@@ -1,0 +1,34 @@
+src/lib/search/algorithms.ts(19,8): error TS1005: ':' expected.
+src/lib/search/algorithms.ts(19,26): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(19,31): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(19,52): error TS1005: ':' expected.
+src/lib/search/algorithms.ts(22,14): error TS1005: ':' expected.
+src/lib/search/algorithms.ts(38,8): error TS1005: ':' expected.
+src/lib/search/algorithms.ts(38,26): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(38,31): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(38,52): error TS1005: ':' expected.
+src/lib/search/algorithms.ts(41,14): error TS1005: ':' expected.
+src/lib/search/algorithms.ts(74,11): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(77,18): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(77,34): error TS1005: '(' expected.
+src/lib/search/algorithms.ts(80,25): error TS1011: An element access expression should take an argument.
+src/lib/search/algorithms.ts(81,11): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(85,1): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(85,18): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(85,40): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(85,48): error TS1005: ':' expected.
+src/lib/search/algorithms.ts(85,62): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(87,6): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(87,7): error TS1180: Property destructuring pattern expected.
+src/lib/search/algorithms.ts(87,15): error TS1005: ',' expected.
+src/lib/search/algorithms.ts(88,7): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(89,10): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(92,10): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(92,19): error TS1011: An element access expression should take an argument.
+src/lib/search/algorithms.ts(93,14): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(94,13): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(95,21): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(98,19): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(99,20): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(100,23): error TS1109: Expression expected.
+src/lib/search/algorithms.ts(101,1): error TS1128: Declaration or statement expected.

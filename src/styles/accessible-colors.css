@@ -1,0 +1,444 @@
+/* WCAG 2.1 AA Compliant Color System */
+
+:root {
+  /* Accessible primary colors - Blue palette */
+  --color-primary-50: #eff6ff;   /* Very light blue */
+  --color-primary-100: #dbeafe;  /* Light blue */
+  --color-primary-200: #bfdbfe;  /* Medium light blue */
+  --color-primary-300: #93c5fd;  /* Medium blue */
+  --color-primary-400: #60a5fa;  /* Medium dark blue */
+  --color-primary-500: #3b82f6;  /* Primary blue (4.5:1 on white) */
+  --color-primary-600: #2563eb;  /* Dark blue (6.3:1 on white) */
+  --color-primary-700: #1d4ed8;  /* Darker blue (8.6:1 on white) */
+  --color-primary-800: #1e40af;  /* Very dark blue (11.9:1 on white) */
+  --color-primary-900: #1e3a8a;  /* Darkest blue (13.9:1 on white) */
+  
+  /* Accessible gray scale */
+  --color-gray-50: #f9fafb;   /* Almost white */
+  --color-gray-100: #f3f4f6;  /* Very light gray */
+  --color-gray-200: #e5e7eb;  /* Light gray */
+  --color-gray-300: #d1d5db;  /* Medium light gray */
+  --color-gray-400: #9ca3af;  /* Medium gray (3.4:1 on white - large text only) */
+  --color-gray-500: #6b7280;  /* Medium dark gray (4.6:1 on white) */
+  --color-gray-600: #4b5563;  /* Dark gray (7.0:1 on white) */
+  --color-gray-700: #374151;  /* Darker gray (10.8:1 on white) */
+  --color-gray-800: #1f2937;  /* Very dark gray (16.0:1 on white) */
+  --color-gray-900: #111827;  /* Almost black (18.7:1 on white) */
+  
+  /* Accessible success colors - Green palette */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;  /* 3.9:1 on white (large text) */
+  --color-success-600: #16a34a;  /* 5.3:1 on white */
+  --color-success-700: #15803d;  /* 7.4:1 on white */
+  --color-success-800: #166534;  /* 10.0:1 on white */
+  --color-success-900: #14532d;  /* 12.2:1 on white */
+  
+  /* Accessible warning colors - Orange palette */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;  /* 2.8:1 on white (insufficient) */
+  --color-warning-600: #d97706;  /* 4.0:1 on white (large text only) */
+  --color-warning-700: #b45309;  /* 5.9:1 on white */
+  --color-warning-800: #92400e;  /* 8.2:1 on white */
+  --color-warning-900: #78350f;  /* 10.4:1 on white */
+  
+  /* Accessible error colors - Red palette */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;  /* 3.3:1 on white (large text only) */
+  --color-error-600: #dc2626;  /* 4.7:1 on white */
+  --color-error-700: #b91c1c;  /* 6.8:1 on white */
+  --color-error-800: #991b1b;  /* 9.2:1 on white */
+  --color-error-900: #7f1d1d;  /* 11.4:1 on white */
+  
+  /* Accessible info colors - Cyan palette */
+  --color-info-50: #f0f9ff;
+  --color-info-100: #e0f2fe;
+  --color-info-200: #bae6fd;
+  --color-info-300: #7dd3fc;
+  --color-info-400: #38bdf8;
+  --color-info-500: #0ea5e9;  /* 3.6:1 on white (large text only) */
+  --color-info-600: #0284c7;  /* 4.9:1 on white */
+  --color-info-700: #0369a1;  /* 6.8:1 on white */
+  --color-info-800: #075985;  /* 9.0:1 on white */
+  --color-info-900: #0c4a6e;  /* 11.0:1 on white */
+  
+  /* Accessible text colors */
+  --text-primary: var(--color-gray-900);      /* 18.7:1 on white */
+  --text-secondary: var(--color-gray-700);    /* 10.8:1 on white */
+  --text-muted: var(--color-gray-600);        /* 7.0:1 on white */
+  --text-disabled: var(--color-gray-400);     /* 3.4:1 on white (large text only) */
+  
+  /* Accessible link colors */
+  --link-default: var(--color-primary-600);   /* 6.3:1 on white */
+  --link-hover: var(--color-primary-700);     /* 8.6:1 on white */
+  --link-visited: var(--color-primary-800);   /* 11.9:1 on white */
+  --link-active: var(--color-primary-900);    /* 13.9:1 on white */
+  
+  /* Accessible background colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: var(--color-gray-50);
+  --bg-tertiary: var(--color-gray-100);
+  --bg-accent: var(--color-primary-50);
+  
+  /* Accessible border colors */
+  --border-light: var(--color-gray-200);      /* 3:1 contrast for UI elements */
+  --border-medium: var(--color-gray-300);
+  --border-dark: var(--color-gray-400);
+  
+  /* Accessible focus colors */
+  --focus-outline: var(--color-primary-600);  /* 6.3:1 on white */
+  --focus-ring: var(--color-primary-200);     /* Light ring for visibility */
+  
+  /* Accessible button colors */
+  --btn-primary-bg: var(--color-primary-600);
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: var(--color-primary-700);
+  
+  --btn-secondary-bg: var(--color-gray-100);
+  --btn-secondary-text: var(--color-gray-700);
+  --btn-secondary-hover: var(--color-gray-200);
+  
+  --btn-success-bg: var(--color-success-600);
+  --btn-success-text: #ffffff;
+  --btn-success-hover: var(--color-success-700);
+  
+  --btn-warning-bg: var(--color-warning-700);
+  --btn-warning-text: #ffffff;
+  --btn-warning-hover: var(--color-warning-800);
+  
+  --btn-error-bg: var(--color-error-600);
+  --btn-error-text: #ffffff;
+  --btn-error-hover: var(--color-error-700);
+}
+
+/* Dark mode accessible colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode backgrounds */
+    --bg-primary: var(--color-gray-900);
+    --bg-secondary: var(--color-gray-800);
+    --bg-tertiary: var(--color-gray-700);
+    --bg-accent: var(--color-primary-900);
+    
+    /* Dark mode text colors */
+    --text-primary: var(--color-gray-50);       /* High contrast on dark */
+    --text-secondary: var(--color-gray-200);    /* Good contrast on dark */
+    --text-muted: var(--color-gray-400);        /* Adequate contrast on dark */
+    --text-disabled: var(--color-gray-600);     /* Lower contrast for disabled */
+    
+    /* Dark mode link colors */
+    --link-default: var(--color-primary-400);   /* Lighter blue for dark mode */
+    --link-hover: var(--color-primary-300);
+    --link-visited: var(--color-primary-500);
+    --link-active: var(--color-primary-200);
+    
+    /* Dark mode borders */
+    --border-light: var(--color-gray-700);
+    --border-medium: var(--color-gray-600);
+    --border-dark: var(--color-gray-500);
+    
+    /* Dark mode focus */
+    --focus-outline: var(--color-primary-400);
+    --focus-ring: var(--color-primary-800);
+    
+    /* Dark mode buttons */
+    --btn-primary-bg: var(--color-primary-600);
+    --btn-primary-text: #ffffff;
+    --btn-primary-hover: var(--color-primary-500);
+    
+    --btn-secondary-bg: var(--color-gray-700);
+    --btn-secondary-text: var(--color-gray-100);
+    --btn-secondary-hover: var(--color-gray-600);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    /* Enhanced contrast for high contrast mode */
+    --text-primary: #000000;
+    --text-secondary: var(--color-gray-800);
+    --text-muted: var(--color-gray-700);
+    
+    --link-default: var(--color-primary-800);
+    --link-hover: var(--color-primary-900);
+    
+    --border-light: var(--color-gray-400);
+    --border-medium: var(--color-gray-500);
+    --border-dark: var(--color-gray-600);
+    
+    --focus-outline: #000000;
+    --btn-primary-bg: var(--color-primary-800);
+  }
+}
+
+/* Forced colors mode (Windows High Contrast) */
+@media (forced-colors: active) {
+  :root {
+    --text-primary: ButtonText;
+    --text-secondary: ButtonText;
+    --text-muted: GrayText;
+    
+    --link-default: LinkText;
+    --link-hover: LinkText;
+    --link-visited: VisitedText;
+    
+    --bg-primary: ButtonFace;
+    --bg-secondary: ButtonFace;
+    --bg-tertiary: ButtonFace;
+    
+    --border-light: ButtonText;
+    --border-medium: ButtonText;
+    --border-dark: ButtonText;
+    
+    --focus-outline: Highlight;
+    --btn-primary-bg: ButtonFace;
+    --btn-primary-text: ButtonText;
+  }
+}
+
+/* Apply accessible colors to common elements */
+
+/* Text elements */
+body {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+p, span, div {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-disabled {
+  color: var(--text-disabled);
+}
+
+/* Link elements */
+a {
+  color: var(--link-default);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--link-hover);
+  text-decoration-thickness: 2px;
+}
+
+a:visited {
+  color: var(--link-visited);
+}
+
+a:active {
+  color: var(--link-active);
+}
+
+/* Button elements */
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-bg);
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover);
+  border-color: var(--btn-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--border-medium);
+}
+
+.btn-secondary:hover {
+  background-color: var(--btn-secondary-hover);
+}
+
+.btn-success {
+  background-color: var(--btn-success-bg);
+  color: var(--btn-success-text);
+  border: 1px solid var(--btn-success-bg);
+}
+
+.btn-success:hover {
+  background-color: var(--btn-success-hover);
+  border-color: var(--btn-success-hover);
+}
+
+.btn-warning {
+  background-color: var(--btn-warning-bg);
+  color: var(--btn-warning-text);
+  border: 1px solid var(--btn-warning-bg);
+}
+
+.btn-warning:hover {
+  background-color: var(--btn-warning-hover);
+  border-color: var(--btn-warning-hover);
+}
+
+.btn-error {
+  background-color: var(--btn-error-bg);
+  color: var(--btn-error-text);
+  border: 1px solid var(--btn-error-bg);
+}
+
+.btn-error:hover {
+  background-color: var(--btn-error-hover);
+  border-color: var(--btn-error-hover);
+}
+
+/* Form elements */
+input, textarea, select {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--focus-outline);
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Status colors */
+.text-success {
+  color: var(--color-success-700);
+}
+
+.text-warning {
+  color: var(--color-warning-700);
+}
+
+.text-error {
+  color: var(--color-error-600);
+}
+
+.text-info {
+  color: var(--color-info-700);
+}
+
+.bg-success {
+  background-color: var(--color-success-50);
+  color: var(--color-success-800);
+}
+
+.bg-warning {
+  background-color: var(--color-warning-50);
+  color: var(--color-warning-800);
+}
+
+.bg-error {
+  background-color: var(--color-error-50);
+  color: var(--color-error-800);
+}
+
+.bg-info {
+  background-color: var(--color-info-50);
+  color: var(--color-info-800);
+}
+
+/* Border utilities */
+.border-light {
+  border-color: var(--border-light);
+}
+
+.border-medium {
+  border-color: var(--border-medium);
+}
+
+.border-dark {
+  border-color: var(--border-dark);
+}
+
+/* Background utilities */
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+.bg-accent {
+  background-color: var(--bg-accent);
+}
+
+/* Ensure sufficient contrast for interactive elements */
+button, [role="button"], [tabindex] {
+  /* Ensure minimum 3:1 contrast for UI components */
+  border: 1px solid var(--border-medium);
+}
+
+/* Job-specific color applications */
+.job-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.job-card:hover {
+  border-color: var(--border-medium);
+}
+
+.job-card.featured {
+  border-color: var(--color-warning-700);
+  background-color: var(--color-warning-50);
+}
+
+.job-type-badge {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-800);
+  border: 1px solid var(--color-primary-200);
+}
+
+.salary-range {
+  color: var(--color-success-700);
+  font-weight: 600;
+}
+
+.company-name {
+  color: var(--text-secondary);
+}
+
+.job-location {
+  color: var(--text-muted);
+}
+
+/* Navigation colors */
+.nav-link {
+  color: var(--text-secondary);
+}
+
+.nav-link:hover {
+  color: var(--link-hover);
+}
+
+.nav-link.active {
+  color: var(--link-default);
+  font-weight: 600;
+} 

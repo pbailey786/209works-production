@@ -1,0 +1,79 @@
+src/components/ui/comprehensive-ui-provider.tsx(280,8): error TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+src/components/ui/lazy-component.tsx(23,10): error TS2322: Type 'Omit<ComponentProps<T> & LazyComponentProps, "className" | "fallback">' is not assignable to type 'IntrinsicAttributes & (T extends MemoExoticComponent<infer U extends ComponentType<any>> | LazyExoticComponent<infer U extends ComponentType<...>> ? ReactManagedAttributes<...> : ReactManagedAttributes<...>)'.
+  Type 'Omit<ComponentProps<T> & LazyComponentProps, "className" | "fallback">' is not assignable to type 'T extends MemoExoticComponent<infer U extends ComponentType<any>> | LazyExoticComponent<infer U extends ComponentType<any>> ? ReactManagedAttributes<...> : ReactManagedAttributes<...>'.
+src/lib/performance/db-optimization.ts(132,14): error TS2345: Argument of type '"query"' is not assignable to parameter of type 'never'.
+src/lib/performance/db-optimization.ts(135,13): error TS2339: Property 'duration' does not exist on type 'never'.
+src/lib/performance/db-optimization.ts(136,48): error TS2339: Property 'duration' does not exist on type 'never'.
+src/lib/performance/db-optimization.ts(136,64): error TS2339: Property 'query' does not exist on type 'never'.
+src/lib/security/dependency-scanner.ts(239,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ critical: number; high: number; moderate: number; low: number; info: number; }'.
+  No index signature with a parameter of type 'string' was found on type '{ critical: number; high: number; moderate: number; low: number; info: number; }'.
+src/lib/security/security-monitor.ts(440,34): error TS18046: 'error' is of type 'unknown'.
+src/lib/services/adRotationService.ts(77,15): error TS2353: Object literal may only specify known properties, and 'path' does not exist in type 'SortOrderInput'.
+src/lib/services/adRotationService.ts(265,11): error TS2353: Object literal may only specify known properties, and 'position' does not exist in type '(Without<AdImpressionCreateInput, AdImpressionUncheckedCreateInput> & AdImpressionUncheckedCreateInput) | (Without<...> & AdImpressionCreateInput)'.
+src/lib/services/cron-scheduler.ts(439,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'JobSelect<DefaultArgs>'.
+src/lib/services/cron-scheduler.ts(491,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'JobSelect<DefaultArgs>'.
+src/lib/services/cron-scheduler.ts(517,20): error TS2339: Property 'type' does not exist on type '{ location: string; jobType: JobType; salaryMin: number | null; salaryMax: number | null; company: string; status: string; skills: string[]; id: string; createdAt: Date; updatedAt: Date; ... 15 more ...; isRemote: boolean; }'.
+src/lib/services/customer-migration.ts(65,11): error TS2739: Type '{ starter: number; professional: number; enterprise: number; premium: number; }' is missing the following properties from type 'Record<PricingTier, number>': basic, essential
+src/lib/services/email-queue.ts(289,33): error TS2345: Argument of type '{ success: boolean; data: CreateEmailResponse; processingTime: number; recipients: number; messageId: string; error?: undefined; code?: undefined; } | { success: boolean; ... 5 more ...; messageId?: undefined; }' is not assignable to parameter of type '{ error?: Error | undefined; data?: any; }'.
+  Type '{ success: boolean; error: string; processingTime: number; code: string; data?: undefined; recipients?: undefined; messageId?: undefined; }' is not assignable to type '{ error?: Error | undefined; data?: any; }'.
+    Types of property 'error' are incompatible.
+      Type 'string' is not assignable to type 'Error'.
+src/lib/services/email-queue.ts(292,63): error TS2339: Property 'message' does not exist on type 'string'.
+src/lib/services/email-queue.ts(313,30): error TS2345: Argument of type 'Record<string, any>' is not assignable to parameter of type 'JobAlertEmailProps'.
+  Type 'Record<string, any>' is missing the following properties from type 'JobAlertEmailProps': userName, jobTitle, companyName, location, and 4 more.
+src/lib/services/email-queue.ts(316,34): error TS2345: Argument of type 'Record<string, any>' is not assignable to parameter of type 'WeeklyDigestEmailProps'.
+  Type 'Record<string, any>' is missing the following properties from type 'WeeklyDigestEmailProps': userName, jobs, location, unsubscribeUrl, manageAlertsUrl
+src/lib/services/email-queue.ts(450,18): error TS2339: Property 'getPaused' does not exist on type 'Queue<any, any, string, any, any, string>'.
+src/lib/services/instagram-image-generator.ts(65,44): error TS2345: Argument of type '{ width?: number; height?: number; backgroundColor?: string; textColor?: string; fontFamily?: string; fontSize?: number; template?: "modern" | "classic" | "minimal" | "gradient"; brandColor?: string; domainConfig?: DomainConfig; }' is not assignable to parameter of type 'Required<InstagramImageOptions>'.
+  Types of property 'width' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/lib/services/instagram-image-generator.ts(92,20): error TS2339: Property 'type' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; location: string; skills: string[]; companyId: string | null; deletedAt: Date | null; company: string; expiresAt: Date | null; ... 16 more ...; isRemote: boolean; }'.
+src/lib/stripe.ts(15,5): error TS2322: Type 'Promise<import("C:/Users/pbail/100devs/209jobs/node_modules/@stripe/stripe-js/dist/stripe-js/stripe").Stripe | null>' is not assignable to type 'Promise<import("stripe").Stripe | null>'.
+  Type 'import("C:/Users/pbail/100devs/209jobs/node_modules/@stripe/stripe-js/dist/stripe-js/stripe").Stripe | null' is not assignable to type 'import("stripe").Stripe | null'.
+    Type 'Stripe' is missing the following properties from type 'Stripe': StripeResource, accountLinks, accountSessions, accounts, and 75 more.
+src/lib/task-management/config.ts(494,9): error TS2740: Type '{ logLevel: "debug"; debug: true; enablePerformanceOptimization: false; }' is missing the following properties from type '{ userId: string; debug: boolean; projectName: string; logLevel: "info" | "warn" | "error" | "debug"; defaultSubtasks: number; defaultPriority: "high" | "low" | "medium" | "critical"; ... 5 more ...; ollamaBaseUrl?: string | undefined; }': userId, projectName, defaultSubtasks, defaultPriority, and 4 more.
+src/lib/task-management/config.ts(501,9): error TS2740: Type '{ logLevel: "warn"; debug: false; enablePerformanceOptimization: true; enableBackups: true; }' is missing the following properties from type '{ userId: string; debug: boolean; projectName: string; logLevel: "info" | "warn" | "error" | "debug"; defaultSubtasks: number; defaultPriority: "high" | "low" | "medium" | "critical"; ... 5 more ...; ollamaBaseUrl?: string | undefined; }': userId, projectName, defaultSubtasks, defaultPriority, and 3 more.
+src/lib/task-management/config.ts(509,9): error TS2740: Type '{ logLevel: "error"; debug: false; enableBackups: false; enableIntegrityChecks: false; }' is missing the following properties from type '{ userId: string; debug: boolean; projectName: string; logLevel: "info" | "warn" | "error" | "debug"; defaultSubtasks: number; defaultPriority: "high" | "low" | "medium" | "critical"; ... 5 more ...; ollamaBaseUrl?: string | undefined; }': userId, projectName, defaultSubtasks, defaultPriority, and 3 more.
+src/lib/task-management/performance.ts(199,13): error TS2739: Type '{ id: number; title: string; description: string; status: "pending" | "cancelled" | "done" | "in-progress" | "review" | "deferred"; priority: "high" | "low" | "medium" | "critical"; dependencies: number[]; }' is missing the following properties from type '{ id: number; status: "pending" | "cancelled" | "done" | "in-progress" | "review" | "deferred"; title: string; priority: "high" | "low" | "medium" | "critical"; description: string; ... 9 more ...; assignee?: string | undefined; }': tags, subtasks
+src/lib/task-management/performance.ts(339,25): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/lib/types/component-props.ts(76,18): error TS2430: Interface 'EnhancedJobData' incorrectly extends interface 'Omit<JobWithOptionalFields, "benefits">'.
+  Types of property 'skills' are incompatible.
+    Type 'JobSkill[]' is not assignable to type 'string[]'.
+      Type 'JobSkill' is not assignable to type 'string'.
+src/lib/ui/component-registry.tsx(281,43): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to parameter of type '(Attributes & P) | null | undefined'.
+      Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'Attributes & P'.
+        Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+          'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+src/lib/ui/component-registry.tsx(286,3): error TS2322: Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'ComponentType<P>'.
+  Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'FunctionComponent<P>'.
+    Types of parameters 'props' and 'props' are incompatible.
+      Type 'P' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+        Type 'object' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+          Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+            Type 'P' is not assignable to type 'PropsWithoutRef<P>'.
+              Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+src/lib/ui/component-registry.tsx(306,3): error TS2322: Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'ComponentType<P>'.
+  Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'FunctionComponent<P>'.
+    Types of parameters 'props' and 'props' are incompatible.
+      Type 'P' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+        Type 'object' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+          Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+            Type 'P' is not assignable to type 'PropsWithoutRef<P>'.
+              Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+src/lib/ui/component-state-manager.tsx(356,56): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'Omit<ModalState, "id" | "timestamp">'.
+src/lib/validations/form-utils.ts(220,14): error TS2345: Argument of type 'Partial<T>' is not assignable to parameter of type 'T | DefaultValues<T> | ResetAction<T> | undefined'.
+  Type 'Partial<T>' is not assignable to type 'T'.
+    'Partial<T>' is assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'FieldValues'.
+src/scripts/backfillJobEmbeddings.ts(373,9): error TS2322: Type 'number[]' is not assignable to type 'string | NullableStringFieldUpdateOperationsInput | null | undefined'.
+src/scripts/finalizeCacheSystemMigration.ts(534,32): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+src/scripts/optimizeTasksFile.ts(591,29): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+src/scripts/test-instagram-automation.ts(45,40): error TS2339: Property 'getQueueStats' does not exist on type 'InstagramScheduler'.
+src/scripts/test-instagram-automation.ts(77,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type '(Without<JobCreateInput, JobUncheckedCreateInput> & JobUncheckedCreateInput) | (Without<JobUncheckedCreateInput, JobCreateInput> & JobCreateInput)'.
+src/scripts/test-instagram-automation.ts(108,9): error TS2353: Object literal may only specify known properties, and 'hashtags' does not exist in type '(Without<InstagramTemplateCreateInput, InstagramTemplateUncheckedCreateInput> & InstagramTemplateUncheckedCreateInput) | (Without<...> & InstagramTemplateCreateInput)'.
+src/scripts/test-instagram-automation.ts(124,9): error TS2353: Object literal may only specify known properties, and 'daysOfWeek' does not exist in type '(Without<InstagramScheduleCreateInput, InstagramScheduleUncheckedCreateInput> & InstagramScheduleUncheckedCreateInput) | (Without<...> & InstagramScheduleCreateInput)'.

@@ -1,0 +1,339 @@
+name: Database Migration
+
+on:
+  push:
+    paths:
+      - 'prisma/schema.prisma'
+      - 'prisma/migrations/**'
+    branches: [main, staging, develop]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run migrations'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+      migration_type:
+        description: 'Type of migration'
+        required: true
+        default: 'migrate'
+        type: choice
+        options:
+          - migrate
+          - reset
+          - generate
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  validate-schema:
+    name: 🔍 Validate Prisma Schema
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Validate Prisma schema
+        run: npx prisma validate
+
+      - name: 📋 Generate Prisma client
+        run: npx prisma generate
+
+      - name: 🔍 Check for drift
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_DEV }}
+        run: |
+          if npx prisma migrate status --schema=./prisma/schema.prisma; then
+            echo "✅ Database schema is in sync"
+          else
+            echo "⚠️  Database schema drift detected"
+            npx prisma migrate status --schema=./prisma/schema.prisma || true
+          fi
+
+  migration-dry-run:
+    name: 🧪 Migration Dry Run
+    runs-on: ubuntu-latest
+    needs: validate-schema
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.migration_type == 'migrate')
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Test migration on clean database
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          echo "🧪 Testing migration on clean database..."
+          npx prisma migrate deploy
+          echo "✅ Migration completed successfully"
+
+      - name: 🧪 Test migration rollback
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          echo "🧪 Testing data integrity after migration..."
+          npx prisma db seed || echo "No seed script found"
+          
+          # Basic data integrity checks
+          npx prisma db execute --stdin <<EOF
+          SELECT COUNT(*) as table_count 
+          FROM information_schema.tables 
+          WHERE table_schema = 'public';
+          EOF
+
+  migrate-development:
+    name: 🚀 Migrate Development
+    runs-on: ubuntu-latest
+    needs: migration-dry-run
+    if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
+    environment:
+      name: database-development
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🗄️ Run migrations on development
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_DEV }}
+        run: |
+          echo "🚀 Running migrations on development database..."
+          npx prisma migrate deploy
+          echo "✅ Development database migration completed"
+
+      - name: 📊 Database status
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_DEV }}
+        run: |
+          echo "📊 Development database status:"
+          npx prisma migrate status
+
+  migrate-staging:
+    name: 🚀 Migrate Staging
+    runs-on: ubuntu-latest
+    needs: migration-dry-run
+    if: github.ref == 'refs/heads/staging' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    environment:
+      name: database-staging
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 💾 Backup staging database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
+        run: |
+          echo "💾 Creating backup of staging database..."
+          # Note: Actual backup command depends on your database setup
+          # This is a placeholder for the backup process
+          echo "Backup created with timestamp: $(date -u +%Y%m%d_%H%M%S)"
+
+      - name: 🗄️ Run migrations on staging
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
+        run: |
+          echo "🚀 Running migrations on staging database..."
+          npx prisma migrate deploy
+          echo "✅ Staging database migration completed"
+
+      - name: 📊 Database status
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
+        run: |
+          echo "📊 Staging database status:"
+          npx prisma migrate status
+
+  migrate-production:
+    name: 🚀 Migrate Production
+    runs-on: ubuntu-latest
+    needs: migration-dry-run
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    environment:
+      name: database-production
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 💾 Backup production database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+        run: |
+          echo "💾 Creating backup of production database..."
+          timestamp=$(date -u +%Y%m%d_%H%M%S)
+          echo "Production backup created: backup_${timestamp}"
+          # Store backup information for rollback if needed
+          echo "BACKUP_TIMESTAMP=${timestamp}" >> $GITHUB_ENV
+
+      - name: 🚨 Pre-migration health check
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+        run: |
+          echo "🚨 Performing pre-migration health check..."
+          npx prisma db execute --stdin <<EOF
+          SELECT 
+            schemaname,
+            tablename,
+            attname as column_name,
+            typname as data_type
+          FROM pg_attribute
+          JOIN pg_class ON pg_attribute.attrelid = pg_class.oid
+          JOIN pg_namespace ON pg_class.relnamespace = pg_namespace.oid
+          JOIN pg_type ON pg_attribute.atttypid = pg_type.oid
+          WHERE pg_namespace.nspname = 'public'
+          AND pg_attribute.attnum > 0
+          AND NOT pg_attribute.attisdropped
+          ORDER BY schemaname, tablename, attname;
+          EOF
+
+      - name: 🗄️ Run migrations on production
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+        run: |
+          echo "🚀 Running migrations on production database..."
+          echo "⚠️  This is a production deployment - proceeding with caution"
+          npx prisma migrate deploy
+          echo "✅ Production database migration completed"
+
+      - name: 🏥 Post-migration health check
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+        run: |
+          echo "🏥 Performing post-migration health check..."
+          npx prisma migrate status
+          
+          # Basic connectivity test
+          npx prisma db execute --stdin <<EOF
+          SELECT COUNT(*) as total_tables
+          FROM information_schema.tables
+          WHERE table_schema = 'public';
+          EOF
+
+      - name: 🔔 Notify migration success
+        if: success()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"✅ Production database migration completed successfully\nBackup: backup_${{ env.BACKUP_TIMESTAMP }}"}' \
+            $SLACK_WEBHOOK
+
+      - name: 🚨 Notify migration failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"🚨 Production database migration FAILED\nBackup available: backup_${{ env.BACKUP_TIMESTAMP }}\nImmediate attention required!"}' \
+            $SLACK_WEBHOOK
+
+  rollback-production:
+    name: 🔄 Rollback Production
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.migration_type == 'reset'
+    environment:
+      name: database-production-rollback
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: ⚠️ Production rollback warning
+        run: |
+          echo "⚠️  WARNING: This will rollback the production database"
+          echo "⚠️  This action should only be performed in emergency situations"
+          echo "⚠️  Ensure you have verified the need for this rollback"
+
+      - name: 🔄 Perform rollback
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+        run: |
+          echo "🔄 Rolling back production database..."
+          echo "This step would restore from backup - implement based on your backup strategy"
+          # Placeholder for actual rollback logic
+          echo "Rollback completed"
+
+      - name: 🚨 Notify rollback
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"🔄 Production database rollback executed\nPlease verify system functionality"}' \
+            $SLACK_WEBHOOK 

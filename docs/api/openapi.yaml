@@ -1,0 +1,2502 @@
+openapi: 3.0.3
+info:
+  title: 209jobs API
+  description: |
+    # 209jobs API Documentation
+    
+    Welcome to the 209jobs API! This RESTful API provides comprehensive job board functionality including:
+    
+    - **Job Management**: Create, update, search, and manage job postings
+    - **User Management**: Handle user profiles, preferences, and authentication
+    - **Alert System**: Smart job alerts with AI-powered matching
+    - **Advertisement Platform**: Comprehensive ad management with tracking
+    - **Application Tracking**: Manage job applications and candidate interactions
+    
+    ## Authentication
+    
+    The API uses JWT-based authentication with role-based access control:
+    - **Jobseekers**: Can search jobs, apply, create alerts
+    - **Employers**: Can post jobs, manage applications, create ads
+    - **Admins**: Full system access
+    
+    ## Rate Limiting
+    
+    API endpoints are rate-limited to ensure fair usage:
+    - **Standard endpoints**: 100 requests per minute
+    - **Search endpoints**: 500 requests per minute  
+    - **Tracking endpoints**: 1000 requests per minute
+    - **Auth endpoints**: 200 requests per minute
+    
+    ## Error Handling
+    
+    All endpoints return consistent error responses with appropriate HTTP status codes and detailed error messages.
+    
+  version: 1.0.0
+  contact:
+    name: 209jobs API Support
+    url: https://209jobs.com/support
+    email: api-support@209jobs.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.209jobs.com/v1
+    description: Production server
+  - url: https://api-staging.209jobs.com/v1
+    description: Staging server
+  - url: http://localhost:3000/api
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: Create a new user account for jobseekers or employers
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              jobseeker:
+                summary: Jobseeker registration
+                value:
+                  name: "John Doe"
+                  email: "john@example.com"
+                  password: "securePassword123"
+                  role: "jobseeker"
+              employer:
+                summary: Employer registration
+                value:
+                  name: "Jane Smith"
+                  email: "jane@company.com"
+                  password: "securePassword123"
+                  role: "employer"
+                  companyName: "Tech Corp"
+                  companyWebsite: "https://techcorp.com"
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Email not verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/2fa/setup:
+    post:
+      tags:
+        - Authentication
+      summary: Setup 2FA
+      description: Setup two-factor authentication for user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Setup2FARequest'
+      responses:
+        '200':
+          description: 2FA setup successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/verify:
+    post:
+      tags:
+        - Authentication
+      summary: Verify email address
+      description: Verify user email with verification token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Email verification token
+              required:
+                - token
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Job Management Endpoints
+  /jobs:
+    get:
+      tags:
+        - Jobs
+      summary: Search jobs
+      description: |
+        Search and filter job listings with advanced options including:
+        - Full-text search across title and description
+        - Location-based filtering with radius support
+        - Salary range filtering
+        - Job type and experience level filters
+        - Skills and company filtering
+        - Sorting and pagination
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/QueryParam'
+        - $ref: '#/components/parameters/LocationParam'
+        - $ref: '#/components/parameters/JobTypeParam'
+        - $ref: '#/components/parameters/ExperienceLevelParam'
+        - $ref: '#/components/parameters/SalaryMinParam'
+        - $ref: '#/components/parameters/SalaryMaxParam'
+        - $ref: '#/components/parameters/RemoteParam'
+        - $ref: '#/components/parameters/SkillsParam'
+        - $ref: '#/components/parameters/CompanyParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/SortParam'
+      responses:
+        '200':
+          description: Jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+    post:
+      tags:
+        - Jobs
+      summary: Create job posting
+      description: Create a new job posting (employers only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jobs/{id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job details
+      description: Retrieve detailed information about a specific job
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/JobIdParam'
+      responses:
+        '200':
+          description: Job details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetailResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Jobs
+      summary: Update job posting
+      description: Update an existing job posting (job owner only)
+      parameters:
+        - $ref: '#/components/parameters/JobIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+      responses:
+        '200':
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Jobs
+      summary: Delete job posting
+      description: Delete a job posting (job owner only)
+      parameters:
+        - $ref: '#/components/parameters/JobIdParam'
+      responses:
+        '204':
+          description: Job deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jobs/{id}/apply:
+    post:
+      tags:
+        - Jobs
+      summary: Apply to job
+      description: Submit a job application (jobseekers only)
+      parameters:
+        - $ref: '#/components/parameters/JobIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobApplicationRequest'
+      responses:
+        '201':
+          description: Application submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Already applied to this job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /jobs/semantic-search:
+    post:
+      tags:
+        - Jobs
+      summary: Semantic job search
+      description: Advanced AI-powered job search with semantic matching
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SemanticSearchRequest'
+      responses:
+        '200':
+          description: Semantic search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SemanticSearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  # User Management Endpoints
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user profile
+      description: Retrieve user profile information (respects privacy settings)
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Users
+      summary: Update user profile
+      description: Update user profile information (own profile only)
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /users/{id}/applications:
+    get:
+      tags:
+        - Users
+      summary: Get user applications
+      description: Retrieve job applications for a user (own applications only)
+      parameters:
+        - $ref: '#/components/parameters/UserIdParam'
+        - $ref: '#/components/parameters/StatusParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Applications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /users/search:
+    get:
+      tags:
+        - Users
+      summary: Search users
+      description: Search for jobseekers (employers only)
+      parameters:
+        - $ref: '#/components/parameters/QueryParam'
+        - $ref: '#/components/parameters/LocationParam'
+        - $ref: '#/components/parameters/SkillsParam'
+        - $ref: '#/components/parameters/ExperienceLevelParam'
+        - name: openToWork
+          in: query
+          description: Filter by users open to work
+          schema:
+            type: boolean
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Users found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSearchResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # Alert Management Endpoints
+  /alerts:
+    get:
+      tags:
+        - Alerts
+      summary: Get user alerts
+      description: Retrieve job alerts for the authenticated user
+      parameters:
+        - $ref: '#/components/parameters/StatusParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Alerts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Alerts
+      summary: Create job alert
+      description: Create a new job alert with smart matching criteria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlertRequest'
+      responses:
+        '201':
+          description: Alert created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /alerts/{id}:
+    get:
+      tags:
+        - Alerts
+      summary: Get alert details
+      description: Retrieve detailed information about a specific alert
+      parameters:
+        - $ref: '#/components/parameters/AlertIdParam'
+      responses:
+        '200':
+          description: Alert details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Alerts
+      summary: Update alert
+      description: Update an existing job alert
+      parameters:
+        - $ref: '#/components/parameters/AlertIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAlertRequest'
+      responses:
+        '200':
+          description: Alert updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Alerts
+      summary: Delete alert
+      description: Delete a job alert
+      parameters:
+        - $ref: '#/components/parameters/AlertIdParam'
+      responses:
+        '204':
+          description: Alert deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /alerts/{id}/test:
+    post:
+      tags:
+        - Alerts
+      summary: Test alert
+      description: Test an alert and get matching jobs with optimization recommendations
+      parameters:
+        - $ref: '#/components/parameters/AlertIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dryRun:
+                  type: boolean
+                  default: true
+                  description: Whether this is a test run (no actual notification sent)
+      responses:
+        '200':
+          description: Alert test completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertTestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Advertisement Endpoints
+  /ads:
+    get:
+      tags:
+        - Advertisements
+      summary: Get advertisements
+      description: Retrieve advertisements (employers see own, admins see all)
+      parameters:
+        - $ref: '#/components/parameters/StatusParam'
+        - name: type
+          in: query
+          description: Filter by ad type
+          schema:
+            $ref: '#/components/schemas/AdType'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Advertisements retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Advertisements
+      summary: Create advertisement
+      description: Create a new advertisement campaign (employers only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAdRequest'
+      responses:
+        '201':
+          description: Advertisement created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /ads/{id}:
+    get:
+      tags:
+        - Advertisements
+      summary: Get advertisement details
+      description: Retrieve detailed information and analytics for an advertisement
+      parameters:
+        - $ref: '#/components/parameters/AdIdParam'
+        - name: startDate
+          in: query
+          description: Start date for analytics (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for analytics (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Advertisement details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDetailResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Advertisements
+      summary: Update advertisement
+      description: Update an existing advertisement
+      parameters:
+        - $ref: '#/components/parameters/AdIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAdRequest'
+      responses:
+        '200':
+          description: Advertisement updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Advertisements
+      summary: Delete advertisement
+      description: Delete an advertisement (with spend protection)
+      parameters:
+        - $ref: '#/components/parameters/AdIdParam'
+      responses:
+        '204':
+          description: Advertisement deleted successfully
+        '400':
+          description: Cannot delete ad with significant spend
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /ads/impression:
+    post:
+      tags:
+        - Advertisement Tracking
+      summary: Track ad impression
+      description: Record an advertisement impression
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdTrackingRequest'
+      responses:
+        '200':
+          description: Impression tracked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /ads/click:
+    post:
+      tags:
+        - Advertisement Tracking
+      summary: Track ad click
+      description: Record an advertisement click
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AdTrackingRequest'
+                - type: object
+                  properties:
+                    targetUrl:
+                      type: string
+                      format: uri
+                      description: URL that was clicked
+      responses:
+        '200':
+          description: Click tracked successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          cost:
+                            type: number
+                            description: Cost of this click
+                          ctr:
+                            type: string
+                            description: Current click-through rate
+                          totalSpend:
+                            type: number
+                            description: Total campaign spend
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /ads/conversion:
+    post:
+      tags:
+        - Advertisement Tracking
+      summary: Track ad conversion
+      description: Record an advertisement conversion
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/AdTrackingRequest'
+                - type: object
+                  properties:
+                    conversionType:
+                      $ref: '#/components/schemas/ConversionType'
+                    conversionValue:
+                      type: number
+                      minimum: 0
+                      description: Value of the conversion
+                    metadata:
+                      type: object
+                      description: Additional conversion metadata
+                  required:
+                    - conversionType
+      responses:
+        '200':
+          description: Conversion tracked successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          conversionType:
+                            $ref: '#/components/schemas/ConversionType'
+                          conversionValue:
+                            type: number
+                          roi:
+                            type: string
+                            nullable: true
+                            description: Return on investment percentage
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /ads/stats:
+    get:
+      tags:
+        - Advertisement Analytics
+      summary: Get advertisement statistics
+      description: Retrieve comprehensive advertisement analytics and insights
+      parameters:
+        - name: groupBy
+          in: query
+          description: Group statistics by time period or dimension
+          schema:
+            type: string
+            enum: [day, week, month, ad, type]
+            default: day
+        - name: metrics
+          in: query
+          description: Specific metrics to include (comma-separated)
+          schema:
+            type: string
+            example: "impressions,clicks,conversions,ctr,cost"
+        - name: startDate
+          in: query
+          description: Start date for analytics (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for analytics (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: adIds
+          in: query
+          description: Specific ad IDs to analyze (comma-separated)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdStatsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authenticated requests
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for programmatic access
+
+  parameters:
+    JobIdParam:
+      name: id
+      in: path
+      required: true
+      description: Job ID
+      schema:
+        type: string
+        format: uuid
+
+    UserIdParam:
+      name: id
+      in: path
+      required: true
+      description: User ID
+      schema:
+        type: string
+        format: uuid
+
+    AlertIdParam:
+      name: id
+      in: path
+      required: true
+      description: Alert ID
+      schema:
+        type: string
+        format: uuid
+
+    AdIdParam:
+      name: id
+      in: path
+      required: true
+      description: Advertisement ID
+      schema:
+        type: string
+        format: uuid
+
+    QueryParam:
+      name: query
+      in: query
+      description: Search query
+      schema:
+        type: string
+        maxLength: 200
+
+    LocationParam:
+      name: location
+      in: query
+      description: Location filter
+      schema:
+        type: string
+        maxLength: 100
+
+    JobTypeParam:
+      name: jobType
+      in: query
+      description: Job type filter
+      schema:
+        $ref: '#/components/schemas/JobType'
+
+    ExperienceLevelParam:
+      name: experienceLevel
+      in: query
+      description: Experience level filter
+      schema:
+        $ref: '#/components/schemas/ExperienceLevel'
+
+    SalaryMinParam:
+      name: salaryMin
+      in: query
+      description: Minimum salary filter
+      schema:
+        type: integer
+        minimum: 0
+
+    SalaryMaxParam:
+      name: salaryMax
+      in: query
+      description: Maximum salary filter
+      schema:
+        type: integer
+        minimum: 0
+
+    RemoteParam:
+      name: remote
+      in: query
+      description: Remote work filter
+      schema:
+        type: boolean
+
+    SkillsParam:
+      name: skills
+      in: query
+      description: Skills filter (comma-separated)
+      schema:
+        type: string
+
+    CompanyParam:
+      name: company
+      in: query
+      description: Company filter
+      schema:
+        type: string
+
+    StatusParam:
+      name: status
+      in: query
+      description: Status filter
+      schema:
+        type: string
+
+    PageParam:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    SortParam:
+      name: sort
+      in: query
+      description: Sort order
+      schema:
+        type: string
+        enum: [created_desc, created_asc, salary_desc, salary_asc, relevance]
+        default: created_desc
+
+  schemas:
+    # Authentication Schemas
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - role
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+        role:
+          $ref: '#/components/schemas/UserRole'
+        companyName:
+          type: string
+          maxLength: 200
+          description: Required for employers
+        companyWebsite:
+          type: string
+          format: uri
+          description: Optional for employers
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    Setup2FARequest:
+      type: object
+      required:
+        - secret
+        - token
+      properties:
+        secret:
+          type: string
+          description: TOTP secret
+        token:
+          type: string
+          pattern: '^[0-9]{6}$'
+          description: 6-digit verification code
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              description: JWT access token
+            refreshToken:
+              type: string
+              description: Refresh token
+            expiresIn:
+              type: integer
+              description: Token expiration time in seconds
+
+    # Job Schemas
+    CreateJobRequest:
+      type: object
+      required:
+        - title
+        - company
+        - description
+        - requirements
+        - location
+        - jobType
+        - experienceLevel
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        company:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 50
+          maxLength: 10000
+        requirements:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        location:
+          type: string
+          minLength: 1
+          maxLength: 200
+        jobType:
+          $ref: '#/components/schemas/JobType'
+        experienceLevel:
+          $ref: '#/components/schemas/ExperienceLevel'
+        salaryMin:
+          type: integer
+          minimum: 0
+        salaryMax:
+          type: integer
+          minimum: 0
+        benefits:
+          type: string
+          maxLength: 2000
+        skills:
+          type: array
+          items:
+            type: string
+          maxItems: 50
+        isRemote:
+          type: boolean
+          default: false
+        applicationUrl:
+          type: string
+          format: uri
+        applicationEmail:
+          type: string
+          format: email
+        expiresAt:
+          type: string
+          format: date-time
+
+    UpdateJobRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateJobRequest'
+        - type: object
+          properties:
+            status:
+              $ref: '#/components/schemas/JobStatus'
+          # All fields are optional for updates
+
+    JobApplicationRequest:
+      type: object
+      required:
+        - coverLetter
+        - resumeUrl
+      properties:
+        coverLetter:
+          type: string
+          minLength: 100
+          maxLength: 5000
+        resumeUrl:
+          type: string
+          format: uri
+        linkedinUrl:
+          type: string
+          format: uri
+        portfolioUrl:
+          type: string
+          format: uri
+        additionalNotes:
+          type: string
+          maxLength: 1000
+
+    SemanticSearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Natural language job search query
+        location:
+          type: string
+          maxLength: 200
+        radius:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Search radius in miles
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        company:
+          type: string
+        description:
+          type: string
+        requirements:
+          type: string
+        location:
+          type: string
+        jobType:
+          $ref: '#/components/schemas/JobType'
+        experienceLevel:
+          $ref: '#/components/schemas/ExperienceLevel'
+        salaryMin:
+          type: integer
+        salaryMax:
+          type: integer
+        benefits:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        isRemote:
+          type: boolean
+        applicationUrl:
+          type: string
+          format: uri
+        applicationEmail:
+          type: string
+          format: email
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        employerId:
+          type: string
+          format: uuid
+        applicationCount:
+          type: integer
+          description: Number of applications received
+
+    JobListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            jobs:
+              type: array
+              items:
+                $ref: '#/components/schemas/Job'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+            filters:
+              type: object
+              description: Available filter options
+            totalCount:
+              type: integer
+
+    JobDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          allOf:
+            - $ref: '#/components/schemas/Job'
+            - type: object
+              properties:
+                employer:
+                  $ref: '#/components/schemas/EmployerInfo'
+                similarJobs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Job'
+                  description: Similar job recommendations
+
+    JobResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Job'
+
+    SemanticSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            jobs:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Job'
+                  - type: object
+                    properties:
+                      relevanceScore:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                        description: AI-calculated relevance score
+                      matchedFields:
+                        type: array
+                        items:
+                          type: string
+                        description: Fields that matched the query
+            query:
+              type: string
+              description: Processed query
+            totalResults:
+              type: integer
+
+    # User Schemas
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        bio:
+          type: string
+          maxLength: 500
+        location:
+          type: string
+          maxLength: 200
+        website:
+          type: string
+          format: uri
+        linkedinUrl:
+          type: string
+          format: uri
+        githubUrl:
+          type: string
+          format: uri
+        portfolioUrl:
+          type: string
+          format: uri
+        profilePictureUrl:
+          type: string
+          format: uri
+        # Employer-specific fields
+        companyName:
+          type: string
+          maxLength: 200
+        companyWebsite:
+          type: string
+          format: uri
+        companySize:
+          $ref: '#/components/schemas/CompanySize'
+        industry:
+          type: string
+          maxLength: 100
+        # Jobseeker-specific fields
+        currentTitle:
+          type: string
+          maxLength: 200
+        experienceLevel:
+          $ref: '#/components/schemas/ExperienceLevel'
+        skills:
+          type: array
+          items:
+            type: string
+          maxItems: 50
+        expectedSalaryMin:
+          type: integer
+          minimum: 0
+        expectedSalaryMax:
+          type: integer
+          minimum: 0
+        isOpenToWork:
+          type: boolean
+        preferredJobTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobType'
+        preferredLocations:
+          type: array
+          items:
+            type: string
+        isOpenToRemote:
+          type: boolean
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        bio:
+          type: string
+        location:
+          type: string
+        website:
+          type: string
+          format: uri
+        linkedinUrl:
+          type: string
+          format: uri
+        githubUrl:
+          type: string
+          format: uri
+        portfolioUrl:
+          type: string
+          format: uri
+        profilePictureUrl:
+          type: string
+          format: uri
+        emailVerified:
+          type: boolean
+        twoFactorEnabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserProfileResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          allOf:
+            - $ref: '#/components/schemas/User'
+            - type: object
+              properties:
+                # Additional profile fields based on role
+                companyName:
+                  type: string
+                companyWebsite:
+                  type: string
+                companySize:
+                  $ref: '#/components/schemas/CompanySize'
+                industry:
+                  type: string
+                currentTitle:
+                  type: string
+                experienceLevel:
+                  $ref: '#/components/schemas/ExperienceLevel'
+                skills:
+                  type: array
+                  items:
+                    type: string
+                isOpenToWork:
+                  type: boolean
+                statistics:
+                  type: object
+                  properties:
+                    jobsPosted:
+                      type: integer
+                    applicationsReceived:
+                      type: integer
+                    applicationsSubmitted:
+                      type: integer
+
+    UserSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            users:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+            totalCount:
+              type: integer
+
+    # Alert Schemas
+    CreateAlertRequest:
+      type: object
+      required:
+        - name
+        - criteria
+        - frequency
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 500
+        criteria:
+          $ref: '#/components/schemas/AlertCriteria'
+        frequency:
+          $ref: '#/components/schemas/AlertFrequency'
+        isActive:
+          type: boolean
+          default: true
+        maxResults:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+
+    UpdateAlertRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateAlertRequest'
+        # All fields are optional for updates
+
+    AlertCriteria:
+      type: object
+      properties:
+        keywords:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+        jobTitle:
+          type: string
+          maxLength: 200
+        company:
+          type: string
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 200
+        radius:
+          type: integer
+          minimum: 1
+          maximum: 100
+        remote:
+          type: boolean
+        jobType:
+          $ref: '#/components/schemas/JobType'
+        experienceLevel:
+          $ref: '#/components/schemas/ExperienceLevel'
+        salaryMin:
+          type: integer
+          minimum: 0
+        salaryMax:
+          type: integer
+          minimum: 0
+        skills:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+        excludeKeywords:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+        excludeCompanies:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        criteria:
+          $ref: '#/components/schemas/AlertCriteria'
+        frequency:
+          $ref: '#/components/schemas/AlertFrequency'
+        isActive:
+          type: boolean
+        maxResults:
+          type: integer
+        lastSent:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        userId:
+          type: string
+          format: uuid
+
+    AlertListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            alerts:
+              type: array
+              items:
+                $ref: '#/components/schemas/Alert'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+            totalCount:
+              type: integer
+
+    AlertDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          allOf:
+            - $ref: '#/components/schemas/Alert'
+            - type: object
+              properties:
+                statistics:
+                  type: object
+                  properties:
+                    totalMatches:
+                      type: integer
+                    recentMatches:
+                      type: integer
+                    averageMatches:
+                      type: number
+                recentJobs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Job'
+                  description: Recent jobs matching this alert
+
+    AlertResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Alert'
+
+    AlertTestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            alert:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                frequency:
+                  $ref: '#/components/schemas/AlertFrequency'
+            testResults:
+              type: object
+              properties:
+                totalMatches:
+                  type: integer
+                matchingJobs:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/Job'
+                      - type: object
+                        properties:
+                          relevanceScore:
+                            type: number
+                          matchedFields:
+                            type: array
+                            items:
+                              type: string
+                matchQuality:
+                  type: object
+                  properties:
+                    score:
+                      type: integer
+                      minimum: 0
+                      maximum: 100
+                    level:
+                      type: string
+                      enum: [excellent, good, fair, poor, no_matches]
+                    feedback:
+                      type: string
+                recommendations:
+                  type: array
+                  items:
+                    type: string
+            notificationPreview:
+              type: object
+              nullable: true
+              properties:
+                subject:
+                  type: string
+                preview:
+                  type: string
+                emailBody:
+                  type: object
+            dryRun:
+              type: boolean
+
+    # Advertisement Schemas
+    CreateAdRequest:
+      type: object
+      required:
+        - title
+        - type
+        - content
+        - targeting
+        - biddingModel
+        - bidAmount
+        - dailyBudget
+        - startDate
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 500
+        type:
+          $ref: '#/components/schemas/AdType'
+        content:
+          $ref: '#/components/schemas/AdContent'
+        targeting:
+          $ref: '#/components/schemas/AdTargeting'
+        biddingModel:
+          $ref: '#/components/schemas/BiddingModel'
+        bidAmount:
+          type: number
+          minimum: 0.01
+        dailyBudget:
+          type: number
+          minimum: 1
+        totalBudget:
+          type: number
+          minimum: 1
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+
+    UpdateAdRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateAdRequest'
+        - type: object
+          properties:
+            status:
+              $ref: '#/components/schemas/AdStatus'
+          # All fields are optional for updates
+
+    AdContent:
+      type: object
+      required:
+        - headline
+      properties:
+        headline:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        imageUrl:
+          type: string
+          format: uri
+        videoUrl:
+          type: string
+          format: uri
+        ctaText:
+          type: string
+          maxLength: 30
+        ctaUrl:
+          type: string
+          format: uri
+        logoUrl:
+          type: string
+          format: uri
+
+    AdTargeting:
+      type: object
+      properties:
+        geographic:
+          type: object
+          properties:
+            countries:
+              type: array
+              items:
+                type: string
+            regions:
+              type: array
+              items:
+                type: string
+            cities:
+              type: array
+              items:
+                type: string
+            radius:
+              type: integer
+              minimum: 1
+              maximum: 100
+        demographic:
+          type: object
+          properties:
+            ageMin:
+              type: integer
+              minimum: 18
+              maximum: 100
+            ageMax:
+              type: integer
+              minimum: 18
+              maximum: 100
+            gender:
+              type: string
+              enum: [male, female, all]
+        professional:
+          type: object
+          properties:
+            jobTitles:
+              type: array
+              items:
+                type: string
+            companies:
+              type: array
+              items:
+                type: string
+            industries:
+              type: array
+              items:
+                type: string
+            skills:
+              type: array
+              items:
+                type: string
+            experienceLevels:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExperienceLevel'
+        behavioral:
+          type: object
+          properties:
+            interests:
+              type: array
+              items:
+                type: string
+            jobSeekerStatus:
+              type: string
+              enum: [active, passive, all]
+        temporal:
+          type: object
+          properties:
+            days:
+              type: array
+              items:
+                type: string
+                enum: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+            hours:
+              type: object
+              properties:
+                start:
+                  type: string
+                  pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+                end:
+                  type: string
+                  pattern: '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$'
+            timezone:
+              type: string
+
+    Advertisement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/AdType'
+        content:
+          $ref: '#/components/schemas/AdContent'
+        targeting:
+          $ref: '#/components/schemas/AdTargeting'
+        biddingModel:
+          $ref: '#/components/schemas/BiddingModel'
+        bidAmount:
+          type: number
+        dailyBudget:
+          type: number
+        totalBudget:
+          type: number
+        currentSpend:
+          type: number
+        status:
+          $ref: '#/components/schemas/AdStatus'
+        impressions:
+          type: integer
+        clicks:
+          type: integer
+        conversions:
+          type: integer
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        employerId:
+          type: string
+          format: uuid
+
+    AdListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            ads:
+              type: array
+              items:
+                $ref: '#/components/schemas/Advertisement'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+            totalCount:
+              type: integer
+
+    AdDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            overview:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                type:
+                  $ref: '#/components/schemas/AdType'
+                status:
+                  $ref: '#/components/schemas/AdStatus'
+                createdAt:
+                  type: string
+                  format: date-time
+            performance:
+              type: object
+              properties:
+                impressions:
+                  type: integer
+                clicks:
+                  type: integer
+                conversions:
+                  type: integer
+                ctr:
+                  type: number
+                  description: Click-through rate percentage
+                conversionRate:
+                  type: number
+                  description: Conversion rate percentage
+                currentSpend:
+                  type: number
+                avgCostPerClick:
+                  type: number
+                budgetUtilization:
+                  type: number
+                  description: Budget utilization percentage
+            budget:
+              type: object
+              properties:
+                daily:
+                  type: number
+                total:
+                  type: number
+                spent:
+                  type: number
+                remaining:
+                  type: number
+                  nullable: true
+            bidding:
+              type: object
+              properties:
+                model:
+                  $ref: '#/components/schemas/BiddingModel'
+                amount:
+                  type: number
+            timeline:
+              type: object
+              properties:
+                impressions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TimelineData'
+                clicks:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TimelineData'
+                conversions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TimelineData'
+
+    AdResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Advertisement'
+
+    AdTrackingRequest:
+      type: object
+      required:
+        - adId
+        - sessionId
+      properties:
+        adId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        sessionId:
+          type: string
+        userAgent:
+          type: string
+        ipAddress:
+          type: string
+          format: ipv4
+        placement:
+          type: string
+          description: Where the ad was displayed
+
+    AdStatsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            summary:
+              type: object
+              properties:
+                totalImpressions:
+                  type: integer
+                totalClicks:
+                  type: integer
+                totalConversions:
+                  type: integer
+                totalSpend:
+                  type: number
+                averageCtr:
+                  type: number
+                averageConversionRate:
+                  type: number
+                totalRevenue:
+                  type: number
+                roas:
+                  type: number
+                  description: Return on ad spend
+            breakdown:
+              type: array
+              items:
+                type: object
+                properties:
+                  period:
+                    type: string
+                  adId:
+                    type: string
+                    format: uuid
+                  metrics:
+                    type: object
+            insights:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [recommendation, warning, insight]
+                  message:
+                    type: string
+                  severity:
+                    type: string
+                    enum: [low, medium, high]
+
+    # Application Schemas
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        jobId:
+          type: string
+          format: uuid
+        applicantId:
+          type: string
+          format: uuid
+        coverLetter:
+          type: string
+        resumeUrl:
+          type: string
+          format: uri
+        linkedinUrl:
+          type: string
+          format: uri
+        portfolioUrl:
+          type: string
+          format: uri
+        additionalNotes:
+          type: string
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        appliedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ApplicationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Application'
+
+    ApplicationListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            applications:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Application'
+                  - type: object
+                    properties:
+                      job:
+                        $ref: '#/components/schemas/Job'
+                      applicant:
+                        $ref: '#/components/schemas/User'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+            totalCount:
+              type: integer
+
+    # Common Schemas
+    EmployerInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        companyName:
+          type: string
+        companyWebsite:
+          type: string
+          format: uri
+        companySize:
+          $ref: '#/components/schemas/CompanySize'
+        industry:
+          type: string
+        location:
+          type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        totalPages:
+          type: integer
+        totalItems:
+          type: integer
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean
+
+    TimelineData:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        value:
+          type: integer
+        cost:
+          type: number
+          nullable: true
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: object
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        code:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    # Enum Schemas
+    UserRole:
+      type: string
+      enum: [jobseeker, employer, admin]
+
+    JobType:
+      type: string
+      enum: [full-time, part-time, contract, temporary, internship]
+
+    ExperienceLevel:
+      type: string
+      enum: [entry, mid, senior, executive]
+
+    JobStatus:
+      type: string
+      enum: [active, paused, completed, expired]
+
+    ApplicationStatus:
+      type: string
+      enum: [pending, reviewed, shortlisted, rejected, hired]
+
+    AlertFrequency:
+      type: string
+      enum: [immediate, daily, weekly, monthly]
+
+    AdType:
+      type: string
+      enum: [banner, sidebar, featured_job, sponsored_search, native, video, popup]
+
+    AdStatus:
+      type: string
+      enum: [draft, scheduled, active, paused, completed, archived]
+
+    BiddingModel:
+      type: string
+      enum: [cpc, cpm, flat_rate]
+
+    ConversionType:
+      type: string
+      enum: [job_view, job_apply, signup, purchase, custom]
+
+    CompanySize:
+      type: string
+      enum: ['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+']
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Validation failed"
+            errors:
+              email: ["Invalid email format"]
+              password: ["Password must be at least 8 characters"]
+
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Authentication required"
+            code: "UNAUTHORIZED"
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Insufficient permissions"
+            code: "FORBIDDEN"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Resource not found"
+            code: "NOT_FOUND"
+
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            message: "Rate limit exceeded. Try again later."
+            code: "RATE_LIMIT_EXCEEDED"
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per time window
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Remaining requests in current window
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Time when rate limit resets (Unix timestamp)
+          schema:
+            type: integer
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+
+tags:
+  - name: Authentication
+    description: User authentication and account management
+  - name: Jobs
+    description: Job posting, searching, and application management
+  - name: Users
+    description: User profile and account management
+  - name: Alerts
+    description: Job alert creation and management
+  - name: Advertisements
+    description: Advertisement campaign management
+  - name: Advertisement Tracking
+    description: Ad impression, click, and conversion tracking
+  - name: Advertisement Analytics
+    description: Advertisement performance analytics and reporting
+
+externalDocs:
+  description: 209jobs API Documentation
+  url: https://docs.209jobs.com 

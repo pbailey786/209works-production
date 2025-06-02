@@ -1,0 +1,50 @@
+# Task ID: 34
+# Title: Task #34: Frontend: Connect 'Should I Apply' Calculator UI to Backend API
+# Status: done
+# Dependencies: None
+# Priority: low
+# Description: Implement the frontend-backend integration for the 'Should I Apply' Calculator by connecting the existing UI to the comparison API endpoint and displaying results to users.
+# Details:
+This task involves integrating the previously developed 'Should I Apply' Calculator UI (Task #31) with the backend API endpoint for resume and job description comparison (Task #32). The developer should:
+
+1. Create a service or utility function to handle API calls to the backend endpoint
+2. Implement proper error handling for API requests (network errors, server errors, etc.)
+3. Add loading states to the UI while waiting for API responses
+4. Format and display the qualification assessment (Not Qualified, Qualified, Over Qualified) prominently in the UI
+5. Present the explanatory feedback from the AI in a readable, user-friendly format
+6. Consider implementing a way to save or export the results
+7. Ensure the UI is responsive and accessible when displaying results
+8. Add appropriate analytics tracking for result views
+9. Document the integration approach for future developers
+
+The implementation should follow the existing design system and UI patterns established in Task #31. This task is not considered high priority but should maintain high quality standards.
+
+# Test Strategy:
+Testing for this integration should include:
+
+1. Unit tests:
+   - Test API service functions with mocked responses
+   - Verify error handling logic works correctly
+   - Ensure loading states are properly managed
+
+2. Integration tests:
+   - Verify the UI correctly calls the API with proper parameters
+   - Test that results from the API are correctly parsed and displayed
+   - Confirm error messages appear appropriately when API calls fail
+
+3. End-to-end tests:
+   - Complete user flow from entering resume/job details to viewing results
+   - Test with various qualification outcomes (Not Qualified, Qualified, Over Qualified)
+   - Verify accessibility of the results display (screen reader compatibility, keyboard navigation)
+
+4. Manual testing:
+   - Test with realistic resume and job description examples
+   - Verify the UI displays results in a user-friendly manner
+   - Check responsiveness on different screen sizes
+   - Validate that loading indicators provide good user experience
+
+5. User acceptance testing:
+   - Have stakeholders review the integration and provide feedback
+   - Collect metrics on user engagement with the results page
+
+All tests should be documented and included in the CI/CD pipeline where appropriate.

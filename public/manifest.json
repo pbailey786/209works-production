@@ -1,0 +1,31 @@
+{
+  "name": "209jobs - Central Valley Jobs",
+  "short_name": "209jobs",
+  "description": "Find local jobs in the 209 area code - Stockton, Modesto, Tracy, Manteca and surrounding Central Valley cities",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["business", "productivity", "employment"],
+  "lang": "en-US",
+  "scope": "/",
+  "id": "209jobs-app"
+}

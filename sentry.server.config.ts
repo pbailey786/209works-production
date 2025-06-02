@@ -1,0 +1,70 @@
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  
+  // Set environment
+  environment: process.env.NODE_ENV || 'development',
+  
+  // Adjust this value in production, or use tracesSampler for greater control
+  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  
+  // Setting this option to true will print useful information to the console while you're setting up Sentry.
+  debug: process.env.NODE_ENV === 'development',
+  
+  // Configure error filtering for server-side
+  beforeSend(event: any, hint: any) {
+    // Filter out database connection errors during startup
+    if (event.exception?.values?.[0]?.value?.includes('ECONNREFUSED')) {
+      return null;
+    }
+    
+    // Filter out expected errors
+    if (event.exception?.values?.[0]?.value?.includes('404')) {
+      return null;
+    }
+    
+    // Don't send rate limit errors to Sentry (they're expected)
+    if (event.exception?.values?.[0]?.value?.includes('Rate limit exceeded')) {
+      return null;
+    }
+    
+    return event;
+  },
+  
+  // Configure performance monitoring for server
+  beforeSendTransaction(event: any) {
+    // Don't track health check transactions
+    if (event.transaction?.includes('/api/health')) {
+      return null;
+    }
+    
+    // Don't track static asset requests
+    if (event.transaction?.includes('/_next/')) {
+      return null;
+    }
+    
+    return event;
+  },
+  
+  // Configure integrations for server
+  integrations: [
+    // HTTP integration for tracking API calls
+    Sentry.httpIntegration(),
+    
+    // Console integration for capturing console errors
+    Sentry.consoleIntegration(),
+  ],
+  
+  // Configure release tracking
+  release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version,
+  
+  // Configure server context
+  initialScope: {
+    tags: {
+      component: 'server',
+      deployment: process.env.VERCEL_ENV || 'development',
+      region: process.env.VERCEL_REGION || 'local',
+    },
+  },
+}); 

@@ -1,0 +1,380 @@
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import authOptions from "../api/auth/authOptions";
+import Link from "next/link";
+import { prisma } from "../api/auth/prisma";
+import DashboardClient from "./DashboardClient";
+
+// Server-side data fetching
+async function getDashboardData(userId: string) {
+  try {
+    const [
+      savedJobsCount,
+      alertsCount,
+      activeAlertsCount,
+      searchHistoryCount,
+      recentSearches,
+      recentSavedJobs,
+      recentAlerts,
+    ] = await Promise.all([
+      // Count saved jobs
+      prisma.jobApplication.count({
+        where: {
+          userId,
+          status: 'saved',
+        },
+      }),
+      
+      // Count total alerts
+      prisma.alert.count({
+        where: { userId },
+      }),
+      
+      // Count active alerts
+      prisma.alert.count({
+        where: {
+          userId,
+          isActive: true,
+        },
+      }),
+      
+      // Count search history
+      prisma.searchHistory.count({
+        where: { userId },
+      }),
+      
+      // Get recent searches (last 5)
+      prisma.searchHistory.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: {
+          id: true,
+          query: true,
+          filters: true,
+          createdAt: true,
+        },
+      }),
+      
+      // Get recent saved jobs
+      prisma.jobApplication.findMany({
+        where: {
+          userId,
+          status: 'saved',
+        },
+        include: {
+          job: {
+            select: {
+              id: true,
+              title: true,
+              company: true,
+              location: true,
+              jobType: true,
+              salaryMin: true,
+              salaryMax: true,
+              postedAt: true,
+            },
+          },
+        },
+        orderBy: { appliedAt: 'desc' },
+        take: 3,
+      }),
+      
+      // Get recent alerts
+      prisma.alert.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+        select: {
+          id: true,
+          type: true,
+          jobTitle: true,
+          location: true,
+          isActive: true,
+          createdAt: true,
+          lastTriggered: true,
+        },
+      }),
+    ]);
+
+    return {
+      stats: {
+        savedJobs: savedJobsCount,
+        totalAlerts: alertsCount,
+        activeAlerts: activeAlertsCount,
+        searchHistory: searchHistoryCount,
+      },
+      recentSearches,
+      recentSavedJobs: recentSavedJobs.map(app => ({
+        ...app.job,
+        type: app.job.jobType,
+        salaryMin: app.job.salaryMin ?? undefined,
+        salaryMax: app.job.salaryMax ?? undefined,
+        savedAt: app.appliedAt,
+      })),
+      recentAlerts: recentAlerts.map(alert => ({
+        ...alert,
+        jobTitle: alert.jobTitle || 'Untitled Alert',
+        location: alert.location || 'Not specified',
+        lastTriggered: alert.lastTriggered ?? undefined,
+      })),
+    };
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    return {
+      stats: {
+        savedJobs: 0,
+        totalAlerts: 0,
+        activeAlerts: 0,
+        searchHistory: 0,
+      },
+      recentSearches: [],
+      recentSavedJobs: [],
+      recentAlerts: [],
+    };
+  }
+}
+
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    redirect("/signin");
+  }
+
+  // Get user by email since session.user.id doesn't exist by default
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: {
+      id: true,
+      role: true,
+      onboardingCompleted: true
+    }
+  });
+
+  if (!user) {
+    redirect("/signin");
+  }
+
+  // Check if user needs to complete onboarding
+  if (!user.onboardingCompleted) {
+    redirect("/onboarding");
+  }
+
+  // Redirect employers to their dashboard
+  if (user.role === 'employer') {
+    redirect("/employers/dashboard");
+  }
+
+  const dashboardData = await getDashboardData(user.id);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+            Welcome back, {session.user?.name || session.user?.email}
+          </h1>
+          <p className="text-gray-600 mt-2 text-sm sm:text-base">
+            Here's an overview of your job search activity.
+          </p>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4 sm:ml-5 min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-500 truncate">Search History</p>
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">{dashboardData.stats.searchHistory}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4 sm:ml-5 min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-500 truncate">Saved Jobs</p>
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">{dashboardData.stats.savedJobs}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-5 5v-5zM21 7H3a2 2 0 00-2 2v10a2 2 0 002 2h8" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4 sm:ml-5 min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-500 truncate">Active Alerts</p>
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">{dashboardData.stats.activeAlerts}</p>
+                <p className="text-xs text-gray-400">of {dashboardData.stats.totalAlerts} total</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4 sm:ml-5 min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-500 truncate">Profile Views</p>
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">24</p>
+                <p className="text-xs text-gray-400">this month</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Pass data to client component for interactive features */}
+        <DashboardClient 
+          recentSavedJobs={dashboardData.recentSavedJobs}
+          recentSearches={dashboardData.recentSearches}
+          recentAlerts={dashboardData.recentAlerts}
+        />
+
+        {/* Quick Actions */}
+        <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <Link
+            href="/jobs"
+            className="flex items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-blue-300"
+          >
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+            <div className="ml-4 min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate">Search Jobs</p>
+              <p className="text-sm text-gray-500 truncate">Find new opportunities</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/profile"
+            className="flex items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-green-300"
+          >
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-green-100 rounded-md flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+            </div>
+            <div className="ml-4 min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate">Update Profile</p>
+              <p className="text-sm text-gray-500 truncate">Keep your info current</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/alerts"
+            className="flex items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-yellow-300"
+          >
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-yellow-100 rounded-md flex items-center justify-center">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-5 5v-5zM21 7H3a2 2 0 00-2 2v10a2 2 0 002 2h8" />
+                </svg>
+              </div>
+            </div>
+            <div className="ml-4 min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate">Job Alerts</p>
+              <p className="text-sm text-gray-500 truncate">Set up notifications</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/profile/saved"
+            className="flex items-center p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-purple-300"
+          >
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+            </div>
+            <div className="ml-4 min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate">Saved Jobs</p>
+              <p className="text-sm text-gray-500 truncate">View your saved jobs</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Getting Started Section */}
+        <div className="mt-6 sm:mt-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 sm:p-6 border border-blue-200">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-md flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+            <div className="ml-4 sm:ml-5 min-w-0 flex-1">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900">🎉 Welcome to 209.works!</h3>
+              <p className="mt-1 text-sm sm:text-base text-gray-700">Your account is set up and ready to go. Here's what you can do next:</p>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Link
+                  href="/jobs"
+                  className="flex items-center p-3 bg-white rounded-lg border border-blue-200 hover:border-blue-300 transition-colors group"
+                >
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 transition-colors">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Start Job Search</p>
+                    <p className="text-xs text-gray-600">Find opportunities in the 209</p>
+                  </div>
+                </Link>
+                <Link
+                  href="/alerts"
+                  className="flex items-center p-3 bg-white rounded-lg border border-green-200 hover:border-green-300 transition-colors group"
+                >
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-green-200 transition-colors">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-5 5v-5zM21 7H3a2 2 0 00-2 2v10a2 2 0 002 2h8" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">Set Up Alerts</p>
+                    <p className="text-xs text-gray-600">Get notified of new jobs</p>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

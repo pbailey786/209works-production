@@ -1,0 +1,103 @@
+name: Branch Protection
+
+on:
+  push:
+    branches: [main, staging, develop]
+
+jobs:
+  branch-protection-check:
+    name: 🔒 Branch Protection Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+    steps:
+      - name: 🚫 Block direct pushes to protected branches
+        run: |
+          echo "🚫 Direct pushes to protected branches are not allowed!"
+          echo "Please create a pull request instead."
+          echo "Protected branch: ${{ github.ref_name }}"
+          exit 1
+
+  require-pr-checks:
+    name: 📋 Require PR Checks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: ✅ PR checks required
+        run: |
+          echo "✅ This pull request will be subject to the following checks:"
+          echo "- Lint and format verification"
+          echo "- Unit and integration tests"
+          echo "- E2E tests"
+          echo "- Security scanning"
+          echo "- Build verification"
+          echo "- Code review approval required"
+          
+      - name: 📝 Check PR description
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if [[ -z "$PR_BODY" || "$PR_BODY" == "null" ]]; then
+            echo "❌ PR description is required"
+            echo "Please add a description explaining what this PR does"
+            exit 1
+          fi
+          
+          if [[ ${#PR_BODY} -lt 20 ]]; then
+            echo "❌ PR description is too short (minimum 20 characters)"
+            echo "Please provide a more detailed description"
+            exit 1
+          fi
+          
+          echo "✅ PR description meets requirements"
+
+      - name: 🏷️ Check PR labels
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          labels=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
+          
+          if [[ -z "$labels" ]]; then
+            echo "⚠️  No labels found on this PR"
+            echo "Consider adding relevant labels like: feature, bugfix, chore, docs, etc."
+          else
+            echo "✅ PR has the following labels:"
+            echo "$labels"
+          fi
+
+  conventional-commits:
+    name: 📝 Conventional Commits Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📝 Check commit messages
+        run: |
+          echo "Checking commit messages for conventional commit format..."
+          
+          base_sha=${{ github.event.pull_request.base.sha }}
+          head_sha=${{ github.event.pull_request.head.sha }}
+          
+          commits=$(git rev-list --no-merges $base_sha..$head_sha)
+          
+          for commit in $commits; do
+            message=$(git log --format=%s -n 1 $commit)
+            echo "Checking commit: $commit"
+            echo "Message: $message"
+            
+            # Check if commit message follows conventional commits format
+            if [[ ! $message =~ ^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+ ]]; then
+              echo "❌ Commit $commit does not follow conventional commits format"
+              echo "Expected format: type(scope): description"
+              echo "Valid types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All commit messages follow conventional commits format" 

@@ -1,0 +1,76 @@
+# Task ID: 28
+# Title: Task #28: Homepage Redesign with Local-Focused UI and Responsive Job Card Grid
+# Status: done
+# Dependencies: None
+# Priority: medium
+# Description: Redesign the homepage with a modern, local-focused hero section, remove the location search functionality, and implement a responsive job card grid specifically styled for a local job board.
+# Details:
+1. Hero Section Redesign:
+   - Create a visually appealing hero section that emphasizes local job opportunities
+   - Include city/region-specific imagery or dynamic content that highlights the local focus
+   - Incorporate a simplified search that focuses on job titles/keywords only (removing location search)
+   - Ensure the hero section maintains brand identity while adopting modern design principles
+   - Add a compelling call-to-action that encourages immediate job exploration
+
+2. Location Search Removal:
+   - Remove all location search UI elements from the homepage
+   - Update the search functionality to operate without location parameters
+   - Modify any backend API calls to no longer require location data
+   - Update search result handling to accommodate the simplified search approach
+   - Ensure proper error handling for any legacy code expecting location parameters
+
+3. Responsive Job Card Grid:
+   - Design and implement a responsive grid layout for job cards
+   - Create a new job card component styled specifically for local job listings
+   - Include visual indicators for job proximity or local relevance
+   - Implement proper spacing and alignment that adapts to different screen sizes
+   - Ensure the grid maintains proper layout on mobile, tablet, and desktop views
+   - Optimize loading performance with lazy loading for job cards
+
+4. Integration Requirements:
+   - Ensure compatibility with the existing UI component library (reference Task #27)
+   - Implement both light and dark mode support for all new UI elements
+   - Maintain accessibility standards throughout the redesign
+   - Update any relevant documentation to reflect the new homepage design
+
+5. Technical Considerations:
+   - Use CSS Grid and/or Flexbox for responsive layouts
+   - Implement proper state management for job card data
+   - Ensure all new components follow the project's component architecture
+   - Optimize image assets for the hero section to ensure fast loading times
+
+# Test Strategy:
+1. Visual Testing:
+   - Compare the implemented design against approved mockups using visual regression testing
+   - Verify the hero section appears correctly across different screen sizes and resolutions
+   - Confirm proper rendering in both light and dark modes
+   - Validate that all UI elements maintain proper spacing and alignment
+
+2. Functional Testing:
+   - Verify the location search has been completely removed from the UI
+   - Confirm the simplified search functionality works correctly with job titles/keywords
+   - Test that job cards display all required information correctly
+   - Validate that clicking on job cards navigates to the correct job detail page
+   - Ensure all interactive elements (buttons, search fields) function as expected
+
+3. Responsive Testing:
+   - Test the homepage on multiple devices (mobile, tablet, desktop)
+   - Verify the job card grid properly adjusts to different screen sizes
+   - Confirm the hero section is responsive and maintains visual appeal at all breakpoints
+   - Test with various viewport sizes to ensure no layout issues occur
+
+4. Performance Testing:
+   - Measure and compare page load times before and after the redesign
+   - Verify lazy loading of job cards functions correctly
+   - Test scrolling performance with a large number of job cards
+   - Ensure hero section images load efficiently
+
+5. Accessibility Testing:
+   - Verify all new UI elements meet WCAG 2.1 AA standards
+   - Test keyboard navigation throughout the redesigned homepage
+   - Ensure proper contrast ratios in both light and dark modes
+   - Validate semantic HTML structure for screen readers
+
+6. Cross-browser Testing:
+   - Verify the redesign works correctly in Chrome, Firefox, Safari, and Edge
+   - Test on both iOS and Android mobile browsers

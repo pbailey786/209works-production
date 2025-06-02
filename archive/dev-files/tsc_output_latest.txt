@@ -1,0 +1,807 @@
+src/__tests__/job-matching.test.ts(20,41): error TS2345: Argument of type 'null' is not assignable to parameter of type 'never'.
+src/__tests__/job-matching.test.ts(21,41): error TS2345: Argument of type 'true' is not assignable to parameter of type 'never'.
+src/__tests__/utils/custom-matchers.ts(121,22): error TS2339: Property 'toBeValidJobType' does not exist on type 'Matchers<void, any> & SnapshotMatchers<void, any> & Inverse<JestMatchers<void, any>> & PromiseMatchers<any>'.
+src/__tests__/utils/custom-matchers.ts(125,21): error TS2339: Property 'toBeValidUrl' does not exist on type 'Matchers<void, any> & SnapshotMatchers<void, any> & Inverse<JestMatchers<void, any>> & PromiseMatchers<any>'.
+src/__tests__/utils/custom-matchers.ts(129,17): error TS2339: Property 'toHaveValidSalaryRange' does not exist on type 'Matchers<void, any> & SnapshotMatchers<void, any> & Inverse<JestMatchers<void, any>> & PromiseMatchers<any>'.
+src/__tests__/utils/custom-matchers.ts(140,24): error TS2339: Property 'toBeValidEmail' does not exist on type 'Matchers<void, any> & SnapshotMatchers<void, any> & Inverse<JestMatchers<void, any>> & PromiseMatchers<any>'.
+src/actions/ads.ts(217,7): error TS2322: Type 'Date' is not assignable to type 'string | number | { title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undef...'.
+src/actions/ads.ts(217,39): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | number | { title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undef...' is not assignable to parameter of type 'string | number | Date'.
+      Type '{ title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undefined; }' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | number | { title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undef...' is not assignable to parameter of type 'string | number'.
+      Type '{ title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undefined; }' is not assignable to type 'string | number'.
+src/actions/ads.ts(220,7): error TS2322: Type 'Date' is not assignable to type 'string | number | { title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undef...'.
+src/actions/ads.ts(220,37): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | number | { title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undef...' is not assignable to parameter of type 'string | number | Date'.
+      Type '{ title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undefined; }' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | number | { title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undef...' is not assignable to parameter of type 'string | number'.
+      Type '{ title: string; description: string; ctaUrl: string; location?: string | undefined; jobType?: string | undefined; imageUrl?: string | undefined; videoUrl?: string | undefined; ctaText?: string | undefined; altText?: string | undefined; companyLogo?: string | undefined; salaryRange?: string | undefined; }' is not assignable to type 'string | number'.
+src/actions/ads.ts(233,23): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ draft: string[]; scheduled: string[]; active: string[]; paused: string[]; completed: never[]; }'.
+  No index signature with a parameter of type 'string' was found on type '{ draft: string[]; scheduled: string[]; active: string[]; paused: string[]; completed: never[]; }'.
+src/actions/ads.ts(420,9): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/actions/ads.ts(423,34): error TS2339: Property 'placement' does not exist on type '{ adId: string; timestamp: string; userId?: string | undefined; sessionId?: string | undefined; ipAddress?: string | undefined; userAgent?: string | undefined; referrer?: string | undefined; page?: string | undefined; position?: string | undefined; }'.
+src/actions/ads.ts(540,9): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/actions/ads.ts(544,34): error TS2339: Property 'placement' does not exist on type '{ targetUrl: string; adId: string; timestamp: string; userId?: string | undefined; sessionId?: string | undefined; ipAddress?: string | undefined; userAgent?: string | undefined; referrer?: string | undefined; impressionId?: string | undefined; }'.
+src/actions/ads.ts(615,34): error TS2339: Property 'sessionId' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(616,39): error TS2339: Property 'conversionType' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(635,34): error TS2339: Property 'sessionId' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(636,39): error TS2339: Property 'conversionType' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(637,40): error TS2339: Property 'conversionValue' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(638,33): error TS2339: Property 'metadata' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(652,23): error TS2339: Property 'conversionValue' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(659,31): error TS2339: Property 'conversionValue' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(667,39): error TS2339: Property 'conversionType' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/ads.ts(668,40): error TS2339: Property 'conversionValue' does not exist on type '{ type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; adId: string; timestamp: string; value?: number | undefined; userId?: string | undefined; clickId?: string | undefined; customEvent?: string | undefined; }'.
+src/actions/alerts.ts(76,9): error TS2353: Object literal may only specify known properties, and 'lastSent' does not exist in type '(Without<JobAlertCreateInput, JobAlertUncheckedCreateInput> & JobAlertUncheckedCreateInput) | (Without<...> & JobAlertCreateInput)'.
+src/actions/alerts.ts(93,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/alerts.ts(185,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/alerts.ts(250,43): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'JobAlertSelect<DefaultArgs>'.
+src/actions/alerts.ts(323,63): error TS2339: Property 'criteria' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; location: string | null; isActive: boolean; userId: string; keywords: string[]; lastTriggered: Date | null; salaryMax: number | null; ... 4 more ...; title: string; }'.
+src/actions/alerts.ts(323,96): error TS2339: Property 'maxResults' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; location: string | null; isActive: boolean; userId: string; keywords: string[]; lastTriggered: Date | null; salaryMax: number | null; ... 4 more ...; title: string; }'.
+src/actions/alerts.ts(326,62): error TS2339: Property 'criteria' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; location: string | null; isActive: boolean; userId: string; keywords: string[]; lastTriggered: Date | null; salaryMax: number | null; ... 4 more ...; title: string; }'.
+src/actions/alerts.ts(330,13): error TS2339: Property 'criteria' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; location: string | null; isActive: boolean; userId: string; keywords: string[]; lastTriggered: Date | null; salaryMax: number | null; ... 4 more ...; title: string; }'.
+src/actions/alerts.ts(342,17): error TS2353: Object literal may only specify known properties, and 'lastSent' does not exist in type '(Without<JobAlertUpdateInput, JobAlertUncheckedUpdateInput> & JobAlertUncheckedUpdateInput) | (Without<...> & JobAlertUpdateInput)'.
+src/actions/alerts.ts(352,23): error TS2339: Property 'name' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; location: string | null; isActive: boolean; userId: string; keywords: string[]; lastTriggered: Date | null; salaryMax: number | null; ... 4 more ...; title: string; }'.
+src/actions/alerts.ts(370,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/auth.ts(9,10): error TS2614: Module '"next-auth"' has no exported member 'AuthError'. Did you mean to use 'import AuthError from "next-auth"' instead?
+src/actions/auth.ts(101,9): error TS2353: Object literal may only specify known properties, and 'companyName' does not exist in type '(Without<UserCreateInput, UserUncheckedCreateInput> & UserUncheckedCreateInput) | (Without<...> & UserCreateInput)'.
+src/actions/auth.ts(121,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/auth.ts(172,15): error TS2551: Property 'emailVerified' does not exist on type '{ name: string | null; email: string; role: UserRole; companyWebsite: string | null; id: string; passwordHash: string; createdAt: Date; isEmailVerified: boolean; magicLinkExpires: Date | null; ... 25 more ...; isActive: boolean; }'. Did you mean 'isEmailVerified'?
+src/actions/auth.ts(183,17): error TS2339: Property 'set' does not exist on type 'Promise<ReadonlyRequestCookies>'.
+src/actions/auth.ts(190,20): error TS2339: Property 'twoFactorSession' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/actions/auth.ts(221,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/auth.ts(240,15): error TS2339: Property 'delete' does not exist on type 'Promise<ReadonlyRequestCookies>'.
+src/actions/auth.ts(299,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/auth.ts(363,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/auth.ts(385,9): error TS2353: Object literal may only specify known properties, and 'emailVerificationToken' does not exist in type 'UserWhereInput'.
+src/actions/auth.ts(400,9): error TS2561: Object literal may only specify known properties, but 'emailVerified' does not exist in type '(Without<UserUpdateInput, UserUncheckedUpdateInput> & UserUncheckedUpdateInput) | (Without<...> & UserUpdateInput)'. Did you mean to write 'isEmailVerified'?
+src/actions/auth.ts(467,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/auth.ts(492,36): error TS2339: Property 'get' does not exist on type 'Promise<ReadonlyRequestCookies>'.
+src/actions/auth.ts(501,34): error TS2339: Property 'twoFactorSession' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/actions/auth.ts(530,18): error TS2339: Property 'twoFactorSession' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
+src/actions/auth.ts(533,15): error TS2339: Property 'delete' does not exist on type 'Promise<ReadonlyRequestCookies>'.
+src/actions/auth.ts(551,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/jobs.ts(116,34): error TS2339: Property 'create' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/actions/jobs.ts(139,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/jobs.ts(178,9): error TS2353: Object literal may only specify known properties, and 'employerId' does not exist in type 'JobWhereInput'.
+src/actions/jobs.ts(221,7): error TS2322: Type 'Date' is not assignable to type 'string | number | boolean | string[]'.
+  Type 'Date' is missing the following properties from type 'string[]': length, pop, push, concat, and 35 more.
+src/actions/jobs.ts(221,39): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | number | true | string[]' is not assignable to parameter of type 'string | number | Date'.
+      Type 'boolean' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | number | true | string[]' is not assignable to parameter of type 'string | number'.
+      Type 'boolean' is not assignable to type 'string | number'.
+src/actions/jobs.ts(246,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/jobs.ts(265,9): error TS2353: Object literal may only specify known properties, and 'employerId' does not exist in type 'JobWhereInput'.
+src/actions/jobs.ts(349,11): error TS2353: Object literal may only specify known properties, and 'employerId' does not exist in type 'JobSelect<DefaultArgs>'.
+src/actions/jobs.ts(356,11): error TS2353: Object literal may only specify known properties, and 'applicantId' does not exist in type 'JobApplicationWhereInput'.
+src/actions/jobs.ts(403,9): error TS2353: Object literal may only specify known properties, and 'applicantId' does not exist in type 'Without<JobApplicationCreateInput, JobApplicationUncheckedCreateInput> & JobApplicationUncheckedCreateInput'.
+src/actions/jobs.ts(421,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/jobs.ts(512,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/jobs.ts(618,13): error TS2561: Object literal may only specify known properties, but 'applications' does not exist in type 'JobCountOutputTypeSelect<DefaultArgs>'. Did you mean to write 'jobApplications'?
+src/actions/jobs.ts(649,9): error TS2353: Object literal may only specify known properties, and 'employerId' does not exist in type 'JobWhereInput'.
+src/actions/users.ts(165,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/users.ts(211,9): error TS2353: Object literal may only specify known properties, and 'notificationPreferences' does not exist in type '(Without<UserUpdateInput, UserUncheckedUpdateInput> & UserUncheckedUpdateInput) | (Without<...> & UserUpdateInput)'.
+src/actions/users.ts(227,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/users.ts(271,9): error TS2353: Object literal may only specify known properties, and 'privacySettings' does not exist in type '(Without<UserUpdateInput, UserUncheckedUpdateInput> & UserUncheckedUpdateInput) | (Without<...> & UserUpdateInput)'.
+src/actions/users.ts(287,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/users.ts(370,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/users.ts(439,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/users.ts(530,9): error TS2322: Type '{ [x: string]: string[] | undefined; [x: number]: string[] | undefined; [x: symbol]: string[] | undefined; }' is not assignable to type 'Record<string, string[]>'.
+  'string' index signatures are incompatible.
+    Type 'string[] | undefined' is not assignable to type 'string[]'.
+      Type 'undefined' is not assignable to type 'string[]'.
+src/actions/users.ts(585,13): error TS2353: Object literal may only specify known properties, and 'jobsPosted' does not exist in type 'UserCountOutputTypeSelect<DefaultArgs>'.
+src/actions/users.ts(604,41): error TS2339: Property 'privacySettings' does not exist on type '{ name: string | null; email: string; role: UserRole; companyWebsite: string | null; id: string; passwordHash: string; createdAt: Date; isEmailVerified: boolean; magicLinkExpires: Date | null; ... 25 more ...; isActive: boolean; }'.
+src/actions/users.ts(706,9): error TS2353: Object literal may only specify known properties, and 'bio' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/admin/analytics/page.tsx(78,16): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type 'JobApplicationWhereInput'.
+src/app/admin/analytics/page.tsx(82,9): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type 'JobApplicationWhereInput'.
+src/app/admin/moderation/jobs/[id]/page.tsx(33,7): error TS2353: Object literal may only specify known properties, and 'company' does not exist in type 'JobInclude<DefaultArgs>'.
+src/app/admin/moderation/jobs/page.tsx(76,9): error TS2353: Object literal may only specify known properties, and 'company' does not exist in type 'JobInclude<DefaultArgs>'.
+src/app/admin/moderation/jobs/page.tsx(147,9): error TS2322: Type '{ type: JobType; status: string; location: string; salaryMin: number | null; salaryMax: number | null; company: string; createdAt: Date; id: string; updatedAt: Date; companyId: string | null; ... 11 more ...; isRemote: boolean; }[]' is not assignable to type 'Job[]'.
+  Type '{ type: JobType; status: string; location: string; salaryMin: number | null; salaryMax: number | null; company: string; createdAt: Date; id: string; updatedAt: Date; companyId: string | null; ... 11 more ...; isRemote: boolean; }' is missing the following properties from type 'Job': jobType, _count
+src/app/admin/settings/page.tsx(28,19): error TS2353: Object literal may only specify known properties, and 'contains' does not exist in type 'EnumUserRoleFilter<"User">'.
+src/app/admin/settings/page.tsx(98,29): error TS2322: Type '{ location: string | null; createdAt: Date; name: string | null; id: string; email: string; passwordHash: string; isEmailVerified: boolean; magicLinkExpires: Date | null; magicLinkToken: string | null; ... 25 more ...; isActive: boolean; }[]' is not assignable to type '{ id: string; name: string; email: string; role: string; createdAt: Date; }[]'.
+  Type '{ location: string | null; createdAt: Date; name: string | null; id: string; email: string; passwordHash: string; isEmailVerified: boolean; magicLinkExpires: Date | null; magicLinkToken: string | null; ... 25 more ...; isActive: boolean; }' is not assignable to type '{ id: string; name: string; email: string; role: string; createdAt: Date; }'.
+    Types of property 'name' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/app/admin/users/page.tsx(9,79): error TS2307: Cannot find module '@/components/ui/table' or its corresponding type declarations.
+src/app/api/admin/data-integrity/route.ts(10,29): error TS2307: Cannot find module '@/lib/auth' or its corresponding type declarations.
+src/app/api/admin/database-performance/route.ts(11,29): error TS2307: Cannot find module '@/lib/auth' or its corresponding type declarations.
+src/app/api/admin/jobs/[id]/moderate/route.ts(46,9): error TS2353: Object literal may only specify known properties, and 'company' does not exist in type 'JobInclude<DefaultArgs>'.
+src/app/api/admin/jobs/[id]/moderate/route.ts(108,31): error TS2339: Property 'name' does not exist on type 'string'.
+src/app/api/admin/jobs/bulk-moderate/route.ts(51,9): error TS2353: Object literal may only specify known properties, and 'company' does not exist in type 'JobInclude<DefaultArgs>'.
+src/app/api/admin/jobs/bulk-moderate/route.ts(109,31): error TS2339: Property 'name' does not exist on type 'string'.
+src/app/api/admin/reports/export/route.ts(145,11): error TS2353: Object literal may only specify known properties, and 'companyName' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/admin/reports/export/route.ts(164,11): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type 'JobSelect<DefaultArgs>'.
+src/app/api/admin/reports/export/route.ts(171,9): error TS2559: Type '{ createdAt?: { gte: Date; lte?: undefined; } | { lte: Date; gte?: undefined; } | undefined; }' has no properties in common with type 'JobApplicationWhereInput'.
+src/app/api/admin/reports/export/route.ts(177,11): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type 'JobApplicationSelect<DefaultArgs>'.
+src/app/api/admin/reports/export/route.ts(241,11): error TS2353: Object literal may only specify known properties, and 'budget' does not exist in type 'AdvertisementSelect<DefaultArgs>'.
+src/app/api/ads/[id]/analytics/export/route.ts(8,3): error TS2345: Argument of type '(req: NextRequest, context: APIContext<any, any>) => Promise<Response>' is not assignable to parameter of type '(req: NextRequest, context: APIContext<any, any>) => Promise<NextResponse<unknown>>'.
+  Type 'Promise<Response>' is not assignable to type 'Promise<NextResponse<unknown>>'.
+    Type 'Response' is missing the following properties from type 'NextResponse<unknown>': cookies, [INTERNALS]
+src/app/api/ads/[id]/route.ts(17,3): error TS2345: Argument of type '(req: NextRequest, context: APIContext<any, any>) => Promise<{ performance: { allTime: { impressions: any; clicks: any; conversions: any; ctr: number; conversionRate: number; estimatedSpend: number; costPerClick: number; costPerConversion: number; }; recent: { ...; }; }; ... 27 more ...; placement: string[]; }>' is not assignable to parameter of type '(req: NextRequest, context: APIContext<any, any>) => Promise<NextResponse<unknown>>'.
+  Type 'Promise<{ performance: { allTime: { impressions: any; clicks: any; conversions: any; ctr: number; conversionRate: number; estimatedSpend: number; costPerClick: number; costPerConversion: number; }; recent: { ...; }; }; ... 27 more ...; placement: string[]; }>' is not assignable to type 'Promise<NextResponse<unknown>>'.
+    Type '{ performance: { allTime: { impressions: any; clicks: any; conversions: any; ctr: number; conversionRate: number; estimatedSpend: number; costPerClick: number; costPerConversion: number; }; recent: { ...; }; }; ... 27 more ...; placement: string[]; }' is missing the following properties from type 'NextResponse<unknown>': cookies, [INTERNALS], headers, ok, and 12 more.
+src/app/api/ads/[id]/route.ts(50,13): error TS2353: Object literal may only specify known properties, and 'targeting' does not exist in type 'AdvertisementSelect<DefaultArgs>'.
+src/app/api/ads/[id]/route.ts(87,15): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdImpressionWhereInput'.
+src/app/api/ads/[id]/route.ts(93,15): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdClickWhereInput'.
+src/app/api/ads/[id]/route.ts(99,15): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdConversionWhereInput'.
+src/app/api/ads/[id]/route.ts(105,37): error TS2339: Property '_count' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(106,32): error TS2339: Property '_count' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(107,37): error TS2339: Property '_count' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(114,13): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/[id]/route.ts(114,24): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/app/api/ads/[id]/route.ts(115,42): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/[id]/route.ts(115,53): error TS2339: Property 'bidAmount' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'bidAmount' does not exist on type 'string'.
+src/app/api/ads/[id]/route.ts(116,20): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/[id]/route.ts(116,31): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/app/api/ads/[id]/route.ts(117,56): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/[id]/route.ts(117,67): error TS2339: Property 'bidAmount' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'bidAmount' does not exist on type 'string'.
+src/app/api/ads/[id]/route.ts(118,20): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/[id]/route.ts(118,31): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/app/api/ads/[id]/route.ts(120,41): error TS2339: Property 'schedule' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(123,28): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/[id]/route.ts(123,39): error TS2339: Property 'bidAmount' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'bidAmount' does not exist on type 'string'.
+src/app/api/ads/[id]/route.ts(130,75): error TS2339: Property 'targeting' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(158,64): error TS2339: Property 'schedule' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(176,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/ads/[id]/route.ts(235,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/ads/[id]/route.ts(262,9): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(262,68): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(264,62): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(269,9): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(270,34): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(271,23): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(271,56): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(279,9): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/[id]/route.ts(279,46): error TS2339: Property 'schedule' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(297,9): error TS2353: Object literal may only specify known properties, and 'targeting' does not exist in type 'AdvertisementSelect<DefaultArgs>'.
+src/app/api/ads/[id]/route.ts(318,57): error TS2339: Property 'targeting' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/[id]/route.ts(323,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/ads/[id]/route.ts(384,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/ads/conversion/route.ts(17,13): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(24,9): error TS2353: Object literal may only specify known properties, and 'advertiser' does not exist in type 'AdvertisementSelect<DefaultArgs>'.
+src/app/api/ads/conversion/route.ts(39,9): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(43,15): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(44,17): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(50,11): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdClickSelect<DefaultArgs>'.
+src/app/api/ads/conversion/route.ts(59,40): error TS2339: Property 'timestamp' does not exist on type '{ createdAt: Date; id: string; userId: string | null; sessionId: string; ipAddress: string | null; userAgent: string | null; targetUrl: string | null; placement: string | null; adId: string; cost: Decimal; }'.
+src/app/api/ads/conversion/route.ts(60,39): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(66,9): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(76,15): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(77,15): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(78,13): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(78,37): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(80,15): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(80,41): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(84,9): error TS2322: Type '{ timestamp: { gte: Date; }; userId: string; adId: string; type: "custom" | "job_view" | "job_apply" | "signup" | "purchase"; } | { timestamp: { gte: Date; }; clickId: string; adId: string; type: "custom" | ... 3 more ... | "purchase"; } | { ...; }' is not assignable to type 'AdConversionWhereInput | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdConversionWhereInput'.
+src/app/api/ads/conversion/route.ts(102,15): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(103,9): error TS2353: Object literal may only specify known properties, and 'clickId' does not exist in type '(Without<AdConversionCreateInput, AdConversionUncheckedCreateInput> & AdConversionUncheckedCreateInput) | (Without<...> & AdConversionCreateInput)'.
+src/app/api/ads/conversion/route.ts(103,18): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(104,17): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(105,15): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(106,16): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(107,22): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(108,29): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(112,9): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'AdConversionSelect<DefaultArgs>'.
+src/app/api/ads/conversion/route.ts(120,20): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(128,50): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(129,45): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(130,50): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(138,9): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(138,23): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(141,11): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/conversion/route.ts(141,22): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/app/api/ads/conversion/route.ts(142,40): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/conversion/route.ts(142,51): error TS2339: Property 'bidAmount' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'bidAmount' does not exist on type 'string'.
+src/app/api/ads/conversion/route.ts(143,18): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/conversion/route.ts(143,29): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/app/api/ads/conversion/route.ts(144,54): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/conversion/route.ts(144,65): error TS2339: Property 'bidAmount' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'bidAmount' does not exist on type 'string'.
+src/app/api/ads/conversion/route.ts(148,17): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(153,56): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(157,24): error TS2339: Property 'type' does not exist on type '{ createdAt: Date; metadata: JsonValue; id: string; userId: string | null; sessionId: string; adId: string; conversionType: string; conversionValue: Decimal; }'.
+src/app/api/ads/conversion/route.ts(158,25): error TS2339: Property 'value' does not exist on type '{ createdAt: Date; metadata: JsonValue; id: string; userId: string | null; sessionId: string; adId: string; conversionType: string; conversionValue: Decimal; }'.
+src/app/api/ads/conversion/route.ts(159,29): error TS2339: Property 'timestamp' does not exist on type '{ createdAt: Date; metadata: JsonValue; id: string; userId: string | null; sessionId: string; adId: string; conversionType: string; conversionValue: Decimal; }'.
+src/app/api/ads/conversion/route.ts(164,24): error TS2339: Property 'advertiser' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/conversion/route.ts(182,7): error TS2322: Type '"tracking"' is not assignable to type '"search" | "premium" | "general" | "authenticated" | "auth" | "upload" | undefined'.
+src/app/api/ads/conversion/route.ts(186,31): error TS2353: Object literal may only specify known properties, and 'level' does not exist in type '{ enabled?: boolean | undefined; includeBody?: boolean | undefined; includeQuery?: boolean | undefined; }'.
+src/app/api/ads/conversion/route.ts(197,5): error TS2322: Type '"type"[]' is not assignable to type 'AdConversionScalarFieldEnum | AdConversionScalarFieldEnum[]'.
+  Type '"type"[]' is not assignable to type 'AdConversionScalarFieldEnum[]'.
+    Type '"type"' is not assignable to type 'AdConversionScalarFieldEnum'.
+src/app/api/ads/conversion/route.ts(200,7): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'AdConversionCountAggregateInputType'.
+src/app/api/ads/conversion/route.ts(203,7): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type 'AdConversionSumAggregateInputType'.
+src/app/api/ads/conversion/route.ts(214,7): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdConversionWhereInput'.
+src/app/api/ads/conversion/route.ts(217,7): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'AdConversionSelect<DefaultArgs>'.
+src/app/api/ads/conversion/route.ts(222,7): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdConversionOrderByWithRelationInput | AdConversionOrderByWithRelationInput[]'.
+src/app/api/ads/conversion/route.ts(229,18): error TS2339: Property 'type' does not exist on type 'PickEnumerable<AdConversionGroupByOutputType, AdConversionScalarFieldEnum | AdConversionScalarFieldEnum[]> & { ...; }'.
+src/app/api/ads/conversion/route.ts(230,14): error TS18048: 'item._count' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(230,26): error TS2339: Property 'type' does not exist on type 'true | { id?: number | undefined; adId?: number | undefined; userId?: number | undefined; sessionId?: number | undefined; conversionType?: number | undefined; conversionValue?: number | undefined; metadata?: number | undefined; createdAt?: number | undefined; _all?: number | undefined; }'.
+  Property 'type' does not exist on type 'true'.
+src/app/api/ads/conversion/route.ts(231,19): error TS18048: 'item._sum' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(231,29): error TS2339: Property 'value' does not exist on type '{ conversionValue?: Decimal | null | undefined; }'.
+src/app/api/ads/conversion/route.ts(232,21): error TS18048: 'item._count' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(232,33): error TS2339: Property 'type' does not exist on type 'true | { id?: number | undefined; adId?: number | undefined; userId?: number | undefined; sessionId?: number | undefined; conversionType?: number | undefined; conversionValue?: number | undefined; metadata?: number | undefined; createdAt?: number | undefined; _all?: number | undefined; }'.
+  Property 'type' does not exist on type 'true'.
+src/app/api/ads/conversion/route.ts(232,45): error TS18048: 'item._sum' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(232,55): error TS2339: Property 'value' does not exist on type '{ conversionValue?: Decimal | null | undefined; }'.
+src/app/api/ads/conversion/route.ts(232,69): error TS18048: 'item._count' is possibly 'undefined'.
+src/app/api/ads/conversion/route.ts(232,81): error TS2339: Property 'type' does not exist on type 'true | { id?: number | undefined; adId?: number | undefined; userId?: number | undefined; sessionId?: number | undefined; conversionType?: number | undefined; conversionValue?: number | undefined; metadata?: number | undefined; createdAt?: number | undefined; _all?: number | undefined; }'.
+  Property 'type' does not exist on type 'true'.
+src/app/api/ads/display/route.ts(58,13): error TS2353: Object literal may only specify known properties, and 'path' does not exist in type 'SortOrderInput'.
+src/app/api/ads/email-click/route.ts(36,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/app/api/ads/email-impression/route.ts(33,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/app/api/ads/route.ts(20,3): error TS2345: Argument of type '(req: import("C:/Users/pbail/100devs/209jobs/node_modules/next/dist/server/web/spec-extension/request").NextRequest, context: import("C:/Users/pbail/100devs/209jobs/src/lib/middleware/api").APIContext<any, { type?: "banner" | "sidebar" | "featured_job" | ... 4 more ... | undefined; ... 8 more ...; advertiserId?: str...' is not assignable to parameter of type '(req: import("C:/Users/pbail/100devs/209jobs/node_modules/next/dist/server/web/spec-extension/request").NextRequest, context: import("C:/Users/pbail/100devs/209jobs/src/lib/middleware/api").APIContext<any, { type?: "banner" | "sidebar" | "featured_job" | ... 4 more ... | undefined; ... 8 more ...; advertiserId?: str...'.
+  Type 'Promise<PaginatedResponse<{ metrics: { impressions: any; clicks: any; conversions: any; ctr: number; conversionRate: number; estimatedSpend: number; costPerClick: number; }; isCurrentlyActive: boolean; type: string; ... 22 more ...; placement: string[]; }>>' is not assignable to type 'Promise<NextResponse<unknown>>'.
+    Type 'PaginatedResponse<{ metrics: { impressions: any; clicks: any; conversions: any; ctr: number; conversionRate: number; estimatedSpend: number; costPerClick: number; }; isCurrentlyActive: boolean; type: string; status: string; ... 21 more ...; placement: string[]; }>' is missing the following properties from type 'NextResponse<unknown>': cookies, [INTERNALS], headers, ok, and 14 more.
+src/app/api/ads/route.ts(114,22): error TS2464: A computed property name must be of type 'string', 'number', 'symbol', or 'any'.
+src/app/api/ads/route.ts(115,18): error TS18048: 'page' is possibly 'undefined'.
+src/app/api/ads/route.ts(115,30): error TS18048: 'limit' is possibly 'undefined'.
+src/app/api/ads/route.ts(124,13): error TS2353: Object literal may only specify known properties, and 'schedule' does not exist in type 'AdvertisementSelect<DefaultArgs>'.
+src/app/api/ads/route.ts(149,36): error TS2339: Property '_count' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/route.ts(150,31): error TS2339: Property '_count' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/route.ts(151,36): error TS2339: Property '_count' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/route.ts(158,17): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/route.ts(158,28): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/app/api/ads/route.ts(159,41): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/route.ts(159,52): error TS2339: Property 'bidAmount' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'bidAmount' does not exist on type 'string'.
+src/app/api/ads/route.ts(160,24): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/route.ts(160,35): error TS2339: Property 'type' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'type' does not exist on type 'string'.
+src/app/api/ads/route.ts(161,55): error TS18047: 'ad.bidding' is possibly 'null'.
+src/app/api/ads/route.ts(161,66): error TS2339: Property 'bidAmount' does not exist on type 'string | number | boolean | JsonObject | JsonArray'.
+  Property 'bidAmount' does not exist on type 'string'.
+src/app/api/ads/route.ts(175,68): error TS2339: Property 'schedule' does not exist on type '{ type: string; status: string; createdAt: Date; name: string | null; id: string; updatedAt: Date; isActive: boolean; clickCount: number; startDate: Date; endDate: Date; ... 13 more ...; placement: string[]; }'.
+src/app/api/ads/route.ts(180,52): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/ads/route.ts(215,16): error TS2353: Object literal may only specify known properties, and 'advertiserId' does not exist in type 'AdvertisementWhereInput'.
+src/app/api/ads/route.ts(226,32): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/route.ts(227,21): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/route.ts(227,54): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/route.ts(241,9): error TS2353: Object literal may only specify known properties, and 'advertiserId' does not exist in type '(Without<AdvertisementCreateInput, AdvertisementUncheckedCreateInput> & AdvertisementUncheckedCreateInput) | (Without<...> & AdvertisementCreateInput)'.
+src/app/api/ads/route.ts(251,9): error TS2353: Object literal may only specify known properties, and 'targeting' does not exist in type 'AdvertisementSelect<DefaultArgs>'.
+src/app/api/ads/route.ts(265,52): error TS18048: 'body' is possibly 'undefined'.
+src/app/api/ads/stats/route.ts(15,3): error TS2345: Argument of type '(req: import("C:/Users/pbail/100devs/209jobs/node_modules/next/dist/server/web/spec-extension/request").NextRequest, context: import("C:/Users/pbail/100devs/209jobs/src/lib/middleware/api").APIContext<any, { dateFrom: string; dateTo: string; metrics?: ("cpc" | ... 8 more ... | "roas")[] | undefined; groupBy?: "type"...' is not assignable to parameter of type '(req: import("C:/Users/pbail/100devs/209jobs/node_modules/next/dist/server/web/spec-extension/request").NextRequest, context: import("C:/Users/pbail/100devs/209jobs/src/lib/middleware/api").APIContext<any, { dateFrom: string; dateTo: string; metrics?: ("cpc" | ... 8 more ... | "roas")[] | undefined; groupBy?: "type"...'.
+  Type 'Promise<{ summary: {}; breakdown: never[]; insights: never[]; message: string; trends?: undefined; period?: undefined; queryTime?: undefined; } | { summary: { totalAds: number; totalImpressions: any; totalClicks: any; ... 7 more ...; estimatedReach: number; }; ... 5 more ...; message?: undefined; }>' is not assignable to type 'Promise<NextResponse<unknown>>'.
+    Type '{ summary: {}; breakdown: never[]; insights: never[]; message: string; trends?: undefined; period?: undefined; queryTime?: undefined; } | { summary: { totalAds: number; totalImpressions: any; totalClicks: any; ... 7 more ...; estimatedReach: number; }; ... 5 more ...; message?: undefined; }' is not assignable to type 'NextResponse<unknown>'.
+      Type '{ summary: {}; breakdown: never[]; insights: never[]; message: string; trends?: undefined; period?: undefined; queryTime?: undefined; }' is missing the following properties from type 'NextResponse<unknown>': cookies, [INTERNALS], headers, ok, and 14 more.
+src/app/api/ads/stats/route.ts(63,7): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+  Type 'undefined' is not assignable to type 'string | number'.
+src/app/api/ads/stats/route.ts(64,7): error TS18048: 'metrics' is possibly 'undefined'.
+src/app/api/ads/stats/route.ts(80,13): error TS2353: Object literal may only specify known properties, and 'advertiser' does not exist in type 'AdvertisementSelect<DefaultArgs>'.
+src/app/api/ads/stats/route.ts(104,11): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/api/ads/stats/route.ts(163,9): error TS2353: Object literal may only specify known properties, and 'timestamp' does not exist in type 'AdImpressionSelect<DefaultArgs>'.
+src/app/api/ads/stats/route.ts(173,9): error TS2353: Object literal may only specify known properties, and 'impressionId' does not exist in type 'AdClickSelect<DefaultArgs>'.
+src/app/api/ads/stats/route.ts(183,9): error TS2353: Object literal may only specify known properties, and 'clickId' does not exist in type 'AdConversionSelect<DefaultArgs>'.
+src/app/api/alerts/[id]/route.ts(17,3): error TS2345: Argument of type '(req: NextRequest, context: APIContext<any, any>) => Promise<{ recentMatches: { id: string; title: string; company: string; location: string; postedAt: string; matchScore: number; }[]; ... 14 more ...; title: string; }>' is not assignable to parameter of type '(req: NextRequest, context: APIContext<any, any>) => Promise<NextResponse<unknown>>'.
+  Type 'Promise<{ recentMatches: { id: string; title: string; company: string; location: string; postedAt: string; matchScore: number; }[]; stats: { totalNotifications: any; averageMatches: number; clickThroughRate: number; lastActivity: any; estimatedNextRun: string | null; }; ... 13 more ...; title: string; }>' is not assignable to type 'Promise<NextResponse<unknown>>'.
+    Type '{ recentMatches: { id: string; title: string; company: string; location: string; postedAt: string; matchScore: number; }[]; stats: { totalNotifications: any; averageMatches: number; clickThroughRate: number; lastActivity: any; estimatedNextRun: string | null; }; ... 13 more ...; title: string; }' is missing the following properties from type 'NextResponse<unknown>': cookies, [INTERNALS], headers, ok, and 14 more.
+src/app/api/alerts/[id]/route.ts(40,13): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'JobAlertSelect<DefaultArgs>'.
+src/app/api/alerts/[id]/route.ts(74,37): error TS2339: Property '_count' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/route.ts(77,31): error TS2339: Property 'lastSent' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/route.ts(78,69): error TS2339: Property 'lastSent' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/route.ts(95,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/alerts/[id]/route.ts(132,9): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'JobAlertSelect<DefaultArgs>'.
+src/app/api/alerts/[id]/route.ts(161,5): error TS2353: Object literal may only specify known properties, and 'requiredAuth' does not exist in type 'APIMiddlewareConfig<{ id: string; name?: string | undefined; isActive?: boolean | undefined; frequency?: "immediate" | "daily" | "weekly" | "monthly" | undefined; description?: string | undefined; criteria?: { ...; } | undefined; maxResults?: number | undefined; }, any>'.
+src/app/api/alerts/[id]/route.ts(162,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/alerts/[id]/route.ts(208,5): error TS2353: Object literal may only specify known properties, and 'requiredAuth' does not exist in type 'APIMiddlewareConfig<any, any>'.
+src/app/api/alerts/[id]/route.ts(209,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/alerts/[id]/test/route.ts(23,3): error TS2345: Argument of type '(req: NextRequest, context: APIContext<{ alertId: string; dryRun?: boolean | undefined; }, any>) => Promise<{ alert: { id: string; name: any; frequency: string; }; testResults: { ...; }; notificationPreview: any; dryRun: any; }>' is not assignable to parameter of type '(req: NextRequest, context: APIContext<{ alertId: string; dryRun?: boolean | undefined; }, any>) => Promise<NextResponse<unknown>>'.
+  Type 'Promise<{ alert: { id: string; name: any; frequency: string; }; testResults: { totalMatches: number; matchingJobs: JobMatchResult[]; matchQuality: MatchQuality; recommendations: string[]; }; notificationPreview: any; dryRun: any; }>' is not assignable to type 'Promise<NextResponse<unknown>>'.
+    Type '{ alert: { id: string; name: any; frequency: string; }; testResults: { totalMatches: number; matchingJobs: JobMatchResult[]; matchQuality: MatchQuality; recommendations: string[]; }; notificationPreview: any; dryRun: any; }' is missing the following properties from type 'NextResponse<unknown>': cookies, [INTERNALS], headers, ok, and 14 more.
+src/app/api/alerts/[id]/test/route.ts(26,13): error TS2339: Property 'dryRun' does not exist on type '{ alertId: string; dryRun?: boolean | undefined; } | undefined'.
+src/app/api/alerts/[id]/test/route.ts(37,9): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'JobAlertSelect<DefaultArgs>'.
+src/app/api/alerts/[id]/test/route.ts(53,28): error TS2339: Property 'criteria' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/test/route.ts(60,59): error TS2339: Property 'criteria' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/test/route.ts(60,75): error TS2339: Property 'maxResults' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/test/route.ts(63,58): error TS2339: Property 'criteria' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/test/route.ts(79,25): error TS2339: Property 'name' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/test/route.ts(86,72): error TS2339: Property 'criteria' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/[id]/test/route.ts(100,38): error TS2339: Property 'uuid' does not exist on type '{ userId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { id: string; }, { id: string; }>; jobId: ZodObject<{ id: ZodString; }, "strip", ZodTypeAny, { ...; }, { ...; }>; }'.
+src/app/api/alerts/analytics/route.ts(3,10): error TS2459: Module '"../../auth/[...nextauth]/route"' declares 'authOptions' locally, but it is not exported.
+src/app/api/alerts/route.ts(3,10): error TS2459: Module '"@/app/api/auth/[...nextauth]/route"' declares 'authOptions' locally, but it is not exported.
+src/app/api/alerts/route.ts(7,28): error TS2440: Import declaration conflicts with local declaration of 'createAlertSchema'.
+src/app/api/alerts/route.ts(131,3): error TS2345: Argument of type '(req: import("C:/Users/pbail/100devs/209jobs/node_modules/next/dist/server/web/spec-extension/request").NextRequest, context: import("C:/Users/pbail/100devs/209jobs/src/lib/middleware/api").APIContext<any, { limit?: number | undefined; page?: number | undefined; ... 4 more ...; frequency?: "immediate" | ... 3 more ....' is not assignable to parameter of type '(req: import("C:/Users/pbail/100devs/209jobs/node_modules/next/dist/server/web/spec-extension/request").NextRequest, context: import("C:/Users/pbail/100devs/209jobs/src/lib/middleware/api").APIContext<any, { limit?: number | undefined; page?: number | undefined; ... 4 more ...; frequency?: "immediate" | ... 3 more ....'.
+  Type 'Promise<PaginatedResponse<{ stats: { totalNotifications: any; recentMatches: number; lastMatchDate: any; }; location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; ... 9 more ...; title: string; }>>' is not assignable to type 'Promise<NextResponse<unknown>>'.
+    Type 'PaginatedResponse<{ stats: { totalNotifications: any; recentMatches: number; lastMatchDate: any; }; location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; ... 9 more ...; title: string; }>' is missing the following properties from type 'NextResponse<unknown>': cookies, [INTERNALS], headers, ok, and 14 more.
+src/app/api/alerts/route.ts(160,22): error TS2551: Property 'user' does not exist on type '{ readonly jobs: "jobs"; readonly users: "users"; readonly search: "search"; readonly stats: "stats"; readonly session: "session"; readonly alerts: "alerts"; readonly ads: "ads"; readonly analytics: "analytics"; }'. Did you mean 'users'?
+src/app/api/alerts/route.ts(180,22): error TS2464: A computed property name must be of type 'string', 'number', 'symbol', or 'any'.
+src/app/api/alerts/route.ts(181,18): error TS18048: 'page' is possibly 'undefined'.
+src/app/api/alerts/route.ts(181,30): error TS18048: 'limit' is possibly 'undefined'.
+src/app/api/alerts/route.ts(185,13): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'JobAlertSelect<DefaultArgs>'.
+src/app/api/alerts/route.ts(229,39): error TS2339: Property '_count' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/route.ts(231,34): error TS2339: Property 'lastSent' does not exist on type '{ location: string | null; jobType: string | null; salaryMin: number | null; salaryMax: number | null; createdAt: Date; id: string; updatedAt: Date; isActive: boolean; userId: string; ... 4 more ...; title: string; }'.
+src/app/api/alerts/route.ts(235,52): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/alerts/route.ts(281,9): error TS2353: Object literal may only specify known properties, and 'lastSent' does not exist in type '(Without<JobAlertCreateInput, JobAlertUncheckedCreateInput> & JobAlertUncheckedCreateInput) | (Without<...> & JobAlertCreateInput)'.
+src/app/api/alerts/route.ts(285,9): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'JobAlertSelect<DefaultArgs>'.
+src/app/api/alerts/route.ts(310,5): error TS2353: Object literal may only specify known properties, and 'requiredAuth' does not exist in type 'APIMiddlewareConfig<{ type: "job_title_alert" | "weekly_digest" | "job_category_alert" | "location_alert" | "company_alert"; location?: string | undefined; salaryMin?: number | undefined; salaryMax?: number | undefined; ... 6 more ...; frequency?: "immediate" | ... 3 more ... | undefined; }, any>'.
+src/app/api/analytics/web-vitals/route.ts(64,34): error TS2339: Property 'timestamp' does not exist on type 'PerformanceMetrics'.
+src/app/api/analytics/web-vitals/route.ts(64,73): error TS2339: Property 'timestamp' does not exist on type 'PerformanceMetrics'.
+src/app/api/cron/send-email-alerts/route.ts(254,44): error TS2576: Property 'findMatchingJobs' does not exist on type 'EnhancedJobMatchingService'. Did you mean to access the static member 'EnhancedJobMatchingService.findMatchingJobs' instead?
+src/app/api/cron/send-email-alerts/route.ts(259,30): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/cron/send-weekly-digests/route.ts(173,68): error TS1016: A required parameter cannot follow an optional parameter.
+src/app/api/cron/update-job-rankings/route.ts(297,9): error TS2353: Object literal may only specify known properties, and 'searchTerm' does not exist in type 'SearchAnalyticsSelect<DefaultArgs>'.
+src/app/api/cron/update-job-rankings/route.ts(307,30): error TS2339: Property 'searchTerm' does not exist on type '{ location: string | null; jobType: JobType | null; datePosted: string | null; sortBy: string | null; createdAt: Date; sortOrder: string | null; query: string | null; id: string; userId: string | null; category: string | null; resultCount: number; }'.
+src/app/api/cron/update-job-rankings/route.ts(319,37): error TS2339: Property 'clickThroughRate' does not exist on type '{ location: string | null; jobType: JobType | null; datePosted: string | null; sortBy: string | null; createdAt: Date; sortOrder: string | null; query: string | null; id: string; userId: string | null; category: string | null; resultCount: number; }'.
+src/app/api/dashboard/stats/route.ts(10,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/dashboard/stats/route.ts(14,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/email-alerts/[id]/route.ts(3,10): error TS2459: Module '"@/app/api/auth/[...nextauth]/route"' declares 'authOptions' locally, but it is not exported.
+src/app/api/email-alerts/route.ts(3,10): error TS2459: Module '"@/app/api/auth/[...nextauth]/route"' declares 'authOptions' locally, but it is not exported.
+src/app/api/email-alerts/unsubscribe/route.ts(46,7): error TS2322: Type '{ createdAt: Date; id: string; email: string; userId: string | null; unsubscribeFrom: string[]; unsubscribeAll: boolean; unsubscribeToken: string; unsubscribedAt: Date; reason: string | null; }' is not assignable to type '{ user: { location: string | null; createdAt: Date; name: string | null; id: string; email: string; passwordHash: string; isEmailVerified: boolean; magicLinkExpires: Date | null; ... 26 more ...; isActive: boolean; } | null; } & { ...; }'.
+  Property 'user' is missing in type '{ createdAt: Date; id: string; email: string; userId: string | null; unsubscribeFrom: string[]; unsubscribeAll: boolean; unsubscribeToken: string; unsubscribedAt: Date; reason: string | null; }' but required in type '{ user: { location: string | null; createdAt: Date; name: string | null; id: string; email: string; passwordHash: string; isEmailVerified: boolean; magicLinkExpires: Date | null; ... 26 more ...; isActive: boolean; } | null; }'.
+src/app/api/email-alerts/unsubscribe/route.ts(57,43): error TS18047: 'unsubscribeRecord' is possibly 'null'.
+src/app/api/email-alerts/unsubscribe/route.ts(59,28): error TS18047: 'unsubscribeRecord' is possibly 'null'.
+src/app/api/email-alerts/unsubscribe/route.ts(385,108): error TS18048: 'type' is possibly 'undefined'.
+src/app/api/employers/knowledge/route.ts(11,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/employers/knowledge/route.ts(17,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/employers/knowledge/route.ts(89,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/employers/knowledge/route.ts(95,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/employers/knowledge/route.ts(149,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/employers/knowledge/route.ts(155,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/employers/knowledge/route.ts(220,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/employers/knowledge/route.ts(226,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/instagram/generate-image/route.ts(3,29): error TS2307: Cannot find module '@/lib/auth' or its corresponding type declarations.
+src/app/api/instagram/posts/[id]/route.ts(3,29): error TS2307: Cannot find module '@/lib/auth' or its corresponding type declarations.
+src/app/api/instagram/posts/[id]/route.ts(25,34): error TS2339: Property 'prisma' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/[id]/route.ts(63,42): error TS2339: Property 'prisma' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/[id]/route.ts(94,25): error TS2339: Property 'reschedulePost' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/[id]/route.ts(107,41): error TS2339: Property 'prisma' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/[id]/route.ts(144,42): error TS2339: Property 'prisma' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/[id]/route.ts(157,23): error TS2339: Property 'cancelPost' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/[id]/route.ts(160,23): error TS2339: Property 'prisma' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/route.ts(3,29): error TS2307: Cannot find module '@/lib/auth' or its corresponding type declarations.
+src/app/api/instagram/posts/route.ts(37,31): error TS2576: Property 'getScheduledPosts' does not exist on type 'InstagramScheduler'. Did you mean to access the static member 'InstagramScheduler.getScheduledPosts' instead?
+src/app/api/instagram/posts/route.ts(39,31): error TS2339: Property 'getPublishedPosts' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/route.ts(43,19): error TS2576: Property 'getScheduledPosts' does not exist on type 'InstagramScheduler'. Did you mean to access the static member 'InstagramScheduler.getScheduledPosts' instead?
+src/app/api/instagram/posts/route.ts(44,19): error TS2339: Property 'getPublishedPosts' does not exist on type 'InstagramScheduler'.
+src/app/api/instagram/posts/route.ts(93,34): error TS2576: Property 'schedulePost' does not exist on type 'InstagramScheduler'. Did you mean to access the static member 'InstagramScheduler.schedulePost' instead?
+src/app/api/jobbot/route.ts(368,25): error TS2339: Property 'ip' does not exist on type 'NextRequest'.
+src/app/api/jobbot/route.ts(488,30): error TS2339: Property 'ip' does not exist on type 'NextRequest'.
+src/app/api/jobbot/route.ts(498,28): error TS2304: Cannot find name 'clientIP'.
+src/app/api/jobbot/route.ts(508,24): error TS2304: Cannot find name 'clientIP'.
+src/app/api/jobs/[id]/route.ts(63,7): error TS18048: 'session.user' is possibly 'undefined'.
+src/app/api/jobs/[id]/route.ts(63,20): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/chatbot/route.ts(20,48): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/chatbot/route.ts(55,35): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/post/route.ts(13,46): error TS2345: Argument of type '{ type: "other" | "full_time" | "part_time" | "contract" | "internship" | "temporary" | "volunteer"; location: string; company: string; title: string; description: string; salaryMin?: number | undefined; ... 4 more ...; postedAt?: string | undefined; } | undefined' is not assignable to parameter of type 'Record<string, any>'.
+  Type 'undefined' is not assignable to type 'Record<string, any>'.
+src/app/api/jobs/post/route.ts(59,36): error TS2339: Property 'create' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/app/api/jobs/post/route.ts(132,9): error TS2353: Object literal may only specify known properties, and 'headers' does not exist in type 'Partial<CORSConfig>'.
+src/app/api/jobs/report/route.ts(51,56): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/report/route.ts(52,7): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/app/api/jobs/route.ts(51,34): error TS2339: Property 'create' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/app/api/jobs/save/route.ts(11,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/save/route.ts(18,30): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/save/route.ts(63,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/save/route.ts(86,32): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/save/route.ts(97,34): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/save/route.ts(111,32): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/jobs/search/route.ts(41,28): error TS2339: Property 'cursor' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; location?: string | undefined; jobType?: string | undefined; salaryMin?: number | undefined; ... 9 more ...; lng?: number | undefined; } | { ...; }'.
+  Property 'cursor' does not exist on type '{ limit?: number | undefined; page?: number | undefined; location?: string | undefined; jobType?: string | undefined; salaryMin?: number | undefined; salaryMax?: number | undefined; ... 8 more ...; lng?: number | undefined; }'.
+src/app/api/jobs/search/route.ts(42,26): error TS2339: Property 'page' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; location?: string | undefined; jobType?: string | undefined; salaryMin?: number | undefined; ... 9 more ...; lng?: number | undefined; } | { ...; }'.
+  Property 'page' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; location?: string | undefined; jobType?: string | undefined; salaryMin?: number | undefined; ... 9 more ...; lng?: number | undefined; }'.
+src/app/api/jobs/search/route.ts(44,31): error TS2339: Property 'direction' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; location?: string | undefined; jobType?: string | undefined; salaryMin?: number | undefined; ... 9 more ...; lng?: number | undefined; } | { ...; }'.
+  Property 'direction' does not exist on type '{ limit?: number | undefined; page?: number | undefined; location?: string | undefined; jobType?: string | undefined; salaryMin?: number | undefined; salaryMax?: number | undefined; ... 8 more ...; lng?: number | undefined; }'.
+src/app/api/jobs/semantic-search/route.ts(111,34): error TS7006: Parameter 'k' implicitly has an 'any' type.
+src/app/api/jobs/semantic-search/route.ts(262,52): error TS2339: Property 'bind' does not exist on type 'PrismaPromise<unknown>'.
+src/app/api/jobs/semantic-search/route.ts(345,11): error TS2353: Object literal may only specify known properties, and 'embedding' does not exist in type 'JobWhereInput'.
+src/app/api/profile/update/route.ts(10,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/profile/update/route.ts(27,60): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/profile/update/route.ts(34,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/profile/update/route.ts(38,9): error TS2353: Object literal may only specify known properties, and 'bio' does not exist in type '(Without<UserUpdateInput, UserUncheckedUpdateInput> & UserUncheckedUpdateInput) | (Without<...> & UserUpdateInput)'.
+src/app/api/profile/update/route.ts(48,9): error TS2353: Object literal may only specify known properties, and 'bio' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/profile/upload/route.ts(12,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/profile/upload/route.ts(58,38): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/profile/upload/route.ts(75,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/search/autocomplete/route.ts(25,7): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+  Type 'undefined' is not assignable to type 'string | number'.
+src/app/api/search/autocomplete/route.ts(27,7): error TS18048: 'limit' is possibly 'undefined'.
+src/app/api/search/autocomplete/route.ts(47,55): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/search/autocomplete/route.ts(50,59): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/search/autocomplete/route.ts(53,60): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/search/autocomplete/route.ts(56,57): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/search/location/route.ts(30,7): error TS18048: 'radius' is possibly 'undefined'.
+src/app/api/search/location/route.ts(47,67): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/search/location/route.ts(82,9): error TS2353: Object literal may only specify known properties, and 'jobType' does not exist in type 'JobSelect<DefaultArgs>'.
+src/app/api/search/location/route.ts(109,38): error TS18048: 'radius' is possibly 'undefined'.
+src/app/api/search/location/route.ts(150,71): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/app/api/search/suggestions/route.ts(31,7): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+  Type 'undefined' is not assignable to type 'string | number'.
+src/app/api/search/suggestions/route.ts(33,7): error TS18048: 'limit' is possibly 'undefined'.
+src/app/api/search/suggestions/route.ts(53,57): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/api/search/suggestions/route.ts(56,56): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/api/search/suggestions/route.ts(59,55): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/app/api/search/suggestions/route.ts(105,9): error TS2353: Object literal may only specify known properties, and 'jobType' does not exist in type 'JobSelect<DefaultArgs>'.
+src/app/api/should-i-apply/route.ts(10,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/should-i-apply/route.ts(43,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/api/should-i-apply/route.ts(49,9): error TS2353: Object literal may only specify known properties, and 'experienceLevel' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/api/stripe/create-checkout-session/route.ts(34,29): error TS7053: Element implicitly has an 'any' type because expression of type 'PricingTier' can't be used to index type '{ starter: { monthly: string | undefined; yearly: string | undefined; }; professional: { monthly: string | undefined; yearly: string | undefined; }; enterprise: { monthly: string | undefined; yearly: string | undefined; }; premium: { ...; }; }'.
+  Property 'basic' does not exist on type '{ starter: { monthly: string | undefined; yearly: string | undefined; }; professional: { monthly: string | undefined; yearly: string | undefined; }; enterprise: { monthly: string | undefined; yearly: string | undefined; }; premium: { ...; }; }'.
+src/app/api/stripe/create-checkout-session/route.ts(34,54): error TS2367: This comparison appears to be unintentional because the types 'BillingInterval' and '"YEARLY"' have no overlap.
+src/app/api/stripe/create-checkout-session/route.ts(77,60): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(params?: SessionCreateParams | undefined, options?: RequestOptions | undefined): Promise<Response<Session>>', gave the following error.
+    Type 'string[]' is not assignable to type 'PaymentMethodType[]'.
+      Type 'string' is not assignable to type 'PaymentMethodType'.
+  Overload 2 of 2, '(options?: RequestOptions | undefined): Promise<Response<Session>>', gave the following error.
+    Object literal may only specify known properties, and 'customer' does not exist in type 'RequestOptions'.
+src/app/api/stripe/webhook/route.ts(117,50): error TS2339: Property 'current_period_start' does not exist on type 'Response<Subscription>'.
+src/app/api/stripe/webhook/route.ts(118,48): error TS2339: Property 'current_period_end' does not exist on type 'Response<Subscription>'.
+src/app/api/stripe/webhook/route.ts(128,50): error TS2339: Property 'current_period_start' does not exist on type 'Response<Subscription>'.
+src/app/api/stripe/webhook/route.ts(129,48): error TS2339: Property 'current_period_end' does not exist on type 'Response<Subscription>'.
+src/app/api/stripe/webhook/route.ts(166,42): error TS2339: Property 'current_period_start' does not exist on type 'Subscription'.
+src/app/api/stripe/webhook/route.ts(167,40): error TS2339: Property 'current_period_end' does not exist on type 'Subscription'.
+src/app/api/stripe/webhook/route.ts(176,42): error TS2339: Property 'current_period_start' does not exist on type 'Subscription'.
+src/app/api/stripe/webhook/route.ts(177,40): error TS2339: Property 'current_period_end' does not exist on type 'Subscription'.
+src/app/api/stripe/webhook/route.ts(201,42): error TS2339: Property 'current_period_start' does not exist on type 'Subscription'.
+src/app/api/stripe/webhook/route.ts(202,40): error TS2339: Property 'current_period_end' does not exist on type 'Subscription'.
+src/app/api/stripe/webhook/route.ts(230,15): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/stripe/webhook/route.ts(230,46): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/stripe/webhook/route.ts(233,48): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/stripe/webhook/route.ts(239,74): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/stripe/webhook/route.ts(247,15): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/stripe/webhook/route.ts(247,46): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/stripe/webhook/route.ts(250,48): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/stripe/webhook/route.ts(256,71): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/app/api/test/email-alerts/route.ts(40,31): error TS2339: Property 'id' does not exist on type 'CreateEmailResponse'.
+src/app/api/test/email-alerts/route.ts(94,31): error TS2339: Property 'id' does not exist on type 'CreateEmailResponse'.
+src/app/api/test/email/route.ts(39,31): error TS2339: Property 'id' does not exist on type 'CreateEmailResponse'.
+src/app/api/users/[id]/applications/route.ts(28,7): error TS2345: Argument of type '({ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; } | { limit?: number | undefined; page?: number | undefined; }) & { sortBy?: string | undefined; sortOrder?: "asc" | ... 1 more ... | undefined; }' is not assignable to parameter of type '{ limit: number; direction: "forward" | "backward"; cursor?: string | undefined; } | { limit: number; page: number; }'.
+  Type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; } & { sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; }' is not assignable to type '{ limit: number; direction: "forward" | "backward"; cursor?: string | undefined; } | { limit: number; page: number; }'.
+    Type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; } & { sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; }' is not assignable to type '{ limit: number; direction: "forward" | "backward"; cursor?: string | undefined; }'.
+      Types of property 'limit' are incompatible.
+        Type 'number | undefined' is not assignable to type 'number'.
+          Type 'undefined' is not assignable to type 'number'.
+src/app/api/users/search/route.ts(31,28): error TS2339: Property 'cursor' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; location?: string | undefined; remote?: "true" | ... 1 more ... | undefined; workAuthorization?: "citizen" | ... 2 more ... | undefined; expe...'.
+  Property 'cursor' does not exist on type '{ limit?: number | undefined; page?: number | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; location?: string | undefined; remote?: "true" | "false" | undefined; workAuthorization?: "citizen" | ... 2 more ... | undefined; experience?: "entry" | ... 3 more ... | undefined; education?...'.
+src/app/api/users/search/route.ts(32,26): error TS2339: Property 'page' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; location?: string | undefined; remote?: "true" | ... 1 more ... | undefined; workAuthorization?: "citizen" | ... 2 more ... | undefined; expe...'.
+  Property 'page' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; location?: string | undefined; remote?: "true" | ... 1 more ... | undefined; workAuthorization?: "citizen" | ... 2 more ... | undefined; expe...'.
+src/app/api/users/search/route.ts(34,31): error TS2339: Property 'direction' does not exist on type '{ cursor?: string | undefined; limit?: number | undefined; direction?: "forward" | "backward" | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; location?: string | undefined; remote?: "true" | ... 1 more ... | undefined; workAuthorization?: "citizen" | ... 2 more ... | undefined; expe...'.
+  Property 'direction' does not exist on type '{ limit?: number | undefined; page?: number | undefined; sortBy?: string | undefined; sortOrder?: "asc" | "desc" | undefined; location?: string | undefined; remote?: "true" | "false" | undefined; workAuthorization?: "citizen" | ... 2 more ... | undefined; experience?: "entry" | ... 3 more ... | undefined; education?...'.
+src/app/dashboard/page.tsx(137,48): error TS18048: 'session.user' is possibly 'undefined'.
+src/app/dashboard/page.tsx(137,61): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/dashboard/page.tsx(223,11): error TS2322: Type '{ savedAt: Date; type: JobType; location: string; salaryMin: number | null; salaryMax: number | null; company: string; id: string; title: string; postedAt: Date; }[]' is not assignable to type 'Job[]'.
+  Type '{ savedAt: Date; type: $Enums.JobType; location: string; salaryMin: number | null; salaryMax: number | null; company: string; id: string; title: string; postedAt: Date; }' is not assignable to type 'Job'.
+    Types of property 'salaryMin' are incompatible.
+      Type 'number | null' is not assignable to type 'number | undefined'.
+        Type 'null' is not assignable to type 'number | undefined'.
+src/app/dashboard/page.tsx(225,11): error TS2322: Type '{ type: AlertType; location: string | null; createdAt: Date; id: string; isActive: boolean; jobTitle: string | null; lastTriggered: Date | null; }[]' is not assignable to type 'Alert[]'.
+  Type '{ type: AlertType; location: string | null; createdAt: Date; id: string; isActive: boolean; jobTitle: string | null; lastTriggered: Date | null; }' is not assignable to type 'Alert'.
+    Types of property 'jobTitle' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/app/demo/enhanced-job-modal/page.tsx(232,11): error TS2322: Type '() => void' is not assignable to type '() => Promise<void>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/app/employers/post-job/page.tsx(77,24): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(78,56): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(79,66): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(120,23): error TS2339: Property 'role' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(128,24): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(129,71): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(130,86): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(146,22): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(150,25): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(156,42): error TS18048: 'session.user' is possibly 'undefined'.
+src/app/employers/post-job/page.tsx(156,55): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(157,52): error TS18048: 'session.user' is possibly 'undefined'.
+src/app/employers/post-job/page.tsx(157,65): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(165,28): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(277,28): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(278,60): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(279,70): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/post-job/page.tsx(379,33): error TS2339: Property 'role' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/employers/pricing/page.tsx(131,17): error TS2820: Type '"MONTHLY"' is not assignable to type 'BillingInterval'. Did you mean '"monthly"'?
+src/app/employers/pricing/page.tsx(255,14): error TS2304: Cannot find name 'Link'.
+src/app/employers/pricing/page.tsx(260,15): error TS2304: Cannot find name 'Link'.
+src/app/employers/pricing/page.tsx(261,14): error TS2304: Cannot find name 'Link'.
+src/app/employers/pricing/page.tsx(266,15): error TS2304: Cannot find name 'Link'.
+src/app/jobs/[id]/page.tsx(210,24): error TS18048: 'session.user' is possibly 'undefined'.
+src/app/jobs/[id]/page.tsx(210,37): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/jobs/[id]/page.tsx(211,28): error TS18048: 'session.user' is possibly 'undefined'.
+src/app/jobs/[id]/page.tsx(211,41): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/jobs/[id]/page.tsx(283,32): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/jobs/page.tsx(565,40): error TS2322: Type '"secondary"' is not assignable to type '"error" | "default" | "warning" | "info" | "success" | undefined'.
+src/app/pricing/page.tsx(103,17): error TS2820: Type '"MONTHLY"' is not assignable to type 'BillingInterval'. Did you mean '"monthly"'?
+src/app/profile/settings/page.tsx(18,9): error TS2353: Object literal may only specify known properties, and 'bio' does not exist in type 'UserSelect<DefaultArgs>'.
+src/app/profile/settings/page.tsx(48,46): error TS18048: 'session.user' is possibly 'undefined'.
+src/app/profile/settings/page.tsx(48,59): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/app/profile/settings/page.tsx(68,38): error TS2739: Type '{ location: string | null; createdAt: Date; name: string | null; id: string; email: string; passwordHash: string; isEmailVerified: boolean; magicLinkExpires: Date | null; magicLinkToken: string | null; ... 25 more ...; isActive: boolean; }' is missing the following properties from type 'UserSettings': bio, phone, website, emailVerified
+src/app/profile/settings/page.tsx(114,39): error TS2551: Property 'emailVerified' does not exist on type '{ location: string | null; createdAt: Date; name: string | null; id: string; email: string; passwordHash: string; isEmailVerified: boolean; magicLinkExpires: Date | null; magicLinkToken: string | null; ... 25 more ...; isActive: boolean; }'. Did you mean 'isEmailVerified'?
+src/app/profile/settings/page.tsx(120,36): error TS2551: Property 'emailVerified' does not exist on type '{ location: string | null; createdAt: Date; name: string | null; id: string; email: string; passwordHash: string; isEmailVerified: boolean; magicLinkExpires: Date | null; magicLinkToken: string | null; ... 25 more ...; isActive: boolean; }'. Did you mean 'isEmailVerified'?
+src/app/services/adzunaToDb.ts(35,24): error TS2339: Property 'upsert' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/app/sitemap.ts(71,9): error TS2353: Object literal may only specify known properties, and 'isActive' does not exist in type 'JobWhereInput'.
+src/components/__tests__/Button.test.tsx(14,9): error TS2698: Spread types may only be created from object types.
+src/components/__tests__/Button.test.tsx(15,32): error TS18046: 'children.props' is of type 'unknown'.
+src/components/admin/AdCreationForm.tsx(85,7): error TS2322: Type 'string' is not assignable to type 'Date'.
+src/components/admin/AdCreationForm.tsx(89,7): error TS2322: Type 'string' is not assignable to type 'Date'.
+src/components/admin/AdCreationForm.tsx(93,7): error TS2322: Type 'string' is not assignable to type 'Date'.
+src/components/admin/AdCreationForm.tsx(285,68): error TS2322: Type 'Date' is not assignable to type 'ReactNode'.
+src/components/admin/AdCreationForm.tsx(309,17): error TS2322: Type '(date: Date) => boolean | null' is not assignable to type 'Matcher | Matcher[] | undefined'.
+  Type '(date: Date) => boolean | null' is not assignable to type '(date: Date) => boolean'.
+    Type 'boolean | null' is not assignable to type 'boolean'.
+      Type 'null' is not assignable to type 'boolean'.
+src/components/admin/AdCreationForm.tsx(314,66): error TS2322: Type 'Date' is not assignable to type 'ReactNode'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(23,36): error TS2307: Cannot find module '@/lib/monitoring/memory-leak-detector' or its corresponding type declarations.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(51,23): error TS2554: Expected 1 arguments, but got 0.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(124,28): error TS18046: 'data' is of type 'unknown'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(125,31): error TS18046: 'data' is of type 'unknown'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(126,27): error TS18046: 'data' is of type 'unknown'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(137,21): error TS18046: 'data' is of type 'unknown'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(138,23): error TS18046: 'data' is of type 'unknown'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(142,23): error TS18046: 'data' is of type 'unknown'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(169,7): error TS2322: Type 'undefined' is not assignable to type 'number'.
+src/components/admin/MemoryLeakMonitoringDashboard.tsx(214,7): error TS2322: Type 'undefined' is not assignable to type 'number'.
+src/components/admin/RoleManagement.tsx(8,79): error TS2307: Cannot find module '@/components/ui/table' or its corresponding type declarations.
+src/components/chat/ChatWindow.tsx(9,23): error TS2306: File 'C:/Users/pbail/100devs/209jobs/src/components/chat/ChatInput.tsx' is not a module.
+src/components/EnhancedJobModal.tsx(57,20): error TS2304: Cannot find name 'useRef'.
+src/components/EnhancedJobModal.tsx(58,28): error TS2304: Cannot find name 'useRef'.
+src/components/EnhancedJobModal.tsx(403,56): error TS2552: Cannot find name 'formatSalary'. Did you mean 'safeFormatSalary'?
+src/components/EnhancedJobModal.tsx(404,24): error TS2552: Cannot find name 'formatSalary'. Did you mean 'safeFormatSalary'?
+src/components/FeaturedJobsSection.tsx(95,18): error TS2741: Property 'applyUrl' is missing in type '{ id: string; title: string; company: string; location: string; salaryMin?: number | undefined; salaryMax?: number | undefined; type: string; isRemote: boolean; postedAt: string; description: string; key: string; }' but required in type 'JobCardProps'.
+src/components/forms/__tests__/ExampleRegistrationForm.test.tsx(8,46): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/components/forms/ExampleRegistrationForm.tsx(334,20): error TS2322: Type '{ onBlur: Noop; value: File | undefined; disabled?: boolean | undefined; name: "resume"; ref: RefCallBack; label: string; description: string; acceptedFileTypes: string[]; maxFileSize: number; error: string | undefined; onChange: (e: ChangeEvent<...>) => void; }' is not assignable to type 'FileInputProps'.
+  Types of property 'value' are incompatible.
+    Type 'File | undefined' is not assignable to type 'string | number | readonly string[] | undefined'.
+      Type 'File' is not assignable to type 'string | number | readonly string[] | undefined'.
+        Type 'File' is missing the following properties from type 'readonly string[]': length, concat, join, indexOf, and 25 more.
+src/components/JobGenie.tsx(247,70): error TS2304: Cannot find name 'prev'.
+src/components/JobGenie.tsx(247,90): error TS2304: Cannot find name 'prev'.
+src/components/JobList.tsx(3,30): error TS2307: Cannot find module './job-modal/EnhancedJobModal' or its corresponding type declarations.
+src/components/JobList.tsx(406,20): error TS2322: Type '{ onClick: () => void; isSelected: boolean; onViewDetails: () => void; onSave: () => Promise<void>; saved: boolean; "aria-label": string; isFeatured?: boolean | undefined; salary?: string | undefined; ... 20 more ...; applyUrl?: string | undefined; }' is not assignable to type 'JobCardProps'.
+  Types of property 'applyUrl' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/components/JobList.tsx(477,50): error TS2345: Argument of type 'JobWithOptionalFields | null' is not assignable to parameter of type 'JobWithOptionalFields'.
+  Type 'null' is not assignable to type 'JobWithOptionalFields'.
+src/components/PerformanceProvider.tsx(15,43): error TS2339: Property 'onFID' does not exist on type 'typeof import("C:/Users/pbail/100devs/209jobs/node_modules/web-vitals/dist/modules/index")'.
+src/components/PlaceholderPage.tsx(4,3): error TS2865: Import 'WireframeSection' conflicts with local value, so must be declared with a type-only import when 'isolatedModules' is enabled.
+src/components/pricing/PricingCard.tsx(11,23): error TS2307: Cannot find module '@/components/ui/use-toast' or its corresponding type declarations.
+src/components/ui/calendar.tsx(63,9): error TS2353: Object literal may only specify known properties, and 'IconLeft' does not exist in type 'Partial<CustomComponents>'.
+src/components/ui/command.tsx(6,45): error TS2307: Cannot find module 'cmdk' or its corresponding type declarations.
+src/components/ui/comprehensive-ui-provider.tsx(280,8): error TS2322: Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'IntrinsicAttributes & P'.
+  Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+    'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+src/components/ui/context-menu.tsx(4,39): error TS2307: Cannot find module '@radix-ui/react-context-menu' or its corresponding type declarations.
+src/components/ui/hover-card.tsx(4,37): error TS2307: Cannot find module '@radix-ui/react-hover-card' or its corresponding type declarations.
+src/components/ui/lazy-component.tsx(23,10): error TS2322: Type 'Omit<ComponentProps<T> & LazyComponentProps, "className" | "fallback">' is not assignable to type 'IntrinsicAttributes & (T extends MemoExoticComponent<infer U extends ComponentType<any>> | LazyExoticComponent<infer U extends ComponentType<...>> ? ReactManagedAttributes<...> : ReactManagedAttributes<...>)'.
+  Type 'Omit<ComponentProps<T> & LazyComponentProps, "className" | "fallback">' is not assignable to type 'T extends MemoExoticComponent<infer U extends ComponentType<any>> | LazyExoticComponent<infer U extends ComponentType<any>> ? ReactManagedAttributes<...> : ReactManagedAttributes<...>'.
+src/components/ui/menubar.tsx(9,35): error TS2307: Cannot find module '@radix-ui/react-menubar' or its corresponding type declarations.
+src/components/ui/navigation-menu.tsx(3,42): error TS2307: Cannot find module '@radix-ui/react-navigation-menu' or its corresponding type declarations.
+src/components/ui/popover.tsx(4,35): error TS2307: Cannot find module '@radix-ui/react-popover' or its corresponding type declarations.
+src/lib/cache/cache-migration-utility.ts(161,40): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/cache/cache-migration-utility.ts(191,40): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/cache/cache-migration-utility.ts(425,42): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/cache/cache-migration-utility.ts(525,41): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/lib/cache/enhanced-cache-services.ts(382,67): error TS2345: Argument of type 'number | ({ jobApplications: { status: string | null; id: string; appliedAt: Date; }[]; } & { type: JobType; status: string; location: string; salaryMin: number | null; salaryMax: number | null; ... 16 more ...; isRemote: boolean; })[]' is not assignable to parameter of type 'number'.
+  Type '({ jobApplications: { status: string | null; id: string; appliedAt: Date; }[]; } & { type: JobType; status: string; location: string; salaryMin: number | null; salaryMax: number | null; ... 16 more ...; isRemote: boolean; })[]' is not assignable to type 'number'.
+src/lib/cache/enhanced-cache-services.ts(383,42): error TS2345: Argument of type 'number | ({ jobApplications: { status: string | null; id: string; appliedAt: Date; }[]; } & { type: JobType; status: string; location: string; salaryMin: number | null; salaryMax: number | null; ... 16 more ...; isRemote: boolean; })[]' is not assignable to parameter of type '({ jobApplications: { status: string | null; id: string; appliedAt: Date; }[]; } & { type: JobType; status: string; location: string; salaryMin: number | null; salaryMax: number | null; ... 16 more ...; isRemote: boolean; })[]'.
+  Type 'number' is not assignable to type '({ jobApplications: { status: string | null; id: string; appliedAt: Date; }[]; } & { type: JobType; status: string; location: string; salaryMin: number | null; salaryMax: number | null; ... 16 more ...; isRemote: boolean; })[]'.
+src/lib/cache/enhanced-cache-services.ts(464,43): error TS2339: Property 'create' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/lib/cache/enhanced-cache-services.ts(741,67): error TS2345: Argument of type 'number | ({ job: { type: JobType; location: string; salaryMin: number | null; salaryMax: number | null; company: string; id: string; title: string; }; } & { status: string | null; ... 7 more ...; coverLetter: string | null; })[]' is not assignable to parameter of type 'number'.
+  Type '({ job: { type: JobType; location: string; salaryMin: number | null; salaryMax: number | null; company: string; id: string; title: string; }; } & { status: string | null; id: string; ... 6 more ...; coverLetter: string | null; })[]' is not assignable to type 'number'.
+src/lib/cache/enhanced-cache-services.ts(742,42): error TS2345: Argument of type 'number | ({ job: { type: JobType; location: string; salaryMin: number | null; salaryMax: number | null; company: string; id: string; title: string; }; } & { status: string | null; ... 7 more ...; coverLetter: string | null; })[]' is not assignable to parameter of type '({ job: { type: JobType; location: string; salaryMin: number | null; salaryMax: number | null; company: string; id: string; title: string; }; } & { status: string | null; id: string; ... 6 more ...; coverLetter: string | null; })[]'.
+  Type 'number' is not assignable to type '({ job: { type: JobType; location: string; salaryMin: number | null; salaryMax: number | null; company: string; id: string; title: string; }; } & { status: string | null; id: string; ... 6 more ...; coverLetter: string | null; })[]'.
+src/lib/cache/services.ts(177,9): error TS2353: Object literal may only specify known properties, and 'page' does not exist in type 'CursorPaginationMeta | OffsetPaginationMeta'.
+src/lib/cache/services.ts(300,19): error TS2339: Property 'page' does not exist on type '{ limit: number; direction: "forward" | "backward"; cursor?: string | undefined; } | { limit: number; page: number; }'.
+src/lib/conversation/chatbot-service.ts(422,17): error TS2339: Property 'searchHistory' does not exist on type 'ConversationContext'.
+src/lib/conversation/chatbot-service.ts(422,42): error TS2339: Property 'searchHistory' does not exist on type 'ConversationContext'.
+src/lib/conversation/chatbot-service.ts(423,34): error TS2339: Property 'searchHistory' does not exist on type 'ConversationContext'.
+src/lib/conversation/chatbot-service.ts(423,56): error TS2339: Property 'searchHistory' does not exist on type 'ConversationContext'.
+src/lib/database/optimized-queries.ts(145,13): error TS2322: Type '{ companyStats: { totalJobs: number; recentJobs: number; avgSalaryMin?: number | undefined; avgSalaryMax?: number | undefined; }; type: JobType; location: string; salaryMin: number | null; ... 8 more ...; postedAt: Date; }[]' is not assignable to type 'JobWithCompanyStats[]'.
+  Type '{ companyStats: { totalJobs: number; recentJobs: number; avgSalaryMin?: number; avgSalaryMax?: number; }; type: $Enums.JobType; location: string; salaryMin: number | null; salaryMax: number | null; ... 7 more ...; postedAt: Date; }' is not assignable to type 'JobWithCompanyStats'.
+    Types of property 'salaryMin' are incompatible.
+      Type 'number | null' is not assignable to type 'number | undefined'.
+        Type 'null' is not assignable to type 'number | undefined'.
+src/lib/database/optimized-queries.ts(365,13): error TS2322: Type '{ companyStats: { totalJobs: number; recentJobs: number; avgSalaryMin?: number | undefined; avgSalaryMax?: number | undefined; }; type: JobType; location: string; salaryMin: number | null; ... 8 more ...; postedAt: Date; }[]' is not assignable to type 'JobWithCompanyStats[]'.
+  Type '{ companyStats: { totalJobs: number; recentJobs: number; avgSalaryMin?: number; avgSalaryMax?: number; }; type: $Enums.JobType; location: string; salaryMin: number | null; salaryMax: number | null; ... 7 more ...; postedAt: Date; }' is not assignable to type 'JobWithCompanyStats'.
+    Types of property 'salaryMin' are incompatible.
+      Type 'number | null' is not assignable to type 'number | undefined'.
+        Type 'null' is not assignable to type 'number | undefined'.
+src/lib/database/transactions.ts(125,9): error TS2353: Object literal may only specify known properties, and 'employerId' does not exist in type 'JobSelect<DefaultArgs>'.
+src/lib/database/transactions.ts(156,11): error TS2353: Object literal may only specify known properties, and 'applicantId' does not exist in type 'Without<JobApplicationCreateInput, JobApplicationUncheckedCreateInput> & JobApplicationUncheckedCreateInput'.
+src/lib/database/transactions.ts(419,30): error TS2339: Property 'create' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/lib/database/transactions.ts(525,33): error TS2339: Property 'createMany' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/lib/database/type-safety.ts(36,48): error TS2339: Property 'partial' does not exist on type 'ZodEffects<ZodObject<{ title: ZodString; company: ZodString; companyId: ZodOptional<ZodString>; description: ZodString; location: ZodString; ... 6 more ...; postedAt: ZodDate; }, "strip", ZodTypeAny, { ...; }, { ...; }>, { ...; }, { ...; }>'.
+src/lib/database/type-safety.ts(100,52): error TS2339: Property 'partial' does not exist on type 'ZodEffects<ZodObject<{ userId: ZodString; type: ZodEnum<["job_title_alert", "weekly_digest", "job_category_alert", "location_alert", "company_alert"]>; frequency: ZodDefault<ZodEnum<[...]>>; ... 7 more ...; salaryMax: ZodOptional<...>; }, "strip", ZodTypeAny, { ...; }, { ...; }>, { ...; }, { ...; }>'.
+src/lib/database/type-safety.ts(123,28): error TS2339: Property 'create' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/lib/database/type-safety.ts(410,28): error TS2339: Property 'createMany' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/lib/email.ts(138,25): error TS2339: Property 'id' does not exist on type 'CreateEmailResponse'.
+src/lib/email/security.ts(175,9): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type '{ a: string[]; img: string[]; '*': string[]; }' is missing the following properties from type 'string[]': length, pop, push, concat, and 35 more.
+src/lib/errors/api-errors.ts(119,20): error TS2339: Property 'input' does not exist on type 'ZodIssue'.
+  Property 'input' does not exist on type 'ZodCustomIssue & { fatal?: boolean | undefined; message: string; }'.
+src/lib/knowledge/company-knowledge.ts(279,17): error TS2353: Object literal may only specify known properties, and 'deletedAt' does not exist in type '(Without<CompanyKnowledgeUpdateInput, CompanyKnowledgeUncheckedUpdateInput> & CompanyKnowledgeUncheckedUpdateInput) | (Without<...> & CompanyKnowledgeUpdateInput)'.
+src/lib/middleware/api.ts(162,28): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Error'.
+src/lib/middleware/api.ts(254,34): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Error'.
+src/lib/middleware/api.ts(284,20): error TS18046: 'handlerError' is of type 'unknown'.
+src/lib/middleware/api.ts(288,28): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string | Error'.
+src/lib/middleware/api.ts(398,13): error TS2353: Object literal may only specify known properties, and 'endpoint' does not exist in type 'PerformanceMetrics'.
+src/lib/middleware/enhanced-security.ts(7,10): error TS2305: Module '"../middleware/ratelimit"' has no exported member 'rateLimit'.
+src/lib/middleware/enhanced-security.ts(170,9): error TS2353: Object literal may only specify known properties, and 'lastActivity' does not exist in type 'Without<UserSessionCreateInput, UserSessionUncheckedCreateInput> & UserSessionUncheckedCreateInput'.
+src/lib/middleware/enhanced-security.ts(204,15): error TS2353: Object literal may only specify known properties, and 'lastActivity' does not exist in type '(Without<UserSessionUpdateInput, UserSessionUncheckedUpdateInput> & UserSessionUncheckedUpdateInput) | (Without<...> & UserSessionUpdateInput)'.
+src/lib/middleware/enhanced-security.ts(264,33): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/lib/middleware/enhanced-security.ts(272,9): error TS2353: Object literal may only specify known properties, and 'failedLoginAttempts' does not exist in type 'UserSelect<DefaultArgs>'.
+src/lib/middleware/enhanced-security.ts(302,31): error TS2339: Property 'id' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/lib/middleware/enhanced-security.ts(305,59): error TS2339: Property 'mfaVerified' does not exist on type '{ name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; }'.
+src/lib/middleware/enhanced-security.ts(422,11): error TS2353: Object literal may only specify known properties, and 'event' does not exist in type '(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)'.
+src/lib/middleware/enhanced-security.ts(640,39): error TS18046: 'error' is of type 'unknown'.
+src/lib/middleware/enhanced-security.ts(644,18): error TS18046: 'error' is of type 'unknown'.
+src/lib/middleware/enhanced-security.ts(656,20): error TS18046: 'error' is of type 'unknown'.
+src/lib/middleware/logging.ts(145,74): error TS2339: Property 'ip' does not exist on type 'NextRequest'.
+src/lib/middleware/ratelimit.ts(68,74): error TS2339: Property 'ip' does not exist on type 'NextRequest'.
+src/lib/mockJobData.ts(150,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ 'Software Engineer': ({ name: string; importance: "required"; } | { name: string; importance: "preferred"; } | { name: string; importance: "nice-to-have"; })[]; 'Data Analyst': ({ name: string; importance: "required"; } | { ...; } | { ...; })[]; 'Marketing Manager': ({ ...; } | ... 1 more ... | { ...; })[]; defaul...'.
+  No index signature with a parameter of type 'string' was found on type '{ 'Software Engineer': ({ name: string; importance: "required"; } | { name: string; importance: "preferred"; } | { name: string; importance: "nice-to-have"; })[]; 'Data Analyst': ({ name: string; importance: "required"; } | { ...; } | { ...; })[]; 'Marketing Manager': ({ ...; } | ... 1 more ... | { ...; })[]; defaul...'.
+src/lib/monitoring/database-monitor.ts(219,11): error TS2353: Object literal may only specify known properties, and 'category' does not exist in type 'ErrorContext'.
+src/lib/monitoring/database-monitor.ts(234,11): error TS2353: Object literal may only specify known properties, and 'category' does not exist in type 'ErrorContext'.
+src/lib/monitoring/database-monitor.ts(299,9): error TS2353: Object literal may only specify known properties, and 'operation' does not exist in type 'ErrorContext'.
+src/lib/monitoring/database-monitor.ts(341,7): error TS2353: Object literal may only specify known properties, and 'category' does not exist in type 'ErrorContext'.
+src/lib/monitoring/error-monitor.ts(95,12): error TS2339: Property 'configureScope' does not exist on type 'typeof import("C:/Users/pbail/100devs/209jobs/node_modules/@sentry/nextjs/build/types/index.types")'.
+src/lib/monitoring/error-monitor.ts(95,28): error TS7006: Parameter 'scope' implicitly has an 'any' type.
+src/lib/monitoring/error-monitor.ts(524,20): error TS2339: Property 'ip' does not exist on type 'NextRequest'.
+src/lib/performance/db-optimization.ts(52,11): error TS2353: Object literal may only specify known properties, and 'benefits' does not exist in type 'JobSelect<DefaultArgs>'.
+src/lib/performance/db-optimization.ts(119,9): error TS2561: Object literal may only specify known properties, but 'impressionCount' does not exist in type 'AdvertisementSelect<DefaultArgs>'. Did you mean to write 'impressions'?
+src/lib/performance/db-optimization.ts(138,14): error TS2345: Argument of type '"query"' is not assignable to parameter of type 'never'.
+src/lib/performance/db-optimization.ts(141,13): error TS2339: Property 'duration' does not exist on type 'never'.
+src/lib/performance/db-optimization.ts(142,48): error TS2339: Property 'duration' does not exist on type 'never'.
+src/lib/performance/db-optimization.ts(142,64): error TS2339: Property 'query' does not exist on type 'never'.
+src/lib/search/algorithms.ts(136,54): error TS2345: Argument of type 'string' is not assignable to parameter of type '"at" | "with" | "in" | "by" | "to" | "on" | "a" | "the" | "an" | "and" | "or" | "but" | "for" | "of"'.
+src/lib/search/job-matching.ts(288,22): error TS7006: Parameter 'jobSkill' implicitly has an 'any' type.
+src/lib/security/dependency-scanner.ts(239,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ critical: number; high: number; moderate: number; low: number; info: number; }'.
+  No index signature with a parameter of type 'string' was found on type '{ critical: number; high: number; moderate: number; low: number; info: number; }'.
+src/lib/security/security-monitor.ts(440,34): error TS18046: 'error' is of type 'unknown'.
+src/lib/services/adRotationService.ts(77,15): error TS2353: Object literal may only specify known properties, and 'path' does not exist in type 'SortOrderInput'.
+src/lib/services/adRotationService.ts(264,11): error TS2353: Object literal may only specify known properties, and 'page' does not exist in type '(Without<AdImpressionCreateInput, AdImpressionUncheckedCreateInput> & AdImpressionUncheckedCreateInput) | (Without<...> & AdImpressionCreateInput)'.
+src/lib/services/adRotationService.ts(308,11): error TS2353: Object literal may only specify known properties, and 'referrer' does not exist in type '(Without<AdClickCreateInput, AdClickUncheckedCreateInput> & AdClickUncheckedCreateInput) | (Without<...> & AdClickCreateInput)'.
+src/lib/services/customer-migration.ts(65,11): error TS2739: Type '{ starter: number; professional: number; enterprise: number; premium: number; }' is missing the following properties from type 'Record<PricingTier, number>': basic, essential
+src/lib/services/email-queue.ts(289,33): error TS2345: Argument of type '{ success: boolean; data: CreateEmailResponse; processingTime: number; recipients: number; messageId: any; error?: undefined; code?: undefined; } | { success: boolean; ... 5 more ...; messageId?: undefined; }' is not assignable to parameter of type '{ error?: Error | undefined; data?: any; }'.
+  Type '{ success: boolean; error: string; processingTime: number; code: string; data?: undefined; recipients?: undefined; messageId?: undefined; }' is not assignable to type '{ error?: Error | undefined; data?: any; }'.
+    Types of property 'error' are incompatible.
+      Type 'string' is not assignable to type 'Error'.
+src/lib/services/email-queue.ts(292,63): error TS2339: Property 'message' does not exist on type 'string'.
+src/lib/services/email-queue.ts(313,30): error TS2345: Argument of type 'Record<string, any>' is not assignable to parameter of type 'JobAlertEmailProps'.
+  Type 'Record<string, any>' is missing the following properties from type 'JobAlertEmailProps': userName, jobTitle, companyName, location, and 4 more.
+src/lib/services/email-queue.ts(316,34): error TS2345: Argument of type 'Record<string, any>' is not assignable to parameter of type 'WeeklyDigestEmailProps'.
+  Type 'Record<string, any>' is missing the following properties from type 'WeeklyDigestEmailProps': userName, jobs, location, unsubscribeUrl, manageAlertsUrl
+src/lib/services/email-queue.ts(450,18): error TS2339: Property 'getPaused' does not exist on type 'Queue<any, any, string, any, any, string>'.
+src/lib/services/instagram-image-generator.ts(65,44): error TS2345: Argument of type '{ width?: number; height?: number; backgroundColor?: string; textColor?: string; fontFamily?: string; fontSize?: number; template?: "modern" | "classic" | "minimal" | "gradient"; brandColor?: string; domainConfig?: DomainConfig; }' is not assignable to parameter of type 'Required<InstagramImageOptions>'.
+  Types of property 'width' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/lib/stripe.ts(15,5): error TS2322: Type 'Promise<import("C:/Users/pbail/100devs/209jobs/node_modules/@stripe/stripe-js/dist/stripe-js/stripe").Stripe | null>' is not assignable to type 'Promise<import("stripe").Stripe | null>'.
+  Type 'import("C:/Users/pbail/100devs/209jobs/node_modules/@stripe/stripe-js/dist/stripe-js/stripe").Stripe | null' is not assignable to type 'import("stripe").Stripe | null'.
+    Type 'Stripe' is missing the following properties from type 'Stripe': StripeResource, accountLinks, accountSessions, accounts, and 75 more.
+src/lib/task-management/config.ts(494,9): error TS2740: Type '{ logLevel: "debug"; debug: true; enablePerformanceOptimization: false; }' is missing the following properties from type '{ userId: string; debug: boolean; logLevel: "info" | "warn" | "error" | "debug"; defaultSubtasks: number; defaultPriority: "low" | "medium" | "high" | "critical"; projectName: string; ... 5 more ...; ollamaBaseUrl?: string | undefined; }': userId, defaultSubtasks, defaultPriority, projectName, and 4 more.
+src/lib/task-management/config.ts(501,9): error TS2740: Type '{ logLevel: "warn"; debug: false; enablePerformanceOptimization: true; enableBackups: true; }' is missing the following properties from type '{ userId: string; debug: boolean; logLevel: "info" | "warn" | "error" | "debug"; defaultSubtasks: number; defaultPriority: "low" | "medium" | "high" | "critical"; projectName: string; ... 5 more ...; ollamaBaseUrl?: string | undefined; }': userId, defaultSubtasks, defaultPriority, projectName, and 3 more.
+src/lib/task-management/config.ts(509,9): error TS2740: Type '{ logLevel: "error"; debug: false; enableBackups: false; enableIntegrityChecks: false; }' is missing the following properties from type '{ userId: string; debug: boolean; logLevel: "info" | "warn" | "error" | "debug"; defaultSubtasks: number; defaultPriority: "low" | "medium" | "high" | "critical"; projectName: string; ... 5 more ...; ollamaBaseUrl?: string | undefined; }': userId, defaultSubtasks, defaultPriority, projectName, and 3 more.
+src/lib/task-management/performance.ts(199,13): error TS2739: Type '{ id: number; title: string; description: string; status: "cancelled" | "pending" | "done" | "in-progress" | "review" | "deferred"; priority: "low" | "medium" | "high" | "critical"; dependencies: number[]; }' is missing the following properties from type '{ status: "cancelled" | "pending" | "done" | "in-progress" | "review" | "deferred"; id: number; priority: "low" | "medium" | "high" | "critical"; description: string; title: string; ... 9 more ...; assignee?: string | undefined; }': tags, subtasks
+src/lib/task-management/performance.ts(339,25): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/lib/types/component-props.ts(76,18): error TS2430: Interface 'EnhancedJobData' incorrectly extends interface 'Omit<JobWithOptionalFields, "benefits">'.
+  Types of property 'skills' are incompatible.
+    Type 'JobSkill[]' is not assignable to type 'string[]'.
+      Type 'JobSkill' is not assignable to type 'string'.
+src/lib/ui/component-registry.tsx(281,43): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to parameter of type '(Attributes & P) | null | undefined'.
+      Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'Attributes & P'.
+        Type 'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is not assignable to type 'P'.
+          'PropsWithoutRef<P> & { ref: ForwardedRef<any>; }' is assignable to the constraint of type 'P', but 'P' could be instantiated with a different subtype of constraint 'object'.
+src/lib/ui/component-registry.tsx(286,3): error TS2322: Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'ComponentType<P>'.
+  Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'FunctionComponent<P>'.
+    Types of parameters 'props' and 'props' are incompatible.
+      Type 'P' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+        Type 'object' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+          Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+            Type 'P' is not assignable to type 'PropsWithoutRef<P>'.
+              Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+src/lib/ui/component-registry.tsx(306,3): error TS2322: Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'ComponentType<P>'.
+  Type 'ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<any>>' is not assignable to type 'FunctionComponent<P>'.
+    Types of parameters 'props' and 'props' are incompatible.
+      Type 'P' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+        Type 'object' is not assignable to type 'PropsWithoutRef<P> & RefAttributes<any>'.
+          Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+            Type 'P' is not assignable to type 'PropsWithoutRef<P>'.
+              Type 'object' is not assignable to type 'PropsWithoutRef<P>'.
+src/lib/ui/component-state-manager.tsx(356,56): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'Omit<ModalState, "id" | "timestamp">'.
+src/lib/validations/form-utils.ts(220,14): error TS2345: Argument of type 'Partial<T>' is not assignable to parameter of type 'T | DefaultValues<T> | ResetAction<T> | undefined'.
+  Type 'Partial<T>' is not assignable to type 'T'.
+    'Partial<T>' is assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'FieldValues'.
+src/scripts/backfillJobEmbeddings.ts(373,9): error TS2353: Object literal may only specify known properties, and 'embedding' does not exist in type '(Without<JobUpdateInput, JobUncheckedUpdateInput> & JobUncheckedUpdateInput) | (Without<JobUncheckedUpdateInput, JobUpdateInput> & JobUpdateInput)'.
+src/scripts/finalizeCacheSystemMigration.ts(534,32): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+src/scripts/optimizeTasksFile.ts(591,29): error TS1205: Re-exporting a type when 'isolatedModules' is enabled requires using 'export type'.
+src/scripts/test-instagram-automation.ts(45,40): error TS2339: Property 'getQueueStats' does not exist on type 'InstagramScheduler'.
+src/scripts/test-instagram-automation.ts(71,38): error TS2339: Property 'create' does not exist on type 'JobDelegate<DefaultArgs, PrismaClientOptions>'.
+src/scripts/test-instagram-automation.ts(94,9): error TS2353: Object literal may only specify known properties, and 'creatorId' does not exist in type '(Without<InstagramPostCreateInput, InstagramPostUncheckedCreateInput> & InstagramPostUncheckedCreateInput) | (Without<...> & InstagramPostCreateInput)'.
+src/scripts/test-instagram-automation.ts(107,9): error TS2353: Object literal may only specify known properties, and 'captionTemplate' does not exist in type '(Without<InstagramTemplateCreateInput, InstagramTemplateUncheckedCreateInput> & InstagramTemplateUncheckedCreateInput) | (Without<...> & InstagramTemplateCreateInput)'.
+src/scripts/test-instagram-automation.ts(123,9): error TS2353: Object literal may only specify known properties, and 'postTimes' does not exist in type '(Without<InstagramScheduleCreateInput, InstagramScheduleUncheckedCreateInput> & InstagramScheduleUncheckedCreateInput) | (Without<...> & InstagramScheduleCreateInput)'.

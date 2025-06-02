@@ -1,0 +1,31 @@
+# Task ID: 2
+# Title: Database Schema and ORM Setup
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Design and implement the PostgreSQL database schema using Prisma ORM, including models for job listings, users, alerts, and advertisements.
+# Details:
+1. Install Prisma ORM: `npm install prisma @prisma/client`
+2. Initialize Prisma: `npx prisma init`
+3. Configure PostgreSQL connection in .env
+4. Define Prisma schema models in schema.prisma:
+   - Job model (id, title, company, description, location, salary, type, source, url, postedAt, etc.)
+   - User model (id, email, name, passwordHash, createdAt, etc.)
+   - Alert model (id, userId, jobTitle, location, frequency, etc.)
+   - Advertisement model (id, title, businessName, imageUrl, targetUrl, zipCodes, startDate, endDate, etc.)
+   - SearchHistory model (id, userId, query, filters, createdAt)
+   - Subscription model (id, userId, email, zipCode, categories, etc.)
+5. Define relationships between models
+6. Set up indexes for frequently queried fields
+7. Configure full-text search using PostgreSQL tsvector
+8. Generate Prisma client: `npx prisma generate`
+9. Create initial migration: `npx prisma migrate dev`
+
+# Test Strategy:
+1. Validate schema against requirements in PRD
+2. Test database connection
+3. Verify migrations apply successfully
+4. Create test data and validate relationships
+5. Test query performance for common operations
+6. Verify full-text search functionality
+7. Ensure indexes are properly created

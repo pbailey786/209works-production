@@ -1,0 +1,13 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background rounded rectangle -->
+  <rect width="180" height="180" rx="40" fill="#2d4a3e"/>
+
+  <!-- "209" text -->
+  <text x="90" y="100" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#9fdf9f">209</text>
+
+  <!-- "WORKS" text -->
+  <text x="90" y="130" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#9fdf9f">WORKS</text>
+
+  <!-- Orange accent circle -->
+  <circle cx="140" cy="40" r="15" fill="#ff6b35"/>
+</svg>

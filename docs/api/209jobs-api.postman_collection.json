@@ -1,0 +1,984 @@
+{
+  "info": {
+    "name": "209jobs API",
+    "description": "Complete API collection for the 209jobs job board platform. Includes authentication, job management, user profiles, alerts, and advertisement endpoints.\n\n## Quick Start\n1. Set environment variables (base_url, api_key, jwt_token)\n2. Run authentication requests to get JWT tokens\n3. Use the organized folders to test different API features\n\n## Environment Variables\n- `base_url`: API base URL (https://api.209jobs.com/v1)\n- `api_key`: Your API key for authentication\n- `jwt_token`: JWT token from login response\n- `refresh_token`: Refresh token from login response\n- `user_id`: Current user ID\n- `job_id`: Sample job ID for testing\n- `alert_id`: Sample alert ID for testing\n- `ad_id`: Sample advertisement ID for testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "209jobs"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.209jobs.com/v1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"role\": \"jobseeker\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account. Choose role: 'jobseeker' or 'employer'."
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.token) {",
+                  "        pm.environment.set('jwt_token', response.data.token);",
+                  "        pm.environment.set('refresh_token', response.data.refreshToken);",
+                  "        pm.environment.set('user_id', response.data.user.id);",
+                  "        console.log('JWT token saved to environment');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate user and receive JWT token. Token is automatically saved to environment variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.token) {",
+                  "        pm.environment.set('jwt_token', response.data.token);",
+                  "        console.log('New JWT token saved to environment');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Refresh expired JWT token using refresh token."
+          },
+          "response": []
+        },
+        {
+          "name": "Setup 2FA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"secret\": \"JBSWY3DPEHPK3PXP\",\n  \"token\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/2fa/setup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "2fa", "setup"]
+            },
+            "description": "Setup two-factor authentication for enhanced security."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"verification_token_from_email\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/verify",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "verify"]
+            },
+            "description": "Verify email address using token from verification email."
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints for user registration, login, 2FA, and email verification."
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Search Jobs",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/jobs?query=software engineer&location=San Francisco&jobType=full-time&salaryMin=80000&remote=true&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["jobs"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "software engineer",
+                  "description": "Search query"
+                },
+                {
+                  "key": "location",
+                  "value": "San Francisco",
+                  "description": "Location filter"
+                },
+                {
+                  "key": "jobType",
+                  "value": "full-time",
+                  "description": "Job type filter"
+                },
+                {
+                  "key": "salaryMin",
+                  "value": "80000",
+                  "description": "Minimum salary"
+                },
+                {
+                  "key": "remote",
+                  "value": "true",
+                  "description": "Remote work option"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Results per page"
+                }
+              ]
+            },
+            "description": "Search for jobs with various filters. All parameters are optional."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job Details",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "{{job_id}}"]
+            },
+            "description": "Get detailed information about a specific job posting."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Job (Employer Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.id) {",
+                  "        pm.environment.set('job_id', response.data.id);",
+                  "        console.log('Job ID saved to environment:', response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Software Engineer\",\n  \"company\": \"Tech Innovations Inc\",\n  \"description\": \"We are seeking a talented Senior Software Engineer to join our dynamic team. You will be responsible for designing, developing, and maintaining high-quality software solutions that drive our business forward.\",\n  \"requirements\": \"5+ years of experience in software development, proficiency in JavaScript/TypeScript, React, Node.js, and database technologies. Strong problem-solving skills and ability to work in an agile environment.\",\n  \"location\": \"San Francisco, CA\",\n  \"jobType\": \"full-time\",\n  \"experienceLevel\": \"senior\",\n  \"salaryMin\": 120000,\n  \"salaryMax\": 180000,\n  \"benefits\": \"Health insurance, 401k matching, flexible PTO, remote work options\",\n  \"skills\": [\"JavaScript\", \"React\", \"Node.js\", \"PostgreSQL\", \"AWS\"],\n  \"isRemote\": true,\n  \"applicationEmail\": \"careers@techinnovations.com\",\n  \"expiresAt\": \"2024-12-31T23:59:59Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/jobs",
+              "host": ["{{base_url}}"],
+              "path": ["jobs"]
+            },
+            "description": "Create a new job posting. Requires employer role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Software Engineer (Updated)\",\n  \"salaryMin\": 130000,\n  \"salaryMax\": 190000,\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "{{job_id}}"]
+            },
+            "description": "Update an existing job posting. Only job owner can update."
+          },
+          "response": []
+        },
+        {
+          "name": "Apply to Job (Jobseeker Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coverLetter\": \"Dear Hiring Manager,\\n\\nI am excited to apply for the Senior Software Engineer position at Tech Innovations Inc. With over 6 years of experience in full-stack development, I have built robust applications using JavaScript, React, and Node.js. My experience aligns perfectly with your requirements, and I am passionate about creating innovative solutions.\\n\\nI would love the opportunity to contribute to your team and discuss how my skills can benefit your organization.\\n\\nBest regards,\\nJohn Doe\",\n  \"resumeUrl\": \"https://example.com/resumes/john-doe-resume.pdf\",\n  \"linkedinUrl\": \"https://linkedin.com/in/johndoe\",\n  \"portfolioUrl\": \"https://johndoe.dev\",\n  \"additionalNotes\": \"Available for immediate start. Open to relocation.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/jobs/{{job_id}}/apply",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "{{job_id}}", "apply"]
+            },
+            "description": "Submit a job application. Requires jobseeker role."
+          },
+          "response": []
+        },
+        {
+          "name": "Semantic Job Search",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"I want to work on machine learning projects using Python and TensorFlow at a startup in the Bay Area\",\n  \"location\": \"San Francisco Bay Area\",\n  \"radius\": 50,\n  \"limit\": 15\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/jobs/semantic-search",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "semantic-search"]
+            },
+            "description": "AI-powered semantic job search using natural language queries."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "{{job_id}}"]
+            },
+            "description": "Delete a job posting. Only job owner can delete."
+          },
+          "response": []
+        }
+      ],
+      "description": "Job management endpoints for searching, creating, updating, and applying to jobs."
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            },
+            "description": "Get user profile information. Respects privacy settings."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"bio\": \"Passionate full-stack developer with 6+ years of experience building scalable web applications. Expertise in React, Node.js, and cloud technologies.\",\n  \"location\": \"San Francisco, CA\",\n  \"website\": \"https://johndoe.dev\",\n  \"linkedinUrl\": \"https://linkedin.com/in/johndoe\",\n  \"githubUrl\": \"https://github.com/johndoe\",\n  \"currentTitle\": \"Senior Software Engineer\",\n  \"experienceLevel\": \"senior\",\n  \"skills\": [\"JavaScript\", \"React\", \"Node.js\", \"Python\", \"AWS\", \"Docker\"],\n  \"expectedSalaryMin\": 120000,\n  \"expectedSalaryMax\": 180000,\n  \"isOpenToWork\": true,\n  \"isOpenToRemote\": true,\n  \"preferredJobTypes\": [\"full-time\", \"contract\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            },
+            "description": "Update user profile information. Can only update own profile."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}/applications?status=pending&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}", "applications"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by application status"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Results per page"
+                }
+              ]
+            },
+            "description": "Get job applications for a user. Can only view own applications."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Users (Employer Only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/search?query=javascript developer&location=San Francisco&skills=React,Node.js&experienceLevel=senior&openToWork=true",
+              "host": ["{{base_url}}"],
+              "path": ["users", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "javascript developer",
+                  "description": "Search query"
+                },
+                {
+                  "key": "location",
+                  "value": "San Francisco",
+                  "description": "Location filter"
+                },
+                {
+                  "key": "skills",
+                  "value": "React,Node.js",
+                  "description": "Skills filter"
+                },
+                {
+                  "key": "experienceLevel",
+                  "value": "senior",
+                  "description": "Experience level"
+                },
+                {
+                  "key": "openToWork",
+                  "value": "true",
+                  "description": "Filter by users open to work"
+                }
+              ]
+            },
+            "description": "Search for jobseekers. Requires employer role."
+          },
+          "response": []
+        }
+      ],
+      "description": "User profile management and search endpoints."
+    },
+    {
+      "name": "Alerts",
+      "item": [
+        {
+          "name": "Get All Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/alerts?status=active&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["alerts"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter by alert status"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Results per page"
+                }
+              ]
+            },
+            "description": "Get job alerts for the authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Job Alert",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.id) {",
+                  "        pm.environment.set('alert_id', response.data.id);",
+                  "        console.log('Alert ID saved to environment:', response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Senior React Developer Opportunities\",\n  \"description\": \"Alert for senior React developer positions in tech companies\",\n  \"criteria\": {\n    \"keywords\": [\"React\", \"Frontend\", \"JavaScript\", \"TypeScript\"],\n    \"jobTitle\": \"Senior Developer\",\n    \"location\": \"San Francisco\",\n    \"radius\": 25,\n    \"remote\": true,\n    \"jobType\": \"full-time\",\n    \"experienceLevel\": \"senior\",\n    \"salaryMin\": 120000,\n    \"skills\": [\"React\", \"TypeScript\", \"Node.js\"],\n    \"excludeKeywords\": [\"junior\", \"intern\"],\n    \"excludeCompanies\": [\"LowPayCorp\"]\n  },\n  \"frequency\": \"daily\",\n  \"maxResults\": 10,\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/alerts",
+              "host": ["{{base_url}}"],
+              "path": ["alerts"]
+            },
+            "description": "Create a new job alert with smart matching criteria."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Alert Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/alerts/{{alert_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["alerts", "{{alert_id}}"]
+            },
+            "description": "Get detailed information about a specific alert."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Alert",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Senior React Developer Opportunities (Updated)\",\n  \"criteria\": {\n    \"salaryMin\": 130000,\n    \"skills\": [\"React\", \"TypeScript\", \"Node.js\", \"GraphQL\"]\n  },\n  \"frequency\": \"weekly\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/alerts/{{alert_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["alerts", "{{alert_id}}"]
+            },
+            "description": "Update an existing job alert."
+          },
+          "response": []
+        },
+        {
+          "name": "Test Alert",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dryRun\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/alerts/{{alert_id}}/test",
+              "host": ["{{base_url}}"],
+              "path": ["alerts", "{{alert_id}}", "test"]
+            },
+            "description": "Test an alert to see matching jobs and get optimization recommendations."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Alert",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/alerts/{{alert_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["alerts", "{{alert_id}}"]
+            },
+            "description": "Delete a job alert."
+          },
+          "response": []
+        }
+      ],
+      "description": "Job alert management with smart matching and testing capabilities."
+    },
+    {
+      "name": "Advertisements",
+      "item": [
+        {
+          "name": "Get All Ads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ads?status=active&type=sponsored_search&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["ads"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter by ad status"
+                },
+                {
+                  "key": "type",
+                  "value": "sponsored_search",
+                  "description": "Filter by ad type"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Results per page"
+                }
+              ]
+            },
+            "description": "Get advertisements. Employers see own ads, admins see all."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Advertisement (Employer Only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.success && response.data.id) {",
+                  "        pm.environment.set('ad_id', response.data.id);",
+                  "        console.log('Ad ID saved to environment:', response.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Hire Top Software Engineers\",\n  \"description\": \"Reach qualified software engineers actively looking for new opportunities\",\n  \"type\": \"sponsored_search\",\n  \"content\": {\n    \"headline\": \"Join Our Award-Winning Development Team\",\n    \"description\": \"Build next-generation software solutions with cutting-edge technologies\",\n    \"ctaText\": \"Apply Now\",\n    \"ctaUrl\": \"https://techcorp.com/careers\",\n    \"logoUrl\": \"https://techcorp.com/logo.png\"\n  },\n  \"targeting\": {\n    \"geographic\": {\n      \"cities\": [\"San Francisco\", \"New York\", \"Seattle\"],\n      \"radius\": 25\n    },\n    \"professional\": {\n      \"jobTitles\": [\"Software Engineer\", \"Developer\", \"Full Stack Engineer\"],\n      \"skills\": [\"JavaScript\", \"Python\", \"React\", \"Node.js\"],\n      \"experienceLevels\": [\"mid\", \"senior\"]\n    },\n    \"behavioral\": {\n      \"jobSeekerStatus\": \"active\"\n    }\n  },\n  \"biddingModel\": \"cpc\",\n  \"bidAmount\": 2.50,\n  \"dailyBudget\": 100,\n  \"totalBudget\": 3000,\n  \"startDate\": \"2024-02-01T00:00:00Z\",\n  \"endDate\": \"2024-02-29T23:59:59Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ads",
+              "host": ["{{base_url}}"],
+              "path": ["ads"]
+            },
+            "description": "Create a new advertisement campaign. Requires employer role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ad Details & Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ads/{{ad_id}}?startDate=2024-01-01T00:00:00Z&endDate=2024-01-31T23:59:59Z",
+              "host": ["{{base_url}}"],
+              "path": ["ads", "{{ad_id}}"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01T00:00:00Z",
+                  "description": "Analytics start date"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-01-31T23:59:59Z",
+                  "description": "Analytics end date"
+                }
+              ]
+            },
+            "description": "Get advertisement details with performance analytics."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Advertisement",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Hire Top Software Engineers (Updated)\",\n  \"bidAmount\": 3.00,\n  \"dailyBudget\": 150,\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ads/{{ad_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ads", "{{ad_id}}"]
+            },
+            "description": "Update an existing advertisement."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Advertisement",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ads/{{ad_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ads", "{{ad_id}}"]
+            },
+            "description": "Delete an advertisement. Protected against deletion of ads with significant spend."
+          },
+          "response": []
+        }
+      ],
+      "description": "Advertisement campaign management and analytics."
+    },
+    {
+      "name": "Ad Tracking",
+      "item": [
+        {
+          "name": "Track Impression",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adId\": \"{{ad_id}}\",\n  \"userId\": \"{{user_id}}\",\n  \"sessionId\": \"session_{{$randomUUID}}\",\n  \"userAgent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\",\n  \"ipAddress\": \"192.168.1.1\",\n  \"placement\": \"job_listing_sidebar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ads/impression",
+              "host": ["{{base_url}}"],
+              "path": ["ads", "impression"]
+            },
+            "description": "Track an advertisement impression. Used for billing and analytics."
+          },
+          "response": []
+        },
+        {
+          "name": "Track Click",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adId\": \"{{ad_id}}\",\n  \"userId\": \"{{user_id}}\",\n  \"sessionId\": \"session_{{$randomUUID}}\",\n  \"targetUrl\": \"https://techcorp.com/careers\",\n  \"userAgent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\",\n  \"ipAddress\": \"192.168.1.1\",\n  \"placement\": \"job_listing_sidebar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ads/click",
+              "host": ["{{base_url}}"],
+              "path": ["ads", "click"]
+            },
+            "description": "Track an advertisement click. Used for CPC billing and CTR calculation."
+          },
+          "response": []
+        },
+        {
+          "name": "Track Conversion",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"adId\": \"{{ad_id}}\",\n  \"userId\": \"{{user_id}}\",\n  \"sessionId\": \"session_{{$randomUUID}}\",\n  \"conversionType\": \"job_apply\",\n  \"conversionValue\": 150,\n  \"metadata\": {\n    \"jobId\": \"{{job_id}}\",\n    \"applicationId\": \"app_123456\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ads/conversion",
+              "host": ["{{base_url}}"],
+              "path": ["ads", "conversion"]
+            },
+            "description": "Track an advertisement conversion. Used for ROI calculation and campaign optimization."
+          },
+          "response": []
+        }
+      ],
+      "description": "Advertisement tracking endpoints for impressions, clicks, and conversions."
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Ad Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ads/stats?groupBy=day&metrics=impressions,clicks,conversions,ctr,cost&startDate=2024-01-01T00:00:00Z&endDate=2024-01-31T23:59:59Z&adIds={{ad_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ads", "stats"],
+              "query": [
+                {
+                  "key": "groupBy",
+                  "value": "day",
+                  "description": "Group by time period or dimension"
+                },
+                {
+                  "key": "metrics",
+                  "value": "impressions,clicks,conversions,ctr,cost",
+                  "description": "Specific metrics to include"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01T00:00:00Z",
+                  "description": "Analytics start date"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-01-31T23:59:59Z",
+                  "description": "Analytics end date"
+                },
+                {
+                  "key": "adIds",
+                  "value": "{{ad_id}}",
+                  "description": "Specific ad IDs to analyze"
+                }
+              ]
+            },
+            "description": "Get comprehensive advertisement analytics and insights."
+          },
+          "response": []
+        }
+      ],
+      "description": "Advertisement analytics and reporting endpoints."
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Auto-set base URL if not already set",
+          "if (!pm.environment.get('base_url')) {",
+          "    pm.environment.set('base_url', 'https://api.209jobs.com/v1');",
+          "}",
+          "",
+          "// Log current environment variables",
+          "console.log('Environment Variables:');",
+          "console.log('- base_url:', pm.environment.get('base_url'));",
+          "console.log('- jwt_token:', pm.environment.get('jwt_token') ? '***SET***' : 'NOT SET');",
+          "console.log('- api_key:', pm.environment.get('api_key') ? '***SET***' : 'NOT SET');"
+        ],
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// Global test script for all requests",
+          "pm.test('Response time is less than 5000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test('Response has success field', function () {",
+          "    if (pm.response.headers.get('Content-Type')?.includes('application/json')) {",
+          "        pm.expect(pm.response.json()).to.have.property('success');",
+          "    }",
+          "});",
+          "",
+          "// Log response for debugging",
+          "if (pm.response.code >= 400) {",
+          "    console.log('Error Response:', pm.response.json());",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+} 

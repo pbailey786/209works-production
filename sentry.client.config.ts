@@ -1,0 +1,62 @@
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  
+  // Performance Monitoring
+  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+  
+  // Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  
+  // Release tracking
+  release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+  
+  // Environment
+  environment: process.env.NODE_ENV,
+  
+  // Debugging
+  debug: process.env.NODE_ENV === "development",
+  
+  // Integrations
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: false,
+      blockAllMedia: false,
+    }),
+  ],
+  
+  // Filtering
+  ignoreErrors: [
+    // Browser extensions
+    "top.GLOBALS",
+    // Random network errors
+    "Network request failed",
+    "NetworkError",
+    "Failed to fetch",
+    // User-caused errors
+    "Non-Error promise rejection captured",
+    // Next.js specific
+    "NEXT_NOT_FOUND",
+  ],
+  
+  beforeSend(event: any, hint: any) {
+    // Filter out non-actionable errors
+    if (event.exception) {
+      const error = hint.originalException;
+      
+      // Ignore ResizeObserver errors
+      if (error?.message?.includes("ResizeObserver")) {
+        return null;
+      }
+      
+      // Ignore browser extension errors
+      if (error?.stack?.includes("extension://")) {
+        return null;
+      }
+    }
+    
+    return event;
+  },
+}); 

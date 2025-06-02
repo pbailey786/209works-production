@@ -1,0 +1,148 @@
+# Task ID: 9
+# Title: Admin Dashboard
+# Status: done
+# Dependencies: 3, 7
+# Priority: medium
+# Description: Develop a comprehensive admin dashboard for content moderation, advertisement management, and analytics.
+# Details:
+1. Design admin dashboard layout with navigation sidebar
+2. Create protected admin routes: `/admin/*`
+3. Implement role-based access control for admin features
+4. Create job listing moderation tools:
+   - Review and approve/reject scraped listings
+   - Edit listing details
+   - Flag inappropriate content
+   - Batch operations for moderation
+5. Implement advertisement management:
+   - Upload and edit ad content
+   - Set targeting parameters
+   - Schedule campaigns
+   - View performance metrics
+6. Create analytics dashboard:
+   - User engagement metrics
+   - Search analytics
+   - Email performance
+   - Ad performance
+7. Implement system health monitoring
+8. Create user management interface
+9. Implement audit logging for admin actions
+10. Add export functionality for reports
+
+# Test Strategy:
+1. Verify admin authentication and authorization
+2. Test job moderation tools with sample content
+3. Validate advertisement management functionality
+4. Test analytics dashboard with sample data
+5. Verify system health monitoring
+6. Test user management interface
+7. Validate audit logging for all admin actions
+8. Test export functionality for reports
+9. Verify mobile responsiveness of admin interface
+
+# Subtasks:
+## 1. Design Admin Dashboard Layout [done]
+### Dependencies: None
+### Description: Create a responsive layout for the admin dashboard with navigation, content area, and consistent styling
+### Details:
+Design should include a sidebar navigation, header with admin info, main content area, and consistent styling. Include wireframes and mockups for desktop and mobile views. Validation criteria: Layout adapts to different screen sizes, follows accessibility guidelines, and maintains brand consistency.
+
+## 2. Implement Protected Admin Routes [done]
+### Dependencies: 9.1
+### Description: Set up route protection for admin-only pages with authentication checks
+### Details:
+Create route guards that verify admin authentication before allowing access to admin routes. Implement redirect logic for unauthorized access attempts. Security considerations: Use JWT with proper expiration, implement CSRF protection, and ensure secure cookie handling. Validation criteria: Unauthenticated users cannot access admin routes, expired sessions are handled properly.
+
+## 3. Develop Role-Based Access Control System [done]
+### Dependencies: 9.2
+### Description: Implement RBAC to manage different admin permission levels
+### Details:
+Create roles (super admin, content moderator, analyst) with specific permissions. Implement UI elements that adapt based on user role. Security considerations: Principle of least privilege, server-side verification of permissions. Validation criteria: UI elements are only visible to appropriate roles, actions are properly restricted based on permissions.
+<info added on 2025-05-26T19:11:38.397Z>
+Implemented a comprehensive Role-Based Access Control (RBAC) system with the following components:
+
+1. **Permission System** (`src/lib/rbac/permissions.ts`):
+   - Defined 23 granular permissions across different admin functions.
+   - Created 5 admin roles: Super Admin, Content Moderator, Analytics Specialist, Marketing Manager, Support Specialist.
+   - Implemented helper functions for permission checking and route access control.
+   - Added backward compatibility for existing 'admin' role.
+
+2. **React Hooks** (`src/hooks/usePermissions.ts`):
+   - Created `usePermissions` hook for client-side permission checking.
+   - Added convenience hooks for specific permission requirements.
+
+3. **Permission Gate Component** (`src/components/admin/PermissionGate.tsx`):
+   - Conditional rendering based on user permissions.
+   - Fallback content for unauthorized access.
+   - Convenience components for common permission patterns.
+
+4. **Updated AdminSidebar** (`src/components/admin/AdminSidebar.tsx`):
+   - Added permission-based navigation filtering.
+   - Only shows menu items user has access to.
+   - Maintains clean UI without unauthorized options.
+
+5. **Role Management Interface** (`src/components/admin/RoleManagement.tsx`):
+   - Visual role overview with statistics.
+   - Permission matrix showing all roles and their permissions.
+   - User role management for admin users.
+   - Current user permission display.
+
+6. **Admin Settings Page** (`src/app/admin/settings/page.tsx`):
+   - Comprehensive settings interface with role management.
+   - Tabbed interface for different admin functions.
+   - Permission-gated access to sensitive settings.
+
+The RBAC system follows security best practices:
+- Principle of least privilege.
+- Server-side permission verification.
+- Granular permission control.
+- Backward compatibility with existing admin role.
+- Clean separation of concerns.
+
+All UI elements now adapt based on user permissions, ensuring users only see and can access features they're authorized to use.
+</info added on 2025-05-26T19:11:38.397Z>
+
+## 4. Build Job Listing Moderation Tools [done]
+### Dependencies: 9.1, 9.3
+### Description: Create interface for reviewing, approving, rejecting, and editing job listings
+### Details:
+Implement a queue system for pending listings, approval/rejection workflows, content filtering tools, and bulk action capabilities. Security considerations: Input sanitization, audit logging of all moderation actions. Validation criteria: Moderators can efficiently review listings, content filtering catches prohibited content, all actions are properly logged.
+
+## 5. Develop Advertisement Management Interface [done]
+### Dependencies: 9.1, 9.3
+### Description: Create tools for managing ad campaigns, placements, and performance
+### Details:
+Build interfaces for creating/editing ad campaigns, managing ad placements, scheduling, and viewing performance metrics. Security considerations: Validate all ad content, prevent XSS in ad creative. Validation criteria: Ads can be created, edited, scheduled and analyzed; performance data is accurate.
+<info added on 2025-05-26T21:03:30.173Z>
+The Advertisement Management Interface has been enhanced with AI-powered features to optimize campaign performance and user engagement. The AdAnalyticsDashboard now includes predictive analytics, offering forecasts of expected performance trajectories and early indicators of campaign success. It also provides AI-generated optimization suggestions, such as bid adjustments and audience targeting refinements, to proactively improve campaign outcomes. Additionally, the system incorporates real-time ad optimization capabilities, dynamically adjusting ads and bids based on user interaction data and preferences, ensuring that the right audience is reached at the optimal time. ([rulelogic.io](https://www.rulelogic.io/blog/ai-powered-real-time-analytics?utm_source=openai), [forbes.com](https://www.forbes.com/councils/forbesagencycouncil/2024/07/16/features-and-benefits-of-ai-tools-for-digital-advertising/?utm_source=openai))
+</info added on 2025-05-26T21:03:30.173Z>
+
+## 6. Implement Analytics Dashboard [done]
+### Dependencies: 9.1, 9.3
+### Description: Create visualizations for key platform metrics and user behavior
+### Details:
+Develop charts and graphs for user growth, job posting activity, application rates, and revenue metrics. Include filtering options and date range selectors. Security considerations: Data anonymization for user analytics, secure API endpoints for sensitive data. Validation criteria: All charts render correctly, data refreshes appropriately, exports function properly.
+
+## 7. Build System Health Monitoring [done]
+### Dependencies: 9.1, 9.3
+### Description: Create interface for monitoring system performance, errors, and uptime
+### Details:
+Implement real-time monitoring of server status, error rates, response times, and database performance. Include alert configuration options. Security considerations: Limit detailed error information to appropriate admin roles. Validation criteria: System issues are clearly displayed, alerts function properly, historical data is accessible.
+
+## 8. Develop User Management Interface [done]
+### Dependencies: 9.1, 9.3
+### Description: Create tools for managing user accounts, permissions, and support issues
+### Details:
+Build interfaces for searching users, viewing profiles, managing account status, handling support tickets, and editing user information. Security considerations: PII protection, secure password reset workflows, action logging. Validation criteria: Admins can efficiently find and manage users, support workflows function properly.
+
+## 9. Implement Comprehensive Audit Logging [done]
+### Dependencies: 9.2, 9.3, 9.5, 9.8
+### Description: Create system for logging and reviewing all admin actions
+### Details:
+Develop logging for all admin actions with timestamps, admin identification, action details, and affected resources. Include a searchable interface for reviewing logs. Security considerations: Tamper-proof logging, secure storage of sensitive action details. Validation criteria: All admin actions are properly logged, logs can be efficiently searched and filtered.
+
+## 10. Create Report Export Functionality [done]
+### Dependencies: 9.6, 9.9
+### Description: Implement tools for generating and exporting various system reports
+### Details:
+Build functionality to generate reports on user activity, job listings, revenue, and system performance. Support multiple export formats (CSV, PDF, Excel). Security considerations: Sanitize exported data, implement rate limiting for exports. Validation criteria: Reports generate with correct data, all export formats function properly, large reports handle pagination correctly.
+

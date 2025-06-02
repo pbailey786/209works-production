@@ -1,0 +1,57 @@
+# Task ID: 54
+# Title: Implement NLP/AI-Powered Job Search
+# Status: pending
+# Dependencies: 5, 44
+# Priority: medium
+# Description: Develop an advanced conversational job search assistant that uses an LLM (like OpenAI GPT-4) to parse natural language queries from a chat UI, extract structured search filters such as age, location, job type, availability, schedule, industry, role, salary, experience level, company, requirements, benefits, application type, and other preferences, and query Supabase for available jobs based on these filters.
+# Details:
+1. Design LLM prompts and extraction logic for structured filters to handle natural language queries effectively.
+2. Implement backend API endpoint for chat-based job search to process user queries and interact with the LLM.
+3. Integrate Supabase job query logic with extracted filters to fetch only available jobs based on user's criteria.
+4. Connect frontend chat UI to backend API and display results or LLM-generated replies.
+5. Test with various queries and refine prompts/logic to ensure robust error handling and edge case support.
+6. Optionally, add advanced features like saving jobs, alerts, or multi-turn context to enhance user interaction.
+
+# Test Strategy:
+1. Conduct unit tests for LLM-based parsers to ensure accurate extraction of structured filters from natural language queries.
+2. Perform integration tests to verify that the extracted filters correctly interact with the Supabase job query system.
+3. Use A/B testing to compare user engagement and satisfaction between the old keyword-based system and the new conversational job search assistant.
+4. Collect and analyze user feedback to refine the system, improve accuracy, and enhance usability.
+
+# Subtasks:
+## 54-1. Design LLM prompts and extraction logic for structured filters [completed]
+### Dependencies: None
+### Description: Create and refine LLM prompts to accurately extract structured filters like age, location, job type, availability, schedule, industry, role, salary, experience level, company, requirements, benefits, application type, and other preferences from conversational queries.
+### Details:
+
+
+## 54-2. Implement backend API endpoint for chat-based job search [completed]
+### Dependencies: None
+### Description: Develop an API endpoint (/api/llm-job-search) that receives user queries from the chat UI, processes them with the LLM to extract filters, and queries Supabase for available jobs. This endpoint also returns a conversational summary of the job results.
+### Details:
+
+
+## 54-3. Integrate Supabase job query logic with extracted filters [pending]
+### Dependencies: None
+### Description: Modify the backend to integrate extracted filters with Supabase queries to fetch job listings that match the user's criteria. Ensure that the integration supports a wide range of filters including age, location, job type, schedule, industry, role, salary, experience level, company, requirements, benefits, application type, and other preferences.
+### Details:
+
+
+## 54-4. Connect frontend chat UI to backend API and display results [completed]
+### Dependencies: None
+### Description: Link the frontend chat UI with the backend API to display job search results or LLM-generated conversational summaries directly to users. Confirm that the integration is functioning correctly and refine as needed.
+### Details:
+
+
+## 54-5. Test with various queries and refine prompts/logic [pending]
+### Dependencies: None
+### Description: Conduct thorough testing with diverse user queries to ensure the system handles different scenarios effectively and refine the LLM prompts and logic as needed. Focus on testing the robustness of the API and the accuracy of job matching.
+### Details:
+
+
+## 54-6. Optionally add advanced features like saving jobs, alerts, or multi-turn context [optional]
+### Dependencies: None
+### Description: Explore and potentially implement additional features such as the ability for users to save job listings, receive alerts, and maintain conversational context over multiple turns.
+### Details:
+
+

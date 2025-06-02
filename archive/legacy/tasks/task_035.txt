@@ -1,0 +1,59 @@
+# Task ID: 35
+# Title: Task #35: Profile Integration for 'Should I Apply' Calculator
+# Status: done
+# Dependencies: None
+# Priority: low
+# Description: Implement functionality to access and utilize resumes stored in user profiles for the 'Should I Apply' Calculator, eliminating the need for users to re-upload their resumes when using the calculator.
+# Details:
+This task involves modifying both the frontend and backend components of the 'Should I Apply' Calculator to integrate with the user profile system:
+
+1. Backend Implementation:
+   - Create an API endpoint to fetch the most recent resume from a user's profile
+   - Implement permission checks to ensure proper authorization for resume access
+   - Modify the existing comparison API endpoint to accept a user ID parameter as an alternative to direct resume upload
+   - Add error handling for cases where a user doesn't have a resume in their profile
+
+2. Frontend Implementation:
+   - Add a toggle or option in the calculator UI allowing users to choose between uploading a resume or using one from their profile
+   - Implement a dropdown or selection mechanism if multiple resumes exist in the profile
+   - Display a preview or confirmation of which resume will be used for the comparison
+   - Add appropriate messaging for users without resumes in their profiles
+   - Ensure the UI clearly indicates when a profile resume is being used versus a newly uploaded one
+
+3. Integration Considerations:
+   - Ensure backward compatibility with the existing direct upload functionality
+   - Implement proper loading states during resume retrieval from profiles
+   - Consider caching mechanisms to improve performance for repeated calculations
+
+Note: This task is not marked as high priority but should be implemented with attention to user experience and data security.
+
+# Test Strategy:
+Testing for this feature should be comprehensive across multiple dimensions:
+
+1. Unit Testing:
+   - Test the new API endpoint for fetching resumes from profiles
+   - Verify proper error handling when profiles don't contain resumes
+   - Test the modified comparison endpoint with both direct uploads and profile-sourced resumes
+
+2. Integration Testing:
+   - Verify the complete flow from UI selection through backend processing
+   - Test scenarios with multiple resumes in a profile
+   - Test with various user permission levels
+   - Verify proper handling of edge cases (no resume, corrupted resume files, etc.)
+
+3. User Acceptance Testing:
+   - Create test scenarios for users with and without existing profile resumes
+   - Verify the UI clearly indicates which resume is being used
+   - Test the user experience of switching between upload and profile options
+   - Ensure performance is acceptable when retrieving resumes from profiles
+
+4. Security Testing:
+   - Verify that users cannot access resumes from other user profiles
+   - Test authentication requirements for accessing profile data
+   - Ensure proper data handling and protection throughout the process
+
+5. Regression Testing:
+   - Verify that existing calculator functionality works correctly with direct uploads
+   - Ensure other profile features are unaffected by these changes
+
+Documentation of test results should include screenshots of the UI flow and detailed logs of API responses for various test scenarios.

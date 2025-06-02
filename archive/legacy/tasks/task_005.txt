@@ -1,0 +1,115 @@
+# Task ID: 5
+# Title: Job Search and Filtering System
+# Status: done
+# Dependencies: 2
+# Priority: high
+# Description: Implement comprehensive job search functionality with keyword, location, and filter-based queries, optimized for performance.
+# Details:
+1. Design and implement search API endpoint: `/api/jobs/search`
+2. Create database queries using Prisma for:
+   - Keyword search using PostgreSQL full-text search
+   - Location filtering with radius support
+   - Job type filtering (full-time, part-time, etc.)
+   - Industry/category filtering
+   - Date-based filtering
+3. Implement sorting options (relevance, date, distance)
+4. Create pagination or infinite scroll support
+5. Optimize query performance with appropriate indexes
+6. Implement caching for frequent searches using Vercel KV
+7. Create search history tracking for logged-in users
+8. Develop ZIP code distance calculation utility
+9. Implement search analytics to track popular terms
+10. Create search suggestion feature based on partial input
+11. Remove or update temporary local job seed/test data once external jobs API is working
+
+# Test Strategy:
+1. Test search with various keyword combinations
+2. Verify location-based filtering with different radius values
+3. Test all filter combinations for expected results
+4. Validate pagination/infinite scroll behavior
+5. Benchmark query performance with large dataset
+6. Verify caching improves performance for repeated searches
+7. Test search history tracking for authenticated users
+8. Validate ZIP code distance calculations
+9. Test search suggestions functionality
+10. Verify system works correctly with both test data and external API data
+
+# Subtasks:
+## 1. Design Search API Endpoint [done]
+### Dependencies: None
+### Description: Create a comprehensive API endpoint design for the job search functionality
+### Details:
+Define request/response formats, parameter validation rules, error handling, and documentation. Include all possible filter parameters (location, job type, category, date, etc.). Consider versioning strategy and authentication requirements. Create OpenAPI/Swagger documentation for the endpoint.
+
+## 2. Implement Full-Text Search [done]
+### Dependencies: 5.1
+### Description: Develop robust full-text search capabilities for job listings
+### Details:
+Implement text search across job titles, descriptions, and requirements. Configure proper text indexing, stemming, and relevance scoring. Handle misspellings and synonyms. Test with various search terms, including partial matches and special characters. Benchmark performance with large datasets.
+
+## 3. Build Location-Based Filtering with Radius Support [done]
+### Dependencies: 5.1
+### Description: Create geospatial search functionality with customizable radius options
+### Details:
+Implement geospatial queries to filter jobs by location and distance. Store geographic coordinates for job locations. Support various radius units (miles, kilometers). Optimize geospatial indexes for performance. Test with various locations and radius combinations, including edge cases like international boundaries.
+
+## 4. Develop Job Type and Category Filtering [done]
+### Dependencies: 5.1
+### Description: Create filtering system for job types and categories
+### Details:
+Implement filtering by job type (full-time, part-time, contract, etc.) and job categories/industries. Design database schema to efficiently support these filters. Allow for multiple selections within each filter type. Test with various combinations of job types and categories.
+
+## 5. Implement Date-Based Filtering [done]
+### Dependencies: 5.1
+### Description: Add date range filtering capabilities for job postings
+### Details:
+Create filters for job posting date, application deadlines, and start dates. Support relative date ranges (last 24 hours, last week, etc.) and absolute date ranges. Ensure proper timezone handling. Test with various date ranges and edge cases like leap years and daylight saving time transitions.
+
+## 6. Add Sorting Options [done]
+### Dependencies: 5.2, 5.3, 5.5
+### Description: Implement various sorting methods for search results
+### Details:
+Support sorting by relevance, date posted, salary, location proximity, and company rating. Allow ascending and descending order options. Implement efficient database indexes to support sorting. Test performance with large result sets and various sorting criteria.
+
+## 7. Develop Pagination and Infinite Scroll [done]
+### Dependencies: 5.6
+### Description: Create efficient pagination system with infinite scroll support
+### Details:
+Implement cursor-based pagination for consistent results across pages. Support configurable page sizes. Develop frontend components for infinite scroll. Ensure proper handling of result set changes during pagination. Test with various page sizes and large result sets.
+
+## 8. Optimize Query Performance [done]
+### Dependencies: 5.2, 5.3, 5.5, 5.6
+### Description: Enhance search query performance for complex filter combinations
+### Details:
+Profile and optimize database queries for common filter combinations. Create appropriate indexes based on access patterns. Consider query restructuring for complex filters. Implement query timeout handling. Test with simulated peak load and complex filter combinations.
+
+## 9. Implement Caching Strategy [done]
+### Dependencies: 5.8
+### Description: Design and implement caching for search results
+### Details:
+Develop a caching strategy for common search queries. Implement cache invalidation rules based on job posting updates. Consider Redis or similar technology for distributed caching. Monitor cache hit rates and adjust strategy accordingly. Test cache performance under various load conditions.
+
+## 10. Create Search Analytics System [done]
+### Dependencies: 5.9
+### Description: Develop analytics to track search patterns and performance
+### Details:
+Implement logging for search queries, filters used, and result counts. Create dashboards for popular search terms, filter combinations, and zero-result searches. Track search performance metrics over time. Use analytics to improve search relevance and suggest popular searches. Test analytics accuracy with simulated user behavior.
+
+## 11. Add 'Sign in to Save' Buttons [done]
+### Dependencies: None
+### Description: Add 'Sign in to save' buttons to job listings and other interactive features. If the user is not authenticated, prompt them to sign in before saving a job or setting an alert.
+### Details:
+
+
+## 12. Clean Up Temporary Job Data [done]
+### Dependencies: 5.2, 5.3, 5.4, 5.5, 5.6
+### Description: Remove or update temporary local job seed/test data once external jobs API integration is complete
+### Details:
+Identify all temporary job data used for MVP testing. Create a plan for transitioning from test data to external API data. Update any hardcoded references to test data. Ensure search functionality works seamlessly with external API data. Document any differences in data structure between test data and API data.
+
+## 13. Test Search System with External API Data [done]
+### Dependencies: 5.12
+### Description: Verify all search and filtering functionality works correctly with the external jobs API
+### Details:
+Test all search features with real data from the external API. Verify that filters, sorting, and pagination work as expected with external data. Compare performance between test data and external API data. Identify and fix any issues specific to the external API data format or structure.
+

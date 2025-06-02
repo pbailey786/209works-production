@@ -1,0 +1,982 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String                     @id @default(uuid())
+  email                String                     @unique
+  name                 String?
+  passwordHash         String
+  createdAt            DateTime                   @default(now())
+  isEmailVerified      Boolean                    @default(false)
+  magicLinkExpires     DateTime?
+  magicLinkToken       String?
+  passwordResetExpires DateTime?
+  passwordResetToken   String?
+  updatedAt            DateTime                   @updatedAt
+  role                 UserRole                   @default(jobseeker)
+  onboardingCompleted  Boolean                    @default(false)
+  twoFactorEnabled     Boolean                    @default(false)
+  twoFactorSecret      String?
+  resumeUrl            String?
+  profilePictureUrl    String?
+  currentJobTitle      String?
+  experienceLevel      String?
+  educationExperience  String?
+  isProfilePublic      Boolean                    @default(false)
+  linkedinUrl          String?
+  location             String?
+  phoneNumber          String?
+  preferredJobTypes    String[]
+  skills               String[]
+  workAuthorization    String?
+  companyWebsite       String?
+  companyName          String?
+  industry             String?
+  companySize          String?
+  isOpenToRemote       Boolean                    @default(false)
+  expectedSalaryMin    Int?
+  expectedSalaryMax    Int?
+  companyId            String?
+  currentTier          PricingTier                @default(basic)
+  subscriptionEndsAt   DateTime?
+  trialEndsAt          DateTime?
+  bio                  String?
+  deletedAt            DateTime?
+  failedLoginAttempts  Int                        @default(0)
+  isActive             Boolean                    @default(true)
+  lastLoginAt          DateTime?
+  lockedUntil          DateTime?
+  mfaVerified          Boolean                    @default(false)
+  stripeCustomerId     String?                    @unique
+  alerts               Alert[]
+  auditLogs            AuditLog[]
+  emailAlerts          EmailAlert[]
+  emailLogs            EmailLog[]
+  emailUnsubscribes    EmailUnsubscribe[]
+  instagramAlerts      InstagramEngagementAlert[]
+  employerJobs         Job[]                      @relation("EmployerJobs")
+  jobApplications      JobApplication[]
+  savedJobs            SavedJob[]
+  jobPostOptimizers    JobPostOptimizer[]         @relation("EmployerJobPosts")
+  searchAnalytics      SearchAnalytics[]
+  searchHistory        SearchHistory[]
+  shouldIApplyUsage    ShouldIApplyUsage[]
+  subscriptions        Subscription?
+  company              Company?                   @relation(fields: [companyId], references: [id])
+  UserAddOn            UserAddOn[]
+  userSessions         UserSession[]
+  weeklyDigest         WeeklyDigest?
+  chatAnalytics        ChatAnalytics[]
+
+  @@index([deletedAt])
+}
+
+model Company {
+  id                  String             @id @default(uuid())
+  name                String             @unique
+  slug                String             @unique
+  website             String?
+  logo                String?
+  description         String?
+  industry            String?
+  size                String?
+  founded             Int?
+  headquarters        String?
+  contactEmail        String?
+  contactPhone        String?
+  isActive            Boolean            @default(true)
+  subscriptionTier    String?
+  subscriptionStart   DateTime?
+  subscriptionEnd     DateTime?
+  allowsKnowledgeEdit Boolean            @default(true)
+  requiresApproval    Boolean            @default(false)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  deletedAt           DateTime?
+  knowledgeBase       CompanyKnowledge[]
+  jobs                Job[]
+  users               User[]
+
+  @@index([name])
+  @@index([slug])
+  @@index([industry])
+  @@index([isActive])
+  @@index([deletedAt])
+}
+
+model CompanyKnowledge {
+  id         String                   @id @default(uuid())
+  companyId  String
+  category   CompanyKnowledgeCategory
+  title      String
+  content    String
+  keywords   String[]
+  source     CompanyKnowledgeSource   @default(company_provided)
+  verified   Boolean                  @default(false)
+  priority   Int                      @default(0)
+  views      Int                      @default(0)
+  lastViewed DateTime?
+  approvedBy String?
+  approvedAt DateTime?
+  createdAt  DateTime                 @default(now())
+  updatedAt  DateTime                 @updatedAt
+  deletedAt  DateTime?
+  company    Company                  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, category])
+  @@index([companyId, verified])
+  @@index([keywords])
+  @@index([priority])
+  @@index([deletedAt])
+}
+
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model Job {
+  id              String           @id @default(uuid())
+  title           String
+  company         String
+  description     String
+  location        String
+  source          String
+  url             String
+  postedAt        DateTime
+  createdAt       DateTime         @default(now())
+  categories      String[]
+  jobType         JobType          @map("type")
+  salaryMax       Int?
+  salaryMin       Int?
+  embedding       String?
+  companyId       String?
+  expiresAt       DateTime?
+  isPinned        Boolean          @default(false)
+  isRemote        Boolean          @default(false)
+  requirements    String?
+  status          String           @default("active")
+  updatedAt       DateTime         @updatedAt
+  viewCount       Int              @default(0)
+  benefits        String?
+  deletedAt       DateTime?
+  employerId      String?
+  region          String?
+  skills          String[]         @default([])
+  // Upsells
+  socialMediaShoutout Boolean      @default(false)
+  placementBump       Boolean      @default(false)
+  upsellBundle        Boolean      @default(false)
+  instagramPosts  InstagramPost[]
+  companyRef      Company?         @relation(fields: [companyId], references: [id])
+  employer        User?            @relation("EmployerJobs", fields: [employerId], references: [id])
+  jobApplications   JobApplication[]
+  savedJobs         SavedJob[]
+  shouldIApplyUsage ShouldIApplyUsage[]
+  alerts            Alert[]          @relation("AlertToJob")
+  optimizedFrom     JobPostOptimizer[] @relation("OptimizedJob")
+
+  @@index([postedAt])
+  @@index([location])
+  @@index([region])
+  @@index([region, jobType])
+  @@index([region, postedAt])
+  @@index([jobType])
+  @@index([company])
+  @@index([companyId])
+  @@index([title])
+  @@index([createdAt])
+  @@index([source])
+  @@index([url])
+  @@index([deletedAt])
+  @@index([employerId])
+}
+
+model Alert {
+  id            String         @id @default(uuid())
+  userId        String
+  jobTitle      String?
+  location      String?
+  categories    String[]
+  companies     String[]
+  createdAt     DateTime       @default(now())
+  emailEnabled  Boolean        @default(true)
+  isActive      Boolean        @default(true)
+  jobTypes      JobType[]
+  keywords      String[]
+  lastTriggered DateTime?
+  pushEnabled   Boolean        @default(false)
+  salaryMax     Int?
+  salaryMin     Int?
+  totalJobsSent Int            @default(0)
+  type          AlertType
+  updatedAt     DateTime       @updatedAt
+  frequency     AlertFrequency @default(immediate)
+  deletedAt     DateTime?
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailLogs     EmailLog[]
+  jobs          Job[]          @relation("AlertToJob")
+
+  @@index([userId])
+  @@index([type])
+  @@index([isActive])
+  @@index([frequency])
+  @@index([lastTriggered])
+  @@index([deletedAt])
+}
+
+model EmailLog {
+  id            String      @id @default(uuid())
+  toEmail       String
+  userId        String?
+  alertId       String?
+  subject       String
+  emailType     String
+  templateName  String?
+  resendId      String?
+  status        EmailStatus @default(pending)
+  statusMessage String?
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  openedAt      DateTime?
+  clickedAt     DateTime?
+  bouncedAt     DateTime?
+  openCount     Int         @default(0)
+  clickCount    Int         @default(0)
+  metadata      Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  alert         Alert?      @relation(fields: [alertId], references: [id])
+  user          User?       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([alertId])
+  @@index([toEmail])
+  @@index([emailType])
+  @@index([status])
+  @@index([sentAt])
+  @@index([createdAt])
+}
+
+model EmailUnsubscribe {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  userId           String?
+  unsubscribeFrom  String[]
+  unsubscribeAll   Boolean  @default(false)
+  unsubscribeToken String   @unique
+  unsubscribedAt   DateTime @default(now())
+  reason           String?
+  createdAt        DateTime @default(now())
+  user             User?    @relation(fields: [userId], references: [id])
+
+  @@index([email])
+  @@index([userId])
+  @@index([unsubscribeToken])
+}
+
+model WeeklyDigest {
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  isActive         Boolean   @default(true)
+  location         String?
+  categories       String[]
+  jobTypes         JobType[]
+  dayOfWeek        Int       @default(1)
+  timeOfDay        String    @default("09:00")
+  timezone         String    @default("America/Los_Angeles")
+  totalDigestsSent Int       @default(0)
+  lastSentAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([dayOfWeek])
+}
+
+model EmailTemplate {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  slug         String   @unique
+  subject      String
+  htmlContent  String
+  textContent  String?
+  isActive     Boolean  @default(true)
+  version      Int      @default(1)
+  totalSent    Int      @default(0)
+  totalOpened  Int      @default(0)
+  totalClicked Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+model Advertisement {
+  id           String   @id @default(uuid())
+  title        String
+  businessName String
+  imageUrl     String
+  targetUrl    String
+  zipCodes     String
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime @default(now())
+  clickCount   Int      @default(0)
+  isActive     Boolean  @default(false)
+  updatedAt    DateTime @updatedAt
+  bidding      Json?
+  clicks       Int      @default(0)
+  content      Json?
+  conversions  Int      @default(0)
+  currentSpend Decimal  @default(0) @db.Decimal(10, 2)
+  employerId   String?
+  impressions  Int      @default(0)
+  name         String?
+  notes        String?
+  placement    String[] @default([])
+  priority     Int      @default(0)
+  schedule     Json?
+  status       String   @default("draft")
+  type         String   @default("banner")
+
+  @@index([employerId])
+  @@index([status])
+  @@index([type])
+  @@index([isActive])
+  @@index([priority])
+}
+
+model AdImpression {
+  id        String   @id @default(uuid())
+  adId      String
+  userId    String?
+  sessionId String
+  userAgent String?
+  ipAddress String?
+  placement String?
+  page      String?
+  createdAt DateTime @default(now())
+  timestamp DateTime @default(now())
+
+  @@index([adId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+model AdClick {
+  id        String   @id @default(uuid())
+  adId      String
+  userId    String?
+  sessionId String
+  targetUrl String?
+  userAgent String?
+  ipAddress String?
+  placement String?
+  referrer  String?
+  cost      Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  timestamp DateTime @default(now())
+
+  @@index([adId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+model AdConversion {
+  id              String   @id @default(uuid())
+  adId            String
+  userId          String?
+  sessionId       String
+  conversionType  String
+  conversionValue Decimal  @default(0) @db.Decimal(10, 2)
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  @@index([adId])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([conversionType])
+  @@index([createdAt])
+}
+
+model JobAlert {
+  id            String    @id @default(uuid())
+  userId        String
+  title         String
+  keywords      String[]
+  location      String?
+  jobType       String?
+  salaryMin     Int?
+  salaryMax     Int?
+  isActive      Boolean   @default(true)
+  frequency     String    @default("immediate")
+  lastTriggered DateTime?
+  totalJobsSent Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([lastTriggered])
+}
+
+model JobAlertMatch {
+  id         String    @id @default(uuid())
+  alertId    String
+  jobId      String
+  matchScore Float     @default(0)
+  sentAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([alertId, jobId])
+  @@index([alertId])
+  @@index([jobId])
+  @@index([sentAt])
+}
+
+model EmailAlert {
+  id        String         @id @default(uuid())
+  userId    String
+  keywords  String[]
+  location  String?
+  jobTitle  String?
+  isActive  Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  frequency AlertFrequency @default(immediate)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([frequency])
+}
+
+model SearchHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  query     String
+  filters   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ShouldIApplyUsage {
+  id           String   @id @default(uuid())
+  userId       String
+  jobId        String
+  userTier     String   @default("free")
+  analysisType String   @default("basic")
+  usedAt       DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job          Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([jobId])
+  @@index([usedAt])
+  @@index([userId, usedAt])
+}
+
+model Subscription {
+  id                   String             @id @default(uuid())
+  userId               String             @unique
+  email                String
+  zipCode              String?
+  categories           String?
+  createdAt            DateTime           @default(now())
+  billingCycle         BillingInterval    @default(monthly)
+  endDate              DateTime?
+  price                Decimal            @default(0) @db.Decimal(10, 2)
+  startDate            DateTime?
+  status               SubscriptionStatus @default(active)
+  tier                 PricingTier        @default(basic)
+  updatedAt            DateTime           @updatedAt
+  stripeSubscriptionId String?            @unique
+  user                 User               @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([tier])
+  @@index([status])
+  @@index([stripeSubscriptionId])
+}
+
+model JobApplication {
+  id             String    @id @default(uuid())
+  userId         String
+  jobId          String
+  appliedAt      DateTime  @default(now())
+  resumeUrl      String?
+  coverLetterUrl String?
+  status         String?   @default("pending")
+  coverLetter    String?
+  deletedAt      DateTime?
+  linkedinUrl    String?
+  job            Job       @relation(fields: [jobId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+  @@index([appliedAt])
+  @@index([deletedAt])
+}
+
+model SearchAnalytics {
+  id          String   @id @default(uuid())
+  query       String?
+  location    String?
+  category    String?
+  datePosted  String?
+  sortBy      String?
+  sortOrder   String?
+  resultCount Int
+  userId      String?
+  createdAt   DateTime @default(now())
+  jobType     JobType?
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+}
+
+model AddOn {
+  id               String          @id
+  name             String          @unique
+  slug             String          @unique
+  description      String
+  shortDescription String?
+  category         AddOnCategory
+  type             AddOnType
+  price            Decimal         @db.Decimal(10, 2)
+  billingInterval  BillingInterval
+  currency         String          @default("USD")
+  compatibleTiers  PricingTier[]
+  requiredUserRole UserRole[]
+  featuresIncluded String[]
+  usageLimits      Json?
+  dependsOnAddOns  String[]
+  excludesAddOns   String[]
+  isPopular        Boolean         @default(false)
+  isActive         Boolean         @default(true)
+  displayOrder     Int             @default(0)
+  badgeText        String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime
+  UserAddOn        UserAddOn[]
+
+  @@index([category])
+  @@index([displayOrder])
+  @@index([isActive])
+  @@index([type])
+}
+
+model UserAddOn {
+  id              String          @id
+  userId          String
+  addOnId         String
+  isActive        Boolean         @default(true)
+  purchasedAt     DateTime        @default(now())
+  activatedAt     DateTime?
+  expiresAt       DateTime?
+  pricePaid       Decimal         @db.Decimal(10, 2)
+  billingInterval BillingInterval
+  nextBillingDate DateTime?
+  usageData       Json?
+  usageReset      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime
+  deletedAt       DateTime?
+  AddOn           AddOn           @relation(fields: [addOnId], references: [id])
+  User            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, addOnId])
+  @@index([addOnId])
+  @@index([expiresAt])
+  @@index([isActive])
+  @@index([nextBillingDate])
+  @@index([userId])
+  @@index([deletedAt])
+}
+
+model InstagramPost {
+  id           String               @id @default(uuid())
+  caption      String
+  imageUrl     String?
+  mediaId      String?
+  publishedId  String?
+  permalink    String?
+  status       InstagramPostStatus  @default(draft)
+  type         InstagramPostType    @default(job_listing)
+  scheduledFor DateTime?
+  publishedAt  DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  jobId        String?
+  templateId   String?
+  scheduleId   String?
+  hashtags     String[]             @default([])
+  creatorId    String?
+  analytics    InstagramAnalytics[]
+  job          Job?                 @relation(fields: [jobId], references: [id])
+  schedule     InstagramSchedule?   @relation(fields: [scheduleId], references: [id])
+  template     InstagramTemplate?   @relation(fields: [templateId], references: [id])
+}
+
+model InstagramTemplate {
+  id              String            @id @default(uuid())
+  name            String
+  description     String?
+  template        String
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  type            InstagramPostType @default(job_listing)
+  captionTemplate String?
+  posts           InstagramPost[]
+}
+
+model InstagramSchedule {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean         @default(true)
+  schedule    String
+  lastRun     DateTime?
+  nextRun     DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  timezone    String          @default("America/Los_Angeles")
+  postTimes   String[]        @default([])
+  posts       InstagramPost[]
+}
+
+model InstagramAnalytics {
+  id               String        @id @default(uuid())
+  postId           String
+  impressions      Int           @default(0)
+  reach            Int           @default(0)
+  likes            Int           @default(0)
+  comments         Int           @default(0)
+  shares           Int           @default(0)
+  saves            Int           @default(0)
+  profileVisits    Int           @default(0)
+  websiteClicks    Int           @default(0)
+  engagementRate   Float         @default(0)
+  clickThroughRate Float         @default(0)
+  recordedAt       DateTime      @default(now())
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  post             InstagramPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([recordedAt])
+  @@index([engagementRate])
+}
+
+model InstagramAccountMetrics {
+  id             String   @id @default(uuid())
+  accountId      String
+  followersCount Int      @default(0)
+  followingCount Int      @default(0)
+  mediaCount     Int      @default(0)
+  impressions    Int      @default(0)
+  reach          Int      @default(0)
+  profileViews   Int      @default(0)
+  websiteClicks  Int      @default(0)
+  date           DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([accountId, date])
+  @@index([accountId])
+  @@index([date])
+}
+
+model InstagramEngagementAlert {
+  id                String             @id @default(uuid())
+  userId            String
+  alertType         InstagramAlertType
+  threshold         Float
+  comparison        String
+  isActive          Boolean            @default(true)
+  emailNotification Boolean            @default(true)
+  frequency         String             @default("immediate")
+  lastTriggered     DateTime?
+  triggerCount      Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([alertType])
+  @@index([isActive])
+}
+
+model UserSession {
+  id           String   @id @default(uuid())
+  userId       String
+  sessionId    String   @unique
+  ipAddress    String?
+  userAgent    String?
+  isActive     Boolean  @default(true)
+  lastActivity DateTime @default(now())
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([expiresAt])
+  @@index([lastActivity])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  resource   String?
+  resourceId String?
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+}
+
+model SavedJob {
+  id      String   @id @default(uuid())
+  userId  String
+  jobId   String
+  savedAt DateTime @default(now())
+  job     Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+}
+
+model JobPostOptimizer {
+  id                  String    @id @default(uuid())
+  employerId          String
+
+  // Basic Info
+  jobTitle            String
+  companyName         String
+  location            String
+  pay                 String?
+  schedule            String?
+
+  // Role + Culture Details
+  companyDescription  String?
+  idealFit            String?
+  culture             String?
+  growthPath          String?
+  perks               String?
+
+  // Call to Action
+  applicationCTA      String?
+
+  // Media
+  mediaUrls           String[]  @default([])
+
+  // AI Processing
+  rawInput            Json?     // Store original form data
+  aiGeneratedOutput   String?   // Store AI-generated job listing
+  optimizationPrompt  String?   // Store the prompt used for optimization
+
+  // Upsells
+  socialMediaShoutout Boolean   @default(false)
+  placementBump       Boolean   @default(false)
+  upsellBundle        Boolean   @default(false)
+  upsellTotal         Decimal?  @db.Decimal(10, 2)
+
+  // Status and Metadata
+  status              JobPostStatus @default(draft)
+  isPublished         Boolean   @default(false)
+  publishedJobId      String?   // Reference to published Job if converted
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  employer            User      @relation("EmployerJobPosts", fields: [employerId], references: [id])
+  publishedJob        Job?      @relation("OptimizedJob", fields: [publishedJobId], references: [id])
+
+  @@index([employerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ChatAnalytics {
+  id           String   @id @default(uuid())
+  userId       String
+  sessionId    String
+  question     String
+  response     String
+  jobsFound    Int?     @default(0)
+  responseTime Float?   @default(0)
+  metadata     Json?    // Store additional context like search filters, etc.
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@index([question])
+}
+
+enum UserRole {
+  admin
+  employer
+  jobseeker
+}
+
+enum JobType {
+  full_time
+  part_time
+  contract
+  internship
+  temporary
+  volunteer
+  other
+}
+
+enum CompanyKnowledgeCategory {
+  culture
+  benefits
+  hiring_process
+  perks
+  career_growth
+  work_environment
+  compensation
+  remote_policy
+  diversity_inclusion
+  company_values
+  interview_process
+  onboarding
+  training
+  general_info
+}
+
+enum CompanyKnowledgeSource {
+  company_provided
+  hr_verified
+  public_info
+  employee_feedback
+  admin_created
+}
+
+enum PricingTier {
+  basic
+  essential
+  professional
+  enterprise
+  premium
+  starter
+}
+
+enum BillingInterval {
+  monthly
+  yearly
+  one_time
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  expired
+  trial
+  past_due
+}
+
+enum AlertType {
+  job_title_alert
+  weekly_digest
+  job_category_alert
+  location_alert
+  company_alert
+}
+
+enum AlertFrequency {
+  immediate
+  daily
+  weekly
+  monthly
+}
+
+enum EmailStatus {
+  pending
+  sent
+  failed
+  bounced
+  delivered
+  opened
+  clicked
+}
+
+enum InstagramPostStatus {
+  draft
+  scheduled
+  published
+  failed
+  cancelled
+}
+
+enum InstagramPostType {
+  job_listing
+  company_highlight
+  industry_news
+  custom
+}
+
+enum AddOnCategory {
+  recruitment_tools
+  candidate_management
+  branding
+  analytics
+  career_services
+  profile_enhancement
+  support
+  integration
+  marketing
+}
+
+enum AddOnType {
+  one_time
+  recurring
+  feature_unlock
+  usage_based
+}
+
+enum InstagramAlertType {
+  engagement_rate_drop
+  engagement_rate_spike
+  follower_count_change
+  post_performance_low
+  post_performance_high
+  reach_decline
+  impressions_decline
+}
+
+enum JobPostStatus {
+  draft
+  optimized
+  published
+  archived
+}
