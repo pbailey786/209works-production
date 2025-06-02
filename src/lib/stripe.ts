@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 
 // Server-side Stripe instance
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-04-30.basil',
+  apiVersion: '2024-06-20',
   typescript: true,
 });
 
@@ -67,4 +67,4 @@ export const STRIPE_WEBHOOK_EVENTS = [
   'payment_intent.payment_failed',
 ] as const;
 
-export type StripeWebhookEvent = typeof STRIPE_WEBHOOK_EVENTS[number]; 
+export type StripeWebhookEvent = typeof STRIPE_WEBHOOK_EVENTS[number];
