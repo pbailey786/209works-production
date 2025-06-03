@@ -106,7 +106,7 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
             return false;
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // If getComputedStyle fails (like in some test environments),
         // just check basic attributes
         if (el.style.display === 'none' || el.style.visibility === 'hidden') {
