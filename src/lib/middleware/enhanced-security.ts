@@ -301,10 +301,10 @@ class AuthenticationValidator {
     req: NextRequest
   ): Promise<SecureAuthContext['user']> {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session?.user?.email) return null;
+    if (!session!.user?.email) return null;
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: {
         id: true,
         email: true,
@@ -347,7 +347,7 @@ class AuthenticationValidator {
       requiresMFA:
         user.role === 'admin' && SecurityConfig.REQUIRE_2FA_FOR_ADMIN,
       mfaVerified:
-        !user.twoFactorEnabled || (session.user as any).mfaVerified === true,
+        !user.twoFactorEnabled || (session!.user as any).mfaVerified === true,
       ipAddress,
       userAgent,
     };

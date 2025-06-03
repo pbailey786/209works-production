@@ -212,7 +212,7 @@ export function withAISecurity(
 
       if (config.requireAuthentication) {
         const session = await getServerSession(authOptions) as Session | null;
-        if (!session?.user?.email) {
+        if (!session!.user?.email) {
           return NextResponse.json(
             { error: 'Authentication required for this AI service' },
             { status: 401 }
@@ -220,7 +220,7 @@ export function withAISecurity(
         }
 
         user = await prisma.user.findUnique({
-          where: { email: session.user?.email },
+          where: { email: session!.user?.email },
           select: { id: true, email: true, role: true },
         });
 
@@ -251,9 +251,9 @@ export function withAISecurity(
       } else {
         // Try to get user if available (optional auth)
         const session = await getServerSession(authOptions) as Session | null;
-        if (session?.user?.email) {
+        if (session!.user?.email) {
           user = await prisma.user.findUnique({
-            where: { email: session.user?.email },
+            where: { email: session!.user?.email },
             select: { id: true, email: true, role: true },
           });
           isAuthenticated = !!user;

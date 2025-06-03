@@ -17,7 +17,7 @@ export default async function AdminLayout({
     redirect('/signin?redirect=/admin');
   }
 
-  const userRole = session.user?.role;
+  const userRole = session!.user?.role;
 
   // Check if user has admin or employer role (employers can import jobs)
   if (
@@ -45,12 +45,12 @@ export default async function AdminLayout({
                 </h1>
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-600">
-                    Welcome, {session.user?.name || session.user?.email}
+                    Welcome, {session!.user?.name || session!.user?.email}
                   </span>
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2d4a3e]">
                     <span className="text-sm font-medium text-white">
-                      {(session.user?.name ||
-                        session.user?.email ||
+                      {(session!.user?.name ||
+                        session!.user?.email ||
                         'A')[0].toUpperCase()}
                     </span>
                   </div>

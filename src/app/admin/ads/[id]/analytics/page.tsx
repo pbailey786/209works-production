@@ -20,7 +20,7 @@ export default async function AdAnalyticsPage({ params }: PageProps) {
     redirect('/signin?redirect=/admin/ads');
   }
 
-  const userRole = session.user?.role || 'guest';
+  const userRole = session!.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }

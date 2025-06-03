@@ -13,7 +13,7 @@ export default async function ReportsPage() {
     redirect('/signin?redirect=/admin/reports');
   }
 
-  const userRole = session.user?.role || 'guest';
+  const userRole = session!.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.EXPORT_REPORTS)) {
     redirect('/admin');
   }

@@ -14,7 +14,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session.user?.role || 'guest';
+    const userRole = session!.user?.role || 'guest';
     if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
       return NextResponse.json(
         { error: 'Insufficient permissions' },
@@ -75,7 +75,7 @@ export async function PATCH(req: NextRequest) {
 
     // In a real app, you'd create audit log entries for each job
     // const auditEntries = jobs.map(job => ({
-    //   adminId: (session.user as any).id,
+    //   adminId: (session!.user as any).id,
     //   action: `job_${action}`,
     //   resourceType: 'job',
     //   resourceId: job.id,
@@ -94,7 +94,7 @@ export async function PATCH(req: NextRequest) {
         company: job.company,
         action: action,
         moderatedAt: new Date(),
-        moderatedBy: session.user?.email,
+        moderatedBy: session!.user?.email,
       })),
     });
   } catch (error) {

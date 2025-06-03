@@ -524,7 +524,7 @@ export async function verify2FAAction(
 
     // TODO: Create actual session
     // await signIn('credentials', {
-    //   email: session.user?.email,
+    //   email: session!.user?.email,
     //   redirect: false,
     // });
 

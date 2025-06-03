@@ -22,7 +22,7 @@ const ParsedResumeSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Get user ID for file naming
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: { id: true },
     });
 

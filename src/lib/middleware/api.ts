@@ -143,13 +143,13 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
             if (session instanceof NextResponse) {
               throw new AuthorizationError('Insufficient permissions');
             }
-            user = session.user;
+            user = (session as any).user;
           } else if (config.requireAuthentication) {
             const session = await requireAuth(req);
             if (session instanceof NextResponse) {
               throw new AuthenticationError();
             }
-            user = session.user;
+            user = (session as any).user;
           }
 
           if (user) {

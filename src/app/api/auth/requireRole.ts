@@ -18,7 +18,7 @@ export async function requireRole(
   if (!session || !session.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const userRole = (session.user as any).role;
+  const userRole = (session!.user as any).role;
   const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
   if (!userRole || !roles.includes(userRole)) {
     return NextResponse.json(

@@ -89,7 +89,7 @@ export default function CreateJobPostPage() {
     );
   }
 
-  if (!session || !session.user || (session.user as any).role !== 'employer') {
+  if (!session || !session.user || (session!.user as any).role !== 'employer') {
     router.push('/employers/signin');
     return null;
   }

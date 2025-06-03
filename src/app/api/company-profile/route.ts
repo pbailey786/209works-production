@@ -11,7 +11,7 @@ export async function GET() {
     const session = await getServerSession(authOptions) as Session | null;
     console.log('🏢 Session check:', {
       hasSession: !!session,
-      userEmail: session?.user?.email,
+      userEmail: session!.user?.email,
       userId: (session?.user as any)?.id,
     });
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user has employer role
     const user = await prisma.user.findUnique({
-      where: { id: (session.user as any).id },
+      where: { id: (session!.user as any).id },
     });
 
     if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         OR: [{ name: { equals: name, mode: 'insensitive' } }, { slug: slug }],
         users: {
           none: {
-            id: (session.user as any).id,
+            id: (session!.user as any).id,
           },
         },
       },
@@ -169,14 +169,14 @@ export async function POST(request: NextRequest) {
           contactPhone: contactPhone || null,
           logo: logo || null,
           users: {
-            connect: { id: (session.user as any).id },
+            connect: { id: (session!.user as any).id },
           },
         },
       });
 
       // Update user with company ID
       await prisma.user.update({
-        where: { id: (session.user as any).id },
+        where: { id: (session!.user as any).id },
         data: { companyId: company.id },
       });
     }

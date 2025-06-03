@@ -11,7 +11,7 @@ export async function POST(
   try {
     // Check authentication
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session || !session.user || (session.user as any).role !== 'employer') {
+    if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         {
           error:
@@ -27,7 +27,7 @@ export async function POST(
     const jobPostOptimizer = await prisma.jobPostOptimizer.findUnique({
       where: {
         id: optimizerJobId,
-        employerId: (session.user as any).id, // Ensure user owns this job post
+        employerId: (session!.user as any).id, // Ensure user owns this job post
       },
     });
 
@@ -64,7 +64,7 @@ export async function POST(
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${Date.now()}`, // Temporary URL
         postedAt: new Date(),
         status: 'active',
-        employerId: (session.user as any).id,
+        employerId: (session!.user as any).id,
         // Optional fields
         salaryMin: extractSalaryMin(jobPostOptimizer.pay),
         salaryMax: extractSalaryMax(jobPostOptimizer.pay),

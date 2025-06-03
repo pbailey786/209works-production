@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session.user?.role || 'guest';
+    const userRole = session!.user?.role || 'guest';
     if (!hasPermission(userRole, Permission.VIEW_SYSTEM_HEALTH)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }

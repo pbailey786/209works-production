@@ -41,13 +41,13 @@ async function getUserSettings(userId: string) {
 export default async function ProfileSettingsPage() {
   const session = await getServerSession(authOptions) as Session | null;
 
-  if (!session?.user?.email) {
+  if (!session!.user?.email) {
     redirect('/signin');
   }
 
-  // Get user by email since (session.user as any).id doesn't exist by default
+  // Get user by email since (session!.user as any).id doesn't exist by default
   const user = await prisma.user.findUnique({
-    where: { email: session.user?.email },
+    where: { email: session!.user?.email },
     select: { id: true },
   });
 

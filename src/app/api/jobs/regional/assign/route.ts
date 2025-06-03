@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     // Check authentication and admin role
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },
         { status: 401 }
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Get user from database to check role
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: { id: true, role: true },
     });
 

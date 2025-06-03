@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     // Check authentication and admin role
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user || (session.user as any).role !== 'admin') {
+    if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
     // Check authentication and admin role
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user || (session.user as any).role !== 'admin') {
+    if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
         result = await DataIntegrityService.safeDeleteUser(
           userId,
           deletionReason,
-          deletedBy || (session.user as any).id
+          deletedBy || (session!.user as any).id
         );
         break;
 
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
         result = await DataIntegrityService.safeDeleteCompany(
           companyId,
           companyReason,
-          companyDeletedBy || (session.user as any).id
+          companyDeletedBy || (session!.user as any).id
         );
         break;
 
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
 
         result = await DataIntegrityService.softDeleteJob(
           jobId,
-          (session.user as any).id,
+          (session!.user as any).id,
           reason
         );
         break;
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
 
         result = await DataIntegrityService.restoreSoftDeletedUser(
           restoreUserId,
-          (session.user as any).id
+          (session!.user as any).id
         );
         break;
 

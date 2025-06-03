@@ -23,7 +23,7 @@ export default async function JobModerationDetailPage({ params }: PageProps) {
     redirect('/signin?redirect=/admin/moderation/jobs/' + id);
   }
 
-  const userRole = session.user?.role || 'guest';
+  const userRole = session!.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
     redirect('/admin');
   }

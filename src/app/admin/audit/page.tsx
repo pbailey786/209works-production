@@ -13,7 +13,7 @@ export default async function AuditLogsPage() {
     redirect('/signin?redirect=/admin/audit');
   }
 
-  const userRole = session.user?.role || 'guest';
+  const userRole = session!.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_AUDIT_LOGS)) {
     redirect('/admin');
   }

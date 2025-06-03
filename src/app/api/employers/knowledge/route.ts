@@ -9,13 +9,13 @@ import type { Session } from 'next-auth';
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       include: { company: true },
     });
 
@@ -114,13 +114,13 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       include: { company: true },
     });
 
@@ -185,13 +185,13 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       include: { company: true },
     });
 
@@ -274,13 +274,13 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       include: { company: true },
     });
 

@@ -23,7 +23,7 @@ export default async function CreateAdPage() {
     redirect('/signin?redirect=/admin/ads/create');
   }
 
-  const userRole = session.user?.role || 'guest';
+  const userRole = session!.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }

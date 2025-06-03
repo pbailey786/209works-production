@@ -37,13 +37,13 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: { id: true, role: true },
     });
 
@@ -136,12 +136,12 @@ export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: {
         id: true,
         name: true,

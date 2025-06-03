@@ -139,13 +139,13 @@ async function getDashboardData(userId: string) {
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions) as Session | null;
 
-  if (!session?.user?.email) {
+  if (!session!.user?.email) {
     redirect('/signin');
   }
 
-  // Get user by email since (session.user as any).id doesn't exist by default
+  // Get user by email since (session!.user as any).id doesn't exist by default
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: session!.user?.email! },
     select: {
       id: true,
       role: true,
@@ -175,7 +175,7 @@ export default async function DashboardPage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">
-            Welcome back, {session.user?.name || session.user?.email}
+            Welcome back, {session!.user?.name || session!.user?.email}
           </h1>
           <p className="mt-2 text-sm text-gray-600 sm:text-base">
             Here's an overview of your job search activity.

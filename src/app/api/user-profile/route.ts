@@ -9,13 +9,13 @@ export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     // Get user profile from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: {
         id: true,
         name: true,
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     // For now, just return success without saving to database
     // In a real implementation, you would save to a UserProfile table
     const updatedUser = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: {
         id: true,
         name: true,
@@ -141,7 +141,7 @@ export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
@@ -200,7 +200,7 @@ export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 

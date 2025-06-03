@@ -204,7 +204,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   // Parallelize data fetching for better performance
   const [job, session] = await Promise.all([
     getJob(id),
-    getServerSession(authOptions),
+    getServerSession(authOptions) as Promise<Session | null>,
   ]);
 
   if (!job) {

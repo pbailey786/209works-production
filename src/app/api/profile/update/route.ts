@@ -8,13 +8,13 @@ export async function POST(req: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get current user by email
     const currentUser = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
     });
 
     if (!currentUser) {
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if email is already taken by another user
-    if (email !== session.user?.email) {
+    if (email !== session!.user?.email) {
       const existingUser = await prisma.user.findUnique({
         where: { email },
       });

@@ -17,7 +17,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session.user?.role || 'guest';
+    const userRole = session!.user?.role || 'guest';
     if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
       return NextResponse.json(
         { error: 'Insufficient permissions' },
@@ -75,7 +75,7 @@ export async function PATCH(
     // In a real app, you'd also create an audit log entry here
     // await prisma.adminAction.create({
     //   data: {
-    //     adminId: (session.user as any).id,
+    //     adminId: (session!.user as any).id,
     //     action: `job_${action}`,
     //     resourceType: 'job',
     //     resourceId: jobId,
@@ -93,7 +93,7 @@ export async function PATCH(
         company: job.company,
         action: action,
         moderatedAt: new Date(),
-        moderatedBy: session.user?.email,
+        moderatedBy: session!.user?.email,
       },
     });
   } catch (error) {

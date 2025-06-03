@@ -22,7 +22,7 @@ export default async function EditAdPage({ params }: PageProps) {
     redirect('/signin?redirect=/admin/ads');
   }
 
-  const userRole = session.user?.role || 'guest';
+  const userRole = session!.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }
@@ -32,7 +32,7 @@ export default async function EditAdPage({ params }: PageProps) {
     where: {
       id: id,
       ...(userRole === 'employer'
-        ? { businessName: (session.user as any)?.name }
+        ? { businessName: (session!.user as any)?.name }
         : {}),
     },
   });

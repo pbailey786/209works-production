@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     // Check authentication and admin role
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user || (session.user as any).role !== 'admin') {
+    if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user || (session.user as any).role !== 'admin') {
+    if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }

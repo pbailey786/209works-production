@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession();
 
-    if (!session?.user?.email) {
+    if (!session!.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     // Get user with Stripe customer ID
     const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
+      where: { email: session!.user?.email },
       select: { stripeCustomerId: true },
     });
 

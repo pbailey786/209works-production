@@ -83,7 +83,7 @@ function MyJobsContent() {
   useEffect(() => {
     if (status === 'loading') return;
 
-    if (!session || !session.user || (session.user as any).role !== 'employer') {
+    if (!session || !session.user || (session!.user as any).role !== 'employer') {
       router.push('/employers/signin');
       return;
     }
@@ -97,7 +97,7 @@ function MyJobsContent() {
       try {
         setLoading(true);
         const response = await fetch(
-          `/api/employers/jobs?employerId=${(session.user as any).id}`
+          `/api/employers/jobs?employerId=${(session!.user as any).id}`
         );
 
         if (response.ok) {
@@ -128,7 +128,7 @@ function MyJobsContent() {
   }
 
   // Show authentication error
-  if (!session || !session.user || (session.user as any).role !== 'employer') {
+  if (!session || !session.user || (session!.user as any).role !== 'employer') {
     return null;
   }
 

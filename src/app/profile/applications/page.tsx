@@ -8,13 +8,13 @@ import type { Session } from 'next-auth';
 export default async function ApplicationsPage() {
   const session = await getServerSession(authOptions) as Session | null;
 
-  if (!session?.user?.email) {
+  if (!session!.user?.email) {
     redirect('/signin?callbackUrl=/profile/applications');
   }
 
   // Get user data
   const user = await prisma.user.findUnique({
-    where: { email: session.user?.email },
+    where: { email: session!.user?.email },
     select: { id: true, role: true },
   });
 

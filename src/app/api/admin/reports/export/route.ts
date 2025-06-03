@@ -289,13 +289,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session.user?.role || 'guest';
+    const userRole = session!.user?.role || 'guest';
     if (!hasPermission(userRole, Permission.EXPORT_REPORTS)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Rate limiting
-    const userId = (session.user as any)?.id;
+    const userId = (session!.user as any)?.id;
     if (!checkRateLimit(userId)) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Maximum 10 exports per hour.' },

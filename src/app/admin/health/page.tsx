@@ -13,7 +13,7 @@ export default async function SystemHealthPage() {
     redirect('/signin?redirect=/admin/health');
   }
 
-  const userRole = session.user?.role || 'guest';
+  const userRole = session!.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_SYSTEM_HEALTH)) {
     redirect('/admin');
   }
