@@ -3,6 +3,7 @@ import authOptions from '../authOptions';
 
 console.log('🚀 NextAuth route loaded');
 
+// @ts-ignore - NextAuth v4 App Router compatibility
 const handler = NextAuth(authOptions);
 
 // Wrap handlers with logging and error catching

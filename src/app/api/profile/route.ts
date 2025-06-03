@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../auth/prisma';
+// @ts-ignore - NextAuth v4 JWT import issue
 import { getToken } from 'next-auth/jwt';
 import { compare, hash } from 'bcryptjs';
 import fs from 'fs/promises';

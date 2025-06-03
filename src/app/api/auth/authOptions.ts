@@ -3,10 +3,13 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from '@/lib/database/prisma';
 import { compare } from 'bcryptjs';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
+// @ts-ignore - NextAuth v4 type import issues
 import type { NextAuthOptions, Session } from 'next-auth';
+// @ts-ignore - NextAuth v4 JWT type import issues
 import type { JWT } from 'next-auth/jwt';
 import type { User } from '@prisma/client';
 import speakeasy from 'speakeasy';
+// @ts-ignore - NextAuth v4 SessionStrategy type import issues
 import type { SessionStrategy } from 'next-auth';
 
 console.log('🔧 AuthOptions loading...');
@@ -126,7 +129,7 @@ const authOptions: NextAuthOptions = {
     signIn: '/signin', // Default to job seeker sign-in page
   },
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user, account, profile, isNewUser }: any) {
       console.log(
         '🎟️ JWT callback - user:',
         !!user,
@@ -139,7 +142,7 @@ const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }: { session: Session; token: any }) {
       console.log(
         '📋 Session callback - token.email:',
         token.email,

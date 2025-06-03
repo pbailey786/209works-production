@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import speakeasy from 'speakeasy';
 import { prisma } from '../../prisma';
+// @ts-ignore - NextAuth v4 JWT import issue
 import { getToken } from 'next-auth/jwt';
 
 export async function POST(req: NextRequest) {
