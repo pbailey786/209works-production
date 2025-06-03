@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getRedisClient } from '@/lib/redis';
+import redis from '@/lib/redis';
 
 // Create clients for health checks
 const prisma = new PrismaClient();
@@ -74,8 +74,7 @@ async function checkRedis(): Promise<{
   }
 
   try {
-    const redis = await getRedisClient();
-    await (redis as any).ping();
+    await redis.ping();
     const responseTime = Date.now() - start;
     return { status: 'healthy', responseTime };
   } catch (error) {

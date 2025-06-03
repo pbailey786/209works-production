@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Setup Project Repository
+# Status: pending
+# Dependencies: None
+# Priority: medium
+# Description: Initialize the project repository with version control and basic structure.
+# Details:
+Create a new Git repository for the project. Set up the initial directory structure for frontend and backend components. Ensure that the repository includes a README file and a .gitignore file for Node.js projects.
+
+# Test Strategy:
+Verify that the repository can be cloned and that the initial structure is correctly set up.

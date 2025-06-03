@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Build User Profile Management
+# Status: pending
+# Dependencies: 2, 3
+# Priority: medium
+# Description: Develop user profile management including resume upload and dashboard.
+# Details:
+Create user profile pages with forms for updating information. Implement file upload handling for resumes using Next.js API routes. Ensure data is saved correctly in the database.
+
+# Test Strategy:
+Perform unit and integration tests for profile updates. Verify file uploads are stored securely and can be retrieved.
