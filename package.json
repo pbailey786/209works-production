@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "build:no-lint": "next build --no-lint",
     "build:watch": "nodemon --watch src --ext ts,tsx,js,jsx --exec \"npm run build\"",
     "type-check": "tsc --noEmit",
