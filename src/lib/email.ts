@@ -36,8 +36,25 @@ if (
   }
 }
 
-// Initialize Resend client
-export const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend client lazily to avoid build-time connection
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resendClient) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY environment variable is required');
+    }
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
+
+// Export for backward compatibility
+export const resend = {
+  get emails() {
+    return getResendClient().emails;
+  }
+};
 
 // Email configuration
 export const emailConfig = {

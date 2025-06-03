@@ -1,11 +1,52 @@
 import { loadStripe, Stripe as StripeClient } from '@stripe/stripe-js';
 import Stripe from 'stripe';
 
-// Server-side Stripe instance
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
-  typescript: true,
-});
+// Server-side Stripe instance (lazy-loaded to avoid build-time connection)
+let stripeInstance: Stripe | null = null;
+
+function getStripeInstance(): Stripe {
+  if (!stripeInstance) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is required');
+    }
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2025-05-28.basil',
+      typescript: true,
+    });
+  }
+  return stripeInstance;
+}
+
+// Export for backward compatibility
+export const stripe = {
+  get checkout() {
+    return getStripeInstance().checkout;
+  },
+  get customers() {
+    return getStripeInstance().customers;
+  },
+  get subscriptions() {
+    return getStripeInstance().subscriptions;
+  },
+  get invoices() {
+    return getStripeInstance().invoices;
+  },
+  get paymentIntents() {
+    return getStripeInstance().paymentIntents;
+  },
+  get webhooks() {
+    return getStripeInstance().webhooks;
+  },
+  get billingPortal() {
+    return getStripeInstance().billingPortal;
+  },
+  get prices() {
+    return getStripeInstance().prices;
+  },
+  get products() {
+    return getStripeInstance().products;
+  }
+};
 
 // Client-side Stripe instance
 let stripePromise: Promise<StripeClient | null>;
