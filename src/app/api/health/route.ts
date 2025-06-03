@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import Redis from 'ioredis';
+import { getRedisClient } from '@/lib/redis';
 
 // Create clients for health checks
 const prisma = new PrismaClient();
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
 interface HealthCheck {
   status: 'healthy' | 'unhealthy' | 'degraded';
@@ -67,8 +66,16 @@ async function checkRedis(): Promise<{
   error?: string;
 }> {
   const start = Date.now();
+
+  // If Redis is disabled, return healthy status
+  if (process.env.REDIS_DISABLED === 'true') {
+    const responseTime = Date.now() - start;
+    return { status: 'healthy', responseTime, error: 'Redis disabled' };
+  }
+
   try {
-    await redis.ping();
+    const redis = await getRedisClient();
+    await (redis as any).ping();
     const responseTime = Date.now() - start;
     return { status: 'healthy', responseTime };
   } catch (error) {
@@ -234,9 +241,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     await prisma.$disconnect().catch(() => {
       // Ignore cleanup errors
     });
-
-    // Clean up Redis connection
-    redis.disconnect();
   }
 }
 
