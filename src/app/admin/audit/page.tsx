@@ -3,16 +3,17 @@ import { redirect } from 'next/navigation';
 import authOptions from '../../api/auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import AuditLogsDashboard from '@/components/admin/AuditLogsDashboard';
+import type { Session } from 'next-auth';
 
 export default async function AuditLogsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   // Check authentication and permissions
   if (!session) {
     redirect('/signin?redirect=/admin/audit');
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = session.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_AUDIT_LOGS)) {
     redirect('/admin');
   }

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import InstagramAnalyticsService from '@/lib/services/instagram-analytics';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import type { Session } from 'next-auth';
 
 const insightsQuerySchema = z.object({
   startDate: z.string().datetime().optional(),
@@ -14,7 +15,7 @@ const insightsQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -5,6 +5,7 @@ import { prisma } from '../../../api/auth/prisma';
 import JobModerationTable from '@/components/admin/JobModerationTable';
 import JobModerationFilters from '@/components/admin/JobModerationFilters';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import type { Session } from 'next-auth';
 
 interface SearchParams {
   page?: string;
@@ -20,14 +21,14 @@ export default async function JobModerationPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   // Check authentication and permissions
   if (!session) {
     redirect('/signin?redirect=/admin/moderation/jobs');
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = session.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
     redirect('/admin');
   }

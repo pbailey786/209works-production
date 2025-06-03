@@ -24,6 +24,7 @@ import {
   calculateOffsetPagination,
   createPaginatedResponse,
 } from '@/lib/cache/pagination';
+import type { Session } from 'next-auth';
 
 // Validation schemas
 const createAlertSchema = z.object({
@@ -63,7 +64,7 @@ const createAlertSchema = z.object({
 // GET /api/alerts - List user's alerts
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -100,7 +101,7 @@ export async function GET(req: NextRequest) {
 // POST /api/alerts - Create new alert
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

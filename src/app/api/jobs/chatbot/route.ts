@@ -4,6 +4,7 @@ import authOptions from '@/app/api/auth/authOptions';
 import { ChatbotService } from '@/lib/conversation/chatbot-service';
 import { ConversationManager } from '@/lib/conversation/manager';
 import { prisma } from '@/app/api/auth/prisma';
+import type { Session } from 'next-auth';
 
 // POST /api/jobs/chatbot - Main chatbot endpoint
 export async function POST(req: NextRequest) {
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user session if authenticated
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     let authenticatedUserId = userId;
 
     if (session?.user?.email) {
@@ -67,7 +68,7 @@ export async function GET(req: NextRequest) {
     const sessionId = searchParams.get('sessionId');
 
     // Get user session if authenticated
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     let userId;
 
     if (session?.user?.email) {

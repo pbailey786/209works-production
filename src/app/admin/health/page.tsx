@@ -3,16 +3,17 @@ import { redirect } from 'next/navigation';
 import authOptions from '../../api/auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import SystemHealthDashboard from '@/components/admin/SystemHealthDashboard';
+import type { Session } from 'next-auth';
 
 export default async function SystemHealthPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   // Check authentication and permissions
   if (!session) {
     redirect('/signin?redirect=/admin/health');
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = session.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_SYSTEM_HEALTH)) {
     redirect('/admin');
   }

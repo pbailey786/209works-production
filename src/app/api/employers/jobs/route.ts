@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../../auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
+import type { Session } from 'next-auth';
 
 export async function GET(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session || session.user.role !== 'employer') {
       return NextResponse.json(
         {

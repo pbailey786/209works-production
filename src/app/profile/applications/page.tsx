@@ -3,9 +3,10 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
 import ApplicationsClient from './ApplicationsClient';
+import type { Session } from 'next-auth';
 
 export default async function ApplicationsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   if (!session?.user?.email) {
     redirect('/signin?callbackUrl=/profile/applications');

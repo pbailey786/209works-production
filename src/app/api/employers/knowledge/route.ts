@@ -3,11 +3,12 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { CompanyKnowledgeService } from '@/lib/knowledge/company-knowledge';
 import { prisma } from '@/app/api/auth/prisma';
+import type { Session } from 'next-auth';
 
 // GET /api/employers/knowledge - Get company knowledge entries
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -112,7 +113,7 @@ export async function GET(req: NextRequest) {
 // POST /api/employers/knowledge - Add new knowledge entry
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -183,7 +184,7 @@ export async function POST(req: NextRequest) {
 // PUT /api/employers/knowledge - Update knowledge entry
 export async function PUT(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -272,7 +273,7 @@ export async function PUT(req: NextRequest) {
 // DELETE /api/employers/knowledge - Delete knowledge entry
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

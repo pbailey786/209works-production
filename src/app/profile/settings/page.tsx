@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import authOptions from '../../api/auth/authOptions';
 import { prisma } from '../../api/auth/prisma';
 import ProfileSettingsClient from './ProfileSettingsClient';
+import type { Session } from 'next-auth';
 
 // Server-side data fetching
 async function getUserSettings(userId: string) {
@@ -38,7 +39,7 @@ async function getUserSettings(userId: string) {
 }
 
 export default async function ProfileSettingsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   if (!session?.user?.email) {
     redirect('/signin');

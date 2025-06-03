@@ -13,16 +13,17 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import AdCreationForm from '@/components/admin/AdCreationForm';
+import type { Session } from 'next-auth';
 
 export default async function CreateAdPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   // Check authentication and permissions
   if (!session) {
     redirect('/signin?redirect=/admin/ads/create');
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = session.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }

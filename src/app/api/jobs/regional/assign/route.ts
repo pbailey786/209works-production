@@ -3,11 +3,12 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { RegionalJobService } from '@/lib/services/regional-job-service';
 import { prisma } from '@/lib/database/prisma';
+import type { Session } from 'next-auth';
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json(

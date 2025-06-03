@@ -6,6 +6,7 @@ import JobModerationDetail from '@/components/admin/JobModerationDetail';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import type { Session } from 'next-auth';
 
 interface PageProps {
   params: Promise<{
@@ -15,14 +16,14 @@ interface PageProps {
 
 export default async function JobModerationDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   // Check authentication and permissions
   if (!session) {
     redirect('/signin?redirect=/admin/moderation/jobs/' + id);
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = session.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
     redirect('/admin');
   }

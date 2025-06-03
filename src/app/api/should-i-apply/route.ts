@@ -4,11 +4,12 @@ import authOptions from '../auth/authOptions';
 import { prisma } from '../auth/prisma';
 import { ShouldIApplyUsageService } from '@/lib/services/should-i-apply-usage';
 import { getChatCompletion } from '@/lib/openai';
+import type { Session } from 'next-auth';
 
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -125,7 +126,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

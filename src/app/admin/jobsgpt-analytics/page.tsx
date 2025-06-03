@@ -56,7 +56,7 @@ export default function JobsGPTAnalyticsPage() {
 
   // Check if user is admin
   const isAdmin =
-    session?.user?.role === 'admin' ||
+    (session?.user as any)?.role === 'admin' ||
     session?.user?.email === 'admin@209jobs.com';
 
   useEffect(() => {

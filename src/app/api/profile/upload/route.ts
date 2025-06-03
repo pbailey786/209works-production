@@ -4,11 +4,12 @@ import authOptions from '../../auth/authOptions';
 import { prisma } from '../../auth/prisma';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import type { Session } from 'next-auth';
 
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

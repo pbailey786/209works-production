@@ -3,16 +3,17 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '../../auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { prisma } from '@/lib/database/prisma';
+import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = (session.user as any)?.role;
+    const userRole = session.user?.role || 'guest';
     if (!hasPermission(userRole, Permission.VIEW_SYSTEM_HEALTH)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }

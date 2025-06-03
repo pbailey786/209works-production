@@ -6,6 +6,7 @@ import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/app/api/auth/prisma';
 import JobDetailClient from './JobDetailClient';
 import { Job, JobType } from '@prisma/client';
+import type { Session } from 'next-auth';
 
 interface JobDetailPageProps {
   params: Promise<{ id: string }>;

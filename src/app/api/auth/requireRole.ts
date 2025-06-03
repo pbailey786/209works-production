@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from './authOptions';
+import type { Session } from 'next-auth';
 
 /**
  * Checks if the user is authenticated and has one of the required roles.
@@ -13,7 +14,7 @@ export async function requireRole(
   req: NextRequest,
   allowedRoles: string | string[]
 ) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
   if (!session || !session.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -3,20 +3,21 @@ import { redirect } from 'next/navigation';
 import authOptions from '../api/auth/authOptions';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { canAccessRoute } from '@/lib/rbac/permissions';
+import type { Session } from 'next-auth';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   // Check if user is authenticated
   if (!session) {
     redirect('/signin?redirect=/admin');
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = session.user?.role;
 
   // Check if user has admin or employer role (employers can import jobs)
   if (

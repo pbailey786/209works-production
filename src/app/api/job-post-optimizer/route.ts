@@ -4,6 +4,7 @@ import authOptions from '../auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
+import type { Session } from 'next-auth';
 
 // Validation schema for job post optimizer
 const jobPostOptimizerSchema = z.object({
@@ -82,7 +83,7 @@ Make this job posting compelling and authentic. Focus on attracting the right pe
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session || session.user.role !== 'employer') {
       return NextResponse.json(
         {
@@ -229,7 +230,7 @@ ${data.applicationCTA || `Interested in this position? We'd love to hear from yo
 // GET endpoint to retrieve job post optimizers for an employer
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session || session.user.role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },

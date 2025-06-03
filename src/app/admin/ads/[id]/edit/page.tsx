@@ -5,6 +5,7 @@ import authOptions from '../../../../api/auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { prisma } from '@/lib/database/prisma';
 import AdEditForm from '@/components/admin/AdEditForm';
+import type { Session } from 'next-auth';
 
 interface PageProps {
   params: Promise<{
@@ -14,14 +15,14 @@ interface PageProps {
 
 export default async function EditAdPage({ params }: PageProps) {
   const { id } = await params;
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   // Check authentication and permissions
   if (!session) {
     redirect('/signin?redirect=/admin/ads');
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = session.user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }

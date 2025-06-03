@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '../auth/prisma';
 import { z } from 'zod';
+import type { Session } from 'next-auth';
 
 // Validation schemas for the new email alert system
 const createEmailAlertSchema = z.object({
@@ -46,7 +47,7 @@ const updateEmailAlertSchema = createEmailAlertSchema.partial().extend({
 // GET /api/email-alerts - List user's email alerts
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -123,7 +124,7 @@ export async function GET(req: NextRequest) {
 // POST /api/email-alerts - Create new email alert
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -203,7 +204,7 @@ export async function POST(req: NextRequest) {
 // PATCH /api/email-alerts - Bulk update alerts (e.g., enable/disable all)
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

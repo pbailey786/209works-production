@@ -3,20 +3,21 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '../../../../auth/authOptions';
 import { prisma } from '../../../../auth/prisma';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import type { Session } from 'next-auth';
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     // Check if user is authenticated and has moderation permissions
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = (session.user as any)?.role;
+    const userRole = session.user?.role || 'guest';
     if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
       return NextResponse.json(
         { error: 'Insufficient permissions' },

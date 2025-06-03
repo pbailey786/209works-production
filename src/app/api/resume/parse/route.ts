@@ -5,6 +5,7 @@ import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile } from '@/lib/fileUpload';
+import type { Session } from 'next-auth';
 
 // Schema for parsed resume data
 const ParsedResumeSchema = z.object({
@@ -20,7 +21,7 @@ const ParsedResumeSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

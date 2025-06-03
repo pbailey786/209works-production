@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { stripe, STRIPE_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { PricingTier, BillingInterval } from '@prisma/client';
+import type { Session } from 'next-auth';
 
 export async function POST(request: NextRequest) {
   try {

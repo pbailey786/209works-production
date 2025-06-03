@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '../auth/prisma';
+import type { Session } from 'next-auth';
 
 // GET /api/company-profile - Get company profile for authenticated user
 export async function GET() {
   try {
     console.log('🏢 Company profile API - GET request started');
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
     console.log('🏢 Session check:', {
       hasSession: !!session,
       userEmail: session?.user?.email,
@@ -58,7 +59,7 @@ export async function GET() {
 // POST /api/company-profile - Create or update company profile
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

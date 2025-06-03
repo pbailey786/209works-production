@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/app/api/auth/prisma';
+import type { Session } from 'next-auth';
 
 /**
  * AI Security Middleware
@@ -210,7 +211,7 @@ export function withAISecurity(
       let isAuthenticated = false;
 
       if (config.requireAuthentication) {
-        const session = await getServerSession(authOptions);
+        const session = await getServerSession(authOptions) as Session | null;
         if (!session?.user?.email) {
           return NextResponse.json(
             { error: 'Authentication required for this AI service' },
@@ -249,7 +250,7 @@ export function withAISecurity(
         }
       } else {
         // Try to get user if available (optional auth)
-        const session = await getServerSession(authOptions);
+        const session = await getServerSession(authOptions) as Session | null;
         if (session?.user?.email) {
           user = await prisma.user.findUnique({
             where: { email: session.user.email },

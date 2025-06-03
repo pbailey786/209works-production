@@ -4,6 +4,7 @@ import authOptions from '../api/auth/authOptions';
 import Link from 'next/link';
 import { prisma } from '../api/auth/prisma';
 import DashboardClient from './DashboardClient';
+import type { Session } from 'next-auth';
 
 // Server-side data fetching
 async function getDashboardData(userId: string) {
@@ -136,7 +137,7 @@ async function getDashboardData(userId: string) {
 }
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as Session | null;
 
   if (!session?.user?.email) {
     redirect('/signin');
