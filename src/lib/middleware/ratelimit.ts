@@ -8,62 +8,70 @@ const isRedisConfigured = !!(
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
 );
 
-// Initialize Redis client only if configured
+// Initialize Redis client and rate limit configs lazily
 let redis: Redis | null = null;
 let rateLimitConfigs: Record<string, Ratelimit> = {};
+let isInitialized = false;
 
-if (isRedisConfigured) {
-  try {
-    redis = Redis.fromEnv();
+// Lazy initialization function
+function initializeRateLimit() {
+  if (isInitialized) return;
 
-    // Define rate limit configurations
-    rateLimitConfigs = {
-      // General API limits (per IP)
-      general: new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute
-        analytics: true,
-      }),
+  if (isRedisConfigured) {
+    try {
+      redis = Redis.fromEnv();
 
-      // Authenticated user limits (per user ID)
-      authenticated: new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(200, '1 m'), // 200 requests per minute
-        analytics: true,
-      }),
+      // Define rate limit configurations
+      rateLimitConfigs = {
+        // General API limits (per IP)
+        general: new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute
+          analytics: true,
+        }),
 
-      // Premium user limits (employers/admin)
-      premium: new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(500, '1 m'), // 500 requests per minute
-        analytics: true,
-      }),
+        // Authenticated user limits (per user ID)
+        authenticated: new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(200, '1 m'), // 200 requests per minute
+          analytics: true,
+        }),
 
-      // Search endpoints (more restrictive)
-      search: new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(30, '1 m'), // 30 searches per minute
-        analytics: true,
-      }),
+        // Premium user limits (employers/admin)
+        premium: new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(500, '1 m'), // 500 requests per minute
+          analytics: true,
+        }),
 
-      // Authentication endpoints (very restrictive)
-      auth: new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 auth attempts per minute
-        analytics: true,
-      }),
+        // Search endpoints (more restrictive)
+        search: new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(30, '1 m'), // 30 searches per minute
+          analytics: true,
+        }),
 
-      // File upload endpoints
-      upload: new Ratelimit({
-        redis,
-        limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 uploads per minute
-        analytics: true,
-      }),
-    };
-  } catch (error) {
-    console.warn('Failed to initialize Redis for rate limiting:', error);
-    redis = null;
+        // Authentication endpoints (very restrictive)
+        auth: new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 auth attempts per minute
+          analytics: true,
+        }),
+
+        // File upload endpoints
+        upload: new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 uploads per minute
+          analytics: true,
+        }),
+      };
+    } catch (error) {
+      console.warn('Failed to initialize Redis for rate limiting:', error);
+      redis = null;
+    }
   }
+
+  isInitialized = true;
 }
 
 // Rate limit types
@@ -156,6 +164,9 @@ export async function applyRateLimit(
     customType?: RateLimitType;
   }
 ): Promise<RateLimitResult> {
+  // Initialize rate limiting on first use
+  initializeRateLimit();
+
   // Skip rate limiting in development if environment variable is set
   if (
     process.env.NODE_ENV === 'development' &&
