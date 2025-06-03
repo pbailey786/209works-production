@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import Link from "next/link";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 interface LocalBusiness {
   id: string;
@@ -14,7 +14,9 @@ interface LocalBusiness {
 }
 
 export default function LocalBusinessHighlightsSection() {
-  const [featuredBusinesses, setFeaturedBusinesses] = useState<LocalBusiness[]>([]);
+  const [featuredBusinesses, setFeaturedBusinesses] = useState<LocalBusiness[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
   // Fetch real employers from the database
@@ -29,59 +31,65 @@ export default function LocalBusinessHighlightsSection() {
           // Fallback to mock data if API fails
           setFeaturedBusinesses([
             {
-              id: "central-valley-health",
-              name: "Central Valley Health",
-              industry: "Healthcare",
-              location: "Stockton, CA",
+              id: 'central-valley-health',
+              name: 'Central Valley Health',
+              industry: 'Healthcare',
+              location: 'Stockton, CA',
               activeJobs: 12,
-              description: "Leading healthcare provider serving the Central Valley with opportunities in nursing, administration, and medical support.",
-              logo: "🏥"
+              description:
+                'Leading healthcare provider serving the Central Valley with opportunities in nursing, administration, and medical support.',
+              logo: '🏥',
             },
             {
-              id: "manteca-unified",
-              name: "Manteca Unified School District",
-              industry: "Education",
-              location: "Manteca, CA",
+              id: 'manteca-unified',
+              name: 'Manteca Unified School District',
+              industry: 'Education',
+              location: 'Manteca, CA',
               activeJobs: 8,
-              description: "Growing school district seeking teachers, administrators, and support staff to serve our diverse student community.",
-              logo: "🎓"
+              description:
+                'Growing school district seeking teachers, administrators, and support staff to serve our diverse student community.',
+              logo: '🎓',
             },
             {
-              id: "tracy-logistics",
-              name: "Tracy Logistics Solutions",
-              industry: "Transportation & Warehousing",
-              location: "Tracy, CA",
+              id: 'tracy-logistics',
+              name: 'Tracy Logistics Solutions',
+              industry: 'Transportation & Warehousing',
+              location: 'Tracy, CA',
               activeJobs: 15,
-              description: "Premier logistics company offering warehouse, transportation, and supply chain careers with competitive benefits.",
-              logo: "🚛"
+              description:
+                'Premier logistics company offering warehouse, transportation, and supply chain careers with competitive benefits.',
+              logo: '🚛',
             },
             {
-              id: "lodi-wine-group",
-              name: "Lodi Wine Group",
-              industry: "Agriculture & Food",
-              location: "Lodi, CA",
+              id: 'lodi-wine-group',
+              name: 'Lodi Wine Group',
+              industry: 'Agriculture & Food',
+              location: 'Lodi, CA',
               activeJobs: 6,
-              description: "Family-owned winery and agricultural business with seasonal and full-time opportunities in wine production and farming.",
-              logo: "🍇"
+              description:
+                'Family-owned winery and agricultural business with seasonal and full-time opportunities in wine production and farming.',
+              logo: '🍇',
             },
             {
-              id: "modesto-tech",
-              name: "Modesto Tech Solutions",
-              industry: "Technology",
-              location: "Modesto, CA",
+              id: 'modesto-tech',
+              name: 'Modesto Tech Solutions',
+              industry: 'Technology',
+              location: 'Modesto, CA',
               activeJobs: 9,
-              description: "Innovative tech company providing IT services to local businesses, seeking developers, support staff, and project managers.",
-              logo: "💻"
+              description:
+                'Innovative tech company providing IT services to local businesses, seeking developers, support staff, and project managers.',
+              logo: '💻',
             },
             {
-              id: "delta-construction",
-              name: "Delta Construction",
-              industry: "Construction",
-              location: "Stockton, CA",
+              id: 'delta-construction',
+              name: 'Delta Construction',
+              industry: 'Construction',
+              location: 'Stockton, CA',
               activeJobs: 11,
-              description: "Established construction company building homes and commercial properties throughout the Central Valley region.",
-              logo: "🏗️"
-            }
+              description:
+                'Established construction company building homes and commercial properties throughout the Central Valley region.',
+              logo: '🏗️',
+            },
           ]);
         }
       } catch (error) {
@@ -101,9 +109,9 @@ export default function LocalBusinessHighlightsSection() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const cardVariants = {
@@ -112,25 +120,26 @@ export default function LocalBusinessHighlightsSection() {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   return (
-    <section className="w-full py-16 bg-blue-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+    <section className="w-full bg-blue-50 py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900">
             Local Employers Hiring Now
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover opportunities with established businesses and growing companies right here in the 209 area
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+            Discover opportunities with established businesses and growing
+            companies right here in the 209 area
           </p>
         </div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -139,40 +148,59 @@ export default function LocalBusinessHighlightsSection() {
           {featuredBusinesses.map((business, index) => (
             <motion.div
               key={business.id || index}
-              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200"
+              className="rounded-lg bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg"
               variants={cardVariants}
             >
-              <div className="flex items-start justify-between mb-4">
+              <div className="mb-4 flex items-start justify-between">
                 <Link
                   href={`/employers/${business.id}`}
-                  className="flex items-center hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex cursor-pointer items-center transition-opacity hover:opacity-80"
                 >
-                  <div className="text-3xl mr-3" role="img" aria-label={business.industry}>
+                  <div
+                    className="mr-3 text-3xl"
+                    role="img"
+                    aria-label={business.industry}
+                  >
                     {business.logo}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-gray-900 transition-colors hover:text-blue-600">
                       {business.name}
                     </h3>
                     <p className="text-sm text-gray-600">{business.industry}</p>
                   </div>
                 </Link>
                 {business.activeJobs > 0 && (
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                     {business.activeJobs} Jobs
                   </span>
                 )}
               </div>
 
               <div className="mb-4">
-                <div className="flex items-center text-sm text-gray-600 mb-2">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <div className="mb-2 flex items-center text-sm text-gray-600">
+                  <svg
+                    className="mr-1 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   {business.location}
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="text-sm leading-relaxed text-gray-700">
                   {business.description}
                 </p>
               </div>
@@ -180,14 +208,15 @@ export default function LocalBusinessHighlightsSection() {
               <div className="flex items-center justify-between">
                 <Link
                   href={`/employers/${business.id}`}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700"
                 >
                   View Profile →
                 </Link>
 
                 {business.activeJobs > 0 && (
                   <span className="text-xs text-gray-500">
-                    {business.activeJobs} open position{business.activeJobs !== 1 ? 's' : ''}
+                    {business.activeJobs} open position
+                    {business.activeJobs !== 1 ? 's' : ''}
                   </span>
                 )}
               </div>
@@ -196,19 +225,20 @@ export default function LocalBusinessHighlightsSection() {
         </motion.div>
 
         <div className="mt-12 text-center">
-          <p className="text-sm text-gray-600 mb-6">
-            Want to showcase your business? Join our growing network of local employers.
+          <p className="mb-6 text-sm text-gray-600">
+            Want to showcase your business? Join our growing network of local
+            employers.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <a
               href="/employers"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
+              className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-6 py-3 text-base font-medium text-white transition-colors duration-200 hover:bg-blue-700"
             >
               For Employers
             </a>
             <a
               href="/jobs"
-              className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
+              className="inline-flex items-center rounded-md border border-gray-300 bg-white px-6 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50"
             >
               See All Companies
             </a>
@@ -217,4 +247,4 @@ export default function LocalBusinessHighlightsSection() {
       </div>
     </section>
   );
-} 
+}

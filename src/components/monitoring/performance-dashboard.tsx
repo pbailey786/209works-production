@@ -12,13 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { 
+import {
   usePerformanceMonitor,
   CoreWebVitals,
   SystemHealthMetric,
   UserExperienceMetric,
   PerformanceAlert,
-  APIPerformanceMetric
+  APIPerformanceMetric,
 } from '@/lib/monitoring/performance-monitor';
 import {
   Activity,
@@ -60,7 +60,14 @@ interface MetricCardProps {
   description?: string;
 }
 
-function MetricCard({ title, value, unit, status, icon, description }: MetricCardProps) {
+function MetricCard({
+  title,
+  value,
+  unit,
+  status,
+  icon,
+  description,
+}: MetricCardProps) {
   const getStatusColor = () => {
     switch (status) {
       case 'good':
@@ -77,13 +84,13 @@ function MetricCard({ title, value, unit, status, icon, description }: MetricCar
   const getStatusIcon = () => {
     switch (status) {
       case 'good':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'needs-improvement':
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+        return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
       case 'poor':
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
       default:
-        return <Info className="w-4 h-4 text-gray-500" />;
+        return <Info className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -92,20 +99,22 @@ function MetricCard({ title, value, unit, status, icon, description }: MetricCar
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-white rounded-lg shadow-sm">
-              {icon}
-            </div>
+            <div className="rounded-lg bg-white p-2 shadow-sm">{icon}</div>
             <div>
               <p className="text-sm font-medium text-gray-600">{title}</p>
               <div className="flex items-center space-x-2">
                 <p className="text-2xl font-bold text-gray-900">
-                  {typeof value === 'number' ? value.toFixed(value < 10 ? 2 : 0) : value}
-                  {unit && <span className="text-sm text-gray-500 ml-1">{unit}</span>}
+                  {typeof value === 'number'
+                    ? value.toFixed(value < 10 ? 2 : 0)
+                    : value}
+                  {unit && (
+                    <span className="ml-1 text-sm text-gray-500">{unit}</span>
+                  )}
                 </p>
                 {getStatusIcon()}
               </div>
               {description && (
-                <p className="text-xs text-gray-500 mt-1">{description}</p>
+                <p className="mt-1 text-xs text-gray-500">{description}</p>
               )}
             </div>
           </div>
@@ -137,13 +146,13 @@ function AlertCard({ alert, onResolve }: AlertCardProps) {
   const getAlertIcon = () => {
     switch (alert.type) {
       case 'critical':
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <AlertCircle className="h-5 w-5 text-red-500" />;
       case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
       case 'info':
-        return <Info className="w-5 h-5 text-blue-500" />;
+        return <Info className="h-5 w-5 text-blue-500" />;
       default:
-        return <Info className="w-5 h-5 text-gray-500" />;
+        return <Info className="h-5 w-5 text-gray-500" />;
     }
   };
 
@@ -156,10 +165,10 @@ function AlertCard({ alert, onResolve }: AlertCardProps) {
             <AlertTitle className="text-sm font-semibold">
               {alert.metric} Alert
             </AlertTitle>
-            <AlertDescription className="text-sm mt-1">
+            <AlertDescription className="mt-1 text-sm">
               {alert.message}
             </AlertDescription>
-            <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+            <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
               <span>Value: {alert.value.toFixed(2)}</span>
               <span>Threshold: {alert.threshold}</span>
               <span>{new Date(alert.timestamp).toLocaleTimeString()}</span>
@@ -198,13 +207,17 @@ function SystemInfoCard({ title, data, icon }: SystemInfoCardProps) {
         <div className="space-y-2">
           {Object.entries(data).map(([key, value]) => (
             <div key={key} className="flex justify-between text-sm">
-              <span className="text-gray-600 capitalize">
+              <span className="capitalize text-gray-600">
                 {key.replace(/([A-Z])/g, ' $1').toLowerCase()}:
               </span>
               <span className="font-medium text-gray-900">
-                {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : 
-                 typeof value === 'number' ? value.toLocaleString() : 
-                 value || 'N/A'}
+                {typeof value === 'boolean'
+                  ? value
+                    ? 'Yes'
+                    : 'No'
+                  : typeof value === 'number'
+                    ? value.toLocaleString()
+                    : value || 'N/A'}
               </span>
             </div>
           ))}
@@ -221,7 +234,7 @@ export function PerformanceDashboard() {
     systemHealth: null,
     userExperience: null,
     alerts: [],
-    apiMetrics: []
+    apiMetrics: [],
   });
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
@@ -238,15 +251,17 @@ export function PerformanceDashboard() {
   const loadPerformanceData = useCallback(async () => {
     setIsMonitoring(true);
     try {
-      const result = await performanceMonitor.monitorPagePerformance('performance-dashboard');
-      
+      const result = await performanceMonitor.monitorPagePerformance(
+        'performance-dashboard'
+      );
+
       if (result) {
         setPerformanceData({
           vitals: result.vitals,
           systemHealth: result.systemHealth,
           userExperience: result.userExperience,
           alerts: result.alerts,
-          apiMetrics: [] // This would be populated from stored API metrics
+          apiMetrics: [], // This would be populated from stored API metrics
         });
         setLastUpdate(new Date());
       }
@@ -267,18 +282,21 @@ export function PerformanceDashboard() {
   const handleResolveAlert = (alertId: string) => {
     setPerformanceData(prev => ({
       ...prev,
-      alerts: prev.alerts.filter(alert => alert.id !== alertId)
+      alerts: prev.alerts.filter(alert => alert.id !== alertId),
     }));
   };
 
   // Get Core Web Vitals status
-  const getVitalStatus = (metric: string, value: number): 'good' | 'needs-improvement' | 'poor' => {
+  const getVitalStatus = (
+    metric: string,
+    value: number
+  ): 'good' | 'needs-improvement' | 'poor' => {
     const thresholds = {
       lcp: { good: 2500, poor: 4000 },
       fid: { good: 100, poor: 300 },
       cls: { good: 0.1, poor: 0.25 },
       fcp: { good: 1800, poor: 3000 },
-      ttfb: { good: 800, poor: 1800 }
+      ttfb: { good: 800, poor: 1800 },
     };
 
     const threshold = thresholds[metric as keyof typeof thresholds];
@@ -296,7 +314,9 @@ export function PerformanceDashboard() {
   };
 
   // Get score status
-  const getScoreStatus = (score: number): 'good' | 'needs-improvement' | 'poor' => {
+  const getScoreStatus = (
+    score: number
+  ): 'good' | 'needs-improvement' | 'poor' => {
     if (score >= 90) return 'good';
     if (score >= 70) return 'needs-improvement';
     return 'poor';
@@ -304,10 +324,12 @@ export function PerformanceDashboard() {
 
   if (!performanceMonitor.isInitialized) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex h-64 items-center justify-center">
         <div className="text-center">
-          <Activity className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500">Performance monitoring not initialized</p>
+          <Activity className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+          <p className="text-gray-500">
+            Performance monitoring not initialized
+          </p>
         </div>
       </div>
     );
@@ -319,9 +341,11 @@ export function PerformanceDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Performance Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Performance Dashboard
+          </h1>
           <p className="text-gray-600">
             Real-time performance monitoring and system health
             {lastUpdate && (
@@ -338,7 +362,9 @@ export function PerformanceDashboard() {
             disabled={isMonitoring}
             className="flex items-center space-x-2"
           >
-            <RefreshCw className={`w-4 h-4 ${isMonitoring ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 ${isMonitoring ? 'animate-spin' : ''}`}
+            />
             <span>Refresh</span>
           </Button>
         </div>
@@ -349,14 +375,29 @@ export function PerformanceDashboard() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Overall Performance Score</h2>
-              <p className="text-sm text-gray-600">Based on Core Web Vitals and system metrics</p>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Overall Performance Score
+              </h2>
+              <p className="text-sm text-gray-600">
+                Based on Core Web Vitals and system metrics
+              </p>
             </div>
             <div className="text-right">
-              <div className="text-4xl font-bold text-gray-900">{overallScore.toFixed(0)}</div>
-              <Badge variant={getScoreStatus(overallScore) === 'good' ? 'default' : 'destructive'}>
-                {getScoreStatus(overallScore) === 'good' ? 'Good' : 
-                 getScoreStatus(overallScore) === 'needs-improvement' ? 'Needs Improvement' : 'Poor'}
+              <div className="text-4xl font-bold text-gray-900">
+                {overallScore.toFixed(0)}
+              </div>
+              <Badge
+                variant={
+                  getScoreStatus(overallScore) === 'good'
+                    ? 'default'
+                    : 'destructive'
+                }
+              >
+                {getScoreStatus(overallScore) === 'good'
+                  ? 'Good'
+                  : getScoreStatus(overallScore) === 'needs-improvement'
+                    ? 'Needs Improvement'
+                    : 'Poor'}
               </Badge>
             </div>
           </div>
@@ -369,8 +410,10 @@ export function PerformanceDashboard() {
       {/* Alerts */}
       {alerts.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-gray-900">Performance Alerts</h2>
-          {alerts.map((alert) => (
+          <h2 className="text-lg font-semibold text-gray-900">
+            Performance Alerts
+          </h2>
+          {alerts.map(alert => (
             <AlertCard
               key={alert.id}
               alert={alert}
@@ -389,7 +432,7 @@ export function PerformanceDashboard() {
         </TabsList>
 
         <TabsContent value="vitals" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {vitals && (
               <>
                 <MetricCard
@@ -397,7 +440,7 @@ export function PerformanceDashboard() {
                   value={vitals.lcp / 1000}
                   unit="s"
                   status={getVitalStatus('lcp', vitals.lcp)}
-                  icon={<Eye className="w-5 h-5 text-blue-500" />}
+                  icon={<Eye className="h-5 w-5 text-blue-500" />}
                   description="Time until largest element is rendered"
                 />
                 <MetricCard
@@ -405,14 +448,14 @@ export function PerformanceDashboard() {
                   value={vitals.fid}
                   unit="ms"
                   status={getVitalStatus('fid', vitals.fid)}
-                  icon={<Zap className="w-5 h-5 text-green-500" />}
+                  icon={<Zap className="h-5 w-5 text-green-500" />}
                   description="Time from first interaction to response"
                 />
                 <MetricCard
                   title="Cumulative Layout Shift"
                   value={vitals.cls}
                   status={getVitalStatus('cls', vitals.cls)}
-                  icon={<Monitor className="w-5 h-5 text-purple-500" />}
+                  icon={<Monitor className="h-5 w-5 text-purple-500" />}
                   description="Visual stability of page elements"
                 />
                 <MetricCard
@@ -420,7 +463,7 @@ export function PerformanceDashboard() {
                   value={vitals.fcp / 1000}
                   unit="s"
                   status={getVitalStatus('fcp', vitals.fcp)}
-                  icon={<Activity className="w-5 h-5 text-orange-500" />}
+                  icon={<Activity className="h-5 w-5 text-orange-500" />}
                   description="Time until first content is rendered"
                 />
                 <MetricCard
@@ -428,15 +471,21 @@ export function PerformanceDashboard() {
                   value={vitals.ttfb}
                   unit="ms"
                   status={getVitalStatus('ttfb', vitals.ttfb)}
-                  icon={<Server className="w-5 h-5 text-red-500" />}
+                  icon={<Server className="h-5 w-5 text-red-500" />}
                   description="Server response time"
                 />
                 <MetricCard
                   title="Page Load Time"
                   value={vitals.pageLoadTime / 1000}
                   unit="s"
-                  status={vitals.pageLoadTime < 3000 ? 'good' : vitals.pageLoadTime < 5000 ? 'needs-improvement' : 'poor'}
-                  icon={<Clock className="w-5 h-5 text-indigo-500" />}
+                  status={
+                    vitals.pageLoadTime < 3000
+                      ? 'good'
+                      : vitals.pageLoadTime < 5000
+                        ? 'needs-improvement'
+                        : 'poor'
+                  }
+                  icon={<Clock className="h-5 w-5 text-indigo-500" />}
                   description="Total page load time"
                 />
               </>
@@ -446,12 +495,12 @@ export function PerformanceDashboard() {
 
         <TabsContent value="system" className="space-y-6">
           {systemHealth && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {/* Memory Usage */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center space-x-2 text-sm">
-                    <MemoryStick className="w-4 h-4" />
+                    <MemoryStick className="h-4 w-4" />
                     <span>Memory Usage</span>
                   </CardTitle>
                 </CardHeader>
@@ -459,13 +508,26 @@ export function PerformanceDashboard() {
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span>Used:</span>
-                      <span>{(systemHealth.memoryUsage.used / 1024 / 1024).toFixed(1)} MB</span>
+                      <span>
+                        {(systemHealth.memoryUsage.used / 1024 / 1024).toFixed(
+                          1
+                        )}{' '}
+                        MB
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Total:</span>
-                      <span>{(systemHealth.memoryUsage.total / 1024 / 1024).toFixed(1)} MB</span>
+                      <span>
+                        {(systemHealth.memoryUsage.total / 1024 / 1024).toFixed(
+                          1
+                        )}{' '}
+                        MB
+                      </span>
                     </div>
-                    <Progress value={systemHealth.memoryUsage.percentage} className="h-2" />
+                    <Progress
+                      value={systemHealth.memoryUsage.percentage}
+                      className="h-2"
+                    />
                     <div className="text-center text-sm font-medium">
                       {systemHealth.memoryUsage.percentage.toFixed(1)}% used
                     </div>
@@ -476,36 +538,37 @@ export function PerformanceDashboard() {
               {/* Network Information */}
               <SystemInfoCard
                 title="Network Information"
-                icon={<Wifi className="w-4 h-4" />}
+                icon={<Wifi className="h-4 w-4" />}
                 data={{
                   effectiveType: systemHealth.networkInfo.effectiveType,
                   downlink: `${systemHealth.networkInfo.downlink} Mbps`,
                   rtt: `${systemHealth.networkInfo.rtt} ms`,
-                  saveData: systemHealth.networkInfo.saveData
+                  saveData: systemHealth.networkInfo.saveData,
                 }}
               />
 
               {/* Device Information */}
               <SystemInfoCard
                 title="Device Information"
-                icon={<Smartphone className="w-4 h-4" />}
+                icon={<Smartphone className="h-4 w-4" />}
                 data={{
                   platform: systemHealth.deviceInfo.platform,
                   language: systemHealth.deviceInfo.language,
                   cookieEnabled: systemHealth.deviceInfo.cookieEnabled,
                   onLine: systemHealth.deviceInfo.onLine,
-                  hardwareConcurrency: systemHealth.deviceInfo.hardwareConcurrency
+                  hardwareConcurrency:
+                    systemHealth.deviceInfo.hardwareConcurrency,
                 }}
               />
 
               {/* Browser Performance */}
               <SystemInfoCard
                 title="Browser Performance"
-                icon={<Globe className="w-4 h-4" />}
+                icon={<Globe className="h-4 w-4" />}
                 data={{
                   jsHeapSizeLimit: `${(systemHealth.browserPerformance.jsHeapSizeLimit / 1024 / 1024).toFixed(1)} MB`,
                   totalJSHeapSize: `${(systemHealth.browserPerformance.totalJSHeapSize / 1024 / 1024).toFixed(1)} MB`,
-                  usedJSHeapSize: `${(systemHealth.browserPerformance.usedJSHeapSize / 1024 / 1024).toFixed(1)} MB`
+                  usedJSHeapSize: `${(systemHealth.browserPerformance.usedJSHeapSize / 1024 / 1024).toFixed(1)} MB`,
                 }}
               />
             </div>
@@ -514,13 +577,19 @@ export function PerformanceDashboard() {
 
         <TabsContent value="experience" className="space-y-6">
           {userExperience && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               <MetricCard
                 title="Time to Interactive"
                 value={userExperience.timeToInteractive / 1000}
                 unit="s"
-                status={userExperience.timeToInteractive < 3800 ? 'good' : userExperience.timeToInteractive < 7300 ? 'needs-improvement' : 'poor'}
-                icon={<Zap className="w-5 h-5 text-blue-500" />}
+                status={
+                  userExperience.timeToInteractive < 3800
+                    ? 'good'
+                    : userExperience.timeToInteractive < 7300
+                      ? 'needs-improvement'
+                      : 'poor'
+                }
+                icon={<Zap className="h-5 w-5 text-blue-500" />}
                 description="Time until page is fully interactive"
               />
               <MetricCard
@@ -528,35 +597,47 @@ export function PerformanceDashboard() {
                 value={userExperience.sessionDuration / 1000}
                 unit="s"
                 status="good"
-                icon={<Clock className="w-5 h-5 text-green-500" />}
+                icon={<Clock className="h-5 w-5 text-green-500" />}
                 description="Current session duration"
               />
               <MetricCard
                 title="Performance Score"
                 value={userExperience.performanceScore}
                 status={getScoreStatus(userExperience.performanceScore)}
-                icon={<TrendingUp className="w-5 h-5 text-purple-500" />}
+                icon={<TrendingUp className="h-5 w-5 text-purple-500" />}
                 description="Overall performance rating"
               />
               <MetricCard
                 title="JavaScript Errors"
                 value={userExperience.jsErrors}
-                status={userExperience.jsErrors === 0 ? 'good' : userExperience.jsErrors < 3 ? 'needs-improvement' : 'poor'}
-                icon={<AlertTriangle className="w-5 h-5 text-red-500" />}
+                status={
+                  userExperience.jsErrors === 0
+                    ? 'good'
+                    : userExperience.jsErrors < 3
+                      ? 'needs-improvement'
+                      : 'poor'
+                }
+                icon={<AlertTriangle className="h-5 w-5 text-red-500" />}
                 description="Number of JS errors encountered"
               />
               <MetricCard
                 title="Network Errors"
                 value={userExperience.networkErrors}
-                status={userExperience.networkErrors === 0 ? 'good' : userExperience.networkErrors < 3 ? 'needs-improvement' : 'poor'}
-                icon={<Wifi className="w-5 h-5 text-orange-500" />}
+                status={
+                  userExperience.networkErrors === 0
+                    ? 'good'
+                    : userExperience.networkErrors < 3
+                      ? 'needs-improvement'
+                      : 'poor'
+                }
+                icon={<Wifi className="h-5 w-5 text-orange-500" />}
                 description="Number of network errors"
               />
               <MetricCard
                 title="Page Views"
                 value={userExperience.pageViews}
                 status="good"
-                icon={<Eye className="w-5 h-5 text-indigo-500" />}
+                icon={<Eye className="h-5 w-5 text-indigo-500" />}
                 description="Pages viewed in session"
               />
             </div>
@@ -569,10 +650,12 @@ export function PerformanceDashboard() {
               <CardTitle>API Performance Metrics</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                <Server className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <div className="py-8 text-center text-gray-500">
+                <Server className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                 <p>API performance metrics will be displayed here</p>
-                <p className="text-sm">Metrics are collected automatically as you use the application</p>
+                <p className="text-sm">
+                  Metrics are collected automatically as you use the application
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -580,4 +663,4 @@ export function PerformanceDashboard() {
       </Tabs>
     </div>
   );
-} 
+}

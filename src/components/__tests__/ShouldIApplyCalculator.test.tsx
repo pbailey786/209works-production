@@ -28,23 +28,25 @@ describe('ShouldIApplyCalculator', () => {
 
   it('renders when open', () => {
     render(<ShouldIApplyCalculator {...mockProps} />);
-    
+
     expect(screen.getByText('Should I Apply?')).toBeInTheDocument();
-    expect(screen.getByText('AI analysis for Software Engineer at Test Company')).toBeInTheDocument();
+    expect(
+      screen.getByText('AI analysis for Software Engineer at Test Company')
+    ).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
     render(<ShouldIApplyCalculator {...mockProps} isOpen={false} />);
-    
+
     expect(screen.queryByText('Should I Apply?')).not.toBeInTheDocument();
   });
 
   it('calls onClose when close button is clicked', () => {
     render(<ShouldIApplyCalculator {...mockProps} />);
-    
+
     const closeButton = screen.getByLabelText('Close calculator');
     fireEvent.click(closeButton);
-    
+
     expect(mockProps.onClose).toHaveBeenCalledTimes(1);
   });
 });

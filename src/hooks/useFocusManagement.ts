@@ -11,29 +11,32 @@ interface FocusManagementOptions {
 export function useFocusAnnouncement() {
   const announcementRef = useRef<HTMLDivElement | null>(null);
 
-  const announce = useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
-    if (!announcementRef.current) {
-      // Create announcement element if it doesn't exist
-      const element = document.createElement('div');
-      element.setAttribute('aria-live', priority);
-      element.setAttribute('aria-atomic', 'true');
-      element.className = 'sr-only';
-      element.id = 'focus-announcement';
-      document.body.appendChild(element);
-      announcementRef.current = element;
-    }
-
-    // Update the aria-live region
-    announcementRef.current.setAttribute('aria-live', priority);
-    announcementRef.current.textContent = message;
-
-    // Clear the message after a short delay to allow for re-announcements
-    setTimeout(() => {
-      if (announcementRef.current) {
-        announcementRef.current.textContent = '';
+  const announce = useCallback(
+    (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+      if (!announcementRef.current) {
+        // Create announcement element if it doesn't exist
+        const element = document.createElement('div');
+        element.setAttribute('aria-live', priority);
+        element.setAttribute('aria-atomic', 'true');
+        element.className = 'sr-only';
+        element.id = 'focus-announcement';
+        document.body.appendChild(element);
+        announcementRef.current = element;
       }
-    }, 1000);
-  }, []);
+
+      // Update the aria-live region
+      announcementRef.current.setAttribute('aria-live', priority);
+      announcementRef.current.textContent = message;
+
+      // Clear the message after a short delay to allow for re-announcements
+      setTimeout(() => {
+        if (announcementRef.current) {
+          announcementRef.current.textContent = '';
+        }
+      }, 1000);
+    },
+    []
+  );
 
   // Cleanup on unmount
   useEffect(() => {
@@ -110,7 +113,9 @@ export function useDynamicFocus(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
         const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
 
         if (event.shiftKey) {
           if (document.activeElement === firstElement) {
@@ -173,7 +178,7 @@ export function useRouteFocus() {
   const focusMainContent = useCallback(() => {
     const mainContent = document.getElementById('main-content');
     const h1 = document.querySelector('h1');
-    
+
     if (mainContent) {
       mainContent.focus();
       announce('Page loaded', 'polite');
@@ -184,9 +189,12 @@ export function useRouteFocus() {
     }
   }, [announce]);
 
-  const announcePageChange = useCallback((pageTitle: string) => {
-    announce(`Navigated to ${pageTitle}`, 'assertive');
-  }, [announce]);
+  const announcePageChange = useCallback(
+    (pageTitle: string) => {
+      announce(`Navigated to ${pageTitle}`, 'assertive');
+    },
+    [announce]
+  );
 
   return { focusMainContent, announcePageChange };
 }
@@ -198,66 +206,72 @@ export function useListFocus<T extends HTMLElement>(
 ) {
   const [focusedIndex, setFocusedIndex] = useState(0);
 
-  const moveFocus = useCallback((direction: 'next' | 'previous' | 'first' | 'last') => {
-    let newIndex = focusedIndex;
+  const moveFocus = useCallback(
+    (direction: 'next' | 'previous' | 'first' | 'last') => {
+      let newIndex = focusedIndex;
 
-    switch (direction) {
-      case 'next':
-        newIndex = Math.min(focusedIndex + 1, items.length - 1);
-        break;
-      case 'previous':
-        newIndex = Math.max(focusedIndex - 1, 0);
-        break;
-      case 'first':
-        newIndex = 0;
-        break;
-      case 'last':
-        newIndex = items.length - 1;
-        break;
-    }
+      switch (direction) {
+        case 'next':
+          newIndex = Math.min(focusedIndex + 1, items.length - 1);
+          break;
+        case 'previous':
+          newIndex = Math.max(focusedIndex - 1, 0);
+          break;
+        case 'first':
+          newIndex = 0;
+          break;
+        case 'last':
+          newIndex = items.length - 1;
+          break;
+      }
 
-    if (newIndex !== focusedIndex && items[newIndex]) {
-      setFocusedIndex(newIndex);
-      items[newIndex].focus();
-    }
-  }, [focusedIndex, items]);
+      if (newIndex !== focusedIndex && items[newIndex]) {
+        setFocusedIndex(newIndex);
+        items[newIndex].focus();
+      }
+    },
+    [focusedIndex, items]
+  );
 
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    switch (event.key) {
-      case 'ArrowDown':
-        if (orientation === 'vertical' || orientation === 'grid') {
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowDown':
+          if (orientation === 'vertical' || orientation === 'grid') {
+            event.preventDefault();
+            moveFocus('next');
+          }
+          break;
+        case 'ArrowUp':
+          if (orientation === 'vertical' || orientation === 'grid') {
+            event.preventDefault();
+            moveFocus('previous');
+          }
+          break;
+        case 'ArrowRight':
+          if (orientation === 'horizontal' || orientation === 'grid') {
+            event.preventDefault();
+            moveFocus('next');
+          }
+          break;
+        case 'ArrowLeft':
+          if (orientation === 'horizontal' || orientation === 'grid') {
+            event.preventDefault();
+            moveFocus('previous');
+          }
+          break;
+        case 'Home':
           event.preventDefault();
-          moveFocus('next');
-        }
-        break;
-      case 'ArrowUp':
-        if (orientation === 'vertical' || orientation === 'grid') {
+          moveFocus('first');
+          break;
+        case 'End':
           event.preventDefault();
-          moveFocus('previous');
-        }
-        break;
-      case 'ArrowRight':
-        if (orientation === 'horizontal' || orientation === 'grid') {
-          event.preventDefault();
-          moveFocus('next');
-        }
-        break;
-      case 'ArrowLeft':
-        if (orientation === 'horizontal' || orientation === 'grid') {
-          event.preventDefault();
-          moveFocus('previous');
-        }
-        break;
-      case 'Home':
-        event.preventDefault();
-        moveFocus('first');
-        break;
-      case 'End':
-        event.preventDefault();
-        moveFocus('last');
-        break;
-    }
-  }, [orientation, moveFocus]);
+          moveFocus('last');
+          break;
+      }
+    },
+    [orientation, moveFocus]
+  );
 
   // Update tabindex for all items
   useEffect(() => {
@@ -316,7 +330,9 @@ export function useModalFocus(isOpen: boolean) {
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
           );
           const firstElement = focusableElements[0] as HTMLElement;
-          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+          const lastElement = focusableElements[
+            focusableElements.length - 1
+          ] as HTMLElement;
 
           if (event.shiftKey) {
             if (document.activeElement === firstElement) {
@@ -353,4 +369,4 @@ export function useModalFocus(isOpen: boolean) {
   }, [isOpen, announce]);
 
   return modalRef;
-} 
+}

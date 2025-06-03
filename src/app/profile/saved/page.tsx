@@ -14,7 +14,7 @@ export default async function SavedJobsPage() {
   // Get user data
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { id: true, role: true }
+    select: { id: true, role: true },
   });
 
   if (!user) {

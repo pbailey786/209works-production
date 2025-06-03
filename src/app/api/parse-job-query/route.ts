@@ -28,7 +28,10 @@ Return your answer as a JSON object with these fields:
 
 export async function POST(req: NextRequest) {
   if (!OPENAI_API_KEY) {
-    return NextResponse.json({ error: 'OpenAI API key not set.' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'OpenAI API key not set.' },
+      { status: 500 }
+    );
   }
 
   let body;
@@ -40,7 +43,10 @@ export async function POST(req: NextRequest) {
 
   const { query } = body;
   if (!query || typeof query !== 'string') {
-    return NextResponse.json({ error: 'Missing or invalid "query" field.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing or invalid "query" field.' },
+      { status: 400 }
+    );
   }
 
   try {
@@ -48,7 +54,7 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gpt-4',
@@ -63,7 +69,10 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const error = await response.text();
-      return NextResponse.json({ error: 'OpenAI API error', details: error }, { status: 500 });
+      return NextResponse.json(
+        { error: 'OpenAI API error', details: error },
+        { status: 500 }
+      );
     }
 
     const data = await response.json();
@@ -72,11 +81,20 @@ export async function POST(req: NextRequest) {
     try {
       parsed = JSON.parse(content);
     } catch (e) {
-      return NextResponse.json({ error: 'Failed to parse LLM response', raw: content }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to parse LLM response', raw: content },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(parsed);
   } catch (e) {
-    return NextResponse.json({ error: 'Internal server error', details: e instanceof Error ? e.message : e }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        details: e instanceof Error ? e.message : e,
+      },
+      { status: 500 }
+    );
   }
-} 
+}

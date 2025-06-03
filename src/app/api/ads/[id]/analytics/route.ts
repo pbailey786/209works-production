@@ -9,7 +9,7 @@ export const GET = withAPIMiddleware(
     const { user, params, query } = context;
     const adId = params.id;
     const range = query?.range || '7d';
-    
+
     // Verify ad exists and user has permission
     const ad = await prisma.advertisement.findFirst({
       where: {
@@ -17,7 +17,7 @@ export const GET = withAPIMiddleware(
         ...(user!.role === 'employer' ? { businessName: user!.name } : {}),
       },
     });
-    
+
     if (!ad) {
       throw new NotFoundError('Advertisement not found');
     }
@@ -25,7 +25,7 @@ export const GET = withAPIMiddleware(
     // Calculate date range
     const now = new Date();
     let startDate = new Date();
-    
+
     switch (range) {
       case '7d':
         startDate.setDate(now.getDate() - 7);
@@ -56,7 +56,7 @@ export const GET = withAPIMiddleware(
         endDate: ad.endDate.toISOString(),
         status: getAdStatus(ad.startDate, ad.endDate),
         budget: 1000, // Mock budget
-        spent: 450,   // Mock spent amount
+        spent: 450, // Mock spent amount
       },
       metrics: {
         impressions: Math.floor(Math.random() * 10000) + 1000,
@@ -92,7 +92,7 @@ export const GET = withAPIMiddleware(
         ],
       },
       performance: {
-        trend: Math.random() > 0.5 ? 'up' : 'down' as 'up' | 'down',
+        trend: Math.random() > 0.5 ? 'up' : ('down' as 'up' | 'down'),
         changePercent: Math.floor(Math.random() * 20) + 5,
         bestPerformingDay: 'Monday',
         recommendations: [
@@ -105,25 +105,34 @@ export const GET = withAPIMiddleware(
     };
 
     // Calculate derived metrics
-    mockAnalytics.metrics.ctr = mockAnalytics.metrics.impressions > 0 
-      ? (mockAnalytics.metrics.clicks / mockAnalytics.metrics.impressions) * 100 
-      : 0;
-    
-    mockAnalytics.metrics.conversionRate = mockAnalytics.metrics.clicks > 0 
-      ? (mockAnalytics.metrics.conversions / mockAnalytics.metrics.clicks) * 100 
-      : 0;
-    
-    mockAnalytics.metrics.costPerClick = mockAnalytics.metrics.clicks > 0 
-      ? mockAnalytics.ad.spent / mockAnalytics.metrics.clicks 
-      : 0;
-    
-    mockAnalytics.metrics.costPerConversion = mockAnalytics.metrics.conversions > 0 
-      ? mockAnalytics.ad.spent / mockAnalytics.metrics.conversions 
-      : 0;
-    
-    mockAnalytics.metrics.roi = mockAnalytics.ad.spent > 0 
-      ? ((mockAnalytics.metrics.revenue - mockAnalytics.ad.spent) / mockAnalytics.ad.spent) * 100 
-      : 0;
+    mockAnalytics.metrics.ctr =
+      mockAnalytics.metrics.impressions > 0
+        ? (mockAnalytics.metrics.clicks / mockAnalytics.metrics.impressions) *
+          100
+        : 0;
+
+    mockAnalytics.metrics.conversionRate =
+      mockAnalytics.metrics.clicks > 0
+        ? (mockAnalytics.metrics.conversions / mockAnalytics.metrics.clicks) *
+          100
+        : 0;
+
+    mockAnalytics.metrics.costPerClick =
+      mockAnalytics.metrics.clicks > 0
+        ? mockAnalytics.ad.spent / mockAnalytics.metrics.clicks
+        : 0;
+
+    mockAnalytics.metrics.costPerConversion =
+      mockAnalytics.metrics.conversions > 0
+        ? mockAnalytics.ad.spent / mockAnalytics.metrics.conversions
+        : 0;
+
+    mockAnalytics.metrics.roi =
+      mockAnalytics.ad.spent > 0
+        ? ((mockAnalytics.metrics.revenue - mockAnalytics.ad.spent) /
+            mockAnalytics.ad.spent) *
+          100
+        : 0;
 
     return createSuccessResponse({
       data: mockAnalytics,
@@ -141,7 +150,7 @@ export const GET = withAPIMiddleware(
 
 function getAdStatus(startDate: Date, endDate: Date): string {
   const now = new Date();
-  
+
   if (startDate > now) {
     return 'scheduled';
   } else if (endDate < now) {
@@ -154,13 +163,13 @@ function getAdStatus(startDate: Date, endDate: Date): string {
 function generateDailyMetrics(startDate: Date, endDate: Date) {
   const metrics = [];
   const currentDate = new Date(startDate);
-  
+
   while (currentDate <= endDate) {
     const impressions = Math.floor(Math.random() * 500) + 100;
     const clicks = Math.floor(impressions * (Math.random() * 0.1 + 0.02)); // 2-12% CTR
     const conversions = Math.floor(clicks * (Math.random() * 0.15 + 0.05)); // 5-20% conversion rate
     const spend = clicks * (Math.random() * 2 + 0.5); // $0.50-$2.50 per click
-    
+
     metrics.push({
       date: currentDate.toISOString().split('T')[0],
       impressions,
@@ -168,9 +177,9 @@ function generateDailyMetrics(startDate: Date, endDate: Date) {
       conversions,
       spend: Math.round(spend * 100) / 100,
     });
-    
+
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  
+
   return metrics;
-} 
+}

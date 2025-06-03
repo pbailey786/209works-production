@@ -16,44 +16,57 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { FormInput, PasswordInput, FormTextarea, FileInput } from '@/components/ui/form-input';
+import {
+  FormInput,
+  PasswordInput,
+  FormTextarea,
+  FileInput,
+} from '@/components/ui/form-input';
 import { FormErrorBoundary } from '@/components/ErrorBoundary';
-import { 
+import {
   validationPatterns,
   handleFormSubmission,
   useFormDirtyState,
-  useDebounceValidation
+  useDebounceValidation,
 } from '@/lib/validations/form-utils';
 import { useToast } from '@/hooks/use-toast';
 
 // Example registration schema using our validation patterns
-const registrationSchema = z.object({
-  // Basic info
-  firstName: z.string().min(1, 'First name is required').max(50, 'First name too long'),
-  lastName: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
-  email: validationPatterns.email,
-  password: validationPatterns.strongPassword,
-  confirmPassword: z.string(),
-  
-  // Optional fields
-  phone: validationPatterns.phone.optional(),
-  linkedinUrl: validationPatterns.linkedinUrl,
-  website: validationPatterns.url.optional(),
-  
-  // Text area
-  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
-  
-  // File upload
-  resume: z.instanceof(File).optional(),
-  
-  // Checkbox
-  acceptTerms: z.boolean().refine(val => val === true, {
-    message: 'You must accept the terms and conditions',
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const registrationSchema = z
+  .object({
+    // Basic info
+    firstName: z
+      .string()
+      .min(1, 'First name is required')
+      .max(50, 'First name too long'),
+    lastName: z
+      .string()
+      .min(1, 'Last name is required')
+      .max(50, 'Last name too long'),
+    email: validationPatterns.email,
+    password: validationPatterns.strongPassword,
+    confirmPassword: z.string(),
+
+    // Optional fields
+    phone: validationPatterns.phone.optional(),
+    linkedinUrl: validationPatterns.linkedinUrl,
+    website: validationPatterns.url.optional(),
+
+    // Text area
+    bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+
+    // File upload
+    resume: z.instanceof(File).optional(),
+
+    // Checkbox
+    acceptTerms: z.boolean().refine(val => val === true, {
+      message: 'You must accept the terms and conditions',
+    }),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
 
@@ -91,46 +104,46 @@ export function ExampleRegistrationForm() {
     const result = await handleFormSubmission(
       async () => {
         setIsSubmitting(true);
-        
+
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 2000));
-        
+
         // Simulate random success/failure for demo
         if (Math.random() > 0.5) {
           throw new Error('Registration failed: Email already exists');
         }
-        
+
         return { success: true, userId: '123' };
       },
       {
-        onSuccess: (data) => {
+        onSuccess: data => {
           toast({
-            title: "Success!",
-            description: "Your account has been created successfully.",
-            variant: "default",
+            title: 'Success!',
+            description: 'Your account has been created successfully.',
+            variant: 'default',
           });
           form.reset();
         },
-        onError: (errors) => {
+        onError: errors => {
           // Handle form-specific errors
-          errors.forEach((error) => {
+          errors.forEach(error => {
             if (error.field === 'email') {
-              form.setError('email', { 
-                type: 'server', 
-                message: error.message 
+              form.setError('email', {
+                type: 'server',
+                message: error.message,
               });
             } else {
               toast({
-                title: "Registration Failed",
+                title: 'Registration Failed',
                 description: error.message,
-                variant: "destructive",
+                variant: 'destructive',
               });
             }
           });
         },
       }
     );
-    
+
     setIsSubmitting(false);
   };
 
@@ -149,16 +162,20 @@ export function ExampleRegistrationForm() {
 
   return (
     <FormErrorBoundary>
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-md">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Create Your Account</h2>
-          <p className="text-gray-600">Join our platform to find your dream job</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Create Your Account
+          </h2>
+          <p className="text-gray-600">
+            Join our platform to find your dream job
+          </p>
         </div>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="firstName"
@@ -209,14 +226,14 @@ export function ExampleRegistrationForm() {
                     error={form.formState.errors.email?.message}
                     isValidating={form.formState.isValidating}
                     {...field}
-                    onChange={(e) => handleEmailChange(e.target.value)}
+                    onChange={e => handleEmailChange(e.target.value)}
                   />
                 </FormItem>
               )}
             />
 
             {/* Password Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="password"
@@ -252,7 +269,7 @@ export function ExampleRegistrationForm() {
             </div>
 
             {/* Optional Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="phone"
@@ -340,7 +357,7 @@ export function ExampleRegistrationForm() {
                     acceptedFileTypes={['.pdf', '.doc', '.docx']}
                     maxFileSize={5}
                     error={form.formState.errors.resume?.message}
-                    onChange={(e) => {
+                    onChange={e => {
                       const file = e.target.files?.[0];
                       onChange(file);
                     }}
@@ -366,11 +383,17 @@ export function ExampleRegistrationForm() {
                   <div className="space-y-1 leading-none">
                     <FormLabel className="text-sm font-medium">
                       I accept the{' '}
-                      <a href="/terms" className="text-blue-600 hover:underline">
+                      <a
+                        href="/terms"
+                        className="text-blue-600 hover:underline"
+                      >
                         Terms of Service
                       </a>{' '}
                       and{' '}
-                      <a href="/privacy" className="text-blue-600 hover:underline">
+                      <a
+                        href="/privacy"
+                        className="text-blue-600 hover:underline"
+                      >
                         Privacy Policy
                       </a>
                     </FormLabel>
@@ -381,8 +404,8 @@ export function ExampleRegistrationForm() {
             />
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting || !form.formState.isValid}
               className="w-full"
             >
@@ -400,8 +423,8 @@ export function ExampleRegistrationForm() {
 
         {/* Development Info */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="mt-6 p-4 bg-gray-100 rounded text-sm">
-            <p className="font-semibold mb-2">Development Info:</p>
+          <div className="mt-6 rounded bg-gray-100 p-4 text-sm">
+            <p className="mb-2 font-semibold">Development Info:</p>
             <p>Form Valid: {form.formState.isValid ? '✅' : '❌'}</p>
             <p>Has Changes: {isDirty ? '✅' : '❌'}</p>
             <p>Is Validating: {form.formState.isValidating ? '✅' : '❌'}</p>
@@ -410,4 +433,4 @@ export function ExampleRegistrationForm() {
       </div>
     </FormErrorBoundary>
   );
-} 
+}

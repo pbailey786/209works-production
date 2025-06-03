@@ -8,12 +8,12 @@ export async function GET() {
   try {
     console.log('🏢 Company profile API - GET request started');
     const session = await getServerSession(authOptions);
-    console.log('🏢 Session check:', { 
-      hasSession: !!session, 
+    console.log('🏢 Session check:', {
+      hasSession: !!session,
       userEmail: session?.user?.email,
-      userId: session?.user?.id 
+      userId: session?.user?.id,
     });
-    
+
     if (!session?.user?.id) {
       console.log('❌ Company profile API - No session or user ID');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -23,29 +23,35 @@ export async function GET() {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       include: {
-        company: true
-      }
+        company: true,
+      },
     });
 
-    console.log('🏢 User lookup result:', { 
-      userFound: !!user, 
+    console.log('🏢 User lookup result:', {
+      userFound: !!user,
       userRole: user?.role,
       hasCompany: !!user?.company,
-      companyName: user?.company?.name 
+      companyName: user?.company?.name,
     });
 
     if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
-      return NextResponse.json({ error: 'Unauthorized - must be employer' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Unauthorized - must be employer' },
+        { status: 403 }
+      );
     }
 
     console.log('✅ Company profile API - Returning company data');
-    return NextResponse.json({ 
+    return NextResponse.json({
       company: user.company,
-      hasProfile: !!user.company
+      hasProfile: !!user.company,
     });
   } catch (error) {
     console.error('Error fetching company profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -53,7 +59,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -69,23 +75,29 @@ export async function POST(request: NextRequest) {
       headquarters,
       contactEmail,
       contactPhone,
-      logo
+      logo,
     } = body;
 
     // Validate required fields
     if (!name || !industry || !contactEmail) {
-      return NextResponse.json({ 
-        error: 'Company name, industry, and contact email are required' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Company name, industry, and contact email are required',
+        },
+        { status: 400 }
+      );
     }
 
     // Check if user has employer role
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id }
+      where: { id: session.user.id },
     });
 
     if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
-      return NextResponse.json({ error: 'Unauthorized - must be employer' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Unauthorized - must be employer' },
+        { status: 403 }
+      );
     }
 
     // Create slug from company name
@@ -102,22 +114,22 @@ export async function POST(request: NextRequest) {
     // Check if company with this name/slug already exists (but not for this user)
     const existingCompany = await prisma.company.findFirst({
       where: {
-        OR: [
-          { name: { equals: name, mode: 'insensitive' } },
-          { slug: slug }
-        ],
+        OR: [{ name: { equals: name, mode: 'insensitive' } }, { slug: slug }],
         users: {
           none: {
-            id: session.user.id
-          }
-        }
-      }
+            id: session.user.id,
+          },
+        },
+      },
     });
 
     if (existingCompany) {
-      return NextResponse.json({ 
-        error: 'A company with this name already exists' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'A company with this name already exists',
+        },
+        { status: 400 }
+      );
     }
 
     let company;
@@ -138,7 +150,7 @@ export async function POST(request: NextRequest) {
           contactEmail: contactEmail || null,
           contactPhone: contactPhone || null,
           logo: logo || null,
-        }
+        },
       });
     } else {
       // Create new company and link to user
@@ -156,24 +168,27 @@ export async function POST(request: NextRequest) {
           contactPhone: contactPhone || null,
           logo: logo || null,
           users: {
-            connect: { id: session.user.id }
-          }
-        }
+            connect: { id: session.user.id },
+          },
+        },
       });
 
       // Update user with company ID
       await prisma.user.update({
         where: { id: session.user.id },
-        data: { companyId: company.id }
+        data: { companyId: company.id },
       });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Company profile saved successfully',
-      company 
+      company,
     });
   } catch (error) {
     console.error('Error saving company profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
-} 
+}

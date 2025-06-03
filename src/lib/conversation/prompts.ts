@@ -1,7 +1,6 @@
 import { ConversationIntent, ConversationContext, Message } from './types';
 
 export class ChatbotPrompts {
-  
   /**
    * Base system prompt for all conversations
    */
@@ -38,9 +37,12 @@ Remember: You're the go-to source for 209 area jobs - this local expertise is wh
   /**
    * Get context-aware system prompt based on conversation intent
    */
-  static getContextualPrompt(intent: ConversationIntent, context?: ConversationContext): string {
+  static getContextualPrompt(
+    intent: ConversationIntent,
+    context?: ConversationContext
+  ): string {
     const basePrompt = this.getBasePrompt();
-    
+
     switch (intent) {
       case 'job_search':
         return `${basePrompt}
@@ -174,21 +176,26 @@ ${this.getContextualInfo(context)}`;
     // Current jobs in conversation
     if (context.context.currentJobs && context.context.currentJobs.length > 0) {
       contextInfo += `\nJobs Being Discussed:
-${context.context.currentJobs.map(job => 
-  `- ${job.title} at ${job.company} (${job.location})`
-).join('\n')}
+${context.context.currentJobs
+  .map(job => `- ${job.title} at ${job.company} (${job.location})`)
+  .join('\n')}
 `;
     }
 
     // Target companies
-    if (context.context.targetCompanies && context.context.targetCompanies.length > 0) {
+    if (
+      context.context.targetCompanies &&
+      context.context.targetCompanies.length > 0
+    ) {
       contextInfo += `\nCompanies of Interest: ${context.context.targetCompanies.join(', ')}
 `;
     }
 
     // Conversation history summary
     if (context.messages.length > 0) {
-      const userMessages = context.messages.filter(m => m.role === 'user').length;
+      const userMessages = context.messages.filter(
+        m => m.role === 'user'
+      ).length;
       contextInfo += `\nConversation: ${userMessages} user messages, started ${context.metadata.startedAt.toLocaleDateString()}
 `;
     }
@@ -199,14 +206,18 @@ ${context.context.currentJobs.map(job =>
   /**
    * Get intent classification prompt for analyzing user messages, now with conversation history.
    */
-  static getIntentClassificationPrompt(userMessage: string, conversationHistory?: Message[]): string {
-    let historyStr = "";
+  static getIntentClassificationPrompt(
+    userMessage: string,
+    conversationHistory?: Message[]
+  ): string {
+    let historyStr = '';
     if (conversationHistory && conversationHistory.length > 0) {
-      historyStr = "\n\nRECENT CONVERSATION HISTORY (for context):\n";
+      historyStr = '\n\nRECENT CONVERSATION HISTORY (for context):\n';
       // Take last 3 messages, excluding the current user message if it's already in history
       const relevantHistory = conversationHistory.slice(-4); // Get a bit more in case current is last
       relevantHistory.forEach(msg => {
-        if (msg.content !== userMessage) { // Avoid duplicating the current message
+        if (msg.content !== userMessage) {
+          // Avoid duplicating the current message
           historyStr += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
         }
       });
@@ -231,11 +242,14 @@ Respond with only the intent name (e.g., "job_search"). No explanation needed. I
   /**
    * Get prompt for generating follow-up suggestions
    */
-  static getFollowUpPrompt(intent: ConversationIntent, context?: ConversationContext): string {
+  static getFollowUpPrompt(
+    intent: ConversationIntent,
+    context?: ConversationContext
+  ): string {
     const basePrompt = this.getBasePrompt();
-    let historyContext = "";
+    let historyContext = '';
     if (context && context.messages.length > 0) {
-      historyContext = "\n\nPrevious turn:\n";
+      historyContext = '\n\nPrevious turn:\n';
       const lastMessage = context.messages[context.messages.length - 1];
       historyContext += `${lastMessage.role === 'user' ? 'User' : 'Assistant'}: ${lastMessage.content}\n`;
       if (context.messages.length > 1) {
@@ -253,4 +267,4 @@ Based on the current intent and conversation context, suggest 2-3 concise and re
 Format your response as a JSON array of strings. For example: ["Suggestion 1", "Suggestion 2", "Suggestion 3"]
 Ensure the suggestions are directly related to the current topic and help the user explore further or take action.`;
   }
-} 
+}

@@ -35,18 +35,18 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     try {
       const validatedParams = accountMetricsQuerySchema.parse(queryParams);
-      
+
       const analyticsService = new InstagramAnalyticsService();
-      
-      const startDate = validatedParams.startDate 
-        ? new Date(validatedParams.startDate) 
+
+      const startDate = validatedParams.startDate
+        ? new Date(validatedParams.startDate)
         : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Default to 30 days ago
-      
-      const endDate = validatedParams.endDate 
-        ? new Date(validatedParams.endDate) 
+
+      const endDate = validatedParams.endDate
+        ? new Date(validatedParams.endDate)
         : new Date(); // Default to today
 
       // Get account metrics history
@@ -56,18 +56,21 @@ export async function GET(request: NextRequest) {
         endDate
       );
 
-      return NextResponse.json({ 
+      return NextResponse.json({
         metrics,
         accountId: validatedParams.accountId,
         period: {
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
-        }
+        },
       });
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { error: 'Invalid query parameters', details: validationError.errors },
+          {
+            error: 'Invalid query parameters',
+            details: validationError.errors,
+          },
           { status: 400 }
         );
       }
@@ -102,9 +105,9 @@ export async function POST(request: NextRequest) {
     const validatedData = fetchAccountMetricsSchema.parse(body);
 
     const analyticsService = new InstagramAnalyticsService();
-    
+
     const date = validatedData.date ? new Date(validatedData.date) : new Date();
-    
+
     // Fetch account metrics from Instagram API and store in database
     const metricsData = await analyticsService.fetchAccountMetrics(
       validatedData.accountId,
@@ -112,14 +115,17 @@ export async function POST(request: NextRequest) {
       date
     );
 
-    return NextResponse.json({ 
-      success: true,
-      metrics: metricsData,
-      date: date.toISOString()
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        metrics: metricsData,
+        date: date.toISOString(),
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error fetching account metrics:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -132,4 +138,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

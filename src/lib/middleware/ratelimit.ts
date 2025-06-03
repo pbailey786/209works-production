@@ -4,7 +4,9 @@ import { NextRequest } from 'next/server';
 import { RateLimitError } from '../errors/api-errors';
 
 // Check if Redis is configured
-const isRedisConfigured = !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+const isRedisConfigured = !!(
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+);
 
 // Initialize Redis client only if configured
 let redis: Redis | null = null;
@@ -65,18 +67,24 @@ if (isRedisConfigured) {
 }
 
 // Rate limit types
-export type RateLimitType = 'general' | 'authenticated' | 'premium' | 'search' | 'auth' | 'upload';
+export type RateLimitType =
+  | 'general'
+  | 'authenticated'
+  | 'premium'
+  | 'search'
+  | 'auth'
+  | 'upload';
 
 // Helper function to get client IP from NextRequest
 function getClientIP(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
   const realIP = req.headers.get('x-real-ip');
   const cfConnectingIP = req.headers.get('cf-connecting-ip');
-  
+
   if (cfConnectingIP) return cfConnectingIP;
   if (realIP) return realIP;
   if (forwarded) return forwarded.split(',')[0].trim();
-  
+
   return 'unknown';
 }
 
@@ -85,7 +93,7 @@ function getClientIdentifier(req: NextRequest, userId?: string): string {
   if (userId) {
     return `user:${userId}`;
   }
-  
+
   // Try to get real IP from headers (for production behind proxy)
   const ip = getClientIP(req);
   return `ip:${ip}`;
@@ -94,22 +102,30 @@ function getClientIdentifier(req: NextRequest, userId?: string): string {
 // Determine rate limit type based on request
 function getRateLimitType(req: NextRequest, userRole?: string): RateLimitType {
   const { pathname } = new URL(req.url);
-  
+
   // Authentication endpoints
-  if (pathname.includes('/auth/') || pathname.includes('/register') || pathname.includes('/login')) {
+  if (
+    pathname.includes('/auth/') ||
+    pathname.includes('/register') ||
+    pathname.includes('/login')
+  ) {
     return 'auth';
   }
-  
+
   // Search endpoints
   if (pathname.includes('/search') || pathname.includes('/semantic-search')) {
     return 'search';
   }
-  
+
   // Upload endpoints
-  if (pathname.includes('/upload') || req.method === 'POST' && req.headers.get('content-type')?.includes('multipart/form-data')) {
+  if (
+    pathname.includes('/upload') ||
+    (req.method === 'POST' &&
+      req.headers.get('content-type')?.includes('multipart/form-data'))
+  ) {
     return 'upload';
   }
-  
+
   // User role based limits
   if (userRole) {
     if (userRole === 'admin' || userRole === 'employer') {
@@ -118,7 +134,7 @@ function getRateLimitType(req: NextRequest, userRole?: string): RateLimitType {
       return 'authenticated';
     }
   }
-  
+
   return 'general';
 }
 
@@ -141,25 +157,30 @@ export async function applyRateLimit(
   }
 ): Promise<RateLimitResult> {
   // Skip rate limiting in development if environment variable is set
-  if (process.env.NODE_ENV === 'development' && process.env.SKIP_RATE_LIMIT === 'true') {
+  if (
+    process.env.NODE_ENV === 'development' &&
+    process.env.SKIP_RATE_LIMIT === 'true'
+  ) {
     return {
       success: true,
       limit: 1000,
       remaining: 999,
       reset: Date.now() + 60000,
-      headers: getRateLimitHeaders(1000, 999, Date.now() + 60000)
+      headers: getRateLimitHeaders(1000, 999, Date.now() + 60000),
     };
   }
 
   // If Redis is not configured, return a permissive result
   if (!isRedisConfigured || !redis) {
-    console.warn('Redis not configured for rate limiting, allowing all requests');
+    console.warn(
+      'Redis not configured for rate limiting, allowing all requests'
+    );
     return {
       success: true,
       limit: 1000,
       remaining: 999,
       reset: Date.now() + 60000,
-      headers: getRateLimitHeaders(1000, 999, Date.now() + 60000)
+      headers: getRateLimitHeaders(1000, 999, Date.now() + 60000),
     };
   }
 
@@ -169,27 +190,30 @@ export async function applyRateLimit(
   const rateLimit = rateLimitConfigs[rateLimitType];
 
   if (!rateLimit) {
-    console.warn(`Rate limit configuration not found for type: ${rateLimitType}`);
+    console.warn(
+      `Rate limit configuration not found for type: ${rateLimitType}`
+    );
     return {
       success: true,
       limit: 100,
       remaining: 99,
       reset: Date.now() + 60000,
-      headers: getRateLimitHeaders(100, 99, Date.now() + 60000)
+      headers: getRateLimitHeaders(100, 99, Date.now() + 60000),
     };
   }
 
   const identifier = getClientIdentifier(req, userId);
 
   try {
-    const { success, limit, reset, remaining } = await rateLimit.limit(identifier);
+    const { success, limit, reset, remaining } =
+      await rateLimit.limit(identifier);
 
     const result: RateLimitResult = {
       success,
       limit,
       remaining,
       reset,
-      headers: getRateLimitHeaders(limit, remaining, reset)
+      headers: getRateLimitHeaders(limit, remaining, reset),
     };
 
     if (!success) {
@@ -199,10 +223,11 @@ export async function applyRateLimit(
       );
     }
 
-    console.log(`Rate limit check passed for ${identifier} (${rateLimitType}): ${remaining}/${limit} remaining`);
+    console.log(
+      `Rate limit check passed for ${identifier} (${rateLimitType}): ${remaining}/${limit} remaining`
+    );
 
     return result;
-
   } catch (error) {
     if (error instanceof RateLimitError) {
       throw error;
@@ -217,7 +242,7 @@ export async function applyRateLimit(
       limit: 100,
       remaining: 99,
       reset: Date.now() + 60000,
-      headers: getRateLimitHeaders(100, 99, Date.now() + 60000)
+      headers: getRateLimitHeaders(100, 99, Date.now() + 60000),
     };
   }
 }
@@ -238,13 +263,7 @@ export function getRateLimitHeaders(
 // Utility to check if request should be rate limited
 export function shouldRateLimit(pathname: string): boolean {
   // Skip rate limiting for health checks, static assets, etc.
-  const skipPaths = [
-    '/health',
-    '/favicon.ico',
-    '/_next',
-    '/static',
-    '/public',
-  ];
-  
+  const skipPaths = ['/health', '/favicon.ico', '/_next', '/static', '/public'];
+
   return !skipPaths.some(path => pathname.startsWith(path));
-} 
+}

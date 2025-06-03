@@ -32,13 +32,19 @@ export const Toast: React.FC<ToastProps> = ({
   if (!open) return null;
 
   return (
-    <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded shadow-lg flex items-center gap-2 ${typeStyles[type]}`}
+    <div
+      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded px-4 py-3 shadow-lg ${typeStyles[type]}`}
       role="alert"
     >
       <span>{message}</span>
-      <button onClick={onClose} className="ml-2 text-white/80 hover:text-white text-lg font-bold focus:outline-none">×</button>
+      <button
+        onClick={onClose}
+        className="ml-2 text-lg font-bold text-white/80 hover:text-white focus:outline-none"
+      >
+        ×
+      </button>
     </div>
   );
 };
 
-export default Toast; 
+export default Toast;

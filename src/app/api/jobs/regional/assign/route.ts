@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Get user from database to check role
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user || user.role !== 'admin') {
@@ -35,18 +35,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: result,
-      message: `Successfully assigned regions to ${result.assignedJobs} out of ${result.totalJobs} jobs`
+      message: `Successfully assigned regions to ${result.assignedJobs} out of ${result.totalJobs} jobs`,
     });
-
   } catch (error) {
     console.error('Regional assignment API error:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to assign regions to jobs' 
+      {
+        success: false,
+        error: 'Failed to assign regions to jobs',
       },
       { status: 500 }
     );
   }
-} 
+}

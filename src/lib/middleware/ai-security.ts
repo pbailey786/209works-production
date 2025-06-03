@@ -58,11 +58,19 @@ export const aiSecurityConfigs = {
     allowedRoles: ['employer', 'admin'],
     logRequests: true,
     blockSuspiciousPatterns: true,
-  }
+  },
 };
 
 // In-memory rate limiting (use Redis in production)
-const rateLimitStore = new Map<string, { count: number; resetTime: number; hourlyCount: number; hourlyResetTime: number }>();
+const rateLimitStore = new Map<
+  string,
+  {
+    count: number;
+    resetTime: number;
+    hourlyCount: number;
+    hourlyResetTime: number;
+  }
+>();
 
 // Suspicious patterns to block
 const suspiciousPatterns = [
@@ -100,16 +108,19 @@ function containsSuspiciousPatterns(message: string): boolean {
 /**
  * Rate limiting implementation
  */
-function checkRateLimit(identifier: string, config: AISecurityConfig): { allowed: boolean; remaining: number } {
+function checkRateLimit(
+  identifier: string,
+  config: AISecurityConfig
+): { allowed: boolean; remaining: number } {
   const now = Date.now();
   const minuteWindow = 60 * 1000; // 1 minute
   const hourWindow = 60 * 60 * 1000; // 1 hour
-  
+
   const current = rateLimitStore.get(identifier) || {
     count: 0,
     resetTime: now + minuteWindow,
     hourlyCount: 0,
-    hourlyResetTime: now + hourWindow
+    hourlyResetTime: now + hourWindow,
   };
 
   // Reset minute counter if window expired
@@ -166,9 +177,9 @@ async function logAIRequest(
           userAgent,
           blocked,
           reason,
-          timestamp: new Date().toISOString()
-        }
-      }
+          timestamp: new Date().toISOString(),
+        },
+      },
     });
   } catch (error) {
     console.error('Failed to log AI request:', error);
@@ -179,12 +190,18 @@ async function logAIRequest(
  * Main AI security middleware
  */
 export function withAISecurity(
-  handler: (req: NextRequest, context: AISecurityContext) => Promise<NextResponse>,
+  handler: (
+    req: NextRequest,
+    context: AISecurityContext
+  ) => Promise<NextResponse>,
   config: AISecurityConfig = aiSecurityConfigs.public
 ) {
   return async (req: NextRequest): Promise<NextResponse> => {
     const requestId = Math.random().toString(36).substring(7);
-    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const ipAddress =
+      req.headers.get('x-forwarded-for') ||
+      req.headers.get('x-real-ip') ||
+      'unknown';
     const userAgent = req.headers.get('user-agent') || 'unknown';
 
     try {
@@ -203,7 +220,7 @@ export function withAISecurity(
 
         user = await prisma.user.findUnique({
           where: { email: session.user.email },
-          select: { id: true, email: true, role: true }
+          select: { id: true, email: true, role: true },
         });
 
         if (!user) {
@@ -217,7 +234,14 @@ export function withAISecurity(
 
         // Check role permissions
         if (config.allowedRoles && !config.allowedRoles.includes(user.role)) {
-          await logAIRequest(user.id, '', ipAddress, userAgent, true, 'Insufficient role permissions');
+          await logAIRequest(
+            user.id,
+            '',
+            ipAddress,
+            userAgent,
+            true,
+            'Insufficient role permissions'
+          );
           return NextResponse.json(
             { error: 'Insufficient permissions for this AI service' },
             { status: 403 }
@@ -229,7 +253,7 @@ export function withAISecurity(
         if (session?.user?.email) {
           user = await prisma.user.findUnique({
             where: { email: session.user.email },
-            select: { id: true, email: true, role: true }
+            select: { id: true, email: true, role: true },
           });
           isAuthenticated = !!user;
         }
@@ -240,11 +264,18 @@ export function withAISecurity(
       const rateLimit = checkRateLimit(rateLimitIdentifier, config);
 
       if (!rateLimit.allowed) {
-        await logAIRequest(user?.id || null, '', ipAddress, userAgent, true, 'Rate limit exceeded');
+        await logAIRequest(
+          user?.id || null,
+          '',
+          ipAddress,
+          userAgent,
+          true,
+          'Rate limit exceeded'
+        );
         return NextResponse.json(
-          { 
+          {
             error: 'Rate limit exceeded. Please try again later.',
-            retryAfter: 60 
+            retryAfter: 60,
           },
           { status: 429 }
         );
@@ -263,8 +294,19 @@ export function withAISecurity(
         userMessage = '';
       }
 
-      if (config.blockSuspiciousPatterns && userMessage && containsSuspiciousPatterns(userMessage)) {
-        await logAIRequest(user?.id || null, userMessage, ipAddress, userAgent, true, 'Suspicious pattern detected');
+      if (
+        config.blockSuspiciousPatterns &&
+        userMessage &&
+        containsSuspiciousPatterns(userMessage)
+      ) {
+        await logAIRequest(
+          user?.id || null,
+          userMessage,
+          ipAddress,
+          userAgent,
+          true,
+          'Suspicious pattern detected'
+        );
         return NextResponse.json(
           { error: 'Request blocked due to security policy' },
           { status: 400 }
@@ -272,8 +314,18 @@ export function withAISecurity(
       }
 
       // 4. Check message length
-      if (config.maxTokensPerRequest && userMessage.length > config.maxTokensPerRequest) {
-        await logAIRequest(user?.id || null, userMessage, ipAddress, userAgent, true, 'Message too long');
+      if (
+        config.maxTokensPerRequest &&
+        userMessage.length > config.maxTokensPerRequest
+      ) {
+        await logAIRequest(
+          user?.id || null,
+          userMessage,
+          ipAddress,
+          userAgent,
+          true,
+          'Message too long'
+        );
         return NextResponse.json(
           { error: 'Message too long. Please shorten your request.' },
           { status: 400 }
@@ -292,12 +344,11 @@ export function withAISecurity(
         rateLimitRemaining: rateLimit.remaining,
         requestId,
         body,
-        startTime: Date.now()
+        startTime: Date.now(),
       };
 
       // 7. Call the handler
       return await handler(req, context);
-
     } catch (error) {
       console.error('AI Security middleware error:', error);
       return NextResponse.json(
@@ -323,6 +374,6 @@ export function sanitizeUserData(userData: any): any {
   delete sanitized.stripeCustomerId;
   delete sanitized.phoneNumber;
   delete sanitized.resumeUrl; // Don't send resume URLs to AI
-  
+
   return sanitized;
 }

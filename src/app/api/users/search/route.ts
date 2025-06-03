@@ -8,24 +8,23 @@ import { createSuccessResponse } from '@/lib/errors/api-errors';
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { query, performance } = context;
-    
+
     // Extract search parameters
-    const {
-      q = '',
-      skills,
-      ...searchParams
-    } = query!;
-    
+    const { q = '', skills, ...searchParams } = query!;
+
     // Convert string arrays from query params
-    const processedSkills = skills ? 
-      (Array.isArray(skills) ? skills : [skills]) : undefined;
-    
+    const processedSkills = skills
+      ? Array.isArray(skills)
+        ? skills
+        : [skills]
+      : undefined;
+
     // Build search filters
     const filters = {
       ...searchParams,
       skills: processedSkills,
     };
-    
+
     // Extract pagination parameters safely based on type
     let paginationParams: any;
     if ('cursor' in searchParams && searchParams.cursor) {
@@ -33,7 +32,10 @@ export const GET = withAPIMiddleware(
       paginationParams = {
         cursor: searchParams.cursor,
         limit: searchParams.limit || 20,
-        direction: 'direction' in searchParams ? searchParams.direction || 'forward' : 'forward',
+        direction:
+          'direction' in searchParams
+            ? searchParams.direction || 'forward'
+            : 'forward',
       };
     } else if ('page' in searchParams && searchParams.page) {
       // Page-based pagination
@@ -48,7 +50,7 @@ export const GET = withAPIMiddleware(
         limit: searchParams.limit || 20,
       };
     }
-    
+
     // Execute user search
     const results = await UserSearchService.searchUsers(
       q,
@@ -56,7 +58,7 @@ export const GET = withAPIMiddleware(
       paginationParams,
       performance
     );
-    
+
     // Add search metadata
     const responseWithMeta = {
       ...results,
@@ -64,23 +66,24 @@ export const GET = withAPIMiddleware(
         query: q,
         totalResults: results.data.length,
         searchType: 'users',
-        filtersApplied: Object.keys(filters).filter(key => 
-          filters[key as keyof typeof filters] !== undefined &&
-          filters[key as keyof typeof filters] !== ''
+        filtersApplied: Object.keys(filters).filter(
+          key =>
+            filters[key as keyof typeof filters] !== undefined &&
+            filters[key as keyof typeof filters] !== ''
         ),
       },
     };
-    
+
     return createSuccessResponse(responseWithMeta);
   },
   {
     requiredRoles: ['admin', 'employer'],
     querySchema: userSearchQuerySchema,
     rateLimit: { enabled: true, type: 'premium' },
-    logging: { 
-      enabled: true, 
-      includeQuery: true 
+    logging: {
+      enabled: true,
+      includeQuery: true,
     },
     cors: { enabled: true },
   }
-); 
+);

@@ -17,7 +17,10 @@ interface ErrorBoundaryProps {
   showDetails?: boolean;
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -32,7 +35,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     // Log error to monitoring service (e.g., Sentry, LogRocket, etc.)
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
@@ -61,31 +64,32 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       // Default error UI
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-          <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="flex justify-center mb-4">
+        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 text-center shadow-md">
+            <div className="mb-4 flex justify-center">
               <AlertCircle className="h-16 w-16 text-red-500" />
             </div>
-            
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">
               Something went wrong
             </h1>
-            
-            <p className="text-gray-600 mb-6">
-              We apologize for the inconvenience. An unexpected error has occurred.
+
+            <p className="mb-6 text-gray-600">
+              We apologize for the inconvenience. An unexpected error has
+              occurred.
             </p>
 
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={this.handleRetry}
                 className="w-full"
                 variant="default"
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Try Again
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={this.handleReload}
                 variant="outline"
                 className="w-full"
@@ -99,10 +103,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
                   Error Details
                 </summary>
-                <div className="mt-2 p-3 bg-gray-100 rounded text-xs font-mono text-gray-800 overflow-auto max-h-40">
+                <div className="mt-2 max-h-40 overflow-auto rounded bg-gray-100 p-3 font-mono text-xs text-gray-800">
                   <p className="font-semibold">Error:</p>
                   <p className="mb-2">{this.state.error.message}</p>
-                  
+
                   {this.state.errorInfo && (
                     <>
                       <p className="font-semibold">Component Stack:</p>
@@ -145,10 +149,10 @@ export function useErrorHandler() {
 }
 
 // Specialized error boundary for form errors
-export function FormErrorBoundary({ 
-  children, 
-  onError 
-}: { 
+export function FormErrorBoundary({
+  children,
+  onError,
+}: {
   children: ReactNode;
   onError?: (error: Error) => void;
 }) {
@@ -161,15 +165,14 @@ export function FormErrorBoundary({
         }
       }}
       fallback={
-        <div className="p-4 border border-red-200 rounded-md bg-red-50">
+        <div className="rounded-md border border-red-200 bg-red-50 p-4">
           <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-            <h3 className="text-sm font-medium text-red-800">
-              Form Error
-            </h3>
+            <AlertCircle className="mr-2 h-5 w-5 text-red-500" />
+            <h3 className="text-sm font-medium text-red-800">Form Error</h3>
           </div>
-          <p className="text-sm text-red-700 mt-1">
-            There was an error processing your form. Please refresh the page and try again.
+          <p className="mt-1 text-sm text-red-700">
+            There was an error processing your form. Please refresh the page and
+            try again.
           </p>
         </div>
       }
@@ -177,4 +180,4 @@ export function FormErrorBoundary({
       {children}
     </ErrorBoundary>
   );
-} 
+}

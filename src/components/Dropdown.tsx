@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useKeyboardNavigation, useFocusRestore } from '@/hooks/useKeyboardNavigation';
+import {
+  useKeyboardNavigation,
+  useFocusRestore,
+} from '@/hooks/useKeyboardNavigation';
 
 interface DropdownOption {
   value: string;
@@ -37,7 +40,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setOpen(false);
         setActiveIndex(-1);
       }
@@ -45,7 +51,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
     if (open) {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      return () =>
+        document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [open]);
 
@@ -56,7 +63,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   const handleToggle = () => {
     if (disabled) return;
-    
+
     if (!open) {
       saveFocus();
       setOpen(true);
@@ -160,8 +167,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
       <button
         ref={buttonRef}
         type="button"
-        className={`w-full px-4 py-2 text-left bg-white border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-          disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'
+        className={`w-full rounded border border-gray-300 bg-white px-4 py-2 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          disabled
+            ? 'cursor-not-allowed opacity-50'
+            : 'cursor-pointer hover:border-gray-400'
         }`}
         onClick={handleToggle}
         onKeyDown={handleButtonKeyDown}
@@ -174,15 +183,20 @@ export const Dropdown: React.FC<DropdownProps> = ({
         <span className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <svg
-            className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+            className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </span>
       </button>
@@ -191,7 +205,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         <ul
           ref={listRef}
           id="dropdown-list"
-          className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-auto"
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded border border-gray-300 bg-white shadow-lg"
           role="listbox"
           aria-label="Options"
           onKeyDown={handleListKeyDown}
@@ -202,12 +216,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
               key={opt.value}
               role="option"
               aria-selected={opt.value === value}
-              className={`px-4 py-2 cursor-pointer transition-colors ${
+              className={`cursor-pointer px-4 py-2 transition-colors ${
                 index === activeIndex
                   ? 'bg-blue-100 text-blue-900'
                   : opt.value === value
-                  ? 'bg-blue-50 font-semibold text-blue-900'
-                  : 'text-gray-900 hover:bg-gray-100'
+                    ? 'bg-blue-50 font-semibold text-blue-900'
+                    : 'text-gray-900 hover:bg-gray-100'
               }`}
               onClick={() => handleSelect(opt.value)}
               onMouseEnter={() => setActiveIndex(index)}
@@ -221,4 +235,4 @@ export const Dropdown: React.FC<DropdownProps> = ({
   );
 };
 
-export default Dropdown; 
+export default Dropdown;

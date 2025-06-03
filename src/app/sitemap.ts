@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const hostname = headersList.get('host') || '209.works';
   const domainConfig = getDomainConfig(hostname);
   const baseUrl = `https://${domainConfig.domain}`;
-  
+
   // Static pages for each domain
   const staticPages = [
     {
@@ -85,7 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Filter jobs by region based on location if region field doesn't exist
     const regionalJobs = jobs.filter(job => {
       if (!job.location) return false;
-      return domainConfig.cities.some(city => 
+      return domainConfig.cities.some(city =>
         job.location.toLowerCase().includes(city.toLowerCase())
       );
     });
@@ -106,4 +106,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } finally {
     await prisma.$disconnect();
   }
-} 
+}

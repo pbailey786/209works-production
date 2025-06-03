@@ -130,7 +130,9 @@ export default function ShouldIApplyCalculator({
       setUsageInfo(calculatorResult.usageInfo);
     } catch (err) {
       console.error('Calculator error:', err);
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setError(
+        err instanceof Error ? err.message : 'An unexpected error occurred'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -190,18 +192,20 @@ export default function ShouldIApplyCalculator({
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
+          className="relative mx-4 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl"
+          onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
+          <div className="sticky top-0 rounded-t-xl border-b border-gray-200 bg-white px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
+                <div className="rounded-lg bg-purple-100 p-2">
                   <SparklesIcon className="h-6 w-6 text-purple-600" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Should I Apply?</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Should I Apply?
+                  </h2>
                   <p className="text-sm text-gray-600">
                     AI analysis for {jobTitle} at {company}
                   </p>
@@ -209,7 +213,7 @@ export default function ShouldIApplyCalculator({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="rounded-lg p-2 transition-colors hover:bg-gray-100"
                 aria-label="Close calculator"
               >
                 <XMarkIcon className="h-5 w-5 text-gray-500" />
@@ -219,55 +223,61 @@ export default function ShouldIApplyCalculator({
 
           {/* Content */}
           <div className="p-6">
-            {!result && !isLoading && !error && !profileIncomplete && !usageLimitReached && (
-              <div className="text-center py-8">
-                <div className="mb-6">
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <SparklesIcon className="h-8 w-8 text-purple-600" />
+            {!result &&
+              !isLoading &&
+              !error &&
+              !profileIncomplete &&
+              !usageLimitReached && (
+                <div className="py-8 text-center">
+                  <div className="mb-6">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
+                      <SparklesIcon className="h-8 w-8 text-purple-600" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-medium text-gray-900">
+                      Get AI-Powered Job Fit Analysis
+                    </h3>
+                    <p className="mx-auto max-w-md text-gray-600">
+                      Our AI will analyze your profile against this job&apos;s
+                      requirements and provide personalized recommendations on
+                      whether you should apply.
+                    </p>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Get AI-Powered Job Fit Analysis
-                  </h3>
-                  <p className="text-gray-600 max-w-md mx-auto">
-                    Our AI will analyze your profile against this job&apos;s requirements and provide 
-                    personalized recommendations on whether you should apply.
-                  </p>
+                  <button
+                    onClick={handleCalculate}
+                    className="inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-colors hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                  >
+                    <SparklesIcon className="mr-2 h-5 w-5" />
+                    Analyze Job Fit
+                  </button>
                 </div>
-                <button
-                  onClick={handleCalculate}
-                  className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                >
-                  <SparklesIcon className="h-5 w-5 mr-2" />
-                  Analyze Job Fit
-                </button>
-              </div>
-            )}
+              )}
 
             {/* Profile Incomplete State */}
             {profileIncomplete && (
-              <div className="text-center py-8">
+              <div className="py-8 text-center">
                 <div className="mb-6">
-                  <div className="mx-auto w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100">
                     <UserIcon className="h-8 w-8 text-yellow-600" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">
                     Complete Your Profile First
                   </h3>
-                  <p className="text-gray-600 max-w-md mx-auto mb-6">
-                    To get accurate job fit analysis, please complete your profile with your skills, 
-                    experience, and other relevant information.
+                  <p className="mx-auto mb-6 max-w-md text-gray-600">
+                    To get accurate job fit analysis, please complete your
+                    profile with your skills, experience, and other relevant
+                    information.
                   </p>
                   <div className="space-y-3">
                     <a
                       href="/profile/settings"
-                      className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+                      className="inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-colors hover:bg-purple-700"
                     >
-                      <UserIcon className="h-5 w-5 mr-2" />
+                      <UserIcon className="mr-2 h-5 w-5" />
                       Complete Profile
                     </a>
                     <button
                       onClick={onClose}
-                      className="block w-full text-gray-600 hover:text-gray-800 transition-colors"
+                      className="block w-full text-gray-600 transition-colors hover:text-gray-800"
                     >
                       Maybe later
                     </button>
@@ -278,27 +288,29 @@ export default function ShouldIApplyCalculator({
 
             {/* Usage Limit Reached State */}
             {usageLimitReached && (
-              <div className="text-center py-8">
+              <div className="py-8 text-center">
                 <div className="mb-6">
-                  <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-100">
                     <ExclamationCircleIcon className="h-8 w-8 text-orange-600" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">
                     Daily Limit Reached
                   </h3>
-                  <p className="text-gray-600 max-w-md mx-auto mb-4">
-                    {error}
-                  </p>
+                  <p className="mx-auto mb-4 max-w-md text-gray-600">{error}</p>
                   {usageInfo && (
-                    <div className="bg-gray-50 rounded-lg p-4 mb-6 max-w-sm mx-auto">
+                    <div className="mx-auto mb-6 max-w-sm rounded-lg bg-gray-50 p-4">
                       <div className="text-sm text-gray-600">
                         <div className="flex justify-between">
                           <span>Today's usage:</span>
-                          <span className="font-medium">{usageInfo.usageToday}/{usageInfo.dailyLimit}</span>
+                          <span className="font-medium">
+                            {usageInfo.usageToday}/{usageInfo.dailyLimit}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Current plan:</span>
-                          <span className="font-medium capitalize">{usageInfo.userTier}</span>
+                          <span className="font-medium capitalize">
+                            {usageInfo.userTier}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -306,14 +318,14 @@ export default function ShouldIApplyCalculator({
                   <div className="space-y-3">
                     <a
                       href="/pricing"
-                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg"
+                      className="inline-flex items-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 font-medium text-white shadow-lg transition-all duration-200 hover:from-purple-700 hover:to-blue-700"
                     >
-                      <SparklesIcon className="h-5 w-5 mr-2" />
+                      <SparklesIcon className="mr-2 h-5 w-5" />
                       Upgrade for Unlimited Access
                     </a>
                     <button
                       onClick={onClose}
-                      className="block w-full text-gray-600 hover:text-gray-800 transition-colors"
+                      className="block w-full text-gray-600 transition-colors hover:text-gray-800"
                     >
                       Maybe later
                     </button>
@@ -324,17 +336,21 @@ export default function ShouldIApplyCalculator({
 
             {/* Loading State */}
             {isLoading && (
-              <div className="text-center py-12">
+              <div className="py-12 text-center">
                 <div className="mb-6">
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'linear',
+                      }}
                     >
                       <SparklesIcon className="h-8 w-8 text-purple-600" />
                     </motion.div>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">
                     Analyzing Job Fit...
                   </h3>
                   <p className="text-gray-600">
@@ -350,25 +366,25 @@ export default function ShouldIApplyCalculator({
 
             {/* Error State */}
             {error && (
-              <div className="text-center py-8">
+              <div className="py-8 text-center">
                 <div className="mb-6">
-                  <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                     <ExclamationCircleIcon className="h-8 w-8 text-red-600" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">
                     Analysis Failed
                   </h3>
-                  <p className="text-gray-600 mb-6">{error}</p>
+                  <p className="mb-6 text-gray-600">{error}</p>
                   <div className="space-x-3">
                     <button
                       onClick={handleCalculate}
-                      className="inline-flex items-center px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+                      className="inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-700"
                     >
                       Try Again
                     </button>
                     <button
                       onClick={onClose}
-                      className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors"
+                      className="inline-flex items-center rounded-lg bg-gray-200 px-4 py-2 font-medium text-gray-800 transition-colors hover:bg-gray-300"
                     >
                       Close
                     </button>
@@ -381,68 +397,78 @@ export default function ShouldIApplyCalculator({
             {result && (
               <div className="space-y-6">
                 {/* Overall Recommendation */}
-                <div className={`p-6 rounded-xl border-2 ${getRecommendationColor(result.recommendation)}`}>
+                <div
+                  className={`rounded-xl border-2 p-6 ${getRecommendationColor(result.recommendation)}`}
+                >
                   <div className="flex items-center space-x-4">
                     {getRecommendationIcon(result.recommendation)}
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold mb-1">
+                      <h3 className="mb-1 text-xl font-semibold">
                         {getRecommendationText(result.recommendation)}
                       </h3>
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">Confidence:</span>
-                        <div className="flex-1 bg-white bg-opacity-50 rounded-full h-2 max-w-32">
+                        <div className="h-2 max-w-32 flex-1 rounded-full bg-white bg-opacity-50">
                           <div
                             className="h-2 rounded-full bg-current"
                             style={{ width: `${result.confidence}%` }}
                           />
                         </div>
-                        <span className="text-sm font-medium">{result.confidence}%</span>
+                        <span className="text-sm font-medium">
+                          {result.confidence}%
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Explanation */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                    <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
+                <div className="rounded-xl bg-gray-50 p-6">
+                  <h4 className="mb-3 flex items-center font-semibold text-gray-900">
+                    <SparklesIcon className="mr-2 h-5 w-5 text-purple-600" />
                     AI Analysis
                   </h4>
-                  <p className="text-gray-700 leading-relaxed">{result.explanation}</p>
+                  <p className="leading-relaxed text-gray-700">
+                    {result.explanation}
+                  </p>
                 </div>
 
                 {/* Skill Match */}
-                <div className="bg-white border border-gray-200 p-6 rounded-xl">
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-                    <AcademicCapIcon className="h-5 w-5 mr-2 text-blue-600" />
+                <div className="rounded-xl border border-gray-200 bg-white p-6">
+                  <h4 className="mb-4 flex items-center font-semibold text-gray-900">
+                    <AcademicCapIcon className="mr-2 h-5 w-5 text-blue-600" />
                     Skill Match Analysis
                   </h4>
-                  
+
                   <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Overall Match</span>
-                      <span className="text-sm font-semibold text-gray-900">{result.skillMatch.score}%</span>
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700">
+                        Overall Match
+                      </span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {result.skillMatch.score}%
+                      </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="h-2 w-full rounded-full bg-gray-200">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="h-2 rounded-full bg-blue-600 transition-all duration-300"
                         style={{ width: `${result.skillMatch.score}%` }}
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {/* Matching Skills */}
                     <div>
-                      <h5 className="text-sm font-medium text-green-700 mb-2 flex items-center">
-                        <CheckCircleSolidIcon className="h-4 w-4 mr-1" />
+                      <h5 className="mb-2 flex items-center text-sm font-medium text-green-700">
+                        <CheckCircleSolidIcon className="mr-1 h-4 w-4" />
                         Matching Skills ({result.skillMatch.matching.length})
                       </h5>
                       <div className="space-y-1">
                         {result.skillMatch.matching.map((skill, index) => (
                           <span
                             key={index}
-                            className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-1 mb-1"
+                            className="mb-1 mr-1 inline-block rounded-full bg-green-100 px-2 py-1 text-xs text-green-800"
                           >
                             {skill}
                           </span>
@@ -452,15 +478,15 @@ export default function ShouldIApplyCalculator({
 
                     {/* Missing Skills */}
                     <div>
-                      <h5 className="text-sm font-medium text-red-700 mb-2 flex items-center">
-                        <ExclamationCircleIcon className="h-4 w-4 mr-1" />
+                      <h5 className="mb-2 flex items-center text-sm font-medium text-red-700">
+                        <ExclamationCircleIcon className="mr-1 h-4 w-4" />
                         Skills to Develop ({result.skillMatch.missing.length})
                       </h5>
                       <div className="space-y-1">
                         {result.skillMatch.missing.map((skill, index) => (
                           <span
                             key={index}
-                            className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mr-1 mb-1"
+                            className="mb-1 mr-1 inline-block rounded-full bg-red-100 px-2 py-1 text-xs text-red-800"
                           >
                             {skill}
                           </span>
@@ -471,21 +497,26 @@ export default function ShouldIApplyCalculator({
                 </div>
 
                 {/* Factors */}
-                <div className="bg-white border border-gray-200 p-6 rounded-xl">
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-                    <ChartBarIcon className="h-5 w-5 mr-2 text-purple-600" />
+                <div className="rounded-xl border border-gray-200 bg-white p-6">
+                  <h4 className="mb-4 flex items-center font-semibold text-gray-900">
+                    <ChartBarIcon className="mr-2 h-5 w-5 text-purple-600" />
                     Key Factors
                   </h4>
-                  
+
                   <div className="space-y-4">
                     {/* Positive Factors */}
                     {result.factors.positive.length > 0 && (
                       <div>
-                        <h5 className="text-sm font-medium text-green-700 mb-2">Strengths</h5>
+                        <h5 className="mb-2 text-sm font-medium text-green-700">
+                          Strengths
+                        </h5>
                         <ul className="space-y-1">
                           {result.factors.positive.map((factor, index) => (
-                            <li key={index} className="flex items-start text-sm text-gray-700">
-                              <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                            <li
+                              key={index}
+                              className="flex items-start text-sm text-gray-700"
+                            >
+                              <CheckCircleIcon className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
                               {factor}
                             </li>
                           ))}
@@ -496,11 +527,16 @@ export default function ShouldIApplyCalculator({
                     {/* Negative Factors */}
                     {result.factors.negative.length > 0 && (
                       <div>
-                        <h5 className="text-sm font-medium text-red-700 mb-2">Areas of Concern</h5>
+                        <h5 className="mb-2 text-sm font-medium text-red-700">
+                          Areas of Concern
+                        </h5>
                         <ul className="space-y-1">
                           {result.factors.negative.map((factor, index) => (
-                            <li key={index} className="flex items-start text-sm text-gray-700">
-                              <ExclamationCircleIcon className="h-4 w-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                            <li
+                              key={index}
+                              className="flex items-start text-sm text-gray-700"
+                            >
+                              <ExclamationCircleIcon className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
                               {factor}
                             </li>
                           ))}
@@ -511,11 +547,16 @@ export default function ShouldIApplyCalculator({
                     {/* Neutral Factors */}
                     {result.factors.neutral.length > 0 && (
                       <div>
-                        <h5 className="text-sm font-medium text-gray-700 mb-2">Additional Considerations</h5>
+                        <h5 className="mb-2 text-sm font-medium text-gray-700">
+                          Additional Considerations
+                        </h5>
                         <ul className="space-y-1">
                           {result.factors.neutral.map((factor, index) => (
-                            <li key={index} className="flex items-start text-sm text-gray-700">
-                              <QuestionMarkCircleIcon className="h-4 w-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
+                            <li
+                              key={index}
+                              className="flex items-start text-sm text-gray-700"
+                            >
+                              <QuestionMarkCircleIcon className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500" />
                               {factor}
                             </li>
                           ))}
@@ -526,35 +567,48 @@ export default function ShouldIApplyCalculator({
                 </div>
 
                 {/* Premium Application Tips */}
-                {result.applicationTips && result.applicationTips.length > 0 && (
-                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 p-6 rounded-xl">
-                    <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-                      <SparklesIcon className="h-5 w-5 mr-2 text-purple-600" />
-                      Premium Application Tips
-                    </h4>
-                    <ul className="space-y-2">
-                      {result.applicationTips.map((tip, index) => (
-                        <li key={index} className="flex items-start text-sm text-gray-700">
-                          <CheckCircleIcon className="h-4 w-4 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
-                          {tip}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {result.applicationTips &&
+                  result.applicationTips.length > 0 && (
+                    <div className="rounded-xl border border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 p-6">
+                      <h4 className="mb-4 flex items-center font-semibold text-gray-900">
+                        <SparklesIcon className="mr-2 h-5 w-5 text-purple-600" />
+                        Premium Application Tips
+                      </h4>
+                      <ul className="space-y-2">
+                        {result.applicationTips.map((tip, index) => (
+                          <li
+                            key={index}
+                            className="flex items-start text-sm text-gray-700"
+                          >
+                            <CheckCircleIcon className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-purple-500" />
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                 {/* Usage Info & Upgrade Suggestions */}
                 {(usageInfo || result.upgradeSuggestions) && (
-                  <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-600">
                         {usageInfo && (
                           <div className="flex items-center space-x-4">
                             <span>
-                              Usage today: <span className="font-medium">{usageInfo.usageToday}/{usageInfo.dailyLimit === -1 ? '∞' : usageInfo.dailyLimit}</span>
+                              Usage today:{' '}
+                              <span className="font-medium">
+                                {usageInfo.usageToday}/
+                                {usageInfo.dailyLimit === -1
+                                  ? '∞'
+                                  : usageInfo.dailyLimit}
+                              </span>
                             </span>
-                            <span className="text-xs bg-gray-200 px-2 py-1 rounded-full capitalize">
-                              {usageInfo.userTier} {usageInfo.analysisType === 'premium' ? '• Premium Analysis' : '• Basic Analysis'}
+                            <span className="rounded-full bg-gray-200 px-2 py-1 text-xs capitalize">
+                              {usageInfo.userTier}{' '}
+                              {usageInfo.analysisType === 'premium'
+                                ? '• Premium Analysis'
+                                : '• Basic Analysis'}
                             </span>
                           </div>
                         )}
@@ -562,7 +616,7 @@ export default function ShouldIApplyCalculator({
                       {result.upgradeSuggestions && (
                         <a
                           href="/pricing"
-                          className="text-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-200"
+                          className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-xs text-white transition-all duration-200 hover:from-purple-700 hover:to-blue-700"
                         >
                           Upgrade for More
                         </a>
@@ -572,10 +626,10 @@ export default function ShouldIApplyCalculator({
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                <div className="flex flex-col gap-3 border-t border-gray-200 pt-4 sm:flex-row">
                   <button
                     onClick={onClose}
-                    className="flex-1 px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                    className="flex-1 rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-colors hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                   >
                     Got it, thanks!
                   </button>
@@ -584,7 +638,7 @@ export default function ShouldIApplyCalculator({
                       // Save result functionality could be added here
                       onClose();
                     }}
-                    className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    className="flex-1 rounded-lg bg-gray-200 px-6 py-3 font-medium text-gray-800 transition-colors hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                   >
                     Save Result
                   </button>
@@ -596,4 +650,4 @@ export default function ShouldIApplyCalculator({
       </motion.div>
     </AnimatePresence>
   );
-} 
+}

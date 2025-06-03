@@ -85,7 +85,10 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'employer') {
       return NextResponse.json(
-        { error: 'Authentication required. Only employers can create job posts.' },
+        {
+          error:
+            'Authentication required. Only employers can create job posts.',
+        },
         { status: 401 }
       );
     }
@@ -95,9 +98,11 @@ export async function POST(req: NextRequest) {
     const validatedData = jobPostOptimizerSchema.parse(body);
 
     // Check if OpenAI API key is available
-    const hasValidApiKey = process.env.OPENAI_API_KEY &&
+    const hasValidApiKey =
+      process.env.OPENAI_API_KEY &&
       process.env.OPENAI_API_KEY !== 'your-openai-key' &&
-      process.env.OPENAI_API_KEY !== 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
+      process.env.OPENAI_API_KEY !==
+        'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
 
     let aiGeneratedOutput = '';
     let optimizationPrompt = '';
@@ -106,18 +111,19 @@ export async function POST(req: NextRequest) {
       try {
         // Generate AI-optimized job listing
         optimizationPrompt = createOptimizationPrompt(validatedData);
-        
+
         const response = await openai.chat.completions.create({
           model: 'gpt-4',
           messages: [
             {
               role: 'system',
-              content: 'You are an expert job posting writer who creates compelling, modern job listings that attract qualified candidates. Write in a friendly, conversational tone and focus on what makes each opportunity unique and appealing.'
+              content:
+                'You are an expert job posting writer who creates compelling, modern job listings that attract qualified candidates. Write in a friendly, conversational tone and focus on what makes each opportunity unique and appealing.',
             },
             {
               role: 'user',
-              content: optimizationPrompt
-            }
+              content: optimizationPrompt,
+            },
           ],
           temperature: 0.7,
           max_tokens: 1500,
@@ -158,7 +164,9 @@ export async function POST(req: NextRequest) {
         socialMediaShoutout: validatedData.socialMediaShoutout || false,
         placementBump: validatedData.placementBump || false,
         upsellBundle: validatedData.upsellBundle || false,
-        upsellTotal: validatedData.upsellTotal ? parseFloat(validatedData.upsellTotal.toString()) : null,
+        upsellTotal: validatedData.upsellTotal
+          ? parseFloat(validatedData.upsellTotal.toString())
+          : null,
       },
     });
 
@@ -167,17 +175,16 @@ export async function POST(req: NextRequest) {
       id: jobPostOptimizer.id,
       aiGeneratedOutput,
       hasAI: hasValidApiKey,
-      message: 'Job post optimized successfully!'
+      message: 'Job post optimized successfully!',
     });
-
   } catch (error) {
     console.error('Job post optimizer error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );
@@ -193,7 +200,7 @@ export async function POST(req: NextRequest) {
 // Fallback job listing template when AI is not available
 function createFallbackJobListing(data: JobPostOptimizerData): string {
   const tagline = `Join Our Team!`;
-  
+
   return `# ${data.jobTitle} — ${tagline}
 
 ## 👋 About This Opportunity
@@ -256,11 +263,11 @@ export async function GET(req: NextRequest) {
               title: true,
               status: true,
               viewCount: true,
-            }
-          }
-        }
+            },
+          },
+        },
       }),
-      prisma.jobPostOptimizer.count({ where })
+      prisma.jobPostOptimizer.count({ where }),
     ]);
 
     return NextResponse.json({
@@ -270,10 +277,9 @@ export async function GET(req: NextRequest) {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     });
-
   } catch (error) {
     console.error('Get job post optimizers error:', error);
     return NextResponse.json(

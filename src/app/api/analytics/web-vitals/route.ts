@@ -7,7 +7,7 @@ const metricsStore: PerformanceMetrics[] = [];
 export async function POST(request: NextRequest) {
   try {
     const metric: PerformanceMetrics = await request.json();
-    
+
     // Validate the metric data
     if (!metric.name || typeof metric.value !== 'number') {
       return NextResponse.json(
@@ -61,7 +61,11 @@ export async function GET(request: NextRequest) {
 
     const recentMetrics = filteredMetrics
       .slice(-limit)
-      .sort((a, b) => new Date((a as any).timestamp || 0).getTime() - new Date((b as any).timestamp || 0).getTime());
+      .sort(
+        (a, b) =>
+          new Date((a as any).timestamp || 0).getTime() -
+          new Date((b as any).timestamp || 0).getTime()
+      );
 
     return NextResponse.json({
       metrics: recentMetrics,
@@ -74,4 +78,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -47,7 +47,7 @@ export function OptimizedImage({
       {isLoading && showLoadingState && (
         <div
           className={cn(
-            'absolute inset-0 bg-gray-200 animate-pulse',
+            'absolute inset-0 animate-pulse bg-gray-200',
             loadingClassName
           )}
         />
@@ -57,7 +57,7 @@ export function OptimizedImage({
       {hasError && currentSrc === fallbackSrc && (
         <div
           className={cn(
-            'absolute inset-0 bg-gray-100 flex items-center justify-center text-gray-400 text-sm',
+            'absolute inset-0 flex items-center justify-center bg-gray-100 text-sm text-gray-400',
             errorClassName
           )}
         >
@@ -150,4 +150,4 @@ export function HeroImage({
       {...props}
     />
   );
-} 
+}

@@ -1,10 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
+import {
   Activity,
   AlertTriangle,
   CheckCircle,
@@ -18,7 +24,7 @@ import {
   TrendingUp,
   Users,
   Zap,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 
 interface SystemMetrics {
@@ -52,23 +58,53 @@ export default function SystemHealthDashboard() {
     memoryUsage: 68,
     diskUsage: 42,
     cpuUsage: 23,
-    lastUpdated: new Date()
+    lastUpdated: new Date(),
   });
 
   const [services, setServices] = useState<ServiceStatus[]>([
-    { name: 'Web Server', status: 'online', responseTime: 120, lastCheck: new Date() },
-    { name: 'Database', status: 'online', responseTime: 45, lastCheck: new Date() },
-    { name: 'Redis Cache', status: 'online', responseTime: 12, lastCheck: new Date() },
-    { name: 'Email Service', status: 'online', responseTime: 89, lastCheck: new Date() },
-    { name: 'File Storage', status: 'online', responseTime: 156, lastCheck: new Date() },
-    { name: 'Search Engine', status: 'degraded', responseTime: 890, lastCheck: new Date() }
+    {
+      name: 'Web Server',
+      status: 'online',
+      responseTime: 120,
+      lastCheck: new Date(),
+    },
+    {
+      name: 'Database',
+      status: 'online',
+      responseTime: 45,
+      lastCheck: new Date(),
+    },
+    {
+      name: 'Redis Cache',
+      status: 'online',
+      responseTime: 12,
+      lastCheck: new Date(),
+    },
+    {
+      name: 'Email Service',
+      status: 'online',
+      responseTime: 89,
+      lastCheck: new Date(),
+    },
+    {
+      name: 'File Storage',
+      status: 'online',
+      responseTime: 156,
+      lastCheck: new Date(),
+    },
+    {
+      name: 'Search Engine',
+      status: 'degraded',
+      responseTime: 890,
+      lastCheck: new Date(),
+    },
   ]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const refreshMetrics = async () => {
     setIsRefreshing(true);
-    
+
     try {
       const response = await fetch('/api/admin/health');
       if (response.ok) {
@@ -83,13 +119,15 @@ export default function SystemHealthDashboard() {
           memoryUsage: data.memoryUsage,
           diskUsage: data.diskUsage,
           cpuUsage: data.cpuUsage,
-          lastUpdated: new Date(data.lastUpdated)
+          lastUpdated: new Date(data.lastUpdated),
         });
-        
-        setServices(data.services.map((service: any) => ({
-          ...service,
-          lastCheck: new Date(service.lastCheck)
-        })));
+
+        setServices(
+          data.services.map((service: any) => ({
+            ...service,
+            lastCheck: new Date(service.lastCheck),
+          }))
+        );
       } else {
         console.error('Failed to fetch health metrics');
       }
@@ -103,7 +141,7 @@ export default function SystemHealthDashboard() {
   useEffect(() => {
     // Initial data fetch
     refreshMetrics();
-    
+
     // Auto-refresh every 30 seconds
     const interval = setInterval(refreshMetrics, 30000);
     return () => clearInterval(interval);
@@ -152,7 +190,9 @@ export default function SystemHealthDashboard() {
       {/* Overall Status and Refresh */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Badge className={`${getStatusColor(metrics.status)} flex items-center space-x-1`}>
+          <Badge
+            className={`${getStatusColor(metrics.status)} flex items-center space-x-1`}
+          >
             {getStatusIcon(metrics.status)}
             <span className="capitalize">{metrics.status}</span>
           </Badge>
@@ -160,26 +200,30 @@ export default function SystemHealthDashboard() {
             Last updated: {metrics.lastUpdated.toLocaleTimeString()}
           </span>
         </div>
-        <Button 
-          onClick={refreshMetrics} 
+        <Button
+          onClick={refreshMetrics}
           disabled={isRefreshing}
           variant="outline"
           size="sm"
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
+          />
           Refresh
         </Button>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Uptime</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{metrics.uptime}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {metrics.uptime}
+            </div>
             <p className="text-xs text-muted-foreground">Last 30 days</p>
           </CardContent>
         </Card>
@@ -191,7 +235,9 @@ export default function SystemHealthDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.responseTime}ms</div>
-            <p className="text-xs text-muted-foreground">Average response time</p>
+            <p className="text-xs text-muted-foreground">
+              Average response time
+            </p>
           </CardContent>
         </Card>
 
@@ -201,7 +247,9 @@ export default function SystemHealthDashboard() {
             <AlertTriangle className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(metrics.errorRate * 100).toFixed(2)}%</div>
+            <div className="text-2xl font-bold">
+              {(metrics.errorRate * 100).toFixed(2)}%
+            </div>
             <p className="text-xs text-muted-foreground">Last 24 hours</p>
           </CardContent>
         </Card>
@@ -212,7 +260,9 @@ export default function SystemHealthDashboard() {
             <Users className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.activeUsers.toLocaleString()}</div>
+            <div className="text-2xl font-bold">
+              {metrics.activeUsers.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">Currently online</p>
           </CardContent>
         </Card>
@@ -225,7 +275,7 @@ export default function SystemHealthDashboard() {
           <CardDescription>Current resource utilization</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* CPU Usage */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -233,10 +283,12 @@ export default function SystemHealthDashboard() {
                   <Server className="h-4 w-4 text-gray-600" />
                   <span className="text-sm font-medium">CPU Usage</span>
                 </div>
-                <span className="text-sm text-gray-600">{metrics.cpuUsage}%</span>
+                <span className="text-sm text-gray-600">
+                  {metrics.cpuUsage}%
+                </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+              <div className="h-2 w-full rounded-full bg-gray-200">
+                <div
                   className={`h-2 rounded-full ${getUsageColor(metrics.cpuUsage)}`}
                   style={{ width: `${metrics.cpuUsage}%` }}
                 />
@@ -250,10 +302,12 @@ export default function SystemHealthDashboard() {
                   <MemoryStick className="h-4 w-4 text-gray-600" />
                   <span className="text-sm font-medium">Memory Usage</span>
                 </div>
-                <span className="text-sm text-gray-600">{metrics.memoryUsage}%</span>
+                <span className="text-sm text-gray-600">
+                  {metrics.memoryUsage}%
+                </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+              <div className="h-2 w-full rounded-full bg-gray-200">
+                <div
                   className={`h-2 rounded-full ${getUsageColor(metrics.memoryUsage)}`}
                   style={{ width: `${metrics.memoryUsage}%` }}
                 />
@@ -267,10 +321,12 @@ export default function SystemHealthDashboard() {
                   <HardDrive className="h-4 w-4 text-gray-600" />
                   <span className="text-sm font-medium">Disk Usage</span>
                 </div>
-                <span className="text-sm text-gray-600">{metrics.diskUsage}%</span>
+                <span className="text-sm text-gray-600">
+                  {metrics.diskUsage}%
+                </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+              <div className="h-2 w-full rounded-full bg-gray-200">
+                <div
                   className={`h-2 rounded-full ${getUsageColor(metrics.diskUsage)}`}
                   style={{ width: `${metrics.diskUsage}%` }}
                 />
@@ -289,24 +345,43 @@ export default function SystemHealthDashboard() {
         <CardContent>
           <div className="space-y-4">
             {services.map((service, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-lg border p-3"
+              >
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2">
-                    {service.name === 'Web Server' && <Globe className="h-4 w-4 text-gray-600" />}
-                    {service.name === 'Database' && <Database className="h-4 w-4 text-gray-600" />}
-                    {service.name === 'Redis Cache' && <Zap className="h-4 w-4 text-gray-600" />}
-                    {service.name === 'Email Service' && <Activity className="h-4 w-4 text-gray-600" />}
-                    {service.name === 'File Storage' && <HardDrive className="h-4 w-4 text-gray-600" />}
-                    {service.name === 'Search Engine' && <Server className="h-4 w-4 text-gray-600" />}
+                    {service.name === 'Web Server' && (
+                      <Globe className="h-4 w-4 text-gray-600" />
+                    )}
+                    {service.name === 'Database' && (
+                      <Database className="h-4 w-4 text-gray-600" />
+                    )}
+                    {service.name === 'Redis Cache' && (
+                      <Zap className="h-4 w-4 text-gray-600" />
+                    )}
+                    {service.name === 'Email Service' && (
+                      <Activity className="h-4 w-4 text-gray-600" />
+                    )}
+                    {service.name === 'File Storage' && (
+                      <HardDrive className="h-4 w-4 text-gray-600" />
+                    )}
+                    {service.name === 'Search Engine' && (
+                      <Server className="h-4 w-4 text-gray-600" />
+                    )}
                     <span className="font-medium">{service.name}</span>
                   </div>
-                  <Badge className={`${getStatusColor(service.status)} flex items-center space-x-1`}>
+                  <Badge
+                    className={`${getStatusColor(service.status)} flex items-center space-x-1`}
+                  >
                     {getStatusIcon(service.status)}
                     <span className="capitalize">{service.status}</span>
                   </Badge>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium">{service.responseTime}ms</div>
+                  <div className="text-sm font-medium">
+                    {service.responseTime}ms
+                  </div>
                   <div className="text-xs text-gray-500">
                     {service.lastCheck.toLocaleTimeString()}
                   </div>
@@ -321,12 +396,16 @@ export default function SystemHealthDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>Database Performance</CardTitle>
-          <CardDescription>Database connection and performance metrics</CardDescription>
+          <CardDescription>
+            Database connection and performance metrics
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{metrics.databaseConnections}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {metrics.databaseConnections}
+              </div>
               <p className="text-sm text-gray-600">Active Connections</p>
             </div>
             <div className="text-center">
@@ -342,4 +421,4 @@ export default function SystemHealthDashboard() {
       </Card>
     </div>
   );
-} 
+}

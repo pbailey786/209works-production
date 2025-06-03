@@ -9,30 +9,72 @@ export function formatJobDescription(description: string): string {
   let formatted = description;
 
   // Convert markdown headers to styled HTML
-  formatted = formatted.replace(/^## (.*$)/gim, '<h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3 flex items-center"><span class="mr-2">📋</span>$1</h3>');
-  formatted = formatted.replace(/^### (.*$)/gim, '<h4 class="text-base font-medium text-gray-800 mt-4 mb-2">$1</h4>');
+  formatted = formatted.replace(
+    /^## (.*$)/gim,
+    '<h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3 flex items-center"><span class="mr-2">📋</span>$1</h3>'
+  );
+  formatted = formatted.replace(
+    /^### (.*$)/gim,
+    '<h4 class="text-base font-medium text-gray-800 mt-4 mb-2">$1</h4>'
+  );
 
   // Convert emoji headers with specific styling
-  formatted = formatted.replace(/^## 👋 (.*$)/gim, '<h3 class="text-lg font-semibold text-blue-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">👋</span>$1</h3>');
-  formatted = formatted.replace(/^## 📋 (.*$)/gim, '<h3 class="text-lg font-semibold text-green-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">📋</span>$1</h3>');
-  formatted = formatted.replace(/^## 🌸 (.*$)/gim, '<h3 class="text-lg font-semibold text-pink-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">🌸</span>$1</h3>');
-  formatted = formatted.replace(/^## 📈 (.*$)/gim, '<h3 class="text-lg font-semibold text-purple-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">📈</span>$1</h3>');
-  formatted = formatted.replace(/^## 🎯 (.*$)/gim, '<h3 class="text-lg font-semibold text-red-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">🎯</span>$1</h3>');
+  formatted = formatted.replace(
+    /^## 👋 (.*$)/gim,
+    '<h3 class="text-lg font-semibold text-blue-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">👋</span>$1</h3>'
+  );
+  formatted = formatted.replace(
+    /^## 📋 (.*$)/gim,
+    '<h3 class="text-lg font-semibold text-green-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">📋</span>$1</h3>'
+  );
+  formatted = formatted.replace(
+    /^## 🌸 (.*$)/gim,
+    '<h3 class="text-lg font-semibold text-pink-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">🌸</span>$1</h3>'
+  );
+  formatted = formatted.replace(
+    /^## 📈 (.*$)/gim,
+    '<h3 class="text-lg font-semibold text-purple-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">📈</span>$1</h3>'
+  );
+  formatted = formatted.replace(
+    /^## 🎯 (.*$)/gim,
+    '<h3 class="text-lg font-semibold text-red-900 mt-6 mb-3 flex items-center"><span class="mr-2 text-xl">🎯</span>$1</h3>'
+  );
 
   // Convert bullet points with emojis to styled lists
-  formatted = formatted.replace(/^- \*\* 📍 (.*?):\*\* (.*)$/gim, '<div class="flex items-start mb-2"><span class="mr-3 text-lg">📍</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>');
-  formatted = formatted.replace(/^- \*\* 💰 (.*?):\*\* (.*)$/gim, '<div class="flex items-start mb-2"><span class="mr-3 text-lg">💰</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>');
-  formatted = formatted.replace(/^- \*\* 🗓️ (.*?):\*\* (.*)$/gim, '<div class="flex items-start mb-2"><span class="mr-3 text-lg">🗓️</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>');
-  formatted = formatted.replace(/^- \*\* 🎁 (.*?):\*\* (.*)$/gim, '<div class="flex items-start mb-2"><span class="mr-3 text-lg">🎁</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>');
+  formatted = formatted.replace(
+    /^- \*\* 📍 (.*?):\*\* (.*)$/gim,
+    '<div class="flex items-start mb-2"><span class="mr-3 text-lg">📍</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>'
+  );
+  formatted = formatted.replace(
+    /^- \*\* 💰 (.*?):\*\* (.*)$/gim,
+    '<div class="flex items-start mb-2"><span class="mr-3 text-lg">💰</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>'
+  );
+  formatted = formatted.replace(
+    /^- \*\* 🗓️ (.*?):\*\* (.*)$/gim,
+    '<div class="flex items-start mb-2"><span class="mr-3 text-lg">🗓️</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>'
+  );
+  formatted = formatted.replace(
+    /^- \*\* 🎁 (.*?):\*\* (.*)$/gim,
+    '<div class="flex items-start mb-2"><span class="mr-3 text-lg">🎁</span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>'
+  );
 
   // Generic emoji bullet points
-  formatted = formatted.replace(/^- \*\* (.*?):\*\* (.*)$/gim, '<div class="flex items-start mb-2"><span class="mr-3 w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>');
+  formatted = formatted.replace(
+    /^- \*\* (.*?):\*\* (.*)$/gim,
+    '<div class="flex items-start mb-2"><span class="mr-3 w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>'
+  );
 
   // Convert regular bullet points
-  formatted = formatted.replace(/^- (.*)$/gim, '<div class="flex items-start mb-2"><span class="mr-3 w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span><span class="text-gray-700">$1</span></div>');
+  formatted = formatted.replace(
+    /^- (.*)$/gim,
+    '<div class="flex items-start mb-2"><span class="mr-3 w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span><span class="text-gray-700">$1</span></div>'
+  );
 
   // Convert bold text
-  formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
+  formatted = formatted.replace(
+    /\*\*(.*?)\*\*/g,
+    '<strong class="font-semibold text-gray-900">$1</strong>'
+  );
 
   // Convert line breaks
   formatted = formatted.replace(/\n\n/g, '</div><div class="mb-4">');

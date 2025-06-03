@@ -11,20 +11,23 @@ import { BusinessDashboard } from '@/components/analytics/business-dashboard';
 
 export default function BusinessDashboardDemoPage() {
   return (
-    <PostHogProvider 
+    <PostHogProvider
       apiKey={process.env.NEXT_PUBLIC_POSTHOG_KEY}
       host={process.env.NEXT_PUBLIC_POSTHOG_HOST}
       region="209"
     >
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 py-6">
-            <div className="flex justify-between items-center">
+        <div className="border-b bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-6">
+            <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Business Dashboard Demo</h1>
-                <p className="text-gray-600 mt-2">
-                  Comprehensive business intelligence and KPI tracking for job board analytics
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Business Dashboard Demo
+                </h1>
+                <p className="mt-2 text-gray-600">
+                  Comprehensive business intelligence and KPI tracking for job
+                  board analytics
                 </p>
               </div>
               <div className="text-sm text-gray-500">
@@ -35,10 +38,10 @@ export default function BusinessDashboardDemoPage() {
         </div>
 
         {/* Dashboard Content */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mx-auto max-w-7xl px-4 py-8">
           <BusinessDashboard />
         </div>
       </div>
     </PostHogProvider>
   );
-} 
+}

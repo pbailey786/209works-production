@@ -16,13 +16,15 @@ Your 209Jobs application now has **intelligent job search** powered by OpenAI! H
 
 1. **Open your `.env.local` file**
 2. **Replace the placeholder**:
+
    ```bash
    # Change this line:
    OPENAI_API_KEY="sk-proj-placeholder-key-replace-with-your-actual-openai-api-key"
-   
+
    # To your actual key:
    OPENAI_API_KEY="sk-proj-your-actual-key-here"
    ```
+
 3. **Save the file**
 4. **Restart your development server**:
    ```bash
@@ -41,12 +43,14 @@ Your 209Jobs application now has **intelligent job search** powered by OpenAI! H
 ## 🤖 How It Works
 
 ### With OpenAI API Key (Full AI Experience):
+
 - **Smart Query Understanding**: AI interprets natural language searches
 - **Intelligent Filtering**: Extracts location, job type, salary, etc. from conversational queries
 - **Personalized Responses**: Generates contextual summaries and follow-up questions
 - **Job Matching**: Analyzes job fit based on user profiles
 
 ### Without OpenAI API Key (Fallback Mode):
+
 - **Basic Keyword Search**: Uses simple keyword matching
 - **Standard Filtering**: Recognizes common terms like "Stockton", "nursing", "part-time"
 - **Simple Responses**: Provides basic summaries and suggestions
@@ -62,12 +66,14 @@ Your 209Jobs application now has **intelligent job search** powered by OpenAI! H
 ## 🔧 Features Enabled by OpenAI
 
 ### 1. **Conversational Job Search**
+
 ```
 User: "I'm looking for entry-level healthcare jobs in Modesto that pay at least $20/hour"
 AI: Understands location (Modesto), industry (healthcare), experience (entry-level), salary ($20/hour)
 ```
 
 ### 2. **Smart Follow-up Questions**
+
 ```
 AI: "Would you like me to show you similar positions in nearby cities?"
 AI: "Are you interested in part-time or full-time positions?"
@@ -75,9 +81,10 @@ AI: "Would you like to see jobs that offer benefits?"
 ```
 
 ### 3. **Contextual Responses**
+
 ```
-AI: "I found 12 healthcare positions in Modesto. Most are at local hospitals and clinics, 
-with 8 positions offering $20+ per hour. The entry-level roles include medical assistant, 
+AI: "I found 12 healthcare positions in Modesto. Most are at local hospitals and clinics,
+with 8 positions offering $20+ per hour. The entry-level roles include medical assistant,
 patient care technician, and administrative positions."
 ```
 
@@ -87,9 +94,11 @@ The system automatically detects if you have a valid OpenAI API key:
 
 ```typescript
 // Checks for valid API key
-const hasValidApiKey = process.env.OPENAI_API_KEY && 
-  process.env.OPENAI_API_KEY !== 'your-openai-key' && 
-  process.env.OPENAI_API_KEY !== 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
+const hasValidApiKey =
+  process.env.OPENAI_API_KEY &&
+  process.env.OPENAI_API_KEY !== 'your-openai-key' &&
+  process.env.OPENAI_API_KEY !==
+    'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
 
 if (hasValidApiKey) {
   // Use AI-powered search
@@ -117,15 +126,18 @@ if (hasValidApiKey) {
 ## 🆘 Troubleshooting
 
 ### "Invalid API key" error:
+
 - Check that your key starts with `sk-` or `sk-proj-`
 - Ensure no extra spaces or quotes
 - Restart your development server
 
 ### "Rate limit exceeded":
+
 - You've hit OpenAI's usage limits
 - Wait a few minutes or upgrade your plan
 
 ### Search not working:
+
 - Check the browser console for errors
 - Verify the API key is correctly set
 - The fallback mode should still work without OpenAI
@@ -133,6 +145,7 @@ if (hasValidApiKey) {
 ## 🎉 Success!
 
 Once configured, your 209Jobs platform will have:
+
 - **Intelligent job search** that understands natural language
 - **Contextual responses** that feel conversational
 - **Smart suggestions** for follow-up searches

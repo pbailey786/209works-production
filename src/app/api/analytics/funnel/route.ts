@@ -11,11 +11,13 @@ export async function GET(req: NextRequest) {
   try {
     // In a real implementation, this would query your analytics database
     // For now, we'll generate realistic mock data
-    
+
     const funnelData = generateFunnelAnalytics(funnelType, {
-      dateFrom: dateFrom ? new Date(dateFrom) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      dateFrom: dateFrom
+        ? new Date(dateFrom)
+        : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       dateTo: dateTo ? new Date(dateTo) : new Date(),
-      includeRecommendations
+      includeRecommendations,
     });
 
     return ResponseHelper.success(funnelData);
@@ -28,7 +30,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    
+
     // Track funnel event
     const {
       funnelId,
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
       userId,
       sessionId,
       eventType, // 'step_completed' | 'drop_off'
-      metadata
+      metadata,
     } = body;
 
     // In a real implementation, this would store the event in your database
@@ -48,13 +50,13 @@ export async function POST(req: NextRequest) {
       sessionId,
       eventType,
       metadata,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     return ResponseHelper.success({
       message: 'Funnel event tracked successfully',
       eventId: `event_${Date.now()}`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Error tracking funnel event:', error);
@@ -63,83 +65,123 @@ export async function POST(req: NextRequest) {
 }
 
 // Helper function to generate realistic funnel analytics data
-function generateFunnelAnalytics(funnelType: string, options: {
-  dateFrom: Date;
-  dateTo: Date;
-  includeRecommendations?: boolean;
-}) {
+function generateFunnelAnalytics(
+  funnelType: string,
+  options: {
+    dateFrom: Date;
+    dateTo: Date;
+    includeRecommendations?: boolean;
+  }
+) {
   const isJobSeeker = funnelType === 'job_seeker';
-  
+
   // Define funnel steps based on type
-  const steps = isJobSeeker ? [
-    { id: 'landing', name: 'Landing Page Visit', category: 'awareness' },
-    { id: 'search', name: 'Job Search', category: 'interest' },
-    { id: 'job_view', name: 'Job View', category: 'consideration' },
-    { id: 'registration', name: 'User Registration', category: 'consideration' },
-    { id: 'application_start', name: 'Application Started', category: 'conversion' },
-    { id: 'application_complete', name: 'Application Completed', category: 'conversion' },
-    { id: 'profile_complete', name: 'Profile Completion', category: 'retention' }
-  ] : [
-    { id: 'employer_landing', name: 'Employer Landing', category: 'awareness' },
-    { id: 'pricing_view', name: 'Pricing View', category: 'interest' },
-    { id: 'employer_registration', name: 'Employer Registration', category: 'consideration' },
-    { id: 'job_post_start', name: 'Job Posting Started', category: 'conversion' },
-    { id: 'payment', name: 'Payment Completed', category: 'conversion' },
-    { id: 'job_published', name: 'Job Published', category: 'conversion' },
-    { id: 'repeat_posting', name: 'Repeat Job Posting', category: 'retention' }
-  ];
+  const steps = isJobSeeker
+    ? [
+        { id: 'landing', name: 'Landing Page Visit', category: 'awareness' },
+        { id: 'search', name: 'Job Search', category: 'interest' },
+        { id: 'job_view', name: 'Job View', category: 'consideration' },
+        {
+          id: 'registration',
+          name: 'User Registration',
+          category: 'consideration',
+        },
+        {
+          id: 'application_start',
+          name: 'Application Started',
+          category: 'conversion',
+        },
+        {
+          id: 'application_complete',
+          name: 'Application Completed',
+          category: 'conversion',
+        },
+        {
+          id: 'profile_complete',
+          name: 'Profile Completion',
+          category: 'retention',
+        },
+      ]
+    : [
+        {
+          id: 'employer_landing',
+          name: 'Employer Landing',
+          category: 'awareness',
+        },
+        { id: 'pricing_view', name: 'Pricing View', category: 'interest' },
+        {
+          id: 'employer_registration',
+          name: 'Employer Registration',
+          category: 'consideration',
+        },
+        {
+          id: 'job_post_start',
+          name: 'Job Posting Started',
+          category: 'conversion',
+        },
+        { id: 'payment', name: 'Payment Completed', category: 'conversion' },
+        { id: 'job_published', name: 'Job Published', category: 'conversion' },
+        {
+          id: 'repeat_posting',
+          name: 'Repeat Job Posting',
+          category: 'retention',
+        },
+      ];
 
   // Generate realistic user counts with drop-offs
   const totalUsers = Math.floor(Math.random() * 15000) + 10000;
   let currentUsers = totalUsers;
-  
+
   const stepData = steps.map((step, index) => {
     // Simulate realistic drop-off rates
     let dropOffRate = 0;
-    
+
     switch (step.category) {
       case 'awareness':
         dropOffRate = 0.15; // 15% drop-off
         break;
       case 'interest':
-        dropOffRate = 0.30; // 30% drop-off
+        dropOffRate = 0.3; // 30% drop-off
         break;
       case 'consideration':
-        dropOffRate = 0.40; // 40% drop-off
+        dropOffRate = 0.4; // 40% drop-off
         break;
       case 'conversion':
-        dropOffRate = 0.50; // 50% drop-off
+        dropOffRate = 0.5; // 50% drop-off
         break;
       case 'retention':
         dropOffRate = 0.25; // 25% drop-off
         break;
     }
-    
+
     // Add randomness
     dropOffRate += (Math.random() - 0.5) * 0.1;
     dropOffRate = Math.max(0.05, Math.min(0.7, dropOffRate));
-    
+
     if (index > 0) {
       currentUsers = Math.floor(currentUsers * (1 - dropOffRate));
     }
-    
+
     const completionRate = (currentUsers / totalUsers) * 100;
-    
+
     return {
       step: {
         id: step.id,
         name: step.name,
         category: step.category,
         order: index + 1,
-        isRequired: step.category !== 'retention'
+        isRequired: step.category !== 'retention',
       },
       users: currentUsers,
       sessions: Math.floor(currentUsers * 1.2),
       completionRate,
       dropOffRate: dropOffRate * 100,
       averageTimeSpent: Math.floor(Math.random() * 300) + 60,
-      conversionValue: step.category === 'conversion' ? Math.floor(Math.random() * 200) + 50 : undefined,
-      timestamp: new Date().toISOString()
+      conversionValue:
+        step.category === 'conversion'
+          ? Math.floor(Math.random() * 200) + 50
+          : undefined,
+      timestamp: new Date().toISOString(),
     };
   });
 
@@ -148,17 +190,21 @@ function generateFunnelAnalytics(funnelType: string, options: {
   for (let i = 0; i < stepData.length - 1; i++) {
     const currentStep = stepData[i];
     const nextStep = stepData[i + 1];
-    
-    const dropOffRate = ((currentStep.users - nextStep.users) / currentStep.users) * 100;
+
+    const dropOffRate =
+      ((currentStep.users - nextStep.users) / currentStep.users) * 100;
     const usersLost = currentStep.users - nextStep.users;
-    
+
     let severity: 'low' | 'medium' | 'high' | 'critical' = 'low';
     if (dropOffRate > 60) severity = 'critical';
     else if (dropOffRate > 45) severity = 'high';
     else if (dropOffRate > 30) severity = 'medium';
-    
-    const primaryReasons = generateDropOffReasons(currentStep.step, nextStep.step);
-    
+
+    const primaryReasons = generateDropOffReasons(
+      currentStep.step,
+      nextStep.step
+    );
+
     dropOffPoints.push({
       fromStep: currentStep.step.id,
       toStep: nextStep.step.id,
@@ -166,13 +212,14 @@ function generateFunnelAnalytics(funnelType: string, options: {
       usersLost,
       potentialRevenueLost: usersLost * (isJobSeeker ? 25 : 150),
       primaryReasons,
-      severity
+      severity,
     });
   }
 
   // Generate optimization recommendations
-  const recommendations = options.includeRecommendations ? 
-    generateOptimizationRecommendations(stepData, dropOffPoints, isJobSeeker) : [];
+  const recommendations = options.includeRecommendations
+    ? generateOptimizationRecommendations(stepData, dropOffPoints, isJobSeeker)
+    : [];
 
   // Calculate overall metrics
   const finalStep = stepData[stepData.length - 1];
@@ -189,20 +236,20 @@ function generateFunnelAnalytics(funnelType: string, options: {
     optimizationRecommendations: recommendations,
     dateRange: {
       from: options.dateFrom.toISOString(),
-      to: options.dateTo.toISOString()
+      to: options.dateTo.toISOString(),
     },
     lastUpdated: new Date().toISOString(),
     metadata: {
       generatedAt: new Date().toISOString(),
       dataSource: 'mock_analytics',
-      confidence: 0.85
-    }
+      confidence: 0.85,
+    },
   };
 }
 
 function generateDropOffReasons(fromStep: any, toStep: any): string[] {
   const reasons: string[] = [];
-  
+
   // Job seeker specific reasons
   if (fromStep.id === 'landing' && toStep.id === 'search') {
     reasons.push('Landing page not compelling enough');
@@ -216,18 +263,24 @@ function generateDropOffReasons(fromStep: any, toStep: any): string[] {
     reasons.push('Registration process too complex');
     reasons.push('Lack of trust signals');
     reasons.push('No clear benefit to registering');
-  } else if (fromStep.id === 'application_start' && toStep.id === 'application_complete') {
+  } else if (
+    fromStep.id === 'application_start' &&
+    toStep.id === 'application_complete'
+  ) {
     reasons.push('Application form too long');
     reasons.push('Technical issues during submission');
     reasons.push('Required fields unclear');
   }
-  
+
   // Employer specific reasons
   else if (fromStep.id === 'employer_landing' && toStep.id === 'pricing_view') {
     reasons.push('Value proposition unclear');
     reasons.push('Pricing information hard to find');
     reasons.push('Competitor comparison needed');
-  } else if (fromStep.id === 'pricing_view' && toStep.id === 'employer_registration') {
+  } else if (
+    fromStep.id === 'pricing_view' &&
+    toStep.id === 'employer_registration'
+  ) {
     reasons.push('Pricing too high');
     reasons.push('No free trial available');
     reasons.push('Complex pricing structure');
@@ -236,14 +289,14 @@ function generateDropOffReasons(fromStep: any, toStep: any): string[] {
     reasons.push('Limited payment options');
     reasons.push('Security concerns');
   }
-  
+
   // Generic reasons
   if (reasons.length === 0) {
     reasons.push('User experience friction');
     reasons.push('Technical performance issues');
     reasons.push('Unclear next steps');
   }
-  
+
   return reasons.slice(0, 3);
 }
 
@@ -253,12 +306,12 @@ function generateOptimizationRecommendations(
   isJobSeeker: boolean
 ): any[] {
   const recommendations: any[] = [];
-  
+
   // Generate recommendations based on critical drop-offs
   dropOffPoints.forEach((dropOff, index) => {
     if (dropOff.severity === 'critical' || dropOff.severity === 'high') {
       const fromStep = stepData.find(s => s.step.id === dropOff.fromStep);
-      
+
       if (fromStep) {
         recommendations.push({
           id: `rec_${dropOff.fromStep}_${index}`,
@@ -269,12 +322,12 @@ function generateOptimizationRecommendations(
           expectedImpact: `Reduce drop-off by 20-30%, potentially recovering ${Math.floor(dropOff.usersLost * 0.25)} users`,
           implementationEffort: 'medium',
           affectedSteps: [dropOff.fromStep, dropOff.toStep],
-          estimatedLift: Math.floor(dropOff.dropOffRate * 0.25)
+          estimatedLift: Math.floor(dropOff.dropOffRate * 0.25),
         });
       }
     }
   });
-  
+
   // Add specific recommendations based on funnel type
   if (isJobSeeker) {
     recommendations.push({
@@ -282,11 +335,12 @@ function generateOptimizationRecommendations(
       type: 'content_optimization',
       priority: 'medium',
       title: 'Improve Job Search Relevance',
-      description: 'Enhance search algorithm and filters to show more relevant job results',
+      description:
+        'Enhance search algorithm and filters to show more relevant job results',
       expectedImpact: 'Increase search-to-view conversion by 15-20%',
       implementationEffort: 'high',
       affectedSteps: ['search', 'job_view'],
-      estimatedLift: 18
+      estimatedLift: 18,
     });
   } else {
     recommendations.push({
@@ -294,13 +348,14 @@ function generateOptimizationRecommendations(
       type: 'content_optimization',
       priority: 'medium',
       title: 'Simplify Pricing Communication',
-      description: 'Make pricing more transparent and add value-based messaging',
+      description:
+        'Make pricing more transparent and add value-based messaging',
       expectedImpact: 'Increase pricing-to-registration conversion by 25%',
       implementationEffort: 'low',
       affectedSteps: ['pricing_view', 'employer_registration'],
-      estimatedLift: 25
+      estimatedLift: 25,
     });
   }
-  
+
   return recommendations;
-} 
+}

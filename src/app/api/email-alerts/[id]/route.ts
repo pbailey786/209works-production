@@ -6,13 +6,33 @@ import { z } from 'zod';
 
 // Validation schema for updating alerts
 const updateEmailAlertSchema = z.object({
-  type: z.enum(['job_title_alert', 'weekly_digest', 'job_category_alert', 'location_alert', 'company_alert']).optional(),
+  type: z
+    .enum([
+      'job_title_alert',
+      'weekly_digest',
+      'job_category_alert',
+      'location_alert',
+      'company_alert',
+    ])
+    .optional(),
   frequency: z.enum(['immediate', 'daily', 'weekly', 'monthly']).optional(),
   jobTitle: z.string().optional(),
   keywords: z.array(z.string()).optional(),
   location: z.string().optional(),
   categories: z.array(z.string()).optional(),
-  jobTypes: z.array(z.enum(['full_time', 'part_time', 'contract', 'internship', 'temporary', 'volunteer', 'other'])).optional(),
+  jobTypes: z
+    .array(
+      z.enum([
+        'full_time',
+        'part_time',
+        'contract',
+        'internship',
+        'temporary',
+        'volunteer',
+        'other',
+      ])
+    )
+    .optional(),
   companies: z.array(z.string()).optional(),
   salaryMin: z.number().min(0).optional(),
   salaryMax: z.number().min(0).optional(),
@@ -23,11 +43,11 @@ const updateEmailAlertSchema = z.object({
 // GET /api/email-alerts/[id] - Get specific alert
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string  }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -41,16 +61,16 @@ export async function GET(
     }
 
     const alert = await prisma.alert.findFirst({
-      where: { 
+      where: {
         id: (await params).id,
-        userId: user.id // Ensure user owns this alert
+        userId: user.id, // Ensure user owns this alert
       },
       include: {
         _count: {
-          select: { 
+          select: {
             jobs: true,
-            emailLogs: true 
-          }
+            emailLogs: true,
+          },
         },
         emailLogs: {
           orderBy: { createdAt: 'desc' },
@@ -62,10 +82,10 @@ export async function GET(
             sentAt: true,
             openedAt: true,
             clickedAt: true,
-            createdAt: true
-          }
-        }
-      }
+            createdAt: true,
+          },
+        },
+      },
     });
 
     if (!alert) {
@@ -85,11 +105,11 @@ export async function GET(
 // PATCH /api/email-alerts/[id] - Update specific alert
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string  }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -104,10 +124,10 @@ export async function PATCH(
 
     // Verify alert exists and belongs to user
     const existingAlert = await prisma.alert.findFirst({
-      where: { 
+      where: {
         id: (await params).id,
-        userId: user.id 
-      }
+        userId: user.id,
+      },
     });
 
     if (!existingAlert) {
@@ -118,8 +138,11 @@ export async function PATCH(
     const validatedData = updateEmailAlertSchema.parse(body);
 
     // Validate salary range if both are provided
-    if (validatedData.salaryMin && validatedData.salaryMax && 
-        validatedData.salaryMin > validatedData.salaryMax) {
+    if (
+      validatedData.salaryMin &&
+      validatedData.salaryMax &&
+      validatedData.salaryMin > validatedData.salaryMax
+    ) {
       return NextResponse.json(
         { error: 'Minimum salary cannot be greater than maximum salary' },
         { status: 400 }
@@ -135,14 +158,14 @@ export async function PATCH(
       },
       include: {
         _count: {
-          select: { jobs: true }
-        }
-      }
+          select: { jobs: true },
+        },
+      },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Alert updated successfully',
-      alert: updatedAlert 
+      alert: updatedAlert,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -163,11 +186,11 @@ export async function PATCH(
 // DELETE /api/email-alerts/[id] - Delete specific alert
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string  }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -182,10 +205,10 @@ export async function DELETE(
 
     // Verify alert exists and belongs to user
     const existingAlert = await prisma.alert.findFirst({
-      where: { 
+      where: {
         id: (await params).id,
-        userId: user.id 
-      }
+        userId: user.id,
+      },
     });
 
     if (!existingAlert) {
@@ -194,11 +217,11 @@ export async function DELETE(
 
     // Delete the alert (cascade will handle related records)
     await prisma.alert.delete({
-      where: { id: (await params).id }
+      where: { id: (await params).id },
     });
 
-    return NextResponse.json({ 
-      message: 'Alert deleted successfully' 
+    return NextResponse.json({
+      message: 'Alert deleted successfully',
     });
   } catch (error) {
     console.error('Delete email alert error:', error);
@@ -207,4 +230,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

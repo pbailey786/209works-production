@@ -28,11 +28,11 @@ export async function POST(req: NextRequest) {
     if (token) {
       // Token-based unsubscribe (from email links)
       const validatedData = tokenUnsubscribeSchema.parse({ ...body, token });
-      
+
       // Find existing unsubscribe record by token
       let unsubscribeRecord = await prisma.emailUnsubscribe.findUnique({
         where: { unsubscribeToken: token },
-        include: { user: true }
+        include: { user: true },
       });
 
       if (!unsubscribeRecord) {
@@ -50,28 +50,30 @@ export async function POST(req: NextRequest) {
           unsubscribeAll: validatedData.unsubscribeAll,
           reason: validatedData.reason,
           unsubscribedAt: new Date(),
-        }
+        },
       });
 
       // If unsubscribing from all, disable all alerts for the user
       if (validatedData.unsubscribeAll && unsubscribeRecord?.userId) {
         await prisma.alert.updateMany({
           where: { userId: unsubscribeRecord.userId },
-          data: { emailEnabled: false }
+          data: { emailEnabled: false },
         });
       }
 
       return NextResponse.json({
         message: 'Successfully unsubscribed',
-        unsubscribedFrom: validatedData.unsubscribeAll ? 'all emails' : validatedData.types || []
+        unsubscribedFrom: validatedData.unsubscribeAll
+          ? 'all emails'
+          : validatedData.types || [],
       });
     } else {
       // Email-based unsubscribe
       const validatedData = unsubscribeSchema.parse(body);
-      
+
       // Find user by email
       const user = await prisma.user.findUnique({
-        where: { email: validatedData.email }
+        where: { email: validatedData.email },
       });
 
       // Generate unsubscribe token
@@ -93,20 +95,22 @@ export async function POST(req: NextRequest) {
           unsubscribeAll: validatedData.unsubscribeAll,
           unsubscribeToken,
           reason: validatedData.reason,
-        }
+        },
       });
 
       // If unsubscribing from all and user exists, disable all alerts
       if (validatedData.unsubscribeAll && user) {
         await prisma.alert.updateMany({
           where: { userId: user.id },
-          data: { emailEnabled: false }
+          data: { emailEnabled: false },
         });
       }
 
       return NextResponse.json({
         message: 'Successfully unsubscribed',
-        unsubscribedFrom: validatedData.unsubscribeAll ? 'all emails' : validatedData.types || []
+        unsubscribedFrom: validatedData.unsubscribeAll
+          ? 'all emails'
+          : validatedData.types || [],
       });
     }
   } catch (error) {
@@ -134,8 +138,11 @@ export async function GET(req: NextRequest) {
 
   if (!email) {
     return new NextResponse(
-      createUnsubscribeHTML('Error', 'Email address is required for unsubscription.'),
-      { 
+      createUnsubscribeHTML(
+        'Error',
+        'Email address is required for unsubscription.'
+      ),
+      {
         status: 400,
         headers: { 'Content-Type': 'text/html' },
       }
@@ -152,7 +159,7 @@ export async function GET(req: NextRequest) {
       if (!unsubscribe) {
         return new NextResponse(
           createUnsubscribeHTML('Error', 'Invalid unsubscribe token.'),
-          { 
+          {
             status: 400,
             headers: { 'Content-Type': 'text/html' },
           }
@@ -161,8 +168,11 @@ export async function GET(req: NextRequest) {
 
       if (unsubscribe.email !== email) {
         return new NextResponse(
-          createUnsubscribeHTML('Error', 'Email address does not match the unsubscribe token.'),
-          { 
+          createUnsubscribeHTML(
+            'Error',
+            'Email address does not match the unsubscribe token.'
+          ),
+          {
             status: 400,
             headers: { 'Content-Type': 'text/html' },
           }
@@ -170,28 +180,32 @@ export async function GET(req: NextRequest) {
       }
 
       // User is already unsubscribed
-      const unsubscribeTypes = type === 'all' ? ['job_alert', 'weekly_digest'] : [type];
-      const message = type === 'all' 
-        ? 'You have been unsubscribed from all emails.'
-        : `You have been unsubscribed from ${type.replace('_', ' ')} emails.`;
+      const unsubscribeTypes =
+        type === 'all' ? ['job_alert', 'weekly_digest'] : [type];
+      const message =
+        type === 'all'
+          ? 'You have been unsubscribed from all emails.'
+          : `You have been unsubscribed from ${type.replace('_', ' ')} emails.`;
 
       return new NextResponse(
-        createUnsubscribeHTML('Unsubscribed', message, { 
+        createUnsubscribeHTML('Unsubscribed', message, {
           showResubscribe: true,
           email,
           types: unsubscribeTypes,
         }),
-        { 
+        {
           status: 200,
           headers: { 'Content-Type': 'text/html' },
         }
       );
-
     } catch (error) {
       console.error('Unsubscribe error:', error);
       return new NextResponse(
-        createUnsubscribeHTML('Error', 'Failed to process unsubscription. Please try again.'),
-        { 
+        createUnsubscribeHTML(
+          'Error',
+          'Failed to process unsubscription. Please try again.'
+        ),
+        {
           status: 500,
           headers: { 'Content-Type': 'text/html' },
         }
@@ -206,7 +220,7 @@ export async function GET(req: NextRequest) {
       email,
       type,
     }),
-    { 
+    {
       status: 200,
       headers: { 'Content-Type': 'text/html' },
     }
@@ -214,8 +228,8 @@ export async function GET(req: NextRequest) {
 }
 
 function createUnsubscribeHTML(
-  title: string, 
-  message?: string | null, 
+  title: string,
+  message?: string | null,
   options?: {
     showConfirmation?: boolean;
     showResubscribe?: boolean;
@@ -224,7 +238,8 @@ function createUnsubscribeHTML(
     types?: string[];
   }
 ): string {
-  const { showConfirmation, showResubscribe, email, type, types } = options || {};
+  const { showConfirmation, showResubscribe, email, type, types } =
+    options || {};
 
   return `
 <!DOCTYPE html>
@@ -380,7 +395,9 @@ function createUnsubscribeHTML(
         
         ${message ? `<p class="message">${message}</p>` : ''}
         
-        ${showConfirmation ? `
+        ${
+          showConfirmation
+            ? `
         <div class="form">
             <p class="message">Are you sure you want to unsubscribe from ${type === 'all' ? 'all emails' : (type || 'unknown').replace('_', ' ') + ' emails'}?</p>
             
@@ -406,14 +423,20 @@ function createUnsubscribeHTML(
                 <a href="/" class="button secondary">Keep My Subscription</a>
             </form>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
         
-        ${showResubscribe ? `
+        ${
+          showResubscribe
+            ? `
         <div class="form">
             <p class="message">Changed your mind? You can resubscribe at any time.</p>
             <button id="resubscribeBtn" class="button secondary">Resubscribe</button>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
         
         <div class="footer">
             <p>&copy; ${new Date().getFullYear()} 209jobs. All rights reserved.</p>
@@ -422,7 +445,9 @@ function createUnsubscribeHTML(
     </div>
     
     <script>
-        ${showConfirmation ? `
+        ${
+          showConfirmation
+            ? `
         document.getElementById('unsubscribeForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -462,16 +487,22 @@ function createUnsubscribeHTML(
                 alert('Failed to unsubscribe. Please try again.');
             }
         });
-        ` : ''}
+        `
+            : ''
+        }
         
-        ${showResubscribe ? `
+        ${
+          showResubscribe
+            ? `
         document.getElementById('resubscribeBtn').addEventListener('click', function() {
             // In a real implementation, you'd handle resubscription here
             alert('Resubscription feature coming soon! For now, please contact support or create a new account.');
         });
-        ` : ''}
+        `
+            : ''
+        }
     </script>
 </body>
 </html>
   `;
-} 
+}

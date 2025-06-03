@@ -9,13 +9,13 @@ export const middlewareConfig = {
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     },
   },
-  
+
   // CORS configuration
   cors: {
     allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',') || [],
     apiAllowedOrigins: process.env.API_ALLOWED_ORIGINS?.split(',') || [],
   },
-  
+
   // Logging configuration
   logging: {
     level: process.env.LOG_LEVEL || 'info',
@@ -25,19 +25,21 @@ export const middlewareConfig = {
       // e.g., DataDog, LogRocket, etc.
     },
   },
-  
+
   // Performance monitoring
   monitoring: {
-    slowRequestThreshold: parseInt(process.env.SLOW_REQUEST_THRESHOLD || '1000'),
+    slowRequestThreshold: parseInt(
+      process.env.SLOW_REQUEST_THRESHOLD || '1000'
+    ),
     enablePerformanceLogging: process.env.ENABLE_PERFORMANCE_LOGGING === 'true',
   },
-  
+
   // Security headers
   security: {
     enableSecurityHeaders: process.env.ENABLE_SECURITY_HEADERS !== 'false',
     contentSecurityPolicy: process.env.CSP_HEADER,
   },
-  
+
   // Environment flags
   environment: {
     isDevelopment: process.env.NODE_ENV === 'development',
@@ -49,7 +51,7 @@ export const middlewareConfig = {
 // Validation for required environment variables
 export function validateMiddlewareConfig(): void {
   const errors: string[] = [];
-  
+
   // Check for required Upstash configuration in production
   if (middlewareConfig.environment.isProduction) {
     if (!middlewareConfig.rateLimit.redis.url) {
@@ -59,12 +61,17 @@ export function validateMiddlewareConfig(): void {
       errors.push('UPSTASH_REDIS_REST_TOKEN is required in production');
     }
   }
-  
+
   // Check for CORS configuration in production
-  if (middlewareConfig.environment.isProduction && middlewareConfig.cors.allowedOrigins.length === 0) {
-    console.warn('Warning: No ALLOWED_ORIGINS configured in production. CORS will be restrictive.');
+  if (
+    middlewareConfig.environment.isProduction &&
+    middlewareConfig.cors.allowedOrigins.length === 0
+  ) {
+    console.warn(
+      'Warning: No ALLOWED_ORIGINS configured in production. CORS will be restrictive.'
+    );
   }
-  
+
   if (errors.length > 0) {
     throw new Error(`Middleware configuration errors:\n${errors.join('\n')}`);
   }
@@ -80,4 +87,4 @@ if (typeof window === 'undefined') {
       process.exit(1);
     }
   }
-} 
+}

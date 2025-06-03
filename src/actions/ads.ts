@@ -1,4 +1,4 @@
-"use server"
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -6,13 +6,13 @@ import { prisma } from '@/lib/database/prisma';
 import { ActionResult } from './auth';
 
 // Import validation schemas from existing files
-import { 
-  createAdSchema, 
-  updateAdSchema, 
+import {
+  createAdSchema,
+  updateAdSchema,
   adImpressionSchema,
   adClickSchema,
   adConversionSchema,
-  AdTargeting 
+  AdTargeting,
 } from '@/lib/validations/ads';
 
 // Create advertisement action
@@ -60,26 +60,36 @@ export async function createAdAction(
       name: formData.get('title') as string,
       type: formData.get('type') as any,
       content: JSON.parse(formData.get('content') as string),
-      targeting: formData.get('targeting') ? JSON.parse(formData.get('targeting') as string) : undefined,
+      targeting: formData.get('targeting')
+        ? JSON.parse(formData.get('targeting') as string)
+        : undefined,
       bidding: {
         type: formData.get('biddingModel') as any,
         bidAmount: Number(formData.get('bidAmount')),
-        dailyBudget: formData.get('dailyBudget') ? Number(formData.get('dailyBudget')) : undefined,
-        totalBudget: formData.get('totalBudget') ? Number(formData.get('totalBudget')) : undefined,
+        dailyBudget: formData.get('dailyBudget')
+          ? Number(formData.get('dailyBudget'))
+          : undefined,
+        totalBudget: formData.get('totalBudget')
+          ? Number(formData.get('totalBudget'))
+          : undefined,
       },
       schedule: {
         startDate: formData.get('startDate') as string,
-        endDate: formData.get('endDate') as string || undefined,
+        endDate: (formData.get('endDate') as string) || undefined,
       },
-      priority: formData.get('priority') ? Number(formData.get('priority')) : undefined,
-      notes: formData.get('notes') as string || undefined,
+      priority: formData.get('priority')
+        ? Number(formData.get('priority'))
+        : undefined,
+      notes: (formData.get('notes') as string) || undefined,
     };
 
     const validatedData = createAdSchema.parse(rawData);
 
     // Validate date range
     const startDate = new Date(validatedData.schedule.startDate);
-    const endDate = validatedData.schedule.endDate ? new Date(validatedData.schedule.endDate) : null;
+    const endDate = validatedData.schedule.endDate
+      ? new Date(validatedData.schedule.endDate)
+      : null;
 
     if (endDate && startDate >= endDate) {
       return {
@@ -91,7 +101,7 @@ export async function createAdAction(
     // Determine initial status
     const now = new Date();
     let status: string;
-    
+
     if (startDate > now) {
       status = 'scheduled';
     } else if (!endDate || endDate > now) {
@@ -105,7 +115,9 @@ export async function createAdAction(
       data: {
         title: validatedData.name,
         name: validatedData.name,
-        businessName: validatedData.content.companyLogo ? 'Company' : 'Business',
+        businessName: validatedData.content.companyLogo
+          ? 'Company'
+          : 'Business',
         imageUrl: validatedData.content.imageUrl || '',
         targetUrl: validatedData.content.ctaUrl,
         zipCodes: '',
@@ -191,30 +203,42 @@ export async function updateAdAction(
     // Extract and validate form data
     const rawData = {
       id: adId,
-      title: formData.get('title') as string || undefined,
-      description: formData.get('description') as string || undefined,
-      content: formData.get('content') ? JSON.parse(formData.get('content') as string) : undefined,
-      targeting: formData.get('targeting') ? JSON.parse(formData.get('targeting') as string) : undefined,
-      biddingModel: formData.get('biddingModel') as any || undefined,
-      bidAmount: formData.get('bidAmount') ? Number(formData.get('bidAmount')) : undefined,
-      dailyBudget: formData.get('dailyBudget') ? Number(formData.get('dailyBudget')) : undefined,
-      totalBudget: formData.get('totalBudget') ? Number(formData.get('totalBudget')) : undefined,
-      startDate: formData.get('startDate') as string || undefined,
-      endDate: formData.get('endDate') as string || undefined,
+      title: (formData.get('title') as string) || undefined,
+      description: (formData.get('description') as string) || undefined,
+      content: formData.get('content')
+        ? JSON.parse(formData.get('content') as string)
+        : undefined,
+      targeting: formData.get('targeting')
+        ? JSON.parse(formData.get('targeting') as string)
+        : undefined,
+      biddingModel: (formData.get('biddingModel') as any) || undefined,
+      bidAmount: formData.get('bidAmount')
+        ? Number(formData.get('bidAmount'))
+        : undefined,
+      dailyBudget: formData.get('dailyBudget')
+        ? Number(formData.get('dailyBudget'))
+        : undefined,
+      totalBudget: formData.get('totalBudget')
+        ? Number(formData.get('totalBudget'))
+        : undefined,
+      startDate: (formData.get('startDate') as string) || undefined,
+      endDate: (formData.get('endDate') as string) || undefined,
     };
 
     const validatedData = updateAdSchema.parse(rawData);
 
     // Remove undefined values and id
     const updateData = Object.fromEntries(
-      Object.entries(validatedData).filter(([key, value]) => 
-        value !== undefined && key !== 'id'
+      Object.entries(validatedData).filter(
+        ([key, value]) => value !== undefined && key !== 'id'
       )
     );
 
     // Handle date conversions
     if (updateData.startDate) {
-      updateData.startDate = new Date(updateData.startDate as string).toISOString();
+      updateData.startDate = new Date(
+        updateData.startDate as string
+      ).toISOString();
     }
     if (updateData.endDate) {
       updateData.endDate = new Date(updateData.endDate as string).toISOString();
@@ -222,15 +246,18 @@ export async function updateAdAction(
 
     // Validate status transitions
     const allowedTransitions: Record<string, string[]> = {
-      'draft': ['scheduled', 'active'],
-      'scheduled': ['active', 'paused'],
-      'active': ['paused', 'completed'],
-      'paused': ['active', 'completed'],
-      'completed': [], // Cannot transition from completed
+      draft: ['scheduled', 'active'],
+      scheduled: ['active', 'paused'],
+      active: ['paused', 'completed'],
+      paused: ['active', 'completed'],
+      completed: [], // Cannot transition from completed
     };
 
     const newStatus = formData.get('status') as string;
-    if (newStatus && !allowedTransitions[existingAd.status]?.includes(newStatus)) {
+    if (
+      newStatus &&
+      !allowedTransitions[existingAd.status]?.includes(newStatus)
+    ) {
       return {
         success: false,
         message: `Cannot change status from ${existingAd.status} to ${newStatus}`,
@@ -301,7 +328,8 @@ export async function deleteAdAction(
     if (Number(existingAd.currentSpend) > 10) {
       return {
         success: false,
-        message: 'Cannot delete advertisement with significant spend. Archive it instead.',
+        message:
+          'Cannot delete advertisement with significant spend. Archive it instead.',
       };
     }
 
@@ -309,7 +337,8 @@ export async function deleteAdAction(
     if (!['draft', 'scheduled', 'completed'].includes(existingAd.status)) {
       return {
         success: false,
-        message: 'Cannot delete active or paused advertisements. Please complete or archive them first.',
+        message:
+          'Cannot delete active or paused advertisements. Please complete or archive them first.',
       };
     }
 
@@ -341,11 +370,11 @@ export async function trackImpressionAction(
   try {
     const rawData = {
       adId: formData.get('adId') as string,
-      userId: formData.get('userId') as string || undefined,
-      sessionId: formData.get('sessionId') as string || 'anonymous',
-      userAgent: formData.get('userAgent') as string || undefined,
-      ipAddress: formData.get('ipAddress') as string || undefined,
-      position: formData.get('placement') as string || undefined,
+      userId: (formData.get('userId') as string) || undefined,
+      sessionId: (formData.get('sessionId') as string) || 'anonymous',
+      userAgent: (formData.get('userAgent') as string) || undefined,
+      ipAddress: (formData.get('ipAddress') as string) || undefined,
+      position: (formData.get('placement') as string) || undefined,
       timestamp: new Date().toISOString(),
     };
 
@@ -354,9 +383,9 @@ export async function trackImpressionAction(
     // Check if ad exists and is active
     const ad = await prisma.advertisement.findUnique({
       where: { id: validatedData.adId },
-      select: { 
-        id: true, 
-        status: true, 
+      select: {
+        id: true,
+        status: true,
         currentSpend: true,
         bidding: true,
         clicks: true,
@@ -399,13 +428,13 @@ export async function trackImpressionAction(
     // Check budget constraints for CPM ads
     if (biddingModel === 'cpm') {
       const cost = bidAmount / 1000; // CPM cost per impression
-      if (totalBudget && (Number(ad.currentSpend) + cost) > totalBudget) {
+      if (totalBudget && Number(ad.currentSpend) + cost > totalBudget) {
         // Auto-pause ad if total budget exceeded
         await prisma.advertisement.update({
           where: { id: ad.id },
           data: { status: 'paused' },
         });
-        
+
         return {
           success: false,
           message: 'Advertisement paused due to budget limit',
@@ -469,11 +498,11 @@ export async function trackClickAction(
   try {
     const rawData = {
       adId: formData.get('adId') as string,
-      userId: formData.get('userId') as string || undefined,
-      sessionId: formData.get('sessionId') as string || 'anonymous',
+      userId: (formData.get('userId') as string) || undefined,
+      sessionId: (formData.get('sessionId') as string) || 'anonymous',
       targetUrl: formData.get('targetUrl') as string,
-      userAgent: formData.get('userAgent') as string || undefined,
-      ipAddress: formData.get('ipAddress') as string || undefined,
+      userAgent: (formData.get('userAgent') as string) || undefined,
+      ipAddress: (formData.get('ipAddress') as string) || undefined,
       timestamp: new Date().toISOString(),
     };
 
@@ -482,9 +511,9 @@ export async function trackClickAction(
     // Get ad details
     const ad = await prisma.advertisement.findUnique({
       where: { id: validatedData.adId },
-      select: { 
-        id: true, 
-        status: true, 
+      select: {
+        id: true,
+        status: true,
         currentSpend: true,
         bidding: true,
         clicks: true,
@@ -518,14 +547,14 @@ export async function trackClickAction(
     let cost = 0;
     if (biddingModel === 'cpc') {
       cost = bidAmount;
-      
+
       // Check budget constraints
-      if (totalBudget && (Number(ad.currentSpend) + cost) > totalBudget) {
+      if (totalBudget && Number(ad.currentSpend) + cost > totalBudget) {
         await prisma.advertisement.update({
           where: { id: ad.id },
           data: { status: 'paused' },
         });
-        
+
         return {
           success: false,
           message: 'Advertisement paused due to budget limit',
@@ -561,9 +590,10 @@ export async function trackClickAction(
     });
 
     // Calculate CTR
-    const ctr = updatedAd.impressions > 0 
-      ? (updatedAd.clicks / updatedAd.impressions) * 100 
-      : 0;
+    const ctr =
+      updatedAd.impressions > 0
+        ? (updatedAd.clicks / updatedAd.impressions) * 100
+        : 0;
 
     return {
       success: true,
@@ -599,10 +629,12 @@ export async function trackConversionAction(
   try {
     const rawData = {
       adId: formData.get('adId') as string,
-      userId: formData.get('userId') as string || undefined,
+      userId: (formData.get('userId') as string) || undefined,
       type: formData.get('conversionType') as any,
-      value: formData.get('conversionValue') ? Number(formData.get('conversionValue')) : undefined,
-      customEvent: formData.get('customEvent') as string || undefined,
+      value: formData.get('conversionValue')
+        ? Number(formData.get('conversionValue'))
+        : undefined,
+      customEvent: (formData.get('customEvent') as string) || undefined,
       timestamp: new Date().toISOString(),
     };
 
@@ -632,7 +664,7 @@ export async function trackConversionAction(
       data: {
         adId: validatedData.adId,
         userId: validatedData.userId || null,
-        sessionId: formData.get('sessionId') as string || 'unknown',
+        sessionId: (formData.get('sessionId') as string) || 'unknown',
         conversionType: validatedData.type,
         conversionValue: validatedData.value || 0,
       },
@@ -653,9 +685,12 @@ export async function trackConversionAction(
         where: { id: validatedData.adId },
         select: { currentSpend: true },
       });
-      
+
       if (ad && Number(ad.currentSpend) > 0) {
-        roi = ((validatedData.value - Number(ad.currentSpend)) / Number(ad.currentSpend)) * 100;
+        roi =
+          ((validatedData.value - Number(ad.currentSpend)) /
+            Number(ad.currentSpend)) *
+          100;
       }
     }
 
@@ -732,14 +767,15 @@ export async function getAdAnalyticsAction(
 
     // Calculate performance metrics
     const ctr = ad.impressions > 0 ? (ad.clicks / ad.impressions) * 100 : 0;
-    const conversionRate = ad.clicks > 0 ? (ad.conversions / ad.clicks) * 100 : 0;
+    const conversionRate =
+      ad.clicks > 0 ? (ad.conversions / ad.clicks) * 100 : 0;
     const avgCost = ad.clicks > 0 ? Number(ad.currentSpend) / ad.clicks : 0;
-    const budgetUtilization = totalBudget 
-      ? (Number(ad.currentSpend) / totalBudget) * 100 
+    const budgetUtilization = totalBudget
+      ? (Number(ad.currentSpend) / totalBudget) * 100
       : 0;
 
     // Get detailed analytics for date range
-    const whereClause = dateRange 
+    const whereClause = dateRange
       ? {
           adId,
           createdAt: {
@@ -749,28 +785,30 @@ export async function getAdAnalyticsAction(
         }
       : { adId };
 
-    const [impressionsByDay, clicksByDay, conversionsByDay] = await Promise.all([
-      prisma.adImpression.groupBy({
-        by: ['createdAt'],
-        where: whereClause,
-        _count: { _all: true },
-        orderBy: { createdAt: 'asc' },
-      }),
-      prisma.adClick.groupBy({
-        by: ['createdAt'],
-        where: whereClause,
-        _count: { _all: true },
-        _sum: { cost: true },
-        orderBy: { createdAt: 'asc' },
-      }),
-      prisma.adConversion.groupBy({
-        by: ['conversionType', 'createdAt'],
-        where: whereClause,
-        _count: { _all: true },
-        _sum: { conversionValue: true },
-        orderBy: { createdAt: 'asc' },
-      }),
-    ]);
+    const [impressionsByDay, clicksByDay, conversionsByDay] = await Promise.all(
+      [
+        prisma.adImpression.groupBy({
+          by: ['createdAt'],
+          where: whereClause,
+          _count: { _all: true },
+          orderBy: { createdAt: 'asc' },
+        }),
+        prisma.adClick.groupBy({
+          by: ['createdAt'],
+          where: whereClause,
+          _count: { _all: true },
+          _sum: { cost: true },
+          orderBy: { createdAt: 'asc' },
+        }),
+        prisma.adConversion.groupBy({
+          by: ['conversionType', 'createdAt'],
+          where: whereClause,
+          _count: { _all: true },
+          _sum: { conversionValue: true },
+          orderBy: { createdAt: 'asc' },
+        }),
+      ]
+    );
 
     return {
       success: true,
@@ -896,7 +934,7 @@ export async function bulkAdOperationAction(
     return {
       success: true,
       message: `Successfully ${operation}d ${result.count} advertisement${result.count !== 1 ? 's' : ''}`,
-      data: { 
+      data: {
         affectedCount: result.count,
         skippedCount: adIds.length - result.count,
       },
@@ -919,4 +957,4 @@ function isValidUrl(url: string): boolean {
   } catch {
     return false;
   }
-} 
+}

@@ -39,18 +39,20 @@ interface PostHogProviderProps {
   region?: string;
 }
 
-export function PostHogProvider({ 
-  children, 
-  apiKey, 
+export function PostHogProvider({
+  children,
+  apiKey,
   host = 'https://us.i.posthog.com',
-  region 
+  region,
 }: PostHogProviderProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [hasConsent, setHasConsent] = useState(false);
   const [regionalContext, setRegionalContextState] = useState<RegionalContext>({
     region,
-    domain: typeof window !== 'undefined' ? window.location.hostname : undefined,
-    userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
+    domain:
+      typeof window !== 'undefined' ? window.location.hostname : undefined,
+    userAgent:
+      typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
     referrer: typeof document !== 'undefined' ? document.referrer : undefined,
   });
 
@@ -76,7 +78,7 @@ export function PostHogProvider({
         person_profiles: 'identified_only',
         capture_pageview: false, // We'll handle this manually for regional context
         capture_pageleave: true,
-        loaded: (posthog) => {
+        loaded: posthog => {
           // Set regional context as super properties
           posthog.register({
             region: regionalContext.region,
@@ -88,7 +90,10 @@ export function PostHogProvider({
           });
 
           setIsInitialized(true);
-          console.log('PostHog initialized with regional context:', regionalContext);
+          console.log(
+            'PostHog initialized with regional context:',
+            regionalContext
+          );
         },
         // GDPR compliance settings
         opt_out_capturing_by_default: !hasConsent,
@@ -96,14 +101,19 @@ export function PostHogProvider({
         disable_session_recording: !hasConsent,
         disable_surveys: !hasConsent,
         // Regional data settings
-        property_blacklist: hasConsent ? [] : ['$ip', '$geoip_country_code', '$geoip_city_name'],
+        property_blacklist: hasConsent
+          ? []
+          : ['$ip', '$geoip_country_code', '$geoip_city_name'],
       });
     } catch (error) {
       console.error('Failed to initialize PostHog:', error);
     }
   };
 
-  const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
+  const trackEvent = (
+    eventName: string,
+    properties: Record<string, any> = {}
+  ) => {
     if (!isInitialized || !hasConsent) return;
 
     const enrichedProperties = {
@@ -142,7 +152,8 @@ export function PostHogProvider({
       search_categories: filters.categories,
       results_count: results.totalCount,
       results_has_more: results.hasMore,
-      search_page: Math.floor((filters.offset || 0) / (filters.limit || 20)) + 1,
+      search_page:
+        Math.floor((filters.offset || 0) / (filters.limit || 20)) + 1,
     });
   };
 
@@ -163,11 +174,15 @@ export function PostHogProvider({
     trackEvent('regional_navigation', {
       from_region: fromRegion,
       to_region: toRegion,
-      navigation_type: fromRegion && toRegion ? 'region_switch' : 'region_entry',
+      navigation_type:
+        fromRegion && toRegion ? 'region_switch' : 'region_entry',
     });
   };
 
-  const identifyUser = (userId: string, userProperties: Record<string, any> = {}) => {
+  const identifyUser = (
+    userId: string,
+    userProperties: Record<string, any> = {}
+  ) => {
     if (!isInitialized || !hasConsent) return;
 
     const enrichedProperties = {
@@ -182,7 +197,7 @@ export function PostHogProvider({
 
   const setRegionalContext = (context: RegionalContext) => {
     setRegionalContextState(prev => ({ ...prev, ...context }));
-    
+
     if (isInitialized && hasConsent) {
       // Update super properties with new regional context
       posthog.register({
@@ -195,7 +210,7 @@ export function PostHogProvider({
   const grantConsent = () => {
     setHasConsent(true);
     localStorage.setItem('posthog-consent', 'granted');
-    
+
     if (apiKey && !isInitialized) {
       initializePostHog();
     } else if (isInitialized) {
@@ -207,7 +222,7 @@ export function PostHogProvider({
   const revokeConsent = () => {
     setHasConsent(false);
     localStorage.setItem('posthog-consent', 'revoked');
-    
+
     if (isInitialized) {
       posthog.opt_out_capturing();
     }
@@ -252,9 +267,7 @@ export function PostHogProvider({
 
   return (
     <PostHogContext.Provider value={contextValue}>
-      <PHProvider client={posthog}>
-        {children}
-      </PHProvider>
+      <PHProvider client={posthog}>{children}</PHProvider>
     </PostHogContext.Provider>
   );
 }
@@ -265,4 +278,4 @@ export function usePostHog() {
     throw new Error('usePostHog must be used within a PostHogProvider');
   }
   return context;
-} 
+}

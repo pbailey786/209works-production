@@ -1,4 +1,4 @@
-"use server"
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -14,11 +14,19 @@ const updateProfileSchema = z.object({
   linkedinUrl: z.string().url('Please enter a valid LinkedIn URL').optional(),
   githubUrl: z.string().url('Please enter a valid GitHub URL').optional(),
   portfolioUrl: z.string().url('Please enter a valid portfolio URL').optional(),
-  profilePictureUrl: z.string().url('Please enter a valid image URL').optional(),
+  profilePictureUrl: z
+    .string()
+    .url('Please enter a valid image URL')
+    .optional(),
   // Employer-specific fields
   companyName: z.string().optional(),
-  companyWebsite: z.string().url('Please enter a valid company website').optional(),
-  companySize: z.enum(['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+']).optional(),
+  companyWebsite: z
+    .string()
+    .url('Please enter a valid company website')
+    .optional(),
+  companySize: z
+    .enum(['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+'])
+    .optional(),
   industry: z.string().optional(),
   // Job seeker-specific fields
   currentTitle: z.string().optional(),
@@ -27,7 +35,11 @@ const updateProfileSchema = z.object({
   expectedSalaryMin: z.number().min(0).optional(),
   expectedSalaryMax: z.number().min(0).optional(),
   isOpenToWork: z.boolean().optional(),
-  preferredJobTypes: z.array(z.enum(['full_time', 'part_time', 'contract', 'temporary', 'internship'])).optional(),
+  preferredJobTypes: z
+    .array(
+      z.enum(['full_time', 'part_time', 'contract', 'temporary', 'internship'])
+    )
+    .optional(),
   preferredLocations: z.array(z.string()).optional(),
   isOpenToRemote: z.boolean().optional(),
 });
@@ -45,7 +57,9 @@ const updateNotificationPreferencesSchema = z.object({
 });
 
 const updatePrivacySettingsSchema = z.object({
-  profileVisibility: z.enum(['public', 'private', 'employers-only']).default('public'),
+  profileVisibility: z
+    .enum(['public', 'private', 'employers-only'])
+    .default('public'),
   showEmail: z.boolean().default(false),
   showPhone: z.boolean().default(false),
   allowMessagesFromEmployers: z.boolean().default(true),
@@ -54,14 +68,18 @@ const updatePrivacySettingsSchema = z.object({
   indexableBySearchEngines: z.boolean().default(true),
 });
 
-const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
-  confirmPassword: z.string().min(1, 'Please confirm your new password'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z
+      .string()
+      .min(8, 'New password must be at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your new password'),
+  })
+  .refine(data => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 const deleteAccountSchema = z.object({
   confirmEmail: z.string().email('Please enter your email address'),
@@ -72,7 +90,12 @@ const uploadResumeSchema = z.object({
   fileName: z.string().min(1, 'File name is required'),
   fileUrl: z.string().url('Please provide a valid file URL'),
   fileSize: z.number().min(1, 'File size must be greater than 0'),
-  fileType: z.string().regex(/^application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document)$/, 'Only PDF, DOC, and DOCX files are allowed'),
+  fileType: z
+    .string()
+    .regex(
+      /^application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document)$/,
+      'Only PDF, DOC, and DOCX files are allowed'
+    ),
 });
 
 // Update user profile action
@@ -105,32 +128,52 @@ export async function updateProfileAction(
 
     // Extract form data
     const rawData: any = {
-      name: formData.get('name') as string || undefined,
-      bio: formData.get('bio') as string || undefined,
-      location: formData.get('location') as string || undefined,
-      website: formData.get('website') as string || undefined,
-      linkedinUrl: formData.get('linkedinUrl') as string || undefined,
-      githubUrl: formData.get('githubUrl') as string || undefined,
-      portfolioUrl: formData.get('portfolioUrl') as string || undefined,
-      profilePictureUrl: formData.get('profilePictureUrl') as string || undefined,
+      name: (formData.get('name') as string) || undefined,
+      bio: (formData.get('bio') as string) || undefined,
+      location: (formData.get('location') as string) || undefined,
+      website: (formData.get('website') as string) || undefined,
+      linkedinUrl: (formData.get('linkedinUrl') as string) || undefined,
+      githubUrl: (formData.get('githubUrl') as string) || undefined,
+      portfolioUrl: (formData.get('portfolioUrl') as string) || undefined,
+      profilePictureUrl:
+        (formData.get('profilePictureUrl') as string) || undefined,
     };
 
     // Add role-specific fields
     if (currentUser.role === 'employer') {
-      rawData.companyName = formData.get('companyName') as string || undefined;
-      rawData.companyWebsite = formData.get('companyWebsite') as string || undefined;
-      rawData.companySize = formData.get('companySize') as string || undefined;
-      rawData.industry = formData.get('industry') as string || undefined;
+      rawData.companyName =
+        (formData.get('companyName') as string) || undefined;
+      rawData.companyWebsite =
+        (formData.get('companyWebsite') as string) || undefined;
+      rawData.companySize =
+        (formData.get('companySize') as string) || undefined;
+      rawData.industry = (formData.get('industry') as string) || undefined;
     } else if (currentUser.role === 'jobseeker') {
-      rawData.currentTitle = formData.get('currentTitle') as string || undefined;
-      rawData.experienceLevel = formData.get('experienceLevel') as string || undefined;
-      rawData.skills = formData.get('skills') ? JSON.parse(formData.get('skills') as string) : undefined;
-      rawData.expectedSalaryMin = formData.get('expectedSalaryMin') ? Number(formData.get('expectedSalaryMin')) : undefined;
-      rawData.expectedSalaryMax = formData.get('expectedSalaryMax') ? Number(formData.get('expectedSalaryMax')) : undefined;
-      rawData.isOpenToWork = formData.get('isOpenToWork') ? formData.get('isOpenToWork') === 'true' : undefined;
-      rawData.preferredJobTypes = formData.get('preferredJobTypes') ? JSON.parse(formData.get('preferredJobTypes') as string) : undefined;
-      rawData.preferredLocations = formData.get('preferredLocations') ? JSON.parse(formData.get('preferredLocations') as string) : undefined;
-      rawData.isOpenToRemote = formData.get('isOpenToRemote') ? formData.get('isOpenToRemote') === 'true' : undefined;
+      rawData.currentTitle =
+        (formData.get('currentTitle') as string) || undefined;
+      rawData.experienceLevel =
+        (formData.get('experienceLevel') as string) || undefined;
+      rawData.skills = formData.get('skills')
+        ? JSON.parse(formData.get('skills') as string)
+        : undefined;
+      rawData.expectedSalaryMin = formData.get('expectedSalaryMin')
+        ? Number(formData.get('expectedSalaryMin'))
+        : undefined;
+      rawData.expectedSalaryMax = formData.get('expectedSalaryMax')
+        ? Number(formData.get('expectedSalaryMax'))
+        : undefined;
+      rawData.isOpenToWork = formData.get('isOpenToWork')
+        ? formData.get('isOpenToWork') === 'true'
+        : undefined;
+      rawData.preferredJobTypes = formData.get('preferredJobTypes')
+        ? JSON.parse(formData.get('preferredJobTypes') as string)
+        : undefined;
+      rawData.preferredLocations = formData.get('preferredLocations')
+        ? JSON.parse(formData.get('preferredLocations') as string)
+        : undefined;
+      rawData.isOpenToRemote = formData.get('isOpenToRemote')
+        ? formData.get('isOpenToRemote') === 'true'
+        : undefined;
     }
 
     const validatedData = updateProfileSchema.parse(rawData);
@@ -163,7 +206,9 @@ export async function updateProfileAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -194,7 +239,8 @@ export async function updateNotificationPreferencesAction(
     // Extract form data
     const rawData = {
       emailJobAlerts: formData.get('emailJobAlerts') === 'true',
-      emailApplicationUpdates: formData.get('emailApplicationUpdates') === 'true',
+      emailApplicationUpdates:
+        formData.get('emailApplicationUpdates') === 'true',
       emailMarketingEmails: formData.get('emailMarketingEmails') === 'true',
       emailWeeklyDigest: formData.get('emailWeeklyDigest') === 'true',
       pushJobAlerts: formData.get('pushJobAlerts') === 'true',
@@ -228,7 +274,9 @@ export async function updateNotificationPreferencesAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -261,10 +309,13 @@ export async function updatePrivacySettingsAction(
       profileVisibility: formData.get('profileVisibility') as any,
       showEmail: formData.get('showEmail') === 'true',
       showPhone: formData.get('showPhone') === 'true',
-      allowMessagesFromEmployers: formData.get('allowMessagesFromEmployers') === 'true',
-      allowJobRecommendations: formData.get('allowJobRecommendations') === 'true',
+      allowMessagesFromEmployers:
+        formData.get('allowMessagesFromEmployers') === 'true',
+      allowJobRecommendations:
+        formData.get('allowJobRecommendations') === 'true',
       showOnlineStatus: formData.get('showOnlineStatus') === 'true',
-      indexableBySearchEngines: formData.get('indexableBySearchEngines') === 'true',
+      indexableBySearchEngines:
+        formData.get('indexableBySearchEngines') === 'true',
     };
 
     const validatedData = updatePrivacySettingsSchema.parse(rawData);
@@ -291,7 +342,9 @@ export async function updatePrivacySettingsAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -376,7 +429,9 @@ export async function changePasswordAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -447,7 +502,9 @@ export async function uploadResumeAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -477,7 +534,7 @@ export async function deleteAccountAction(
 
     const rawData = {
       confirmEmail: formData.get('confirmEmail') as string,
-      reason: formData.get('reason') as string || undefined,
+      reason: (formData.get('reason') as string) || undefined,
     };
 
     const validatedData = deleteAccountSchema.parse(rawData);
@@ -514,7 +571,9 @@ export async function deleteAccountAction(
     }
 
     // Use safe deletion to prevent cascading delete issues
-    const { DataIntegrityService } = await import('@/lib/database/data-integrity');
+    const { DataIntegrityService } = await import(
+      '@/lib/database/data-integrity'
+    );
     const deletionResult = await DataIntegrityService.safeDeleteUser(
       userId,
       validatedData.reason || 'User requested account deletion'
@@ -523,7 +582,8 @@ export async function deleteAccountAction(
     if (!deletionResult.success) {
       return {
         success: false,
-        message: deletionResult.errors?.[0] || 'Failed to delete account safely',
+        message:
+          deletionResult.errors?.[0] || 'Failed to delete account safely',
       };
     }
 
@@ -532,7 +592,7 @@ export async function deleteAccountAction(
 
     return {
       success: true,
-      message: 'Account deleted successfully. We\'re sorry to see you go!',
+      message: "Account deleted successfully. We're sorry to see you go!",
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -540,7 +600,9 @@ export async function deleteAccountAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -601,7 +663,7 @@ export async function getUserProfileAction(
     }
 
     const isOwnProfile = currentUserId === profileUserId;
-    
+
     // Check if user can view this profile
     let canViewProfile = false;
     // TODO: Implement privacy settings when schema supports it
@@ -628,7 +690,7 @@ export async function getUserProfileAction(
     if (!isOwnProfile && canViewProfile) {
       // TODO: Implement privacy settings check when schema supports it
       // if (!privacySettings?.showEmail) {
-        profileUser.email = '';
+      profileUser.email = '';
       // }
     }
 
@@ -652,10 +714,12 @@ export async function searchUsersAction(
   formData: FormData
 ): Promise<{ users: any[]; totalCount: number; currentPage: number }> {
   try {
-    const query = formData.get('query') as string || '';
-    const skills = formData.get('skills') ? JSON.parse(formData.get('skills') as string) : [];
-    const location = formData.get('location') as string || '';
-    const experienceLevel = formData.get('experienceLevel') as string || '';
+    const query = (formData.get('query') as string) || '';
+    const skills = formData.get('skills')
+      ? JSON.parse(formData.get('skills') as string)
+      : [];
+    const location = (formData.get('location') as string) || '';
+    const experienceLevel = (formData.get('experienceLevel') as string) || '';
     const isOpenToWork = formData.get('isOpenToWork') === 'true';
     const page = Number(formData.get('page')) || 1;
     const limit = Math.min(Number(formData.get('limit')) || 20, 50);
@@ -735,4 +799,4 @@ export async function searchUsersAction(
       currentPage: 1,
     };
   }
-} 
+}

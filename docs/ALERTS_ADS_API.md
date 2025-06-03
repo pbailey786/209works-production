@@ -81,14 +81,14 @@ POST /api/ads/impression
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `isActive` | boolean | Filter by active status |
-| `frequency` | enum | Filter by frequency (`immediate`, `daily`, `weekly`, `monthly`) |
-| `page` | number | Page number (default: 1) |
-| `limit` | number | Items per page (max: 100) |
-| `sortBy` | enum | Sort field (`name`, `createdAt`, `lastSent`) |
-| `sortOrder` | enum | Sort direction (`asc`, `desc`) |
+| Parameter   | Type    | Description                                                     |
+| ----------- | ------- | --------------------------------------------------------------- |
+| `isActive`  | boolean | Filter by active status                                         |
+| `frequency` | enum    | Filter by frequency (`immediate`, `daily`, `weekly`, `monthly`) |
+| `page`      | number  | Page number (default: 1)                                        |
+| `limit`     | number  | Items per page (max: 100)                                       |
+| `sortBy`    | enum    | Sort field (`name`, `createdAt`, `lastSent`)                    |
+| `sortOrder` | enum    | Sort direction (`asc`, `desc`)                                  |
 
 **Example Response:**
 
@@ -172,6 +172,7 @@ POST /api/ads/impression
 **Authentication:** Required (Users can only access their own alerts)
 
 **Response includes:**
+
 - Alert configuration
 - Recent matching jobs preview
 - Performance statistics
@@ -264,18 +265,18 @@ POST /api/ads/impression
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `advertiserId` | UUID | Filter by advertiser (Admin only) |
-| `status` | enum | Filter by status |
-| `type` | enum | Filter by ad type |
-| `isActive` | boolean | Filter by current activity |
-| `dateFrom` | datetime | Start date filter |
-| `dateTo` | datetime | End date filter |
-| `page` | number | Page number |
-| `limit` | number | Items per page |
-| `sortBy` | enum | Sort field |
-| `sortOrder` | enum | Sort direction |
+| Parameter      | Type     | Description                       |
+| -------------- | -------- | --------------------------------- |
+| `advertiserId` | UUID     | Filter by advertiser (Admin only) |
+| `status`       | enum     | Filter by status                  |
+| `type`         | enum     | Filter by ad type                 |
+| `isActive`     | boolean  | Filter by current activity        |
+| `dateFrom`     | datetime | Start date filter                 |
+| `dateTo`       | datetime | End date filter                   |
+| `page`         | number   | Page number                       |
+| `limit`        | number   | Items per page                    |
+| `sortBy`       | enum     | Sort field                        |
+| `sortOrder`    | enum     | Sort direction                    |
 
 **Example Response:**
 
@@ -298,7 +299,7 @@ POST /api/ads/impression
         },
         "bidding": {
           "type": "cpc",
-          "bidAmount": 2.50,
+          "bidAmount": 2.5,
           "dailyBudget": 100,
           "totalBudget": 3000
         },
@@ -312,8 +313,8 @@ POST /api/ads/impression
           "conversions": 12,
           "ctr": 1.52,
           "conversionRate": 5.13,
-          "estimatedSpend": 585.00,
-          "costPerClick": 2.50
+          "estimatedSpend": 585.0,
+          "costPerClick": 2.5
         },
         "isCurrentlyActive": true
       }
@@ -358,7 +359,11 @@ POST /api/ads/impression
     "states": ["CA", "NY", "TX"],
     "cities": ["San Francisco", "New York", "Austin"],
     "radius": 50,
-    "jobTitles": ["Software Engineer", "Frontend Developer", "Backend Developer"],
+    "jobTitles": [
+      "Software Engineer",
+      "Frontend Developer",
+      "Backend Developer"
+    ],
     "industries": ["Technology", "Software"],
     "experienceLevels": ["mid", "senior"],
     "skills": ["JavaScript", "React", "Node.js", "Python"],
@@ -369,10 +374,10 @@ POST /api/ads/impression
   },
   "bidding": {
     "type": "cpc",
-    "bidAmount": 3.00,
+    "bidAmount": 3.0,
     "dailyBudget": 150,
     "totalBudget": 4500,
-    "maxCpc": 5.00
+    "maxCpc": 5.0
   },
   "schedule": {
     "startDate": "2024-01-01T00:00:00Z",
@@ -392,6 +397,7 @@ POST /api/ads/impression
 **Authentication:** Required (Role-based access)
 
 **Response includes:**
+
 - Complete ad configuration
 - Performance metrics (all-time and recent)
 - Budget utilization
@@ -405,6 +411,7 @@ POST /api/ads/impression
 **Authentication:** Required
 
 **Features:**
+
 - Status transition validation
 - Schedule change restrictions for active ads
 - Automatic re-estimation of reach
@@ -416,6 +423,7 @@ POST /api/ads/impression
 **Authentication:** Required
 
 **Restrictions:**
+
 - Cannot delete active ads with recorded spend
 - Must pause first, then delete
 
@@ -443,6 +451,7 @@ POST /api/ads/impression
 ```
 
 **Features:**
+
 - Duplicate prevention (30-second window)
 - Automatic budget checking for CPM ads
 - Schedule validation
@@ -470,6 +479,7 @@ POST /api/ads/impression
 ```
 
 **Features:**
+
 - URL validation against ad content
 - CPC billing calculation
 - Budget monitoring and auto-pause
@@ -491,13 +501,14 @@ POST /api/ads/impression
   "clickId": "click-uuid",
   "userId": "user-uuid",
   "type": "job_apply",
-  "value": 50.00,
+  "value": 50.0,
   "customEvent": "premium_signup",
   "timestamp": "2024-01-15T11:00:00Z"
 }
 ```
 
 **Conversion Types:**
+
 - `job_view` - Job listing viewed
 - `job_apply` - Job application submitted
 - `signup` - User registration
@@ -505,6 +516,7 @@ POST /api/ads/impression
 - `custom` - Custom conversion event
 
 **Features:**
+
 - ROI calculation
 - Conversion funnel analysis
 - Attribution tracking (24-hour window)
@@ -520,16 +532,17 @@ POST /api/ads/impression
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `adIds` | array | Specific ads to analyze |
-| `advertiserId` | UUID | Advertiser filter (Admin only) |
-| `dateFrom` | datetime | Start date |
-| `dateTo` | datetime | End date |
-| `groupBy` | enum | Grouping (`day`, `week`, `month`, `ad`, `type`) |
-| `metrics` | array | Metrics to include |
+| Parameter      | Type     | Description                                     |
+| -------------- | -------- | ----------------------------------------------- |
+| `adIds`        | array    | Specific ads to analyze                         |
+| `advertiserId` | UUID     | Advertiser filter (Admin only)                  |
+| `dateFrom`     | datetime | Start date                                      |
+| `dateTo`       | datetime | End date                                        |
+| `groupBy`      | enum     | Grouping (`day`, `week`, `month`, `ad`, `type`) |
+| `metrics`      | array    | Metrics to include                              |
 
 **Available Metrics:**
+
 - `impressions` - Total ad impressions
 - `clicks` - Total ad clicks
 - `conversions` - Total conversions
@@ -552,11 +565,11 @@ POST /api/ads/impression
       "totalImpressions": 45620,
       "totalClicks": 1234,
       "totalConversions": 67,
-      "totalCost": 3085.50,
-      "totalRevenue": 3350.00,
+      "totalCost": 3085.5,
+      "totalRevenue": 3350.0,
       "overallCtr": 2.71,
       "overallConversionRate": 5.43,
-      "averageCpc": 2.50,
+      "averageCpc": 2.5,
       "overallRoas": 108.56,
       "estimatedReach": 28945
     },
@@ -568,8 +581,8 @@ POST /api/ads/impression
         "conversions": 2,
         "ctr": 2.72,
         "conversionRate": 5.88,
-        "cost": 85.00,
-        "revenue": 100.00,
+        "cost": 85.0,
+        "revenue": 100.0,
         "uniqueUsers": 892,
         "uniqueSessions": 1015
       }
@@ -603,7 +616,7 @@ POST /api/ads/impression
 ### Rate Limiting
 
 - **Alert endpoints**: 30 requests/minute
-- **Ad management**: 30 requests/minute  
+- **Ad management**: 30 requests/minute
 - **Impression tracking**: 1000 requests/minute
 - **Click tracking**: 500 requests/minute
 - **Conversion tracking**: 200 requests/minute
@@ -690,8 +703,8 @@ CREATE INDEX idx_conversion_ad_timestamp ON ad_conversion(ad_id, timestamp);
 export function useAlerts() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(false);
-  
-  const createAlert = async (alertData) => {
+
+  const createAlert = async alertData => {
     setLoading(true);
     try {
       const response = await fetch('/api/alerts', {
@@ -700,7 +713,7 @@ export function useAlerts() {
         body: JSON.stringify(alertData),
       });
       const result = await response.json();
-      
+
       if (result.success) {
         setAlerts(prev => [...prev, result.data]);
         return result.data;
@@ -709,8 +722,8 @@ export function useAlerts() {
       setLoading(false);
     }
   };
-  
-  const testAlert = async (alertId) => {
+
+  const testAlert = async alertId => {
     const response = await fetch(`/api/alerts/${alertId}/test`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -718,7 +731,7 @@ export function useAlerts() {
     });
     return response.json();
   };
-  
+
   return { alerts, createAlert, testAlert, loading };
 }
 ```
@@ -769,7 +782,7 @@ function trackClickAndRedirect(adId, targetUrl, impressionId) {
 The system requires additional database tables for alerts and ads. See the Prisma schema for complete definitions:
 
 - `JobAlert` - User job alerts
-- `Advertisement` - Ad campaigns  
+- `Advertisement` - Ad campaigns
 - `AdImpression` - Impression tracking
 - `AdClick` - Click tracking
 - `AdConversion` - Conversion tracking
@@ -805,4 +818,4 @@ ALERT_WEBHOOK_SECRET=your_webhook_secret
 
 ---
 
-For additional support or questions, contact the development team or refer to the API middleware and validation documentation. 
+For additional support or questions, contact the development team or refer to the API middleware and validation documentation.

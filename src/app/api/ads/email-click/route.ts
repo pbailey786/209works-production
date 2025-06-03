@@ -45,10 +45,9 @@ export async function GET(request: NextRequest) {
 
     // Redirect to target URL
     return NextResponse.redirect(targetUrl, 302);
-
   } catch (error) {
     console.error('Error in email click tracking:', error);
-    
+
     // If we have a target URL, still redirect even on error
     const targetUrl = new URL(request.url).searchParams.get('targetUrl');
     if (targetUrl) {
@@ -59,10 +58,10 @@ export async function GET(request: NextRequest) {
         // Invalid URL, return error
       }
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to process click tracking' },
       { status: 500 }
     );
   }
-} 
+}

@@ -31,7 +31,7 @@ const AREA_209_CITIES = [
   'Hilmar, CA',
   'Stevinson, CA',
   'Crows Landing, CA',
-  'Vernalis, CA'
+  'Vernalis, CA',
 ];
 
 // POST /api/admin/adzuna-import - Start job import
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
 
     // TODO: Add admin role check here
     // For now, allow any authenticated user for testing
-    
+
     const body = await req.json();
     const {
       cities = AREA_209_CITIES,
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       maxJobs = 500,
       filterQuality = true,
       cleanupOld = false,
-      removeDuplicates = true
+      removeDuplicates = true,
     } = body;
 
     console.log('🚀 Starting Adzuna import with options:', {
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       resultsPerCity,
       maxJobs,
       filterQuality,
-      cleanupOld
+      cleanupOld,
     });
 
     // Clean up old jobs if requested
@@ -76,35 +76,36 @@ export async function POST(req: NextRequest) {
       resultsPerCity,
       maxJobs,
       filterQuality,
-      removeDuplicates
+      removeDuplicates,
     });
 
     console.log('📊 Import result:', {
       success: importResult.success,
       imported: importResult.imported,
       skipped: importResult.skipped,
-      errors: importResult.errors
+      errors: importResult.errors,
     });
 
     return NextResponse.json({
       success: importResult.success,
-      message: importResult.success ? 'Import completed successfully' : 'Import failed',
+      message: importResult.success
+        ? 'Import completed successfully'
+        : 'Import failed',
       stats: {
         imported: importResult.imported,
         skipped: importResult.skipped,
         duplicates: importResult.duplicates,
-        errors: importResult.errors
+        errors: importResult.errors,
       },
-      details: importResult.details
+      details: importResult.details,
     });
-
   } catch (error) {
     console.error('Adzuna import API error:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Import failed',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -124,7 +125,9 @@ export async function GET(req: NextRequest) {
     const stats = await AdzunaImportService.getImportStats();
 
     // Check if Adzuna credentials are configured
-    const hasCredentials = !!(process.env.ADZUNA_APP_ID && process.env.ADZUNA_APP_KEY);
+    const hasCredentials = !!(
+      process.env.ADZUNA_APP_ID && process.env.ADZUNA_APP_KEY
+    );
 
     return NextResponse.json({
       success: true,
@@ -134,19 +137,20 @@ export async function GET(req: NextRequest) {
       recommendations: {
         suggestedImportSize: stats.totalAdzunaJobs < 100 ? 500 : 250,
         needsCleanup: stats.totalAdzunaJobs > 1000,
-        lastImportAge: stats.newestJob ? 
-          Math.floor((Date.now() - stats.newestJob.getTime()) / (1000 * 60 * 60 * 24)) : 
-          null
-      }
+        lastImportAge: stats.newestJob
+          ? Math.floor(
+              (Date.now() - stats.newestJob.getTime()) / (1000 * 60 * 60 * 24)
+            )
+          : null,
+      },
     });
-
   } catch (error) {
     console.error('Adzuna stats API error:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Failed to get statistics',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -168,16 +172,15 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({
       success: cleanupResult.success,
       message: cleanupResult.message,
-      deleted: cleanupResult.deleted
+      deleted: cleanupResult.deleted,
     });
-
   } catch (error) {
     console.error('Adzuna cleanup API error:', error);
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: 'Cleanup failed',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

@@ -7,36 +7,36 @@ export enum Permission {
   EDIT_USERS = 'edit_users',
   DELETE_USERS = 'delete_users',
   MANAGE_USER_ROLES = 'manage_user_roles',
-  
+
   // Content Moderation
   VIEW_MODERATION_QUEUE = 'view_moderation_queue',
   MODERATE_JOBS = 'moderate_jobs',
   MODERATE_USERS = 'moderate_users',
   HANDLE_REPORTS = 'handle_reports',
-  
+
   // Analytics & Reports
   VIEW_ANALYTICS = 'view_analytics',
   VIEW_DETAILED_ANALYTICS = 'view_detailed_analytics',
   EXPORT_REPORTS = 'export_reports',
   VIEW_FINANCIAL_DATA = 'view_financial_data',
-  
+
   // Advertisement Management
   VIEW_ADS = 'view_ads',
   MANAGE_ADS = 'manage_ads',
   VIEW_AD_PERFORMANCE = 'view_ad_performance',
   MANAGE_AD_CAMPAIGNS = 'manage_ad_campaigns',
-  
+
   // System Administration
   VIEW_SYSTEM_HEALTH = 'view_system_health',
   MANAGE_SYSTEM_SETTINGS = 'manage_system_settings',
   VIEW_AUDIT_LOGS = 'view_audit_logs',
   MANAGE_AUDIT_LOGS = 'manage_audit_logs',
-  
+
   // Email & Communications
   MANAGE_EMAIL_TEMPLATES = 'manage_email_templates',
   VIEW_EMAIL_ANALYTICS = 'view_email_analytics',
   SEND_BULK_EMAILS = 'send_bulk_emails',
-  
+
   // Super Admin Only
   MANAGE_ADMIN_ROLES = 'manage_admin_roles',
   SYSTEM_MAINTENANCE = 'system_maintenance',
@@ -55,9 +55,9 @@ export enum AdminRole {
 export const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
   [AdminRole.SUPER_ADMIN]: [
     // Super admin has all permissions
-    ...Object.values(Permission)
+    ...Object.values(Permission),
   ],
-  
+
   [AdminRole.CONTENT_MODERATOR]: [
     Permission.VIEW_USERS,
     Permission.EDIT_USERS,
@@ -68,7 +68,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     Permission.VIEW_ANALYTICS,
     Permission.VIEW_AUDIT_LOGS,
   ],
-  
+
   [AdminRole.ANALYTICS_SPECIALIST]: [
     Permission.VIEW_USERS,
     Permission.VIEW_ANALYTICS,
@@ -79,7 +79,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     Permission.VIEW_EMAIL_ANALYTICS,
     Permission.VIEW_SYSTEM_HEALTH,
   ],
-  
+
   [AdminRole.MARKETING_MANAGER]: [
     Permission.VIEW_USERS,
     Permission.VIEW_ADS,
@@ -92,7 +92,7 @@ export const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     Permission.VIEW_ANALYTICS,
     Permission.EXPORT_REPORTS,
   ],
-  
+
   [AdminRole.SUPPORT_SPECIALIST]: [
     Permission.VIEW_USERS,
     Permission.EDIT_USERS,
@@ -104,22 +104,31 @@ export const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
 };
 
 // Helper functions for permission checking
-export function hasPermission(userRole: string, permission: Permission): boolean {
+export function hasPermission(
+  userRole: string,
+  permission: Permission
+): boolean {
   // For backward compatibility, treat 'admin' as super admin
   if (userRole === 'admin') {
     return true;
   }
-  
+
   const adminRole = userRole as AdminRole;
   const permissions = ROLE_PERMISSIONS[adminRole];
   return permissions ? permissions.includes(permission) : false;
 }
 
-export function hasAnyPermission(userRole: string, permissions: Permission[]): boolean {
+export function hasAnyPermission(
+  userRole: string,
+  permissions: Permission[]
+): boolean {
   return permissions.some(permission => hasPermission(userRole, permission));
 }
 
-export function hasAllPermissions(userRole: string, permissions: Permission[]): boolean {
+export function hasAllPermissions(
+  userRole: string,
+  permissions: Permission[]
+): boolean {
   return permissions.every(permission => hasPermission(userRole, permission));
 }
 
@@ -128,7 +137,7 @@ export function getUserPermissions(userRole: string): Permission[] {
   if (userRole === 'admin') {
     return Object.values(Permission);
   }
-  
+
   const adminRole = userRole as AdminRole;
   return ROLE_PERMISSIONS[adminRole] || [];
 }
@@ -186,4 +195,4 @@ export const ROLE_DISPLAY_INFO = {
     description: 'Handles user support and basic moderation',
     color: 'orange',
   },
-}; 
+};

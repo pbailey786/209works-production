@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { useFocusIndicator, useDynamicFocus, useRouteFocus } from '@/hooks/useFocusManagement';
+import {
+  useFocusIndicator,
+  useDynamicFocus,
+  useRouteFocus,
+} from '@/hooks/useFocusManagement';
 
 interface FocusManagerProps {
   children: React.ReactNode;
@@ -8,10 +12,10 @@ interface FocusManagerProps {
 }
 
 // Global focus manager component
-export function FocusManager({ 
-  children, 
+export function FocusManager({
+  children,
   enableRouteAnnouncements = true,
-  className = '' 
+  className = '',
 }: FocusManagerProps) {
   const { isKeyboardUser } = useFocusIndicator();
   const { focusMainContent, announcePageChange } = useRouteFocus();
@@ -41,18 +45,14 @@ export function FocusManager({
 
       // Listen for route changes (Next.js specific)
       window.addEventListener('popstate', handleRouteChange);
-      
+
       return () => {
         window.removeEventListener('popstate', handleRouteChange);
       };
     }
   }, [enableRouteAnnouncements, focusMainContent, announcePageChange]);
 
-  return (
-    <div className={`focus-manager ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`focus-manager ${className}`}>{children}</div>;
 }
 
 // Component for managing focus in dynamic content
@@ -149,7 +149,9 @@ export function ModalFocus({
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
           );
           const firstElement = focusableElements[0] as HTMLElement;
-          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+          const lastElement = focusableElements[
+            focusableElements.length - 1
+          ] as HTMLElement;
 
           if (event.shiftKey) {
             if (document.activeElement === firstElement) {
@@ -192,7 +194,7 @@ export function ModalFocus({
         aria-modal="true"
         aria-label={ariaLabel}
         className={`modal-content ${className}`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
         tabIndex={-1}
       >
         {children}
@@ -213,7 +215,7 @@ export function SkipLink({ href, children, className = '' }: SkipLinkProps) {
     <a
       href={href}
       className={`skip-link ${className}`}
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault();
         const target = document.querySelector(href);
         if (target) {
@@ -234,21 +236,16 @@ interface FocusAnnouncementProps {
   id?: string;
 }
 
-export function FocusAnnouncement({ 
-  message, 
+export function FocusAnnouncement({
+  message,
   priority = 'polite',
-  id = 'focus-announcement'
+  id = 'focus-announcement',
 }: FocusAnnouncementProps) {
   return (
-    <div
-      id={id}
-      aria-live={priority}
-      aria-atomic="true"
-      className="sr-only"
-    >
+    <div id={id} aria-live={priority} aria-atomic="true" className="sr-only">
       {message}
     </div>
   );
 }
 
-export default FocusManager; 
+export default FocusManager;

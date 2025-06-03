@@ -65,6 +65,7 @@ We use the following branch strategy:
 Our CI/CD pipeline includes several workflows:
 
 #### 1. Main CI/CD Pipeline (`.github/workflows/ci-cd.yml`)
+
 - **Triggers**: Push to main/staging/develop, PRs
 - **Jobs**:
   - Lint and format checking
@@ -75,11 +76,13 @@ Our CI/CD pipeline includes several workflows:
   - Health checks
 
 #### 2. Branch Protection (`.github/workflows/branch-protection.yml`)
+
 - Enforces PR requirements
 - Checks commit message format
 - Validates PR descriptions
 
 #### 3. Database Migration (`.github/workflows/database-migration.yml`)
+
 - Validates schema changes
 - Performs dry-run migrations
 - Deploys migrations to appropriate environments
@@ -130,16 +133,19 @@ vercel --prod
 Configure environments in Vercel dashboard:
 
 #### Development Environment
+
 - **Branch**: `develop`
 - **Domain**: `dev-209jobs.vercel.app`
 - **Environment**: Development variables
 
 #### Staging Environment
-- **Branch**: `staging`  
+
+- **Branch**: `staging`
 - **Domain**: `staging-209jobs.vercel.app`
 - **Environment**: Staging variables
 
 #### Production Environment
+
 - **Branch**: `main`
 - **Domain**: `209jobs.com`
 - **Environment**: Production variables
@@ -148,12 +154,13 @@ Configure environments in Vercel dashboard:
 
 1. Add domain in Vercel dashboard
 2. Configure DNS records:
+
    ```
    Type: CNAME
    Name: @
    Value: cname.vercel-dns.com
-   
-   Type: CNAME  
+
+   Type: CNAME
    Name: www
    Value: cname.vercel-dns.com
    ```
@@ -165,6 +172,7 @@ Configure environments in Vercel dashboard:
 We recommend using a managed PostgreSQL service:
 
 #### Supabase (Recommended)
+
 ```bash
 # Create project at https://supabase.com
 # Get connection string from project settings
@@ -172,6 +180,7 @@ DATABASE_URL=postgresql://postgres:[password]@[host]:5432/postgres
 ```
 
 #### Neon (Alternative)
+
 ```bash
 # Create project at https://neon.tech
 # Get connection string from dashboard
@@ -245,6 +254,7 @@ SLACK_WEBHOOK=https://hooks.slack.com/services/...
 ### Environment-Specific Configuration
 
 #### Development
+
 ```bash
 NODE_ENV=development
 SKIP_RATE_LIMIT=true
@@ -253,6 +263,7 @@ ENABLE_API_DOCS=true
 ```
 
 #### Staging
+
 ```bash
 NODE_ENV=staging
 ENABLE_PERFORMANCE_LOGGING=true
@@ -260,6 +271,7 @@ LOG_LEVEL=debug
 ```
 
 #### Production
+
 ```bash
 NODE_ENV=production
 ENABLE_SECURITY_HEADERS=true
@@ -358,12 +370,14 @@ API_ALLOWED_ORIGINS=https://209jobs.com
 ### 1. Application Rollback
 
 #### Via Vercel Dashboard
+
 1. Go to Vercel project dashboard
 2. Navigate to "Deployments" tab
 3. Find previous stable deployment
 4. Click "Promote to Production"
 
 #### Via CLI
+
 ```bash
 # List recent deployments
 vercel list
@@ -375,6 +389,7 @@ vercel rollback [deployment-url]
 ### 2. Database Rollback
 
 #### Manual Rollback
+
 ```bash
 # Connect to database
 psql $DATABASE_URL
@@ -384,6 +399,7 @@ pg_restore -d $DATABASE_URL backup_file.sql
 ```
 
 #### Migration Rollback
+
 ```bash
 # Rollback to specific migration
 npx prisma migrate reset
@@ -395,11 +411,13 @@ npx prisma migrate deploy --to [migration-id]
 ### 3. Emergency Procedures
 
 1. **Immediate Response**
+
    - Rollback to last known good deployment
    - Check error logs and monitoring dashboards
    - Notify stakeholders via Slack/email
 
 2. **Investigation**
+
    - Review deployment logs
    - Check database migration status
    - Verify external service dependencies
@@ -415,6 +433,7 @@ npx prisma migrate deploy --to [migration-id]
 ### Common Issues
 
 #### 1. Build Failures
+
 ```bash
 # Check build logs in Vercel dashboard
 # Common causes:
@@ -429,6 +448,7 @@ npm run test
 ```
 
 #### 2. Database Connection Issues
+
 ```bash
 # Test database connection
 npx prisma db execute --stdin <<< "SELECT 1"
@@ -441,6 +461,7 @@ npx prisma migrate reset
 ```
 
 #### 3. Environment Variable Issues
+
 ```bash
 # Verify required variables are set
 node -e "console.log(process.env.DATABASE_URL ? 'DB OK' : 'DB MISSING')"
@@ -450,6 +471,7 @@ vercel env ls
 ```
 
 #### 4. Performance Issues
+
 ```bash
 # Check health endpoint
 curl https://209jobs.com/api/health
@@ -491,8 +513,9 @@ vercel logs [deployment-url]
 This deployment guide provides a comprehensive overview of deploying the 209jobs application. For additional support or questions, please refer to the team contacts above or create an issue in the project repository.
 
 Remember to:
+
 - Always test changes in staging before production
 - Keep environment variables secure and up to date
 - Monitor application performance and errors
 - Follow the rollback procedures if issues arise
-- Document any changes or custom configurations 
+- Document any changes or custom configurations

@@ -14,7 +14,9 @@ export async function POST(req: NextRequest) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     // For security, do not reveal if the email exists
-    return NextResponse.json({ message: 'If that email exists, a reset link has been sent.' });
+    return NextResponse.json({
+      message: 'If that email exists, a reset link has been sent.',
+    });
   }
 
   const passwordResetToken = randomBytes(32).toString('hex');
@@ -29,9 +31,18 @@ export async function POST(req: NextRequest) {
   const resetUrl = `${baseUrl}/reset-password?token=${passwordResetToken}`;
 
   // Validate required email environment variables
-  if (!process.env.EMAIL_SERVER_HOST || !process.env.EMAIL_SERVER_USER || !process.env.EMAIL_SERVER_PASS) {
-    console.error('Email configuration missing. Required: EMAIL_SERVER_HOST, EMAIL_SERVER_USER, EMAIL_SERVER_PASS');
-    return NextResponse.json({ error: 'Email service not configured' }, { status: 500 });
+  if (
+    !process.env.EMAIL_SERVER_HOST ||
+    !process.env.EMAIL_SERVER_USER ||
+    !process.env.EMAIL_SERVER_PASS
+  ) {
+    console.error(
+      'Email configuration missing. Required: EMAIL_SERVER_HOST, EMAIL_SERVER_USER, EMAIL_SERVER_PASS'
+    );
+    return NextResponse.json(
+      { error: 'Email service not configured' },
+      { status: 500 }
+    );
   }
 
   const transporter = nodemailer.createTransport({
@@ -60,26 +71,40 @@ export async function POST(req: NextRequest) {
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
           <p style="color: #666; font-size: 12px;">209jobs - Your Career, Our Priority</p>
         </div>
-      `
+      `,
     });
   } catch (err) {
     console.error('Password reset email send error:', err);
-    return NextResponse.json({ error: 'Email send failed', details: err instanceof Error ? err.message : String(err) }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Email send failed',
+        details: err instanceof Error ? err.message : String(err),
+      },
+      { status: 500 }
+    );
   }
 
-  return NextResponse.json({ message: 'If that email exists, a reset link has been sent.' });
+  return NextResponse.json({
+    message: 'If that email exists, a reset link has been sent.',
+  });
 }
 
 export async function PATCH(req: NextRequest) {
   const { token, password } = await req.json();
 
   if (!token || !password) {
-    return NextResponse.json({ error: 'Token and new password are required.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Token and new password are required.' },
+      { status: 400 }
+    );
   }
 
   // Validate password strength
   if (password.length < 8) {
-    return NextResponse.json({ error: 'Password must be at least 8 characters long.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Password must be at least 8 characters long.' },
+      { status: 400 }
+    );
   }
 
   const user = await prisma.user.findFirst({
@@ -90,7 +115,10 @@ export async function PATCH(req: NextRequest) {
   });
 
   if (!user) {
-    return NextResponse.json({ error: 'Invalid or expired token.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Invalid or expired token.' },
+      { status: 400 }
+    );
   }
 
   const { hash } = await import('bcryptjs');
@@ -105,5 +133,7 @@ export async function PATCH(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ message: 'Password has been reset successfully.' });
-} 
+  return NextResponse.json({
+    message: 'Password has been reset successfully.',
+  });
+}

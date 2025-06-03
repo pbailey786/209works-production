@@ -71,19 +71,20 @@ export default function WeeklyDigestEmail({
                   {job.salary && (
                     <Text style={salaryStyle}>💰 {job.salary}</Text>
                   )}
-                  
+
                   <Button style={viewJobButton} href={job.url}>
                     View Job
                   </Button>
-                  
+
                   {index < jobs.length - 1 && <Hr style={jobDivider} />}
                 </Section>
               ))
             ) : (
               <Section style={noJobsCard}>
                 <Text style={noJobsText}>
-                  No new jobs this week, but don't worry! We're constantly adding new opportunities. 
-                  Check back soon or consider expanding your search criteria.
+                  No new jobs this week, but don't worry! We're constantly
+                  adding new opportunities. Check back soon or consider
+                  expanding your search criteria.
                 </Text>
                 <Button style={browseButton} href="https://209jobs.com/jobs">
                   Browse All Jobs
@@ -102,7 +103,8 @@ export default function WeeklyDigestEmail({
             </Section>
 
             <Text style={footer}>
-              Keep searching, keep growing!<br />
+              Keep searching, keep growing!
+              <br />
               The 209jobs Team
             </Text>
           </Section>
@@ -135,7 +137,8 @@ export default function WeeklyDigestEmail({
 // Styles
 const main = {
   backgroundColor: '#f6f9fc',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  fontFamily:
+    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {
@@ -328,4 +331,4 @@ const copyrightText = {
   fontSize: '12px',
   color: '#9ca3af',
   margin: '8px 0 0 0',
-}; 
+};

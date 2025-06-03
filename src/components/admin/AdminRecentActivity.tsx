@@ -1,20 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Clock, 
-  User, 
-  FileText, 
-  Shield, 
-  AlertCircle, 
+import {
+  Clock,
+  User,
+  FileText,
+  Shield,
+  AlertCircle,
   CheckCircle,
   XCircle,
-  Eye
+  Eye,
 } from 'lucide-react';
 
 interface Activity {
   id: string;
-  type: 'user_signup' | 'job_posted' | 'job_application' | 'moderation' | 'system_alert';
+  type:
+    | 'user_signup'
+    | 'job_posted'
+    | 'job_application'
+    | 'moderation'
+    | 'system_alert';
   title: string;
   description: string;
   timestamp: Date;
@@ -31,7 +36,7 @@ const mockActivities: Activity[] = [
     description: 'John Smith registered as a jobseeker',
     timestamp: new Date(Date.now() - 1000 * 60 * 10), // 10 minutes ago
     status: 'success',
-    actor: 'john.smith@email.com'
+    actor: 'john.smith@email.com',
   },
   {
     id: '2',
@@ -40,7 +45,7 @@ const mockActivities: Activity[] = [
     description: 'TechCorp posted Senior Software Engineer position',
     timestamp: new Date(Date.now() - 1000 * 60 * 25), // 25 minutes ago
     status: 'success',
-    actor: 'TechCorp'
+    actor: 'TechCorp',
   },
   {
     id: '3',
@@ -49,7 +54,7 @@ const mockActivities: Activity[] = [
     description: 'Job listing flagged for inappropriate content',
     timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 minutes ago
     status: 'warning',
-    actor: 'Auto-Moderation System'
+    actor: 'Auto-Moderation System',
   },
   {
     id: '4',
@@ -58,7 +63,7 @@ const mockActivities: Activity[] = [
     description: 'Sarah Johnson applied to Marketing Manager position',
     timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
     status: 'success',
-    actor: 'sarah.johnson@email.com'
+    actor: 'sarah.johnson@email.com',
   },
   {
     id: '5',
@@ -67,8 +72,8 @@ const mockActivities: Activity[] = [
     description: 'High API usage detected - possible rate limiting',
     timestamp: new Date(Date.now() - 1000 * 60 * 90), // 1.5 hours ago
     status: 'warning',
-    actor: 'System Monitor'
-  }
+    actor: 'System Monitor',
+  },
 ];
 
 export default function AdminRecentActivity() {
@@ -146,15 +151,17 @@ export default function AdminRecentActivity() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+      <div className="rounded-lg bg-white p-6 shadow">
+        <h3 className="mb-4 text-lg font-medium text-gray-900">
+          Recent Activity
+        </h3>
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center space-x-3 animate-pulse">
-              <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+            <div key={i} className="flex animate-pulse items-center space-x-3">
+              <div className="h-8 w-8 rounded-full bg-gray-200"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 w-3/4 rounded bg-gray-200"></div>
+                <div className="h-3 w-1/2 rounded bg-gray-200"></div>
               </div>
             </div>
           ))}
@@ -164,47 +171,52 @@ export default function AdminRecentActivity() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="rounded-lg bg-white p-6 shadow">
+      <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
-        <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center">
-          <Eye className="w-4 h-4 mr-1" />
+        <button className="flex items-center text-sm text-blue-600 hover:text-blue-800">
+          <Eye className="mr-1 h-4 w-4" />
           View All
         </button>
       </div>
-      
+
       <div className="space-y-4">
-        {activities.map((activity) => {
+        {activities.map(activity => {
           const ActivityIcon = getActivityIcon(activity.type);
           const StatusIcon = getStatusIcon(activity.status);
-          
+
           return (
-            <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+            <div
+              key={activity.id}
+              className="flex items-start space-x-3 rounded-lg p-3 transition-colors hover:bg-gray-50"
+            >
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                  <ActivityIcon className="w-4 h-4 text-gray-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
+                  <ActivityIcon className="h-4 w-4 text-gray-600" />
                 </div>
               </div>
-              
-              <div className="flex-1 min-w-0">
+
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="truncate text-sm font-medium text-gray-900">
                     {activity.title}
                   </p>
                   <div className="flex items-center space-x-2">
-                    <StatusIcon className={`w-4 h-4 ${getStatusColor(activity.status)}`} />
+                    <StatusIcon
+                      className={`h-4 w-4 ${getStatusColor(activity.status)}`}
+                    />
                     <span className="text-xs text-gray-500">
                       {formatTimestamp(activity.timestamp)}
                     </span>
                   </div>
                 </div>
-                
-                <p className="text-sm text-gray-600 mt-1">
+
+                <p className="mt-1 text-sm text-gray-600">
                   {activity.description}
                 </p>
-                
+
                 {activity.actor && (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="mt-1 text-xs text-gray-500">
                     by {activity.actor}
                   </p>
                 )}
@@ -213,13 +225,13 @@ export default function AdminRecentActivity() {
           );
         })}
       </div>
-      
+
       {activities.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <Clock className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+        <div className="py-8 text-center text-gray-500">
+          <Clock className="mx-auto mb-2 h-8 w-8 text-gray-400" />
           <p>No recent activity</p>
         </div>
       )}
     </div>
   );
-} 
+}

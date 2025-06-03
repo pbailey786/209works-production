@@ -1,25 +1,28 @@
 import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { adQuerySchema, createAdSchema } from '@/lib/validations/ads';
-import { createSuccessResponse, AuthorizationError } from '@/lib/errors/api-errors';
+import {
+  createSuccessResponse,
+  AuthorizationError,
+} from '@/lib/errors/api-errors';
 import { prisma } from '../auth/prisma';
-import { 
+import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags 
+  invalidateCacheByTags,
 } from '@/lib/cache/redis';
-import { 
+import {
   calculateOffsetPagination,
-  createPaginatedResponse 
+  createPaginatedResponse,
 } from '@/lib/cache/pagination';
 
 // GET /api/ads - List advertisements (admins see all, employers see their own)
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { user, query, performance } = context;
-    
+
     // Extract query parameters
     const {
       advertiserId,
@@ -33,10 +36,10 @@ export const GET = withAPIMiddleware(
       dateFrom,
       dateTo,
     } = query!;
-    
+
     // Build where condition based on user role
     const whereCondition: any = {};
-    
+
     // Role-based access control
     if (user!.role === 'admin') {
       // Admins can see all ads, optionally filtered by employer
@@ -49,26 +52,23 @@ export const GET = withAPIMiddleware(
     } else {
       throw new AuthorizationError('Only employers and admins can access ads');
     }
-    
+
     // Apply filters
     if (status) {
       whereCondition.status = status;
     }
-    
+
     if (type) {
       whereCondition.type = type;
     }
-    
+
     if (isActive !== undefined) {
       const now = new Date();
       if (isActive === 'true') {
         whereCondition.status = 'active';
         whereCondition.schedule = {
           startDate: { lte: now },
-          OR: [
-            { endDate: null },
-            { endDate: { gte: now } },
-          ],
+          OR: [{ endDate: null }, { endDate: { gte: now } }],
         };
       } else {
         whereCondition.OR = [
@@ -78,7 +78,7 @@ export const GET = withAPIMiddleware(
         ];
       }
     }
-    
+
     // Date range filter
     if (dateFrom || dateTo) {
       whereCondition.createdAt = {};
@@ -89,7 +89,7 @@ export const GET = withAPIMiddleware(
         whereCondition.createdAt.lte = new Date(dateTo);
       }
     }
-    
+
     // Generate cache key
     const cacheKey = generateCacheKey(
       CACHE_PREFIXES.ads,
@@ -97,7 +97,7 @@ export const GET = withAPIMiddleware(
       JSON.stringify(whereCondition),
       `${page}-${limit}-${sortBy}-${sortOrder}`
     );
-    
+
     const result = await getCacheOrExecute(
       cacheKey,
       async () => {
@@ -106,7 +106,7 @@ export const GET = withAPIMiddleware(
         const totalCount = await prisma.advertisement.count({
           where: whereCondition,
         });
-        
+
         // Get paginated ads
         performance.trackDatabaseQuery();
         const ads = await prisma.advertisement.findMany({
@@ -132,18 +132,19 @@ export const GET = withAPIMiddleware(
             conversions: true,
           },
         });
-        
+
         // Add performance metrics for each ad
         const adsWithMetrics = await Promise.all(
-          ads.map(async (ad) => {
+          ads.map(async ad => {
             // Calculate basic metrics
             const impressions = ad.impressions;
             const clicks = ad.clicks;
             const conversions = ad.conversions;
-            
+
             const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
-            const conversionRate = clicks > 0 ? (conversions / clicks) * 100 : 0;
-            
+            const conversionRate =
+              clicks > 0 ? (conversions / clicks) * 100 : 0;
+
             // Estimate spend based on bidding type (simplified)
             let estimatedSpend = 0;
             const bidding = ad.bidding as any;
@@ -152,7 +153,7 @@ export const GET = withAPIMiddleware(
             } else if (bidding?.type === 'cpm') {
               estimatedSpend = (impressions / 1000) * (bidding.bidAmount || 0);
             }
-            
+
             return {
               ...ad,
               metrics: {
@@ -168,9 +169,13 @@ export const GET = withAPIMiddleware(
             };
           })
         );
-        
-        const { meta } = calculateOffsetPagination(page || 1, limit || 10, totalCount);
-        
+
+        const { meta } = calculateOffsetPagination(
+          page || 1,
+          limit || 10,
+          totalCount
+        );
+
         return createPaginatedResponse(adsWithMetrics, meta, {
           queryTime: Date.now(),
           cached: false,
@@ -178,10 +183,13 @@ export const GET = withAPIMiddleware(
       },
       {
         ttl: DEFAULT_TTL.short,
-        tags: ['ads', user!.role === 'admin' ? 'admin' : `advertiser:${user!.id}`],
+        tags: [
+          'ads',
+          user!.role === 'admin' ? 'admin' : `advertiser:${user!.id}`,
+        ],
       }
     );
-    
+
     return createSuccessResponse(result);
   },
   {
@@ -197,40 +205,42 @@ export const GET = withAPIMiddleware(
 export const POST = withAPIMiddleware(
   async (req, context) => {
     const { user, body, performance } = context;
-    
+
     // Only employers can create ads (admins can help via other means)
     if (user!.role !== 'employer') {
       throw new AuthorizationError('Only employers can create advertisements');
     }
-    
+
     // Check if user has reached their ad limit
     performance.trackDatabaseQuery();
     const existingAdsCount = await prisma.advertisement.count({
       where: { employerId: user!.id },
     });
-    
+
     const maxAdsPerEmployer = 50; // Configurable limit
     if (existingAdsCount >= maxAdsPerEmployer) {
       throw new AuthorizationError(
         `Maximum ${maxAdsPerEmployer} advertisements allowed per account`
       );
     }
-    
+
     // Validate schedule dates
     if (!body) {
       throw new Error('Request body is required');
     }
-    
+
     const startDate = new Date(body.schedule.startDate);
-    const endDate = body.schedule.endDate ? new Date(body.schedule.endDate) : null;
-    
+    const endDate = body.schedule.endDate
+      ? new Date(body.schedule.endDate)
+      : null;
+
     if (endDate && endDate <= startDate) {
       throw new AuthorizationError('End date must be after start date');
     }
-    
+
     // Set initial status based on validation needs
     const initialStatus = determineInitialStatus(body, user!);
-    
+
     // Create the advertisement
     performance.trackDatabaseQuery();
     const ad = await prisma.advertisement.create({
@@ -244,7 +254,9 @@ export const POST = withAPIMiddleware(
         targetUrl: body.content?.ctaUrl || '',
         zipCodes: (body.targeting?.cities || []).join(','),
         startDate: new Date(body.schedule?.startDate || Date.now()),
-        endDate: body.schedule?.endDate ? new Date(body.schedule.endDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        endDate: body.schedule?.endDate
+          ? new Date(body.schedule.endDate)
+          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         impressions: 0,
         clicks: 0,
         conversions: 0,
@@ -264,13 +276,13 @@ export const POST = withAPIMiddleware(
         updatedAt: true,
       },
     });
-    
+
     // Invalidate relevant caches
     await invalidateCacheByTags(['ads', `advertiser:${user!.id}`]);
-    
+
     // Estimate potential reach (simplified calculation)
     const estimatedReach = calculateEstimatedReach({});
-    
+
     return createSuccessResponse({
       ...ad,
       estimatedReach,
@@ -290,27 +302,27 @@ export const POST = withAPIMiddleware(
 // Helper function to check if ad is currently active
 function isAdCurrentlyActive(status: string, schedule: any): boolean {
   if (status !== 'active') return false;
-  
+
   if (!schedule?.startDate) return true; // If no schedule, consider active if status is active
-  
+
   const now = new Date();
   const startDate = new Date(schedule.startDate);
   const endDate = schedule.endDate ? new Date(schedule.endDate) : null;
-  
+
   if (now < startDate) return false;
   if (endDate && now > endDate) return false;
-  
+
   return true;
 }
 
 // Determine initial status for new ads
 function determineInitialStatus(adData: any, user: any): string {
   // Simple approval logic - in production this would be more sophisticated
-  const needsReview = 
+  const needsReview =
     adData.bidding.bidAmount > 10 || // High bid amounts need review
     adData.content.description.length < 50 || // Short descriptions need review
     !adData.content.imageUrl; // Ads without images need review
-  
+
   return needsReview ? 'pending' : 'active';
 }
 
@@ -318,20 +330,20 @@ function determineInitialStatus(adData: any, user: any): string {
 function calculateEstimatedReach(targeting: any): number {
   // Simplified reach calculation
   let baseReach = 100000; // Base potential audience
-  
+
   // Apply targeting multipliers
   if (targeting?.countries && targeting.countries.length > 0) {
     baseReach *= Math.min(targeting.countries.length / 10, 1);
   }
-  
+
   if (targeting?.jobTitles && targeting.jobTitles.length > 0) {
     baseReach *= Math.min(targeting.jobTitles.length / 20, 0.5);
   }
-  
+
   if (targeting?.experienceLevels && targeting.experienceLevels.length > 0) {
     baseReach *= Math.min(targeting.experienceLevels.length / 4, 0.7);
   }
-  
+
   return Math.floor(baseReach);
 }
 
@@ -341,7 +353,7 @@ function getNextSteps(status: string): string[] {
     case 'pending':
       return [
         'Your ad is pending review',
-        'You will be notified once it\'s approved',
+        "You will be notified once it's approved",
         'Review typically takes 1-2 business days',
       ];
     case 'active':
@@ -359,4 +371,4 @@ function getNextSteps(status: string): string[] {
     default:
       return ['Contact support for assistance'];
   }
-} 
+}

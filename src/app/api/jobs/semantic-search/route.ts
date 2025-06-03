@@ -11,7 +11,7 @@ class SemanticSearchValidator {
       query.length <= 1000 // Reasonable limit
     );
   }
-  
+
   static isValidLimit(limit: any): limit is number {
     return (
       typeof limit === 'number' &&
@@ -20,14 +20,14 @@ class SemanticSearchValidator {
       limit <= 100 // Reasonable upper limit
     );
   }
-  
+
   static sanitizeQuery(query: string): string {
     return query
       .trim()
       .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
       .substring(0, 1000); // Enforce length limit
   }
-  
+
   static isValidExtractedParams(params: any): boolean {
     return (
       params &&
@@ -53,9 +53,9 @@ async function extractSearchParams(userQuery: string): Promise<{
       console.warn('Invalid query provided to extractSearchParams');
       return null;
     }
-    
+
     const sanitizedQuery = SemanticSearchValidator.sanitizeQuery(userQuery);
-    
+
     const prompt = `Extract the following from this job search query:
 - keywords (array of relevant job-related terms)
 - location (city, state, or region)
@@ -83,14 +83,14 @@ Respond in valid JSON format only:
         timeout: 15000,
       }
     );
-    
+
     // Safely parse JSON response
     const jsonMatch = response.match(/{[\s\S]*}/);
     if (!jsonMatch) {
       console.warn('No JSON found in OpenAI response');
       return null;
     }
-    
+
     let parsed: any;
     try {
       parsed = JSON.parse(jsonMatch[0]);
@@ -98,23 +98,33 @@ Respond in valid JSON format only:
       console.warn('Failed to parse JSON from OpenAI response:', parseError);
       return null;
     }
-    
+
     // Validate parsed response
     if (!SemanticSearchValidator.isValidExtractedParams(parsed)) {
       console.warn('Invalid extracted parameters from OpenAI');
       return null;
     }
-    
+
     // Sanitize and return
     return {
-      keywords: Array.isArray(parsed.keywords) 
-        ? parsed.keywords.filter((k: any) => typeof k === 'string' && k.length > 0).slice(0, 10)
+      keywords: Array.isArray(parsed.keywords)
+        ? parsed.keywords
+            .filter((k: any) => typeof k === 'string' && k.length > 0)
+            .slice(0, 10)
         : [],
-      location: typeof parsed.location === 'string' ? parsed.location.trim().substring(0, 100) : '',
-      minSalary: typeof parsed.minSalary === 'string' ? parsed.minSalary.trim().substring(0, 20) : '',
-      jobType: typeof parsed.jobType === 'string' ? parsed.jobType.trim().substring(0, 50) : '',
+      location:
+        typeof parsed.location === 'string'
+          ? parsed.location.trim().substring(0, 100)
+          : '',
+      minSalary:
+        typeof parsed.minSalary === 'string'
+          ? parsed.minSalary.trim().substring(0, 20)
+          : '',
+      jobType:
+        typeof parsed.jobType === 'string'
+          ? parsed.jobType.trim().substring(0, 50)
+          : '',
     };
-    
   } catch (error) {
     console.error('Error extracting search parameters:', error);
     return null;
@@ -131,7 +141,7 @@ function buildSemanticSearchQuery(
   let extraFilters = '';
   const params: any[] = [embedding, limit, embeddingInput];
   let paramIdx = 4;
-  
+
   if (extracted) {
     // Location filter with safe parameter binding
     if (extracted.location && extracted.location.length > 0) {
@@ -139,20 +149,27 @@ function buildSemanticSearchQuery(
       params.push(`%${extracted.location}%`);
       paramIdx++;
     }
-    
+
     // Salary filter with validation
     if (extracted.minSalary && !isNaN(Number(extracted.minSalary))) {
       const minSalary = Number(extracted.minSalary);
-      if (minSalary > 0 && minSalary < 10000000) { // Reasonable salary range
+      if (minSalary > 0 && minSalary < 10000000) {
+        // Reasonable salary range
         extraFilters += ` AND ("salary_min" >= $${paramIdx} OR "salary_max" >= $${paramIdx})`;
         params.push(minSalary);
         paramIdx++;
       }
     }
-    
+
     // Job type filter with validation
     if (extracted.jobType && extracted.jobType.length > 0) {
-      const validJobTypes = ['full_time', 'part_time', 'contract', 'temporary', 'internship'];
+      const validJobTypes = [
+        'full_time',
+        'part_time',
+        'contract',
+        'temporary',
+        'internship',
+      ];
       const normalizedJobType = extracted.jobType.toLowerCase();
       if (validJobTypes.includes(normalizedJobType)) {
         extraFilters += ` AND LOWER(type::text) = LOWER($${paramIdx})`;
@@ -161,7 +178,7 @@ function buildSemanticSearchQuery(
       }
     }
   }
-  
+
   // Use safe, parameterized query
   const query = `
     SELECT 
@@ -179,7 +196,7 @@ function buildSemanticSearchQuery(
     ORDER BY hybrid_score ASC, distance ASC
     LIMIT $2
   `;
-  
+
   return { query, params };
 }
 
@@ -195,9 +212,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     const { query, limit = 20 } = requestBody;
-    
+
     // Validate query parameter
     if (!SemanticSearchValidator.isValidQuery(query)) {
       return NextResponse.json(
@@ -205,7 +222,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Validate limit parameter
     if (!SemanticSearchValidator.isValidLimit(limit)) {
       return NextResponse.json(
@@ -213,9 +230,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     const sanitizedQuery = SemanticSearchValidator.sanitizeQuery(query);
-    
+
     // Extract search parameters using secure OpenAI wrapper
     let extracted: any = null;
     try {
@@ -224,12 +241,13 @@ export async function POST(req: NextRequest) {
       console.warn('Failed to extract search parameters:', extractError);
       // Continue without extracted parameters
     }
-    
+
     // Determine embedding input
-    const embeddingInput = extracted && extracted.keywords && extracted.keywords.length > 0
-      ? extracted.keywords.join(' ')
-      : sanitizedQuery;
-    
+    const embeddingInput =
+      extracted && extracted.keywords && extracted.keywords.length > 0
+        ? extracted.keywords.join(' ')
+        : sanitizedQuery;
+
     // Generate embedding using secure wrapper
     let embeddingArr: number[];
     try {
@@ -244,10 +262,10 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     // Convert embedding to string format for database
     const embedding = `[${embeddingArr.join(',')}]`;
-    
+
     // Build safe database query
     const { query: dbQuery, params } = buildSemanticSearchQuery(
       embedding,
@@ -255,7 +273,7 @@ export async function POST(req: NextRequest) {
       embeddingInput,
       extracted
     );
-    
+
     // Execute database query safely
     let results: any[];
     try {
@@ -267,7 +285,7 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     // Validate and sanitize results
     const sanitizedResults = results.map(result => ({
       id: result.id,
@@ -282,10 +300,12 @@ export async function POST(req: NextRequest) {
       type: result.type || '',
       categories: Array.isArray(result.categories) ? result.categories : [],
       distance: typeof result.distance === 'number' ? result.distance : 0,
-      keywordBoost: typeof result.keyword_boost === 'number' ? result.keyword_boost : 1,
-      hybridScore: typeof result.hybrid_score === 'number' ? result.hybrid_score : 0,
+      keywordBoost:
+        typeof result.keyword_boost === 'number' ? result.keyword_boost : 1,
+      hybridScore:
+        typeof result.hybrid_score === 'number' ? result.hybrid_score : 0,
     }));
-    
+
     return NextResponse.json({
       results: sanitizedResults,
       extracted: extracted || {},
@@ -295,10 +315,9 @@ export async function POST(req: NextRequest) {
         resultCount: sanitizedResults.length,
       },
     });
-    
   } catch (error: any) {
     console.error('Semantic search error:', error);
-    
+
     // Don't expose internal error details
     return NextResponse.json(
       { error: 'Internal server error occurred during search' },
@@ -311,7 +330,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get('query');
-    
+
     // Validate query parameter
     if (!SemanticSearchValidator.isValidQuery(query)) {
       return NextResponse.json(
@@ -319,9 +338,9 @@ export async function GET(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     const sanitizedQuery = SemanticSearchValidator.sanitizeQuery(query);
-    
+
     // Generate embedding using secure wrapper
     let embedding: number[];
     try {
@@ -336,7 +355,7 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     // Execute safe database query
     let jobs: any[];
     try {
@@ -369,7 +388,7 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     // Sanitize results
     const sanitizedJobs = jobs.map(job => ({
       id: job.id,
@@ -384,7 +403,7 @@ export async function GET(req: NextRequest) {
       type: job.type || '',
       categories: Array.isArray(job.categories) ? job.categories : [],
     }));
-    
+
     return NextResponse.json({
       jobs: sanitizedJobs,
       metadata: {
@@ -392,14 +411,13 @@ export async function GET(req: NextRequest) {
         resultCount: sanitizedJobs.length,
       },
     });
-    
   } catch (error: any) {
     console.error('Semantic search GET error:', error);
-    
+
     // Don't expose internal error details
     return NextResponse.json(
       { error: 'Internal server error occurred during search' },
       { status: 500 }
     );
   }
-} 
+}

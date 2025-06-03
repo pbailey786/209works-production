@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const hostname = request.nextUrl.hostname;
     const config = getDomainConfig(hostname);
-    
+
     // Return only safe, public configuration data
     const publicConfig = {
       domain: config.domain,
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       branding: config.branding,
       social: config.social,
     };
-    
+
     return NextResponse.json(publicConfig);
   } catch (error) {
     console.error('Error getting domain config:', error);
@@ -27,4 +27,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

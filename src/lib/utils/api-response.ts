@@ -83,7 +83,10 @@ export class ResponseHelper {
     return this.error(message, undefined, 500, 'INTERNAL_ERROR');
   }
 
-  static created<T>(data: T, message = 'Resource created successfully'): NextResponse {
+  static created<T>(
+    data: T,
+    message = 'Resource created successfully'
+  ): NextResponse {
     return this.success(data, message, 201);
   }
 
@@ -99,18 +102,13 @@ export class ResponseHelper {
     message?: string
   ): NextResponse {
     const hasMore = page * limit < total;
-    
-    return this.success(
-      data,
-      message,
-      200,
-      {
-        total,
-        page,
-        limit,
-        hasMore,
-      }
-    );
+
+    return this.success(data, message, 200, {
+      total,
+      page,
+      limit,
+      hasMore,
+    });
   }
 }
 
@@ -128,8 +126,10 @@ export const createApiError = (
   type,
 });
 
-export const createValidationErrors = (errors: Record<string, string>): ApiError[] => {
+export const createValidationErrors = (
+  errors: Record<string, string>
+): ApiError[] => {
   return Object.entries(errors).map(([field, message]) =>
     createApiError(field, message, 'validation')
   );
-}; 
+};

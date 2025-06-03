@@ -1,8 +1,8 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import authOptions from "../../../../api/auth/authOptions";
-import { hasPermission, Permission } from "@/lib/rbac/permissions";
-import AdAnalyticsDashboard from "@/components/admin/AdAnalyticsDashboard";
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import authOptions from '../../../../api/auth/authOptions';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import AdAnalyticsDashboard from '@/components/admin/AdAnalyticsDashboard';
 
 interface PageProps {
   params: Promise<{
@@ -16,13 +16,13 @@ export default async function AdAnalyticsPage({ params }: PageProps) {
 
   // Check authentication and permissions
   if (!session) {
-    redirect("/signin?redirect=/admin/ads");
+    redirect('/signin?redirect=/admin/ads');
   }
 
   const userRole = (session.user as any)?.role;
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
-    redirect("/admin");
+    redirect('/admin');
   }
 
   return <AdAnalyticsDashboard adId={id} />;
-} 
+}

@@ -30,15 +30,19 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     try {
       const validatedParams = insightsQuerySchema.parse(queryParams);
-      
+
       const analyticsService = new InstagramAnalyticsService();
-      
+
       const filters = {
-        startDate: validatedParams.startDate ? new Date(validatedParams.startDate) : undefined,
-        endDate: validatedParams.endDate ? new Date(validatedParams.endDate) : undefined,
+        startDate: validatedParams.startDate
+          ? new Date(validatedParams.startDate)
+          : undefined,
+        endDate: validatedParams.endDate
+          ? new Date(validatedParams.endDate)
+          : undefined,
         postType: validatedParams.postType,
         jobId: validatedParams.jobId,
       };
@@ -50,7 +54,10 @@ export async function GET(request: NextRequest) {
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { error: 'Invalid query parameters', details: validationError.errors },
+          {
+            error: 'Invalid query parameters',
+            details: validationError.errors,
+          },
           { status: 400 }
         );
       }
@@ -63,4 +70,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

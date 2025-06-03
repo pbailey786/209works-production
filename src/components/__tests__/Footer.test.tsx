@@ -16,11 +16,11 @@ jest.mock('next/link', () => ({
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className, ...props }: any) => (
-    <img 
-      src={src} 
-      alt={alt} 
-      width={width} 
-      height={height} 
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
       className={className}
       {...props}
     />
@@ -68,13 +68,19 @@ describe('Footer', () => {
 
       const companyName = screen.getByText('209Jobs');
       expect(companyName).toBeInTheDocument();
-      expect(companyName).toHaveClass('text-gray-700', 'text-sm', 'font-medium');
+      expect(companyName).toHaveClass(
+        'text-gray-700',
+        'text-sm',
+        'font-medium'
+      );
     });
 
     it('renders copyright notice with current year', () => {
       render(<Footer />);
 
-      const copyright = screen.getByText('© 2024 Voodoo Rodeo LLC. All rights reserved.');
+      const copyright = screen.getByText(
+        '© 2024 Voodoo Rodeo LLC. All rights reserved.'
+      );
       expect(copyright).toBeInTheDocument();
       expect(copyright).toHaveClass('text-gray-700', 'text-sm');
     });
@@ -137,13 +143,17 @@ describe('Footer', () => {
       jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2025);
       render(<Footer />);
 
-      expect(screen.getByText('© 2025 Voodoo Rodeo LLC. All rights reserved.')).toBeInTheDocument();
+      expect(
+        screen.getByText('© 2025 Voodoo Rodeo LLC. All rights reserved.')
+      ).toBeInTheDocument();
     });
 
     it('copyright has correct styling', () => {
       render(<Footer />);
 
-      const copyright = screen.getByText(/© \d{4} Voodoo Rodeo LLC\. All rights reserved\./);
+      const copyright = screen.getByText(
+        /© \d{4} Voodoo Rodeo LLC\. All rights reserved\./
+      );
       expect(copyright).toHaveClass('text-gray-700', 'text-sm');
     });
   });
@@ -152,18 +162,17 @@ describe('Footer', () => {
     it('all links have proper styling', () => {
       render(<Footer />);
 
-      const links = screen.getAllByRole('link').filter(link => 
-        link.textContent === 'Contact' || 
-        link.textContent === 'Twitter' || 
-        link.textContent === 'LinkedIn'
-      );
+      const links = screen
+        .getAllByRole('link')
+        .filter(
+          link =>
+            link.textContent === 'Contact' ||
+            link.textContent === 'Twitter' ||
+            link.textContent === 'LinkedIn'
+        );
 
       links.forEach(link => {
-        expect(link).toHaveClass(
-          'text-blue-600',
-          'hover:underline',
-          'text-sm'
-        );
+        expect(link).toHaveClass('text-blue-600', 'hover:underline', 'text-sm');
       });
     });
 
@@ -189,12 +198,12 @@ describe('Footer', () => {
       render(<Footer />);
 
       const contactLink = screen.getByRole('link', { name: 'Contact' });
-      
+
       // Focus the link
       await user.tab();
       // The first focusable element might be the logo link, so tab to contact
       contactLink.focus();
-      
+
       expect(contactLink).toHaveFocus();
     });
   });
@@ -227,7 +236,9 @@ describe('Footer', () => {
     it('links section has proper spacing', () => {
       render(<Footer />);
 
-      const linksSection = screen.getByRole('link', { name: 'Contact' }).closest('div');
+      const linksSection = screen
+        .getByRole('link', { name: 'Contact' })
+        .closest('div');
       expect(linksSection).toHaveClass('flex', 'gap-4');
     });
   });
@@ -245,7 +256,7 @@ describe('Footer', () => {
       render(<Footer />);
 
       const links = screen.getAllByRole('link');
-      
+
       // Should be able to tab through all links
       for (let i = 0; i < links.length; i++) {
         await user.tab();
@@ -304,12 +315,15 @@ describe('Footer', () => {
       const tagline = screen.getByText('Connecting talent with opportunity.');
       expect(tagline).toHaveClass('text-gray-500');
 
-      const links = screen.getAllByRole('link').filter(link => 
-        link.textContent === 'Contact' || 
-        link.textContent === 'Twitter' || 
-        link.textContent === 'LinkedIn'
-      );
-      
+      const links = screen
+        .getAllByRole('link')
+        .filter(
+          link =>
+            link.textContent === 'Contact' ||
+            link.textContent === 'Twitter' ||
+            link.textContent === 'LinkedIn'
+        );
+
       links.forEach(link => {
         expect(link).toHaveClass('text-blue-600');
       });
@@ -321,8 +335,12 @@ describe('Footer', () => {
       render(<Footer />);
 
       expect(screen.getByText('209Jobs')).toBeInTheDocument();
-      expect(screen.getByText(/© \d{4} Voodoo Rodeo LLC\. All rights reserved\./)).toBeInTheDocument();
-      expect(screen.getByText('Connecting talent with opportunity.')).toBeInTheDocument();
+      expect(
+        screen.getByText(/© \d{4} Voodoo Rodeo LLC\. All rights reserved\./)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Connecting talent with opportunity.')
+      ).toBeInTheDocument();
       expect(screen.getByText('Contact')).toBeInTheDocument();
       expect(screen.getByText('Twitter')).toBeInTheDocument();
       expect(screen.getByText('LinkedIn')).toBeInTheDocument();
@@ -338,4 +356,4 @@ describe('Footer', () => {
       expect(container).toHaveClass('gap-4');
     });
   });
-}); 
+});

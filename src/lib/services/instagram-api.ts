@@ -52,11 +52,13 @@ export class InstagramAPI {
 
     // Add request interceptor for logging
     this.client.interceptors.request.use(
-      (config) => {
-        console.log(`Instagram API Request: ${config.method?.toUpperCase()} ${config.url}`);
+      config => {
+        console.log(
+          `Instagram API Request: ${config.method?.toUpperCase()} ${config.url}`
+        );
         return config;
       },
-      (error) => {
+      error => {
         console.error('Instagram API Request Error:', error);
         return Promise.reject(error);
       }
@@ -64,11 +66,14 @@ export class InstagramAPI {
 
     // Add response interceptor for error handling
     this.client.interceptors.response.use(
-      (response) => {
+      response => {
         return response;
       },
-      (error) => {
-        console.error('Instagram API Response Error:', error.response?.data || error.message);
+      error => {
+        console.error(
+          'Instagram API Response Error:',
+          error.response?.data || error.message
+        );
         return Promise.reject(this.handleAPIError(error));
       }
     );
@@ -77,16 +82,24 @@ export class InstagramAPI {
   /**
    * Validate Instagram credentials
    */
-  async validateCredentials(credentials: InstagramCredentials): Promise<boolean> {
+  async validateCredentials(
+    credentials: InstagramCredentials
+  ): Promise<boolean> {
     try {
-      const response = await this.client.get(`/${credentials.instagramBusinessAccountId}`, {
-        params: {
-          fields: 'id,username,account_type',
-          access_token: credentials.accessToken,
-        },
-      });
+      const response = await this.client.get(
+        `/${credentials.instagramBusinessAccountId}`,
+        {
+          params: {
+            fields: 'id,username,account_type',
+            access_token: credentials.accessToken,
+          },
+        }
+      );
 
-      return response.data && response.data.id === credentials.instagramBusinessAccountId;
+      return (
+        response.data &&
+        response.data.id === credentials.instagramBusinessAccountId
+      );
     } catch (error) {
       console.error('Failed to validate Instagram credentials:', error);
       return false;
@@ -104,7 +117,9 @@ export class InstagramAPI {
       // This would typically involve uploading to a CDN or temporary storage
       if (options.imageData && !imageUrl) {
         // TODO: Implement image upload to CDN (AWS S3, Cloudinary, etc.)
-        throw new Error('Image upload to CDN not implemented yet. Please provide imageUrl.');
+        throw new Error(
+          'Image upload to CDN not implemented yet. Please provide imageUrl.'
+        );
       }
 
       if (!imageUrl) {
@@ -123,7 +138,8 @@ export class InstagramAPI {
       return response.data.id;
     } catch (error) {
       console.error('Failed to create Instagram media object:', error);
-      const message = error instanceof Error ? error.message : 'Unknown error occurred';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to create media object: ${message}`);
     }
   }
@@ -147,7 +163,8 @@ export class InstagramAPI {
       return response.data.id;
     } catch (error) {
       console.error('Failed to publish Instagram media:', error);
-      const message = error instanceof Error ? error.message : 'Unknown error occurred';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to publish media: ${message}`);
     }
   }
@@ -171,7 +188,10 @@ export class InstagramAPI {
       });
 
       // Step 3: Get permalink
-      const permalink = await this.getMediaPermalink(publishedId, options.accessToken);
+      const permalink = await this.getMediaPermalink(
+        publishedId,
+        options.accessToken
+      );
 
       return {
         mediaId: mediaObjectId,
@@ -187,7 +207,10 @@ export class InstagramAPI {
   /**
    * Get media permalink
    */
-  async getMediaPermalink(mediaId: string, accessToken: string): Promise<string> {
+  async getMediaPermalink(
+    mediaId: string,
+    accessToken: string
+  ): Promise<string> {
     try {
       const response = await this.client.get(`/${mediaId}`, {
         params: {
@@ -222,7 +245,8 @@ export class InstagramAPI {
       return response.data;
     } catch (error) {
       console.error('Failed to get media insights:', error);
-      const message = error instanceof Error ? error.message : 'Unknown error occurred';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to get insights: ${message}`);
     }
   }
@@ -237,18 +261,22 @@ export class InstagramAPI {
     metrics: string[] = ['impressions', 'reach', 'profile_views']
   ): Promise<InstagramInsightsResponse> {
     try {
-      const response = await this.client.get(`/${instagramBusinessAccountId}/insights`, {
-        params: {
-          metric: metrics.join(','),
-          period,
-          access_token: accessToken,
-        },
-      });
+      const response = await this.client.get(
+        `/${instagramBusinessAccountId}/insights`,
+        {
+          params: {
+            metric: metrics.join(','),
+            period,
+            access_token: accessToken,
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
       console.error('Failed to get account insights:', error);
-      const message = error instanceof Error ? error.message : 'Unknown error occurred';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to get account insights: ${message}`);
     }
   }
@@ -262,18 +290,23 @@ export class InstagramAPI {
     limit: number = 25
   ): Promise<InstagramMediaResponse[]> {
     try {
-      const response = await this.client.get(`/${instagramBusinessAccountId}/media`, {
-        params: {
-          fields: 'id,media_type,media_url,permalink,caption,timestamp,like_count,comments_count',
-          limit,
-          access_token: accessToken,
-        },
-      });
+      const response = await this.client.get(
+        `/${instagramBusinessAccountId}/media`,
+        {
+          params: {
+            fields:
+              'id,media_type,media_url,permalink,caption,timestamp,like_count,comments_count',
+            limit,
+            access_token: accessToken,
+          },
+        }
+      );
 
       return response.data.data || [];
     } catch (error) {
       console.error('Failed to get recent media:', error);
-      const message = error instanceof Error ? error.message : 'Unknown error occurred';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to get recent media: ${message}`);
     }
   }
@@ -297,7 +330,8 @@ export class InstagramAPI {
     try {
       const response = await this.client.get(`/${instagramBusinessAccountId}`, {
         params: {
-          fields: 'id,username,name,biography,website,followers_count,follows_count,media_count',
+          fields:
+            'id,username,name,biography,website,followers_count,follows_count,media_count',
           access_token: accessToken,
         },
       });
@@ -305,7 +339,8 @@ export class InstagramAPI {
       return response.data;
     } catch (error) {
       console.error('Failed to get account info:', error);
-      const message = error instanceof Error ? error.message : 'Unknown error occurred';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to get account info: ${message}`);
     }
   }
@@ -316,7 +351,9 @@ export class InstagramAPI {
   private handleAPIError(error: any): Error {
     if (error.response?.data?.error) {
       const apiError = error.response.data.error;
-      return new Error(`Instagram API Error: ${apiError.message} (Code: ${apiError.code})`);
+      return new Error(
+        `Instagram API Error: ${apiError.message} (Code: ${apiError.code})`
+      );
     }
 
     if (error.code === 'ECONNABORTED') {
@@ -353,7 +390,10 @@ export class InstagramUtils {
   /**
    * Validate Instagram caption length and format
    */
-  static validateCaption(caption: string): { isValid: boolean; errors: string[] } {
+  static validateCaption(caption: string): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     if (caption.length > 2200) {
@@ -389,7 +429,7 @@ export class InstagramUtils {
    */
   static formatHashtags(hashtags: string[]): string {
     return hashtags
-      .map(tag => tag.startsWith('#') ? tag : `#${tag}`)
+      .map(tag => (tag.startsWith('#') ? tag : `#${tag}`))
       .join(' ');
   }
 
@@ -409,4 +449,4 @@ export class InstagramUtils {
   }
 }
 
-export default InstagramAPI; 
+export default InstagramAPI;

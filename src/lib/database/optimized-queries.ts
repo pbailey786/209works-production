@@ -1,7 +1,7 @@
 /**
  * Optimized Database Queries Service
  * Task 45.13: Fix Database Performance Issues and N+1 Query Problems
- * 
+ *
  * This service provides optimized database operations that:
  * 1. Prevent N+1 query problems
  * 2. Use composite indexes efficiently
@@ -77,9 +77,7 @@ export class OptimizedJobSearchService {
    * Search jobs with optimized queries and batch company lookups
    * Prevents N+1 queries by fetching company stats in batch
    */
-  static async searchJobsOptimized(
-    params: OptimizedJobQuery
-  ): Promise<{
+  static async searchJobsOptimized(params: OptimizedJobQuery): Promise<{
     jobs: JobWithCompanyStats[];
     totalCount: number;
     queryTime: number;
@@ -106,9 +104,12 @@ export class OptimizedJobSearchService {
     try {
       // Build optimized where condition using indexes
       const whereCondition = this.buildOptimizedWhereCondition(params);
-      
+
       // Build optimized order by using indexes
-      const orderBy = this.buildOptimizedOrderBy(params.sortBy, params.sortOrder);
+      const orderBy = this.buildOptimizedOrderBy(
+        params.sortBy,
+        params.sortOrder
+      );
 
       // Execute optimized queries in parallel
       const [jobs, totalCount] = await Promise.all([
@@ -138,7 +139,9 @@ export class OptimizedJobSearchService {
       ]);
 
       // Batch fetch company stats to prevent N+1 queries
-      const companyNames = [...new Set(jobs.map(job => job.company).filter(Boolean))];
+      const companyNames = [
+        ...new Set(jobs.map(job => job.company).filter(Boolean)),
+      ];
       const companyStats = await this.batchGetCompanyStats(companyNames);
 
       // Combine job data with company stats
@@ -210,7 +213,9 @@ export class OptimizedJobSearchService {
       `;
 
       // Batch fetch company stats
-      const companyNames = [...new Set(jobs.map(job => job.company).filter(Boolean))];
+      const companyNames = [
+        ...new Set(jobs.map(job => job.company).filter(Boolean)),
+      ];
       const companyStats = await this.batchGetCompanyStats(companyNames);
 
       const jobsWithStats: JobWithCompanyStats[] = jobs.map(job => ({
@@ -264,7 +269,9 @@ export class OptimizedJobSearchService {
       `;
 
       // Batch fetch company stats
-      const companyNames = [...new Set(jobs.map(job => job.company).filter(Boolean))];
+      const companyNames = [
+        ...new Set(jobs.map(job => job.company).filter(Boolean)),
+      ];
       const companyStats = await this.batchGetCompanyStats(companyNames);
 
       const jobsWithStats: JobWithCompanyStats[] = jobs.map(job => ({
@@ -284,7 +291,9 @@ export class OptimizedJobSearchService {
    * Batch get company statistics to prevent N+1 queries
    * Uses the materialized view and batch function from migration
    */
-  static async batchGetCompanyStats(companyNames: string[]): Promise<BatchCompanyStats> {
+  static async batchGetCompanyStats(
+    companyNames: string[]
+  ): Promise<BatchCompanyStats> {
     if (companyNames.length === 0) return {};
 
     const cacheKey = `${this.CACHE_PREFIX}:company_stats:${companyNames.sort().join(',')}`;
@@ -302,8 +311,12 @@ export class OptimizedJobSearchService {
         result[stat.company] = {
           totalJobs: Number(stat.total_jobs),
           recentJobs: Number(stat.recent_jobs),
-          avgSalaryMin: stat.avg_salary_min ? Number(stat.avg_salary_min) : undefined,
-          avgSalaryMax: stat.avg_salary_max ? Number(stat.avg_salary_max) : undefined,
+          avgSalaryMin: stat.avg_salary_min
+            ? Number(stat.avg_salary_min)
+            : undefined,
+          avgSalaryMax: stat.avg_salary_max
+            ? Number(stat.avg_salary_max)
+            : undefined,
         };
       });
 
@@ -337,10 +350,7 @@ export class OptimizedJobSearchService {
             mode: 'insensitive',
           },
         },
-        orderBy: [
-          { postedAt: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ postedAt: 'desc' }, { createdAt: 'desc' }],
         take: limit,
         skip: offset,
         select: {
@@ -378,7 +388,9 @@ export class OptimizedJobSearchService {
   /**
    * Build optimized where condition using composite indexes
    */
-  private static buildOptimizedWhereCondition(params: OptimizedJobQuery): Prisma.JobWhereInput {
+  private static buildOptimizedWhereCondition(
+    params: OptimizedJobQuery
+  ): Prisma.JobWhereInput {
     const where: Prisma.JobWhereInput = {};
 
     // Use composite indexes efficiently
@@ -406,17 +418,19 @@ export class OptimizedJobSearchService {
 
     // Use salary range index
     if (params.salaryMin || params.salaryMax) {
-      const andConditions: Prisma.JobWhereInput[] = where.AND 
-        ? (Array.isArray(where.AND) ? where.AND : [where.AND])
+      const andConditions: Prisma.JobWhereInput[] = where.AND
+        ? Array.isArray(where.AND)
+          ? where.AND
+          : [where.AND]
         : [];
-      
+
       if (params.salaryMin) {
         andConditions.push({ salaryMin: { gte: params.salaryMin } });
       }
       if (params.salaryMax) {
         andConditions.push({ salaryMax: { lte: params.salaryMax } });
       }
-      
+
       where.AND = andConditions;
     }
 
@@ -482,7 +496,11 @@ export class OptimizedJobSearchService {
         return [{ postedAt: order }, { createdAt: order }];
       case 'salary':
         // Uses salary range index
-        return [{ salaryMax: order }, { salaryMin: order }, { postedAt: 'desc' }];
+        return [
+          { salaryMax: order },
+          { salaryMin: order },
+          { postedAt: 'desc' },
+        ];
       case 'relevance':
       default:
         // Uses createdAt index for default relevance
@@ -516,10 +534,17 @@ export class OptimizedJobSearchService {
       const now = new Date();
       let days: number;
       switch (params.datePosted) {
-        case '24h': days = 1; break;
-        case '7d': days = 7; break;
-        case '30d': days = 30; break;
-        default: days = 30;
+        case '24h':
+          days = 1;
+          break;
+        case '7d':
+          days = 7;
+          break;
+        case '30d':
+          days = 30;
+          break;
+        default:
+          days = 30;
       }
       filters.push(`AND j."postedAt" >= NOW() - INTERVAL '${days} days'`);
     }
@@ -533,10 +558,10 @@ export class OptimizedJobSearchService {
   static async refreshCompanyStats(): Promise<void> {
     try {
       await prisma.$executeRaw`SELECT refresh_job_stats()`;
-      
+
       // Invalidate related caches
       await invalidateCache(`${this.CACHE_PREFIX}:company_stats:*`);
-      
+
       console.log('Company stats materialized view refreshed successfully');
     } catch (error) {
       console.error('Error refreshing company stats:', error);
@@ -657,4 +682,4 @@ export class OptimizedUserQueryService {
   }
 }
 
-export default OptimizedJobSearchService; 
+export default OptimizedJobSearchService;

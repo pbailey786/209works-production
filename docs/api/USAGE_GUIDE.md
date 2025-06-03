@@ -20,7 +20,7 @@ The 209jobs API is a RESTful API that provides comprehensive job board functiona
 ### Base URLs
 
 - **Production**: `https://api.209jobs.com/v1`
-- **Staging**: `https://api-staging.209jobs.com/v1` 
+- **Staging**: `https://api-staging.209jobs.com/v1`
 - **Development**: `http://localhost:3000/api`
 
 ### Prerequisites
@@ -48,6 +48,7 @@ curl -X POST https://api.209jobs.com/v1/auth/login \
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -67,6 +68,7 @@ Response:
 ```
 
 Use the token in subsequent requests:
+
 ```bash
 curl -X GET https://api.209jobs.com/v1/jobs \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -91,6 +93,7 @@ curl -X GET "https://api.209jobs.com/v1/jobs?query=software+engineer&location=Sa
 ```
 
 Example Response:
+
 ```json
 {
   "success": true,
@@ -136,7 +139,7 @@ const createJob = async () => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_JWT_TOKEN'
+      Authorization: 'Bearer YOUR_JWT_TOKEN',
     },
     body: JSON.stringify({
       title: 'Frontend Developer',
@@ -150,10 +153,10 @@ const createJob = async () => {
       salaryMax: 120000,
       skills: ['React', 'TypeScript', 'CSS', 'HTML'],
       isRemote: true,
-      applicationEmail: 'jobs@awesomestartup.com'
-    })
+      applicationEmail: 'jobs@awesomestartup.com',
+    }),
   });
-  
+
   const data = await response.json();
   console.log('Job created:', data);
 };
@@ -166,7 +169,7 @@ import requests
 
 def search_jobs(query, filters=None):
     """Search for jobs with advanced filtering"""
-    
+
     url = "https://api.209jobs.com/v1/jobs"
     params = {
         'query': query,
@@ -179,10 +182,10 @@ def search_jobs(query, filters=None):
         'sort': 'relevance',
         'limit': 20
     }
-    
+
     # Remove None values
     params = {k: v for k, v in params.items() if v is not None}
-    
+
     response = requests.get(url, params=params)
     return response.json()
 
@@ -217,24 +220,27 @@ curl -X POST https://api.209jobs.com/v1/jobs/semantic-search \
 #### Applying to a Job
 
 ```javascript
-const applyToJob = async (jobId) => {
-  const response = await fetch(`https://api.209jobs.com/v1/jobs/${jobId}/apply`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_JWT_TOKEN'
-    },
-    body: JSON.stringify({
-      coverLetter: 'Dear Hiring Manager, I am excited to apply...',
-      resumeUrl: 'https://example.com/resume.pdf',
-      linkedinUrl: 'https://linkedin.com/in/johndoe',
-      portfolioUrl: 'https://johndoe.dev',
-      additionalNotes: 'Available for interviews next week'
-    })
-  });
-  
+const applyToJob = async jobId => {
+  const response = await fetch(
+    `https://api.209jobs.com/v1/jobs/${jobId}/apply`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer YOUR_JWT_TOKEN',
+      },
+      body: JSON.stringify({
+        coverLetter: 'Dear Hiring Manager, I am excited to apply...',
+        resumeUrl: 'https://example.com/resume.pdf',
+        linkedinUrl: 'https://linkedin.com/in/johndoe',
+        portfolioUrl: 'https://johndoe.dev',
+        additionalNotes: 'Available for interviews next week',
+      }),
+    }
+  );
+
   const data = await response.json();
-  
+
   if (data.success) {
     console.log('Application submitted successfully!');
   } else {
@@ -252,13 +258,13 @@ import requests
 
 def update_profile(user_id, profile_data, token):
     """Update user profile information"""
-    
+
     url = f"https://api.209jobs.com/v1/users/{user_id}"
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {token}'
     }
-    
+
     response = requests.put(url, json=profile_data, headers=headers)
     return response.json()
 
@@ -309,19 +315,19 @@ const createJobAlert = async () => {
       salaryMin: 120000,
       skills: ['React', 'TypeScript', 'Node.js'],
       excludeKeywords: ['junior', 'intern'],
-      excludeCompanies: ['Company X']
+      excludeCompanies: ['Company X'],
     },
     frequency: 'daily',
-    maxResults: 10
+    maxResults: 10,
   };
 
   const response = await fetch('https://api.209jobs.com/v1/alerts', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_JWT_TOKEN'
+      Authorization: 'Bearer YOUR_JWT_TOKEN',
     },
-    body: JSON.stringify(alertData)
+    body: JSON.stringify(alertData),
   });
 
   const data = await response.json();
@@ -347,7 +353,7 @@ curl -X POST https://api.209jobs.com/v1/alerts/alert-id-123/test \
 ```python
 def create_ad_campaign(token):
     """Create a new advertisement campaign"""
-    
+
     ad_data = {
         'title': 'Hire Top Software Engineers',
         'description': 'Reach qualified software engineers actively looking for new opportunities',
@@ -380,7 +386,7 @@ def create_ad_campaign(token):
         'startDate': '2024-02-01T00:00:00Z',
         'endDate': '2024-02-29T23:59:59Z'
     }
-    
+
     response = requests.post(
         'https://api.209jobs.com/v1/ads',
         json=ad_data,
@@ -389,25 +395,25 @@ def create_ad_campaign(token):
             'Authorization': f'Bearer {token}'
         }
     )
-    
+
     return response.json()
 ```
 
 #### Tracking Ad Performance
 
 ```javascript
-const getAdAnalytics = async (adId) => {
+const getAdAnalytics = async adId => {
   const response = await fetch(
     `https://api.209jobs.com/v1/ads/${adId}?startDate=2024-01-01&endDate=2024-01-31`,
     {
       headers: {
-        'Authorization': 'Bearer YOUR_JWT_TOKEN'
-      }
+        Authorization: 'Bearer YOUR_JWT_TOKEN',
+      },
     }
   );
-  
+
   const data = await response.json();
-  
+
   if (data.success) {
     const { performance, budget } = data.data;
     console.log(`CTR: ${performance.ctr}%`);
@@ -423,7 +429,7 @@ const getAdAnalytics = async (adId) => {
 The API implements rate limiting to ensure fair usage:
 
 - **Standard endpoints**: 100 requests per minute
-- **Search endpoints**: 500 requests per minute  
+- **Search endpoints**: 500 requests per minute
 - **Tracking endpoints**: 1000 requests per minute
 - **Auth endpoints**: 200 requests per minute
 
@@ -432,16 +438,16 @@ The API implements rate limiting to ensure fair usage:
 ```javascript
 const makeAPICall = async (url, options) => {
   const response = await fetch(url, options);
-  
+
   if (response.status === 429) {
     const retryAfter = response.headers.get('Retry-After');
     console.log(`Rate limited. Retry after ${retryAfter} seconds`);
-    
+
     // Wait and retry
     await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
     return makeAPICall(url, options);
   }
-  
+
   return response.json();
 };
 ```
@@ -471,10 +477,10 @@ from typing import Dict, Any
 
 def api_request(method: str, url: str, **kwargs) -> Dict[Any, Any]:
     """Make API request with comprehensive error handling"""
-    
+
     try:
         response = requests.request(method, url, **kwargs)
-        
+
         # Handle different HTTP status codes
         if response.status_code == 200:
             return response.json()
@@ -494,7 +500,7 @@ def api_request(method: str, url: str, **kwargs) -> Dict[Any, Any]:
             raise Exception("Server error. Please try again later")
         else:
             response.raise_for_status()
-            
+
     except requests.exceptions.ConnectionError:
         raise ConnectionError("Failed to connect to API")
     except requests.exceptions.Timeout:
@@ -519,7 +525,7 @@ class JobsAPIClient {
 
   async searchJobs(query, useCache = true) {
     const cacheKey = JSON.stringify(query);
-    
+
     if (useCache && this.cache.has(cacheKey)) {
       const cached = this.cache.get(cacheKey);
       if (Date.now() - cached.timestamp < this.cacheTimeout) {
@@ -530,16 +536,16 @@ class JobsAPIClient {
     const response = await fetch('https://api.209jobs.com/v1/jobs', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${this.token}`
-      }
+        Authorization: `Bearer ${this.token}`,
+      },
     });
 
     const data = await response.json();
-    
+
     if (useCache) {
       this.cache.set(cacheKey, {
         data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
 
@@ -555,31 +561,31 @@ Handle large datasets efficiently:
 ```python
 def get_all_jobs(query_params):
     """Fetch all jobs using pagination"""
-    
+
     all_jobs = []
     page = 1
-    
+
     while True:
         params = {**query_params, 'page': page, 'limit': 50}
         response = requests.get(
             'https://api.209jobs.com/v1/jobs',
             params=params
         )
-        
+
         data = response.json()
-        
+
         if not data['success']:
             break
-            
+
         jobs = data['data']['jobs']
         all_jobs.extend(jobs)
-        
+
         pagination = data['data']['pagination']
         if not pagination['hasNext']:
             break
-            
+
         page += 1
-    
+
     return all_jobs
 ```
 
@@ -593,14 +599,14 @@ const bulkUpdateAlerts = async (alertIds, operation) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_JWT_TOKEN'
+      Authorization: 'Bearer YOUR_JWT_TOKEN',
     },
     body: JSON.stringify({
       operation, // 'activate', 'deactivate', or 'delete'
-      alertIds
-    })
+      alertIds,
+    }),
   });
-  
+
   const data = await response.json();
   console.log(`${data.data.affectedCount} alerts ${operation}d`);
 };
@@ -626,14 +632,14 @@ import { JobsAPI } from '@209jobs/api-client';
 
 const client = new JobsAPI({
   apiKey: 'your-api-key',
-  environment: 'production' // or 'staging'
+  environment: 'production', // or 'staging'
 });
 
 // Search jobs
 const jobs = await client.jobs.search({
   query: 'software engineer',
   location: 'San Francisco',
-  jobType: 'full-time'
+  jobType: 'full-time',
 });
 
 // Create job alert
@@ -641,9 +647,9 @@ const alert = await client.alerts.create({
   name: 'My Job Alert',
   criteria: {
     keywords: ['React', 'JavaScript'],
-    location: 'Remote'
+    location: 'Remote',
   },
-  frequency: 'daily'
+  frequency: 'daily',
 });
 ```
 
@@ -703,35 +709,35 @@ app.post('/webhooks/209jobs', (req, res) => {
   const signature = req.headers['x-209jobs-signature'];
   const payload = JSON.stringify(req.body);
   const secret = 'your-webhook-secret';
-  
+
   // Verify webhook signature
   const hmac = crypto.createHmac('sha256', secret);
   hmac.update(payload);
   const digest = hmac.digest('hex');
-  
+
   if (signature !== `sha256=${digest}`) {
     return res.status(401).send('Invalid signature');
   }
-  
+
   const { event, data } = req.body;
-  
+
   switch (event) {
     case 'job.applied':
       console.log(`New application for job ${data.jobId}`);
       // Handle job application
       break;
-      
+
     case 'alert.matched':
       console.log(`Alert ${data.alertId} found ${data.matches} new jobs`);
       // Handle alert matches
       break;
-      
+
     case 'ad.performance':
       console.log(`Ad ${data.adId} performance update`);
       // Handle ad performance data
       break;
   }
-  
+
   res.status(200).send('OK');
 });
 ```
@@ -744,13 +750,13 @@ app.post('/webhooks/209jobs', (req, res) => {
 class JobRecommendationEngine:
     def __init__(self, api_client):
         self.client = api_client
-    
+
     def get_recommendations(self, user_id):
         """Get personalized job recommendations"""
-        
+
         # Get user profile
         user = self.client.users.get(user_id)
-        
+
         # Build search criteria based on user profile
         criteria = {
             'skills': user['skills'],
@@ -759,48 +765,48 @@ class JobRecommendationEngine:
             'salary_min': user['expected_salary_min'],
             'remote': user['is_open_to_remote']
         }
-        
+
         # Search for relevant jobs
         jobs = self.client.jobs.search(**criteria)
-        
+
         # Apply ML scoring (simplified)
         scored_jobs = self.score_jobs(jobs, user)
-        
+
         return sorted(scored_jobs, key=lambda x: x['score'], reverse=True)
-    
+
     def score_jobs(self, jobs, user):
         """Score jobs based on user preferences"""
         scored_jobs = []
-        
+
         for job in jobs:
             score = 0
-            
+
             # Skill match scoring
             user_skills = set(user['skills'])
             job_skills = set(job['skills'])
             skill_match = len(user_skills.intersection(job_skills)) / len(user_skills)
             score += skill_match * 40
-            
+
             # Salary scoring
             if job['salary_min'] and job['salary_max']:
                 salary_mid = (job['salary_min'] + job['salary_max']) / 2
                 expected_mid = (user['expected_salary_min'] + user['expected_salary_max']) / 2
                 if salary_mid >= expected_mid:
                     score += 30
-            
+
             # Location scoring
             if job['location'] == user['location'] or job['is_remote']:
                 score += 20
-            
+
             # Experience level scoring
             if job['experience_level'] == user['experience_level']:
                 score += 10
-            
+
             scored_jobs.append({
                 **job,
                 'score': score
             })
-        
+
         return scored_jobs
 ```
 
@@ -816,7 +822,7 @@ class AnalyticsDashboard {
     const [jobs, applications, ads] = await Promise.all([
       this.client.jobs.list({ employerId }),
       this.client.applications.list({ employerId }),
-      this.client.ads.list({ employerId })
+      this.client.ads.list({ employerId }),
     ]);
 
     return {
@@ -825,7 +831,7 @@ class AnalyticsDashboard {
       totalApplications: applications.length,
       applicationRate: applications.length / jobs.length,
       adSpend: ads.reduce((sum, ad) => sum + ad.currentSpend, 0),
-      adPerformance: this.calculateAdPerformance(ads)
+      adPerformance: this.calculateAdPerformance(ads),
     };
   }
 
@@ -835,11 +841,11 @@ class AnalyticsDashboard {
     const totalConversions = ads.reduce((sum, ad) => sum + ad.conversions, 0);
 
     return {
-      ctr: totalClicks / totalImpressions * 100,
-      conversionRate: totalConversions / totalClicks * 100,
+      ctr: (totalClicks / totalImpressions) * 100,
+      conversionRate: (totalConversions / totalClicks) * 100,
       totalImpressions,
       totalClicks,
-      totalConversions
+      totalConversions,
     };
   }
 }
@@ -852,36 +858,36 @@ class ATSIntegration:
     def __init__(self, jobs_api_client, ats_api_client):
         self.jobs_api = jobs_api_client
         self.ats_api = ats_api_client
-    
+
     def sync_jobs(self):
         """Sync job postings from ATS to 209jobs"""
-        
+
         # Get approved jobs from ATS
         ats_jobs = self.ats_api.get_approved_jobs()
-        
+
         for ats_job in ats_jobs:
             # Check if job already exists
             existing_job = self.jobs_api.jobs.search(
                 query=ats_job['title'],
                 company=ats_job['company']
             )
-            
+
             if not existing_job['data']['jobs']:
                 # Transform ATS job to 209jobs format
                 job_data = self.transform_job_data(ats_job)
-                
+
                 # Create job posting
                 result = self.jobs_api.jobs.create(job_data)
-                
+
                 if result['success']:
                     print(f"Created job: {job_data['title']}")
-                    
+
                     # Update ATS with 209jobs job ID
                     self.ats_api.update_job(
                         ats_job['id'],
                         {'209jobs_id': result['data']['id']}
                     )
-    
+
     def transform_job_data(self, ats_job):
         """Transform ATS job data to 209jobs format"""
         return {
@@ -905,9 +911,10 @@ class ATSIntegration:
 The 209jobs API provides a comprehensive set of tools for building job board integrations, career platforms, and recruitment solutions. This usage guide covers the most common use cases, but the API is flexible enough to support a wide variety of custom implementations.
 
 For additional support, please refer to:
+
 - [API Reference Documentation](./openapi.yaml)
 - [Authentication Guide](./AUTHENTICATION.md)
 - [Rate Limiting Documentation](./RATE_LIMITING.md)
 - [Support Portal](https://support.209jobs.com)
 
-Happy coding! 🚀 
+Happy coding! 🚀

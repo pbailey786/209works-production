@@ -9,25 +9,27 @@ interface UseSavedJobsReturn {
   clearSavedJobs: () => void;
 }
 
-export function useSavedJobs(initialSavedJobs: (string | number)[] = []): UseSavedJobsReturn {
-  const [savedJobs, setSavedJobs] = useState<(string | number)[]>(initialSavedJobs);
+export function useSavedJobs(
+  initialSavedJobs: (string | number)[] = []
+): UseSavedJobsReturn {
+  const [savedJobs, setSavedJobs] =
+    useState<(string | number)[]>(initialSavedJobs);
 
-  const isSaved = useCallback((jobId: string | number): boolean => {
-    return savedJobs.includes(jobId);
-  }, [savedJobs]);
+  const isSaved = useCallback(
+    (jobId: string | number): boolean => {
+      return savedJobs.includes(jobId);
+    },
+    [savedJobs]
+  );
 
   const toggleSaveJob = useCallback((jobId: string | number) => {
-    setSavedJobs(prev => 
-      prev.includes(jobId) 
-        ? prev.filter(id => id !== jobId)
-        : [...prev, jobId]
+    setSavedJobs(prev =>
+      prev.includes(jobId) ? prev.filter(id => id !== jobId) : [...prev, jobId]
     );
   }, []);
 
   const saveJob = useCallback((jobId: string | number) => {
-    setSavedJobs(prev => 
-      prev.includes(jobId) ? prev : [...prev, jobId]
-    );
+    setSavedJobs(prev => (prev.includes(jobId) ? prev : [...prev, jobId]));
   }, []);
 
   const unsaveJob = useCallback((jobId: string | number) => {
@@ -46,4 +48,4 @@ export function useSavedJobs(initialSavedJobs: (string | number)[] = []): UseSav
     unsaveJob,
     clearSavedJobs,
   };
-} 
+}

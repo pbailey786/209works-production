@@ -14,10 +14,16 @@ const colorStyles = {
   info: 'bg-blue-100 text-blue-800',
 };
 
-export const Badge: React.FC<BadgeProps> = ({ color = 'default', children, className = '' }) => (
-  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${colorStyles[color]} ${className}`.trim()}>
+export const Badge: React.FC<BadgeProps> = ({
+  color = 'default',
+  children,
+  className = '',
+}) => (
+  <span
+    className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${colorStyles[color]} ${className}`.trim()}
+  >
     {children}
   </span>
 );
 
-export default Badge; 
+export default Badge;

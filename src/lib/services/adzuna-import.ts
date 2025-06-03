@@ -4,7 +4,6 @@ import { JobType } from '@prisma/client';
 
 // Enhanced job import service with better error handling and filtering
 export class AdzunaImportService {
-  
   /**
    * Map Adzuna contract time to our JobType enum
    */
@@ -39,7 +38,7 @@ export class AdzunaImportService {
    */
   private static cleanJobDescription(description: string): string {
     if (!description) return '';
-    
+
     // Remove excessive HTML tags and clean up
     let cleaned = description
       .replace(/<[^>]*>/g, '') // Remove HTML tags
@@ -96,14 +95,17 @@ export class AdzunaImportService {
       'remote-first',
       'fully remote',
       'remote position',
-      'remote opportunity'
+      'remote opportunity',
     ];
 
-    if (remoteKeywords.some(keyword =>
-      title.includes(keyword) ||
-      description.includes(keyword) ||
-      location.includes(keyword)
-    )) {
+    if (
+      remoteKeywords.some(
+        keyword =>
+          title.includes(keyword) ||
+          description.includes(keyword) ||
+          location.includes(keyword)
+      )
+    ) {
       return false;
     }
 
@@ -137,13 +139,14 @@ export class AdzunaImportService {
       'amazing opportunity',
       'limited time',
       'act now',
-      'don\'t wait'
+      "don't wait",
     ];
 
-    if (spamKeywords.some(keyword =>
-      title.includes(keyword) ||
-      description.includes(keyword)
-    )) {
+    if (
+      spamKeywords.some(
+        keyword => title.includes(keyword) || description.includes(keyword)
+      )
+    ) {
       return false;
     }
 
@@ -170,12 +173,12 @@ export class AdzunaImportService {
       'vivint',
       'aptive',
       'pest defense',
-      'alarm.com'
+      'alarm.com',
     ];
 
-    if (repetitiveCompanies.some(companyName =>
-      company.includes(companyName)
-    )) {
+    if (
+      repetitiveCompanies.some(companyName => company.includes(companyName))
+    ) {
       return false;
     }
 
@@ -201,12 +204,10 @@ export class AdzunaImportService {
       'freelance writer',
       'content creator',
       'social media manager - remote',
-      'digital marketing specialist - remote'
+      'digital marketing specialist - remote',
     ];
 
-    if (repetitiveTitles.some(titlePattern =>
-      title.includes(titlePattern)
-    )) {
+    if (repetitiveTitles.some(titlePattern => title.includes(titlePattern))) {
       return false;
     }
 
@@ -224,22 +225,43 @@ export class AdzunaImportService {
       const avgSalary = (job.salary_min + job.salary_max) / 2;
 
       // Unrealistic salary ranges (too wide or too high for entry level)
-      if (salaryRange > 100000 || (avgSalary > 150000 && title.includes('entry level'))) {
+      if (
+        salaryRange > 100000 ||
+        (avgSalary > 150000 && title.includes('entry level'))
+      ) {
         return false;
       }
     }
 
     // ENSURE: Job is actually in a 209 area city (double-check location)
     const valid209Cities = [
-      'stockton', 'modesto', 'tracy', 'manteca', 'lodi', 'turlock', 'merced',
-      'ceres', 'patterson', 'ripon', 'escalon', 'oakdale', 'riverbank',
-      'hughson', 'newman', 'gustine', 'los banos', 'atwater', 'livingston',
-      'winton', 'hilmar', 'stevinson', 'crows landing', 'vernalis'
+      'stockton',
+      'modesto',
+      'tracy',
+      'manteca',
+      'lodi',
+      'turlock',
+      'merced',
+      'ceres',
+      'patterson',
+      'ripon',
+      'escalon',
+      'oakdale',
+      'riverbank',
+      'hughson',
+      'newman',
+      'gustine',
+      'los banos',
+      'atwater',
+      'livingston',
+      'winton',
+      'hilmar',
+      'stevinson',
+      'crows landing',
+      'vernalis',
     ];
 
-    const isIn209 = valid209Cities.some(city =>
-      location.includes(city)
-    );
+    const isIn209 = valid209Cities.some(city => location.includes(city));
 
     if (!isIn209) {
       return false;
@@ -253,13 +275,47 @@ export class AdzunaImportService {
    */
   private static extractSkills(description: string): string[] {
     const skillKeywords = [
-      'javascript', 'python', 'java', 'react', 'node.js', 'sql', 'html', 'css',
-      'customer service', 'sales', 'marketing', 'accounting', 'excel', 'word',
-      'communication', 'teamwork', 'leadership', 'problem solving', 'organization',
-      'time management', 'microsoft office', 'data entry', 'bilingual', 'spanish',
-      'forklift', 'warehouse', 'retail', 'food service', 'healthcare', 'nursing',
-      'administrative', 'receptionist', 'cashier', 'driver', 'cdl', 'construction',
-      'maintenance', 'cleaning', 'security', 'teaching', 'education'
+      'javascript',
+      'python',
+      'java',
+      'react',
+      'node.js',
+      'sql',
+      'html',
+      'css',
+      'customer service',
+      'sales',
+      'marketing',
+      'accounting',
+      'excel',
+      'word',
+      'communication',
+      'teamwork',
+      'leadership',
+      'problem solving',
+      'organization',
+      'time management',
+      'microsoft office',
+      'data entry',
+      'bilingual',
+      'spanish',
+      'forklift',
+      'warehouse',
+      'retail',
+      'food service',
+      'healthcare',
+      'nursing',
+      'administrative',
+      'receptionist',
+      'cashier',
+      'driver',
+      'cdl',
+      'construction',
+      'maintenance',
+      'cleaning',
+      'security',
+      'teaching',
+      'education',
     ];
 
     const foundSkills: string[] = [];
@@ -286,28 +342,28 @@ export class AdzunaImportService {
             {
               title: {
                 contains: job.title.substring(0, 20), // First 20 chars of title
-                mode: 'insensitive'
-              }
+                mode: 'insensitive',
+              },
             },
             {
               company: {
                 contains: job.company?.display_name?.substring(0, 15) || '', // First 15 chars of company
-                mode: 'insensitive'
-              }
+                mode: 'insensitive',
+              },
             },
             {
               location: {
                 contains: job.location?.display_name?.split(',')[0] || '', // City name only
-                mode: 'insensitive'
-              }
-            }
-          ]
+                mode: 'insensitive',
+              },
+            },
+          ],
         },
         select: {
           id: true,
           title: true,
-          company: true
-        }
+          company: true,
+        },
       });
 
       // If we find similar jobs, it's likely a duplicate
@@ -321,13 +377,15 @@ export class AdzunaImportService {
   /**
    * Import jobs from Adzuna with enhanced processing
    */
-  static async importJobs(options: {
-    cities?: string[];
-    resultsPerCity?: number;
-    maxJobs?: number;
-    filterQuality?: boolean;
-    removeDuplicates?: boolean;
-  } = {}): Promise<{
+  static async importJobs(
+    options: {
+      cities?: string[];
+      resultsPerCity?: number;
+      maxJobs?: number;
+      filterQuality?: boolean;
+      removeDuplicates?: boolean;
+    } = {}
+  ): Promise<{
     success: boolean;
     imported: number;
     skipped: number;
@@ -340,7 +398,7 @@ export class AdzunaImportService {
       resultsPerCity = 25,
       maxJobs = 500,
       filterQuality = true,
-      removeDuplicates = true
+      removeDuplicates = true,
     } = options;
 
     const result = {
@@ -349,19 +407,19 @@ export class AdzunaImportService {
       skipped: 0,
       errors: 0,
       duplicates: 0,
-      details: [] as string[]
+      details: [] as string[],
     };
 
     try {
       result.details.push('🚀 Starting Adzuna job import...');
-      
+
       // Fetch jobs from Adzuna
       const adzunaJobs = await fetchAdzunaJobs(cities, resultsPerCity);
       result.details.push(`📥 Fetched ${adzunaJobs.length} jobs from Adzuna`);
 
       // Limit total jobs if specified
       const jobsToProcess = maxJobs ? adzunaJobs.slice(0, maxJobs) : adzunaJobs;
-      
+
       for (const job of jobsToProcess) {
         try {
           // Validate job quality
@@ -371,21 +429,23 @@ export class AdzunaImportService {
           }
 
           // Check for duplicates
-          if (removeDuplicates && await this.isDuplicateJob(job)) {
+          if (removeDuplicates && (await this.isDuplicateJob(job))) {
             result.duplicates++;
             continue;
           }
 
           // Check if job already exists by ID
           const existingJob = await prisma.job.findUnique({
-            where: { id: job.id }
+            where: { id: job.id },
           });
 
           // Clean and prepare job data
           const cleanDescription = this.cleanJobDescription(job.description);
           const extractedSkills = this.extractSkills(cleanDescription);
 
-          const mappedJobType = this.mapContractTimeToJobType(job.contract_time);
+          const mappedJobType = this.mapContractTimeToJobType(
+            job.contract_time
+          );
 
           const jobData = {
             title: job.title.trim(),
@@ -407,15 +467,15 @@ export class AdzunaImportService {
             // Update existing job
             await prisma.job.update({
               where: { id: job.id },
-              data: jobData
+              data: jobData,
             });
           } else {
             // Create new job
             await prisma.job.create({
               data: {
                 id: job.id,
-                ...jobData
-              }
+                ...jobData,
+              },
             });
           }
 
@@ -425,23 +485,28 @@ export class AdzunaImportService {
           if (result.imported % 50 === 0) {
             result.details.push(`✅ Processed ${result.imported} jobs...`);
           }
-
         } catch (error) {
           result.errors++;
           console.error(`Error processing job ${job.id}:`, error);
-          
-          if (result.errors < 10) { // Only log first 10 errors
-            result.details.push(`❌ Error processing job ${job.title}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+
+          if (result.errors < 10) {
+            // Only log first 10 errors
+            result.details.push(
+              `❌ Error processing job ${job.title}: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
           }
         }
       }
 
       result.success = true;
-      result.details.push(`🎉 Import completed! Imported: ${result.imported}, Skipped: ${result.skipped}, Duplicates: ${result.duplicates}, Errors: ${result.errors}`);
-
+      result.details.push(
+        `🎉 Import completed! Imported: ${result.imported}, Skipped: ${result.skipped}, Duplicates: ${result.duplicates}, Errors: ${result.errors}`
+      );
     } catch (error) {
       result.success = false;
-      result.details.push(`💥 Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      result.details.push(
+        `💥 Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
       console.error('Adzuna import failed:', error);
     }
 
@@ -464,21 +529,21 @@ export class AdzunaImportService {
         where: {
           source: 'adzuna',
           postedAt: {
-            lt: thirtyDaysAgo
-          }
-        }
+            lt: thirtyDaysAgo,
+          },
+        },
       });
 
       return {
         success: true,
         deleted: deleteResult.count,
-        message: `Cleaned up ${deleteResult.count} old Adzuna jobs`
+        message: `Cleaned up ${deleteResult.count} old Adzuna jobs`,
       };
     } catch (error) {
       return {
         success: false,
         deleted: 0,
-        message: `Cleanup failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Cleanup failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -493,49 +558,44 @@ export class AdzunaImportService {
     newestJob: Date | null;
     jobsByType: Record<string, number>;
   }> {
-    const [
-      totalAdzunaJobs,
-      recentJobs,
-      oldestJob,
-      newestJob,
-      jobsByType
-    ] = await Promise.all([
-      // Total Adzuna jobs
-      prisma.job.count({
-        where: { source: 'adzuna' }
-      }),
-      
-      // Jobs from last 7 days
-      prisma.job.count({
-        where: {
-          source: 'adzuna',
-          postedAt: {
-            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-          }
-        }
-      }),
-      
-      // Oldest job
-      prisma.job.findFirst({
-        where: { source: 'adzuna' },
-        orderBy: { postedAt: 'asc' },
-        select: { postedAt: true }
-      }),
-      
-      // Newest job
-      prisma.job.findFirst({
-        where: { source: 'adzuna' },
-        orderBy: { postedAt: 'desc' },
-        select: { postedAt: true }
-      }),
-      
-      // Jobs by type
-      prisma.job.groupBy({
-        by: ['jobType'],
-        where: { source: 'adzuna' },
-        _count: true
-      })
-    ]);
+    const [totalAdzunaJobs, recentJobs, oldestJob, newestJob, jobsByType] =
+      await Promise.all([
+        // Total Adzuna jobs
+        prisma.job.count({
+          where: { source: 'adzuna' },
+        }),
+
+        // Jobs from last 7 days
+        prisma.job.count({
+          where: {
+            source: 'adzuna',
+            postedAt: {
+              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+            },
+          },
+        }),
+
+        // Oldest job
+        prisma.job.findFirst({
+          where: { source: 'adzuna' },
+          orderBy: { postedAt: 'asc' },
+          select: { postedAt: true },
+        }),
+
+        // Newest job
+        prisma.job.findFirst({
+          where: { source: 'adzuna' },
+          orderBy: { postedAt: 'desc' },
+          select: { postedAt: true },
+        }),
+
+        // Jobs by type
+        prisma.job.groupBy({
+          by: ['jobType'],
+          where: { source: 'adzuna' },
+          _count: true,
+        }),
+      ]);
 
     const jobTypeStats: Record<string, number> = {};
     jobsByType.forEach(item => {
@@ -547,7 +607,7 @@ export class AdzunaImportService {
       recentJobs,
       oldestJob: oldestJob?.postedAt || null,
       newestJob: newestJob?.postedAt || null,
-      jobsByType: jobTypeStats
+      jobsByType: jobTypeStats,
     };
   }
 }

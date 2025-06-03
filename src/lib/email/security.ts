@@ -25,12 +25,12 @@ export const EMAIL_SECURITY_CONFIG = {
   MAX_BODY_LENGTH: 100000, // 100KB
   MAX_RECIPIENTS: 50,
   MAX_ATTACHMENT_SIZE: 10 * 1024 * 1024, // 10MB
-  
+
   // Rate limiting
   MAX_EMAILS_PER_MINUTE: 10,
   MAX_EMAILS_PER_HOUR: 100,
   MAX_EMAILS_PER_DAY: 1000,
-  
+
   // Content filtering
   BLOCKED_DOMAINS: [
     'tempmail.org',
@@ -38,61 +38,88 @@ export const EMAIL_SECURITY_CONFIG = {
     'guerrillamail.com',
     'mailinator.com',
   ],
-  
+
   // Security headers
   REQUIRED_HEADERS: ['Message-ID', 'Date', 'From', 'To'],
   FORBIDDEN_HEADERS: ['Bcc', 'X-Priority', 'X-MSMail-Priority'],
-  
+
   // Content security
   ALLOWED_HTML_TAGS: [
-    'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'a', 'img', 'div', 'span', 'table', 'tr', 'td', 'th',
+    'p',
+    'br',
+    'strong',
+    'em',
+    'u',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'ul',
+    'ol',
+    'li',
+    'a',
+    'img',
+    'div',
+    'span',
+    'table',
+    'tr',
+    'td',
+    'th',
   ],
   ALLOWED_ATTRIBUTES: {
-    'a': ['href', 'title'],
-    'img': ['src', 'alt', 'width', 'height'],
+    a: ['href', 'title'],
+    img: ['src', 'alt', 'width', 'height'],
     '*': ['style', 'class'],
   },
 };
 
 // Email validation schemas
-export const emailAddressSchema = z.string()
+export const emailAddressSchema = z
+  .string()
   .email('Invalid email format')
   .min(5, 'Email too short')
   .max(254, 'Email too long')
-  .refine((email) => {
+  .refine(email => {
     // Additional validation beyond basic email format
     const domain = email.split('@')[1];
     return !EMAIL_SECURITY_CONFIG.BLOCKED_DOMAINS.includes(domain);
   }, 'Email domain not allowed')
-  .refine((email) => {
+  .refine(email => {
     // Check for homograph attacks
     return !containsHomographs(email);
   }, 'Email contains suspicious characters');
 
-export const emailSubjectSchema = z.string()
+export const emailSubjectSchema = z
+  .string()
   .min(1, 'Subject is required')
   .max(EMAIL_SECURITY_CONFIG.MAX_SUBJECT_LENGTH, 'Subject too long')
-  .refine((subject) => {
+  .refine(subject => {
     // Check for header injection
     return !containsHeaderInjection(subject);
   }, 'Subject contains invalid characters');
 
-export const emailBodySchema = z.string()
+export const emailBodySchema = z
+  .string()
   .max(EMAIL_SECURITY_CONFIG.MAX_BODY_LENGTH, 'Email body too long')
-  .refine((body) => {
+  .refine(body => {
     // Check for suspicious content
     return !containsSuspiciousContent(body);
   }, 'Email body contains suspicious content');
 
-export const emailRecipientsSchema = z.array(emailAddressSchema)
+export const emailRecipientsSchema = z
+  .array(emailAddressSchema)
   .min(1, 'At least one recipient required')
   .max(EMAIL_SECURITY_CONFIG.MAX_RECIPIENTS, 'Too many recipients');
 
 // Email security validator class
 export class EmailSecurityValidator {
   private static instance: EmailSecurityValidator;
-  private rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+  private rateLimitStore = new Map<
+    string,
+    { count: number; resetTime: number }
+  >();
 
   public static getInstance(): EmailSecurityValidator {
     if (!EmailSecurityValidator.instance) {
@@ -104,7 +131,10 @@ export class EmailSecurityValidator {
   /**
    * Validate email address with comprehensive security checks
    */
-  public validateEmailAddress(email: string): { isValid: boolean; errors: string[] } {
+  public validateEmailAddress(email: string): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     try {
@@ -138,7 +168,6 @@ export class EmailSecurityValidator {
       if (!this.isValidDomain(domain)) {
         errors.push('Invalid email domain');
       }
-
     } catch (error) {
       errors.push('Email validation failed');
     }
@@ -152,7 +181,10 @@ export class EmailSecurityValidator {
   /**
    * Validate email subject for security issues
    */
-  public validateSubject(subject: string): { isValid: boolean; errors: string[] } {
+  public validateSubject(subject: string): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     try {
@@ -170,7 +202,6 @@ export class EmailSecurityValidator {
       if (containsSuspiciousContent(subject)) {
         errors.push('Subject contains suspicious content');
       }
-
     } catch (error) {
       errors.push('Subject validation failed');
     }
@@ -196,7 +227,10 @@ export class EmailSecurityValidator {
   /**
    * Validate email headers for security
    */
-  public validateHeaders(headers: Record<string, string>): { isValid: boolean; errors: string[] } {
+  public validateHeaders(headers: Record<string, string>): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     try {
@@ -220,7 +254,6 @@ export class EmailSecurityValidator {
           errors.push(`Header injection detected in ${key}`);
         }
       }
-
     } catch (error) {
       errors.push('Header validation failed');
     }
@@ -234,7 +267,10 @@ export class EmailSecurityValidator {
   /**
    * Check rate limits for email sending
    */
-  public checkRateLimit(identifier: string): { allowed: boolean; resetTime?: number } {
+  public checkRateLimit(identifier: string): {
+    allowed: boolean;
+    resetTime?: number;
+  } {
     const now = Date.now();
     const key = `email_rate_${identifier}`;
     const limit = this.rateLimitStore.get(key);
@@ -243,7 +279,7 @@ export class EmailSecurityValidator {
       // Reset or initialize rate limit
       this.rateLimitStore.set(key, {
         count: 1,
-        resetTime: now + (60 * 1000), // 1 minute window
+        resetTime: now + 60 * 1000, // 1 minute window
       });
       return { allowed: true };
     }
@@ -289,7 +325,6 @@ export class EmailSecurityValidator {
       if (containsMaliciousContent(file.content)) {
         errors.push('File contains suspicious content');
       }
-
     } catch (error) {
       errors.push('Attachment validation failed');
     }
@@ -303,15 +338,19 @@ export class EmailSecurityValidator {
   /**
    * Generate secure email headers
    */
-  public generateSecureHeaders(from: string, to: string[], subject: string): Record<string, string> {
+  public generateSecureHeaders(
+    from: string,
+    to: string[],
+    subject: string
+  ): Record<string, string> {
     const messageId = `<${Date.now()}.${Math.random().toString(36)}@${process.env.DOMAIN || 'localhost'}>`;
-    
+
     return {
       'Message-ID': messageId,
-      'Date': new Date().toUTCString(),
-      'From': from,
-      'To': to.join(', '),
-      'Subject': subject,
+      Date: new Date().toUTCString(),
+      From: from,
+      To: to.join(', '),
+      Subject: subject,
       'X-Mailer': '209jobs-secure-mailer',
       'X-Priority': '3', // Normal priority
       'MIME-Version': '1.0',
@@ -326,7 +365,8 @@ export class EmailSecurityValidator {
   private isValidDomain(domain: string): boolean {
     try {
       // Basic domain format check
-      const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      const domainRegex =
+        /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
       return domainRegex.test(domain) && domain.length <= 253;
     } catch {
       return false;
@@ -338,13 +378,13 @@ export class EmailSecurityValidator {
 function containsHeaderInjection(value: string): boolean {
   // Check for CRLF injection and header manipulation
   const injectionPatterns = [
-    /\r\n/g,           // CRLF
-    /\n/g,             // LF
-    /\r/g,             // CR
-    /%0[aA]/g,         // URL encoded LF
-    /%0[dD]/g,         // URL encoded CR
-    /%0[dD]%0[aA]/g,   // URL encoded CRLF
-    /\x00/g,           // Null byte
+    /\r\n/g, // CRLF
+    /\n/g, // LF
+    /\r/g, // CR
+    /%0[aA]/g, // URL encoded LF
+    /%0[dD]/g, // URL encoded CR
+    /%0[dD]%0[aA]/g, // URL encoded CRLF
+    /\x00/g, // Null byte
   ];
 
   return injectionPatterns.some(pattern => pattern.test(value));
@@ -362,24 +402,17 @@ function containsSuspiciousContent(content: string): boolean {
     /data:/i,
     /vbscript:/i,
     /<script/i,
-    /on\w+\s*=/i,     // Event handlers
+    /on\w+\s*=/i, // Event handlers
     /expression\s*\(/i, // CSS expressions
-    /import\s+/i,      // ES6 imports
-    /eval\s*\(/i,      // eval() calls
+    /import\s+/i, // ES6 imports
+    /eval\s*\(/i, // eval() calls
   ];
 
   return suspiciousPatterns.some(pattern => pattern.test(content));
 }
 
 function containsPathTraversal(filename: string): boolean {
-  const pathTraversalPatterns = [
-    /\.\./,
-    /\//,
-    /\\/,
-    /%2e%2e/i,
-    /%2f/i,
-    /%5c/i,
-  ];
+  const pathTraversalPatterns = [/\.\./, /\//, /\\/, /%2e%2e/i, /%2f/i, /%5c/i];
 
   return pathTraversalPatterns.some(pattern => pattern.test(filename));
 }
@@ -407,8 +440,8 @@ function containsMaliciousContent(content: Buffer): boolean {
     Buffer.from('504B0304', 'hex'), // ZIP file (could contain malware)
   ];
 
-  return maliciousSignatures.some(signature => 
-    content.indexOf(signature) !== -1
+  return maliciousSignatures.some(
+    signature => content.indexOf(signature) !== -1
   );
 }
 
@@ -431,7 +464,10 @@ export class EmailAuthenticator {
   /**
    * Validate SPF record (placeholder - requires DNS lookup)
    */
-  public static async validateSPF(domain: string, ip: string): Promise<boolean> {
+  public static async validateSPF(
+    domain: string,
+    ip: string
+  ): Promise<boolean> {
     // This is a placeholder - implement proper SPF validation
     // using DNS TXT record lookup in production
     console.warn('SPF validation not implemented - use proper SPF library');
@@ -447,4 +483,4 @@ export class EmailAuthenticator {
 }
 
 // Export singleton instance
-export const emailSecurityValidator = EmailSecurityValidator.getInstance(); 
+export const emailSecurityValidator = EmailSecurityValidator.getInstance();

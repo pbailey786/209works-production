@@ -23,9 +23,11 @@ export async function POST(req: NextRequest) {
         location: 'Modesto, CA',
         salary: '$80,000 - $120,000',
         jobType: 'Full-time',
-        description: 'We are seeking a talented Senior Software Developer to join our growing team. You will be responsible for developing scalable web applications, collaborating with cross-functional teams, and mentoring junior developers. This is an excellent opportunity to work with modern technologies and make a significant impact.',
+        description:
+          'We are seeking a talented Senior Software Developer to join our growing team. You will be responsible for developing scalable web applications, collaborating with cross-functional teams, and mentoring junior developers. This is an excellent opportunity to work with modern technologies and make a significant impact.',
         jobUrl: 'https://209jobs.com/jobs/test-job',
-        unsubscribeUrl: 'https://209jobs.com/api/email-alerts/unsubscribe?token=test-token',
+        unsubscribeUrl:
+          'https://209jobs.com/api/email-alerts/unsubscribe?token=test-token',
       };
 
       const result = await sendEmail({
@@ -37,9 +39,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         message: 'Job alert email sent successfully!',
         type: 'job_alert',
-        emailId: (result as any).data?.id || (result as any).id || (result as any).messageId || 'unknown',
+        emailId:
+          (result as any).data?.id ||
+          (result as any).id ||
+          (result as any).messageId ||
+          'unknown',
       });
-
     } else if (type === 'weekly_digest') {
       // Test weekly digest email
       const testJobs = [
@@ -78,7 +83,8 @@ export async function POST(req: NextRequest) {
         userName: 'Test User',
         jobs: testJobs,
         location: '209 Area',
-        unsubscribeUrl: 'https://209jobs.com/api/email-alerts/unsubscribe?token=test-token',
+        unsubscribeUrl:
+          'https://209jobs.com/api/email-alerts/unsubscribe?token=test-token',
         manageAlertsUrl: 'https://209jobs.com/dashboard/alerts',
       };
 
@@ -91,22 +97,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         message: 'Weekly digest email sent successfully!',
         type: 'weekly_digest',
-        emailId: (result as any).data?.id || (result as any).id || (result as any).messageId || 'unknown',
+        emailId:
+          (result as any).data?.id ||
+          (result as any).id ||
+          (result as any).messageId ||
+          'unknown',
       });
-
     } else {
       return NextResponse.json(
         { error: 'Invalid email type. Use "job_alert" or "weekly_digest"' },
         { status: 400 }
       );
     }
-
   } catch (error) {
     console.error('Test email alerts error:', error);
     return NextResponse.json(
-      { 
-        error: 'Internal server error', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -120,18 +128,18 @@ export async function GET() {
     endpoints: {
       test_job_alert: {
         method: 'POST',
-        body: { 
+        body: {
           to: 'your-email@example.com',
-          type: 'job_alert'
-        }
+          type: 'job_alert',
+        },
       },
       test_weekly_digest: {
         method: 'POST',
-        body: { 
+        body: {
           to: 'your-email@example.com',
-          type: 'weekly_digest'
-        }
-      }
+          type: 'weekly_digest',
+        },
+      },
     },
     status: 'Email Alert System is operational ✅',
     features: [
@@ -140,7 +148,7 @@ export async function GET() {
       '✅ Database models implemented',
       '✅ API endpoints functional',
       '✅ Unsubscribe system ready',
-      '🔄 Next: Job matching and scheduling'
-    ]
+      '🔄 Next: Job matching and scheduling',
+    ],
   });
-} 
+}

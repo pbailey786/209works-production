@@ -13,7 +13,10 @@ const sizeClasses = {
   xl: 'w-12 h-12',
 };
 
-export function LoadingSpinner({ size = 'md', className }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  size = 'md',
+  className,
+}: LoadingSpinnerProps) {
   return (
     <div
       className={cn(
@@ -27,4 +30,4 @@ export function LoadingSpinner({ size = 'md', className }: LoadingSpinnerProps) 
       <span className="sr-only">Loading...</span>
     </div>
   );
-} 
+}

@@ -1,20 +1,20 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import authOptions from "../../api/auth/authOptions";
-import { hasPermission, Permission } from "@/lib/rbac/permissions";
-import AuditLogsDashboard from "@/components/admin/AuditLogsDashboard";
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import authOptions from '../../api/auth/authOptions';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import AuditLogsDashboard from '@/components/admin/AuditLogsDashboard';
 
 export default async function AuditLogsPage() {
   const session = await getServerSession(authOptions);
 
   // Check authentication and permissions
   if (!session) {
-    redirect("/signin?redirect=/admin/audit");
+    redirect('/signin?redirect=/admin/audit');
   }
 
   const userRole = (session.user as any)?.role;
   if (!hasPermission(userRole, Permission.VIEW_AUDIT_LOGS)) {
-    redirect("/admin");
+    redirect('/admin');
   }
 
   return (
@@ -31,4 +31,4 @@ export default async function AuditLogsPage() {
       <AuditLogsDashboard />
     </div>
   );
-} 
+}

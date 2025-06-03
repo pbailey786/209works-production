@@ -94,13 +94,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
-      success: true,
-      alert 
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        alert,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating engagement alert:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -156,13 +159,13 @@ export async function PUT(request: NextRequest) {
       data: updateData,
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      alert: updatedAlert 
+      alert: updatedAlert,
     });
   } catch (error) {
     console.error('Error updating engagement alert:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -223,9 +226,9 @@ export async function DELETE(request: NextRequest) {
       where: { id: alertId },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      message: 'Alert deleted successfully' 
+      message: 'Alert deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting engagement alert:', error);
@@ -234,4 +237,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

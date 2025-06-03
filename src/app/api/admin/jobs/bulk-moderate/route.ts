@@ -10,10 +10,7 @@ export async function PATCH(req: NextRequest) {
 
     // Check if user is authenticated and has moderation permissions
     if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userRole = (session.user as any)?.role;
@@ -36,24 +33,18 @@ export async function PATCH(req: NextRequest) {
 
     const validActions = ['approve', 'reject', 'flag'];
     if (!validActions.includes(action)) {
-      return NextResponse.json(
-        { error: 'Invalid action' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
     // Find the jobs
     const jobs = await prisma.job.findMany({
-      where: { 
-        id: { in: jobIds } 
-      }
+      where: {
+        id: { in: jobIds },
+      },
     });
 
     if (jobs.length === 0) {
-      return NextResponse.json(
-        { error: 'No jobs found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'No jobs found' }, { status: 404 });
     }
 
     // Prepare update data
@@ -78,7 +69,7 @@ export async function PATCH(req: NextRequest) {
     // Bulk update jobs
     const updatedJobs = await prisma.job.updateMany({
       where: { id: { in: jobIds } },
-      data: updateData
+      data: updateData,
     });
 
     // In a real app, you'd create audit log entries for each job
@@ -102,10 +93,9 @@ export async function PATCH(req: NextRequest) {
         company: job.company,
         action: action,
         moderatedAt: new Date(),
-        moderatedBy: session.user?.email
-      }))
+        moderatedBy: session.user?.email,
+      })),
     });
-
   } catch (error) {
     console.error('Bulk moderation error:', error);
     return NextResponse.json(
@@ -113,4 +103,4 @@ export async function PATCH(req: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

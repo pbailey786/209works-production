@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from 'lucide-react';
+import {
+  Heart,
+  MessageCircle,
+  Send,
+  Bookmark,
+  MoreHorizontal,
+} from 'lucide-react';
 
 interface InstagramPostAdProps {
   maxAds?: number;
@@ -122,18 +128,18 @@ export default function InstagramPostAd({
   if (loading) {
     return (
       <div className={`animate-pulse ${className}`}>
-        <div className="bg-white border border-gray-200 rounded-lg">
+        <div className="rounded-lg border border-gray-200 bg-white">
           <div className="flex items-center p-4">
-            <div className="w-8 h-8 bg-gray-200 rounded-full mr-3"></div>
+            <div className="mr-3 h-8 w-8 rounded-full bg-gray-200"></div>
             <div className="flex-1">
-              <div className="h-4 bg-gray-200 rounded w-24 mb-1"></div>
-              <div className="h-3 bg-gray-200 rounded w-16"></div>
+              <div className="mb-1 h-4 w-24 rounded bg-gray-200"></div>
+              <div className="h-3 w-16 rounded bg-gray-200"></div>
             </div>
           </div>
           <div className="aspect-square bg-gray-200"></div>
           <div className="p-4">
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="mb-2 h-4 w-3/4 rounded bg-gray-200"></div>
+            <div className="h-4 w-1/2 rounded bg-gray-200"></div>
           </div>
         </div>
       </div>
@@ -145,15 +151,17 @@ export default function InstagramPostAd({
   }
 
   const renderInstagramAd = (ad: Advertisement) => (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm max-w-md mx-auto">
+    <div className="mx-auto max-w-md overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-sm font-bold text-white">
             {ad.content.businessName.charAt(0).toUpperCase()}
           </div>
           <div className="ml-3">
-            <div className="font-semibold text-sm">{ad.content.businessName}</div>
+            <div className="text-sm font-semibold">
+              {ad.content.businessName}
+            </div>
             <div className="text-xs text-gray-500">Sponsored</div>
           </div>
         </div>
@@ -163,26 +171,26 @@ export default function InstagramPostAd({
       </div>
 
       {/* Image */}
-      <div className="aspect-square relative">
+      <div className="relative aspect-square">
         {ad.content.imageUrl ? (
-          <img 
-            src={ad.content.imageUrl} 
+          <img
+            src={ad.content.imageUrl}
             alt={ad.content.title}
-            className="w-full h-full object-cover cursor-pointer"
+            className="h-full w-full cursor-pointer object-cover"
             onClick={() => handleAdClick(ad)}
           />
         ) : (
-          <div 
-            className="w-full h-full bg-gray-200 flex items-center justify-center cursor-pointer"
+          <div
+            className="flex h-full w-full cursor-pointer items-center justify-center bg-gray-200"
             onClick={() => handleAdClick(ad)}
           >
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-2 flex items-center justify-center">
+              <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-gray-300">
                 <span className="text-2xl text-gray-500">
                   {ad.content.businessName.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <p className="text-gray-500 text-sm">{ad.content.businessName}</p>
+              <p className="text-sm text-gray-500">{ad.content.businessName}</p>
             </div>
           </div>
         )}
@@ -192,11 +200,13 @@ export default function InstagramPostAd({
       {showEngagement && (
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-4">
-            <button 
+            <button
               onClick={() => handleLike(ad.id)}
               className={`transition-colors ${liked[ad.id] ? 'text-red-500' : 'text-gray-700 hover:text-gray-900'}`}
             >
-              <Heart className={`h-6 w-6 ${liked[ad.id] ? 'fill-current' : ''}`} />
+              <Heart
+                className={`h-6 w-6 ${liked[ad.id] ? 'fill-current' : ''}`}
+              />
             </button>
             <button className="text-gray-700 hover:text-gray-900">
               <MessageCircle className="h-6 w-6" />
@@ -205,11 +215,13 @@ export default function InstagramPostAd({
               <Send className="h-6 w-6" />
             </button>
           </div>
-          <button 
+          <button
             onClick={() => handleSave(ad.id)}
             className={`transition-colors ${saved[ad.id] ? 'text-gray-900' : 'text-gray-700 hover:text-gray-900'}`}
           >
-            <Bookmark className={`h-6 w-6 ${saved[ad.id] ? 'fill-current' : ''}`} />
+            <Bookmark
+              className={`h-6 w-6 ${saved[ad.id] ? 'fill-current' : ''}`}
+            />
           </button>
         </div>
       )}
@@ -217,15 +229,14 @@ export default function InstagramPostAd({
       {/* Content */}
       <div className="px-4 pb-4">
         {showEngagement && (
-          <div className="text-sm font-semibold mb-2">
+          <div className="mb-2 text-sm font-semibold">
             {Math.floor(Math.random() * 1000) + 100} likes
           </div>
         )}
-        
+
         <div className="text-sm">
-          <span className="font-semibold">{ad.content.businessName}</span>
-          {' '}
-          <span 
+          <span className="font-semibold">{ad.content.businessName}</span>{' '}
+          <span
             className="cursor-pointer hover:text-blue-600"
             onClick={() => handleAdClick(ad)}
           >
@@ -242,20 +253,20 @@ export default function InstagramPostAd({
         {/* Call to Action */}
         <button
           onClick={() => handleAdClick(ad)}
-          className="mt-3 w-full bg-blue-500 text-white py-2 px-4 rounded-md font-medium text-sm hover:bg-blue-600 transition-colors"
+          className="mt-3 w-full rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600"
         >
           Learn More
         </button>
 
         {/* Location */}
         {ad.targeting?.zipCodes && (
-          <div className="text-xs text-gray-500 mt-2">
+          <div className="mt-2 text-xs text-gray-500">
             📍 Serving {ad.targeting.zipCodes.join(', ')}
           </div>
         )}
 
         {showEngagement && (
-          <div className="text-xs text-gray-500 mt-2">
+          <div className="mt-2 text-xs text-gray-500">
             {Math.floor(Math.random() * 24) + 1} hours ago
           </div>
         )}
@@ -265,11 +276,9 @@ export default function InstagramPostAd({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {ads.map((ad) => (
-        <div key={ad.id}>
-          {renderInstagramAd(ad)}
-        </div>
+      {ads.map(ad => (
+        <div key={ad.id}>{renderInstagramAd(ad)}</div>
       ))}
     </div>
   );
-} 
+}

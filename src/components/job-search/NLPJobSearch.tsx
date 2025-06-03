@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sparkles, ArrowRight, MapPin, Briefcase, Clock, DollarSign } from 'lucide-react';
+import {
+  Search,
+  Sparkles,
+  ArrowRight,
+  MapPin,
+  Briefcase,
+  Clock,
+  DollarSign,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -11,24 +19,32 @@ interface NLPJobSearchProps {
 }
 
 const searchSuggestions = [
-  "Remote warehouse job near Modesto",
-  "Part-time retail cashier in Tracy with flexible hours",
-  "Entry-level forklift operator in Stockton, $18+ per hour",
-  "School janitor positions in Lodi with benefits",
-  "Delivery driver jobs in Manteca, weekends off",
-  "Customer service representative, work from home",
-  "Administrative assistant in Central Valley, full-time",
-  "Manufacturing jobs in Stockton with overtime pay"
+  'Remote warehouse job near Modesto',
+  'Part-time retail cashier in Tracy with flexible hours',
+  'Entry-level forklift operator in Stockton, $18+ per hour',
+  'School janitor positions in Lodi with benefits',
+  'Delivery driver jobs in Manteca, weekends off',
+  'Customer service representative, work from home',
+  'Administrative assistant in Central Valley, full-time',
+  'Manufacturing jobs in Stockton with overtime pay',
 ];
 
 const quickFilters = [
-  { icon: MapPin, label: "Remote Only", query: "remote jobs" },
-  { icon: Clock, label: "Part-Time", query: "part-time positions" },
-  { icon: DollarSign, label: "$20+ /hour", query: "jobs paying $20 or more per hour" },
-  { icon: Briefcase, label: "Entry Level", query: "entry level positions" }
+  { icon: MapPin, label: 'Remote Only', query: 'remote jobs' },
+  { icon: Clock, label: 'Part-Time', query: 'part-time positions' },
+  {
+    icon: DollarSign,
+    label: '$20+ /hour',
+    query: 'jobs paying $20 or more per hour',
+  },
+  { icon: Briefcase, label: 'Entry Level', query: 'entry level positions' },
 ];
 
-export default function NLPJobSearch({ onSearch, loading = false, className }: NLPJobSearchProps) {
+export default function NLPJobSearch({
+  onSearch,
+  loading = false,
+  className,
+}: NLPJobSearchProps) {
   const [query, setQuery] = useState('');
   const [currentSuggestion, setCurrentSuggestion] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(true);
@@ -38,7 +54,7 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
   // Rotate suggestions every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSuggestion((prev) => (prev + 1) % searchSuggestions.length);
+      setCurrentSuggestion(prev => (prev + 1) % searchSuggestions.length);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
@@ -76,18 +92,20 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
   };
 
   return (
-    <div className={cn("w-full max-w-4xl mx-auto", className)}>
+    <div className={cn('mx-auto w-full max-w-4xl', className)}>
       {/* Main Search Interface */}
       <form onSubmit={handleSubmit} className="relative">
-        <div className={cn(
-          "relative bg-white rounded-2xl shadow-lg border-2 transition-all duration-300",
-          isFocused ? "border-blue-500 shadow-xl" : "border-gray-200",
-          "hover:shadow-xl hover:border-gray-300"
-        )}>
+        <div
+          className={cn(
+            'relative rounded-2xl border-2 bg-white shadow-lg transition-all duration-300',
+            isFocused ? 'border-blue-500 shadow-xl' : 'border-gray-200',
+            'hover:border-gray-300 hover:shadow-xl'
+          )}
+        >
           {/* AI Icon */}
           <div className="absolute left-6 top-6 z-10">
-            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-              <Sparkles className="w-4 h-4 text-white" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
+              <Sparkles className="h-4 w-4 text-white" />
             </div>
           </div>
 
@@ -101,33 +119,33 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
             onBlur={() => setIsFocused(false)}
             placeholder="e.g., Part-time warehouse job in Stockton with weekends off, $18+ per hour"
             className={cn(
-              "w-full pl-16 pr-20 py-6 text-lg resize-none border-0 rounded-2xl",
-              "focus:outline-none focus:ring-0 placeholder-gray-400",
-              "min-h-[80px] max-h-[200px] leading-relaxed"
+              'w-full resize-none rounded-2xl border-0 py-6 pl-16 pr-20 text-lg',
+              'placeholder-gray-400 focus:outline-none focus:ring-0',
+              'max-h-[200px] min-h-[80px] leading-relaxed'
             )}
             rows={1}
-            style={{ 
+            style={{
               height: 'auto',
-              minHeight: '80px'
+              minHeight: '80px',
             }}
           />
 
           {/* Submit Button */}
-          <div className="absolute right-4 bottom-4">
+          <div className="absolute bottom-4 right-4">
             <Button
               type="submit"
               disabled={!query.trim() || loading}
               className={cn(
-                "h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600",
-                "hover:from-blue-600 hover:to-purple-700 transition-all duration-200",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                "flex items-center justify-center"
+                'h-12 w-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600',
+                'transition-all duration-200 hover:from-blue-600 hover:to-purple-700',
+                'disabled:cursor-not-allowed disabled:opacity-50',
+                'flex items-center justify-center'
               )}
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
               ) : (
-                <ArrowRight className="w-5 h-5 text-white" />
+                <ArrowRight className="h-5 w-5 text-white" />
               )}
             </Button>
           </div>
@@ -146,7 +164,7 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
           >
             {/* Rotating Suggestion */}
             <div className="text-center">
-              <p className="text-sm text-gray-500 mb-3">Try asking:</p>
+              <p className="mb-3 text-sm text-gray-500">Try asking:</p>
               <AnimatePresence mode="wait">
                 <motion.button
                   key={currentSuggestion}
@@ -154,12 +172,14 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.4 }}
-                  onClick={() => handleSuggestionClick(searchSuggestions[currentSuggestion])}
+                  onClick={() =>
+                    handleSuggestionClick(searchSuggestions[currentSuggestion])
+                  }
                   className={cn(
-                    "text-blue-600 hover:text-blue-700 font-medium text-lg",
-                    "hover:underline transition-colors duration-200 cursor-pointer",
-                    "block mx-auto max-w-2xl px-4 py-2 rounded-lg",
-                    "hover:bg-blue-50"
+                    'text-lg font-medium text-blue-600 hover:text-blue-700',
+                    'cursor-pointer transition-colors duration-200 hover:underline',
+                    'mx-auto block max-w-2xl rounded-lg px-4 py-2',
+                    'hover:bg-blue-50'
                   )}
                 >
                   "{searchSuggestions[currentSuggestion]}"
@@ -179,13 +199,13 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
                     transition={{ delay: index * 0.1 }}
                     onClick={() => handleQuickFilter(filter.query)}
                     className={cn(
-                      "flex items-center gap-2 px-4 py-3 bg-white border border-gray-200",
-                      "rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all duration-200",
-                      "text-gray-700 hover:text-blue-700 font-medium text-sm",
-                      "shadow-sm hover:shadow-md"
+                      'flex items-center gap-2 border border-gray-200 bg-white px-4 py-3',
+                      'rounded-xl transition-all duration-200 hover:border-blue-300 hover:bg-blue-50',
+                      'text-sm font-medium text-gray-700 hover:text-blue-700',
+                      'shadow-sm hover:shadow-md'
                     )}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="h-4 w-4" />
                     {filter.label}
                   </motion.button>
                 );
@@ -193,7 +213,7 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
             </div>
 
             {/* Additional Suggestions Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
+            <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 md:grid-cols-2">
               {searchSuggestions.slice(0, 4).map((suggestion, index) => (
                 <motion.button
                   key={suggestion}
@@ -202,12 +222,12 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
                   transition={{ delay: 0.4 + index * 0.1 }}
                   onClick={() => handleSuggestionClick(suggestion)}
                   className={cn(
-                    "text-left p-4 bg-gray-50 hover:bg-gray-100 rounded-xl",
-                    "border border-gray-200 hover:border-gray-300 transition-all duration-200",
-                    "text-gray-700 hover:text-gray-900 text-sm"
+                    'rounded-xl bg-gray-50 p-4 text-left hover:bg-gray-100',
+                    'border border-gray-200 transition-all duration-200 hover:border-gray-300',
+                    'text-sm text-gray-700 hover:text-gray-900'
                   )}
                 >
-                  <Search className="w-4 h-4 text-gray-400 mb-2" />
+                  <Search className="mb-2 h-4 w-4 text-gray-400" />
                   {suggestion}
                 </motion.button>
               ))}
@@ -217,4 +237,4 @@ export default function NLPJobSearch({ onSearch, loading = false, className }: N
       </AnimatePresence>
     </div>
   );
-} 
+}

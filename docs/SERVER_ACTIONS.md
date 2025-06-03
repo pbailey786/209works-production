@@ -7,6 +7,7 @@ This document provides a comprehensive overview of all server actions implemente
 ## Architecture
 
 All server actions follow a consistent pattern:
+
 - **Type Safety**: Full TypeScript support with Zod validation
 - **Error Handling**: Comprehensive error handling with user-friendly messages
 - **Security**: Authentication checks and authorization validation
@@ -18,6 +19,7 @@ All server actions follow a consistent pattern:
 ### 1. Authentication Actions (`src/actions/auth.ts`)
 
 #### Core Features
+
 - **User Registration**: Sign up for jobseekers and employers
 - **Authentication**: Sign in with email/password
 - **2FA Support**: Two-factor authentication setup and verification
@@ -56,6 +58,7 @@ disable2FAAction(userId: string): Promise<ActionResult>
 ```
 
 #### Security Features
+
 - Password hashing with bcrypt (12 rounds)
 - Secure token generation for verification
 - Session management for 2FA
@@ -67,6 +70,7 @@ disable2FAAction(userId: string): Promise<ActionResult>
 ### 2. Job Management Actions (`src/actions/jobs.ts`)
 
 #### Core Features
+
 - **Job Posting**: Create and manage job listings
 - **Job Applications**: Apply to jobs with validation
 - **Job Search**: Advanced search with filters
@@ -103,6 +107,7 @@ toggleJobStatusAction(jobId: string, userId: string): Promise<ActionResult>
 ```
 
 #### Validation Features
+
 - Comprehensive job posting validation
 - Application deadline enforcement
 - Duplicate application prevention
@@ -114,6 +119,7 @@ toggleJobStatusAction(jobId: string, userId: string): Promise<ActionResult>
 ### 3. User Management Actions (`src/actions/users.ts`)
 
 #### Core Features
+
 - **Profile Management**: Update user profiles with role-specific fields
 - **Privacy Settings**: Control profile visibility and data sharing
 - **Notification Preferences**: Manage email, push, and SMS notifications
@@ -157,6 +163,7 @@ searchUsersAction(formData: FormData): Promise<{
 ```
 
 #### Privacy Features
+
 - **Profile Visibility**: Public, private, or employers-only
 - **Data Control**: Choose what information to show
 - **Search Settings**: Control discoverability
@@ -167,6 +174,7 @@ searchUsersAction(formData: FormData): Promise<{
 ### 4. Alert Management Actions (`src/actions/alerts.ts`)
 
 #### Core Features
+
 - **Smart Alerts**: AI-powered job matching with relevance scoring
 - **Alert Testing**: Preview and optimize alert criteria
 - **Bulk Operations**: Manage multiple alerts efficiently
@@ -199,6 +207,7 @@ bulkAlertOperationAction(
 ```
 
 #### Smart Features
+
 - **Relevance Scoring**: 7-factor scoring system for job matching
 - **Match Quality Analysis**: Provides feedback on search criteria effectiveness
 - **Optimization Recommendations**: AI-generated suggestions to improve results
@@ -209,6 +218,7 @@ bulkAlertOperationAction(
 ### 5. Advertisement Actions (`src/actions/ads.ts`)
 
 #### Core Features
+
 - **Campaign Management**: Create and manage advertising campaigns
 - **Performance Tracking**: Real-time analytics and reporting
 - **Budget Control**: Automatic budget monitoring and limits
@@ -251,6 +261,7 @@ bulkAdOperationAction(
 ```
 
 #### Business Features
+
 - **Multiple Bidding Models**: CPC, CPM, flat-rate pricing
 - **Advanced Targeting**: Geographic, demographic, and behavioral targeting
 - **Real-time Budget Tracking**: Automatic pause when budgets are exceeded
@@ -262,6 +273,7 @@ bulkAdOperationAction(
 ## Common Patterns
 
 ### Error Handling
+
 All actions return a consistent `ActionResult` type:
 
 ```typescript
@@ -274,17 +286,20 @@ export type ActionResult = {
 ```
 
 ### Validation
+
 - **Zod Integration**: All inputs validated with Zod schemas
 - **Type Safety**: Full TypeScript support throughout
 - **Custom Validators**: Business logic validation (e.g., budget limits, date ranges)
 
 ### Security
+
 - **Authentication**: User session validation
 - **Authorization**: Role-based access control
 - **Input Sanitization**: All inputs validated and sanitized
 - **Rate Limiting**: Protection against abuse
 
 ### Performance
+
 - **Database Optimization**: Efficient queries with proper indexing
 - **Cache Strategy**: Strategic `revalidatePath()` usage
 - **Pagination**: Large datasets handled efficiently
@@ -302,7 +317,7 @@ import { signInAction } from '@/actions/auth';
 
 export function SignInForm() {
   const [state, formAction] = useFormState(signInAction, null);
-  
+
   return (
     <form action={formAction}>
       <input name="email" type="email" required />
@@ -322,7 +337,7 @@ import { deleteJobAction } from '@/actions/jobs';
 
 export function DeleteJobButton({ jobId, userId }: { jobId: string; userId: string }) {
   const [isPending, startTransition] = useTransition();
-  
+
   const handleDelete = () => {
     startTransition(async () => {
       const result = await deleteJobAction(jobId, userId);
@@ -333,7 +348,7 @@ export function DeleteJobButton({ jobId, userId }: { jobId: string; userId: stri
       }
     });
   };
-  
+
   return (
     <button onClick={handleDelete} disabled={isPending}>
       {isPending ? 'Deleting...' : 'Delete Job'}
@@ -347,16 +362,19 @@ export function DeleteJobButton({ jobId, userId }: { jobId: string; userId: stri
 ## Integration Points
 
 ### Database
+
 - **Prisma ORM**: All database operations use Prisma client
 - **Transaction Support**: Critical operations wrapped in transactions
 - **Relationship Management**: Proper cascade handling for deletions
 
 ### Validation
+
 - **Shared Schemas**: Reuses validation schemas from `/lib/validations/`
 - **Type Safety**: Full TypeScript integration
 - **Custom Validation**: Business-specific validation rules
 
 ### Caching
+
 - **Next.js Cache**: Integrates with Next.js caching system
 - **Strategic Invalidation**: Targeted cache clearing for optimal performance
 - **Real-time Updates**: Immediate UI updates after successful actions
@@ -366,21 +384,25 @@ export function DeleteJobButton({ jobId, userId }: { jobId: string; userId: stri
 ## Security Considerations
 
 ### Authentication
+
 - All actions verify user authentication before execution
 - Session-based security for 2FA workflows
 - Secure token generation and validation
 
 ### Authorization
+
 - Role-based access control (jobseeker, employer, admin)
 - Resource ownership verification
 - Action-specific permissions
 
 ### Data Protection
+
 - Input sanitization and validation
 - SQL injection prevention through Prisma
 - XSS protection through proper data handling
 
 ### Rate Limiting
+
 - Built-in protection against abuse
 - Configurable limits per action type
 - User-specific and global limits
@@ -390,16 +412,19 @@ export function DeleteJobButton({ jobId, userId }: { jobId: string; userId: stri
 ## Performance Optimizations
 
 ### Database
+
 - Optimized queries with minimal data selection
 - Proper indexing for search operations
 - Connection pooling through Prisma
 
 ### Caching
+
 - Strategic cache invalidation
 - Minimal cache clearing for better performance
 - Redis integration for advanced caching needs
 
 ### Bulk Operations
+
 - Optimized for handling multiple records
 - Transaction-based for consistency
 - Limited batch sizes to prevent timeouts
@@ -409,12 +434,14 @@ export function DeleteJobButton({ jobId, userId }: { jobId: string; userId: stri
 ## Future Enhancements
 
 ### Planned Features
+
 - **Background Jobs**: Long-running operations moved to background
 - **Enhanced Analytics**: More detailed tracking and reporting
 - **API Rate Limiting**: More sophisticated rate limiting
 - **Audit Logging**: Comprehensive action logging for compliance
 
 ### Scalability Improvements
+
 - **Database Sharding**: Support for horizontal scaling
 - **Microservices**: Potential separation of concerns
 - **Caching Layers**: Advanced caching strategies
@@ -427,8 +454,9 @@ export function DeleteJobButton({ jobId, userId }: { jobId: string; userId: stri
 The server actions system provides a robust, type-safe, and performant foundation for the 209jobs application. With comprehensive validation, security measures, and optimized performance, these actions enable seamless user interactions while maintaining data integrity and security.
 
 Each action is designed to be:
+
 - **Reliable**: Comprehensive error handling and validation
 - **Secure**: Authentication, authorization, and input validation
 - **Performant**: Optimized database queries and caching
 - **Maintainable**: Consistent patterns and clear documentation
-- **Scalable**: Built to handle growing user base and data volumes 
+- **Scalable**: Built to handle growing user base and data volumes

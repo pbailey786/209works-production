@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  MapPin, 
-  Globe, 
-  Calendar, 
-  Users, 
-  Briefcase, 
+import {
+  MapPin,
+  Globe,
+  Calendar,
+  Users,
+  Briefcase,
   Heart,
   ExternalLink,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react';
 import Link from 'next/link';
 import EnhancedJobCard from '../../../components/job-search/EnhancedJobCard';
@@ -47,7 +47,9 @@ interface EmployerProfileClientProps {
   employer: Employer;
 }
 
-export default function EmployerProfileClient({ employer }: EmployerProfileClientProps) {
+export default function EmployerProfileClient({
+  employer,
+}: EmployerProfileClientProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -78,43 +80,43 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center mb-6">
-            <Link 
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mb-6 flex items-center">
+            <Link
               href="/"
-              className="flex items-center text-gray-600 hover:text-gray-900 mr-4"
+              className="mr-4 flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="mr-2 h-5 w-5" />
               Back to Home
             </Link>
           </div>
-          
+
           <div className="flex items-start space-x-6">
             <div className="text-6xl" role="img" aria-label={employer.industry}>
               {employer.logo}
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">
                 {employer.name}
               </h1>
-              <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-4">
+              <div className="mb-4 flex flex-wrap items-center gap-4 text-gray-600">
                 <div className="flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" />
+                  <MapPin className="mr-1 h-4 w-4" />
                   {employer.location}
                 </div>
                 <div className="flex items-center">
-                  <Briefcase className="w-4 h-4 mr-1" />
+                  <Briefcase className="mr-1 h-4 w-4" />
                   {employer.industry}
                 </div>
                 {employer.founded && (
                   <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
+                    <Calendar className="mr-1 h-4 w-4" />
                     Founded {employer.founded}
                   </div>
                 )}
                 {employer.size && (
                   <div className="flex items-center">
-                    <Users className="w-4 h-4 mr-1" />
+                    <Users className="mr-1 h-4 w-4" />
                     {employer.size}
                   </div>
                 )}
@@ -126,14 +128,14 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
                   rel="noopener noreferrer"
                   className="inline-flex items-center text-blue-600 hover:text-blue-700"
                 >
-                  <Globe className="w-4 h-4 mr-1" />
+                  <Globe className="mr-1 h-4 w-4" />
                   Visit Website
-                  <ExternalLink className="w-3 h-3 ml-1" />
+                  <ExternalLink className="ml-1 h-3 w-3" />
                 </a>
               )}
             </div>
             <div className="text-right">
-              <div className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+              <div className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
                 {employer.activeJobs} Open Positions
               </div>
             </div>
@@ -142,18 +144,20 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Left Column - Company Info */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="space-y-8 lg:col-span-2">
             {/* About */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-lg shadow-sm p-6"
+              className="rounded-lg bg-white p-6 shadow-sm"
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">About {employer.name}</h2>
-              <p className="text-gray-700 leading-relaxed">
+              <h2 className="mb-4 text-xl font-semibold text-gray-900">
+                About {employer.name}
+              </h2>
+              <p className="leading-relaxed text-gray-700">
                 {employer.description}
               </p>
             </motion.div>
@@ -164,13 +168,13 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-lg shadow-sm p-6"
+                className="rounded-lg bg-white p-6 shadow-sm"
               >
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <Heart className="w-5 h-5 mr-2 text-red-500" />
+                <h2 className="mb-4 flex items-center text-xl font-semibold text-gray-900">
+                  <Heart className="mr-2 h-5 w-5 text-red-500" />
                   Our Culture
                 </h2>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="leading-relaxed text-gray-700">
                   {employer.culture}
                 </p>
               </motion.div>
@@ -181,35 +185,39 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-lg shadow-sm p-6"
+              className="rounded-lg bg-white p-6 shadow-sm"
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              <h2 className="mb-6 text-xl font-semibold text-gray-900">
                 Open Positions ({employer.activeJobs})
               </h2>
-              
+
               {loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="text-gray-600 mt-2">Loading positions...</p>
+                <div className="py-8 text-center">
+                  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+                  <p className="mt-2 text-gray-600">Loading positions...</p>
                 </div>
               ) : jobs.length > 0 ? (
                 <div className="space-y-4">
-                  {jobs.map((job) => (
+                  {jobs.map(job => (
                     <EnhancedJobCard
                       key={job.id}
                       {...job}
                       applyUrl={`/jobs/${job.id}`}
                       onSave={() => console.log('Save job:', job.id)}
-                      onViewDetails={() => window.location.href = `/jobs/${job.id}`}
+                      onViewDetails={() =>
+                        (window.location.href = `/jobs/${job.id}`)
+                      }
                       saved={job.saved || false}
                     />
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No open positions at this time.</p>
-                  <p className="text-sm text-gray-500 mt-1">
+                <div className="py-8 text-center">
+                  <Briefcase className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                  <p className="text-gray-600">
+                    No open positions at this time.
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
                     Check back later for new opportunities!
                   </p>
                 </div>
@@ -225,14 +233,16 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-lg shadow-sm p-6"
+                className="rounded-lg bg-white p-6 shadow-sm"
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Benefits & Perks</h3>
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                  Benefits & Perks
+                </h3>
                 <ul className="space-y-2">
                   {employer.benefits.map((benefit, index) => (
                     <li key={index} className="flex items-start">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                      <span className="text-gray-700 text-sm">{benefit}</span>
+                      <div className="mr-3 mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-green-500"></div>
+                      <span className="text-sm text-gray-700">{benefit}</span>
                     </li>
                   ))}
                 </ul>
@@ -244,13 +254,15 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-white rounded-lg shadow-sm p-6"
+              className="rounded-lg bg-white p-6 shadow-sm"
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                Quick Actions
+              </h3>
               <div className="space-y-3">
                 <Link
                   href={`/jobs?company=${encodeURIComponent(employer.name)}`}
-                  className="block w-full bg-blue-600 text-white text-center py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="block w-full rounded-lg bg-blue-600 px-4 py-2 text-center text-white transition-colors hover:bg-blue-700"
                 >
                   View All Jobs
                 </Link>
@@ -259,7 +271,7 @@ export default function EmployerProfileClient({ employer }: EmployerProfileClien
                     href={employer.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="block w-full rounded-lg bg-gray-100 px-4 py-2 text-center text-gray-700 transition-colors hover:bg-gray-200"
                   >
                     Visit Website
                   </a>

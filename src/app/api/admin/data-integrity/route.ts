@@ -1,7 +1,7 @@
 /**
  * Admin API: Data Integrity Management
  * Task 45.14: Fix Cascading Delete Risks and Data Integrity Constraints
- * 
+ *
  * This endpoint provides data integrity monitoring, validation, and safe deletion operations
  */
 
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin role
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
@@ -45,20 +45,25 @@ export async function GET(request: NextRequest) {
       case 'soft-deleted':
         const entityType = searchParams.get('entityType') as any;
         const limit = parseInt(searchParams.get('limit') || '50');
-        
+
         if (!entityType) {
           return NextResponse.json(
-            { error: 'entityType parameter required for soft-deleted operation' },
+            {
+              error: 'entityType parameter required for soft-deleted operation',
+            },
             { status: 400 }
           );
         }
 
-        result = await DataIntegrityService.getSoftDeletedRecords(entityType, limit);
+        result = await DataIntegrityService.getSoftDeletedRecords(
+          entityType,
+          limit
+        );
         break;
 
       case 'user-audit':
         const userId = searchParams.get('userId');
-        
+
         if (!userId) {
           return NextResponse.json(
             { error: 'userId parameter required for user-audit operation' },
@@ -71,10 +76,12 @@ export async function GET(request: NextRequest) {
 
       case 'company-audit':
         const companyId = searchParams.get('companyId');
-        
+
         if (!companyId) {
           return NextResponse.json(
-            { error: 'companyId parameter required for company-audit operation' },
+            {
+              error: 'companyId parameter required for company-audit operation',
+            },
             { status: 400 }
           );
         }
@@ -85,7 +92,7 @@ export async function GET(request: NextRequest) {
       case 'billing-audit':
         const auditUserId = searchParams.get('userId');
         const auditLimit = parseInt(searchParams.get('limit') || '50');
-        
+
         if (!auditUserId) {
           return NextResponse.json(
             { error: 'userId parameter required for billing-audit operation' },
@@ -93,7 +100,10 @@ export async function GET(request: NextRequest) {
           );
         }
 
-        result = await DataIntegrityService.getBillingAudit(auditUserId, auditLimit);
+        result = await DataIntegrityService.getBillingAudit(
+          auditUserId,
+          auditLimit
+        );
         break;
 
       default:
@@ -112,10 +122,9 @@ export async function GET(request: NextRequest) {
       queryTime,
       timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Error in data integrity operation:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
@@ -132,7 +141,7 @@ export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
@@ -151,7 +160,7 @@ export async function POST(request: NextRequest) {
     switch (operation) {
       case 'safe-delete-user':
         const { userId, deletionReason, deletedBy } = params;
-        
+
         if (!userId) {
           return NextResponse.json(
             { error: 'userId is required for safe-delete-user operation' },
@@ -167,11 +176,17 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'safe-delete-company':
-        const { companyId, deletionReason: companyReason, deletedBy: companyDeletedBy } = params;
-        
+        const {
+          companyId,
+          deletionReason: companyReason,
+          deletedBy: companyDeletedBy,
+        } = params;
+
         if (!companyId) {
           return NextResponse.json(
-            { error: 'companyId is required for safe-delete-company operation' },
+            {
+              error: 'companyId is required for safe-delete-company operation',
+            },
             { status: 400 }
           );
         }
@@ -185,7 +200,7 @@ export async function POST(request: NextRequest) {
 
       case 'soft-delete-job':
         const { jobId, reason } = params;
-        
+
         if (!jobId) {
           return NextResponse.json(
             { error: 'jobId is required for soft-delete-job operation' },
@@ -202,7 +217,7 @@ export async function POST(request: NextRequest) {
 
       case 'restore-user':
         const { userId: restoreUserId } = params;
-        
+
         if (!restoreUserId) {
           return NextResponse.json(
             { error: 'userId is required for restore-user operation' },
@@ -218,7 +233,7 @@ export async function POST(request: NextRequest) {
 
       case 'cleanup-soft-deleted':
         const { daysOld = 90 } = params;
-        
+
         result = await DataIntegrityService.cleanupSoftDeletedRecords(daysOld);
         break;
 
@@ -238,10 +253,9 @@ export async function POST(request: NextRequest) {
       queryTime,
       timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Error in data integrity POST operation:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
@@ -252,4 +266,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

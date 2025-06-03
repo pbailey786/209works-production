@@ -36,7 +36,6 @@ class DeploymentSetup {
       console.log('  3. Test locally with: npm run dev');
       console.log('  4. Run tests with: node scripts/test-domains-locally.js');
       console.log('  5. Deploy to Vercel');
-
     } catch (error) {
       console.error('\n❌ Setup failed:', error.message);
       process.exit(1);
@@ -78,7 +77,7 @@ class DeploymentSetup {
       'public/og-images',
       'public/favicons',
       'src/lib/domain',
-      'docs'
+      'docs',
     ];
 
     for (const dir of directories) {
@@ -101,7 +100,7 @@ class DeploymentSetup {
       { code: '209', name: 'Central Valley', color: '#3B82F6' },
       { code: '916', name: 'Sacramento Metro', color: '#059669' },
       { code: '510', name: 'East Bay', color: '#DC2626' },
-      { code: 'norcal', name: 'Northern California', color: '#7C3AED' }
+      { code: 'norcal', name: 'Northern California', color: '#7C3AED' },
     ];
 
     for (const domain of domains) {
@@ -114,7 +113,7 @@ class DeploymentSetup {
   <text x="100" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" 
         text-anchor="middle" fill="white">${domain.code.toUpperCase()} JOBS</text>
 </svg>`.trim();
-        
+
         fs.writeFileSync(logoPath, logoSvg);
         console.log(`  ✅ Created logo: ${logoPath}`);
       }
@@ -132,7 +131,7 @@ class DeploymentSetup {
   <text x="600" y="420" font-family="Arial, sans-serif" font-size="24" 
         text-anchor="middle" fill="white">Find local jobs in ${domain.name}</text>
 </svg>`.trim();
-        
+
         fs.writeFileSync(ogPath, ogSvg);
         console.log(`  ✅ Created OG image: ${ogPath}`);
       }
@@ -146,7 +145,7 @@ class DeploymentSetup {
   <text x="16" y="22" font-family="Arial, sans-serif" font-size="14" font-weight="bold" 
         text-anchor="middle" fill="white">${domain.code.charAt(0)}</text>
 </svg>`.trim();
-        
+
         fs.writeFileSync(faviconPath, faviconSvg);
         console.log(`  ✅ Created favicon: ${faviconPath}`);
       }
@@ -166,7 +165,7 @@ class DeploymentSetup {
     const newScripts = {
       'test:domains': 'node scripts/test-domains-locally.js',
       'setup:deployment': 'node scripts/setup-for-deployment.js',
-      'domain:migrate': 'node scripts/domain-migration.js'
+      'domain:migrate': 'node scripts/domain-migration.js',
     };
 
     let hasChanges = false;
@@ -194,7 +193,7 @@ class DeploymentSetup {
 
     const gitignorePath = '.gitignore';
     let gitignoreContent = '';
-    
+
     if (fs.existsSync(gitignorePath)) {
       gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
     }
@@ -207,7 +206,7 @@ class DeploymentSetup {
       '# Environment files',
       '.env.local',
       '.env.production',
-      ''
+      '',
     ];
 
     let hasChanges = false;
@@ -241,12 +240,12 @@ class DeploymentSetup {
         'src/components/DomainLayout.tsx',
         'src/components/SEOHead.tsx (updated)',
         'middleware.ts (updated)',
-        'next.config.ts (updated)'
+        'next.config.ts (updated)',
       ],
       assetsCreated: [
         'public/logos/*.svg',
         'public/og-images/*.svg',
-        'public/favicons/*.svg'
+        'public/favicons/*.svg',
       ],
       nextSteps: [
         'Register .works domains',
@@ -255,8 +254,8 @@ class DeploymentSetup {
         'Test locally',
         'Deploy to Vercel',
         'Add custom domains in Vercel',
-        'Test production deployment'
-      ]
+        'Test production deployment',
+      ],
     };
 
     fs.writeFileSync('setup-summary.json', JSON.stringify(summary, null, 2));
@@ -267,9 +266,9 @@ class DeploymentSetup {
 // CLI interface
 if (require.main === module) {
   const setup = new DeploymentSetup();
-  
+
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
 Setup Script for .works Domain Deployment
@@ -292,10 +291,10 @@ Examples:
     `);
     process.exit(0);
   }
-  
+
   // Run setup
   setup.setup().catch(error => {
     console.error('Setup failed:', error);
     process.exit(1);
   });
-} 
+}

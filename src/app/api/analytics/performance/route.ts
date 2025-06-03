@@ -16,10 +16,12 @@ export async function GET(request: NextRequest) {
       performanceData.database = {
         queryStats: QueryPerformanceMonitor.getAllStats(),
         summary: {
-          totalQueries: Object.keys(QueryPerformanceMonitor.getAllStats()).length,
-          slowQueries: Object.values(QueryPerformanceMonitor.getAllStats())
-            .filter((stat: any) => stat && stat.average > 1000).length,
-        }
+          totalQueries: Object.keys(QueryPerformanceMonitor.getAllStats())
+            .length,
+          slowQueries: Object.values(
+            QueryPerformanceMonitor.getAllStats()
+          ).filter((stat: any) => stat && stat.average > 1000).length,
+        },
       };
     }
 
@@ -28,7 +30,9 @@ export async function GET(request: NextRequest) {
       performanceData.cache = {
         memory: memoryCache.getStats(),
         // Add Redis stats if available
-        redis: await getRedisStats().catch(() => ({ error: 'Redis not available' })),
+        redis: await getRedisStats().catch(() => ({
+          error: 'Redis not available',
+        })),
       };
     }
 
@@ -85,4 +89,4 @@ async function getWebVitalsSummary() {
 // Health check endpoint
 export async function HEAD() {
   return new NextResponse(null, { status: 200 });
-} 
+}

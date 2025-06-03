@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  withEnhancedSecurity, 
-  securityConfigs, 
+import {
+  withEnhancedSecurity,
+  securityConfigs,
   Permission,
   SecurityUtils,
-  type SecureAuthContext 
+  type SecureAuthContext,
 } from '../../../lib/middleware/enhanced-security';
 
 // Example 1: Public endpoint with basic security
@@ -26,9 +26,9 @@ export const POST = withEnhancedSecurity(
   async (req: NextRequest, context: SecureAuthContext) => {
     // User is guaranteed to be authenticated here
     const { user } = context;
-    
+
     const body = await req.json();
-    
+
     return NextResponse.json({
       message: 'Authenticated request processed',
       user: {
@@ -48,9 +48,9 @@ export const PUT = withEnhancedSecurity(
   async (req: NextRequest, context: SecureAuthContext) => {
     // User is guaranteed to be admin with MFA verified
     const { user } = context;
-    
+
     const body = await req.json();
-    
+
     // Perform admin operations here
     return NextResponse.json({
       message: 'Admin operation completed',
@@ -70,7 +70,7 @@ export const PUT = withEnhancedSecurity(
 export const PATCH = withEnhancedSecurity(
   async (req: NextRequest, context: SecureAuthContext) => {
     const { user } = context;
-    
+
     // Access sensitive user data
     return NextResponse.json({
       message: 'Sensitive data accessed',
@@ -85,21 +85,21 @@ export const PATCH = withEnhancedSecurity(
     requireAuthentication: true,
     requiredPermissions: [Permission.USER_READ, Permission.ANALYTICS_READ],
     requireSecureConnection: true,
-    rateLimit: { 
-      enabled: true, 
-      maxRequests: 20, 
-      windowMs: 60000 
+    rateLimit: {
+      enabled: true,
+      maxRequests: 20,
+      windowMs: 60000,
     },
-    securityHeaders: { 
-      enabled: true, 
-      contentSecurityPolicy: true, 
-      strictTransportSecurity: true 
+    securityHeaders: {
+      enabled: true,
+      contentSecurityPolicy: true,
+      strictTransportSecurity: true,
     },
-    auditLog: { 
-      enabled: true, 
-      logSuccess: true, 
-      logFailure: true, 
-      sensitiveData: true 
+    auditLog: {
+      enabled: true,
+      logSuccess: true,
+      logFailure: true,
+      sensitiveData: true,
     },
     csrfProtection: { enabled: true },
   }
@@ -109,7 +109,7 @@ export const PATCH = withEnhancedSecurity(
 export const DELETE = withEnhancedSecurity(
   async (req: NextRequest, context: SecureAuthContext) => {
     const { user } = context;
-    
+
     // Only employers and admins can access this endpoint
     return NextResponse.json({
       message: 'Resource deleted successfully',
@@ -124,15 +124,15 @@ export const DELETE = withEnhancedSecurity(
     requireAuthentication: true,
     requiredRoles: ['employer', 'admin'],
     requiredPermissions: [Permission.JOB_DELETE],
-    rateLimit: { 
-      enabled: true, 
-      maxRequests: 10, 
-      windowMs: 60000 
+    rateLimit: {
+      enabled: true,
+      maxRequests: 10,
+      windowMs: 60000,
     },
-    auditLog: { 
-      enabled: true, 
-      logSuccess: true, 
-      logFailure: true 
+    auditLog: {
+      enabled: true,
+      logSuccess: true,
+      logFailure: true,
     },
     csrfProtection: { enabled: true },
   }
@@ -141,7 +141,7 @@ export const DELETE = withEnhancedSecurity(
 // Example utility function for CSRF token generation (not exported to avoid Next.js conflicts)
 async function generateCSRFToken(req: NextRequest) {
   const token = SecurityUtils.generateCSRFToken();
-  
+
   return NextResponse.json({
     csrfToken: token,
     expiresIn: 3600, // 1 hour
@@ -152,9 +152,13 @@ async function generateCSRFToken(req: NextRequest) {
 async function createUserSession(req: NextRequest, userId: string) {
   const ipAddress = SecurityUtils.getClientIP(req);
   const userAgent = req.headers.get('user-agent') || 'unknown';
-  
-  const sessionId = await SecurityUtils.createSession(userId, ipAddress, userAgent);
-  
+
+  const sessionId = await SecurityUtils.createSession(
+    userId,
+    ipAddress,
+    userAgent
+  );
+
   return NextResponse.json({
     sessionId,
     message: 'Session created successfully',
@@ -165,19 +169,18 @@ async function createUserSession(req: NextRequest, userId: string) {
 export const OPTIONS = withEnhancedSecurity(
   async (req: NextRequest, context: SecureAuthContext) => {
     const { user } = context;
-    
+
     // Manual permission check example
     if (user) {
-      const hasJobWritePermission = await SecurityUtils.checkPermissions(
-        user, 
-        [Permission.JOB_WRITE]
-      );
-      
-      const isEmployerOrAdmin = await SecurityUtils.checkRoles(
-        user, 
-        ['employer', 'admin']
-      );
-      
+      const hasJobWritePermission = await SecurityUtils.checkPermissions(user, [
+        Permission.JOB_WRITE,
+      ]);
+
+      const isEmployerOrAdmin = await SecurityUtils.checkRoles(user, [
+        'employer',
+        'admin',
+      ]);
+
       return NextResponse.json({
         user: {
           id: user.id,
@@ -187,12 +190,14 @@ export const OPTIONS = withEnhancedSecurity(
         capabilities: {
           canCreateJobs: hasJobWritePermission && isEmployerOrAdmin,
           canModerateJobs: user.permissions.includes(Permission.JOB_MODERATE),
-          canAccessAnalytics: user.permissions.includes(Permission.ANALYTICS_READ),
+          canAccessAnalytics: user.permissions.includes(
+            Permission.ANALYTICS_READ
+          ),
         },
         requestId: context.security.requestId,
       });
     }
-    
+
     return NextResponse.json({
       message: 'Anonymous user capabilities',
       capabilities: {
@@ -209,4 +214,4 @@ export const OPTIONS = withEnhancedSecurity(
     securityHeaders: { enabled: true },
     auditLog: { enabled: true, logFailure: true },
   }
-); 
+);

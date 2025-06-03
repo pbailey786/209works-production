@@ -1,7 +1,7 @@
 /**
  * Cron Job: Data Integrity Monitoring
  * Task 45.14: Fix Cascading Delete Risks and Data Integrity Constraints
- * 
+ *
  * This endpoint runs automated data integrity checks and alerts if issues are found
  */
 
@@ -17,13 +17,10 @@ export async function GET(request: NextRequest) {
     // Verify cron secret for security
     const headersList = await headers();
     const cronSecret = headersList.get('x-cron-secret');
-    
+
     if (cronSecret !== process.env.CRON_SECRET) {
       console.error('Unauthorized cron job access attempt');
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     console.log('Starting automated data integrity monitoring...');
@@ -33,9 +30,11 @@ export async function GET(request: NextRequest) {
     const monitoringResult = await DataIntegrityService.monitorDataIntegrity();
 
     const duration = Date.now() - startTime;
-    
+
     console.log(`Data integrity monitoring completed in ${duration}ms`);
-    console.log(`Status: ${monitoringResult.status}, Issues: ${monitoringResult.totalIssues}`);
+    console.log(
+      `Status: ${monitoringResult.status}, Issues: ${monitoringResult.totalIssues}`
+    );
 
     // If issues found, also run validation for detailed report
     let validationResult = null;
@@ -66,10 +65,9 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(response);
-
   } catch (error) {
     console.error('Error in data integrity monitoring:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
@@ -136,4 +134,4 @@ function generateRecommendations(monitoringResult: any): string[] {
   }
 
   return recommendations;
-} 
+}

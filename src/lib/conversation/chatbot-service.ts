@@ -2,18 +2,33 @@ import { openai } from '@/lib/openai';
 import { prisma } from '@/app/api/auth/prisma';
 import { ConversationManager } from './manager';
 import { ChatbotPrompts } from './prompts';
-import { CompanyKnowledgeService, CompanyInfo } from '@/lib/knowledge/company-knowledge';
+import {
+  CompanyKnowledgeService,
+  CompanyInfo,
+} from '@/lib/knowledge/company-knowledge';
 import { LocalKnowledgeService } from './local-knowledge';
-import {   ConversationIntent,   ChatbotResponse,   ConversationContext,  JobContext,  Message } from './types';
+import {
+  ConversationIntent,
+  ChatbotResponse,
+  ConversationContext,
+  JobContext,
+  Message,
+} from './types';
 
 interface ChatContextualData {
   jobRecommendations?: JobContext[];
-  companyInfo?: CompanyInfo | { name: string; description?: string; hasKnowledgeBase?: boolean; knowledgeEntries?: any[] };
+  companyInfo?:
+    | CompanyInfo
+    | {
+        name: string;
+        description?: string;
+        hasKnowledgeBase?: boolean;
+        knowledgeEntries?: any[];
+      };
   followUpActions?: any[];
 }
 
 export class ChatbotService {
-  
   /**
    * Process a user message and generate a response
    */
@@ -23,7 +38,7 @@ export class ChatbotService {
     userId?: string
   ): Promise<ChatbotResponse> {
     const startTime = Date.now();
-    
+
     // Get or create conversation session
     let session = ConversationManager.getSession(sessionId);
     if (!session) {
@@ -34,7 +49,7 @@ export class ChatbotService {
     ConversationManager.addMessage(session.sessionId, {
       role: 'user',
       content: userMessage,
-      metadata: { userId, searchQuery: userMessage }
+      metadata: { userId, searchQuery: userMessage },
     });
 
     // Classify intent
@@ -42,8 +57,12 @@ export class ChatbotService {
     ConversationManager.updateIntent(session.sessionId, intent);
 
     // Generate response based on intent
-    const response = await this.generateResponse(session.sessionId, userMessage, intent);
-    
+    const response = await this.generateResponse(
+      session.sessionId,
+      userMessage,
+      intent
+    );
+
     // Add assistant response to conversation - timestamp handled by ConversationManager
     ConversationManager.addMessage(session.sessionId, {
       role: 'assistant',
@@ -65,14 +84,17 @@ export class ChatbotService {
    * Classify user intent using GPT, now with conversation history.
    */
   private static async classifyIntent(
-    userMessage: string, 
+    userMessage: string,
     context: ConversationContext // Full ConversationContext which includes messages
   ): Promise<ConversationIntent> {
     try {
       // Pass the user message and the last few messages from context for history
       const relevantHistory = context.messages.slice(-4); // Get last 3 messages + current (if it was already added)
-      const prompt = ChatbotPrompts.getIntentClassificationPrompt(userMessage, relevantHistory);
-      
+      const prompt = ChatbotPrompts.getIntentClassificationPrompt(
+        userMessage,
+        relevantHistory
+      );
+
       const completion = await openai.chat.completions.create({
         model: 'gpt-4-turbo', // Consider a faster/cheaper model if latency/cost is an issue for intent
         messages: [{ role: 'user', content: prompt }],
@@ -80,16 +102,23 @@ export class ChatbotService {
         temperature: 0.1, // Keep low for deterministic classification
       });
 
-      let intent = completion.choices[0]?.message?.content?.trim().toLowerCase() as ConversationIntent;
-      
+      let intent = completion.choices[0]?.message?.content
+        ?.trim()
+        .toLowerCase() as ConversationIntent;
+
       // Minor cleanup: sometimes model might add quotes or periods.
       intent = intent.replace(/[".]/g, '') as ConversationIntent;
 
       const validIntents: ConversationIntent[] = [
-        'job_search', 'company_info', 'career_guidance', 
-        'application_help', 'market_insights', 'job_comparison', 'general_chat'
+        'job_search',
+        'company_info',
+        'career_guidance',
+        'application_help',
+        'market_insights',
+        'job_comparison',
+        'general_chat',
       ];
-      
+
       return validIntents.includes(intent) ? intent : 'general_chat';
     } catch (error) {
       console.error('Intent classification error:', error);
@@ -111,22 +140,36 @@ export class ChatbotService {
     }
 
     // Get contextual system prompt
-    const systemPrompt = ChatbotPrompts.getContextualPrompt(intent, session.context);
-    
+    const systemPrompt = ChatbotPrompts.getContextualPrompt(
+      intent,
+      session.context
+    );
+
     // Prepare conversation history
-    const conversationHistory = this.prepareConversationHistory(session.context.messages);
-    
+    const conversationHistory = this.prepareConversationHistory(
+      session.context.messages
+    );
+
     // Handle intent-specific logic
     let contextualData: ChatContextualData = {};
     switch (intent) {
       case 'job_search':
-        contextualData = await this.handleJobSearch(userMessage, session.context);
+        contextualData = await this.handleJobSearch(
+          userMessage,
+          session.context
+        );
         break;
       case 'company_info':
-        contextualData = await this.handleCompanyInfo(userMessage, session.context);
+        contextualData = await this.handleCompanyInfo(
+          userMessage,
+          session.context
+        );
         break;
       case 'job_comparison':
-        contextualData = await this.handleJobComparison(userMessage, session.context);
+        contextualData = await this.handleJobComparison(
+          userMessage,
+          session.context
+        );
         break;
       default:
         // General conversation handling
@@ -163,11 +206,14 @@ export class ChatbotService {
   ): Promise<ChatContextualData> {
     try {
       // Extract search parameters from natural language
-      const searchParams = await this.extractJobSearchParams(userMessage, context);
-      
+      const searchParams = await this.extractJobSearchParams(
+        userMessage,
+        context
+      );
+
       // Search for jobs using existing search functionality
       const jobs = await this.searchJobs(searchParams);
-      
+
       // Convert to JobContext format
       const jobRecommendations: JobContext[] = jobs.slice(0, 5).map(job => ({
         jobId: job.id,
@@ -194,9 +240,9 @@ export class ChatbotService {
         followUpActions: [
           {
             type: 'search_jobs',
-            data: { query: searchParams.query, totalResults: jobs.length }
-          }
-        ]
+            data: { query: searchParams.query, totalResults: jobs.length },
+          },
+        ],
       };
     } catch (error) {
       console.error('Job search error:', error);
@@ -211,14 +257,16 @@ export class ChatbotService {
     userMessage: string,
     context: ConversationContext
   ): Promise<ChatContextualData> {
-    const companyName = CompanyKnowledgeService.extractCompanyName(userMessage) || 
-                       this.extractCompanyName(userMessage);
+    const companyName =
+      CompanyKnowledgeService.extractCompanyName(userMessage) ||
+      this.extractCompanyName(userMessage);
 
     if (!companyName) {
       return {}; // No company name found
     }
 
-    const companyInfoData = await CompanyKnowledgeService.getCompanyInfo(companyName);
+    const companyInfoData =
+      await CompanyKnowledgeService.getCompanyInfo(companyName);
     const companyJobs = await this.getCompanyJobs(companyName); // companyName is confirmed not null here
     const jobRecommendations = companyJobs.slice(0, 3).map(job => ({
       jobId: job.id,
@@ -234,33 +282,48 @@ export class ChatbotService {
       let relevantKnowledge = companyInfoData.knowledgeEntries;
       const query = userMessage.toLowerCase();
       if (query.includes('culture') || query.includes('work environment')) {
-        relevantKnowledge = relevantKnowledge.filter(entry => 
-          entry.category === 'culture' || entry.category === 'work_environment'
+        relevantKnowledge = relevantKnowledge.filter(
+          entry =>
+            entry.category === 'culture' ||
+            entry.category === 'work_environment'
         );
       } else if (query.includes('benefit') || query.includes('perk')) {
-        relevantKnowledge = relevantKnowledge.filter(entry => 
-          entry.category === 'benefits' || entry.category === 'perks'
+        relevantKnowledge = relevantKnowledge.filter(
+          entry => entry.category === 'benefits' || entry.category === 'perks'
         );
-      } else if (query.includes('interview') || query.includes('hiring') || query.includes('process')) {
-        relevantKnowledge = relevantKnowledge.filter(entry => 
-          entry.category === 'hiring_process' || entry.category === 'interview_process'
+      } else if (
+        query.includes('interview') ||
+        query.includes('hiring') ||
+        query.includes('process')
+      ) {
+        relevantKnowledge = relevantKnowledge.filter(
+          entry =>
+            entry.category === 'hiring_process' ||
+            entry.category === 'interview_process'
         );
-      } else if (query.includes('salary') || query.includes('compensation') || query.includes('pay')) {
-        relevantKnowledge = relevantKnowledge.filter(entry => 
-          entry.category === 'compensation'
+      } else if (
+        query.includes('salary') ||
+        query.includes('compensation') ||
+        query.includes('pay')
+      ) {
+        relevantKnowledge = relevantKnowledge.filter(
+          entry => entry.category === 'compensation'
         );
       }
 
       // Construct a more specific type for companyInfo when companyInfoData exists
-      const fullCompanyInfo: CompanyInfo & { knowledgeEntries: any[], hasKnowledgeBase: boolean } = {
+      const fullCompanyInfo: CompanyInfo & {
+        knowledgeEntries: any[];
+        hasKnowledgeBase: boolean;
+      } = {
         ...companyInfoData,
         knowledgeEntries: relevantKnowledge.slice(0, 5),
-        hasKnowledgeBase: companyInfoData.knowledgeEntries.length > 0
+        hasKnowledgeBase: companyInfoData.knowledgeEntries.length > 0,
       };
 
       return {
         companyInfo: fullCompanyInfo,
-        jobRecommendations
+        jobRecommendations,
       };
     } else {
       // Fallback when companyInfoData is null, but companyName is valid
@@ -268,9 +331,9 @@ export class ChatbotService {
         companyInfo: {
           name: companyName, // companyName is not null here
           description: `${companyName} posts job opportunities on 209jobs. We can help you learn more about their current openings.`,
-          hasKnowledgeBase: false
+          hasKnowledgeBase: false,
         },
-        jobRecommendations
+        jobRecommendations,
       };
     }
   }
@@ -284,15 +347,15 @@ export class ChatbotService {
   ): Promise<ChatContextualData> {
     // Use jobs from current conversation context
     const currentJobs = context.context.currentJobs || [];
-    
+
     return {
       jobRecommendations: currentJobs,
       followUpActions: [
         {
           type: 'learn_more',
-          data: { action: 'compare', jobCount: currentJobs.length }
-        }
-      ]
+          data: { action: 'compare', jobCount: currentJobs.length },
+        },
+      ],
     };
   }
 
@@ -307,8 +370,9 @@ export class ChatbotService {
   ): Promise<string> {
     try {
       // Extract local references from user message
-      const localReferences = LocalKnowledgeService.extractLocalReferences(userMessage);
-      
+      const localReferences =
+        LocalKnowledgeService.extractLocalReferences(userMessage);
+
       // Get local context if relevant
       let localContext = '';
       if (localReferences.length > 0) {
@@ -323,7 +387,10 @@ export class ChatbotService {
 
       // Add job recommendations context if available
       let jobContext = '';
-      if (contextualData.jobRecommendations && contextualData.jobRecommendations.length > 0) {
+      if (
+        contextualData.jobRecommendations &&
+        contextualData.jobRecommendations.length > 0
+      ) {
         jobContext = '\n\nCurrent Job Recommendations:\n';
         contextualData.jobRecommendations.slice(0, 3).forEach((job, index) => {
           jobContext += `${index + 1}. ${job.title} at ${job.company} (${job.location})\n`;
@@ -340,12 +407,15 @@ export class ChatbotService {
       }
 
       const messages = [
-        { role: 'system', content: systemPrompt + localContext + jobContext + companyContext },
+        {
+          role: 'system',
+          content: systemPrompt + localContext + jobContext + companyContext,
+        },
         ...conversationHistory.map(msg => ({
           role: msg.role,
-          content: msg.content
+          content: msg.content,
         })),
-        { role: 'user', content: userMessage }
+        { role: 'user', content: userMessage },
       ];
 
       const completion = await openai.chat.completions.create({
@@ -355,7 +425,10 @@ export class ChatbotService {
         temperature: 0.7,
       });
 
-      return completion.choices[0]?.message?.content || 'I apologize, but I cannot provide a response at this time.';
+      return (
+        completion.choices[0]?.message?.content ||
+        'I apologize, but I cannot provide a response at this time.'
+      );
     } catch (error) {
       console.error('AI response generation error:', error);
       return 'I apologize, but I encountered an error while processing your request. Please try again.';
@@ -370,59 +443,61 @@ export class ChatbotService {
     context: ConversationContext
   ): Promise<string[]> {
     const suggestions: string[] = [];
-    
+
     // Get local-aware suggestions based on intent
     switch (intent) {
       case 'job_search':
         suggestions.push(
-          "Find more jobs in specific 209 cities",
-          "Show me healthcare jobs in the Central Valley",
-          "What logistics companies are hiring in Stockton?",
-          "Tell me about commute options to Bay Area"
+          'Find more jobs in specific 209 cities',
+          'Show me healthcare jobs in the Central Valley',
+          'What logistics companies are hiring in Stockton?',
+          'Tell me about commute options to Bay Area'
         );
         break;
-        
+
       case 'company_info':
         suggestions.push(
-          "What are the major employers in Modesto?",
-          "Tell me about Gallo Winery opportunities",
-          "Show me jobs at local hospitals",
-          "What companies are in the Port of Stockton?"
+          'What are the major employers in Modesto?',
+          'Tell me about Gallo Winery opportunities',
+          'Show me jobs at local hospitals',
+          'What companies are in the Port of Stockton?'
         );
         break;
-        
+
       case 'career_guidance':
         suggestions.push(
-          "What skills are in demand in the 209 area?",
-          "Should I consider commuting to Bay Area or work locally?",
+          'What skills are in demand in the 209 area?',
+          'Should I consider commuting to Bay Area or work locally?',
           "What's the job market like in Central Valley?",
-          "How can I transition to a local career?"
+          'How can I transition to a local career?'
         );
         break;
-        
+
       case 'market_insights':
         suggestions.push(
-          "What are local salary ranges for my field?",
-          "How does Central Valley pay compare to Bay Area?",
-          "What industries are growing in the 209 area?",
-          "Show me the best employers in Stockton"
+          'What are local salary ranges for my field?',
+          'How does Central Valley pay compare to Bay Area?',
+          'What industries are growing in the 209 area?',
+          'Show me the best employers in Stockton'
         );
         break;
-        
+
       default:
         // General 209-focused suggestions
         suggestions.push(
-          "Find jobs near me in the 209 area",
-          "What companies are hiring locally?",
-          "Tell me about career opportunities in Central Valley"
+          'Find jobs near me in the 209 area',
+          'What companies are hiring locally?',
+          'Tell me about career opportunities in Central Valley'
         );
     }
-    
+
     // Add context-specific suggestions based on search history
     if (context.context.lastJobSearch) {
       const lastSearch = context.context.lastJobSearch;
       if (lastSearch.filters?.location) {
-        const areaInfo = LocalKnowledgeService.getAreaInfo(lastSearch.filters.location);
+        const areaInfo = LocalKnowledgeService.getAreaInfo(
+          lastSearch.filters.location
+        );
         if (areaInfo) {
           suggestions.push(`Show me more opportunities in ${areaInfo.name}`);
           if (areaInfo.majorEmployers.length > 0) {
@@ -431,7 +506,7 @@ export class ChatbotService {
         }
       }
     }
-    
+
     // Limit to 4 suggestions and ensure uniqueness
     return [...new Set(suggestions)].slice(0, 4);
   }
@@ -444,12 +519,13 @@ export class ChatbotService {
     context: ConversationContext
   ): Promise<any> {
     // Extract local references and get industry context
-    const localReferences = LocalKnowledgeService.extractLocalReferences(userMessage);
-    
+    const localReferences =
+      LocalKnowledgeService.extractLocalReferences(userMessage);
+
     // Simple keyword extraction (enhanced with local knowledge)
     const params: any = {
       query: userMessage,
-      limit: 10
+      limit: 10,
     };
 
     // Extract location if mentioned
@@ -470,13 +546,22 @@ export class ChatbotService {
     }
 
     // Extract industry-specific context
-    const industryKeywords = ['healthcare', 'logistics', 'agriculture', 'education', 'manufacturing'];
-    const detectedIndustry = industryKeywords.find(industry => 
+    const industryKeywords = [
+      'healthcare',
+      'logistics',
+      'agriculture',
+      'education',
+      'manufacturing',
+    ];
+    const detectedIndustry = industryKeywords.find(industry =>
       userMessage.toLowerCase().includes(industry)
     );
     if (detectedIndustry) {
       params.industry = detectedIndustry;
-      params.localJobContext = LocalKnowledgeService.getLocalJobContext(detectedIndustry, params.location);
+      params.localJobContext = LocalKnowledgeService.getLocalJobContext(
+        detectedIndustry,
+        params.location
+      );
     }
 
     // Extract remote preference
@@ -486,7 +571,9 @@ export class ChatbotService {
 
     // Extract commute preferences
     if (/commute|drive|bay area|sacramento/i.test(userMessage)) {
-      params.commuteAdvice = LocalKnowledgeService.getCommuteAdvice(params.location);
+      params.commuteAdvice = LocalKnowledgeService.getCommuteAdvice(
+        params.location
+      );
     }
 
     // DEFAULT TO 209 AREA CODE REGION if no location specified
@@ -497,7 +584,8 @@ export class ChatbotService {
       } else {
         // Default to 209 area search
         params.location209 = true; // Special flag for 209 area search
-        params.locationHint = "209 area (Stockton, Modesto, Lodi, Central Valley)";
+        params.locationHint =
+          '209 area (Stockton, Modesto, Lodi, Central Valley)';
       }
     }
 
@@ -520,7 +608,7 @@ export class ChatbotService {
    */
   private static async searchJobs(params: any): Promise<any[]> {
     const whereClause: any = {};
-    
+
     // Handle 209 area code default search
     if (params.location209) {
       // Search for jobs in 209 area code cities
@@ -533,12 +621,12 @@ export class ChatbotService {
         { location: { contains: 'Turlock', mode: 'insensitive' } },
         { location: { contains: 'Merced', mode: 'insensitive' } },
         { location: { contains: 'Central Valley', mode: 'insensitive' } },
-        { location: { contains: '209', mode: 'insensitive' } }
+        { location: { contains: '209', mode: 'insensitive' } },
       ];
     } else if (params.location) {
       whereClause.location = {
         contains: params.location,
-        mode: 'insensitive'
+        mode: 'insensitive',
       };
     }
 
@@ -546,9 +634,9 @@ export class ChatbotService {
       const remoteConditions = [
         { location: { contains: 'remote', mode: 'insensitive' } },
         { title: { contains: 'remote', mode: 'insensitive' } },
-        { description: { contains: 'remote', mode: 'insensitive' } }
+        { description: { contains: 'remote', mode: 'insensitive' } },
       ];
-      
+
       if (whereClause.OR) {
         // Combine with existing location conditions
         whereClause.OR = [...whereClause.OR, ...remoteConditions];
@@ -558,23 +646,37 @@ export class ChatbotService {
     }
 
     // Full-text search if query provided
-    if (params.query && !params.query.includes('Find me') && !params.query.includes('Looking for')) {
-      const searchTerms = params.query.toLowerCase().split(' ').filter((term: string) => 
-        !['find', 'me', 'looking', 'for', 'a', 'job', 'jobs', 'work'].includes(term)
-      );
-      
+    if (
+      params.query &&
+      !params.query.includes('Find me') &&
+      !params.query.includes('Looking for')
+    ) {
+      const searchTerms = params.query
+        .toLowerCase()
+        .split(' ')
+        .filter(
+          (term: string) =>
+            ![
+              'find',
+              'me',
+              'looking',
+              'for',
+              'a',
+              'job',
+              'jobs',
+              'work',
+            ].includes(term)
+        );
+
       if (searchTerms.length > 0) {
         const searchConditions = searchTerms.flatMap((term: string) => [
           { title: { contains: term, mode: 'insensitive' } },
           { description: { contains: term, mode: 'insensitive' } },
-          { company: { contains: term, mode: 'insensitive' } }
+          { company: { contains: term, mode: 'insensitive' } },
         ]);
-        
+
         if (whereClause.OR) {
-          whereClause.AND = [
-            { OR: whereClause.OR },
-            { OR: searchConditions }
-          ];
+          whereClause.AND = [{ OR: whereClause.OR }, { OR: searchConditions }];
           delete whereClause.OR;
         } else {
           whereClause.OR = searchConditions;
@@ -585,7 +687,7 @@ export class ChatbotService {
     const jobs = await prisma.job.findMany({
       where: whereClause,
       take: params.limit || 10,
-      orderBy: { postedAt: 'desc' }
+      orderBy: { postedAt: 'desc' },
     });
 
     return jobs;
@@ -620,11 +722,11 @@ export class ChatbotService {
       where: {
         company: {
           contains: companyName,
-          mode: 'insensitive'
-        }
+          mode: 'insensitive',
+        },
       },
       take: 5,
-      orderBy: { postedAt: 'desc' }
+      orderBy: { postedAt: 'desc' },
     });
   }
 
@@ -635,7 +737,7 @@ export class ChatbotService {
     return messages.map(msg => ({
       ...msg,
       role: msg.role,
-      content: msg.content
+      content: msg.content,
     }));
   }
 
@@ -645,42 +747,42 @@ export class ChatbotService {
   private static getDefaultSuggestions(intent: ConversationIntent): string[] {
     const suggestions = {
       job_search: [
-        "Show me similar jobs in other locations",
-        "What skills are most in demand for these roles?",
-        "Help me refine my search criteria"
+        'Show me similar jobs in other locations',
+        'What skills are most in demand for these roles?',
+        'Help me refine my search criteria',
       ],
       company_info: [
-        "Tell me about the interview process",
-        "What are the benefits and perks?",
-        "How is the work-life balance?"
+        'Tell me about the interview process',
+        'What are the benefits and perks?',
+        'How is the work-life balance?',
       ],
       career_guidance: [
-        "What skills should I develop next?",
-        "How can I advance in my career?",
-        "What are the growth opportunities?"
+        'What skills should I develop next?',
+        'How can I advance in my career?',
+        'What are the growth opportunities?',
       ],
       application_help: [
-        "Help me write a cover letter",
-        "Review my resume for this role",
-        "Prepare me for the interview"
+        'Help me write a cover letter',
+        'Review my resume for this role',
+        'Prepare me for the interview',
       ],
       market_insights: [
         "What's the salary range for this role?",
-        "How competitive is this market?",
-        "What are the industry trends?"
+        'How competitive is this market?',
+        'What are the industry trends?',
       ],
       job_comparison: [
-        "Compare these opportunities",
-        "Which offer should I choose?",
-        "What are the pros and cons?"
+        'Compare these opportunities',
+        'Which offer should I choose?',
+        'What are the pros and cons?',
       ],
       general_chat: [
-        "Help me search for jobs",
-        "Tell me about companies",
-        "Give me career advice"
-      ]
+        'Help me search for jobs',
+        'Tell me about companies',
+        'Give me career advice',
+      ],
     };
 
     return suggestions[intent] || suggestions.general_chat;
   }
-} 
+}

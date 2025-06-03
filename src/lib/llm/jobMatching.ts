@@ -26,7 +26,7 @@ interface UserProfile {
 }
 
 export async function analyzeJobMatches(
-  jobs: any[], 
+  jobs: any[],
   userProfile: UserProfile
 ): Promise<JobMatch[]> {
   if (!jobs.length || !userProfile) {
@@ -53,38 +53,49 @@ export async function analyzeJobMatches(
 }
 
 async function analyzeJobBatch(
-  jobs: any[], 
+  jobs: any[],
   userProfile: UserProfile
 ): Promise<JobMatch[]> {
-  
   const profileSummary = `
 User Profile:
 - Experience: ${userProfile.experience || 'Not specified'}
 - Skills: ${userProfile.skills?.join(', ') || 'Not specified'}
 - Location: ${userProfile.location || 'Not specified'}
 - Preferred Job Types: ${userProfile.preferences?.jobTypes?.join(', ') || 'Any'}
-- Salary Range: ${userProfile.preferences?.salaryRange ? 
-    `$${userProfile.preferences.salaryRange.min || 0} - $${userProfile.preferences.salaryRange.max || 'unlimited'}` : 'Not specified'}
+- Salary Range: ${
+    userProfile.preferences?.salaryRange
+      ? `$${userProfile.preferences.salaryRange.min || 0} - $${userProfile.preferences.salaryRange.max || 'unlimited'}`
+      : 'Not specified'
+  }
 - Remote Work Preference: ${userProfile.preferences?.remoteWork ? 'Yes' : 'No preference'}
 - Preferred Industries: ${userProfile.preferences?.industries?.join(', ') || 'Any'}
 - Career Goals: ${userProfile.careerGoals?.join(', ') || 'Not specified'}
 `;
 
-  const jobsData = jobs.map((job, index) => `
+  const jobsData = jobs
+    .map(
+      (job, index) => `
 Job ${index + 1}:
 - ID: ${job.id}
 - Title: ${job.title}
 - Company: ${job.company}
 - Location: ${job.location}
 - Job Type: ${job.jobType || 'Not specified'}
-- Salary: ${job.salaryMin && job.salaryMax ? 
-    `$${job.salaryMin} - $${job.salaryMax}` : 
-    job.salaryMin ? `From $${job.salaryMin}` :
-    job.salaryMax ? `Up to $${job.salaryMax}` : 'Not specified'}
+- Salary: ${
+        job.salaryMin && job.salaryMax
+          ? `$${job.salaryMin} - $${job.salaryMax}`
+          : job.salaryMin
+            ? `From $${job.salaryMin}`
+            : job.salaryMax
+              ? `Up to $${job.salaryMax}`
+              : 'Not specified'
+      }
 - Description: ${job.description?.substring(0, 300) || 'No description'}
 - Requirements: ${job.requirements?.substring(0, 200) || 'Not specified'}
 - Benefits: ${job.benefits?.substring(0, 200) || 'Not specified'}
-`).join('\n');
+`
+    )
+    .join('\n');
 
   const systemPrompt = `You are an expert career counselor and job matching specialist. Analyze how well each job matches the user's profile and provide detailed insights.
 
@@ -131,7 +142,7 @@ Analyze each job and return the JSON array with match analysis.`;
     const response = await getChatCompletion(
       [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       {
         model: 'gpt-4',
@@ -148,10 +159,10 @@ Analyze each job and return the JSON array with match analysis.`;
       const matches = JSON.parse(jsonMatch[0]);
       return matches.map((match: any) => ({
         ...match,
-        matchScore: Math.min(100, Math.max(0, match.matchScore)) // Ensure score is 0-100
+        matchScore: Math.min(100, Math.max(0, match.matchScore)), // Ensure score is 0-100
       }));
     }
-    
+
     return [];
   } catch (error) {
     console.error('Error in job matching analysis:', error);
@@ -160,7 +171,10 @@ Analyze each job and return the JSON array with match analysis.`;
 }
 
 // Quick match scoring for real-time feedback
-export function calculateQuickMatchScore(job: any, userProfile: UserProfile): number {
+export function calculateQuickMatchScore(
+  job: any,
+  userProfile: UserProfile
+): number {
   let score = 0;
   let factors = 0;
 
@@ -168,8 +182,11 @@ export function calculateQuickMatchScore(job: any, userProfile: UserProfile): nu
   if (userProfile.location && job.location) {
     const userLocation = userProfile.location.toLowerCase();
     const jobLocation = job.location.toLowerCase();
-    
-    if (jobLocation.includes(userLocation) || userLocation.includes(jobLocation)) {
+
+    if (
+      jobLocation.includes(userLocation) ||
+      userLocation.includes(jobLocation)
+    ) {
       score += 25;
     } else if (isNearbyLocation(userLocation, jobLocation)) {
       score += 15;
@@ -182,13 +199,15 @@ export function calculateQuickMatchScore(job: any, userProfile: UserProfile): nu
   // Skills match (30 points)
   if (userProfile.skills && userProfile.skills.length > 0) {
     const userSkills = userProfile.skills.map(s => s.toLowerCase());
-    const jobText = `${job.title} ${job.description || ''} ${job.requirements || ''}`.toLowerCase();
-    
-    const matchingSkills = userSkills.filter(skill => 
-      jobText.includes(skill) || 
-      jobText.includes(skill.replace(/[^a-z0-9]/g, ''))
+    const jobText =
+      `${job.title} ${job.description || ''} ${job.requirements || ''}`.toLowerCase();
+
+    const matchingSkills = userSkills.filter(
+      skill =>
+        jobText.includes(skill) ||
+        jobText.includes(skill.replace(/[^a-z0-9]/g, ''))
     );
-    
+
     const skillMatchRatio = matchingSkills.length / userSkills.length;
     score += Math.round(skillMatchRatio * 30);
     factors++;
@@ -196,7 +215,9 @@ export function calculateQuickMatchScore(job: any, userProfile: UserProfile): nu
 
   // Job type match (15 points)
   if (userProfile.preferences?.jobTypes && job.jobType) {
-    const preferredTypes = userProfile.preferences.jobTypes.map(t => t.toLowerCase());
+    const preferredTypes = userProfile.preferences.jobTypes.map(t =>
+      t.toLowerCase()
+    );
     if (preferredTypes.includes(job.jobType.toLowerCase())) {
       score += 15;
     }
@@ -204,7 +225,10 @@ export function calculateQuickMatchScore(job: any, userProfile: UserProfile): nu
   }
 
   // Salary match (20 points)
-  if (userProfile.preferences?.salaryRange && (job.salaryMin || job.salaryMax)) {
+  if (
+    userProfile.preferences?.salaryRange &&
+    (job.salaryMin || job.salaryMax)
+  ) {
     const userMin = userProfile.preferences.salaryRange.min || 0;
     const userMax = userProfile.preferences.salaryRange.max || Infinity;
     const jobMin = job.salaryMin || 0;
@@ -222,7 +246,7 @@ export function calculateQuickMatchScore(job: any, userProfile: UserProfile): nu
   if (userProfile.experience && job.requirements) {
     const experienceYears = extractExperienceYears(userProfile.experience);
     const requiredYears = extractRequiredExperience(job.requirements);
-    
+
     if (experienceYears >= requiredYears) {
       score += 10;
     } else if (experienceYears >= requiredYears * 0.7) {
@@ -233,22 +257,39 @@ export function calculateQuickMatchScore(job: any, userProfile: UserProfile): nu
 
   // Normalize score based on available factors
   if (factors === 0) return 50; // Default score when no profile data
-  
+
   return Math.min(100, Math.round(score));
 }
 
 // Helper functions
 function isNearbyLocation(userLocation: string, jobLocation: string): boolean {
   const centralValleyCities = [
-    'stockton', 'modesto', 'fresno', 'visalia', 'bakersfield',
-    'tracy', 'manteca', 'lodi', 'turlock', 'merced', 'ceres',
-    'patterson', 'newman', 'gustine', 'los banos'
+    'stockton',
+    'modesto',
+    'fresno',
+    'visalia',
+    'bakersfield',
+    'tracy',
+    'manteca',
+    'lodi',
+    'turlock',
+    'merced',
+    'ceres',
+    'patterson',
+    'newman',
+    'gustine',
+    'los banos',
   ];
-  
-  return centralValleyCities.some(city => 
-    userLocation.includes(city) && jobLocation.includes('central valley')
-  ) || centralValleyCities.some(city => 
-    jobLocation.includes(city) && userLocation.includes('central valley')
+
+  return (
+    centralValleyCities.some(
+      city =>
+        userLocation.includes(city) && jobLocation.includes('central valley')
+    ) ||
+    centralValleyCities.some(
+      city =>
+        jobLocation.includes(city) && userLocation.includes('central valley')
+    )
   );
 }
 
@@ -258,13 +299,15 @@ function extractExperienceYears(experienceText: string): number {
 }
 
 function extractRequiredExperience(requirementsText: string): number {
-  const match = requirementsText.match(/(\d+)\s*(?:\+\s*)?(?:years?|yrs?)\s*(?:of\s+)?(?:experience|exp)/i);
+  const match = requirementsText.match(
+    /(\d+)\s*(?:\+\s*)?(?:years?|yrs?)\s*(?:of\s+)?(?:experience|exp)/i
+  );
   return match ? parseInt(match[1]) : 0;
 }
 
 // Generate personalized application tips
 export async function generateApplicationTips(
-  job: any, 
+  job: any,
   userProfile: UserProfile,
   matchAnalysis: JobMatch
 ): Promise<string[]> {
@@ -299,7 +342,7 @@ Provide specific application tips as a JSON array.`;
     const response = await getChatCompletion(
       [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       {
         model: 'gpt-4',
@@ -314,18 +357,18 @@ Provide specific application tips as a JSON array.`;
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);
     }
-    
+
     return [
-      "Tailor your resume to highlight relevant experience",
+      'Tailor your resume to highlight relevant experience',
       "Research the company's recent news and achievements",
-      "Prepare specific examples that demonstrate your skills"
+      'Prepare specific examples that demonstrate your skills',
     ];
   } catch (error) {
     console.error('Error generating application tips:', error);
     return [
-      "Customize your application to match the job requirements",
-      "Highlight your most relevant experience and skills",
-      "Show enthusiasm for the company and role"
+      'Customize your application to match the job requirements',
+      'Highlight your most relevant experience and skills',
+      'Show enthusiasm for the company and role',
     ];
   }
 }

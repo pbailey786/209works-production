@@ -7,7 +7,7 @@ This document describes the comprehensive API middleware system implemented for 
 The API middleware system provides a unified wrapper for all API endpoints that includes:
 
 - **Rate Limiting** with Upstash Redis
-- **Request Logging** and performance monitoring  
+- **Request Logging** and performance monitoring
 - **CORS** configuration
 - **Authentication & Authorization**
 - **Request Validation** with Zod schemas
@@ -45,7 +45,7 @@ import { withAPIMiddleware, apiConfigs } from '@/lib/middleware/api';
 // For public endpoints
 export const GET = withAPIMiddleware(handler, apiConfigs.public);
 
-// For authenticated endpoints  
+// For authenticated endpoints
 export const POST = withAPIMiddleware(handler, apiConfigs.authenticated);
 
 // For admin-only endpoints
@@ -63,7 +63,7 @@ export const PUT = withAPIMiddleware(handler, apiConfigs.employer);
 {
   // Require authentication
   requireAuthentication: true,
-  
+
   // Require specific roles
   requiredRoles: ['admin', 'employer'],
 }
@@ -75,10 +75,10 @@ export const PUT = withAPIMiddleware(handler, apiConfigs.employer);
 {
   // Validate request body
   bodySchema: createJobSchema,
-  
+
   // Validate query parameters
   querySchema: jobSearchSchema,
-  
+
   // Validate URL parameters
   paramsSchema: routeParamsSchemas.jobId,
 }
@@ -97,14 +97,14 @@ export const PUT = withAPIMiddleware(handler, apiConfigs.employer);
 
 #### Rate Limit Types
 
-| Type | Limit | Use Case |
-|------|-------|----------|
-| `general` | 100/min | Public endpoints |
-| `authenticated` | 200/min | Logged-in users |
-| `premium` | 500/min | Admin/Employer users |
-| `search` | 30/min | Search endpoints |
-| `auth` | 5/min | Authentication endpoints |
-| `upload` | 10/min | File upload endpoints |
+| Type            | Limit   | Use Case                 |
+| --------------- | ------- | ------------------------ |
+| `general`       | 100/min | Public endpoints         |
+| `authenticated` | 200/min | Logged-in users          |
+| `premium`       | 500/min | Admin/Employer users     |
+| `search`        | 30/min  | Search endpoints         |
+| `auth`          | 5/min   | Authentication endpoints |
+| `upload`        | 10/min  | File upload endpoints    |
 
 ### CORS Configuration
 
@@ -130,7 +130,7 @@ export const PUT = withAPIMiddleware(handler, apiConfigs.employer);
     includeBody: false,    // Don't log request bodies (for sensitive data)
     includeQuery: true,    // Log query parameters
   },
-  
+
   monitoring: {
     enabled: true,
     slowRequestThreshold: 1000, // Log warning for requests > 1s
@@ -144,18 +144,20 @@ The middleware provides an enhanced context object to your handlers:
 
 ```typescript
 interface APIContext<TBody, TQuery> {
-  params: any;           // URL parameters (validated)
-  body?: TBody;          // Request body (validated)
-  query?: TQuery;        // Query parameters (validated)
-  requestId: string;     // Unique request identifier
-  
-  user?: {               // Authenticated user (if auth required)
+  params: any; // URL parameters (validated)
+  body?: TBody; // Request body (validated)
+  query?: TQuery; // Query parameters (validated)
+  requestId: string; // Unique request identifier
+
+  user?: {
+    // Authenticated user (if auth required)
     id: string;
     email: string;
     role: string;
   };
-  
-  performance: {         // Performance tracking utilities
+
+  performance: {
+    // Performance tracking utilities
     startTime: number;
     trackDatabaseQuery(): void;
     trackCacheHit(): void;
@@ -170,17 +172,17 @@ interface APIContext<TBody, TQuery> {
 export const POST = withAPIMiddleware(
   async (req, context) => {
     const { user, params, body, performance } = context;
-    
+
     // Access authenticated user
     const userId = user!.id;
-    
+
     // Track database operations
     performance.trackDatabaseQuery();
     const result = await prisma.job.findUnique({ where: { id: params.id } });
-    
+
     // Use validated request body
     const jobData = body!; // TypeScript knows this is validated
-    
+
     return createSuccessResponse({ result });
   },
   {
@@ -226,40 +228,47 @@ SKIP_RATE_LIMIT=true
 The system includes several preset configurations for common use cases:
 
 ### `apiConfigs.public`
+
 - No authentication required
 - Basic rate limiting (100/min by IP)
 - CORS enabled for public use
 - Standard logging
 
 ### `apiConfigs.authenticated`
+
 - Authentication required
 - Higher rate limits (200/min by user)
 - CORS enabled
 - User context available
 
 ### `apiConfigs.admin`
+
 - Admin role required
 - Premium rate limits (500/min)
 - Body logging enabled
 - Full monitoring
 
 ### `apiConfigs.employer`
+
 - Admin or Employer role required
 - Premium rate limits
 - Standard logging
 
 ### `apiConfigs.search`
+
 - No authentication required
 - Restrictive rate limits (30/min)
 - Query parameter logging
 - Optimized for search endpoints
 
 ### `apiConfigs.upload`
+
 - Authentication required
 - Upload-specific rate limits (10/min)
 - File handling optimized
 
 ### `apiConfigs.auth`
+
 - No authentication required (for login/register)
 - Very restrictive rate limits (5/min)
 - Body logging disabled (no passwords in logs)
@@ -299,17 +308,14 @@ The middleware integrates with the error handling system:
 
 ```typescript
 // Automatic error handling
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    // If you throw any error, it's automatically handled
-    throw new NotFoundError('Job not found');
-    
-    // Rate limiting errors are handled automatically
-    // Validation errors are handled automatically
-    // Authentication errors are handled automatically
-  },
-  config
-);
+export const POST = withAPIMiddleware(async (req, context) => {
+  // If you throw any error, it's automatically handled
+  throw new NotFoundError('Job not found');
+
+  // Rate limiting errors are handled automatically
+  // Validation errors are handled automatically
+  // Authentication errors are handled automatically
+}, config);
 ```
 
 ## Performance Monitoring
@@ -317,40 +323,34 @@ export const POST = withAPIMiddleware(
 ### Database Query Tracking
 
 ```typescript
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    context.performance.trackDatabaseQuery();
-    const users = await prisma.user.findMany();
-    
-    context.performance.trackDatabaseQuery();  
-    const jobs = await prisma.job.findMany();
-    
-    // Logs will show: "2 database queries"
-    return createSuccessResponse({ users, jobs });
-  },
-  config
-);
+export const GET = withAPIMiddleware(async (req, context) => {
+  context.performance.trackDatabaseQuery();
+  const users = await prisma.user.findMany();
+
+  context.performance.trackDatabaseQuery();
+  const jobs = await prisma.job.findMany();
+
+  // Logs will show: "2 database queries"
+  return createSuccessResponse({ users, jobs });
+}, config);
 ```
 
 ### Cache Tracking
 
 ```typescript
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const cached = await redis.get('jobs');
-    if (cached) {
-      context.performance.trackCacheHit();
-      return createSuccessResponse(JSON.parse(cached));
-    }
-    
-    context.performance.trackCacheMiss();
-    const jobs = await prisma.job.findMany();
-    await redis.set('jobs', JSON.stringify(jobs));
-    
-    return createSuccessResponse(jobs);
-  },
-  config
-);
+export const GET = withAPIMiddleware(async (req, context) => {
+  const cached = await redis.get('jobs');
+  if (cached) {
+    context.performance.trackCacheHit();
+    return createSuccessResponse(JSON.parse(cached));
+  }
+
+  context.performance.trackCacheMiss();
+  const jobs = await prisma.job.findMany();
+  await redis.set('jobs', JSON.stringify(jobs));
+
+  return createSuccessResponse(jobs);
+}, config);
 ```
 
 ## Migration from Old System
@@ -362,7 +362,7 @@ export const POST = withValidation(
   async (req, { params, body, requestId }) => {
     const session = await requireRole(req, ['employer']);
     if (session instanceof Response) return session;
-    
+
     const userId = (session.user as any).id;
     // ... rest of logic
   },
@@ -448,4 +448,4 @@ Verify your Upstash configuration:
 # Check these are set correctly
 UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
 UPSTASH_REDIS_REST_TOKEN=your-token
-``` 
+```

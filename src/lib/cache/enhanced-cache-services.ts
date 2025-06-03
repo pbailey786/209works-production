@@ -1,5 +1,5 @@
 import { prisma } from '../../app/api/auth/prisma';
-import { 
+import {
   CursorPaginationParams,
   OffsetPaginationParams,
   SearchFilters,
@@ -13,20 +13,16 @@ import {
   createPaginatedResponse,
   generatePaginationCacheKey,
 } from './pagination';
-import { 
-  getAtomicCacheManager, 
+import {
+  getAtomicCacheManager,
   AtomicCacheUtils,
-  AtomicCacheManager 
+  AtomicCacheManager,
 } from './atomic-cache-manager';
-import { 
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL 
-} from './redis';
+import { generateCacheKey, CACHE_PREFIXES, DEFAULT_TTL } from './redis';
 
 /**
  * Enhanced Cache Services with Atomic Operations
- * 
+ *
  * Provides race-condition-free cache operations with data consistency guarantees.
  * Replaces the existing cache services to fix critical issues.
  */
@@ -83,7 +79,7 @@ export class EnhancedJobCacheService {
   ): Promise<PaginatedResponse<any>> {
     const startTime = Date.now();
     const { sortBy = 'createdAt', sortOrder = 'desc', filters = {} } = params;
-    
+
     // Generate cache key with dependency tracking
     const cacheKey = generatePaginationCacheKey(
       generateCacheKey(CACHE_PREFIXES.jobs, 'paginated'),
@@ -99,32 +95,39 @@ export class EnhancedJobCacheService {
     const dependencies = [
       'jobs:all',
       `jobs:sort:${sortBy}:${sortOrder}`,
-      ...Object.keys(filters).map(key => `jobs:filter:${key}:${filters[key as keyof SearchFilters]}`),
+      ...Object.keys(filters).map(
+        key => `jobs:filter:${key}:${filters[key as keyof SearchFilters]}`
+      ),
     ];
 
     return AtomicCacheUtils.getOrExecute(
       cacheKey,
       async () => {
         trackPerformance?.trackCacheMiss();
-        
+
         // Build where condition from filters
         const whereCondition = this.buildJobWhereCondition(filters);
         const orderBy = buildSortCondition(sortBy, sortOrder);
-        
+
         let data: any[];
         let pagination: CursorPaginationMeta | OffsetPaginationMeta;
-        
+
         if ('cursor' in params) {
           // Cursor-based pagination with atomic operations
           const { cursor, limit, direction = 'forward' } = params;
-          
+
           let cursorCondition = {};
           if (cursor) {
-            cursorCondition = buildCursorCondition(cursor, sortBy, direction, sortOrder);
+            cursorCondition = buildCursorCondition(
+              cursor,
+              sortBy,
+              direction,
+              sortOrder
+            );
           }
-          
+
           trackPerformance?.trackDatabaseQuery();
-          
+
           // Use transaction for consistency
           data = await prisma.$transaction(async () => {
             return await prisma.job.findMany({
@@ -158,20 +161,22 @@ export class EnhancedJobCacheService {
               },
             });
           });
-          
+
           const hasNextPage = data.length > limit;
           if (hasNextPage) {
             data.pop(); // Remove the extra record
           }
-          
-          const nextCursor = hasNextPage && data.length > 0 
-            ? generateCursorFromRecord(data[data.length - 1], sortBy)
-            : undefined;
-          
-          const prevCursor = cursor && data.length > 0
-            ? generateCursorFromRecord(data[0], sortBy)
-            : undefined;
-          
+
+          const nextCursor =
+            hasNextPage && data.length > 0
+              ? generateCursorFromRecord(data[data.length - 1], sortBy)
+              : undefined;
+
+          const prevCursor =
+            cursor && data.length > 0
+              ? generateCursorFromRecord(data[0], sortBy)
+              : undefined;
+
           pagination = {
             hasNextPage,
             hasPrevPage: !!cursor,
@@ -184,11 +189,15 @@ export class EnhancedJobCacheService {
             throw new Error('Invalid pagination parameters');
           }
           const { page, limit } = offsetParams;
-          
+
           const [totalCount, data] = await prisma.$transaction(async () => {
             const count = await prisma.job.count({ where: whereCondition });
-            const { skip, take } = calculateOffsetPagination(page, limit, count);
-            
+            const { skip, take } = calculateOffsetPagination(
+              page,
+              limit,
+              count
+            );
+
             const jobs = await prisma.job.findMany({
               where: whereCondition,
               orderBy,
@@ -204,17 +213,17 @@ export class EnhancedJobCacheService {
                 },
               },
             });
-            
+
             return [count, jobs] as [number, any[]];
           });
-          
+
           const { meta } = calculateOffsetPagination(page, limit, totalCount);
           return createPaginatedResponse(data, meta, {
             queryTime: 0,
             cached: false,
           });
         }
-        
+
         const queryTime = Date.now() - startTime;
         return createPaginatedResponse(data, pagination, {
           queryTime,
@@ -240,13 +249,13 @@ export class EnhancedJobCacheService {
     trackPerformance?: PerformanceTracker
   ): Promise<any | null> {
     const cacheKey = generateCacheKey(CACHE_PREFIXES.jobs, 'detail', id);
-    
+
     return AtomicCacheUtils.getOrExecute(
       cacheKey,
       async () => {
         trackPerformance?.trackCacheMiss();
         trackPerformance?.trackDatabaseQuery();
-        
+
         return await prisma.job.findUnique({
           where: { id },
           include: {
@@ -308,15 +317,15 @@ export class EnhancedJobCacheService {
       async () => {
         const whereCondition = { companyId: employerId };
         const orderBy = buildSortCondition('createdAt', 'desc');
-        
+
         if ('cursor' in params) {
           const { cursor, limit } = params;
-          
+
           let cursorCondition = {};
           if (cursor) {
             cursorCondition = buildCursorCondition(cursor, 'createdAt');
           }
-          
+
           const data = await prisma.job.findMany({
             where: { ...whereCondition, ...cursorCondition },
             orderBy,
@@ -332,27 +341,33 @@ export class EnhancedJobCacheService {
               },
             },
           });
-          
+
           const hasNextPage = data.length > limit;
           if (hasNextPage) data.pop();
-          
+
           const pagination: CursorPaginationMeta = {
             hasNextPage,
             hasPrevPage: !!cursor,
-            nextCursor: hasNextPage ? generateCursorFromRecord(data[data.length - 1], 'createdAt') : undefined,
+            nextCursor: hasNextPage
+              ? generateCursorFromRecord(data[data.length - 1], 'createdAt')
+              : undefined,
           };
-          
+
           return createPaginatedResponse(data, pagination, {
             queryTime: 0,
             cached: false,
           });
         } else {
           const { page, limit } = params as OffsetPaginationParams;
-          
+
           const [totalCount, data] = await prisma.$transaction(async () => {
             const count = await prisma.job.count({ where: whereCondition });
-            const { skip, take } = calculateOffsetPagination(page, limit, count);
-            
+            const { skip, take } = calculateOffsetPagination(
+              page,
+              limit,
+              count
+            );
+
             const jobs = await prisma.job.findMany({
               where: whereCondition,
               orderBy,
@@ -368,10 +383,10 @@ export class EnhancedJobCacheService {
                 },
               },
             });
-            
+
             return [count, jobs] as [number, any[]];
           });
-          
+
           const { meta } = calculateOffsetPagination(page, limit, totalCount);
           return createPaginatedResponse(data, meta, {
             queryTime: 0,
@@ -381,7 +396,11 @@ export class EnhancedJobCacheService {
       },
       {
         ttl: this.CACHE_TTL,
-        tags: [this.CACHE_TAGS.jobs, this.CACHE_TAGS.jobsByEmployer, `employer:${employerId}`],
+        tags: [
+          this.CACHE_TAGS.jobs,
+          this.CACHE_TAGS.jobsByEmployer,
+          `employer:${employerId}`,
+        ],
         dependencies: [`employer:${employerId}`, 'jobs:all'],
         validateIntegrity: true,
       }
@@ -392,7 +411,7 @@ export class EnhancedJobCacheService {
    * Atomic cache invalidation with dependency cascade
    */
   static async invalidateJobCaches(
-    jobId?: string, 
+    jobId?: string,
     employerId?: string,
     strategy: Partial<CacheInvalidationStrategy> = {}
   ): Promise<void> {
@@ -406,12 +425,12 @@ export class EnhancedJobCacheService {
     const invalidateOperation = async () => {
       const tags = [this.CACHE_TAGS.jobs, ...additionalTags];
       const keys: string[] = [];
-      
+
       if (jobId) {
         tags.push(`job:${jobId}`);
         keys.push(generateCacheKey(CACHE_PREFIXES.jobs, 'detail', jobId));
       }
-      
+
       if (employerId) {
         tags.push(this.CACHE_TAGS.jobsByEmployer, `employer:${employerId}`);
       }
@@ -441,22 +460,22 @@ export class EnhancedJobCacheService {
     }>
   ): Promise<Array<any>> {
     const manager = await this.getCacheManager();
-    
+
     // Group operations by type for optimal execution
     const createOps = operations.filter(op => op.type === 'create');
     const updateOps = operations.filter(op => op.type === 'update');
     const deleteOps = operations.filter(op => op.type === 'delete');
-    
+
     // Execute operations in transaction
-    const results = await prisma.$transaction(async (tx) => {
+    const results = await prisma.$transaction(async tx => {
       const operationResults: any[] = [];
-      
+
       // Handle creates
       for (const op of createOps) {
         try {
           const result = await tx.job.create({ data: op.data });
           operationResults.push(result);
-          
+
           // Invalidate relevant caches
           await this.invalidateJobCaches(result.id, op.employerId, {
             immediate: false,
@@ -466,7 +485,7 @@ export class EnhancedJobCacheService {
           operationResults.push(error);
         }
       }
-      
+
       // Handle updates
       for (const op of updateOps) {
         try {
@@ -475,7 +494,7 @@ export class EnhancedJobCacheService {
             data: op.data,
           });
           operationResults.push(result);
-          
+
           // Invalidate relevant caches
           await this.invalidateJobCaches(op.jobId, op.employerId, {
             immediate: false,
@@ -485,7 +504,7 @@ export class EnhancedJobCacheService {
           operationResults.push(error);
         }
       }
-      
+
       // Handle deletes
       for (const op of deleteOps) {
         try {
@@ -493,7 +512,7 @@ export class EnhancedJobCacheService {
             where: { id: op.jobId },
           });
           operationResults.push(result);
-          
+
           // Invalidate relevant caches
           await this.invalidateJobCaches(op.jobId, op.employerId, {
             immediate: false,
@@ -503,10 +522,10 @@ export class EnhancedJobCacheService {
           operationResults.push(error);
         }
       }
-      
+
       return operationResults;
     });
-    
+
     return results;
   }
 
@@ -515,7 +534,7 @@ export class EnhancedJobCacheService {
    */
   private static buildJobWhereCondition(filters: SearchFilters): any {
     const where: any = {};
-    
+
     // Text search with proper escaping
     if (filters.q) {
       const searchTerm = filters.q.replace(/[%_]/g, '\\$&'); // Escape SQL wildcards
@@ -525,50 +544,60 @@ export class EnhancedJobCacheService {
         { company: { contains: searchTerm, mode: 'insensitive' } },
       ];
     }
-    
+
     // Location filter with validation
     if (filters.location) {
       const location = filters.location.replace(/[%_]/g, '\\$&');
       where.location = { contains: location, mode: 'insensitive' };
     }
-    
+
     // Job type filter with enum validation
     if (filters.jobType) {
-      const validJobTypes = ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP', 'FREELANCE'];
+      const validJobTypes = [
+        'FULL_TIME',
+        'PART_TIME',
+        'CONTRACT',
+        'INTERNSHIP',
+        'FREELANCE',
+      ];
       if (validJobTypes.includes(filters.jobType)) {
         where.jobType = filters.jobType;
       }
     }
-    
+
     // Salary filters with validation
     if (filters.salaryMin || filters.salaryMax) {
       where.salaryMin = {};
       if (filters.salaryMin && filters.salaryMin >= 0) {
         where.salaryMin.gte = filters.salaryMin;
       }
-      if (filters.salaryMax && filters.salaryMax >= 0 && filters.salaryMax >= (filters.salaryMin || 0)) {
+      if (
+        filters.salaryMax &&
+        filters.salaryMax >= 0 &&
+        filters.salaryMax >= (filters.salaryMin || 0)
+      ) {
         where.salaryMax = { lte: filters.salaryMax };
       }
     }
-    
+
     // Company filter with validation
     if (filters.company) {
       const company = filters.company.replace(/[%_]/g, '\\$&');
       where.company = { contains: company, mode: 'insensitive' };
     }
-    
+
     // Remote filter with boolean validation
     if (filters.remote === 'true') {
       where.isRemote = true;
     } else if (filters.remote === 'false') {
       where.isRemote = false;
     }
-    
+
     // Date posted filter with validation
     if (filters.datePosted) {
       const now = new Date();
       let dateThreshold: Date;
-      
+
       switch (filters.datePosted) {
         case '24h':
           dateThreshold = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -582,10 +611,10 @@ export class EnhancedJobCacheService {
         default:
           dateThreshold = new Date(0);
       }
-      
+
       where.createdAt = { gte: dateThreshold };
     }
-    
+
     return where;
   }
 }
@@ -609,13 +638,13 @@ export class EnhancedUserCacheService {
     trackPerformance?: PerformanceTracker
   ): Promise<any | null> {
     const cacheKey = generateCacheKey(CACHE_PREFIXES.users, 'profile', id);
-    
+
     return AtomicCacheUtils.getOrExecute(
       cacheKey,
       async () => {
         trackPerformance?.trackCacheMiss();
         trackPerformance?.trackDatabaseQuery();
-        
+
         return await prisma.user.findUnique({
           where: { id },
           select: {
@@ -654,21 +683,21 @@ export class EnhancedUserCacheService {
       generateCacheKey(CACHE_PREFIXES.users, 'applications', userId),
       params
     );
-    
+
     return AtomicCacheUtils.getOrExecute(
       cacheKey,
       async () => {
         const whereCondition = { userId };
         const orderBy = buildSortCondition('appliedAt', 'desc');
-        
+
         if ('cursor' in params) {
           const { cursor, limit } = params;
-          
+
           let cursorCondition = {};
           if (cursor) {
             cursorCondition = buildCursorCondition(cursor, 'appliedAt');
           }
-          
+
           const data = await prisma.jobApplication.findMany({
             where: { ...whereCondition, ...cursorCondition },
             orderBy,
@@ -687,27 +716,35 @@ export class EnhancedUserCacheService {
               },
             },
           });
-          
+
           const hasNextPage = data.length > limit;
           if (hasNextPage) data.pop();
-          
+
           const pagination: CursorPaginationMeta = {
             hasNextPage,
             hasPrevPage: !!cursor,
-            nextCursor: hasNextPage ? generateCursorFromRecord(data[data.length - 1], 'appliedAt') : undefined,
+            nextCursor: hasNextPage
+              ? generateCursorFromRecord(data[data.length - 1], 'appliedAt')
+              : undefined,
           };
-          
+
           return createPaginatedResponse(data, pagination, {
             queryTime: 0,
             cached: false,
           });
         } else {
           const { page, limit } = params as OffsetPaginationParams;
-          
+
           const [totalCount, data] = await prisma.$transaction(async () => {
-            const count = await prisma.jobApplication.count({ where: whereCondition });
-            const { skip, take } = calculateOffsetPagination(page, limit, count);
-            
+            const count = await prisma.jobApplication.count({
+              where: whereCondition,
+            });
+            const { skip, take } = calculateOffsetPagination(
+              page,
+              limit,
+              count
+            );
+
             const applications = await prisma.jobApplication.findMany({
               where: whereCondition,
               orderBy,
@@ -727,10 +764,10 @@ export class EnhancedUserCacheService {
                 },
               },
             });
-            
+
             return [count, applications] as [number, any[]];
           });
-          
+
           const { meta } = calculateOffsetPagination(page, limit, totalCount);
           return createPaginatedResponse(data, meta, {
             queryTime: 0,
@@ -740,7 +777,11 @@ export class EnhancedUserCacheService {
       },
       {
         ttl: this.CACHE_TTL,
-        tags: [this.CACHE_TAGS.users, this.CACHE_TAGS.userApplications, `user:${userId}`],
+        tags: [
+          this.CACHE_TAGS.users,
+          this.CACHE_TAGS.userApplications,
+          `user:${userId}`,
+        ],
         dependencies: [`user:${userId}`, 'users:all'],
         validateIntegrity: true,
       }
@@ -769,10 +810,8 @@ export class EnhancedUserCacheService {
         `user:${userId}`,
         ...additionalTags,
       ];
-      
-      const keys = [
-        generateCacheKey(CACHE_PREFIXES.users, 'profile', userId),
-      ];
+
+      const keys = [generateCacheKey(CACHE_PREFIXES.users, 'profile', userId)];
 
       await AtomicCacheUtils.invalidateWithDependencies(keys, tags);
     };
@@ -812,7 +851,9 @@ export class EnhancedSearchCacheService {
     const dependencies = [
       'search:all',
       `search:query:${query}`,
-      ...Object.keys(filters).map(key => `search:filter:${key}:${filters[key as keyof SearchFilters]}`),
+      ...Object.keys(filters).map(
+        key => `search:filter:${key}:${filters[key as keyof SearchFilters]}`
+      ),
     ];
 
     return AtomicCacheUtils.getOrExecute(
@@ -848,9 +889,13 @@ export class EnhancedSearchCacheService {
     } = strategy;
 
     const invalidateOperation = async () => {
-      const tags = [this.CACHE_TAGS.search, this.CACHE_TAGS.searchJobs, ...additionalTags];
+      const tags = [
+        this.CACHE_TAGS.search,
+        this.CACHE_TAGS.searchJobs,
+        ...additionalTags,
+      ];
       const keys: string[] = [];
-      
+
       if (query) {
         keys.push(generateCacheKey(CACHE_PREFIXES.search, 'jobs', query));
       }
@@ -885,17 +930,24 @@ export class CacheHealthMonitor {
       try {
         const manager = await getAtomicCacheManager();
         this.healthStats = await manager.getCacheStats();
-        
+
         // Log health stats
         console.log('Cache Health Stats:', this.healthStats);
-        
+
         // Check for issues
         if (this.healthStats.operationQueueSize > 100) {
-          console.warn('High cache operation queue size:', this.healthStats.operationQueueSize);
+          console.warn(
+            'High cache operation queue size:',
+            this.healthStats.operationQueueSize
+          );
         }
-        
-        if (this.healthStats.memoryUsage > 100 * 1024 * 1024) { // 100MB
-          console.warn('High cache memory usage:', this.healthStats.memoryUsage);
+
+        if (this.healthStats.memoryUsage > 100 * 1024 * 1024) {
+          // 100MB
+          console.warn(
+            'High cache memory usage:',
+            this.healthStats.memoryUsage
+          );
         }
       } catch (error) {
         console.error('Cache health monitoring error:', error);
@@ -928,4 +980,4 @@ export {
   EnhancedJobCacheService as JobCacheService,
   EnhancedUserCacheService as UserCacheService,
   EnhancedSearchCacheService as SearchCacheService,
-}; 
+};

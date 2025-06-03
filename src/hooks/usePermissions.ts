@@ -1,13 +1,13 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { 
-  Permission, 
-  hasPermission, 
-  hasAnyPermission, 
-  hasAllPermissions, 
+import {
+  Permission,
+  hasPermission,
+  hasAnyPermission,
+  hasAllPermissions,
   getUserPermissions,
-  canAccessRoute 
+  canAccessRoute,
 } from '@/lib/rbac/permissions';
 
 export function usePermissions() {
@@ -15,9 +15,12 @@ export function usePermissions() {
   const userRole = (session?.user as any)?.role || '';
 
   return {
-    hasPermission: (permission: Permission) => hasPermission(userRole, permission),
-    hasAnyPermission: (permissions: Permission[]) => hasAnyPermission(userRole, permissions),
-    hasAllPermissions: (permissions: Permission[]) => hasAllPermissions(userRole, permissions),
+    hasPermission: (permission: Permission) =>
+      hasPermission(userRole, permission),
+    hasAnyPermission: (permissions: Permission[]) =>
+      hasAnyPermission(userRole, permissions),
+    hasAllPermissions: (permissions: Permission[]) =>
+      hasAllPermissions(userRole, permissions),
     getUserPermissions: () => getUserPermissions(userRole),
     canAccessRoute: (route: string) => canAccessRoute(userRole, route),
     userRole,
@@ -33,4 +36,4 @@ export function useRequirePermission(permission: Permission) {
 export function useRequireAnyPermission(permissions: Permission[]) {
   const { hasAnyPermission } = usePermissions();
   return hasAnyPermission(permissions);
-} 
+}

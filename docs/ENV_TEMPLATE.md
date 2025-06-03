@@ -63,12 +63,14 @@ TWITTER_NORCAL=@norcaljobs
 When deploying to Vercel, add these environment variables in your Vercel dashboard:
 
 ### Production Environment
+
 - `NEXT_PUBLIC_APP_URL`: `https://209.works`
 - `NEXTAUTH_URL`: `https://209.works`
 - `ALLOWED_ORIGINS`: `https://209.works,https://916.works,https://510.works,https://norcal.works`
 - `API_ALLOWED_ORIGINS`: `https://209.works,https://916.works,https://510.works,https://norcal.works`
 
 ### Development Environment
+
 - `NEXT_PUBLIC_APP_URL`: `http://localhost:3000`
 - `NEXTAUTH_URL`: `http://localhost:3000`
 - `ALLOWED_ORIGINS`: `http://localhost:3000`
@@ -84,4 +86,4 @@ When deploying to Vercel, add these environment variables in your Vercel dashboa
    - `510.works`
    - `norcal.works`
 4. Configure DNS records as instructed by Vercel
-5. Wait for SSL certificates to be issued 
+5. Wait for SSL certificates to be issued

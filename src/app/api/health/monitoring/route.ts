@@ -96,7 +96,11 @@ class HealthMetricsStore {
     return HealthMetricsStore.instance;
   }
 
-  public recordRequest(duration: number, success: boolean, endpoint: string): void {
+  public recordRequest(
+    duration: number,
+    success: boolean,
+    endpoint: string
+  ): void {
     this.requestMetrics.push({
       timestamp: Date.now(),
       duration,
@@ -110,7 +114,11 @@ class HealthMetricsStore {
     }
   }
 
-  public recordError(category: string, severity: string, message: string): void {
+  public recordError(
+    category: string,
+    severity: string,
+    message: string
+  ): void {
     this.errorMetrics.push({
       timestamp: Date.now(),
       category,
@@ -133,7 +141,9 @@ class HealthMetricsStore {
     slowRequestCount: number;
   } {
     const cutoff = Date.now() - timeWindow;
-    const recentRequests = this.requestMetrics.filter(r => r.timestamp >= cutoff);
+    const recentRequests = this.requestMetrics.filter(
+      r => r.timestamp >= cutoff
+    );
 
     if (recentRequests.length === 0) {
       return {
@@ -148,10 +158,15 @@ class HealthMetricsStore {
 
     const successful = recentRequests.filter(r => r.success).length;
     const failed = recentRequests.length - successful;
-    const totalDuration = recentRequests.reduce((sum, r) => sum + r.duration, 0);
+    const totalDuration = recentRequests.reduce(
+      (sum, r) => sum + r.duration,
+      0
+    );
     const averageResponseTime = totalDuration / recentRequests.length;
-    const slowRequestCount = recentRequests.filter(r => r.duration > 1000).length;
-    const requestsPerMinute = (recentRequests.length / (timeWindow / 60000));
+    const slowRequestCount = recentRequests.filter(
+      r => r.duration > 1000
+    ).length;
+    const requestsPerMinute = recentRequests.length / (timeWindow / 60000);
 
     return {
       total: recentRequests.length,
@@ -182,13 +197,16 @@ class HealthMetricsStore {
     recentErrors.forEach(error => {
       byCategory[error.category] = (byCategory[error.category] || 0) + 1;
       bySeverity[error.severity] = (bySeverity[error.severity] || 0) + 1;
-      
+
       if (error.severity === 'critical') {
         criticalErrors++;
       }
     });
 
-    const errorRate = requestMetrics.total > 0 ? (recentErrors.length / requestMetrics.total) * 100 : 0;
+    const errorRate =
+      requestMetrics.total > 0
+        ? (recentErrors.length / requestMetrics.total) * 100
+        : 0;
 
     return {
       total: recentErrors.length,
@@ -244,12 +262,18 @@ function checkPerformanceHealth(): {
   };
 } {
   const requestMetrics = healthMetrics.getRequestMetrics();
-  
+
   let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
-  
-  if (requestMetrics.averageResponseTime > 2000 || requestMetrics.slowRequestCount > requestMetrics.total * 0.2) {
+
+  if (
+    requestMetrics.averageResponseTime > 2000 ||
+    requestMetrics.slowRequestCount > requestMetrics.total * 0.2
+  ) {
     status = 'unhealthy';
-  } else if (requestMetrics.averageResponseTime > 1000 || requestMetrics.slowRequestCount > requestMetrics.total * 0.1) {
+  } else if (
+    requestMetrics.averageResponseTime > 1000 ||
+    requestMetrics.slowRequestCount > requestMetrics.total * 0.1
+  ) {
     status = 'degraded';
   }
 
@@ -273,9 +297,9 @@ function checkErrorHealth(): {
   };
 } {
   const errorMetrics = healthMetrics.getErrorMetrics();
-  
+
   let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
-  
+
   if (errorMetrics.criticalErrors > 0 || errorMetrics.errorRate > 10) {
     status = 'unhealthy';
   } else if (errorMetrics.errorRate > 5 || errorMetrics.recentErrorCount > 50) {
@@ -296,7 +320,7 @@ function checkErrorHealth(): {
 export const GET = withAPIMiddleware(
   async (req: NextRequest, context) => {
     const startTime = Date.now();
-    
+
     try {
       // Get database health
       const databaseHealth = await getDatabaseHealthReport();
@@ -320,10 +344,10 @@ export const GET = withAPIMiddleware(
         errorHealth.status,
       ];
 
-      const overallStatus = statuses.includes('unhealthy') 
-        ? 'unhealthy' 
-        : statuses.includes('degraded') 
-          ? 'degraded' 
+      const overallStatus = statuses.includes('unhealthy')
+        ? 'unhealthy'
+        : statuses.includes('degraded')
+          ? 'degraded'
           : 'healthy';
 
       const healthStatus: SystemHealthStatus = {
@@ -345,10 +369,13 @@ export const GET = withAPIMiddleware(
         metrics: {
           requests: requestMetrics,
           database: {
-            totalQueries: databaseHealth.checks.queries.details.totalQueries || 0,
+            totalQueries:
+              databaseHealth.checks.queries.details.totalQueries || 0,
             slowQueries: databaseHealth.checks.queries.details.slowQueries || 0,
-            averageQueryTime: databaseHealth.checks.queries.details.averageQueryTime || 0,
-            connectionHealth: databaseHealth.checks.connections.details.successRate || 100,
+            averageQueryTime:
+              databaseHealth.checks.queries.details.averageQueryTime || 0,
+            connectionHealth:
+              databaseHealth.checks.connections.details.successRate || 100,
           },
           memory: {
             heapUsed: memoryUsage.heapUsed,
@@ -365,15 +392,22 @@ export const GET = withAPIMiddleware(
       healthMetrics.recordRequest(responseTime, true, '/api/health/monitoring');
 
       return createSuccessResponse(healthStatus);
-
     } catch (error) {
       // Record failed request
       const responseTime = Date.now() - startTime;
-      healthMetrics.recordRequest(responseTime, false, '/api/health/monitoring');
-      
+      healthMetrics.recordRequest(
+        responseTime,
+        false,
+        '/api/health/monitoring'
+      );
+
       // Record error
-      healthMetrics.recordError('system', 'high', error instanceof Error ? error.message : 'Unknown error');
-      
+      healthMetrics.recordError(
+        'system',
+        'high',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+
       throw error;
     }
   },
@@ -385,4 +419,4 @@ export const GET = withAPIMiddleware(
 );
 
 // Export the metrics store for use by other parts of the application
-export { healthMetrics }; 
+export { healthMetrics };

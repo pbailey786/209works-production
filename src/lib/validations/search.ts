@@ -7,13 +7,17 @@ export const enhancedSearchFiltersSchema = searchFiltersSchema.extend({
   lat: z.coerce.number().min(-90).max(90).optional(),
   lng: z.coerce.number().min(-180).max(180).optional(),
   radius: z.coerce.number().min(1).max(100).optional(), // miles
-  
+
   // Advanced filters
   skills: z.array(z.string()).optional(),
   experience: z.enum(['entry', 'mid', 'senior', 'executive']).optional(),
-  education: z.enum(['high-school', 'associates', 'bachelors', 'masters', 'phd']).optional(),
-  workAuthorization: z.enum(['citizen', 'permanent-resident', 'visa-required']).optional(),
-  
+  education: z
+    .enum(['high-school', 'associates', 'bachelors', 'masters', 'phd'])
+    .optional(),
+  workAuthorization: z
+    .enum(['citizen', 'permanent-resident', 'visa-required'])
+    .optional(),
+
   // Search behavior options
   includeSnippets: z.enum(['true', 'false']).default('false'),
   highlightMatches: z.enum(['true', 'false']).default('false'),
@@ -33,9 +37,13 @@ export const userSearchFiltersSchema = z.object({
   location: z.string().optional(),
   skills: z.array(z.string()).optional(),
   experience: z.enum(['entry', 'mid', 'senior', 'executive']).optional(),
-  education: z.enum(['high-school', 'associates', 'bachelors', 'masters', 'phd']).optional(),
+  education: z
+    .enum(['high-school', 'associates', 'bachelors', 'masters', 'phd'])
+    .optional(),
   remote: z.enum(['true', 'false']).optional(),
-  workAuthorization: z.enum(['citizen', 'permanent-resident', 'visa-required']).optional(),
+  workAuthorization: z
+    .enum(['citizen', 'permanent-resident', 'visa-required'])
+    .optional(),
 });
 
 export const userSearchQuerySchema = z.intersection(
@@ -72,4 +80,4 @@ export type EnhancedSearchQuery = z.infer<typeof enhancedSearchQuerySchema>;
 export type UserSearchQuery = z.infer<typeof userSearchQuerySchema>;
 export type AutocompleteQuery = z.infer<typeof autocompleteQuerySchema>;
 export type SearchAnalytics = z.infer<typeof searchAnalyticsSchema>;
-export type GeolocationSearch = z.infer<typeof geolocationSearchSchema>; 
+export type GeolocationSearch = z.infer<typeof geolocationSearchSchema>;

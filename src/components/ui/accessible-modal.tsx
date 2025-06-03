@@ -3,16 +3,17 @@
 import React, { useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { 
-  useModalAccessibility, 
-  createDialogAriaProps, 
+import {
+  useModalAccessibility,
+  createDialogAriaProps,
   createModalId,
   validateModalAccessibility,
-  type ModalAccessibilityOptions 
+  type ModalAccessibilityOptions,
 } from '@/utils/modal-accessibility';
 import { cn } from '@/lib/utils';
 
-export interface AccessibleModalProps extends Omit<ModalAccessibilityOptions, 'isOpen' | 'onClose'> {
+export interface AccessibleModalProps
+  extends Omit<ModalAccessibilityOptions, 'isOpen' | 'onClose'> {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
@@ -35,7 +36,7 @@ const sizeClasses = {
   md: 'max-w-lg',
   lg: 'max-w-2xl',
   xl: 'max-w-4xl',
-  full: 'max-w-full mx-4'
+  full: 'max-w-full mx-4',
 };
 
 export function AccessibleModal({
@@ -64,7 +65,10 @@ export function AccessibleModal({
   ...props
 }: AccessibleModalProps) {
   // Generate unique IDs for ARIA attributes
-  const { modalId, titleId, descriptionId } = useMemo(() => createModalId('accessible-modal'), []);
+  const { modalId, titleId, descriptionId } = useMemo(
+    () => createModalId('accessible-modal'),
+    []
+  );
 
   // Use modal accessibility hook
   const { modalRef, handleOverlayClick } = useModalAccessibility({
@@ -80,11 +84,15 @@ export function AccessibleModal({
   });
 
   // Create ARIA props
-  const ariaProps = useMemo(() => createDialogAriaProps(type, {
-    titleId: title ? titleId : undefined,
-    descriptionId: description ? descriptionId : undefined,
-    isModal: true,
-  }), [type, title, titleId, description, descriptionId]);
+  const ariaProps = useMemo(
+    () =>
+      createDialogAriaProps(type, {
+        titleId: title ? titleId : undefined,
+        descriptionId: description ? descriptionId : undefined,
+        isModal: true,
+      }),
+    [type, title, titleId, description, descriptionId]
+  );
 
   // Handle lifecycle callbacks
   useEffect(() => {
@@ -136,12 +144,12 @@ export function AccessibleModal({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.2 }}
           className={cn(
-            'relative w-full bg-white rounded-lg shadow-xl',
+            'relative w-full rounded-lg bg-white shadow-xl',
             'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
             sizeClasses[size],
             className
           )}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
           id={modalId}
           data-testid={testId}
           {...ariaProps}
@@ -170,7 +178,7 @@ export function AccessibleModal({
             {title && (
               <h2
                 id={titleId}
-                className="text-lg font-semibold text-gray-900 mb-2"
+                className="mb-2 text-lg font-semibold text-gray-900"
               >
                 {title}
               </h2>
@@ -178,10 +186,7 @@ export function AccessibleModal({
 
             {/* Description */}
             {description && (
-              <p
-                id={descriptionId}
-                className="text-sm text-gray-600 mb-4"
-              >
+              <p id={descriptionId} className="mb-4 text-sm text-gray-600">
                 {description}
               </p>
             )}
@@ -196,7 +201,8 @@ export function AccessibleModal({
 }
 
 // Specialized modal components
-export interface ConfirmationModalProps extends Omit<AccessibleModalProps, 'type' | 'children'> {
+export interface ConfirmationModalProps
+  extends Omit<AccessibleModalProps, 'type' | 'children'> {
   title: string;
   message: string;
   confirmLabel?: string;
@@ -246,15 +252,15 @@ export function ConfirmationModal({
       closeOnOverlayClick={false} // Prevent accidental dismissal
       showCloseButton={false} // Force explicit choice
     >
-      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6">
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <button
           onClick={handleCancel}
           disabled={isLoading}
           className={cn(
-            'px-4 py-2 text-sm font-medium rounded-md',
+            'rounded-md px-4 py-2 text-sm font-medium',
             'border border-gray-300 bg-white text-gray-700',
             'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
+            'disabled:cursor-not-allowed disabled:opacity-50',
             'transition-colors duration-200'
           )}
         >
@@ -264,9 +270,9 @@ export function ConfirmationModal({
           onClick={handleConfirm}
           disabled={isLoading}
           className={cn(
-            'px-4 py-2 text-sm font-medium rounded-md text-white',
+            'rounded-md px-4 py-2 text-sm font-medium text-white',
             'focus:outline-none focus:ring-2 focus:ring-offset-2',
-            'disabled:opacity-50 disabled:cursor-not-allowed',
+            'disabled:cursor-not-allowed disabled:opacity-50',
             'transition-colors duration-200',
             variantStyles[variant]
           )}
@@ -306,27 +312,21 @@ export function FormModal({
   };
 
   return (
-    <AccessibleModal
-      {...props}
-      onClose={onClose}
-      title={title}
-    >
+    <AccessibleModal {...props} onClose={onClose} title={title}>
       <form onSubmit={handleSubmit}>
-        <div className="space-y-4">
-          {children}
-        </div>
+        <div className="space-y-4">{children}</div>
 
         {showFooter && (
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+          <div className="mt-6 flex flex-col-reverse gap-3 border-t border-gray-200 pt-4 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
               className={cn(
-                'px-4 py-2 text-sm font-medium rounded-md',
+                'rounded-md px-4 py-2 text-sm font-medium',
                 'border border-gray-300 bg-white text-gray-700',
                 'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                'disabled:opacity-50 disabled:cursor-not-allowed',
+                'disabled:cursor-not-allowed disabled:opacity-50',
                 'transition-colors duration-200'
               )}
             >
@@ -336,10 +336,10 @@ export function FormModal({
               type="submit"
               disabled={isSubmitting}
               className={cn(
-                'px-4 py-2 text-sm font-medium rounded-md text-white',
+                'rounded-md px-4 py-2 text-sm font-medium text-white',
                 'bg-blue-600 hover:bg-blue-700',
                 'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                'disabled:opacity-50 disabled:cursor-not-allowed',
+                'disabled:cursor-not-allowed disabled:opacity-50',
                 'transition-colors duration-200'
               )}
             >
@@ -350,4 +350,4 @@ export function FormModal({
       </form>
     </AccessibleModal>
   );
-} 
+}

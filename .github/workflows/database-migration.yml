@@ -34,7 +34,7 @@ jobs:
   validate-schema:
     name: 🔍 Validate Prisma Schema
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: validate-schema
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.migration_type == 'migrate')
-    
+
     services:
       postgres:
         image: postgres:15
@@ -85,7 +85,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
@@ -113,7 +113,7 @@ jobs:
         run: |
           echo "🧪 Testing data integrity after migration..."
           npx prisma db seed || echo "No seed script found"
-          
+
           # Basic data integrity checks
           npx prisma db execute --stdin <<EOF
           SELECT COUNT(*) as table_count 
@@ -128,7 +128,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development')
     environment:
       name: database-development
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
@@ -164,7 +164,7 @@ jobs:
     if: github.ref == 'refs/heads/staging' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
     environment:
       name: database-staging
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
@@ -209,7 +209,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
     environment:
       name: database-production
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
@@ -269,7 +269,7 @@ jobs:
         run: |
           echo "🏥 Performing post-migration health check..."
           npx prisma migrate status
-          
+
           # Basic connectivity test
           npx prisma db execute --stdin <<EOF
           SELECT COUNT(*) as total_tables
@@ -301,7 +301,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.migration_type == 'reset'
     environment:
       name: database-production-rollback
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
@@ -336,4 +336,4 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' \
             --data '{"text":"🔄 Production database rollback executed\nPlease verify system functionality"}' \
-            $SLACK_WEBHOOK 
+            $SLACK_WEBHOOK

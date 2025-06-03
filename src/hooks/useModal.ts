@@ -77,4 +77,4 @@ export function useModal(options: UseModalOptions = {}): UseModalReturn {
     close,
     toggle,
   };
-} 
+}

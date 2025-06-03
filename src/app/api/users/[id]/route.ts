@@ -3,10 +3,10 @@ import { withAPIMiddleware } from '@/lib/middleware/api';
 import { updateUserSchema } from '@/lib/validations/api';
 import { routeParamsSchemas } from '@/lib/middleware/validation';
 import { UserCacheService } from '@/lib/cache/services';
-import { 
-  createSuccessResponse, 
+import {
+  createSuccessResponse,
   NotFoundError,
-  AuthorizationError 
+  AuthorizationError,
 } from '@/lib/errors/api-errors';
 import { prisma } from '../../auth/prisma';
 
@@ -15,19 +15,19 @@ export const GET = withAPIMiddleware(
   async (req, context) => {
     const { user, params, performance } = context;
     const userId = params.id;
-    
+
     // Users can view their own profile, admins can view any profile
     if (user!.id !== userId && user!.role !== 'admin') {
       throw new AuthorizationError('You can only view your own profile');
     }
-    
+
     // Get user with caching
     const profile = await UserCacheService.getUserById(userId, performance);
-    
+
     if (!profile) {
       throw new NotFoundError('User');
     }
-    
+
     return createSuccessResponse({ user: profile });
   },
   {
@@ -44,22 +44,24 @@ export const PUT = withAPIMiddleware(
   async (req, context) => {
     const { user, params, body, performance } = context;
     const userId = params.id;
-    
+
     // Users can update their own profile, admins can update any profile
     if (user!.id !== userId && user!.role !== 'admin') {
       throw new AuthorizationError('You can only update your own profile');
     }
-    
+
     performance.trackDatabaseQuery();
-    
+
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
     if (!existingUser) {
       throw new NotFoundError('User');
     }
-    
+
     performance.trackDatabaseQuery();
-    
+
     // Update user profile
     const updatedUser = await prisma.user.update({
       where: { id: userId },
@@ -79,10 +81,10 @@ export const PUT = withAPIMiddleware(
         updatedAt: true,
       },
     });
-    
+
     // Invalidate user caches
     await UserCacheService.invalidateUserCaches(userId);
-    
+
     return createSuccessResponse(
       { user: updatedUser },
       'Profile updated successfully'
@@ -96,4 +98,4 @@ export const PUT = withAPIMiddleware(
     logging: { enabled: true, includeBody: false }, // Don't log profile updates
     cors: { enabled: true },
   }
-); 
+);

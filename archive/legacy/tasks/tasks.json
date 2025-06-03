@@ -18,9 +18,7 @@
       "details": "1. Install Prisma ORM: `npm install prisma @prisma/client`\n2. Initialize Prisma: `npx prisma init`\n3. Configure PostgreSQL connection in .env\n4. Define Prisma schema models in schema.prisma:\n   - Job model (id, title, company, description, location, salary, type, source, url, postedAt, etc.)\n   - User model (id, email, name, passwordHash, createdAt, etc.)\n   - Alert model (id, userId, jobTitle, location, frequency, etc.)\n   - Advertisement model (id, title, businessName, imageUrl, targetUrl, zipCodes, startDate, endDate, etc.)\n   - SearchHistory model (id, userId, query, filters, createdAt)\n   - Subscription model (id, userId, email, zipCode, categories, etc.)\n5. Define relationships between models\n6. Set up indexes for frequently queried fields\n7. Configure full-text search using PostgreSQL tsvector\n8. Generate Prisma client: `npx prisma generate`\n9. Create initial migration: `npx prisma migrate dev`",
       "testStrategy": "1. Validate schema against requirements in PRD\n2. Test database connection\n3. Verify migrations apply successfully\n4. Create test data and validate relationships\n5. Test query performance for common operations\n6. Verify full-text search functionality\n7. Ensure indexes are properly created",
       "priority": "high",
-      "dependencies": [
-        1
-      ],
+      "dependencies": [1],
       "status": "done",
       "subtasks": []
     },
@@ -29,10 +27,7 @@
       "title": "Authentication System Implementation",
       "description": "Implement user authentication using Clerk or NextAuth.js, including registration, login, password reset, and role-based access control.",
       "status": "done",
-      "dependencies": [
-        1,
-        2
-      ],
+      "dependencies": [1, 2],
       "priority": "high",
       "details": "1. Install authentication library: `npm install @clerk/nextjs` or `npm install next-auth`\n2. Configure authentication provider in Next.js\n3. Create authentication API routes:\n   - /api/auth/register\n   - /api/auth/login\n   - /api/auth/logout\n   - /api/auth/reset-password\n4. Implement email verification flow\n5. Create protected route middleware\n6. Set up role-based access control for admin users\n7. Implement 2FA for admin accounts\n8. Create session management with appropriate timeouts\n9. Implement \"Remember me\" functionality\n10. Set up secure password policies\n11. Create user profile management interface\n12. Implement audit logging for authentication events",
       "testStrategy": "1. Test user registration with valid and invalid inputs\n2. Verify email verification process\n3. Test login with correct and incorrect credentials\n4. Verify password reset functionality\n5. Test role-based access restrictions\n6. Verify session timeout behavior\n7. Test 2FA for admin accounts\n8. Validate security of authentication endpoints\n9. Test \"Remember me\" functionality across browser sessions",
@@ -49,9 +44,7 @@
           "id": 2,
           "title": "User Registration Flow Implementation",
           "description": "Create a secure user registration system with validation and data storage.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Implement form validation for username, email, and password (with strength requirements). Add CSRF protection. Create database schema for user data. Implement password hashing using bcrypt or similar. Add rate limiting to prevent brute force attacks. Write unit tests for validation logic and integration tests for the registration flow.\n\nNOTE: The 'role' field in user registration is currently set using the string literal 'user' instead of the UserRole enum from Prisma due to persistent type issues. This should be revisited and fixed once the Prisma client correctly generates the enum and field types.",
           "status": "done"
         },
@@ -59,10 +52,7 @@
           "id": 3,
           "title": "Login System Development",
           "description": "Build a secure login system with proper error handling and security measures.",
-          "dependencies": [
-            1,
-            2
-          ],
+          "dependencies": [1, 2],
           "details": "Implement login form with validation. Create authentication endpoints. Add brute force protection with account lockout after failed attempts. Implement secure session creation. Add CSRF protection. Log authentication attempts for security auditing. Test login flow with valid and invalid credentials. Ensure proper error messages that don't leak sensitive information.",
           "status": "done"
         },
@@ -70,9 +60,7 @@
           "id": 4,
           "title": "Password Reset Functionality",
           "description": "Implement a secure password reset flow with token-based verification.",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "details": "Create password reset request form. Implement secure token generation with expiration. Set up email delivery for reset links. Create password reset confirmation page. Add rate limiting for reset requests. Implement token validation and password update logic. Test the complete flow including token expiration and validation. Document security considerations.",
           "status": "done"
         },
@@ -80,9 +68,7 @@
           "id": 5,
           "title": "Email Verification System",
           "description": "Develop an email verification system for new user accounts.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Implement verification token generation. Set up email delivery service integration. Create verification email template. Build verification confirmation endpoint. Add account status tracking in database. Implement UI indicators for unverified accounts. Test verification flow including token expiration. Consider resend verification functionality.",
           "status": "done"
         },
@@ -90,9 +76,7 @@
           "id": 6,
           "title": "Protected Route Middleware",
           "description": "Create middleware to protect routes based on authentication status.",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "details": "Implement authentication check middleware. Create redirect logic for unauthenticated users. Add session validation. Implement token verification for API routes. Create test cases for protected and public routes. Document middleware usage for other developers. Consider handling expired sessions gracefully.",
           "status": "done"
         },
@@ -100,9 +84,7 @@
           "id": 7,
           "title": "Role-Based Access Control Implementation",
           "description": "Develop a role-based access control system for different user types.",
-          "dependencies": [
-            6
-          ],
+          "dependencies": [6],
           "details": "Define role schema and hierarchy (e.g., admin, moderator, user). Implement role assignment during registration and by admins. Create permission-based middleware. Add role verification to protected routes. Implement UI changes based on user roles. Test access control with different user roles. Document role capabilities for product team.\n\nNOTE: Currently, the 'role' field is set using string literals instead of the UserRole enum from Prisma due to type issues. This implementation should be updated once the Prisma client correctly generates the enum and field types.",
           "status": "done"
         },
@@ -110,10 +92,7 @@
           "id": 8,
           "title": "Two-Factor Authentication for Admins",
           "description": "Implement 2FA for administrative accounts using TOTP or similar methods.",
-          "dependencies": [
-            3,
-            7
-          ],
+          "dependencies": [3, 7],
           "details": "Research and select 2FA library (like Speakeasy). Implement TOTP generation and QR code display. Create 2FA setup flow for admin users. Build 2FA verification during login. Add backup codes generation and management. Implement 2FA bypass for account recovery. Test the complete 2FA workflow. Document the recovery process.",
           "status": "done"
         },
@@ -121,9 +100,7 @@
           "id": 9,
           "title": "Session Management Implementation",
           "description": "Develop comprehensive session handling with security features.",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "details": "Implement secure session storage. Add session expiration and renewal logic. Create session invalidation on logout. Implement device tracking for active sessions. Add concurrent session management. Create session revocation functionality. Test session timeout and renewal. Implement IP change detection for additional security.",
           "status": "done"
         },
@@ -131,10 +108,7 @@
           "id": 10,
           "title": "User Profile Functionality",
           "description": "Create user profile management with secure update capabilities.",
-          "dependencies": [
-            2,
-            3
-          ],
+          "dependencies": [2, 3],
           "details": "Implement profile data retrieval. Create profile edit form and validation. Add secure password change functionality. Implement email change with verification. Create account deletion option with confirmation. Add profile picture upload with validation. Test profile updates and security measures. Ensure proper authorization checks for profile actions.",
           "status": "done"
         },
@@ -142,10 +116,7 @@
           "id": 11,
           "title": "Fix UserRole Enum Type Issues",
           "description": "Resolve the type issues with the UserRole enum from Prisma in the user registration and role management.",
-          "dependencies": [
-            2,
-            7
-          ],
+          "dependencies": [2, 7],
           "details": "Investigate why the Prisma client is not correctly generating the UserRole enum types. Review Prisma schema definition for the role field. Check if there are any issues with Prisma client generation or configuration. Update the user registration and role management code to use the proper UserRole enum once the type issues are resolved. Test the changes to ensure roles are properly assigned and validated. Update documentation to reflect the proper usage of UserRole enum.",
           "status": "done"
         }
@@ -156,9 +127,7 @@
       "title": "Job Search and Filtering System",
       "description": "Implement comprehensive job search functionality with keyword, location, and filter-based queries, optimized for performance.",
       "status": "done",
-      "dependencies": [
-        2
-      ],
+      "dependencies": [2],
       "priority": "high",
       "details": "1. Design and implement search API endpoint: `/api/jobs/search`\n2. Create database queries using Prisma for:\n   - Keyword search using PostgreSQL full-text search\n   - Location filtering with radius support\n   - Job type filtering (full-time, part-time, etc.)\n   - Industry/category filtering\n   - Date-based filtering\n3. Implement sorting options (relevance, date, distance)\n4. Create pagination or infinite scroll support\n5. Optimize query performance with appropriate indexes\n6. Implement caching for frequent searches using Vercel KV\n7. Create search history tracking for logged-in users\n8. Develop ZIP code distance calculation utility\n9. Implement search analytics to track popular terms\n10. Create search suggestion feature based on partial input\n11. Remove or update temporary local job seed/test data once external jobs API is working",
       "testStrategy": "1. Test search with various keyword combinations\n2. Verify location-based filtering with different radius values\n3. Test all filter combinations for expected results\n4. Validate pagination/infinite scroll behavior\n5. Benchmark query performance with large dataset\n6. Verify caching improves performance for repeated searches\n7. Test search history tracking for authenticated users\n8. Validate ZIP code distance calculations\n9. Test search suggestions functionality\n10. Verify system works correctly with both test data and external API data",
@@ -175,9 +144,7 @@
           "id": 2,
           "title": "Implement Full-Text Search",
           "description": "Develop robust full-text search capabilities for job listings",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Implement text search across job titles, descriptions, and requirements. Configure proper text indexing, stemming, and relevance scoring. Handle misspellings and synonyms. Test with various search terms, including partial matches and special characters. Benchmark performance with large datasets.",
           "status": "done"
         },
@@ -185,9 +152,7 @@
           "id": 3,
           "title": "Build Location-Based Filtering with Radius Support",
           "description": "Create geospatial search functionality with customizable radius options",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Implement geospatial queries to filter jobs by location and distance. Store geographic coordinates for job locations. Support various radius units (miles, kilometers). Optimize geospatial indexes for performance. Test with various locations and radius combinations, including edge cases like international boundaries.",
           "status": "done"
         },
@@ -195,9 +160,7 @@
           "id": 4,
           "title": "Develop Job Type and Category Filtering",
           "description": "Create filtering system for job types and categories",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Implement filtering by job type (full-time, part-time, contract, etc.) and job categories/industries. Design database schema to efficiently support these filters. Allow for multiple selections within each filter type. Test with various combinations of job types and categories.",
           "status": "done"
         },
@@ -205,9 +168,7 @@
           "id": 5,
           "title": "Implement Date-Based Filtering",
           "description": "Add date range filtering capabilities for job postings",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Create filters for job posting date, application deadlines, and start dates. Support relative date ranges (last 24 hours, last week, etc.) and absolute date ranges. Ensure proper timezone handling. Test with various date ranges and edge cases like leap years and daylight saving time transitions.",
           "status": "done"
         },
@@ -215,11 +176,7 @@
           "id": 6,
           "title": "Add Sorting Options",
           "description": "Implement various sorting methods for search results",
-          "dependencies": [
-            2,
-            3,
-            5
-          ],
+          "dependencies": [2, 3, 5],
           "details": "Support sorting by relevance, date posted, salary, location proximity, and company rating. Allow ascending and descending order options. Implement efficient database indexes to support sorting. Test performance with large result sets and various sorting criteria.",
           "status": "done"
         },
@@ -227,9 +184,7 @@
           "id": 7,
           "title": "Develop Pagination and Infinite Scroll",
           "description": "Create efficient pagination system with infinite scroll support",
-          "dependencies": [
-            6
-          ],
+          "dependencies": [6],
           "details": "Implement cursor-based pagination for consistent results across pages. Support configurable page sizes. Develop frontend components for infinite scroll. Ensure proper handling of result set changes during pagination. Test with various page sizes and large result sets.",
           "status": "done"
         },
@@ -237,12 +192,7 @@
           "id": 8,
           "title": "Optimize Query Performance",
           "description": "Enhance search query performance for complex filter combinations",
-          "dependencies": [
-            2,
-            3,
-            5,
-            6
-          ],
+          "dependencies": [2, 3, 5, 6],
           "details": "Profile and optimize database queries for common filter combinations. Create appropriate indexes based on access patterns. Consider query restructuring for complex filters. Implement query timeout handling. Test with simulated peak load and complex filter combinations.",
           "status": "done"
         },
@@ -250,9 +200,7 @@
           "id": 9,
           "title": "Implement Caching Strategy",
           "description": "Design and implement caching for search results",
-          "dependencies": [
-            8
-          ],
+          "dependencies": [8],
           "details": "Develop a caching strategy for common search queries. Implement cache invalidation rules based on job posting updates. Consider Redis or similar technology for distributed caching. Monitor cache hit rates and adjust strategy accordingly. Test cache performance under various load conditions.",
           "status": "done"
         },
@@ -260,9 +208,7 @@
           "id": 10,
           "title": "Create Search Analytics System",
           "description": "Develop analytics to track search patterns and performance",
-          "dependencies": [
-            9
-          ],
+          "dependencies": [9],
           "details": "Implement logging for search queries, filters used, and result counts. Create dashboards for popular search terms, filter combinations, and zero-result searches. Track search performance metrics over time. Use analytics to improve search relevance and suggest popular searches. Test analytics accuracy with simulated user behavior.",
           "status": "done"
         },
@@ -279,13 +225,7 @@
           "id": 12,
           "title": "Clean Up Temporary Job Data",
           "description": "Remove or update temporary local job seed/test data once external jobs API integration is complete",
-          "dependencies": [
-            2,
-            3,
-            4,
-            5,
-            6
-          ],
+          "dependencies": [2, 3, 4, 5, 6],
           "details": "Identify all temporary job data used for MVP testing. Create a plan for transitioning from test data to external API data. Update any hardcoded references to test data. Ensure search functionality works seamlessly with external API data. Document any differences in data structure between test data and API data.",
           "status": "done",
           "parentTaskId": 5
@@ -294,9 +234,7 @@
           "id": 13,
           "title": "Test Search System with External API Data",
           "description": "Verify all search and filtering functionality works correctly with the external jobs API",
-          "dependencies": [
-            12
-          ],
+          "dependencies": [12],
           "details": "Test all search features with real data from the external API. Verify that filters, sorting, and pagination work as expected with external data. Compare performance between test data and external API data. Identify and fix any issues specific to the external API data format or structure.",
           "status": "done",
           "parentTaskId": 5
@@ -308,9 +246,7 @@
       "title": "Job Listing Detail Pages",
       "description": "Create detailed job listing pages showing complete job information, application links, and related jobs.",
       "status": "done",
-      "dependencies": [
-        5
-      ],
+      "dependencies": [5],
       "priority": "medium",
       "details": "1. Design job detail page layout ✅\n2. Create dynamic route: `/jobs/[id]` ✅\n3. Implement server-side rendering for job details ✅\n4. Display comprehensive job information: ✅\n   - Title, company, location\n   - Full description and requirements\n   - Salary information (when available)\n   - Job type and category\n   - Posted date\n5. Add prominent application link to original source ✅\n6. Implement job sharing functionality (email, social media) ✅\n7. Create \"Save Job\" feature for authenticated users ✅\n8. Implement \"Report Job\" functionality for inappropriate listings ✅\n9. Display related or similar job suggestions ✅\n10. Add company information section ✅\n11. Implement structured data (JSON-LD) for SEO ✅\n12. Add breadcrumb navigation ✅\n13. Prepare for future commute-based features: ✅\n    - Ensure job location data is stored as coordinates (latitude/longitude)\n    - Add placeholder UI elements for future commute time features\n14. Conduct final review and performance optimization: ✅\n    - Perform comprehensive cross-browser testing using tools like Selenium or Playwright to ensure compatibility across all major browsers.\n    - Optimize image loading and component rendering to enhance page load times and responsiveness.\n    - Review accessibility compliance to ensure the page meets WCAG standards.\n    - Conduct performance testing on mobile devices to verify responsiveness and load times.\n    - Verify all API endpoints have proper error handling to manage potential failures gracefully.",
       "testStrategy": "1. Verify all job details are correctly displayed ✅\n2. Test application link directs to the correct source ✅\n3. Validate sharing functionality across platforms ✅\n4. Test \"Save Job\" feature for authenticated users ✅\n5. Verify \"Report Job\" functionality ✅\n6. Test related job suggestions for relevance ✅\n7. Validate structured data format for SEO ✅\n8. Test breadcrumb navigation ✅\n9. Verify page renders correctly on mobile devices ✅\n10. Verify job location data is properly stored in a format that would support future commute-based features ✅\n11. Conduct performance testing to ensure optimal load times and responsiveness ✅\n12. Perform accessibility testing to confirm compliance with WCAG 2.1 AA standards ✅\n13. Execute cross-browser testing to ensure consistent functionality across all major browsers ✅",
@@ -346,10 +282,7 @@
       "title": "Email Alert System",
       "description": "Implement email alert functionality for job notifications, including weekly digests and specific job title alerts.",
       "status": "done",
-      "dependencies": [
-        2,
-        3
-      ],
+      "dependencies": [2, 3],
       "priority": "medium",
       "details": "1. Implement job matching algorithm for alerts\n   - Develop logic to match user subscriptions with relevant job postings\n   - Ensure efficient and accurate matching to provide users with pertinent job alerts\n2. Create scheduled tasks for email generation and delivery\n   - Set up cron jobs to automate the sending of weekly digests and job title alerts\n   - Ensure timely and reliable email delivery\n3. Implement email queue system for high volume sending\n   - Utilize a queue management system like BullMQ to handle large volumes of emails efficiently\n   - Implement rate limiting and retry mechanisms to manage email delivery and handle failures\n4. Develop UI for alert management\n   - Create an intuitive interface for users to manage their alert subscriptions\n   - Allow users to customize their preferences for job categories, ZIP codes, and specific job titles\n5. Build analytics dashboard for email performance\n   - Develop a dashboard to monitor email delivery rates, open rates, and user engagement\n   - Use insights to optimize email content and delivery strategies",
       "testStrategy": "1. Test job matching algorithm\n   - Verify accuracy and efficiency in matching user subscriptions with job postings\n2. Validate scheduled email generation and delivery\n   - Ensure cron jobs trigger email sending at the correct times\n   - Confirm successful delivery of emails to intended recipients\n3. Test email queue system under load\n   - Simulate high-volume email sending to assess queue performance\n   - Verify rate limiting and retry mechanisms function as expected\n4. Evaluate UI for alert management\n   - Conduct usability testing to ensure intuitive user experience\n   - Test all functionalities related to managing alert subscriptions\n5. Assess analytics dashboard\n   - Verify accuracy of email performance metrics\n   - Ensure real-time data updates and responsiveness of the dashboard",
@@ -393,11 +326,7 @@
       "title": "User Dashboard",
       "description": "Create a personalized dashboard for users to manage job alerts, saved jobs, search history, and account preferences.",
       "status": "done",
-      "dependencies": [
-        3,
-        6,
-        7
-      ],
+      "dependencies": [3, 6, 7],
       "priority": "medium",
       "details": "1. Design user dashboard layout\n2. Create protected dashboard route: `/dashboard`\n3. Implement dashboard sections:\n   - Saved jobs collection\n   - Alert management\n   - Search history\n   - Account settings\n4. Create alert management interface:\n   - List existing alerts\n   - Create new alerts\n   - Edit alert criteria\n   - Delete alerts\n5. Implement saved jobs functionality:\n   - Display saved jobs in grid/list view\n   - Allow removal of saved jobs\n   - Show application status (if tracked)\n6. Create search history section:\n   - Display recent searches\n   - Allow rerunning previous searches\n   - Clear search history option\n7. Implement account settings:\n   - Profile information update\n   - Password change\n   - Email preferences\n   - Account deletion\n8. Ensure mobile responsiveness across all dashboard sections\n9. Optimize performance for users with extensive saved jobs and alerts",
       "testStrategy": "1. Verify dashboard loads correctly for authenticated users\n2. Test alert management functionality (create, edit, delete)\n3. Validate saved jobs display and management\n4. Test search history functionality\n5. Verify account settings updates\n6. Test dashboard on mobile devices\n7. Validate protected route redirects unauthenticated users\n8. Test performance with users having many saved jobs/alerts",
@@ -429,10 +358,7 @@
       "details": "1. Design admin dashboard layout with navigation sidebar\n2. Create protected admin routes: `/admin/*`\n3. Implement role-based access control for admin features\n4. Create job listing moderation tools:\n   - Review and approve/reject scraped listings\n   - Edit listing details\n   - Flag inappropriate content\n   - Batch operations for moderation\n5. Implement advertisement management:\n   - Upload and edit ad content\n   - Set targeting parameters\n   - Schedule campaigns\n   - View performance metrics\n6. Create analytics dashboard:\n   - User engagement metrics\n   - Search analytics\n   - Email performance\n   - Ad performance\n7. Implement system health monitoring\n8. Create user management interface\n9. Implement audit logging for admin actions\n10. Add export functionality for reports",
       "testStrategy": "1. Verify admin authentication and authorization\n2. Test job moderation tools with sample content\n3. Validate advertisement management functionality\n4. Test analytics dashboard with sample data\n5. Verify system health monitoring\n6. Test user management interface\n7. Validate audit logging for all admin actions\n8. Test export functionality for reports\n9. Verify mobile responsiveness of admin interface",
       "priority": "medium",
-      "dependencies": [
-        3,
-        7
-      ],
+      "dependencies": [3, 7],
       "status": "done",
       "subtasks": [
         {
@@ -447,9 +373,7 @@
           "id": 2,
           "title": "Implement Protected Admin Routes",
           "description": "Set up route protection for admin-only pages with authentication checks",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Create route guards that verify admin authentication before allowing access to admin routes. Implement redirect logic for unauthorized access attempts. Security considerations: Use JWT with proper expiration, implement CSRF protection, and ensure secure cookie handling. Validation criteria: Unauthenticated users cannot access admin routes, expired sessions are handled properly.",
           "status": "done"
         },
@@ -457,9 +381,7 @@
           "id": 3,
           "title": "Develop Role-Based Access Control System",
           "description": "Implement RBAC to manage different admin permission levels",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Create roles (super admin, content moderator, analyst) with specific permissions. Implement UI elements that adapt based on user role. Security considerations: Principle of least privilege, server-side verification of permissions. Validation criteria: UI elements are only visible to appropriate roles, actions are properly restricted based on permissions.\n<info added on 2025-05-26T19:11:38.397Z>\nImplemented a comprehensive Role-Based Access Control (RBAC) system with the following components:\n\n1. **Permission System** (`src/lib/rbac/permissions.ts`):\n   - Defined 23 granular permissions across different admin functions.\n   - Created 5 admin roles: Super Admin, Content Moderator, Analytics Specialist, Marketing Manager, Support Specialist.\n   - Implemented helper functions for permission checking and route access control.\n   - Added backward compatibility for existing 'admin' role.\n\n2. **React Hooks** (`src/hooks/usePermissions.ts`):\n   - Created `usePermissions` hook for client-side permission checking.\n   - Added convenience hooks for specific permission requirements.\n\n3. **Permission Gate Component** (`src/components/admin/PermissionGate.tsx`):\n   - Conditional rendering based on user permissions.\n   - Fallback content for unauthorized access.\n   - Convenience components for common permission patterns.\n\n4. **Updated AdminSidebar** (`src/components/admin/AdminSidebar.tsx`):\n   - Added permission-based navigation filtering.\n   - Only shows menu items user has access to.\n   - Maintains clean UI without unauthorized options.\n\n5. **Role Management Interface** (`src/components/admin/RoleManagement.tsx`):\n   - Visual role overview with statistics.\n   - Permission matrix showing all roles and their permissions.\n   - User role management for admin users.\n   - Current user permission display.\n\n6. **Admin Settings Page** (`src/app/admin/settings/page.tsx`):\n   - Comprehensive settings interface with role management.\n   - Tabbed interface for different admin functions.\n   - Permission-gated access to sensitive settings.\n\nThe RBAC system follows security best practices:\n- Principle of least privilege.\n- Server-side permission verification.\n- Granular permission control.\n- Backward compatibility with existing admin role.\n- Clean separation of concerns.\n\nAll UI elements now adapt based on user permissions, ensuring users only see and can access features they're authorized to use.\n</info added on 2025-05-26T19:11:38.397Z>",
           "status": "done"
         },
@@ -467,10 +389,7 @@
           "id": 4,
           "title": "Build Job Listing Moderation Tools",
           "description": "Create interface for reviewing, approving, rejecting, and editing job listings",
-          "dependencies": [
-            1,
-            3
-          ],
+          "dependencies": [1, 3],
           "details": "Implement a queue system for pending listings, approval/rejection workflows, content filtering tools, and bulk action capabilities. Security considerations: Input sanitization, audit logging of all moderation actions. Validation criteria: Moderators can efficiently review listings, content filtering catches prohibited content, all actions are properly logged.",
           "status": "done"
         },
@@ -478,10 +397,7 @@
           "id": 5,
           "title": "Develop Advertisement Management Interface",
           "description": "Create tools for managing ad campaigns, placements, and performance",
-          "dependencies": [
-            1,
-            3
-          ],
+          "dependencies": [1, 3],
           "details": "Build interfaces for creating/editing ad campaigns, managing ad placements, scheduling, and viewing performance metrics. Security considerations: Validate all ad content, prevent XSS in ad creative. Validation criteria: Ads can be created, edited, scheduled and analyzed; performance data is accurate.\n<info added on 2025-05-26T21:03:30.173Z>\nThe Advertisement Management Interface has been enhanced with AI-powered features to optimize campaign performance and user engagement. The AdAnalyticsDashboard now includes predictive analytics, offering forecasts of expected performance trajectories and early indicators of campaign success. It also provides AI-generated optimization suggestions, such as bid adjustments and audience targeting refinements, to proactively improve campaign outcomes. Additionally, the system incorporates real-time ad optimization capabilities, dynamically adjusting ads and bids based on user interaction data and preferences, ensuring that the right audience is reached at the optimal time. ([rulelogic.io](https://www.rulelogic.io/blog/ai-powered-real-time-analytics?utm_source=openai), [forbes.com](https://www.forbes.com/councils/forbesagencycouncil/2024/07/16/features-and-benefits-of-ai-tools-for-digital-advertising/?utm_source=openai))\n</info added on 2025-05-26T21:03:30.173Z>",
           "status": "done"
         },
@@ -489,10 +405,7 @@
           "id": 6,
           "title": "Implement Analytics Dashboard",
           "description": "Create visualizations for key platform metrics and user behavior",
-          "dependencies": [
-            1,
-            3
-          ],
+          "dependencies": [1, 3],
           "details": "Develop charts and graphs for user growth, job posting activity, application rates, and revenue metrics. Include filtering options and date range selectors. Security considerations: Data anonymization for user analytics, secure API endpoints for sensitive data. Validation criteria: All charts render correctly, data refreshes appropriately, exports function properly.",
           "status": "done"
         },
@@ -500,10 +413,7 @@
           "id": 7,
           "title": "Build System Health Monitoring",
           "description": "Create interface for monitoring system performance, errors, and uptime",
-          "dependencies": [
-            1,
-            3
-          ],
+          "dependencies": [1, 3],
           "details": "Implement real-time monitoring of server status, error rates, response times, and database performance. Include alert configuration options. Security considerations: Limit detailed error information to appropriate admin roles. Validation criteria: System issues are clearly displayed, alerts function properly, historical data is accessible.",
           "status": "done"
         },
@@ -511,10 +421,7 @@
           "id": 8,
           "title": "Develop User Management Interface",
           "description": "Create tools for managing user accounts, permissions, and support issues",
-          "dependencies": [
-            1,
-            3
-          ],
+          "dependencies": [1, 3],
           "details": "Build interfaces for searching users, viewing profiles, managing account status, handling support tickets, and editing user information. Security considerations: PII protection, secure password reset workflows, action logging. Validation criteria: Admins can efficiently find and manage users, support workflows function properly.",
           "status": "done"
         },
@@ -522,12 +429,7 @@
           "id": 9,
           "title": "Implement Comprehensive Audit Logging",
           "description": "Create system for logging and reviewing all admin actions",
-          "dependencies": [
-            2,
-            3,
-            5,
-            8
-          ],
+          "dependencies": [2, 3, 5, 8],
           "details": "Develop logging for all admin actions with timestamps, admin identification, action details, and affected resources. Include a searchable interface for reviewing logs. Security considerations: Tamper-proof logging, secure storage of sensitive action details. Validation criteria: All admin actions are properly logged, logs can be efficiently searched and filtered.",
           "status": "done"
         },
@@ -535,10 +437,7 @@
           "id": 10,
           "title": "Create Report Export Functionality",
           "description": "Implement tools for generating and exporting various system reports",
-          "dependencies": [
-            6,
-            9
-          ],
+          "dependencies": [6, 9],
           "details": "Build functionality to generate reports on user activity, job listings, revenue, and system performance. Support multiple export formats (CSV, PDF, Excel). Security considerations: Sanitize exported data, implement rate limiting for exports. Validation criteria: Reports generate with correct data, all export formats function properly, large reports handle pagination correctly.",
           "status": "done"
         }
@@ -549,10 +448,7 @@
       "title": "Local Advertisement Platform",
       "description": "Implement the local business advertisement system with ad creation, management, and performance tracking.",
       "status": "done",
-      "dependencies": [
-        2,
-        9
-      ],
+      "dependencies": [2, 9],
       "priority": "medium",
       "details": "1. Design advertisement data model and database schema:\n   - Implemented Advertisement, AdImpression, AdClick, and AdConversion models\n2. Create ad upload and storage system:\n   - Image upload with validation\n   - Storage in Vercel Blob Storage\n   - Metadata management\n3. Implement ad placement options:\n   - Sidebar ads on search results\n   - Email newsletter ads\n   - Instagram post ads\n   - Banner, native, and featured placements\n4. Create geographic targeting by ZIP code\n5. Implement ad rotation algorithm:\n   - Intelligent rotation with weighted selection\n   - Performance-based optimization (CTR, conversion rate, bid amount)\n   - Impression fatigue prevention\n   - Freshness factor for new ads\n6. Develop ad scheduling system with start/end dates\n7. Create click tracking with attribution:\n   - Real-time impression tracking with /api/ads/impression\n   - Click tracking with /api/ads/click\n8. Implement impression tracking\n9. Develop performance metrics dashboard\n10. Create ad preview functionality for advertisers\n11. Implement ad status management (active, paused, ended)\n12. Add business advertiser limited dashboard:\n   - Budget management and daily spend limits\n   - Performance dashboard with metrics\n13. Ensure responsive designs for all screen sizes\n14. Implement role-based access control and permissions\n15. Integrate social media tracking and analytics\n16. Ensure TypeScript throughout with proper type safety\n17. Implement error handling and graceful degradation\n18. Apply rate limiting and security measures\n19. Implement comprehensive validation with Zod schemas\n20. Optimize database queries with proper indexing",
       "testStrategy": "1. Test ad upload with various image formats and sizes\n2. Verify ad storage and retrieval\n3. Test ad placement in different locations\n4. Validate geographic targeting functionality\n5. Test ad rotation algorithm\n6. Verify scheduling system for time-limited campaigns\n7. Test click and impression tracking\n8. Validate performance metrics calculations\n9. Test ad preview functionality\n10. Verify business advertiser dashboard access and functionality\n11. Ensure responsive design across devices\n12. Test role-based access control and permissions\n13. Validate social media tracking and analytics\n14. Test error handling and graceful degradation\n15. Verify rate limiting and security measures\n16. Validate comprehensive validation with Zod schemas\n17. Test optimized database queries and indexing",
@@ -581,9 +477,7 @@
           "description": "Embed ad components into job search results and sidebar placements.",
           "details": "Modify job search result templates to include ad components in designated positions, ensuring seamless integration with existing content.",
           "status": "done",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "parentTaskId": 10
         },
         {
@@ -592,9 +486,7 @@
           "description": "Develop and integrate an ad rotation algorithm to display ads based on performance metrics.",
           "details": "Create an algorithm that rotates ads in designated placements, prioritizing ads with higher performance metrics such as click-through rates and conversions.",
           "status": "done",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "parentTaskId": 10
         },
         {
@@ -622,9 +514,7 @@
       "title": "Instagram Post Automation",
       "description": "Develop automated Instagram post generation and scheduling for job listings with engagement tracking.",
       "status": "in-progress",
-      "dependencies": [
-        10
-      ],
+      "dependencies": [10],
       "priority": "medium",
       "details": "1. Research and implement Meta Graph API integration\n2. Create alternative integration with Make.com if needed\n3. Design Instagram post templates for job listings\n4. Implement image generation system:\n   - Dynamic text overlay on templates\n   - Consistent branding elements\n   - Call-to-action inclusion\n5. Develop post scheduling system\n6. Create content queue management\n7. Implement engagement metrics tracking\n8. Develop error handling for failed posts\n9. Create notification system for posting issues\n10. Implement admin controls for post approval\n11. Add hashtag strategy implementation\n12. Create analytics dashboard for Instagram performance",
       "testStrategy": "1. Test API integration with Meta Graph API or Make.com\n2. Verify image generation with various job details\n3. Test post scheduling and publication\n4. Validate engagement metrics tracking\n5. Test error handling with simulated failures\n6. Verify notification system for posting issues\n7. Test admin approval workflow\n8. Validate hashtag inclusion in posts\n9. Test analytics dashboard with sample data",
@@ -680,9 +570,7 @@
           "description": "Implement functionality to publish posts directly to Instagram using the Meta Graph API.",
           "details": "1. Utilize the access tokens obtained from the Meta Developer account.\n2. Implement API calls to publish images and captions to Instagram.\n3. Ensure compliance with Instagram's content publishing guidelines.\n4. Handle API responses and errors appropriately.",
           "status": "pending",
-          "dependencies": [
-            5
-          ],
+          "dependencies": [5],
           "parentTaskId": 11
         },
         {
@@ -691,9 +579,7 @@
           "description": "Develop a system to track and analyze engagement metrics for Instagram posts.",
           "details": "1. Use the Meta Graph API to fetch insights on published posts.\n2. Store engagement data such as likes, comments, shares, and reach.\n3. Create visualizations and reports to display engagement trends.\n4. Implement alerts for significant changes in engagement metrics.",
           "status": "pending",
-          "dependencies": [
-            5
-          ],
+          "dependencies": [5],
           "parentTaskId": 11
         }
       ]
@@ -705,10 +591,7 @@
       "details": "1. Design homepage layout with focus on search functionality\n2. Implement hero section with search bar\n3. Create featured jobs section\n4. Add local business highlights section\n5. Implement statistics section (job counts, businesses, etc.)\n6. Create call-to-action for email subscriptions\n7. Add testimonials section (placeholder for future)\n8. Implement mobile-responsive design\n9. Optimize for performance and Core Web Vitals\n10. Add SEO metadata and structured data\n11. Implement analytics tracking\n12. Create A/B testing framework for layout variations",
       "testStrategy": "1. Verify homepage loads correctly with all sections\n2. Test search functionality from hero section\n3. Validate featured jobs display\n4. Test local business highlights section\n5. Verify email subscription CTA functionality\n6. Test mobile responsiveness across devices\n7. Validate performance metrics (Lighthouse score)\n8. Test SEO metadata and structured data\n9. Verify analytics tracking implementation",
       "priority": "high",
-      "dependencies": [
-        5,
-        10
-      ],
+      "dependencies": [5, 10],
       "status": "done",
       "subtasks": []
     },
@@ -719,10 +602,7 @@
       "details": "1. Design search results page layout\n2. Implement search form with all filter options:\n   - Keyword input\n   - Location and radius selector\n   - Job type filters\n   - Category/industry filters\n   - Date posted filters\n3. Create job listing cards with key information\n4. Implement pagination or infinite scroll\n5. Add sorting options (relevance, date, distance)\n6. Integrate sidebar advertisements\n7. Create filter persistence between searches\n8. Implement mobile-responsive design with collapsible filters\n9. Add search analytics tracking\n10. Implement loading states and skeleton screens\n11. Create empty state for no results\n12. Add URL parameter support for shareable searches",
       "testStrategy": "1. Test search with various filter combinations\n2. Verify pagination or infinite scroll functionality\n3. Test sorting options for expected results\n4. Validate advertisement display in sidebar\n5. Test filter persistence between searches\n6. Verify mobile responsiveness with collapsible filters\n7. Test loading states during search\n8. Validate empty state for no results\n9. Test URL parameter support for shared searches",
       "priority": "high",
-      "dependencies": [
-        5,
-        10
-      ],
+      "dependencies": [5, 10],
       "status": "done",
       "subtasks": []
     },
@@ -733,9 +613,7 @@
       "details": "1. Set up ShadCN UI with Tailwind CSS\n2. Configure theme with brand colors and typography\n3. Create or customize core components:\n   - Buttons (primary, secondary, tertiary)\n   - Form inputs and controls\n   - Cards for job listings\n   - Navigation components\n   - Modals and dialogs\n   - Alerts and notifications\n   - Pagination controls\n   - Dropdown menus\n   - Tabs and accordions\n4. Implement responsive variants for all components\n5. Create component documentation\n6. Implement accessibility features (ARIA attributes, keyboard navigation)\n7. Add dark mode support\n8. Create animation and transition utilities\n9. Implement form validation styles",
       "testStrategy": "1. Test all components in isolation\n2. Verify responsive behavior across breakpoints\n3. Validate accessibility compliance (WCAG 2.1 AA)\n4. Test dark mode implementation\n5. Verify animation and transition effects\n6. Test form validation styles with various states\n7. Validate component documentation\n8. Test keyboard navigation for all interactive components",
       "priority": "high",
-      "dependencies": [
-        1
-      ],
+      "dependencies": [1],
       "status": "done",
       "subtasks": []
     },
@@ -744,9 +622,7 @@
       "title": "Form Validation and Error Handling",
       "description": "Implement comprehensive form validation and error handling throughout the application using React Hook Form and Zod.",
       "status": "done",
-      "dependencies": [
-        14
-      ],
+      "dependencies": [14],
       "priority": "medium",
       "details": "1. Set up React Hook Form with Zod validation\n2. Create reusable form validation schemas for:\n   - User registration and login\n   - Job search\n   - Alert creation\n   - Advertisement submission\n   - Contact forms\n3. Implement client-side validation with immediate feedback\n4. Create server-side validation for all API endpoints\n5. Develop error handling utilities\n6. Implement error boundary components\n7. Create toast notification system for errors\n8. Design and implement error pages (404, 500, etc.)\n9. Add form submission loading states\n10. Implement field-level error messages\n11. Create validation for file uploads\n12. Add accessibility features for error states",
       "testStrategy": "1. Test form validation with valid and invalid inputs\n2. Verify error message display for various validation failures\n3. Test server-side validation bypass attempts\n4. Validate error boundary functionality\n5. Test toast notification system\n6. Verify custom error pages\n7. Test loading states during form submission\n8. Validate file upload validation\n9. Test accessibility of error states",
@@ -806,10 +682,7 @@
       "title": "API Routes and Server Actions",
       "description": "Develop API routes and server actions for all application functionality with proper error handling and rate limiting.",
       "status": "done",
-      "dependencies": [
-        2,
-        3
-      ],
+      "dependencies": [2, 3],
       "priority": "high",
       "details": "1. Design RESTful API structure\n2. Implement core API routes:\n   - /api/jobs/* for job-related operations\n   - /api/users/* for user management\n   - /api/alerts/* for alert management\n   - /api/ads/* for advertisement operations\n3. Create server actions for form submissions\n4. Implement middleware for:\n   - Authentication\n   - Rate limiting using Upstash/Ratelimit\n   - Logging\n   - Error handling\n5. Add request validation using Zod\n6. Implement proper HTTP status codes and error responses\n7. Create API documentation\n8. Add caching strategies for read-heavy endpoints\n9. Implement pagination for list endpoints\n10. Create search endpoints with filtering\n11. Add sorting options for list endpoints",
       "testStrategy": "1. Test all API endpoints with valid requests\n2. Verify error handling with invalid requests\n3. Test rate limiting functionality\n4. Validate authentication middleware\n5. Test pagination with various page sizes\n6. Verify search and filtering functionality\n7. Test caching effectiveness\n8. Validate server actions for form submissions\n9. Test API performance under load",
@@ -826,9 +699,7 @@
           "id": 2,
           "title": "Implement Job API Routes",
           "description": "Develop the complete set of API routes for job-related operations including listing, creation, updating, deletion, and specialized job actions.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Create endpoints for: GET /api/jobs (with filtering), GET /api/jobs/:id, POST /api/jobs, PUT /api/jobs/:id, DELETE /api/jobs/:id, and specialized endpoints like POST /api/jobs/:id/apply. Implement proper authorization checks. Ensure efficient query performance with appropriate indexes. Include field selection and expansion options.",
           "status": "done"
         },
@@ -836,9 +707,7 @@
           "id": 3,
           "title": "Implement User API Routes",
           "description": "Develop the complete set of API routes for user management, profiles, preferences, and user-specific actions.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Create endpoints for: GET /api/users/:id, PUT /api/users/:id, GET /api/users/:id/jobs (saved/applied jobs), POST /api/users/:id/preferences. Implement proper data sanitization. Ensure PII protection. Include role-based access controls. Consider implementing ETag support for profile updates.",
           "status": "done"
         },
@@ -846,9 +715,7 @@
           "id": 4,
           "title": "Implement Alert and Ad API Routes",
           "description": "Develop API routes for managing job alerts and advertisement placements/tracking.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Create endpoints for: GET/POST/PUT/DELETE /api/alerts, GET/POST /api/ads, GET /api/ads/stats. Implement frequency controls for alerts. Ensure ad impression and click tracking. Add targeting parameters for ad delivery. Include conversion tracking endpoints. Implement proper rate limiting for ad-related endpoints.",
           "status": "done"
         },
@@ -856,10 +723,7 @@
           "id": 5,
           "title": "Implement Server Actions for Forms",
           "description": "Create server actions to handle form submissions for job applications, user registrations, contact forms, and other interactive elements.",
-          "dependencies": [
-            2,
-            3
-          ],
+          "dependencies": [2, 3],
           "details": "Implement server actions for: job application submission, user registration/profile updates, alert creation, contact form submission. Include CSRF protection. Add file upload handling for resumes/portfolios. Implement progressive enhancement for JS-disabled clients. Ensure proper validation and sanitization.",
           "status": "done"
         },
@@ -867,9 +731,7 @@
           "id": 6,
           "title": "Implement API Middleware",
           "description": "Develop middleware for authentication, rate limiting, logging, and other cross-cutting concerns.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Create middleware for: JWT validation, API key authentication, rate limiting (by IP and user), request logging, response compression. Implement tiered rate limiting based on user roles. Add request ID generation for traceability. Include performance monitoring. Configure CORS policies appropriately.",
           "status": "done"
         },
@@ -877,11 +739,7 @@
           "id": 7,
           "title": "Implement Request Validation and Error Handling",
           "description": "Create a robust validation and error handling system for all API routes and server actions.",
-          "dependencies": [
-            2,
-            3,
-            5
-          ],
+          "dependencies": [2, 3, 5],
           "details": "Implement schema validation using Zod/Joi. Create standardized error response format. Add detailed validation for complex objects. Implement proper HTTP status code selection. Create centralized error logging. Add support for i18n in error messages. Ensure sensitive information is never leaked in error responses.",
           "status": "done"
         },
@@ -889,10 +747,7 @@
           "id": 8,
           "title": "Implement Caching and Pagination Strategies",
           "description": "Develop caching mechanisms and pagination support for all list-based API endpoints.",
-          "dependencies": [
-            2,
-            3
-          ],
+          "dependencies": [2, 3],
           "details": "Implement Redis/memory caching for frequently accessed resources. Add cache headers (ETag, Cache-Control). Create cursor-based pagination for large collections. Implement limit/offset pagination as fallback. Add cache invalidation triggers. Support partial response caching. Ensure cache keys consider all query parameters.",
           "status": "done"
         },
@@ -900,11 +755,7 @@
           "id": 9,
           "title": "Implement Search and Filter Endpoints",
           "description": "Create specialized search endpoints with advanced filtering, sorting, and relevance features.",
-          "dependencies": [
-            2,
-            3,
-            8
-          ],
+          "dependencies": [2, 3, 8],
           "details": "Implement full-text search for jobs and users. Add geolocation-based search. Support complex filtering with multiple parameters. Implement faceted search capabilities. Add sorting options. Ensure search performance with proper indexing. Consider implementing typeahead/autocomplete API endpoints.",
           "status": "done"
         },
@@ -912,16 +763,7 @@
           "id": 10,
           "title": "Create API Documentation",
           "description": "Develop comprehensive API documentation including reference guides, examples, and security information.",
-          "dependencies": [
-            1,
-            2,
-            3,
-            5,
-            6,
-            7,
-            8,
-            9
-          ],
+          "dependencies": [1, 2, 3, 5, 6, 7, 8, 9],
           "details": "Generate OpenAPI/Swagger documentation. Create usage examples for common scenarios. Document rate limiting policies. Add authentication guides. Include performance best practices. Document error codes and resolution steps. Create SDK examples in popular languages. Implement an API explorer/playground.",
           "status": "done"
         },
@@ -929,9 +771,7 @@
           "id": 11,
           "title": "Apply Validation System to Remaining Endpoints",
           "description": "Extend the implemented validation and error handling system to all remaining API endpoints and server actions.",
-          "dependencies": [
-            7
-          ],
+          "dependencies": [7],
           "details": "Apply the Zod validation schemas to alert and ad API routes. Ensure all server actions use the centralized error handling system. Update any remaining endpoints to use standardized error responses. Verify proper HTTP status codes are used consistently across all endpoints. Test the validation system with edge cases for all endpoints.",
           "status": "done"
         },
@@ -939,9 +779,7 @@
           "id": 12,
           "title": "Document Validation and Error Handling System",
           "description": "Create internal documentation for the validation and error handling system to ensure consistent implementation across the team.",
-          "dependencies": [
-            7
-          ],
+          "dependencies": [7],
           "details": "Document the custom error classes and their use cases. Create examples of implementing Zod schemas for new endpoints. Document the middleware wrapper pattern. Create a reference guide for HTTP status code usage. Provide examples of handling common error scenarios. Include documentation on how to extend the system for future requirements.",
           "status": "done"
         }
@@ -954,12 +792,7 @@
       "details": "1. Implement image optimization using Next.js Image component\n2. Set up caching strategies:\n   - Static generation for static content\n   - Incremental Static Regeneration where appropriate\n   - Server-side rendering for dynamic content\n   - Client-side data fetching with SWR\n3. Configure Vercel KV for caching frequently accessed data\n4. Implement code splitting and lazy loading\n5. Optimize bundle size with proper imports\n6. Set up database query optimization:\n   - Review and optimize complex queries\n   - Ensure proper indexing\n   - Implement query caching where appropriate\n7. Add performance monitoring\n8. Implement resource hints (preload, prefetch)\n9. Configure content delivery optimization\n10. Set up response compression",
       "testStrategy": "1. Measure page load times before and after optimization\n2. Test Lighthouse performance scores\n3. Verify Core Web Vitals metrics\n4. Validate image optimization effectiveness\n5. Test caching strategies with cache hits/misses\n6. Measure database query performance\n7. Test bundle size and loading performance\n8. Validate performance under various network conditions\n9. Test performance on low-end devices",
       "priority": "medium",
-      "dependencies": [
-        5,
-        6,
-        12,
-        13
-      ],
+      "dependencies": [5, 6, 12, 13],
       "status": "done",
       "subtasks": [
         {
@@ -998,11 +831,7 @@
       "details": "1. Create dynamic metadata for all pages\n2. Implement canonical URLs\n3. Add structured data (JSON-LD) for job listings\n4. Create XML sitemap generation\n5. Implement robots.txt configuration\n6. Add Open Graph and Twitter card metadata\n7. Implement semantic HTML structure\n8. Create SEO-friendly URLs\n9. Add alt text for all images\n10. Implement breadcrumb navigation\n11. Create meta description templates\n12. Set up analytics for SEO performance tracking\n13. Implement schema.org markup for local businesses\n14. Add hreflang tags if supporting multiple languages",
       "testStrategy": "1. Validate metadata on all pages\n2. Test structured data using Google's Rich Results Test\n3. Verify sitemap generation and format\n4. Test robots.txt configuration\n5. Validate Open Graph tags with Facebook debugger\n6. Test Twitter card display\n7. Verify semantic HTML structure\n8. Test URL structure for SEO friendliness\n9. Validate alt text for images\n10. Test breadcrumb navigation implementation",
       "priority": "medium",
-      "dependencies": [
-        6,
-        12,
-        13
-      ],
+      "dependencies": [6, 12, 13],
       "status": "done",
       "subtasks": []
     },
@@ -1013,11 +842,7 @@
       "details": "1. Research and select analytics platform (Vercel Analytics or PostHog)\n2. Implement core analytics tracking:\n   - Page views\n   - Search events\n   - Job view events\n   - Application clicks\n   - User registration and login\n3. Create custom events for key user actions\n4. Set up conversion tracking\n5. Implement funnel analysis\n6. Create custom dashboards for key metrics\n7. Set up automated reports\n8. Implement A/B testing framework\n9. Add heat mapping for UI optimization\n10. Create performance monitoring\n11. Implement privacy-compliant tracking (respecting Do Not Track)\n12. Add consent management for GDPR compliance",
       "testStrategy": "1. Verify tracking implementation for all key events\n2. Test data collection accuracy\n3. Validate custom event tracking\n4. Test conversion tracking\n5. Verify funnel analysis data\n6. Test dashboard functionality\n7. Validate automated reports\n8. Test A/B testing framework\n9. Verify privacy compliance\n10. Test consent management functionality",
       "priority": "low",
-      "dependencies": [
-        12,
-        13,
-        16
-      ],
+      "dependencies": [12, 13, 16],
       "status": "done",
       "subtasks": [
         {
@@ -1065,11 +890,7 @@
       "details": "1. Implement mobile-first design approach\n2. Create responsive layouts for all pages:\n   - Homepage\n   - Search results\n   - Job details\n   - User dashboard\n   - Admin dashboard\n3. Optimize touch targets for mobile interaction\n4. Implement collapsible navigation for mobile\n5. Create mobile-optimized forms\n6. Ensure proper viewport configuration\n7. Test and optimize for various screen sizes\n8. Implement responsive images\n9. Create mobile-specific UI components where needed\n10. Optimize performance for mobile networks\n11. Implement mobile-friendly filters and search\n12. Test and fix any mobile-specific issues",
       "testStrategy": "1. Test on various mobile devices (iOS and Android)\n2. Verify responsive behavior at all breakpoints\n3. Test touch interactions on mobile devices\n4. Validate form usability on small screens\n5. Test navigation on mobile devices\n6. Verify performance on mobile networks\n7. Test mobile-specific features\n8. Validate accessibility on mobile devices\n9. Test orientation changes (portrait/landscape)",
       "priority": "high",
-      "dependencies": [
-        12,
-        13,
-        14
-      ],
+      "dependencies": [12, 13, 14],
       "status": "done",
       "subtasks": [
         {
@@ -1117,10 +938,7 @@
       "details": "1. Implement semantic HTML throughout the application\n2. Add proper ARIA attributes where needed\n3. Ensure keyboard navigation for all interactive elements\n4. Implement focus management\n5. Create skip navigation links\n6. Ensure sufficient color contrast\n7. Add text alternatives for non-text content\n8. Implement proper form labels and error messages\n9. Create accessible modals and dialogs\n10. Ensure proper heading hierarchy\n11. Add screen reader announcements for dynamic content\n12. Implement accessible tables where used\n13. Create accessible custom components\n14. Test with screen readers and assistive technologies",
       "testStrategy": "1. Conduct automated accessibility testing with tools like axe\n2. Perform manual testing with keyboard navigation\n3. Test with screen readers (NVDA, VoiceOver)\n4. Verify color contrast compliance\n5. Test focus management\n6. Validate form accessibility\n7. Test modal and dialog accessibility\n8. Verify heading hierarchy\n9. Test dynamic content announcements\n10. Validate custom component accessibility",
       "priority": "medium",
-      "dependencies": [
-        14,
-        20
-      ],
+      "dependencies": [14, 20],
       "status": "in-progress",
       "subtasks": [
         {
@@ -1135,9 +953,7 @@
           "id": 2,
           "title": "Add ARIA Attributes and Landmarks",
           "description": "Implement ARIA roles, states, and properties where native HTML semantics are insufficient.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Add appropriate aria-* attributes to complex UI components. Implement ARIA landmarks (role='navigation', 'main', etc.) to enhance navigation. Follow the first rule of ARIA: don't use ARIA when native HTML elements can provide the semantics. Test with screen readers to ensure ARIA implementation meets WCAG 2.1 Success Criterion 4.1.2 (Name, Role, Value).\n<info added on 2025-05-28T18:14:31.065Z>\nThe implementation of ARIA attributes and landmarks has been completed across various components to enhance accessibility:\n\n**Root Layout (app/layout.tsx):**\n- Added a skip navigation link for keyboard users.\n- Assigned `id=\"main-content\"` and `role=\"main\"` to the main element.\n- Ensured the skip link becomes visible on focus with appropriate styling.\n\n**Header Component:**\n- Added `role=\"banner\"` to the header element.\n- Applied `role=\"navigation\"` and `aria-label=\"Main navigation\"` to the desktop navigation.\n- Designated `role=\"region\"` and `aria-label=\"User account actions\"` to the user actions area.\n- Implemented `role=\"alert\"` and `aria-live=\"assertive\"` for error displays.\n- Set `aria-live=\"polite\"` for loading states.\n- Enhanced mobile navigation with appropriate `role=\"navigation\"` and `aria-label`.\n- Added `role=\"separator\"` to dividers.\n\n**DomainLayout Component:**\n- Assigned `role=\"banner\"` to the header.\n- Applied `role=\"navigation\"` and `aria-label=\"Main navigation\"` to the main navigation.\n- Designated `role=\"main\"` to the main content area.\n- Set `role=\"contentinfo\"` to the footer.\n- Introduced navigation landmarks for footer sections, including:\n  - Social media links with descriptive `aria-label` attributes.\n  - Job seeker links section.\n  - Employer links section.\n  - Legal links section.\n- Enhanced social media links with descriptive `aria-label` attributes.\n\n**Existing Components with Adequate ARIA Support:**\n- The HeroSection form already includes `role=\"search\"` and appropriate `aria-label` attributes.\n- UI components utilizing Radix UI primitives possess built-in ARIA support.\n- Header dropdown menus are equipped with proper ARIA attributes.\n\nThese enhancements provide clear navigation landmarks for screen readers, enable keyboard users to skip directly to the main content, and ensure all interactive elements have appropriate ARIA labels and roles. As a result, the application now meets WCAG 2.1 Success Criterion 4.1.2 (Name, Role, Value) and offers an improved navigation structure.\n</info added on 2025-05-28T18:14:31.065Z>",
           "status": "done"
         },
@@ -1145,10 +961,7 @@
           "id": 3,
           "title": "Implement Keyboard Navigation",
           "description": "Ensure all interactive elements are keyboard accessible and follow a logical tab order.",
-          "dependencies": [
-            1,
-            2
-          ],
+          "dependencies": [1, 2],
           "details": "Make all interactive elements focusable and operable with keyboard. Implement custom keyboard interactions for complex widgets (arrow keys for sliders, etc.). Test tab order and keyboard operability manually. Ensure compliance with WCAG 2.1 Success Criterion 2.1.1 (Keyboard) and 2.4.3 (Focus Order).\n<info added on 2025-05-28T18:19:22.077Z>\nImplemented comprehensive keyboard navigation across the application, ensuring all interactive elements are focusable and operable via keyboard. Developed custom keyboard interactions for complex widgets, such as arrow key navigation for sliders. Manually tested tab order and keyboard operability to confirm compliance with WCAG 2.1 Success Criterion 2.1.1 (Keyboard) and 2.4.3 (Focus Order).\n\n**Key Enhancements:**\n\n- **Keyboard Navigation Hooks:** Created hooks like `useKeyboardNavigation` for common interactions (Enter, Space, Arrow keys, Home, End, Escape), `useFocusTrap` for managing focus within containers (modals, dropdowns), `useRovingTabIndex` for roving tabindex patterns in radio groups and lists, and `useFocusRestore` for saving and restoring focus during component state changes.\n\n- **Enhanced Button Component:** Ensured consistent keyboard activation with Enter and Space keys, implemented loading states with appropriate ARIA attributes, provided visible focus indicators, and handled disabled states effectively.\n\n- **Keyboard Navigation List Components:** Developed components like `KeyboardNavigationList` for generic lists, `KeyboardNavigationMenu` for navigation menus, and `KeyboardNavigationRadioGroup` for radio button groups, supporting various orientations and incorporating proper ARIA attributes and roles.\n\n- **Improved Dropdown Component:** Enabled full keyboard navigation using arrow keys, Home, End, and Escape, ensured proper focus management and restoration, highlighted active items, and enhanced ARIA attributes for screen reader compatibility.\n\n- **Existing Components:** Verified that components such as JobCard, EnhancedJobModal, Tabs, JobBoard, and Header already had robust keyboard support, including proper activation, focus trapping, and navigation.\n\nThese enhancements ensure the application meets WCAG 2.1 Success Criteria 2.1.1 (Keyboard) and 2.4.3 (Focus Order), providing a seamless and accessible experience for keyboard users.\n</info added on 2025-05-28T18:19:22.077Z>",
           "status": "done"
         },
@@ -1156,9 +969,7 @@
           "id": 4,
           "title": "Implement Focus Management",
           "description": "Create visible focus indicators and manage focus for dynamic content and interactive components.",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "details": "Ensure focus indicators are visible and meet minimum contrast requirements. Implement proper focus management for dynamic content changes. Trap focus in modal dialogs. Test focus visibility and management manually. Ensure compliance with WCAG 2.1 Success Criterion 2.4.7 (Focus Visible) and 2.4.3 (Focus Order).\n<info added on 2025-05-28T18:22:00.906Z>\nImplemented comprehensive focus management to ensure compliance with WCAG 2.1 Success Criterion 3.2.1 (On Focus). Developed focus management hooks, CSS styles, and components to handle focus for dynamic content, modals, and route changes. Integrated these into the application to provide consistent and accessible focus behavior.\n</info added on 2025-05-28T18:22:00.906Z>",
           "status": "done"
         },
@@ -1182,10 +993,7 @@
           "id": 7,
           "title": "Implement Form Accessibility",
           "description": "Make all forms accessible with proper labels, error handling, and instructions.",
-          "dependencies": [
-            1,
-            2
-          ],
+          "dependencies": [1, 2],
           "details": "Associate labels with form controls using for/id attributes. Group related form elements with fieldset/legend. Provide clear error messages and validation. Implement accessible error notifications. Test form completion with keyboard and screen readers. Ensure compliance with WCAG 2.1 Success Criterion 3.3.1 (Error Identification), 3.3.2 (Labels or Instructions), and 4.1.3 (Status Messages).",
           "status": "pending"
         },
@@ -1193,9 +1001,7 @@
           "id": 8,
           "title": "Implement Modal and Dialog Accessibility",
           "description": "Ensure modals and dialogs are fully accessible with proper focus management and keyboard interactions.",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "details": "Use appropriate ARIA roles (dialog, alertdialog). Trap focus within open dialogs. Return focus to triggering element when closed. Provide keyboard methods to close dialogs (Esc key). Test with screen readers and keyboard-only navigation. Ensure compliance with WCAG 2.1 Success Criterion 2.1.2 (No Keyboard Trap) and 4.1.2 (Name, Role, Value).\n<info added on 2025-05-28T19:41:54.276Z>\nImplemented comprehensive accessibility features for modals and dialogs, ensuring full compliance with WCAG 2.1 Success Criteria 2.1.2 (No Keyboard Trap), 4.1.2 (Name, Role, Value), 2.4.3 (Focus Order), 1.3.1 (Info and Relationships), and 2.4.6 (Headings and Labels).\n\n**Accessibility Utilities Created** (`src/utils/modal-accessibility.ts`):\n\n- **Focus Management**: Developed `useModalAccessibility` hook to handle focus trapping, restoration, and keyboard navigation.\n- **ARIA Support**: Implemented `createDialogAriaProps` for assigning correct dialog/alertdialog attributes.\n- **Element Detection**: Created `getFocusableElements` function compatible with browsers and test environments.\n- **Validation**: Added `validateModalAccessibility` for development-time accessibility checks.\n- **Navigation Hooks**: Introduced `useTabNavigation` and `useArrowKeyNavigation` for complex UI patterns.\n- **ID Generation**: Developed `createModalId` for unique, accessible element IDs.\n\n**Enhanced Components**:\n\n- **AccessibleModal** (`src/components/ui/accessible-modal.tsx`): Ensured full WCAG 2.1 compliance with proper ARIA attributes, complete focus management, keyboard navigation, configurable overlay click handling, multiple sizes, customization options, and development-time accessibility validation.\n- **ConfirmationModal**: Utilized `alertdialog` role for critical confirmations, prevented accidental dismissal, provided multiple variants (default, danger, warning), and included loading states with proper accessibility.\n- **FormModal**: Ensured proper form structure with accessible submission, configurable footer with cancel/submit actions, and support for loading states and validation.\n- **Enhanced Existing Components**: Added configurable close button with proper ARIA labels to Dialog; enhanced AlertDialog with variant support and convenience component; introduced SimpleAlertDialog as a ready-to-use component for common patterns.\n\n**Comprehensive Testing** (`src/__tests__/accessibility/modal-accessibility.test.tsx`):\n\n- Conducted 23 passing tests covering all accessibility features, including focus management validation, ARIA attribute verification, keyboard navigation testing, cross-browser compatibility (including JSDOM), and component behavior validation.\n\n**WCAG 2.1 Compliance Achieved**:\n\n- **2.1.2 (No Keyboard Trap)**: Focus properly trapped and can be escaped.\n- **4.1.2 (Name, Role, Value)**: All elements have proper ARIA attributes.\n- **2.4.3 (Focus Order)**: Logical focus progression within modals.\n- **1.3.1 (Info and Relationships)**: Proper semantic structure.\n- **2.4.6 (Headings and Labels)**: Clear, descriptive labels for all interactive elements.\n\n**Key Features**:\n\n- **Focus Trapping**: Prevents focus from leaving modal.\n- **Focus Restoration**: Returns focus to triggering element when closed.\n- **Keyboard Support**: Escape to close, Tab navigation, Arrow keys for tab lists.\n- **Screen Reader Support**: Proper announcements and navigation.\n- **Flexible Configuration**: Customizable behavior for different use cases.\n- **Development Tools**: Automatic accessibility validation in development mode.\n\nAll modal and dialog components now meet or exceed WCAG 2.1 AA standards for accessibility.\n</info added on 2025-05-28T19:41:54.276Z>",
           "status": "done"
         },
@@ -1203,15 +1009,7 @@
           "id": 9,
           "title": "Conduct Screen Reader Testing",
           "description": "Test the application with multiple screen readers to ensure compatibility and proper information conveyance.",
-          "dependencies": [
-            1,
-            2,
-            3,
-            5,
-            6,
-            7,
-            8
-          ],
+          "dependencies": [1, 2, 3, 5, 6, 7, 8],
           "details": "Test with NVDA, JAWS, and VoiceOver on appropriate platforms. Verify all content is announced correctly. Check that interactive elements convey their state and purpose. Document and fix any screen reader-specific issues. Create test cases for future regression testing. Ensure compliance with WCAG 2.1 Success Criterion 4.1.2 (Name, Role, Value) and 1.3.1 (Info and Relationships).",
           "status": "pending"
         }
@@ -1222,9 +1020,7 @@
       "title": "Testing Infrastructure",
       "description": "Set up comprehensive testing infrastructure including unit tests, integration tests, and end-to-end tests.",
       "status": "done",
-      "dependencies": [
-        1
-      ],
+      "dependencies": [1],
       "priority": "medium",
       "details": "1. Set up Jest for unit testing\n2. Configure React Testing Library for component testing\n3. Set up Playwright for end-to-end testing\n4. Create test utilities and helpers\n5. Implement mock services for API testing\n6. Set up test database for integration tests\n7. Create CI pipeline for automated testing\n8. Implement code coverage reporting\n9. Create test documentation\n10. Set up visual regression testing\n11. Implement performance testing\n12. Create accessibility testing automation",
       "testStrategy": "1. Write unit tests for utility functions\n2. Create component tests for UI components\n3. Implement API integration tests\n4. Develop end-to-end tests for critical user flows\n5. Set up visual regression tests for UI components\n6. Create performance tests for key pages\n7. Implement accessibility automated tests\n8. Test CI pipeline functionality\n9. Verify code coverage reporting",
@@ -1298,9 +1094,7 @@
           "description": "Resolve issues in JobCard component tests related to multiple button elements and event handling",
           "details": "Update JobCard tests to use more specific element selectors to accurately target buttons. Ensure event handling tests account for multiple button elements with the same role.",
           "status": "done",
-          "dependencies": [
-            5
-          ],
+          "dependencies": [5],
           "parentTaskId": 22
         },
         {
@@ -1309,9 +1103,7 @@
           "description": "Address timeout issues in JobList component tests related to job selection and modal interactions",
           "details": "Investigate and resolve timeout issues in JobList tests by improving async behavior handling and mock setup. Ensure tests accurately simulate user interactions and handle asynchronous operations effectively.",
           "status": "done",
-          "dependencies": [
-            5
-          ],
+          "dependencies": [5],
           "parentTaskId": 22
         },
         {
@@ -1368,10 +1160,7 @@
       "details": "1. Set up Vercel project for deployment\n2. Configure environment variables in Vercel\n3. Set up production, staging, and development environments\n4. Configure custom domains and DNS\n5. Implement GitHub Actions workflow:\n   - Lint and format checking\n   - Unit and integration testing\n   - Build verification\n   - Deployment to appropriate environment\n6. Set up branch protection rules\n7. Configure automatic preview deployments for pull requests\n8. Implement deployment approval process for production\n9. Set up monitoring and alerting\n10. Configure logging and error tracking with Sentry\n11. Implement database migration strategy for deployments\n12. Create rollback procedures",
       "testStrategy": "1. Test deployment to all environments\n2. Verify environment variable configuration\n3. Test CI/CD pipeline with various scenarios\n4. Validate preview deployments for pull requests\n5. Test production deployment process\n6. Verify monitoring and alerting functionality\n7. Test logging and error tracking\n8. Validate database migration process\n9. Test rollback procedures",
       "priority": "high",
-      "dependencies": [
-        1,
-        22
-      ],
+      "dependencies": [1, 22],
       "status": "done",
       "subtasks": []
     },
@@ -1382,10 +1171,7 @@
       "details": "1. Set up Storybook for component documentation\n2. Create API documentation\n3. Write developer onboarding guide\n4. Document database schema and relationships\n5. Create deployment and operations guide\n6. Write user manual for admin features\n7. Document testing procedures\n8. Create troubleshooting guide\n9. Document third-party integrations\n10. Create security documentation\n11. Write performance optimization guide\n12. Document code standards and best practices",
       "testStrategy": "1. Verify Storybook documentation for all components\n2. Validate API documentation accuracy\n3. Test developer onboarding guide with new team members\n4. Review database schema documentation\n5. Verify deployment guide accuracy\n6. Test user manual with admin users\n7. Validate testing documentation\n8. Review security documentation for completeness",
       "priority": "low",
-      "dependencies": [
-        16,
-        23
-      ],
+      "dependencies": [16, 23],
       "status": "done",
       "subtasks": []
     },
@@ -1396,10 +1182,7 @@
       "details": "1. Implement secure authentication practices\n2. Set up HTTPS enforcement\n3. Configure Content Security Policy (CSP)\n4. Implement Cross-Origin Resource Sharing (CORS) policies\n5. Add protection against common vulnerabilities:\n   - Cross-Site Scripting (XSS)\n   - Cross-Site Request Forgery (CSRF)\n   - SQL Injection\n   - Server-Side Request Forgery (SSRF)\n6. Implement rate limiting for all API endpoints\n7. Set up security headers\n8. Create data encryption for sensitive information\n9. Implement secure password policies\n10. Set up security monitoring and logging\n11. Create security incident response plan\n12. Implement regular dependency scanning\n13. Configure secure cookie settings",
       "testStrategy": "1. Conduct security scanning with automated tools\n2. Perform penetration testing on authentication system\n3. Test API endpoints for security vulnerabilities\n4. Verify CSP implementation\n5. Test CORS policies\n6. Validate rate limiting effectiveness\n7. Verify security headers configuration\n8. Test data encryption implementation\n9. Validate password policy enforcement\n10. Test security monitoring and logging",
       "priority": "high",
-      "dependencies": [
-        3,
-        16
-      ],
+      "dependencies": [3, 16],
       "status": "done",
       "subtasks": [
         {
@@ -1422,9 +1205,7 @@
           "id": 3,
           "title": "Implement Content Security Policy",
           "description": "Configure Content Security Policy headers to prevent XSS attacks by controlling which resources can be loaded.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Define CSP directives for scripts, styles, images, fonts, and other resources, implement nonce-based CSP for inline scripts, set up a reporting endpoint for CSP violations, test CSP configuration with browser developer tools, and gradually tighten policies after monitoring violations.\n<info added on 2025-05-24T06:53:38.253Z>\nCompleted Content Security Policy (CSP) implementation:\n\n✅ **Comprehensive CSP Headers**: Implemented detailed CSP directives in global middleware\n✅ **Environment-Aware Configuration**: Different CSP rules for development vs production\n✅ **Nonce Support Ready**: Infrastructure ready for nonce-based CSP for inline scripts\n✅ **Security Directives**: Configured all major CSP directives:\n  - default-src: 'self' \n  - script-src: Controlled script sources with allowlist\n  - style-src: Style sources with inline support for Tailwind CSS\n  - font-src: Font loading from Google Fonts and data URIs\n  - img-src: Image sources with HTTPS enforcement\n  - connect-src: API and external service connections\n  - frame-ancestors: 'none' (prevents clickjacking)\n  - form-action: 'self' (prevents form hijacking)\n  - object-src: 'none' (blocks plugins)\n\nCSP Features implemented:\n- Protection against XSS attacks\n- Control over resource loading\n- Development mode allowances for hot reload\n- Production-ready security restrictions\n- Support for external services (OpenAI, fonts, etc.)\n- Image security for user uploads and company logos\n\nThe CSP implementation provides strong protection against injection attacks while maintaining application functionality.\n</info added on 2025-05-24T06:53:38.253Z>",
           "status": "done"
         },
@@ -1432,9 +1213,7 @@
           "id": 4,
           "title": "Configure CORS Policies",
           "description": "Implement Cross-Origin Resource Sharing policies to control which domains can access resources.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Define allowed origins, methods, and headers, implement preflight request handling, set appropriate Access-Control-* headers, limit credential sharing across origins, test CORS configuration with cross-domain requests, and document CORS policies for API consumers.\n<info added on 2025-05-24T06:53:58.257Z>\nCORS implementation is complete with the following components:\n\n- Full CORS middleware implementation in src/lib/middleware/cors.ts\n- Environment-specific configurations (development vs production)\n- Seamless integration with the API middleware system\n- Comprehensive security features including:\n  - Origin validation with allowlists\n  - Credentials handling\n  - Preflight request support\n  - Secure headers configuration\n  - Method and header restrictions\n- Production environment configured with restricted origins\n- Development environment configured with permissive settings for easier development\n\nThe implementation is production-ready and fully integrated throughout the API system.\n</info added on 2025-05-24T06:53:58.257Z>",
           "status": "done"
         },
@@ -1442,10 +1221,7 @@
           "id": 5,
           "title": "Implement Protection Against Common Vulnerabilities",
           "description": "Add safeguards against XSS, CSRF, SQL Injection, and other OWASP Top 10 vulnerabilities.",
-          "dependencies": [
-            1,
-            3
-          ],
+          "dependencies": [1, 3],
           "details": "Implement input validation and sanitization, use parameterized queries for database operations, add CSRF tokens to forms, implement output encoding, use ORM with prepared statements, validate file uploads, and conduct security code reviews focusing on injection points.",
           "status": "done"
         },
@@ -1453,9 +1229,7 @@
           "id": 6,
           "title": "Implement Rate Limiting",
           "description": "Add rate limiting to protect against brute force attacks, DoS, and API abuse.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Implement token bucket or sliding window rate limiting algorithms, configure limits for authentication endpoints, API routes, and user-specific actions, add appropriate response headers (Retry-After, X-RateLimit-*), implement IP-based and user-based rate limiting, and create a system to handle legitimate traffic spikes.",
           "status": "done"
         },
@@ -1463,10 +1237,7 @@
           "id": 7,
           "title": "Configure Security Headers",
           "description": "Implement additional HTTP security headers to enhance browser security features.",
-          "dependencies": [
-            2,
-            3
-          ],
+          "dependencies": [2, 3],
           "details": "Configure X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Feature-Policy/Permissions-Policy, X-XSS-Protection headers, test header configuration using tools like SecurityHeaders.com, and document the purpose of each header for the development team.",
           "status": "done"
         },
@@ -1474,9 +1245,7 @@
           "id": 8,
           "title": "Implement Data Encryption",
           "description": "Establish encryption for sensitive data at rest and in transit.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Implement database column-level encryption for PII and sensitive data, set up encryption key management, implement secure key rotation procedures, use envelope encryption for stored files, encrypt backups, and document encryption standards and procedures.",
           "status": "done"
         },
@@ -1484,11 +1253,7 @@
           "id": 9,
           "title": "Set Up Security Monitoring and Logging",
           "description": "Implement comprehensive security logging, monitoring, and alerting systems.",
-          "dependencies": [
-            1,
-            5,
-            6
-          ],
+          "dependencies": [1, 5, 6],
           "details": "Configure centralized logging for security events, implement real-time alerting for suspicious activities, set up audit logging for authentication and authorization events, create dashboards for security metrics, implement automated responses to common attack patterns, and establish incident response procedures.",
           "status": "done"
         },
@@ -1581,9 +1346,7 @@
           "id": 2,
           "title": "Documentation Template Creation",
           "description": "Develop a standardized documentation template for all UI components.",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Create a consistent template that includes sections for: component description, props/API, usage examples, accessibility considerations, and customization options. This template will be used for all component documentation.\n<info added on 2025-05-24T07:03:50.749Z>\nCompleted documentation template creation. Created two comprehensive templates:\n\n1. docs/component-documentation-template.md - A complete markdown template for formal component documentation including:\n   - Overview and installation\n   - Basic and advanced usage examples\n   - Complete API reference with props table\n   - Variants, states, and accessibility info\n   - Dark mode support details\n   - Customization options\n   - Common patterns and troubleshooting\n\n2. docs/demo-page-component-template.tsx - A practical TypeScript template for adding components to the demo page with:\n   - Section structure matching existing demo page\n   - Basic usage, variants, sizes, and states examples\n   - Interactive demo component template\n   - Code example display\n   - Usage instructions and common patterns\n\nBoth templates are ready for use in documenting the remaining 25 components.\n</info added on 2025-05-24T07:03:50.749Z>",
           "status": "done"
         },
@@ -1591,9 +1354,7 @@
           "id": 3,
           "title": "Document Input Components",
           "description": "Create documentation for input-related components: Checkbox, Form, Label, Radio Group, Select, Slider, Switch, Textarea, Toggle.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Apply the documentation template to these components. Include code examples showing basic usage, form integration, validation states, and customization options.\n<info added on 2025-05-24T07:08:19.773Z>\nDocumentation for all input components has been successfully completed. The components-demo page now includes comprehensive demonstrations for:\n\nInput Components:\n- Checkbox: Basic usage and interactive multi-select form implementation\n- Label: Integrated throughout all form examples for proper accessibility\n- Switch: Basic toggle functionality with interactive settings panel demonstration\n- Slider: Interactive range selection with volume control example including button integration\n- Textarea: Multi-line text input with labeled form integration\n- Radio Group: Complete option selection implementation with state management\n- Select: Dropdown component with practical fruit selection example\n- Toggle: Text formatting controls (bold/italic/underline) with state tracking\n- Form: Comprehensive contact form example with validation-ready structure\n\nEach component documentation includes:\n- Basic usage code examples\n- Interactive demonstrations\n- Accessibility implementation details\n- Responsive design considerations\n- Dark mode support implementation via CSS variables\n- TypeScript integration examples\n- Styling guidelines and customization options\n\nAll input components are now fully documented with consistent formatting following the established template structure.\n</info added on 2025-05-24T07:08:19.773Z>",
           "status": "done"
         },
@@ -1601,9 +1362,7 @@
           "id": 4,
           "title": "Document Navigation Components",
           "description": "Create documentation for navigation-related components: Context Menu, Menubar, Navigation Menu.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Document these components with examples of different navigation patterns, keyboard navigation support, and responsive behavior. Include accessibility best practices.\n<info added on 2025-05-24T07:12:17.070Z>\n# Navigation Components Documentation\n\n## Components Implemented\n- **Context Menu**: Right-click context menus with shortcuts, sub-menus, checkboxes, radio groups, and separators\n- **Menubar**: Traditional application menubar with File/Edit/View/Profiles menus, keyboard shortcuts, sub-menus, checkbox items, radio groups, and disabled states\n- **Navigation Menu**: Modern website navigation with dropdown content panels, rich layouts, links grid, and styled triggers\n\n## Documentation Features\n- Basic usage examples with simple implementations\n- Advanced interactive demonstrations with state management\n- Comprehensive sub-component usage (separators, shortcuts, sub-menus, etc.)\n- Proper accessibility attributes and keyboard navigation\n- Responsive design patterns\n- Dark mode support via CSS variables\n- TypeScript integration with proper typing\n- Rich content layouts and styling demonstrations\n\n## Demo Implementation\nAdded comprehensive demo sections to components-demo page, including an advanced browser context menu simulation for the Context Menu component.\n\nAll navigation components are fully documented with examples of different navigation patterns, keyboard navigation support, and responsive behavior, following accessibility best practices.\n</info added on 2025-05-24T07:12:17.070Z>",
           "status": "done"
         },
@@ -1611,9 +1370,7 @@
           "id": 5,
           "title": "Document Overlay Components",
           "description": "Create documentation for overlay-related components: Alert Dialog, Command, Hover Card, Popover, Sheet.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Document these components with examples of triggering, positioning, animations, and keyboard interactions. Include information about focus management and accessibility.\n<info added on 2025-05-24T07:17:26.807Z>\nDocumentation for overlay components is now complete. This includes Alert Dialog, Command, Hover Card, Popover, and Sheet components. The components-demo page features both basic usage examples and advanced interactive demonstrations for each component.\n\nAlert Dialog components include basic confirmation dialogs and advanced delete/save dialogs with proper styling and action handlers. Command components demonstrate basic command palette functionality and advanced dialog implementations with keyboard shortcuts (Cmd+K) and grouped commands. Hover Card components showcase profile cards with avatar support for different users. Popover components include basic dimensions popover and interactive settings panels with form controls. Sheet components demonstrate all four positioning options (left, right, bottom, top) with various content types including navigation, profile forms, actions, and notifications.\n\nAll overlay components are fully documented with TypeScript types, accessibility features, responsive design considerations, state management patterns, and follow consistent design patterns across the library. Focus management and keyboard interaction details are included for each component to ensure proper accessibility compliance.\n</info added on 2025-05-24T07:17:26.807Z>",
           "status": "done"
         },
@@ -1621,9 +1378,7 @@
           "id": 6,
           "title": "Document Layout and Utility Components",
           "description": "Create documentation for layout and utility components: Aspect Ratio, Calendar, Collapsible, Separator, Skeleton, Scroll Area, Copy Button, Theme Toggle, Tailwind Indicator.",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "details": "Document these components with examples of common use cases, responsive behavior, and integration with other components. Include performance considerations where relevant.\n<info added on 2025-05-24T07:20:44.119Z>\nDocumentation completed for all layout and utility components:\n\n- Aspect Ratio: Documented with basic image display examples and interactive demonstrations showing different ratios (16:9, 4:3, 1:1, 9:16) with visual feedback\n- Calendar: Included basic single date selection examples and advanced demo with both single date and range selection modes with state feedback\n- Collapsible: Added FAQ-style usage examples and advanced demo with multiple collapsible items and state management\n- Separator: Documented both horizontal and vertical separator examples with proper spacing and styling\n- Skeleton: Included basic loading state examples and interactive demo that toggles between skeleton and loaded content every 3 seconds\n- Scroll Area: Added basic vertical scrolling examples and advanced demo with both vertical and horizontal scroll areas with colored tags\n\nAll component documentation includes TypeScript types, accessibility features, responsive design considerations, state management patterns, and follows consistent design patterns. Documentation provides both simple copy-paste examples and complex interactive demonstrations showcasing real-world usage scenarios.\n</info added on 2025-05-24T07:20:44.119Z>",
           "status": "done"
         },
@@ -1631,12 +1386,7 @@
           "id": 7,
           "title": "Update Demo Page",
           "description": "Integrate all newly documented components into the existing demo page.",
-          "dependencies": [
-            3,
-            4,
-            5,
-            6
-          ],
+          "dependencies": [3, 4, 5, 6],
           "details": "Update the demo page to include interactive examples of all 39 components. Organize them into logical categories for easy navigation. Ensure all examples are functional and responsive.\n<info added on 2025-05-24T07:24:50.663Z>\nThe demo page has been updated with comprehensive interactive examples organized into logical categories:\n\n**Component Composition Examples:**\n- User Profile Card with follow/unfollow functionality, expandable details, badges, and social stats\n- Data Table featuring row selection, search, sorting, actions dropdown, and bulk operations\n- Settings Panel with notifications toggles, theme selection, language dropdown, and form validation\n\n**Form Patterns:**\n- Multi-step Form with step indicator, navigation controls, validation, and review step\n- Dynamic Form Builder allowing addition/removal of fields with different input types\n\n**Responsive Design Patterns:**\n- Mobile-first responsive navigation with hamburger menu and adaptive layout\n- Adaptive grid system responding to different screen sizes (1/2/3 columns)\n\n**Accessibility Best Practices:**\n- Keyboard navigation with arrow key support and focus management\n- Screen reader support with proper ARIA labels, descriptions, fieldsets, and semantic markup\n\n**Performance Optimization:**\n- Lazy loading with skeleton states and progressive content loading\n- Virtualized lists with pagination-based navigation controls\n\nAll 39 components now have functional, responsive examples with TypeScript types, state management, event handling, and accessibility features following modern React patterns. The documentation provides real-world usage scenarios that developers can easily adapt for their projects.\n</info added on 2025-05-24T07:24:50.663Z>",
           "status": "done"
         },
@@ -1644,9 +1394,7 @@
           "id": 8,
           "title": "Create Component Integration Guide",
           "description": "Develop a comprehensive guide for integrating UI components into applications.",
-          "dependencies": [
-            7
-          ],
+          "dependencies": [7],
           "details": "Create a guide that explains component composition patterns, theming, accessibility best practices, and performance considerations. Include examples of complex component combinations and common UI patterns.\n<info added on 2025-05-24T07:26:40.576Z>\nI've completed the comprehensive documentation guide for the UI component library. The guide includes:\n\n1. Installation & Setup section with:\n   - Step-by-step npm installation instructions for all dependencies\n   - Tailwind CSS configuration with color variables and theme extensions\n   - CSS variables setup with HSL color definitions\n   - Code examples with proper formatting\n\n2. Usage Guidelines organized into 4 component categories:\n   - Input Components (9): Button, Input, Checkbox, Switch, Radio Group, Select, Textarea, Slider, Toggle\n   - Navigation Components (5): Context Menu, Menubar, Navigation Menu, Dropdown Menu, Tabs\n   - Overlay Components (8): Alert Dialog, Command, Hover Card, Popover, Sheet, Dialog, Tooltip, Toast\n   - Layout & Utility (11): Aspect Ratio, Calendar, Collapsible, Separator, Skeleton, Scroll Area, Card, Badge, Avatar, Progress, Accordion\n\n3. Best Practices covering:\n   - Accessibility-first design principles\n   - Responsive design guidelines\n   - Performance optimization strategies\n   - Consistency guidelines\n\n4. API Reference including:\n   - TypeScript interface definitions\n   - Prop documentation with types, variants, and examples\n   - Formatted code examples\n\nThe documentation provides developers with comprehensive guidance for implementing and customizing the UI component library according to modern development practices and accessibility standards.\n</info added on 2025-05-24T07:26:40.576Z>",
           "status": "done"
         }
@@ -2183,10 +1931,7 @@
       "details": "1. Install and configure PostHog SDK for Next.js\n   - Install posthog-js: `npm install posthog-js`\n   - Set up PostHog provider in Next.js app directory\n   - Configure environment variables for PostHog project API key\n2. Set up PostHog project and configuration\n   - Create PostHog cloud account or self-hosted instance\n   - Configure project settings and data collection policies\n   - Set up custom domains if needed for data privacy\n3. Implement core event tracking for job platform:\n   - Job search events (search_initiated, search_completed, filters_applied)\n   - Job interaction events (job_viewed, job_saved, job_shared, job_applied)\n   - User lifecycle events (user_registered, user_logged_in, profile_completed)\n   - Email alert events (alert_created, alert_triggered, email_opened)\n   - Navigation and engagement events (page_viewed, time_on_page, scroll_depth)\n4. Implement user identification and properties\n   - User identification with hashed user IDs for privacy\n   - User properties (registration_date, user_type, location, preferences)\n   - Anonymous user tracking before registration\n   - GDPR-compliant data collection with consent management\n5. Create conversion funnels and analytics dashboards\n   - Job search to application funnel (search → view → apply)\n   - User registration funnel (visit → signup → profile_complete)\n   - Email engagement funnel (subscription → delivery → click → action)\n   - Custom dashboards for key business metrics\n6. Implement advanced features\n   - A/B testing framework using PostHog feature flags\n   - Session recordings for UX insights (with privacy controls)\n   - Cohort analysis for user retention tracking\n   - Custom events for business-specific metrics\n7. Set up performance and error monitoring\n   - Track Core Web Vitals and page load performance\n   - Monitor API response times and error rates\n   - Set up alerts for critical metric thresholds\n8. Implement privacy compliance\n   - GDPR/CCPA compliant data collection\n   - Cookie consent management\n   - Data retention policies\n   - User data deletion capabilities\n9. Create automated reports and insights\n   - Weekly/monthly automated reports\n   - Slack/email notifications for key metrics\n   - Custom alerts for unusual patterns or drops in key metrics\n10. Documentation and team training\n    - Document event tracking implementation\n    - Create analytics playbook for team members\n    - Set up access controls and team permissions",
       "testStrategy": "1. Event Tracking Validation:\n   - Verify all critical events are properly tracked and sent to PostHog\n   - Test event properties and user identification accuracy\n   - Validate custom event parameters and data types\n   - Test tracking across different user flows and device types\n2. Funnel and Dashboard Testing:\n   - Verify conversion funnels display accurate data\n   - Test dashboard filtering and date range functionality\n   - Validate cohort analysis calculations\n   - Test custom dashboard creation and sharing\n3. Privacy and Compliance Testing:\n   - Verify GDPR consent management works correctly\n   - Test data anonymization and user deletion features\n   - Validate cookie consent integration\n   - Test opt-out functionality for analytics tracking\n4. Performance Testing:\n   - Measure impact of analytics tracking on page load times\n   - Test analytics performance under high traffic conditions\n   - Verify error tracking and monitoring accuracy\n   - Test session recording performance impact\n5. A/B Testing Framework:\n   - Test feature flag delivery and targeting\n   - Verify A/B test result tracking accuracy\n   - Test rollout and rollback functionality\n   - Validate statistical significance calculations\n6. Integration Testing:\n   - Test PostHog integration with existing authentication system\n   - Verify analytics data consistency across different pages\n   - Test email analytics integration\n   - Validate API monitoring and error tracking\n7. User Acceptance Testing:\n   - Have team members use analytics dashboards and provide feedback\n   - Test automated report delivery and accuracy\n   - Verify alert system functionality\n   - Test mobile analytics tracking and dashboard access",
       "priority": "medium",
-      "dependencies": [
-        1,
-        3
-      ],
+      "dependencies": [1, 3],
       "status": "pending",
       "subtasks": [
         {
@@ -2201,9 +1946,7 @@
           "id": 2,
           "title": "Implement Core Job Platform Event Tracking",
           "description": "Add comprehensive event tracking for all job-related user actions and interactions",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Implement tracking for job searches, job views, applications, saves, and shares. Include contextual data like search terms, job categories, and user properties. Test event firing and data accuracy.",
           "status": "pending"
         },
@@ -2211,9 +1954,7 @@
           "id": 3,
           "title": "Set Up User Identification and Properties",
           "description": "Implement user identification system with privacy-compliant data collection",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "details": "Set up user identification with proper anonymization, track user properties and preferences, implement consent management, and ensure GDPR compliance for data collection.",
           "status": "pending"
         },
@@ -2221,10 +1962,7 @@
           "id": 4,
           "title": "Create Analytics Dashboards and Funnels",
           "description": "Build custom dashboards and conversion funnels for key business metrics",
-          "dependencies": [
-            2,
-            3
-          ],
+          "dependencies": [2, 3],
           "details": "Create dashboards for job search behavior, user engagement, and conversion tracking. Set up automated funnels for key user journeys and implement custom metrics for business insights.",
           "status": "pending"
         },
@@ -2232,9 +1970,7 @@
           "id": 5,
           "title": "Implement A/B Testing Framework",
           "description": "Set up PostHog feature flags for A/B testing job listings and user interface elements",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "details": "Configure feature flags system, create A/B testing infrastructure for UI components, implement result tracking, and set up statistical analysis for test results.",
           "status": "pending"
         },
@@ -2242,9 +1978,7 @@
           "id": 6,
           "title": "Set Up Performance Monitoring and Alerts",
           "description": "Implement performance tracking and automated alerting for critical metrics",
-          "dependencies": [
-            4
-          ],
+          "dependencies": [4],
           "details": "Track Core Web Vitals, API performance, and user experience metrics. Set up automated alerts for performance degradation and create monitoring dashboards for system health.",
           "status": "pending"
         }
@@ -2554,9 +2288,7 @@
           "description": "Decide between the functional form at /jobs/post-job and the placeholder wireframe at /employers/post-job, then remove the unused implementation to eliminate user confusion.",
           "details": "CURRENT ISSUE: Two completely different post-job pages exist:\n- /jobs/post-job/page.tsx - Basic functional form (126 lines)\n- /employers/post-job/page.tsx - Placeholder wireframe only (80 lines)\n\nDECISION NEEDED: Choose one approach and remove the other\nRECOMMENDATION: Keep /employers/post-job route but replace placeholder with enhanced functional form\nTASKS:\n1. Analyze user flow to determine correct routing strategy\n2. Move functional form logic to /employers/post-job\n3. Remove /jobs/post-job implementation\n4. Update navigation and links to point to correct route\n5. Add redirect from old route to new route",
           "status": "pending",
-          "dependencies": [
-            32
-          ],
+          "dependencies": [32],
           "parentTaskId": 45
         },
         {
@@ -2565,9 +2297,7 @@
           "description": "Add authentication checks to prevent unauthorized job posting and ensure only authenticated employers can post jobs.",
           "details": "SECURITY ISSUE: Current API endpoint has no authentication check - anyone can post jobs\n\nFIXES NEEDED:\n1. Add authentication middleware to /api/jobs/post route\n2. Verify user is authenticated before allowing job posting\n3. Check user role is 'employer' (if role-based access needed)\n4. Add proper error responses for unauthenticated requests\n5. Update frontend to handle authentication errors\n6. Add rate limiting to prevent spam job posting\n7. Add CSRF protection for form submissions\n\nCURRENT CODE ISSUE in src/app/api/jobs/post/route.ts:\n- No authentication check\n- No user validation\n- No rate limiting",
           "status": "pending",
-          "dependencies": [
-            32
-          ],
+          "dependencies": [32],
           "parentTaskId": 45
         },
         {
@@ -2576,9 +2306,7 @@
           "description": "Replace basic client-side validation with proper Zod schema validation and fix field mapping inconsistencies between frontend and backend.",
           "details": "VALIDATION ISSUES:\n1. Basic client-side validation only checks if fields exist\n2. No input sanitization - XSS vulnerability risk\n3. No length limits - users can submit extremely long content\n4. No format validation for URLs, emails, or salary ranges\n5. Field mapping inconsistency: frontend sends 'jobType', backend expects 'type'\n\nFIXES NEEDED:\n1. Use existing createJobSchema from src/lib/validations/api.ts\n2. Add proper input sanitization for all fields\n3. Add length limits and format validation\n4. Fix field mapping between frontend and backend\n5. Add salary range validation (min <= max)\n6. Add URL validation for application URLs\n7. Add duplicate job posting prevention\n8. Replace generic error messages with field-specific errors\n\nCURRENT VALIDATION CODE:\n```javascript\nif (!form.title || !form.company || !form.location || !form.jobType || !form.category || !form.description) {\n  setError(\\\"Please fill in all required fields.\\\");\n}\n```\n\nSHOULD USE: Zod schema validation with proper error handling",
           "status": "pending",
-          "dependencies": [
-            32
-          ],
+          "dependencies": [32],
           "parentTaskId": 45
         },
         {
@@ -2587,9 +2315,7 @@
           "description": "Fix critical accessibility issues including missing label associations, ARIA attributes, and keyboard navigation support.",
           "details": "ACCESSIBILITY VIOLATIONS FOUND:\n1. Missing htmlFor and id associations between labels and inputs\n2. No aria-describedby for error messages\n3. No aria-invalid attributes on fields with errors\n4. No aria-required attributes on required fields\n5. Poor keyboard navigation - no tab order management\n6. No screen reader announcements for form state changes\n\nCURRENT PROBLEMATIC CODE:\n```jsx\n<label className=\\\"block mb-1 font-medium text-gray-700\\\">Job Title *</label>\n<input name=\\\"title\\\" value={form.title} onChange={handleChange} className=\\\"...\\\" />\n```\n\nFIXES NEEDED:\n1. Add proper htmlFor and id attributes to all form fields\n2. Add aria-describedby linking error messages to inputs\n3. Add aria-invalid=\\\"true\\\" on fields with validation errors\n4. Add aria-required=\\\"true\\\" on required fields\n5. Add proper role attributes where needed\n6. Implement proper focus management\n7. Add screen reader announcements for form state changes\n8. Test with screen readers and keyboard-only navigation\n\nACCESSIBILITY STANDARDS: WCAG 2.1 AA compliance required",
           "status": "pending",
-          "dependencies": [
-            32
-          ],
+          "dependencies": [32],
           "parentTaskId": 45
         },
         {
@@ -2598,12 +2324,7 @@
           "description": "Improve user experience with better error handling, loading states, and user feedback mechanisms.",
           "details": "UX IMPROVEMENTS NEEDED:\n1. Add field-specific error handling with proper error display\n2. Implement real-time validation feedback with debounced validation\n3. Add proper loading states during form submission\n4. Improve error messages to be more helpful and actionable\n5. Add success confirmation with next steps after job posting\n6. Implement form persistence (draft saving)\n7. Add progress indicators for multi-step process\n\nCURRENT ISSUES:\n- Generic error messages don't help users fix problems\n- No loading feedback during submission\n- Success message clears form immediately with no guidance\n- No way to save progress or recover from errors\n- Poor error recovery experience",
           "status": "pending",
-          "dependencies": [
-            33,
-            34,
-            35,
-            36
-          ],
+          "dependencies": [33, 34, 35, 36],
           "parentTaskId": 45
         }
       ]
@@ -2642,9 +2363,7 @@
           "description": "Implement PostHog analytics system with regional context tracking for user behavior analysis and business intelligence.",
           "details": "Install posthog-js package, create PostHog provider with regional context, implement event tracking for job searches/views/applications with regional metadata, set up user identification with regional preferences, create regional analytics dashboards, implement A/B testing framework for regional features, and ensure GDPR compliance for data collection.\n<info added on 2025-05-28T16:34:19.971Z>\nImplemented PostHog analytics with regional context to track job searches, views, and applications, ensuring GDPR compliance through EU data hosting and user consent management. ([posthog.com](https://posthog.com/docs/privacy/gdpr-compliance?utm_source=openai))\n</info added on 2025-05-28T16:34:19.971Z>",
           "status": "done",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "parentTaskId": 46
         },
         {
@@ -2653,9 +2372,7 @@
           "description": "Develop city-specific landing pages within each regional domain to capture local search traffic and improve regional SEO.",
           "details": "Create landing pages for major cities in each region (e.g., /stockton-jobs, /modesto-jobs for 209.works). Include local job listings, city-specific content, local business partnerships, regional salary data, and optimized meta tags for local SEO. Implement dynamic routing and content management for scalability.\n<info added on 2025-05-28T16:44:37.328Z>\nThe PostHog analytics system has been successfully integrated into the landing pages, providing comprehensive regional tracking capabilities. This integration ensures that user interactions are monitored with regional context, enhancing the relevance and effectiveness of the landing pages. Additionally, the implementation adheres to GDPR compliance standards, incorporating features such as consent management and data minimization to protect user privacy.\n</info added on 2025-05-28T16:44:37.328Z>",
           "status": "done",
-          "dependencies": [
-            2
-          ],
+          "dependencies": [2],
           "parentTaskId": 46
         },
         {
@@ -2664,9 +2381,7 @@
           "description": "Create a content management system for regional blog posts, job market reports, and local business spotlights to support regional SEO and marketing.",
           "details": "Build CMS for regional content including job market reports, local business spotlights, career guides, and regional news. Implement content scheduling, SEO optimization, regional tagging, and social media integration. Create templates for consistent regional branding and automated content distribution.",
           "status": "pending",
-          "dependencies": [
-            4
-          ],
+          "dependencies": [4],
           "parentTaskId": 46
         },
         {
@@ -2675,10 +2390,7 @@
           "description": "Implement regional-specific performance optimizations including CDN configuration, caching strategies, and database query optimization.",
           "details": "Set up regional CDN optimization for faster loading, implement regional caching strategies for job listings and content, optimize database queries for regional filtering, implement regional edge functions for improved performance, and set up performance monitoring for each domain with automated alerts.",
           "status": "pending",
-          "dependencies": [
-            2,
-            3
-          ],
+          "dependencies": [2, 3],
           "parentTaskId": 46
         },
         {
@@ -2687,10 +2399,7 @@
           "description": "Create social media accounts and marketing infrastructure for each regional domain to support local marketing campaigns.",
           "details": "Create Facebook, Instagram, and Twitter accounts for each region (209jobs, 916jobs, 510jobs, norcaljobs), set up regional Google My Business listings, create regional email marketing templates, implement social media automation for job posting, and develop regional hashtag strategies and content calendars.",
           "status": "pending",
-          "dependencies": [
-            1,
-            5
-          ],
+          "dependencies": [1, 5],
           "parentTaskId": 46
         },
         {
@@ -2699,10 +2408,7 @@
           "description": "Create regional-specific user onboarding flows and preference management to improve user experience and retention.",
           "details": "Develop regional onboarding flows with local job recommendations, implement regional preference settings for users, create regional job alert systems, implement cross-regional job discovery features, and develop regional user segmentation for targeted marketing and content delivery.",
           "status": "pending",
-          "dependencies": [
-            2,
-            3
-          ],
+          "dependencies": [2, 3],
           "parentTaskId": 46
         },
         {
@@ -2711,9 +2417,7 @@
           "description": "Develop partnerships with local chambers of commerce, business associations, and educational institutions to strengthen regional positioning.",
           "details": "Identify and reach out to regional chambers of commerce, create partnership agreements with local business associations, establish relationships with community colleges and universities, develop co-marketing opportunities, create regional business directory integration, and implement local event sponsorship and participation strategies.",
           "status": "pending",
-          "dependencies": [
-            7
-          ],
+          "dependencies": [7],
           "parentTaskId": 46
         },
         {
@@ -2722,10 +2426,7 @@
           "description": "Set up comprehensive SEO monitoring and reporting system to track regional domain performance and search rankings.",
           "details": "Implement SEO tracking for each regional domain, set up Google Search Console for all domains, create automated SEO reports, monitor regional keyword rankings, track local search performance, implement competitor analysis for regional markets, and create SEO performance dashboards with automated alerts for ranking changes.",
           "status": "pending",
-          "dependencies": [
-            4,
-            6
-          ],
+          "dependencies": [4, 6],
           "parentTaskId": 46
         }
       ]
@@ -2816,11 +2517,7 @@
           "id": 7,
           "title": "Regenerate Prisma Client and Align Schema",
           "description": "Regenerate the Prisma Client to reflect the latest schema changes and ensure alignment.",
-          "dependencies": [
-            2,
-            3,
-            5
-          ],
+          "dependencies": [2, 3, 5],
           "details": "After updating the schema for the User, Job, and Advertisement models, regenerate the Prisma Client to reflect these changes. This ensures that the generated TypeScript types are up-to-date and align with the database schema.\n<info added on 2025-05-28T00:03:06.582Z>\nMultiple regenerations of the Prisma Client were performed during the session to ensure alignment with the updated schema. This process addressed issues related to the availability of the `Job.create` method, confirming that the Prisma Client now accurately reflects the current database schema.\n</info added on 2025-05-28T00:03:06.582Z>\n<info added on 2025-05-28T00:08:56.236Z>\nAfter successfully installing the missing UI dependencies (`cmdk`, `@radix-ui/react-context-menu`, `@radix-ui/react-hover-card`) and regenerating the Prisma Client, attention has shifted to resolving schema field mismatches. It was identified that the `Job` model contains a `type` field, whereas the application code references a `jobType` field. To address this discrepancy, the `@map` attribute was utilized in the Prisma schema to align the field names without altering the database schema. Additionally, missing fields were identified in various models, which have been added to ensure consistency between the Prisma schema and the application code.\n</info added on 2025-05-28T00:08:56.236Z>",
           "status": "done",
           "testStrategy": "Run type checks and tests to confirm that the regenerated Prisma Client is correctly integrated and that there are no type errors."
@@ -2901,10 +2598,7 @@
       "details": "This task addresses the critical missing chamber partnership flows identified in the strategic alignment review. We need to build:\n\n1. Chamber Partnership Dashboard (/chamber) - Co-branded portal for chamber partners with member management, analytics, and joint marketing tools\n2. Local Business Sign-Up Flow (/signup/local-business) - Specialized onboarding for local businesses with verification, directory lookup, and chamber member benefits\n3. Chamber Partner Sign-Up (/signup/chamber-partner) - Partnership code validation, co-branded setup, and bulk account creation\n4. Chamber Member Verification System - Business license checks, chamber membership validation, and compliance verification\n5. Co-branded Analytics Dashboard - Partner-specific metrics, regional impact reporting, and ROI tracking\n\nThis is essential for Tasks 46.2 and 47.4 strategic alignment and represents a critical gap in our current user flow implementation.",
       "testStrategy": "",
       "status": "pending",
-      "dependencies": [
-        46,
-        47
-      ],
+      "dependencies": [46, 47],
       "priority": "high",
       "subtasks": []
     },
@@ -2915,9 +2609,7 @@
       "details": "Implement the missing community features identified in the strategic alignment review:\n\n1. Community Hub (/community) - Central hub for networking and career development\n2. Networking Events System - Regional meetups, industry workshops, career fairs, and chamber events\n3. Mentorship Program - Find mentors, peer connections, industry groups, and success stories\n4. Local Career Resources - Training programs, certification courses, career guides, and salary reports\n5. Event Management System - Registration, scheduling, notifications, and follow-up\n6. Success Stories Platform - User testimonials, career progression tracking, and community highlights\n\nThis addresses the missing community features that are essential for user engagement and retention in the Central Valley market.",
       "testStrategy": "",
       "status": "pending",
-      "dependencies": [
-        51
-      ],
+      "dependencies": [51],
       "priority": "medium",
       "subtasks": []
     },
@@ -2928,10 +2620,7 @@
       "details": "Simplify the overbuilt pricing system to match strategic alignment:\n\n1. Job Seeker Pricing Simplification:\n   - Remove complex multi-tier system\n   - Implement simple Free + Premium ($19/month) model\n   - Bundle all tools into pricing tiers (no à la carte add-ons)\n\n2. Employer Pricing Restructure:\n   - Basic ($49/month) - 5 job posts, basic analytics, regional targeting\n   - Pro ($149/month) - Unlimited posts, advanced analytics, chamber benefits\n   - Enterprise (Custom) - White-label, API access, dedicated support\n\n3. Remove Add-On System:\n   - Eliminate /tools/interview-coach add-on access\n   - Eliminate /tools/resume-compare add-on access\n   - Bundle core tools into pricing tiers\n   - Remove conditional feature access logic\n\n4. Update UI/UX:\n   - Simplify pricing pages\n   - Remove add-on purchase flows\n   - Update feature access controls\n   - Streamline subscription management\n\nThis addresses the overbuilt pricing complexity identified in the strategic review.",
       "testStrategy": "",
       "status": "pending",
-      "dependencies": [
-        46,
-        47
-      ],
+      "dependencies": [46, 47],
       "priority": "high",
       "subtasks": []
     },
@@ -2940,10 +2629,7 @@
       "title": "Implement NLP/AI-Powered Job Search",
       "description": "Develop an advanced conversational job search assistant that uses an LLM (like OpenAI GPT-4) to parse natural language queries from a chat UI, extract structured search filters such as age, location, job type, availability, schedule, industry, role, salary, experience level, company, requirements, benefits, application type, and other preferences, and query Supabase for available jobs based on these filters.",
       "status": "pending",
-      "dependencies": [
-        5,
-        44
-      ],
+      "dependencies": [5, 44],
       "priority": "medium",
       "details": "1. Design LLM prompts and extraction logic for structured filters to handle natural language queries effectively.\n2. Implement backend API endpoint for chat-based job search to process user queries and interact with the LLM.\n3. Integrate Supabase job query logic with extracted filters to fetch only available jobs based on user's criteria.\n4. Connect frontend chat UI to backend API and display results or LLM-generated replies.\n5. Test with various queries and refine prompts/logic to ensure robust error handling and edge case support.\n6. Optionally, add advanced features like saving jobs, alerts, or multi-turn context to enhance user interaction.",
       "testStrategy": "1. Conduct unit tests for LLM-based parsers to ensure accurate extraction of structured filters from natural language queries.\n2. Perform integration tests to verify that the extracted filters correctly interact with the Supabase job query system.\n3. Use A/B testing to compare user engagement and satisfaction between the old keyword-based system and the new conversational job search assistant.\n4. Collect and analyze user feedback to refine the system, improve accuracy, and enhance usability.",

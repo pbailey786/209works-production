@@ -11,23 +11,31 @@ interface DashboardCardProps {
 function Skeleton() {
   return (
     <div className="animate-pulse space-y-2">
-      <div className="h-4 bg-gray-200 rounded w-3/4" />
-      <div className="h-3 bg-gray-200 rounded w-1/2" />
-      <div className="h-6 bg-gray-200 rounded w-full" />
+      <div className="h-4 w-3/4 rounded bg-gray-200" />
+      <div className="h-3 w-1/2 rounded bg-gray-200" />
+      <div className="h-6 w-full rounded bg-gray-200" />
     </div>
   );
 }
 
-export default function DashboardCard({ title, description, children, isLoading, empty }: DashboardCardProps) {
+export default function DashboardCard({
+  title,
+  description,
+  children,
+  isLoading,
+  empty,
+}: DashboardCardProps) {
   const headingId = `${title.replace(/\s+/g, '-').toLowerCase()}-heading`;
   return (
     <div
-      className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition flex flex-col h-full"
+      className="flex h-full flex-col rounded-2xl bg-white p-4 shadow-md transition hover:shadow-lg"
       role="region"
       aria-labelledby={headingId}
     >
-      <h2 id={headingId} className="text-xl font-semibold mb-2">{title}</h2>
-      <p className="text-sm text-gray-600 mb-4">{description}</p>
+      <h2 id={headingId} className="mb-2 text-xl font-semibold">
+        {title}
+      </h2>
+      <p className="mb-4 text-sm text-gray-600">{description}</p>
       <div className="mb-4 flex-1">
         {isLoading ? (
           <Skeleton />
@@ -38,11 +46,11 @@ export default function DashboardCard({ title, description, children, isLoading,
         )}
       </div>
       <button
-        className="mt-auto bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+        className="mt-auto rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
         aria-label={`Open ${title} widget`}
       >
         Open
       </button>
     </div>
   );
-} 
+}

@@ -9,7 +9,7 @@ jobs:
     name: 🔒 Branch Protection Check
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    
+
     steps:
       - name: 🚫 Block direct pushes to protected branches
         run: |
@@ -22,7 +22,7 @@ jobs:
     name: 📋 Require PR Checks
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    
+
     steps:
       - name: ✅ PR checks required
         run: |
@@ -33,7 +33,7 @@ jobs:
           echo "- Security scanning"
           echo "- Build verification"
           echo "- Code review approval required"
-          
+
       - name: 📝 Check PR description
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
@@ -43,13 +43,13 @@ jobs:
             echo "Please add a description explaining what this PR does"
             exit 1
           fi
-          
+
           if [[ ${#PR_BODY} -lt 20 ]]; then
             echo "❌ PR description is too short (minimum 20 characters)"
             echo "Please provide a more detailed description"
             exit 1
           fi
-          
+
           echo "✅ PR description meets requirements"
 
       - name: 🏷️ Check PR labels
@@ -57,7 +57,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           labels=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
-          
+
           if [[ -z "$labels" ]]; then
             echo "⚠️  No labels found on this PR"
             echo "Consider adding relevant labels like: feature, bugfix, chore, docs, etc."
@@ -70,7 +70,7 @@ jobs:
     name: 📝 Conventional Commits Check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    
+
     steps:
       - name: 📦 Checkout code
         uses: actions/checkout@v4
@@ -80,12 +80,12 @@ jobs:
       - name: 📝 Check commit messages
         run: |
           echo "Checking commit messages for conventional commit format..."
-          
+
           base_sha=${{ github.event.pull_request.base.sha }}
           head_sha=${{ github.event.pull_request.head.sha }}
-          
+
           commits=$(git rev-list --no-merges $base_sha..$head_sha)
-          
+
           for commit in $commits; do
             message=$(git log --format=%s -n 1 $commit)
             echo "Checking commit: $commit"
@@ -99,5 +99,5 @@ jobs:
               exit 1
             fi
           done
-          
-          echo "✅ All commit messages follow conventional commits format" 
+
+          echo "✅ All commit messages follow conventional commits format"

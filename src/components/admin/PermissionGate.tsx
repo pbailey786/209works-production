@@ -19,9 +19,10 @@ export function PermissionGate({
   permissions,
   requireAll = false,
   fallback = null,
-  role
+  role,
 }: PermissionGateProps) {
-  const { hasPermission, hasAnyPermission, hasAllPermissions, userRole } = usePermissions();
+  const { hasPermission, hasAnyPermission, hasAllPermissions, userRole } =
+    usePermissions();
 
   // Check role-based access if role is specified
   if (role && userRole !== role && userRole !== 'admin') {
@@ -35,10 +36,10 @@ export function PermissionGate({
 
   // Check multiple permissions
   if (permissions) {
-    const hasAccess = requireAll 
+    const hasAccess = requireAll
       ? hasAllPermissions(permissions)
       : hasAnyPermission(permissions);
-    
+
     if (!hasAccess) {
       return <>{fallback}</>;
     }
@@ -48,7 +49,13 @@ export function PermissionGate({
 }
 
 // Convenience components for common permission patterns
-export function AdminOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+export function AdminOnly({
+  children,
+  fallback = null,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
   return (
     <PermissionGate role="admin" fallback={fallback}>
       {children}
@@ -56,10 +63,16 @@ export function AdminOnly({ children, fallback = null }: { children: ReactNode; 
   );
 }
 
-export function ModeratorOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+export function ModeratorOnly({
+  children,
+  fallback = null,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
   return (
-    <PermissionGate 
-      permissions={[Permission.VIEW_MODERATION_QUEUE, Permission.MODERATE_JOBS]} 
+    <PermissionGate
+      permissions={[Permission.VIEW_MODERATION_QUEUE, Permission.MODERATE_JOBS]}
       fallback={fallback}
     >
       {children}
@@ -67,13 +80,19 @@ export function ModeratorOnly({ children, fallback = null }: { children: ReactNo
   );
 }
 
-export function AnalystOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+export function AnalystOnly({
+  children,
+  fallback = null,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
   return (
-    <PermissionGate 
-      permission={Permission.VIEW_DETAILED_ANALYTICS} 
+    <PermissionGate
+      permission={Permission.VIEW_DETAILED_ANALYTICS}
       fallback={fallback}
     >
       {children}
     </PermissionGate>
   );
-} 
+}

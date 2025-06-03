@@ -3,9 +3,9 @@ import { z } from 'zod';
 // Alert frequency options
 export const alertFrequencySchema = z.enum([
   'immediate', // Send immediately when matching jobs are found
-  'daily',     // Daily digest
-  'weekly',    // Weekly digest
-  'monthly'    // Monthly digest
+  'daily', // Daily digest
+  'weekly', // Weekly digest
+  'monthly', // Monthly digest
 ]);
 
 // Job alert criteria schema
@@ -14,27 +14,31 @@ export const alertCriteriaSchema = z.object({
   keywords: z.array(z.string()).optional(),
   jobTitle: z.string().optional(),
   company: z.string().optional(),
-  
+
   // Location criteria
   location: z.string().optional(),
   remote: z.boolean().optional(),
   radius: z.number().min(1).max(100).optional(), // miles
-  
+
   // Job specifics
-  jobType: z.enum(['full_time', 'part_time', 'contract', 'temporary', 'internship']).optional(),
+  jobType: z
+    .enum(['full_time', 'part_time', 'contract', 'temporary', 'internship'])
+    .optional(),
   experienceLevel: z.enum(['entry', 'mid', 'senior', 'executive']).optional(),
-  
+
   // Salary criteria
   salaryMin: z.number().min(0).optional(),
   salaryMax: z.number().min(0).optional(),
-  
+
   // Skills and requirements
   skills: z.array(z.string()).optional(),
   excludeKeywords: z.array(z.string()).optional(), // Keywords to exclude
-  
+
   // Industry and company filters
   industry: z.string().optional(),
-  companySize: z.enum(['startup', 'small', 'medium', 'large', 'enterprise']).optional(),
+  companySize: z
+    .enum(['startup', 'small', 'medium', 'large', 'enterprise'])
+    .optional(),
 });
 
 // Create alert schema
@@ -99,4 +103,4 @@ export type AlertQuery = z.infer<typeof alertQuerySchema>;
 export type TestAlert = z.infer<typeof testAlertSchema>;
 export type AlertStats = z.infer<typeof alertStatsSchema>;
 export type BulkAlertOperation = z.infer<typeof bulkAlertOperationSchema>;
-export type AlertNotification = z.infer<typeof alertNotificationSchema>; 
+export type AlertNotification = z.infer<typeof alertNotificationSchema>;

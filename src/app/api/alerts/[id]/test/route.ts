@@ -5,17 +5,17 @@ import { routeParamsSchemas } from '@/lib/middleware/validation';
 import { createSuccessResponse, NotFoundError } from '@/lib/errors/api-errors';
 import { prisma } from '../../../auth/prisma';
 import { EnhancedJobSearchService } from '@/lib/search/services';
-import { 
+import {
   EnhancedJobMatchingService,
   findMatchingJobs,
   calculateMatchQuality,
-  generateOptimizationRecommendations
+  generateOptimizationRecommendations,
 } from '@/lib/search/job-matching';
-import { 
+import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute 
+  getCacheOrExecute,
 } from '@/lib/cache/redis';
 
 // POST /api/alerts/:id/test - Test alert to see matching jobs
@@ -24,7 +24,7 @@ export const POST = withAPIMiddleware(
     const { user, params, body, performance } = context;
     const alertId = params.id;
     const dryRun = body?.dryRun || false;
-    
+
     // Verify alert exists and belongs to user
     performance.trackDatabaseQuery();
     const alert = await prisma.jobAlert.findFirst({
@@ -42,11 +42,11 @@ export const POST = withAPIMiddleware(
         frequency: true,
       },
     });
-    
+
     if (!alert) {
       throw new NotFoundError('Alert not found');
     }
-    
+
     // Generate cache key for test results (cache for a short time)
     const cacheKey = generateCacheKey(
       CACHE_PREFIXES.alerts,
@@ -59,7 +59,7 @@ export const POST = withAPIMiddleware(
         salaryMax: alert.salaryMax,
       })
     );
-    
+
     return getCacheOrExecute(
       cacheKey,
       async () => {
@@ -71,24 +71,27 @@ export const POST = withAPIMiddleware(
           salaryMax: alert.salaryMax || undefined,
         };
         const matchingJobs = await findMatchingJobs(alertCriteria, 50);
-        
+
         // Calculate match quality metrics using enhanced algorithm
         const matchQuality = calculateMatchQuality(alertCriteria, matchingJobs);
-        
+
         // Simulate sending notification if not dry run
         let notificationPreview = null;
         if (!dryRun && matchingJobs.length > 0) {
-          notificationPreview = generateNotificationPreview({
-            ...alert,
-            name: alert.title || 'Unnamed Alert'
-          }, matchingJobs);
-          
+          notificationPreview = generateNotificationPreview(
+            {
+              ...alert,
+              name: alert.title || 'Unnamed Alert',
+            },
+            matchingJobs
+          );
+
           // In a real implementation, you would:
           // 1. Update alert.lastSent
           // 2. Create notification record
           // 3. Send actual email/SMS/push notification
         }
-        
+
         return createSuccessResponse({
           alert: {
             id: alert.id,
@@ -99,7 +102,10 @@ export const POST = withAPIMiddleware(
             totalMatches: matchingJobs.length,
             matchingJobs,
             matchQuality,
-            recommendations: generateOptimizationRecommendations(alertCriteria, matchingJobs),
+            recommendations: generateOptimizationRecommendations(
+              alertCriteria,
+              matchingJobs
+            ),
           },
           notificationPreview,
           dryRun: body?.dryRun || false,
@@ -127,7 +133,7 @@ export const POST = withAPIMiddleware(
 // Generate notification preview
 function generateNotificationPreview(alert: any, jobs: any[]): any {
   const topJobs = jobs.slice(0, 3); // Show top 3 jobs in preview
-  
+
   return {
     subject: `${jobs.length} new job${jobs.length !== 1 ? 's' : ''} matching "${alert.name}"`,
     preview: `Found ${jobs.length} new opportunities including ${topJobs.map(job => job.title).join(', ')}`,
@@ -138,14 +144,18 @@ function generateNotificationPreview(alert: any, jobs: any[]): any {
         title: job.title,
         company: job.company,
         location: job.location,
-        salary: job.salaryMin && job.salaryMax 
-          ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
-          : 'Salary not specified',
+        salary:
+          job.salaryMin && job.salaryMax
+            ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
+            : 'Salary not specified',
         snippet: job.snippet || 'No description available',
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`,
       })),
-      footerText: jobs.length > 3 ? `View all ${jobs.length} matches on 209jobs` : undefined,
+      footerText:
+        jobs.length > 3
+          ? `View all ${jobs.length} matches on 209jobs`
+          : undefined,
     },
     estimatedDelivery: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // 5 minutes from now
   };
-} 
+}

@@ -11,15 +11,21 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { PostHogProvider } from '@/lib/analytics/posthog-provider';
 import { useJobBoardAnalytics } from '@/lib/analytics/job-board-analytics';
 import { useSessionTracker } from '@/lib/analytics/session-tracker';
-import { 
-  Search, 
-  Eye, 
-  Send, 
-  UserPlus, 
+import {
+  Search,
+  Eye,
+  Send,
+  UserPlus,
   Briefcase,
   Bell,
   Save,
@@ -27,7 +33,7 @@ import {
   BarChart3,
   Clock,
   Users,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 
 const DEMO_JOBS = [
@@ -69,19 +75,26 @@ const DEMO_JOBS = [
 function AnalyticsTrackingDemo() {
   const analytics = useJobBoardAnalytics();
   const sessionTracker = useSessionTracker('demo-user-123');
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJobType, setSelectedJobType] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [eventLog, setEventLog] = useState<Array<{ type: string; timestamp: string; data: any }>>([]);
+  const [eventLog, setEventLog] = useState<
+    Array<{ type: string; timestamp: string; data: any }>
+  >([]);
 
   // Log events for demo purposes
   const logEvent = (type: string, data: any) => {
-    setEventLog(prev => [...prev, {
-      type,
-      timestamp: new Date().toISOString(),
-      data,
-    }].slice(-10)); // Keep last 10 events
+    setEventLog(prev =>
+      [
+        ...prev,
+        {
+          type,
+          timestamp: new Date().toISOString(),
+          data,
+        },
+      ].slice(-10)
+    ); // Keep last 10 events
   };
 
   // Demo: Job Search
@@ -108,7 +121,7 @@ function AnalyticsTrackingDemo() {
   };
 
   // Demo: Job View
-  const handleJobView = (job: typeof DEMO_JOBS[0]) => {
+  const handleJobView = (job: (typeof DEMO_JOBS)[0]) => {
     const viewEvent = {
       jobId: job.id,
       jobTitle: job.title,
@@ -129,7 +142,7 @@ function AnalyticsTrackingDemo() {
   };
 
   // Demo: Job Application
-  const handleJobApplication = (job: typeof DEMO_JOBS[0]) => {
+  const handleJobApplication = (job: (typeof DEMO_JOBS)[0]) => {
     const applicationEvent = {
       jobId: job.id,
       jobTitle: job.title,
@@ -143,7 +156,7 @@ function AnalyticsTrackingDemo() {
 
     analytics.trackJobApplication(applicationEvent);
     sessionTracker.trackApplicationStart(job.id);
-    
+
     // Simulate application completion after a delay
     setTimeout(() => {
       sessionTracker.trackApplicationComplete(job.id);
@@ -208,7 +221,7 @@ function AnalyticsTrackingDemo() {
   };
 
   // Demo: Job Save
-  const handleJobSave = (job: typeof DEMO_JOBS[0]) => {
+  const handleJobSave = (job: (typeof DEMO_JOBS)[0]) => {
     analytics.trackJobSave(job.id, 'save', {
       jobTitle: job.title,
       company: job.company,
@@ -237,29 +250,35 @@ function AnalyticsTrackingDemo() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
+      <div className="border-b bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Analytics Tracking Demo</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-gray-900">
+                Analytics Tracking Demo
+              </h1>
+              <p className="mt-2 text-gray-600">
                 Comprehensive job board analytics tracking system
               </p>
             </div>
             <div className="flex items-center gap-3">
               <Badge variant="outline" className="flex items-center gap-1">
-                <Activity className="w-3 h-3" />
+                <Activity className="h-3 w-3" />
                 Session: {sessionTracker.sessionId?.slice(-8)}
               </Badge>
-              <Badge variant={analytics.isInitialized ? "default" : "secondary"}>
-                {analytics.isInitialized ? 'Analytics Active' : 'Analytics Inactive'}
+              <Badge
+                variant={analytics.isInitialized ? 'default' : 'secondary'}
+              >
+                {analytics.isInitialized
+                  ? 'Analytics Active'
+                  : 'Analytics Inactive'}
               </Badge>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8">
         <Tabs defaultValue="tracking" className="space-y-6">
           <TabsList>
             <TabsTrigger value="tracking">Event Tracking</TabsTrigger>
@@ -273,23 +292,30 @@ function AnalyticsTrackingDemo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Search className="w-5 h-5" />
+                  <Search className="h-5 w-5" />
                   Job Search Tracking
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-3 gap-4">
+                <div className="grid gap-4 md:grid-cols-3">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Search Query</label>
+                    <label className="mb-2 block text-sm font-medium">
+                      Search Query
+                    </label>
                     <Input
                       placeholder="e.g., software engineer"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={e => setSearchQuery(e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Job Type</label>
-                    <Select value={selectedJobType} onValueChange={setSelectedJobType}>
+                    <label className="mb-2 block text-sm font-medium">
+                      Job Type
+                    </label>
+                    <Select
+                      value={selectedJobType}
+                      onValueChange={setSelectedJobType}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select job type" />
                       </SelectTrigger>
@@ -301,8 +327,13 @@ function AnalyticsTrackingDemo() {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Location</label>
-                    <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                    <label className="mb-2 block text-sm font-medium">
+                      Location
+                    </label>
+                    <Select
+                      value={selectedLocation}
+                      onValueChange={setSelectedLocation}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select location" />
                       </SelectTrigger>
@@ -314,46 +345,64 @@ function AnalyticsTrackingDemo() {
                     </Select>
                   </div>
                 </div>
-                <Button onClick={handleJobSearch} className="flex items-center gap-2">
-                  <Search className="w-4 h-4" />
+                <Button
+                  onClick={handleJobSearch}
+                  className="flex items-center gap-2"
+                >
+                  <Search className="h-4 w-4" />
                   Perform Search (Track Event)
                 </Button>
               </CardContent>
             </Card>
 
             {/* Quick Actions */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardContent className="p-4">
-                  <Button onClick={handleUserRegistration} className="w-full flex items-center gap-2">
-                    <UserPlus className="w-4 h-4" />
+                  <Button
+                    onClick={handleUserRegistration}
+                    className="flex w-full items-center gap-2"
+                  >
+                    <UserPlus className="h-4 w-4" />
                     Track Registration
                   </Button>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-4">
-                  <Button onClick={handleJobPosting} variant="outline" className="w-full flex items-center gap-2">
-                    <Briefcase className="w-4 h-4" />
+                  <Button
+                    onClick={handleJobPosting}
+                    variant="outline"
+                    className="flex w-full items-center gap-2"
+                  >
+                    <Briefcase className="h-4 w-4" />
                     Track Job Posting
                   </Button>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-4">
-                  <Button onClick={handleEmailAlert} variant="outline" className="w-full flex items-center gap-2">
-                    <Bell className="w-4 h-4" />
+                  <Button
+                    onClick={handleEmailAlert}
+                    variant="outline"
+                    className="flex w-full items-center gap-2"
+                  >
+                    <Bell className="h-4 w-4" />
                     Track Email Alert
                   </Button>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-4">
-                  <Button onClick={handleUserIdentification} variant="outline" className="w-full flex items-center gap-2">
-                    <Users className="w-4 h-4" />
+                  <Button
+                    onClick={handleUserIdentification}
+                    variant="outline"
+                    className="flex w-full items-center gap-2"
+                  >
+                    <Users className="h-4 w-4" />
                     Identify User
                   </Button>
                 </CardContent>
@@ -363,20 +412,29 @@ function AnalyticsTrackingDemo() {
 
           <TabsContent value="jobs">
             <div className="grid gap-4">
-              {DEMO_JOBS.map((job) => (
+              {DEMO_JOBS.map(job => (
                 <Card key={job.id}>
                   <CardContent className="p-6">
-                    <div className="flex justify-between items-start">
+                    <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
-                        <p className="text-gray-600">{job.company} • {job.location}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="outline">{job.jobType.replace('_', ' ')}</Badge>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {job.title}
+                        </h3>
+                        <p className="text-gray-600">
+                          {job.company} • {job.location}
+                        </p>
+                        <div className="mt-2 flex items-center gap-2">
                           <Badge variant="outline">
-                            ${job.salaryMin?.toLocaleString()} - ${job.salaryMax?.toLocaleString()}
+                            {job.jobType.replace('_', ' ')}
                           </Badge>
-                          {job.categories.map((category) => (
-                            <Badge key={category} variant="secondary">{category}</Badge>
+                          <Badge variant="outline">
+                            ${job.salaryMin?.toLocaleString()} - $
+                            {job.salaryMax?.toLocaleString()}
+                          </Badge>
+                          {job.categories.map(category => (
+                            <Badge key={category} variant="secondary">
+                              {category}
+                            </Badge>
                           ))}
                         </div>
                       </div>
@@ -387,7 +445,7 @@ function AnalyticsTrackingDemo() {
                           size="sm"
                           className="flex items-center gap-1"
                         >
-                          <Eye className="w-3 h-3" />
+                          <Eye className="h-3 w-3" />
                           View
                         </Button>
                         <Button
@@ -396,7 +454,7 @@ function AnalyticsTrackingDemo() {
                           size="sm"
                           className="flex items-center gap-1"
                         >
-                          <Save className="w-3 h-3" />
+                          <Save className="h-3 w-3" />
                           Save
                         </Button>
                         <Button
@@ -404,7 +462,7 @@ function AnalyticsTrackingDemo() {
                           size="sm"
                           className="flex items-center gap-1"
                         >
-                          <Send className="w-3 h-3" />
+                          <Send className="h-3 w-3" />
                           Apply
                         </Button>
                       </div>
@@ -416,7 +474,7 @@ function AnalyticsTrackingDemo() {
           </TabsContent>
 
           <TabsContent value="user">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
               <Card>
                 <CardHeader>
                   <CardTitle>Session Information</CardTitle>
@@ -424,18 +482,30 @@ function AnalyticsTrackingDemo() {
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Session ID:</span>
-                    <span className="text-sm font-mono">{sessionTracker.sessionId?.slice(-12) || 'Not started'}</span>
+                    <span className="font-mono text-sm">
+                      {sessionTracker.sessionId?.slice(-12) || 'Not started'}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Status:</span>
-                    <Badge variant={sessionTracker.isActive ? "default" : "secondary"}>
+                    <Badge
+                      variant={
+                        sessionTracker.isActive ? 'default' : 'secondary'
+                      }
+                    >
                       {sessionTracker.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600">Analytics:</span>
-                    <Badge variant={analytics.isInitialized ? "default" : "secondary"}>
-                      {analytics.isInitialized ? 'Initialized' : 'Not initialized'}
+                    <Badge
+                      variant={
+                        analytics.isInitialized ? 'default' : 'secondary'
+                      }
+                    >
+                      {analytics.isInitialized
+                        ? 'Initialized'
+                        : 'Not initialized'}
                     </Badge>
                   </div>
                 </CardContent>
@@ -449,13 +519,14 @@ function AnalyticsTrackingDemo() {
                   <Button
                     onClick={() => sessionTracker.endSession()}
                     variant="outline"
-                    className="w-full flex items-center gap-2"
+                    className="flex w-full items-center gap-2"
                   >
-                    <Clock className="w-4 h-4" />
+                    <Clock className="h-4 w-4" />
                     End Session Manually
                   </Button>
                   <p className="text-xs text-gray-500">
-                    Sessions automatically end after 30 minutes of inactivity or when the page is closed.
+                    Sessions automatically end after 30 minutes of inactivity or
+                    when the page is closed.
                   </p>
                 </CardContent>
               </Card>
@@ -466,26 +537,29 @@ function AnalyticsTrackingDemo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
+                  <BarChart3 className="h-5 w-5" />
                   Recent Events (Last 10)
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {eventLog.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">
+                  <p className="py-8 text-center text-gray-500">
                     No events tracked yet. Try interacting with the demo above.
                   </p>
                 ) : (
                   <div className="space-y-3">
                     {eventLog.map((event, index) => (
-                      <div key={index} className="border rounded-lg p-3 bg-gray-50">
-                        <div className="flex justify-between items-start mb-2">
+                      <div
+                        key={index}
+                        className="rounded-lg border bg-gray-50 p-3"
+                      >
+                        <div className="mb-2 flex items-start justify-between">
                           <Badge variant="outline">{event.type}</Badge>
                           <span className="text-xs text-gray-500">
                             {new Date(event.timestamp).toLocaleTimeString()}
                           </span>
                         </div>
-                        <pre className="text-xs text-gray-600 overflow-x-auto">
+                        <pre className="overflow-x-auto text-xs text-gray-600">
                           {JSON.stringify(event.data, null, 2)}
                         </pre>
                       </div>
@@ -503,7 +577,7 @@ function AnalyticsTrackingDemo() {
 
 export default function AnalyticsTrackingDemoPage() {
   return (
-    <PostHogProvider 
+    <PostHogProvider
       apiKey={process.env.NEXT_PUBLIC_POSTHOG_KEY}
       host={process.env.NEXT_PUBLIC_POSTHOG_HOST}
       region="209"
@@ -511,4 +585,4 @@ export default function AnalyticsTrackingDemoPage() {
       <AnalyticsTrackingDemo />
     </PostHogProvider>
   );
-} 
+}

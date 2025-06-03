@@ -43,69 +43,69 @@ describe('InstagramAnalyticsService', () => {
     it('should fetch and store post analytics successfully', async () => {
       const mockInsights = {
         data: [
-          { 
-            name: 'impressions', 
+          {
+            name: 'impressions',
             period: 'lifetime',
             values: [{ value: 1000, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Impressions',
             description: 'Total impressions',
-            id: 'impressions_metric'
+            id: 'impressions_metric',
           },
-          { 
-            name: 'reach', 
+          {
+            name: 'reach',
             period: 'lifetime',
             values: [{ value: 800, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Reach',
             description: 'Total reach',
-            id: 'reach_metric'
+            id: 'reach_metric',
           },
-          { 
-            name: 'likes', 
+          {
+            name: 'likes',
             period: 'lifetime',
             values: [{ value: 50, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Likes',
             description: 'Total likes',
-            id: 'likes_metric'
+            id: 'likes_metric',
           },
-          { 
-            name: 'comments', 
+          {
+            name: 'comments',
             period: 'lifetime',
             values: [{ value: 10, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Comments',
             description: 'Total comments',
-            id: 'comments_metric'
+            id: 'comments_metric',
           },
-          { 
-            name: 'shares', 
+          {
+            name: 'shares',
             period: 'lifetime',
             values: [{ value: 5, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Shares',
             description: 'Total shares',
-            id: 'shares_metric'
+            id: 'shares_metric',
           },
-          { 
-            name: 'saves', 
+          {
+            name: 'saves',
             period: 'lifetime',
             values: [{ value: 15, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Saves',
             description: 'Total saves',
-            id: 'saves_metric'
+            id: 'saves_metric',
           },
-          { 
-            name: 'profile_visits', 
+          {
+            name: 'profile_visits',
             period: 'lifetime',
             values: [{ value: 25, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Profile Visits',
             description: 'Total profile visits',
-            id: 'profile_visits_metric'
+            id: 'profile_visits_metric',
           },
-          { 
-            name: 'website_clicks', 
+          {
+            name: 'website_clicks',
             period: 'lifetime',
             values: [{ value: 8, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Website Clicks',
             description: 'Total website clicks',
-            id: 'website_clicks_metric'
+            id: 'website_clicks_metric',
           },
         ],
       };
@@ -113,12 +113,25 @@ describe('InstagramAnalyticsService', () => {
       mockInstagramAPI.getMediaInsights.mockResolvedValue(mockInsights);
       (prisma.instagramAnalytics.create as jest.Mock).mockResolvedValue({});
 
-      const result = await service.fetchPostAnalytics('post123', 'media456', 'token789');
+      const result = await service.fetchPostAnalytics(
+        'post123',
+        'media456',
+        'token789'
+      );
 
       expect(mockInstagramAPI.getMediaInsights).toHaveBeenCalledWith(
         'media456',
         'token789',
-        ['impressions', 'reach', 'likes', 'comments', 'shares', 'saves', 'profile_visits', 'website_clicks']
+        [
+          'impressions',
+          'reach',
+          'likes',
+          'comments',
+          'shares',
+          'saves',
+          'profile_visits',
+          'website_clicks',
+        ]
       );
 
       expect(result).toEqual({
@@ -152,23 +165,27 @@ describe('InstagramAnalyticsService', () => {
     });
 
     it('should handle API errors gracefully', async () => {
-      mockInstagramAPI.getMediaInsights.mockRejectedValue(new Error('API Error'));
+      mockInstagramAPI.getMediaInsights.mockRejectedValue(
+        new Error('API Error')
+      );
 
       await expect(
         service.fetchPostAnalytics('post123', 'media456', 'token789')
-      ).rejects.toThrow('Failed to fetch analytics for post post123: Error: API Error');
+      ).rejects.toThrow(
+        'Failed to fetch analytics for post post123: Error: API Error'
+      );
     });
 
     it('should handle missing metrics gracefully', async () => {
       const mockInsights = {
         data: [
-          { 
-            name: 'impressions', 
+          {
+            name: 'impressions',
             period: 'lifetime',
             values: [{ value: 1000, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Impressions',
             description: 'Total impressions',
-            id: 'impressions_metric'
+            id: 'impressions_metric',
           },
           // Missing other metrics
         ],
@@ -177,7 +194,11 @@ describe('InstagramAnalyticsService', () => {
       mockInstagramAPI.getMediaInsights.mockResolvedValue(mockInsights);
       (prisma.instagramAnalytics.create as jest.Mock).mockResolvedValue({});
 
-      const result = await service.fetchPostAnalytics('post123', 'media456', 'token789');
+      const result = await service.fetchPostAnalytics(
+        'post123',
+        'media456',
+        'token789'
+      );
 
       expect(result).toEqual({
         impressions: 1000,
@@ -207,46 +228,51 @@ describe('InstagramAnalyticsService', () => {
 
       const mockInsights = {
         data: [
-          { 
-            name: 'impressions', 
+          {
+            name: 'impressions',
             period: 'day',
             values: [{ value: 10000, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Impressions',
             description: 'Daily impressions',
-            id: 'impressions_metric'
+            id: 'impressions_metric',
           },
-          { 
-            name: 'reach', 
+          {
+            name: 'reach',
             period: 'day',
             values: [{ value: 8000, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Reach',
             description: 'Daily reach',
-            id: 'reach_metric'
+            id: 'reach_metric',
           },
-          { 
-            name: 'profile_views', 
+          {
+            name: 'profile_views',
             period: 'day',
             values: [{ value: 500, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Profile Views',
             description: 'Daily profile views',
-            id: 'profile_views_metric'
+            id: 'profile_views_metric',
           },
-          { 
-            name: 'website_clicks', 
+          {
+            name: 'website_clicks',
             period: 'day',
             values: [{ value: 100, end_time: '2024-01-01T00:00:00Z' }],
             title: 'Website Clicks',
             description: 'Daily website clicks',
-            id: 'website_clicks_metric'
+            id: 'website_clicks_metric',
           },
         ],
       };
 
       mockInstagramAPI.getAccountInfo.mockResolvedValue(mockAccountInfo);
       mockInstagramAPI.getAccountInsights.mockResolvedValue(mockInsights);
-      (prisma.instagramAccountMetrics.upsert as jest.Mock).mockResolvedValue({});
+      (prisma.instagramAccountMetrics.upsert as jest.Mock).mockResolvedValue(
+        {}
+      );
 
-      const result = await service.fetchAccountMetrics('account123', 'token789');
+      const result = await service.fetchAccountMetrics(
+        'account123',
+        'token789'
+      );
 
       expect(result).toEqual({
         followersCount: 5000,
@@ -292,7 +318,9 @@ describe('InstagramAnalyticsService', () => {
         },
       ];
 
-      (prisma.instagramAnalytics.findMany as jest.Mock).mockResolvedValue(mockAnalytics);
+      (prisma.instagramAnalytics.findMany as jest.Mock).mockResolvedValue(
+        mockAnalytics
+      );
 
       const filters = {
         startDate: new Date('2024-01-01'),
@@ -361,7 +389,9 @@ describe('InstagramAnalyticsService', () => {
         },
       ];
 
-      jest.spyOn(service, 'getPostsAnalytics').mockResolvedValue(mockAnalytics as any);
+      jest
+        .spyOn(service, 'getPostsAnalytics')
+        .mockResolvedValue(mockAnalytics as any);
 
       const result = await service.getPerformanceInsights();
 
@@ -434,9 +464,15 @@ describe('InstagramAnalyticsService', () => {
         },
       ];
 
-      (prisma.instagramAnalytics.findFirst as jest.Mock).mockResolvedValue(mockAnalytics);
-      (prisma.instagramEngagementAlert.findMany as jest.Mock).mockResolvedValue(mockAlerts);
-      (prisma.instagramEngagementAlert.update as jest.Mock).mockResolvedValue({});
+      (prisma.instagramAnalytics.findFirst as jest.Mock).mockResolvedValue(
+        mockAnalytics
+      );
+      (prisma.instagramEngagementAlert.findMany as jest.Mock).mockResolvedValue(
+        mockAlerts
+      );
+      (prisma.instagramEngagementAlert.update as jest.Mock).mockResolvedValue(
+        {}
+      );
 
       jest.spyOn(service as any, 'shouldTriggerAlert').mockReturnValue(true);
       jest.spyOn(service as any, 'triggerAlert').mockResolvedValue(undefined);
@@ -475,9 +511,15 @@ describe('InstagramAnalyticsService', () => {
         },
       ];
 
-      (prisma.instagramAccountMetrics.findMany as jest.Mock).mockResolvedValue(mockMetrics);
+      (prisma.instagramAccountMetrics.findMany as jest.Mock).mockResolvedValue(
+        mockMetrics
+      );
 
-      const result = await service.getAccountMetricsHistory('account1', startDate, endDate);
+      const result = await service.getAccountMetricsHistory(
+        'account1',
+        startDate,
+        endDate
+      );
 
       expect(prisma.instagramAccountMetrics.findMany).toHaveBeenCalledWith({
         where: {
@@ -495,4 +537,4 @@ describe('InstagramAnalyticsService', () => {
       expect(result).toEqual(mockMetrics);
     });
   });
-}); 
+});

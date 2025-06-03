@@ -15,12 +15,12 @@ export interface CoreWebVitals {
   cls: number; // Cumulative Layout Shift
   fcp: number; // First Contentful Paint
   ttfb: number; // Time to First Byte
-  
+
   // Additional Performance Metrics
   domContentLoaded: number;
   loadComplete: number;
   navigationTiming: PerformanceNavigationTiming | null;
-  
+
   // Page-specific metrics
   pageLoadTime: number;
   renderTime: number;
@@ -46,7 +46,7 @@ export interface SystemHealthMetric {
     total: number;
     percentage: number;
   };
-  
+
   // Network Performance
   networkInfo: {
     effectiveType: string;
@@ -54,7 +54,7 @@ export interface SystemHealthMetric {
     rtt: number;
     saveData: boolean;
   };
-  
+
   // Device Information
   deviceInfo: {
     userAgent: string;
@@ -64,14 +64,14 @@ export interface SystemHealthMetric {
     onLine: boolean;
     hardwareConcurrency: number;
   };
-  
+
   // Browser Performance
   browserPerformance: {
     jsHeapSizeLimit: number;
     totalJSHeapSize: number;
     usedJSHeapSize: number;
   };
-  
+
   timestamp: number;
 }
 
@@ -80,21 +80,21 @@ export interface UserExperienceMetric {
   timeToInteractive: number;
   firstInputDelay: number;
   totalBlockingTime: number;
-  
+
   // Page Performance
   pageViews: number;
   bounceRate: number;
   sessionDuration: number;
-  
+
   // Error Tracking
   jsErrors: number;
   networkErrors: number;
   renderErrors: number;
-  
+
   // User Satisfaction
   performanceScore: number;
   userSatisfactionScore: number;
-  
+
   timestamp: number;
 }
 
@@ -118,31 +118,42 @@ export function usePerformanceMonitor() {
 
   // Track Core Web Vitals
   const trackCoreWebVitals = (): Promise<CoreWebVitals> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (typeof window === 'undefined') {
         resolve({
-          lcp: 0, fid: 0, cls: 0, fcp: 0, ttfb: 0,
-          domContentLoaded: 0, loadComplete: 0, navigationTiming: null,
-          pageLoadTime: 0, renderTime: 0, interactionTime: 0
+          lcp: 0,
+          fid: 0,
+          cls: 0,
+          fcp: 0,
+          ttfb: 0,
+          domContentLoaded: 0,
+          loadComplete: 0,
+          navigationTiming: null,
+          pageLoadTime: 0,
+          renderTime: 0,
+          interactionTime: 0,
         });
         return;
       }
 
       const vitals: Partial<CoreWebVitals> = {};
-      
+
       // Get Navigation Timing
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const navigation = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming;
       vitals.navigationTiming = navigation;
-      
+
       if (navigation) {
         vitals.ttfb = navigation.responseStart - navigation.requestStart;
-        vitals.domContentLoaded = navigation.domContentLoadedEventEnd - navigation.startTime;
+        vitals.domContentLoaded =
+          navigation.domContentLoadedEventEnd - navigation.startTime;
         vitals.loadComplete = navigation.loadEventEnd - navigation.startTime;
         vitals.pageLoadTime = navigation.loadEventEnd - navigation.startTime;
       }
 
       // Track Core Web Vitals using Performance Observer
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           switch (entry.entryType) {
             case 'largest-contentful-paint':
@@ -167,7 +178,14 @@ export function usePerformanceMonitor() {
 
       // Observe different entry types
       try {
-        observer.observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift', 'paint'] });
+        observer.observe({
+          entryTypes: [
+            'largest-contentful-paint',
+            'first-input',
+            'layout-shift',
+            'paint',
+          ],
+        });
       } catch (error) {
         console.warn('Performance Observer not supported:', error);
       }
@@ -185,7 +203,7 @@ export function usePerformanceMonitor() {
           navigationTiming: vitals.navigationTiming ?? null,
           pageLoadTime: vitals.pageLoadTime || 0,
           renderTime: performance.now(),
-          interactionTime: 0
+          interactionTime: 0,
         };
 
         resolve(finalVitals);
@@ -214,7 +232,7 @@ export function usePerformanceMonitor() {
       timestamp: Date.now(),
       success: status >= 200 && status < 400,
       errorMessage,
-      retryCount
+      retryCount,
     };
 
     if (isInitialized) {
@@ -238,10 +256,26 @@ export function usePerformanceMonitor() {
     if (typeof window === 'undefined') {
       return {
         memoryUsage: { used: 0, total: 0, percentage: 0 },
-        networkInfo: { effectiveType: 'unknown', downlink: 0, rtt: 0, saveData: false },
-        deviceInfo: { userAgent: '', platform: '', language: '', cookieEnabled: false, onLine: false, hardwareConcurrency: 0 },
-        browserPerformance: { jsHeapSizeLimit: 0, totalJSHeapSize: 0, usedJSHeapSize: 0 },
-        timestamp: Date.now()
+        networkInfo: {
+          effectiveType: 'unknown',
+          downlink: 0,
+          rtt: 0,
+          saveData: false,
+        },
+        deviceInfo: {
+          userAgent: '',
+          platform: '',
+          language: '',
+          cookieEnabled: false,
+          onLine: false,
+          hardwareConcurrency: 0,
+        },
+        browserPerformance: {
+          jsHeapSizeLimit: 0,
+          totalJSHeapSize: 0,
+          usedJSHeapSize: 0,
+        },
+        timestamp: Date.now(),
       };
     }
 
@@ -250,16 +284,22 @@ export function usePerformanceMonitor() {
     const memoryUsage = {
       used: memory.usedJSHeapSize || 0,
       total: memory.totalJSHeapSize || 0,
-      percentage: memory.totalJSHeapSize ? (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100 : 0
+      percentage: memory.totalJSHeapSize
+        ? (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100
+        : 0,
     };
 
     // Network Information
-    const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection || {};
+    const connection =
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection ||
+      {};
     const networkInfo = {
       effectiveType: connection.effectiveType || 'unknown',
       downlink: connection.downlink || 0,
       rtt: connection.rtt || 0,
-      saveData: connection.saveData || false
+      saveData: connection.saveData || false,
     };
 
     // Device Information
@@ -269,14 +309,14 @@ export function usePerformanceMonitor() {
       language: navigator.language,
       cookieEnabled: navigator.cookieEnabled,
       onLine: navigator.onLine,
-      hardwareConcurrency: navigator.hardwareConcurrency || 0
+      hardwareConcurrency: navigator.hardwareConcurrency || 0,
     };
 
     // Browser Performance
     const browserPerformance = {
       jsHeapSizeLimit: memory.jsHeapSizeLimit || 0,
       totalJSHeapSize: memory.totalJSHeapSize || 0,
-      usedJSHeapSize: memory.usedJSHeapSize || 0
+      usedJSHeapSize: memory.usedJSHeapSize || 0,
     };
 
     return {
@@ -284,16 +324,20 @@ export function usePerformanceMonitor() {
       networkInfo,
       deviceInfo,
       browserPerformance,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   };
 
   // Track User Experience Metrics
   const trackUserExperienceMetrics = (): UserExperienceMetric => {
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    
+    const navigation = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming;
+
     const metric: UserExperienceMetric = {
-      timeToInteractive: navigation ? navigation.domInteractive - navigation.startTime : 0,
+      timeToInteractive: navigation
+        ? navigation.domInteractive - navigation.startTime
+        : 0,
       firstInputDelay: 0, // This would be tracked via Performance Observer
       totalBlockingTime: 0, // This would be calculated from long tasks
       pageViews: 1,
@@ -304,7 +348,7 @@ export function usePerformanceMonitor() {
       renderErrors: 0, // This would be tracked via React error boundaries
       performanceScore: calculatePerformanceScore(),
       userSatisfactionScore: 0, // This would be calculated based on various factors
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     if (isInitialized) {
@@ -323,27 +367,29 @@ export function usePerformanceMonitor() {
   const calculatePerformanceScore = (): number => {
     if (typeof window === 'undefined') return 100;
 
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    const navigation = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming;
     if (!navigation) return 100;
 
     // Performance scoring based on Core Web Vitals thresholds
     let score = 100;
-    
+
     // LCP scoring (good: <2.5s, needs improvement: 2.5-4s, poor: >4s)
     const lcp = navigation.loadEventEnd - navigation.startTime;
     if (lcp > 4000) score -= 30;
     else if (lcp > 2500) score -= 15;
-    
+
     // FCP scoring (good: <1.8s, needs improvement: 1.8-3s, poor: >3s)
     const fcp = navigation.domContentLoadedEventEnd - navigation.startTime;
     if (fcp > 3000) score -= 25;
     else if (fcp > 1800) score -= 10;
-    
+
     // TTFB scoring (good: <800ms, needs improvement: 800-1800ms, poor: >1800ms)
     const ttfb = navigation.responseStart - navigation.requestStart;
     if (ttfb > 1800) score -= 20;
     else if (ttfb > 800) score -= 10;
-    
+
     // Memory usage scoring
     const memory = (performance as any).memory;
     if (memory && memory.totalJSHeapSize) {
@@ -373,7 +419,7 @@ export function usePerformanceMonitor() {
         threshold: 2500,
         message: `LCP of ${(vitals.lcp / 1000).toFixed(2)}s exceeds recommended threshold of 2.5s`,
         timestamp: Date.now(),
-        resolved: false
+        resolved: false,
       });
     } else if (vitals.lcp > 2500) {
       alerts.push({
@@ -384,7 +430,7 @@ export function usePerformanceMonitor() {
         threshold: 2500,
         message: `LCP of ${(vitals.lcp / 1000).toFixed(2)}s needs improvement`,
         timestamp: Date.now(),
-        resolved: false
+        resolved: false,
       });
     }
 
@@ -398,7 +444,7 @@ export function usePerformanceMonitor() {
         threshold: 70,
         message: `Memory usage at ${systemHealth.memoryUsage.percentage.toFixed(1)}% is critically high`,
         timestamp: Date.now(),
-        resolved: false
+        resolved: false,
       });
     } else if (systemHealth.memoryUsage.percentage > 70) {
       alerts.push({
@@ -409,7 +455,7 @@ export function usePerformanceMonitor() {
         threshold: 70,
         message: `Memory usage at ${systemHealth.memoryUsage.percentage.toFixed(1)}% is high`,
         timestamp: Date.now(),
-        resolved: false
+        resolved: false,
       });
     }
 
@@ -423,7 +469,7 @@ export function usePerformanceMonitor() {
         threshold: 70,
         message: `Performance score of ${userExperience.performanceScore} is critically low`,
         timestamp: Date.now(),
-        resolved: false
+        resolved: false,
       });
     } else if (userExperience.performanceScore < 70) {
       alerts.push({
@@ -434,7 +480,7 @@ export function usePerformanceMonitor() {
         threshold: 70,
         message: `Performance score of ${userExperience.performanceScore} needs improvement`,
         timestamp: Date.now(),
-        resolved: false
+        resolved: false,
       });
     }
 
@@ -447,7 +493,11 @@ export function usePerformanceMonitor() {
       const vitals = await trackCoreWebVitals();
       const systemHealth = getSystemHealthMetrics();
       const userExperience = trackUserExperienceMetrics();
-      const alerts = generatePerformanceAlerts(vitals, systemHealth, userExperience);
+      const alerts = generatePerformanceAlerts(
+        vitals,
+        systemHealth,
+        userExperience
+      );
 
       if (isInitialized) {
         trackEvent('page_performance_monitored', {
@@ -468,7 +518,7 @@ export function usePerformanceMonitor() {
         vitals,
         systemHealth,
         userExperience,
-        alerts
+        alerts,
       };
     } catch (error) {
       console.error('Performance monitoring error:', error);
@@ -479,21 +529,21 @@ export function usePerformanceMonitor() {
   // Create API Performance Wrapper
   const createAPIMonitor = () => {
     const originalFetch = window.fetch;
-    
+
     window.fetch = async (...args) => {
       const startTime = performance.now();
       const url = args[0] as string;
       const options = args[1] || {};
       const method = options.method || 'GET';
-      
+
       try {
         const response = await originalFetch(...args);
         const endTime = performance.now();
-        
+
         // Get response size if available
         const contentLength = response.headers.get('content-length');
         const size = contentLength ? parseInt(contentLength, 10) : 0;
-        
+
         trackAPIPerformance(
           url,
           method,
@@ -502,11 +552,11 @@ export function usePerformanceMonitor() {
           response.status,
           size
         );
-        
+
         return response;
       } catch (error) {
         const endTime = performance.now();
-        
+
         trackAPIPerformance(
           url,
           method,
@@ -516,7 +566,7 @@ export function usePerformanceMonitor() {
           0,
           error instanceof Error ? error.message : 'Unknown error'
         );
-        
+
         throw error;
       }
     };
@@ -530,7 +580,7 @@ export function usePerformanceMonitor() {
     createAPIMonitor();
 
     // Set up error tracking
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', event => {
       if (isInitialized) {
         trackEvent('javascript_error', {
           message: event.message,
@@ -544,7 +594,7 @@ export function usePerformanceMonitor() {
     });
 
     // Set up unhandled promise rejection tracking
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', event => {
       if (isInitialized) {
         trackEvent('unhandled_promise_rejection', {
           reason: event.reason?.toString(),
@@ -573,11 +623,11 @@ export function usePerformanceMonitor() {
     monitorPagePerformance,
     generatePerformanceAlerts,
     calculatePerformanceScore,
-    
+
     // Setup functions
     initializePerformanceMonitoring,
-    
+
     // State
     isInitialized,
   };
-} 
+}

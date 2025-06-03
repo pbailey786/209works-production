@@ -6,7 +6,10 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { useJobBoardAnalytics, UserEngagementEvent } from './job-board-analytics';
+import {
+  useJobBoardAnalytics,
+  UserEngagementEvent,
+} from './job-board-analytics';
 
 interface SessionData {
   sessionId: string;
@@ -36,41 +39,70 @@ const generateSessionId = (): string => {
 // Detect device type
 const getDeviceType = (): 'desktop' | 'mobile' | 'tablet' => {
   if (typeof window === 'undefined') return 'desktop';
-  
+
   const userAgent = window.navigator.userAgent;
   if (/tablet|ipad|playbook|silk/i.test(userAgent)) return 'tablet';
-  if (/mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(userAgent)) return 'mobile';
+  if (
+    /mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(
+      userAgent
+    )
+  )
+    return 'mobile';
   return 'desktop';
 };
 
 // Detect traffic source
-const getTrafficSource = (): 'organic' | 'direct' | 'social' | 'email' | 'paid' => {
+const getTrafficSource = ():
+  | 'organic'
+  | 'direct'
+  | 'social'
+  | 'email'
+  | 'paid' => {
   if (typeof window === 'undefined') return 'direct';
-  
+
   const referrer = document.referrer;
   const urlParams = new URLSearchParams(window.location.search);
-  
+
   // Check for UTM parameters (paid/email campaigns)
   if (urlParams.get('utm_source')) {
     const source = urlParams.get('utm_source')?.toLowerCase();
     if (source?.includes('email')) return 'email';
-    if (source?.includes('google') || source?.includes('facebook') || source?.includes('linkedin')) return 'paid';
+    if (
+      source?.includes('google') ||
+      source?.includes('facebook') ||
+      source?.includes('linkedin')
+    )
+      return 'paid';
     return 'paid';
   }
-  
+
   // Check referrer
   if (!referrer) return 'direct';
-  
+
   const referrerDomain = new URL(referrer).hostname.toLowerCase();
-  
+
   // Social media sources
-  const socialDomains = ['facebook.com', 'twitter.com', 'linkedin.com', 'instagram.com', 'youtube.com', 'tiktok.com'];
-  if (socialDomains.some(domain => referrerDomain.includes(domain))) return 'social';
-  
+  const socialDomains = [
+    'facebook.com',
+    'twitter.com',
+    'linkedin.com',
+    'instagram.com',
+    'youtube.com',
+    'tiktok.com',
+  ];
+  if (socialDomains.some(domain => referrerDomain.includes(domain)))
+    return 'social';
+
   // Search engines (organic)
-  const searchDomains = ['google.com', 'bing.com', 'yahoo.com', 'duckduckgo.com'];
-  if (searchDomains.some(domain => referrerDomain.includes(domain))) return 'organic';
-  
+  const searchDomains = [
+    'google.com',
+    'bing.com',
+    'yahoo.com',
+    'duckduckgo.com',
+  ];
+  if (searchDomains.some(domain => referrerDomain.includes(domain)))
+    return 'organic';
+
   return 'direct';
 };
 
@@ -100,10 +132,12 @@ export function useSessionTracker(userId?: string) {
       deviceType: getDeviceType(),
       trafficSource: getTrafficSource(),
       pages: [window.location.pathname],
-      events: [{
-        type: 'session_start',
-        timestamp: now,
-      }],
+      events: [
+        {
+          type: 'session_start',
+          timestamp: now,
+        },
+      ],
     };
 
     // Store session ID in sessionStorage for persistence across page reloads
@@ -115,133 +149,156 @@ export function useSessionTracker(userId?: string) {
     if (!sessionDataRef.current) return;
 
     sessionDataRef.current.lastActivity = Date.now();
-    
+
     // Reset inactivity timer
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
     }
-    
+
     // Set new inactivity timer (30 minutes)
-    inactivityTimerRef.current = setTimeout(() => {
-      endSession('inactivity');
-    }, 30 * 60 * 1000);
+    inactivityTimerRef.current = setTimeout(
+      () => {
+        endSession('inactivity');
+      },
+      30 * 60 * 1000
+    );
   }, []);
 
   // Track page view
-  const trackPageView = useCallback((path: string) => {
-    if (!sessionDataRef.current) return;
+  const trackPageView = useCallback(
+    (path: string) => {
+      if (!sessionDataRef.current) return;
 
-    sessionDataRef.current.pageViews++;
-    if (!sessionDataRef.current.pages.includes(path)) {
-      sessionDataRef.current.pages.push(path);
-    }
-    
-    sessionDataRef.current.events.push({
-      type: 'page_view',
-      timestamp: Date.now(),
-      data: { path },
-    });
+      sessionDataRef.current.pageViews++;
+      if (!sessionDataRef.current.pages.includes(path)) {
+        sessionDataRef.current.pages.push(path);
+      }
 
-    updateActivity();
-  }, [updateActivity]);
+      sessionDataRef.current.events.push({
+        type: 'page_view',
+        timestamp: Date.now(),
+        data: { path },
+      });
+
+      updateActivity();
+    },
+    [updateActivity]
+  );
 
   // Track job view
-  const trackJobView = useCallback((jobId: string) => {
-    if (!sessionDataRef.current) return;
+  const trackJobView = useCallback(
+    (jobId: string) => {
+      if (!sessionDataRef.current) return;
 
-    sessionDataRef.current.jobsViewed++;
-    sessionDataRef.current.events.push({
-      type: 'job_view',
-      timestamp: Date.now(),
-      data: { jobId },
-    });
+      sessionDataRef.current.jobsViewed++;
+      sessionDataRef.current.events.push({
+        type: 'job_view',
+        timestamp: Date.now(),
+        data: { jobId },
+      });
 
-    updateActivity();
-  }, [updateActivity]);
+      updateActivity();
+    },
+    [updateActivity]
+  );
 
   // Track job search
-  const trackJobSearch = useCallback((searchQuery: string) => {
-    if (!sessionDataRef.current) return;
+  const trackJobSearch = useCallback(
+    (searchQuery: string) => {
+      if (!sessionDataRef.current) return;
 
-    sessionDataRef.current.searchesPerformed++;
-    sessionDataRef.current.events.push({
-      type: 'job_search',
-      timestamp: Date.now(),
-      data: { searchQuery },
-    });
+      sessionDataRef.current.searchesPerformed++;
+      sessionDataRef.current.events.push({
+        type: 'job_search',
+        timestamp: Date.now(),
+        data: { searchQuery },
+      });
 
-    updateActivity();
-  }, [updateActivity]);
+      updateActivity();
+    },
+    [updateActivity]
+  );
 
   // Track application start
-  const trackApplicationStart = useCallback((jobId: string) => {
-    if (!sessionDataRef.current) return;
+  const trackApplicationStart = useCallback(
+    (jobId: string) => {
+      if (!sessionDataRef.current) return;
 
-    sessionDataRef.current.applicationsStarted++;
-    sessionDataRef.current.events.push({
-      type: 'application_start',
-      timestamp: Date.now(),
-      data: { jobId },
-    });
+      sessionDataRef.current.applicationsStarted++;
+      sessionDataRef.current.events.push({
+        type: 'application_start',
+        timestamp: Date.now(),
+        data: { jobId },
+      });
 
-    updateActivity();
-  }, [updateActivity]);
+      updateActivity();
+    },
+    [updateActivity]
+  );
 
   // Track application completion
-  const trackApplicationComplete = useCallback((jobId: string) => {
-    if (!sessionDataRef.current) return;
+  const trackApplicationComplete = useCallback(
+    (jobId: string) => {
+      if (!sessionDataRef.current) return;
 
-    sessionDataRef.current.applicationsCompleted++;
-    sessionDataRef.current.events.push({
-      type: 'application_complete',
-      timestamp: Date.now(),
-      data: { jobId },
-    });
+      sessionDataRef.current.applicationsCompleted++;
+      sessionDataRef.current.events.push({
+        type: 'application_complete',
+        timestamp: Date.now(),
+        data: { jobId },
+      });
 
-    updateActivity();
-  }, [updateActivity]);
+      updateActivity();
+    },
+    [updateActivity]
+  );
 
   // End session and send analytics
-  const endSession = useCallback((reason: 'navigation' | 'inactivity' | 'manual' | 'beforeunload') => {
-    if (!sessionDataRef.current || !isInitialized) return;
+  const endSession = useCallback(
+    (reason: 'navigation' | 'inactivity' | 'manual' | 'beforeunload') => {
+      if (!sessionDataRef.current || !isInitialized) return;
 
-    const sessionData = sessionDataRef.current;
-    const sessionDuration = Math.floor((Date.now() - sessionData.startTime) / 1000);
-    
-    // Determine if this was a bounce (single page, short duration)
-    const bounceRate = sessionData.pageViews === 1 && sessionDuration < 30;
+      const sessionData = sessionDataRef.current;
+      const sessionDuration = Math.floor(
+        (Date.now() - sessionData.startTime) / 1000
+      );
 
-    const engagementEvent: UserEngagementEvent = {
-      sessionId: sessionData.sessionId,
-      userId: sessionData.userId,
-      sessionDuration,
-      pageViews: sessionData.pageViews,
-      jobsViewed: sessionData.jobsViewed,
-      searchesPerformed: sessionData.searchesPerformed,
-      applicationsStarted: sessionData.applicationsStarted,
-      applicationsCompleted: sessionData.applicationsCompleted,
-      bounceRate,
-      deviceType: sessionData.deviceType,
-      trafficSource: sessionData.trafficSource,
-    };
+      // Determine if this was a bounce (single page, short duration)
+      const bounceRate = sessionData.pageViews === 1 && sessionDuration < 30;
 
-    // Send session data to analytics
-    trackUserSession(engagementEvent);
+      const engagementEvent: UserEngagementEvent = {
+        sessionId: sessionData.sessionId,
+        userId: sessionData.userId,
+        sessionDuration,
+        pageViews: sessionData.pageViews,
+        jobsViewed: sessionData.jobsViewed,
+        searchesPerformed: sessionData.searchesPerformed,
+        applicationsStarted: sessionData.applicationsStarted,
+        applicationsCompleted: sessionData.applicationsCompleted,
+        bounceRate,
+        deviceType: sessionData.deviceType,
+        trafficSource: sessionData.trafficSource,
+      };
 
-    // Clean up
-    sessionDataRef.current = null;
-    sessionStorage.removeItem('job_board_session_id');
-    
-    if (inactivityTimerRef.current) {
-      clearTimeout(inactivityTimerRef.current);
-      inactivityTimerRef.current = null;
-    }
-    
-    if (heartbeatTimerRef.current) {
-      clearInterval(heartbeatTimerRef.current);
-      heartbeatTimerRef.current = null;
-    }
-  }, [isInitialized, trackUserSession]);
+      // Send session data to analytics
+      trackUserSession(engagementEvent);
+
+      // Clean up
+      sessionDataRef.current = null;
+      sessionStorage.removeItem('job_board_session_id');
+
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+
+      if (heartbeatTimerRef.current) {
+        clearInterval(heartbeatTimerRef.current);
+        heartbeatTimerRef.current = null;
+      }
+    },
+    [isInitialized, trackUserSession]
+  );
 
   // Set up session tracking
   useEffect(() => {
@@ -264,7 +321,14 @@ export function useSessionTracker(userId?: string) {
     }
 
     // Set up activity listeners
-    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    const activityEvents = [
+      'mousedown',
+      'mousemove',
+      'keypress',
+      'scroll',
+      'touchstart',
+      'click',
+    ];
     activityEvents.forEach(event => {
       document.addEventListener(event, updateActivity, { passive: true });
     });
@@ -273,10 +337,13 @@ export function useSessionTracker(userId?: string) {
     heartbeatTimerRef.current = setInterval(() => {
       if (sessionDataRef.current) {
         // Update session in sessionStorage
-        sessionStorage.setItem('job_board_session_data', JSON.stringify({
-          ...sessionDataRef.current,
-          lastActivity: Date.now(),
-        }));
+        sessionStorage.setItem(
+          'job_board_session_data',
+          JSON.stringify({
+            ...sessionDataRef.current,
+            lastActivity: Date.now(),
+          })
+        );
       }
     }, 60000); // Every minute
 
@@ -292,18 +359,24 @@ export function useSessionTracker(userId?: string) {
       activityEvents.forEach(event => {
         document.removeEventListener(event, updateActivity);
       });
-      
+
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      
+
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current);
       }
-      
+
       if (heartbeatTimerRef.current) {
         clearInterval(heartbeatTimerRef.current);
       }
     };
-  }, [isInitialized, initializeSession, updateActivity, trackPageView, endSession]);
+  }, [
+    isInitialized,
+    initializeSession,
+    updateActivity,
+    trackPageView,
+    endSession,
+  ]);
 
   // Track route changes
   useEffect(() => {
@@ -317,9 +390,9 @@ export function useSessionTracker(userId?: string) {
     trackApplicationStart,
     trackApplicationComplete,
     endSession: () => endSession('manual'),
-    
+
     // Session state
     sessionId: sessionDataRef.current?.sessionId,
     isActive: !!sessionDataRef.current,
   };
-} 
+}

@@ -1,17 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { withValidation } from './validation';
-import { applyRateLimit, shouldRateLimit, RateLimitType, RateLimitResult } from './ratelimit';
-import { startRequestLogging, endRequestLogging, getPerformanceMetrics } from './logging';
+import {
+  applyRateLimit,
+  shouldRateLimit,
+  RateLimitType,
+  RateLimitResult,
+} from './ratelimit';
+import {
+  startRequestLogging,
+  endRequestLogging,
+  getPerformanceMetrics,
+} from './logging';
 import { applyCORS, getCORSConfig, CORSConfig } from './cors';
-import { 
-  generateRequestId, 
-  createErrorResponse, 
+import {
+  generateRequestId,
+  createErrorResponse,
   createSuccessResponse,
   AuthenticationError,
-  AuthorizationError 
+  AuthorizationError,
 } from '../errors/api-errors';
-import { errorMonitor, createErrorContext, ErrorLogger } from '../monitoring/error-monitor';
+import {
+  errorMonitor,
+  createErrorContext,
+  ErrorLogger,
+} from '../monitoring/error-monitor';
 import { healthMetrics } from '../../app/api/health/monitoring/route';
 import { requireAuth } from '../../app/api/auth/requireAuth';
 import { requireRole } from '../../app/api/auth/requireRole';
@@ -22,36 +35,36 @@ export interface APIMiddlewareConfig<TBody = any, TQuery = any> {
   bodySchema?: z.ZodSchema<TBody>;
   querySchema?: z.ZodSchema<TQuery>;
   paramsSchema?: z.ZodSchema<any>;
-  
+
   // Authentication & authorization
   requireAuthentication?: boolean;
   requiredRoles?: string[];
-  
+
   // Rate limiting
   rateLimit?: {
     enabled?: boolean;
     type?: RateLimitType;
   };
-  
+
   // CORS configuration
   cors?: {
     enabled?: boolean;
     config?: Partial<CORSConfig>;
   };
-  
+
   // Logging configuration
   logging?: {
     enabled?: boolean;
     includeBody?: boolean;
     includeQuery?: boolean;
   };
-  
+
   // Performance monitoring
   monitoring?: {
     enabled?: boolean;
     slowRequestThreshold?: number; // milliseconds
   };
-  
+
   // Response compression
   compression?: boolean;
 }
@@ -87,13 +100,13 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
   return async (req: NextRequest, routeParams: { params: any }) => {
     const requestId = generateRequestId();
     const startTime = Date.now();
-    
+
     let user: any = null;
     let statusCode = 200;
     let error: any = null;
     let response: NextResponse;
     let rateLimitResult: RateLimitResult | null = null;
-    
+
     try {
       // Initialize context
       const context: APIContext<TBody, TQuery> = {
@@ -115,13 +128,13 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
           },
         },
       };
-      
+
       // 1. CORS handling for preflight requests
       if (req.method === 'OPTIONS' && config.cors?.enabled !== false) {
         const { handlePreflight } = require('./cors');
         return handlePreflight(req, config.cors?.config);
       }
-      
+
       // 2. Authentication & Authorization
       if (config.requireAuthentication || config.requiredRoles) {
         try {
@@ -138,7 +151,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
             }
             user = session.user;
           }
-          
+
           if (user) {
             context.user = {
               id: user.id,
@@ -146,7 +159,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
               role: user.role,
               ...user,
             };
-            
+
             // Set user context for error monitoring
             errorMonitor.setUserContext({
               id: user.id,
@@ -157,22 +170,25 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
         } catch (authError) {
           error = authError;
           statusCode = authError instanceof AuthenticationError ? 401 : 403;
-          
+
           // Log authentication/authorization errors
-          ErrorLogger.auth(authError as Error, createErrorContext(req, {
-            userId: user?.id,
-            requestId,
-            additionalData: {
-              requiredRoles: config.requiredRoles,
-              requireAuthentication: config.requireAuthentication,
-            },
-          }));
-          
+          ErrorLogger.auth(
+            authError as Error,
+            createErrorContext(req, {
+              userId: user?.id,
+              requestId,
+              additionalData: {
+                requiredRoles: config.requiredRoles,
+                requireAuthentication: config.requireAuthentication,
+              },
+            })
+          );
+
           response = createErrorResponse(authError, requestId);
           return applyFinalMiddleware(req, response, config);
         }
       }
-      
+
       // 3. Start request logging
       if (config.logging?.enabled !== false) {
         startRequestLogging(req, requestId, {
@@ -181,9 +197,12 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
           includeBody: config.logging?.includeBody,
         });
       }
-      
+
       // 4. Rate limiting
-      if (config.rateLimit?.enabled !== false && shouldRateLimit(new URL(req.url).pathname)) {
+      if (
+        config.rateLimit?.enabled !== false &&
+        shouldRateLimit(new URL(req.url).pathname)
+      ) {
         try {
           rateLimitResult = await applyRateLimit(req, {
             userId: user?.id,
@@ -193,7 +212,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
         } catch (rateLimitError) {
           error = rateLimitError;
           statusCode = 429;
-          
+
           // Log rate limit violations
           ErrorLogger.security(
             `Rate limit exceeded for ${user?.id || 'anonymous'} user`,
@@ -206,7 +225,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
               },
             })
           );
-          
+
           response = createErrorResponse(rateLimitError, requestId);
           return applyFinalMiddleware(req, response, config, {
             requestId,
@@ -214,16 +233,19 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
             user,
             startTime,
             error: rateLimitError,
-            rateLimitResult: (rateLimitError as any).rateLimitResult
+            rateLimitResult: (rateLimitError as any).rateLimitResult,
           });
         }
       }
-      
+
       // 5. Request validation
       if (config.bodySchema || config.querySchema || config.paramsSchema) {
         try {
           // Validate request body
-          if (config.bodySchema && ['POST', 'PUT', 'PATCH'].includes(req.method)) {
+          if (
+            config.bodySchema &&
+            ['POST', 'PUT', 'PATCH'].includes(req.method)
+          ) {
             try {
               const rawBody = await req.json();
               context.body = config.bodySchema.parse(rawBody);
@@ -234,14 +256,14 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
               throw parseError;
             }
           }
-          
+
           // Validate query parameters
           if (config.querySchema) {
             const searchParams = new URL(req.url).searchParams;
             const queryObject = Object.fromEntries(searchParams.entries());
             context.query = config.querySchema.parse(queryObject);
           }
-          
+
           // Validate URL parameters
           if (config.paramsSchema) {
             context.params = config.paramsSchema.parse(routeParams.params);
@@ -249,27 +271,30 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
         } catch (validationError) {
           error = validationError;
           statusCode = 400;
-          
+
           // Log validation errors
-          ErrorLogger.validation(validationError as Error, createErrorContext(req, {
-            userId: user?.id,
-            requestId,
-            additionalData: {
-              bodySchema: !!config.bodySchema,
-              querySchema: !!config.querySchema,
-              paramsSchema: !!config.paramsSchema,
-            },
-          }));
-          
+          ErrorLogger.validation(
+            validationError as Error,
+            createErrorContext(req, {
+              userId: user?.id,
+              requestId,
+              additionalData: {
+                bodySchema: !!config.bodySchema,
+                querySchema: !!config.querySchema,
+                paramsSchema: !!config.paramsSchema,
+              },
+            })
+          );
+
           response = createErrorResponse(validationError, requestId);
           return applyFinalMiddleware(req, response, config);
         }
       }
-      
+
       // 6. Execute the main handler
       response = await handler(req, context);
       statusCode = response.status;
-      
+
       // 7. Apply final middleware
       return applyFinalMiddleware(req, response, config, {
         requestId,
@@ -278,27 +303,29 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
         startTime,
         rateLimitResult,
       });
-      
     } catch (handlerError) {
       error = handlerError;
       statusCode = (handlerError as any).statusCode || 500;
-      
+
       // Log handler errors with appropriate severity
       const severity = statusCode >= 500 ? 'high' : 'medium';
-      ErrorLogger.business(handlerError as Error, createErrorContext(req, {
-        userId: user?.id,
-        requestId,
-        additionalData: {
-          handlerConfig: {
-            requireAuthentication: config.requireAuthentication,
-            requiredRoles: config.requiredRoles,
-            rateLimitEnabled: config.rateLimit?.enabled,
+      ErrorLogger.business(
+        handlerError as Error,
+        createErrorContext(req, {
+          userId: user?.id,
+          requestId,
+          additionalData: {
+            handlerConfig: {
+              requireAuthentication: config.requireAuthentication,
+              requiredRoles: config.requiredRoles,
+              rateLimitEnabled: config.rateLimit?.enabled,
+            },
           },
-        },
-      }));
-      
+        })
+      );
+
       response = createErrorResponse(handlerError, requestId);
-      
+
       return applyFinalMiddleware(req, response, config, {
         requestId,
         statusCode,
@@ -325,14 +352,15 @@ function applyFinalMiddleware(
     rateLimitResult?: RateLimitResult | null;
   }
 ): NextResponse {
-  const { requestId, statusCode, user, startTime, error, rateLimitResult } = options || {};
-  
+  const { requestId, statusCode, user, startTime, error, rateLimitResult } =
+    options || {};
+
   // 1. Add request ID header
   if (requestId) {
     response.headers.set('X-Request-ID', requestId);
   }
-  
-    // 2. Add rate limit headers
+
+  // 2. Add rate limit headers
   if (rateLimitResult && config.rateLimit?.enabled !== false) {
     Object.entries(rateLimitResult.headers).forEach(([key, value]) => {
       response.headers.set(key, value);
@@ -349,8 +377,8 @@ function applyFinalMiddleware(
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
-    // 5. Add performance headers (in development)
+
+  // 5. Add performance headers (in development)
   if (process.env.NODE_ENV === 'development' && startTime) {
     const duration = Date.now() - startTime;
     response.headers.set('X-Response-Time', `${duration}ms`);
@@ -367,55 +395,74 @@ function applyFinalMiddleware(
         cacheMisses: metrics?.cacheMisses,
       },
     });
-    
+
     // Record request metrics for health monitoring
     if (startTime) {
       const duration = Date.now() - startTime;
       const success = statusCode < 400;
       const endpoint = new URL(req.url).pathname;
-      
+
       try {
         healthMetrics.recordRequest(duration, success, endpoint);
-        
+
         // Record error metrics if applicable
         if (error) {
-          const category = statusCode >= 500 ? 'system' : 
-                          statusCode === 429 ? 'rate_limit' :
-                          statusCode === 401 || statusCode === 403 ? 'authentication' :
-                          statusCode >= 400 ? 'validation' : 'unknown';
-          
-          const severity = statusCode >= 500 ? 'high' : 
-                          statusCode === 429 ? 'medium' :
-                          statusCode >= 400 ? 'low' : 'medium';
-          
-          healthMetrics.recordError(category, severity, error.message || 'Unknown error');
+          const category =
+            statusCode >= 500
+              ? 'system'
+              : statusCode === 429
+                ? 'rate_limit'
+                : statusCode === 401 || statusCode === 403
+                  ? 'authentication'
+                  : statusCode >= 400
+                    ? 'validation'
+                    : 'unknown';
+
+          const severity =
+            statusCode >= 500
+              ? 'high'
+              : statusCode === 429
+                ? 'medium'
+                : statusCode >= 400
+                  ? 'low'
+                  : 'medium';
+
+          healthMetrics.recordError(
+            category,
+            severity,
+            error.message || 'Unknown error'
+          );
         }
-        
+
         // Log performance issues
         if (duration > 2000) {
-          ErrorLogger.performance('Slow API request', {
-            duration,
-            databaseQueries: metrics?.databaseQueries || 0,
-            cacheHits: metrics?.cacheHits || 0,
-            cacheMisses: metrics?.cacheMisses || 0,
-          }, createErrorContext(req, {
-            userId: user?.id,
-            requestId,
-            additionalData: {
-              performanceThreshold: 2000,
-              actualDuration: duration,
-              endpoint,
+          ErrorLogger.performance(
+            'Slow API request',
+            {
+              duration,
+              databaseQueries: metrics?.databaseQueries || 0,
+              cacheHits: metrics?.cacheHits || 0,
+              cacheMisses: metrics?.cacheMisses || 0,
             },
-          }));
+            createErrorContext(req, {
+              userId: user?.id,
+              requestId,
+              additionalData: {
+                performanceThreshold: 2000,
+                actualDuration: duration,
+                endpoint,
+              },
+            })
+          );
         }
       } catch (metricsError) {
         console.error('Failed to record metrics:', metricsError);
       }
     }
   }
-  
+
   return response;
 }
 
 // Preset configurations for common use cases
-export { apiConfigs, mergeAPIConfig } from './configs'; 
+export { apiConfigs, mergeAPIConfig } from './configs';

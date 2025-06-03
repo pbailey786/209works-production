@@ -4,7 +4,13 @@ import { z } from 'zod';
 
 // Validation schemas
 const addJobSchema = z.object({
-  type: z.enum(['job_alert', 'weekly_digest', 'password_reset', 'verification', 'generic']),
+  type: z.enum([
+    'job_alert',
+    'weekly_digest',
+    'password_reset',
+    'verification',
+    'generic',
+  ]),
   to: z.string().email(),
   subject: z.string(),
   template: z.string(),
@@ -18,14 +24,18 @@ const addJobSchema = z.object({
 });
 
 const bulkJobSchema = z.object({
-  jobs: z.array(z.object({
-    data: addJobSchema,
-    options: z.object({
-      priority: z.number().optional(),
-      delay: z.number().optional(),
-      attempts: z.number().optional(),
-    }).optional(),
-  })),
+  jobs: z.array(
+    z.object({
+      data: addJobSchema,
+      options: z
+        .object({
+          priority: z.number().optional(),
+          delay: z.number().optional(),
+          attempts: z.number().optional(),
+        })
+        .optional(),
+    })
+  ),
 });
 
 const queueActionSchema = z.object({
@@ -36,11 +46,11 @@ const queueActionSchema = z.object({
 function verifyAdminAccess(req: NextRequest): boolean {
   const authHeader = req.headers.get('authorization');
   const adminSecret = process.env.ADMIN_SECRET || process.env.CRON_SECRET;
-  
+
   if (adminSecret && authHeader !== `Bearer ${adminSecret}`) {
     return false;
   }
-  
+
   return authHeader?.startsWith('Bearer ') || false;
 }
 
@@ -55,7 +65,7 @@ export async function GET(req: NextRequest) {
     }
 
     const stats = await emailQueue.getQueueStats();
-    
+
     return NextResponse.json({
       message: 'Email queue status',
       data: {
@@ -65,13 +75,12 @@ export async function GET(req: NextRequest) {
         isHealthy: stats.active >= 0, // Basic health check
       },
     });
-
   } catch (error) {
     console.error('Email queue status error:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to get queue status', 
-        message: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Failed to get queue status',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -95,20 +104,20 @@ export async function POST(req: NextRequest) {
     // Handle queue management actions
     if (action) {
       const { action: validatedAction } = queueActionSchema.parse({ action });
-      
+
       switch (validatedAction) {
         case 'pause':
           await emailQueue.pauseQueue();
           return NextResponse.json({ message: 'Queue paused successfully' });
-        
+
         case 'resume':
           await emailQueue.resumeQueue();
           return NextResponse.json({ message: 'Queue resumed successfully' });
-        
+
         case 'clear':
           await emailQueue.clearQueue();
           return NextResponse.json({ message: 'Queue cleared successfully' });
-        
+
         default:
           return NextResponse.json(
             { error: 'Invalid action' },
@@ -120,9 +129,9 @@ export async function POST(req: NextRequest) {
     // Handle bulk job addition
     if (body.jobs && Array.isArray(body.jobs)) {
       const validatedData = bulkJobSchema.parse(body);
-      
+
       const jobs = await emailQueue.addBulkEmailJobs(validatedData.jobs);
-      
+
       return NextResponse.json({
         message: `Successfully added ${jobs.length} email jobs to queue`,
         data: {
@@ -134,9 +143,9 @@ export async function POST(req: NextRequest) {
 
     // Handle single job addition
     const validatedData = addJobSchema.parse(body);
-    
+
     const job = await emailQueue.addEmailJob(validatedData);
-    
+
     return NextResponse.json({
       message: 'Email job added to queue successfully',
       data: {
@@ -146,7 +155,6 @@ export async function POST(req: NextRequest) {
         priority: validatedData.priority,
       },
     });
-
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -157,9 +165,9 @@ export async function POST(req: NextRequest) {
 
     console.error('Email queue operation error:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to process queue operation', 
-        message: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Failed to process queue operation',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -177,19 +185,18 @@ export async function DELETE(req: NextRequest) {
     }
 
     await emailQueue.close();
-    
+
     return NextResponse.json({
       message: 'Email queue system closed successfully',
     });
-
   } catch (error) {
     console.error('Email queue close error:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to close queue system', 
-        message: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Failed to close queue system',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
   }
-} 
+}

@@ -1,12 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -14,8 +20,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   Activity,
   AlertTriangle,
   CalendarIcon,
@@ -28,7 +38,7 @@ import {
   Search,
   Shield,
   User,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -70,7 +80,7 @@ export default function AuditLogsDashboard() {
     dateFrom: null,
     dateTo: null,
     userId: '',
-    event: ''
+    event: '',
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -83,12 +93,12 @@ export default function AuditLogsDashboard() {
 
   const loadAuditLogs = async () => {
     setLoading(true);
-    
+
     try {
       // Build query parameters
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: logsPerPage.toString()
+        limit: logsPerPage.toString(),
       });
 
       if (filters.search) params.append('search', filters.search);
@@ -96,21 +106,24 @@ export default function AuditLogsDashboard() {
       if (filters.severity) params.append('severity', filters.severity);
       if (filters.event) params.append('event', filters.event);
       if (filters.userId) params.append('userId', filters.userId);
-      if (filters.dateFrom) params.append('dateFrom', filters.dateFrom.toISOString());
+      if (filters.dateFrom)
+        params.append('dateFrom', filters.dateFrom.toISOString());
       if (filters.dateTo) params.append('dateTo', filters.dateTo.toISOString());
 
-      const response = await fetch(`/api/admin/audit-logs?${params.toString()}`);
-      
+      const response = await fetch(
+        `/api/admin/audit-logs?${params.toString()}`
+      );
+
       if (!response.ok) {
         throw new Error('Failed to fetch audit logs');
       }
 
       const data = await response.json();
-      
+
       // Convert timestamp strings back to Date objects
       const logsWithDates = data.logs.map((log: any) => ({
         ...log,
-        timestamp: new Date(log.timestamp)
+        timestamp: new Date(log.timestamp),
       }));
 
       setLogs(logsWithDates);
@@ -182,17 +195,28 @@ export default function AuditLogsDashboard() {
 
   const exportLogs = () => {
     const csvContent = [
-      ['Timestamp', 'Event', 'User Email', 'IP Address', 'Severity', 'Category', 'Success', 'Details'].join(','),
-      ...filteredLogs.map(log => [
-        log.timestamp.toISOString(),
-        log.event,
-        log.userEmail || '',
-        log.ipAddress,
-        log.severity,
-        log.category,
-        log.success?.toString() || '',
-        JSON.stringify(log.details || {})
-      ].join(','))
+      [
+        'Timestamp',
+        'Event',
+        'User Email',
+        'IP Address',
+        'Severity',
+        'Category',
+        'Success',
+        'Details',
+      ].join(','),
+      ...filteredLogs.map(log =>
+        [
+          log.timestamp.toISOString(),
+          log.event,
+          log.userEmail || '',
+          log.ipAddress,
+          log.severity,
+          log.category,
+          log.success?.toString() || '',
+          JSON.stringify(log.details || {}),
+        ].join(',')
+      ),
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -218,7 +242,7 @@ export default function AuditLogsDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
               <Label htmlFor="search">Search</Label>
               <div className="relative">
@@ -227,7 +251,9 @@ export default function AuditLogsDashboard() {
                   id="search"
                   placeholder="Search logs..."
                   value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  onChange={e =>
+                    setFilters(prev => ({ ...prev, search: e.target.value }))
+                  }
                   className="pl-10"
                 />
               </div>
@@ -235,7 +261,12 @@ export default function AuditLogsDashboard() {
 
             <div className="space-y-2">
               <Label>Category</Label>
-              <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
+              <Select
+                value={filters.category}
+                onValueChange={value =>
+                  setFilters(prev => ({ ...prev, category: value }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
@@ -244,7 +275,9 @@ export default function AuditLogsDashboard() {
                   <SelectItem value="authentication">Authentication</SelectItem>
                   <SelectItem value="moderation">Moderation</SelectItem>
                   <SelectItem value="security">Security</SelectItem>
-                  <SelectItem value="user_management">User Management</SelectItem>
+                  <SelectItem value="user_management">
+                    User Management
+                  </SelectItem>
                   <SelectItem value="data_access">Data Access</SelectItem>
                 </SelectContent>
               </Select>
@@ -252,7 +285,12 @@ export default function AuditLogsDashboard() {
 
             <div className="space-y-2">
               <Label>Severity</Label>
-              <Select value={filters.severity} onValueChange={(value) => setFilters(prev => ({ ...prev, severity: value }))}>
+              <Select
+                value={filters.severity}
+                onValueChange={value =>
+                  setFilters(prev => ({ ...prev, severity: value }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All severities" />
                 </SelectTrigger>
@@ -279,12 +317,17 @@ export default function AuditLogsDashboard() {
                     <Calendar
                       mode="single"
                       selected={filters.dateFrom || undefined}
-                      onSelect={(date) => setFilters(prev => ({ ...prev, dateFrom: date || null }))}
+                      onSelect={date =>
+                        setFilters(prev => ({
+                          ...prev,
+                          dateFrom: date || null,
+                        }))
+                      }
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
-                <span className="text-sm text-gray-500 self-center">to</span>
+                <span className="self-center text-sm text-gray-500">to</span>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -295,7 +338,9 @@ export default function AuditLogsDashboard() {
                     <Calendar
                       mode="single"
                       selected={filters.dateTo || undefined}
-                      onSelect={(date) => setFilters(prev => ({ ...prev, dateTo: date || null }))}
+                      onSelect={date =>
+                        setFilters(prev => ({ ...prev, dateTo: date || null }))
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -304,17 +349,17 @@ export default function AuditLogsDashboard() {
             </div>
           </div>
 
-          <div className="flex justify-between items-center mt-4">
+          <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-600">
               Showing {filteredLogs.length} logs
             </div>
             <div className="flex space-x-2">
               <Button onClick={loadAuditLogs} variant="outline" size="sm">
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <RefreshCw className="mr-2 h-4 w-4" />
                 Refresh
               </Button>
               <Button onClick={exportLogs} variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="mr-2 h-4 w-4" />
                 Export CSV
               </Button>
             </div>
@@ -332,44 +377,56 @@ export default function AuditLogsDashboard() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex justify-center items-center py-8">
+            <div className="flex items-center justify-center py-8">
               <RefreshCw className="h-6 w-6 animate-spin" />
               <span className="ml-2">Loading audit logs...</span>
             </div>
           ) : (
             <div className="space-y-4">
-              {paginatedLogs.map((log) => (
-                <div key={log.id} className="border rounded-lg p-4 hover:bg-gray-50">
+              {paginatedLogs.map(log => (
+                <div
+                  key={log.id}
+                  className="rounded-lg border p-4 hover:bg-gray-50"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-3">
                       <div className="flex items-center space-x-2">
                         {getCategoryIcon(log.category)}
-                        <Badge className={`${getSeverityColor(log.severity)} flex items-center space-x-1`}>
+                        <Badge
+                          className={`${getSeverityColor(log.severity)} flex items-center space-x-1`}
+                        >
                           {getSeverityIcon(log.severity)}
                           <span className="capitalize">{log.severity}</span>
                         </Badge>
                       </div>
-                      
+
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
-                          <h4 className="font-medium">{log.event.replace(/_/g, ' ').toUpperCase()}</h4>
+                          <h4 className="font-medium">
+                            {log.event.replace(/_/g, ' ').toUpperCase()}
+                          </h4>
                           {log.success !== undefined && (
-                            <Badge variant={log.success ? "default" : "destructive"}>
+                            <Badge
+                              variant={log.success ? 'default' : 'destructive'}
+                            >
                               {log.success ? 'Success' : 'Failed'}
                             </Badge>
                           )}
                         </div>
-                        
-                        <div className="text-sm text-gray-600 mt-1">
+
+                        <div className="mt-1 text-sm text-gray-600">
                           <div>User: {log.userEmail || 'System'}</div>
                           <div>IP: {log.ipAddress}</div>
                           {log.resource && (
-                            <div>Resource: {log.resource} {log.resourceId && `(${log.resourceId})`}</div>
+                            <div>
+                              Resource: {log.resource}{' '}
+                              {log.resourceId && `(${log.resourceId})`}
+                            </div>
                           )}
                         </div>
-                        
+
                         {log.details && (
-                          <div className="mt-2 p-2 bg-gray-100 rounded text-xs">
+                          <div className="mt-2 rounded bg-gray-100 p-2 text-xs">
                             <pre className="whitespace-pre-wrap">
                               {JSON.stringify(log.details, null, 2)}
                             </pre>
@@ -377,7 +434,7 @@ export default function AuditLogsDashboard() {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="text-right text-sm text-gray-500">
                       <div>{format(log.timestamp, 'MMM dd, yyyy')}</div>
                       <div>{format(log.timestamp, 'HH:mm:ss')}</div>
@@ -387,31 +444,35 @@ export default function AuditLogsDashboard() {
               ))}
 
               {filteredLogs.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="py-8 text-center text-gray-500">
                   No audit logs found matching your criteria.
                 </div>
               )}
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2 mt-6">
+                <div className="mt-6 flex items-center justify-center space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    onClick={() =>
+                      setCurrentPage(prev => Math.max(1, prev - 1))
+                    }
                     disabled={currentPage === 1}
                   >
                     Previous
                   </Button>
-                  
+
                   <span className="text-sm text-gray-600">
                     Page {currentPage} of {totalPages}
                   </span>
-                  
+
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    onClick={() =>
+                      setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                    }
                     disabled={currentPage === totalPages}
                   >
                     Next
@@ -424,4 +485,4 @@ export default function AuditLogsDashboard() {
       </Card>
     </div>
   );
-} 
+}

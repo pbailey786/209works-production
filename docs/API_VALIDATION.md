@@ -5,6 +5,7 @@ This document describes the comprehensive validation and error handling system i
 ## Overview
 
 The API uses a centralized validation and error handling system built with:
+
 - **Zod** for schema validation
 - **Custom error classes** for standardized error responses
 - **Middleware wrapper** for consistent error handling
@@ -13,7 +14,9 @@ The API uses a centralized validation and error handling system built with:
 ## Key Features
 
 ### ✅ **Standardized Error Responses**
+
 All API errors follow this consistent format:
+
 ```json
 {
   "error": "ValidationError",
@@ -32,12 +35,15 @@ All API errors follow this consistent format:
 ```
 
 ### ✅ **Automatic Request Validation**
+
 Request bodies, query parameters, and URL parameters are automatically validated using Zod schemas.
 
 ### ✅ **Type Safety**
+
 All validated data is properly typed, providing excellent TypeScript support.
 
 ### ✅ **Centralized Error Handling**
+
 Prisma errors, validation errors, and custom errors are all handled consistently.
 
 ## Usage
@@ -45,7 +51,10 @@ Prisma errors, validation errors, and custom errors are all handled consistently
 ### Basic Endpoint with Validation
 
 ```typescript
-import { withValidation, routeParamsSchemas } from '@/lib/middleware/validation';
+import {
+  withValidation,
+  routeParamsSchemas,
+} from '@/lib/middleware/validation';
 import { createJobSchema } from '@/lib/validations/api';
 import { createSuccessResponse, NotFoundError } from '@/lib/errors/api-errors';
 
@@ -54,16 +63,16 @@ export const POST = withValidation(
     // body is automatically validated and typed
     // params.id is validated as UUID
     // query parameters are validated if schema provided
-    
+
     // Your business logic here
     const result = await someBusinessLogic(body);
-    
+
     return createSuccessResponse(result, 'Operation successful');
   },
   {
-    bodySchema: createJobSchema,           // Validates request body
+    bodySchema: createJobSchema, // Validates request body
     paramsSchema: routeParamsSchemas.jobId, // Validates URL params
-    querySchema: jobSearchSchema,          // Validates query params
+    querySchema: jobSearchSchema, // Validates query params
   }
 );
 ```
@@ -71,28 +80,31 @@ export const POST = withValidation(
 ### Available Validation Schemas
 
 #### Job-related
+
 - `createJobSchema` - For creating new jobs
 - `updateJobSchema` - For updating existing jobs
 - `jobSearchSchema` - For job search query parameters
 
 #### User-related
+
 - `updateUserSchema` - For updating user profiles
 - `userApplicationsSchema` - For user applications query params
 - `registerSchema` - For user registration
 
 #### Application-related
+
 - `createJobApplicationSchema` - For job applications
 
 ### Custom Error Classes
 
 ```typescript
-import { 
+import {
   ValidationError,
   AuthenticationError,
   AuthorizationError,
   NotFoundError,
   ConflictError,
-  RateLimitError
+  RateLimitError,
 } from '@/lib/errors/api-errors';
 
 // Throw custom errors in your handlers
@@ -107,16 +119,16 @@ if (user.role !== 'admin') {
 
 ### Error Codes
 
-| Code | Description | HTTP Status |
-|------|-------------|-------------|
-| `VALIDATION_ERROR` | Invalid input data | 400 |
-| `AUTHENTICATION_ERROR` | Authentication required | 401 |
-| `AUTHORIZATION_ERROR` | Insufficient permissions | 403 |
-| `NOT_FOUND` | Resource not found | 404 |
-| `CONFLICT` | Resource already exists | 409 |
-| `RATE_LIMIT_EXCEEDED` | Too many requests | 429 |
-| `DATABASE_ERROR` | Database operation failed | 500 |
-| `INTERNAL_SERVER_ERROR` | Unexpected error | 500 |
+| Code                    | Description               | HTTP Status |
+| ----------------------- | ------------------------- | ----------- |
+| `VALIDATION_ERROR`      | Invalid input data        | 400         |
+| `AUTHENTICATION_ERROR`  | Authentication required   | 401         |
+| `AUTHORIZATION_ERROR`   | Insufficient permissions  | 403         |
+| `NOT_FOUND`             | Resource not found        | 404         |
+| `CONFLICT`              | Resource already exists   | 409         |
+| `RATE_LIMIT_EXCEEDED`   | Too many requests         | 429         |
+| `DATABASE_ERROR`        | Database operation failed | 500         |
+| `INTERNAL_SERVER_ERROR` | Unexpected error          | 500         |
 
 ## Testing Validation
 
@@ -180,7 +192,10 @@ export async function POST(req: NextRequest) {
     }
     // ... rest of logic
   } catch (error) {
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Something went wrong' },
+      { status: 500 }
+    );
   }
 }
 
@@ -193,4 +208,4 @@ export const POST = withValidation(
   },
   { bodySchema: createJobSchema }
 );
-``` 
+```

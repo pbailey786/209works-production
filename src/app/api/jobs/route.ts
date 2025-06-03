@@ -1,5 +1,9 @@
 import { NextRequest } from 'next/server';
-import { withAPIMiddleware, apiConfigs, mergeAPIConfig } from '@/lib/middleware/api';
+import {
+  withAPIMiddleware,
+  apiConfigs,
+  mergeAPIConfig,
+} from '@/lib/middleware/api';
 import { paginatedQuerySchema } from '@/lib/cache/pagination';
 import { JobCacheService } from '@/lib/cache/services';
 import { createJobSchema } from '@/lib/validations/api';
@@ -10,14 +14,14 @@ import { prisma } from '../auth/prisma';
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { query, performance } = context;
-    
+
     // Extract query parameters with defaults
     const {
       sortBy = 'createdAt',
       sortOrder = 'desc',
       ...paginationParams
     } = query!;
-    
+
     // Get paginated jobs with caching
     const results = await JobCacheService.getPaginatedJobs(
       {
@@ -27,14 +31,14 @@ export const GET = withAPIMiddleware(
       },
       performance
     );
-    
+
     return createSuccessResponse(results);
   },
   mergeAPIConfig(apiConfigs.public, {
     querySchema: paginatedQuerySchema,
-    logging: { 
-      enabled: true, 
-      includeQuery: true 
+    logging: {
+      enabled: true,
+      includeQuery: true,
     },
   })
 );
@@ -44,23 +48,27 @@ export const POST = withAPIMiddleware(
   async (req, context) => {
     const { user, body, performance } = context;
     const employerId = user!.id;
-    
+
     performance.trackDatabaseQuery();
-    
+
     // Extract and transform the data from the form
-    const {
-      type,
-      contactEmail,
-      salaryMin,
-      salaryMax,
-      isRemote,
-      ...jobData
-    } = body!;
-    
+    const { type, contactEmail, salaryMin, salaryMax, isRemote, ...jobData } =
+      body!;
+
     // Handle salary conversion from strings to numbers
-    const processedSalaryMin = typeof salaryMin === 'string' && salaryMin ? parseInt(salaryMin, 10) : (typeof salaryMin === 'number' ? salaryMin : null);
-    const processedSalaryMax = typeof salaryMax === 'string' && salaryMax ? parseInt(salaryMax, 10) : (typeof salaryMax === 'number' ? salaryMax : null);
-    
+    const processedSalaryMin =
+      typeof salaryMin === 'string' && salaryMin
+        ? parseInt(salaryMin, 10)
+        : typeof salaryMin === 'number'
+          ? salaryMin
+          : null;
+    const processedSalaryMax =
+      typeof salaryMax === 'string' && salaryMax
+        ? parseInt(salaryMax, 10)
+        : typeof salaryMax === 'number'
+          ? salaryMax
+          : null;
+
     // Create job with employer relationship
     const job = await prisma.job.create({
       data: {
@@ -86,15 +94,11 @@ export const POST = withAPIMiddleware(
         },
       },
     });
-    
+
     // Invalidate job caches since we added a new job
     await JobCacheService.invalidateJobCaches(undefined, employerId);
-    
-    return createSuccessResponse(
-      { job },
-      'Job created successfully',
-      201
-    );
+
+    return createSuccessResponse({ job }, 'Job created successfully', 201);
   },
   {
     requiredRoles: ['admin', 'employer'],
@@ -103,4 +107,4 @@ export const POST = withAPIMiddleware(
     logging: { enabled: true, includeBody: true },
     cors: { enabled: true },
   }
-); 
+);

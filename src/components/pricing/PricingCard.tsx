@@ -2,7 +2,13 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
 import { PricingTier, BillingInterval } from '@prisma/client';
@@ -36,7 +42,7 @@ const toast = {
   error: (message: string) => {
     console.error('Error:', message);
     // In a real app, this would show an error toast
-  }
+  },
 };
 
 export default function PricingCard({
@@ -107,43 +113,47 @@ export default function PricingCard({
   };
 
   return (
-    <Card className={`relative flex flex-col ${featured ? 'border-primary shadow-lg scale-105' : ''} ${disabled ? 'opacity-50' : ''}`}>
+    <Card
+      className={`relative flex flex-col ${featured ? 'scale-105 border-primary shadow-lg' : ''} ${disabled ? 'opacity-50' : ''}`}
+    >
       {badge && (
-        <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
+        <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 transform bg-primary text-primary-foreground">
           {badge}
         </Badge>
       )}
-      
+
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold">{name}</CardTitle>
         <CardDescription>{description}</CardDescription>
-        
+
         <div className="mt-4">
           <div className="flex items-baseline justify-center gap-1">
             <span className="text-4xl font-bold">{price}</span>
             {period && <span className="text-muted-foreground">/{period}</span>}
           </div>
           {originalPrice && (
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="mt-1 text-sm text-muted-foreground">
               {originalPrice}
             </p>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col">
-        <div className="space-y-3 flex-1">
+      <CardContent className="flex flex-1 flex-col">
+        <div className="flex-1 space-y-3">
           {features.map((feature, index) => (
             <div key={index} className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+              <Check className="h-4 w-4 flex-shrink-0 text-green-500" />
               <span className="text-sm">{feature}</span>
             </div>
           ))}
-          
+
           {limitations.map((limitation, index) => (
             <div key={index} className="flex items-center gap-2">
-              <X className="h-4 w-4 text-red-500 flex-shrink-0" />
-              <span className="text-sm text-muted-foreground">{limitation}</span>
+              <X className="h-4 w-4 flex-shrink-0 text-red-500" />
+              <span className="text-sm text-muted-foreground">
+                {limitation}
+              </span>
             </div>
           ))}
         </div>
@@ -159,4 +169,4 @@ export default function PricingCard({
       </CardContent>
     </Card>
   );
-} 
+}

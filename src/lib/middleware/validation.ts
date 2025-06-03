@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { 
-  validateRequestData, 
-  generateRequestId, 
+import {
+  validateRequestData,
+  generateRequestId,
   createErrorResponse,
-  ValidationError 
+  ValidationError,
 } from '../errors/api-errors';
 
 // Middleware wrapper for API routes with validation and error handling
@@ -26,17 +26,24 @@ export function withValidation<TBody = any, TQuery = any>(
 ) {
   return async (req: NextRequest, context: { params: any }) => {
     const requestId = generateRequestId();
-    
+
     try {
       let body: TBody | undefined;
       let query: TQuery | undefined;
       let validatedParams = context.params;
 
       // Validate request body for non-GET requests
-      if (options?.bodySchema && ['POST', 'PUT', 'PATCH'].includes(req.method)) {
+      if (
+        options?.bodySchema &&
+        ['POST', 'PUT', 'PATCH'].includes(req.method)
+      ) {
         try {
           const rawBody = await req.json();
-          body = validateRequestData<TBody>(options.bodySchema, rawBody, 'Invalid request body');
+          body = validateRequestData<TBody>(
+            options.bodySchema,
+            rawBody,
+            'Invalid request body'
+          );
         } catch (error) {
           if (error instanceof SyntaxError) {
             throw new ValidationError('Invalid JSON in request body');
@@ -49,12 +56,20 @@ export function withValidation<TBody = any, TQuery = any>(
       if (options?.querySchema) {
         const searchParams = new URL(req.url).searchParams;
         const queryObject = Object.fromEntries(searchParams.entries());
-        query = validateRequestData<TQuery>(options.querySchema, queryObject, 'Invalid query parameters');
+        query = validateRequestData<TQuery>(
+          options.querySchema,
+          queryObject,
+          'Invalid query parameters'
+        );
       }
 
       // Validate URL parameters
       if (options?.paramsSchema) {
-        validatedParams = validateRequestData(options.paramsSchema, context.params, 'Invalid URL parameters');
+        validatedParams = validateRequestData(
+          options.paramsSchema,
+          context.params,
+          'Invalid URL parameters'
+        );
       }
 
       // Call the actual handler
@@ -87,9 +102,12 @@ export const routeParamsSchemas = {
 export function extractPagination(url: string, maxLimit = 50) {
   const searchParams = new URL(url).searchParams;
   const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-  const limit = Math.min(maxLimit, Math.max(1, parseInt(searchParams.get('limit') || '10', 10)));
+  const limit = Math.min(
+    maxLimit,
+    Math.max(1, parseInt(searchParams.get('limit') || '10', 10))
+  );
   const skip = (page - 1) * limit;
-  
+
   return { page, limit, skip };
 }
 
@@ -98,10 +116,12 @@ export function extractSorting(url: string, allowedFields: string[] = []) {
   const searchParams = new URL(url).searchParams;
   const sortBy = searchParams.get('sortBy') || 'createdAt';
   const order = searchParams.get('order') === 'asc' ? 'asc' : 'desc';
-  
+
   if (allowedFields.length > 0 && !allowedFields.includes(sortBy)) {
-    throw new ValidationError(`Invalid sort field. Allowed fields: ${allowedFields.join(', ')}`);
+    throw new ValidationError(
+      `Invalid sort field. Allowed fields: ${allowedFields.join(', ')}`
+    );
   }
-  
+
   return { [sortBy]: order };
-} 
+}

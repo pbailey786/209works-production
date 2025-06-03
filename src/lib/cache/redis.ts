@@ -26,12 +26,15 @@ const redisConfig = {
     host: new URL(process.env.UPSTASH_REDIS_REST_URL).hostname,
     port: parseInt(new URL(process.env.UPSTASH_REDIS_REST_URL).port) || 6379,
     password: process.env.UPSTASH_REDIS_REST_TOKEN,
-    tls: process.env.UPSTASH_REDIS_REST_URL.startsWith('rediss://') ? {} : undefined,
+    tls: process.env.UPSTASH_REDIS_REST_URL.startsWith('rediss://')
+      ? {}
+      : undefined,
   }),
 };
 
 // Connection state tracking
-let connectionState: 'disconnected' | 'connecting' | 'connected' | 'error' = 'disconnected';
+let connectionState: 'disconnected' | 'connecting' | 'connected' | 'error' =
+  'disconnected';
 let lastConnectionError: Error | null = null;
 
 // Initialize Redis client with proper race condition handling
@@ -54,18 +57,18 @@ export async function getRedisClient(): Promise<Redis | any> {
   // Start new connection
   isConnecting = true;
   connectionState = 'connecting';
-  
+
   connectionPromise = new Promise<Redis>((resolve, reject) => {
     try {
       const client = new Redis(redisConfig);
-      
+
       // Set up event handlers before connecting
       client.on('connect', () => {
         console.log('Redis connected successfully');
         connectionState = 'connected';
         lastConnectionError = null;
       });
-      
+
       client.on('ready', () => {
         console.log('Redis client ready');
         connectionState = 'connected';
@@ -73,21 +76,21 @@ export async function getRedisClient(): Promise<Redis | any> {
         redis = client;
         resolve(client);
       });
-      
-      client.on('error', (error) => {
+
+      client.on('error', error => {
         console.error('Redis connection error:', error);
         connectionState = 'error';
         lastConnectionError = error;
         isConnecting = false;
-        
+
         // Clean up failed connection
         if (redis === client) {
           redis = null;
         }
-        
+
         reject(error);
       });
-      
+
       client.on('close', () => {
         console.log('Redis connection closed');
         connectionState = 'disconnected';
@@ -95,21 +98,20 @@ export async function getRedisClient(): Promise<Redis | any> {
           redis = null;
         }
       });
-      
+
       client.on('reconnecting', () => {
         console.log('Redis reconnecting...');
         connectionState = 'connecting';
       });
-      
+
       // Attempt to connect
-      client.connect().catch((error) => {
+      client.connect().catch(error => {
         console.error('Failed to connect to Redis:', error);
         connectionState = 'error';
         lastConnectionError = error;
         isConnecting = false;
         reject(error);
       });
-      
     } catch (error) {
       console.error('Error creating Redis client:', error);
       connectionState = 'error';
@@ -166,9 +168,9 @@ export interface CacheOptions {
 
 // Default cache TTL values (in seconds)
 export const DEFAULT_TTL = {
-  short: 60 * 5,        // 5 minutes
-  medium: 60 * 30,      // 30 minutes  
-  long: 60 * 60 * 2,    // 2 hours
+  short: 60 * 5, // 5 minutes
+  medium: 60 * 30, // 30 minutes
+  long: 60 * 60 * 2, // 2 hours
   veryLong: 60 * 60 * 24, // 24 hours
 } as const;
 
@@ -185,7 +187,10 @@ export const CACHE_PREFIXES = {
 } as const;
 
 // Generate cache key with validation
-export function generateCacheKey(prefix: string, ...parts: (string | number)[]): string {
+export function generateCacheKey(
+  prefix: string,
+  ...parts: (string | number)[]
+): string {
   if (!prefix || parts.some(part => part === null || part === undefined)) {
     throw new Error('Invalid cache key parameters');
   }
@@ -215,44 +220,45 @@ function deserialize<T>(data: string | null): T | null {
 
 // Set cache value with improved error handling
 export async function setCache<T>(
-  key: string, 
-  value: T, 
+  key: string,
+  value: T,
   options: CacheOptions = {}
 ): Promise<boolean> {
   try {
     if (!key || value === undefined) {
       throw new Error('Invalid cache key or value');
     }
-    
+
     if (!(await isRedisAvailable())) {
       return false;
     }
-    
+
     const client = await getRedisClient();
     const serialized = serialize(value);
     const { ttl = DEFAULT_TTL.medium, tags = [] } = options;
-    
+
     // Validate TTL
-    if (ttl <= 0 || ttl > DEFAULT_TTL.veryLong * 7) { // Max 1 week
+    if (ttl <= 0 || ttl > DEFAULT_TTL.veryLong * 7) {
+      // Max 1 week
       throw new Error('Invalid TTL value');
     }
-    
+
     // Set the main cache entry
     await client.setex(key, ttl, serialized);
-    
+
     // Set cache tags for invalidation with error handling
     if (tags.length > 0) {
       const tagKeys = tags.map(tag => `tag:${tag}`);
       const pipeline = client.pipeline();
-      
+
       try {
         tagKeys.forEach(tagKey => {
           pipeline.sadd(tagKey, key);
           pipeline.expire(tagKey, ttl);
         });
-        
+
         const results = await pipeline.exec();
-        
+
         // Check for pipeline errors
         if (results) {
           for (const [error] of results) {
@@ -266,7 +272,7 @@ export async function setCache<T>(
         // Don't fail the entire operation for tag errors
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error('Failed to set cache:', error);
@@ -280,11 +286,11 @@ export async function getCache<T>(key: string): Promise<T | null> {
     if (!key) {
       throw new Error('Invalid cache key');
     }
-    
+
     if (!(await isRedisAvailable())) {
       return null;
     }
-    
+
     const client = await getRedisClient();
     const cached = await client.get(key);
     return deserialize<T>(cached);
@@ -300,11 +306,11 @@ export async function deleteCache(key: string): Promise<boolean> {
     if (!key) {
       throw new Error('Invalid cache key');
     }
-    
+
     if (!(await isRedisAvailable())) {
       return false;
     }
-    
+
     const client = await getRedisClient();
     await client.del(key);
     return true;
@@ -323,22 +329,22 @@ export async function invalidateCacheByTags(tags: string[]): Promise<boolean> {
     if (!tags || tags.length === 0) {
       return true; // Nothing to invalidate
     }
-    
+
     if (!(await isRedisAvailable())) {
       return false;
     }
-    
+
     const client = await getRedisClient();
-    
+
     // Process tags in batches to avoid overwhelming Redis
     const batchSize = 10;
     for (let i = 0; i < tags.length; i += batchSize) {
       const tagBatch = tags.slice(i, i + batchSize);
-      
+
       try {
         const pipeline = client.pipeline();
         const keysToDelete: string[] = [];
-        
+
         // First, collect all keys to delete
         for (const tag of tagBatch) {
           const tagKey = `tag:${tag}`;
@@ -353,7 +359,7 @@ export async function invalidateCacheByTags(tags: string[]): Promise<boolean> {
             // Continue with other tags
           }
         }
-        
+
         // Delete keys in batches
         if (keysToDelete.length > 0) {
           const deleteBatchSize = 100;
@@ -361,9 +367,9 @@ export async function invalidateCacheByTags(tags: string[]): Promise<boolean> {
             const deleteBatch = keysToDelete.slice(j, j + deleteBatchSize);
             pipeline.del(...deleteBatch);
           }
-          
+
           const results = await pipeline.exec();
-          
+
           // Check for errors in pipeline execution
           if (results) {
             for (const [error] of results) {
@@ -378,7 +384,7 @@ export async function invalidateCacheByTags(tags: string[]): Promise<boolean> {
         // Continue with next batch
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error('Failed to invalidate cache by tags:', error);
@@ -398,15 +404,15 @@ export async function getCacheOrExecute<T>(
     if (cached !== null) {
       return cached;
     }
-    
+
     // Execute fallback and cache result
     const result = await fallback();
-    
+
     // Only cache if result is not null/undefined
     if (result !== null && result !== undefined) {
       await setCache(key, result, options);
     }
-    
+
     return result;
   } catch (error) {
     console.error('Error in getCacheOrExecute:', error);
@@ -423,41 +429,44 @@ export async function setCacheBatch<T>(
     if (!entries || entries.length === 0) {
       return true;
     }
-    
+
     if (!(await isRedisAvailable())) {
       return false;
     }
-    
+
     const client = await getRedisClient();
-    
+
     // Process entries in batches to avoid overwhelming Redis
     const batchSize = 50;
     for (let i = 0; i < entries.length; i += batchSize) {
       const batch = entries.slice(i, i + batchSize);
-      
+
       try {
         const pipeline = client.pipeline();
-        
+
         batch.forEach(({ key, value, options = {} }) => {
           if (!key || value === undefined) {
             console.warn('Skipping invalid cache entry:', { key, value });
             return;
           }
-          
+
           try {
             const serialized = serialize(value);
             const { ttl = DEFAULT_TTL.medium } = options;
-            
+
             if (ttl > 0 && ttl <= DEFAULT_TTL.veryLong * 7) {
               pipeline.setex(key, ttl, serialized);
             }
           } catch (serializeError) {
-            console.error(`Failed to serialize entry for key ${key}:`, serializeError);
+            console.error(
+              `Failed to serialize entry for key ${key}:`,
+              serializeError
+            );
           }
         });
-        
+
         const results = await pipeline.exec();
-        
+
         // Check for pipeline errors
         if (results) {
           for (const [error] of results) {
@@ -471,7 +480,7 @@ export async function setCacheBatch<T>(
         // Continue with next batch
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error('Failed to set cache batch:', error);
@@ -509,7 +518,7 @@ export async function getRedisHealth(): Promise<{
   responseTime: number;
 }> {
   const start = Date.now();
-  
+
   try {
     if (connectionState === 'error') {
       return {
@@ -519,10 +528,10 @@ export async function getRedisHealth(): Promise<{
         responseTime: Date.now() - start,
       };
     }
-    
+
     const client = await getRedisClient();
     await client.ping();
-    
+
     return {
       status: 'healthy',
       connectionState,
@@ -551,4 +560,4 @@ if (typeof process !== 'undefined') {
   process.on('SIGTERM', gracefulShutdown);
   process.on('SIGINT', gracefulShutdown);
   process.on('beforeExit', gracefulShutdown);
-} 
+}

@@ -67,4 +67,4 @@ export const STRIPE_WEBHOOK_EVENTS = [
   'payment_intent.payment_failed',
 ] as const;
 
-export type StripeWebhookEvent = typeof STRIPE_WEBHOOK_EVENTS[number];
+export type StripeWebhookEvent = (typeof STRIPE_WEBHOOK_EVENTS)[number];

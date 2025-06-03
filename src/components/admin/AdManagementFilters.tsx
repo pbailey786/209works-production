@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -13,14 +13,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { CalendarIcon, Search, X } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function AdManagementFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const [filters, setFilters] = useState({
     status: searchParams.get('status') || '',
     type: searchParams.get('type') || '',
@@ -38,7 +42,7 @@ export default function AdManagementFilters() {
 
   const applyFilters = () => {
     const params = new URLSearchParams();
-    
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         params.set(key, value);
@@ -66,11 +70,14 @@ export default function AdManagementFilters() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {/* Status Filter */}
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
-          <Select value={filters.status} onValueChange={(value) => handleFilterChange('status', value)}>
+          <Select
+            value={filters.status}
+            onValueChange={value => handleFilterChange('status', value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
@@ -87,7 +94,10 @@ export default function AdManagementFilters() {
         {/* Type Filter */}
         <div className="space-y-2">
           <Label htmlFor="type">Ad Type</Label>
-          <Select value={filters.type} onValueChange={(value) => handleFilterChange('type', value)}>
+          <Select
+            value={filters.type}
+            onValueChange={value => handleFilterChange('type', value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="All types" />
             </SelectTrigger>
@@ -109,16 +119,16 @@ export default function AdManagementFilters() {
             id="advertiser"
             placeholder="Search by business name..."
             value={filters.advertiser}
-            onChange={(e) => handleFilterChange('advertiser', e.target.value)}
+            onChange={e => handleFilterChange('advertiser', e.target.value)}
           />
         </div>
 
         {/* Sort By */}
         <div className="space-y-2">
           <Label htmlFor="sortBy">Sort By</Label>
-          <Select 
-            value={searchParams.get('sortBy') || 'createdAt'} 
-            onValueChange={(value) => {
+          <Select
+            value={searchParams.get('sortBy') || 'createdAt'}
+            onValueChange={value => {
               const params = new URLSearchParams(searchParams.toString());
               params.set('sortBy', value);
               router.push(`/admin/ads?${params.toString()}`);
@@ -139,7 +149,7 @@ export default function AdManagementFilters() {
       </div>
 
       {/* Date Range Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Date From */}
         <div className="space-y-2">
           <Label>Created From</Label>
@@ -150,15 +160,22 @@ export default function AdManagementFilters() {
                 className="w-full justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.dateFrom ? format(new Date(filters.dateFrom), 'PPP') : 'Select date'}
+                {filters.dateFrom
+                  ? format(new Date(filters.dateFrom), 'PPP')
+                  : 'Select date'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={filters.dateFrom ? new Date(filters.dateFrom) : undefined}
-                onSelect={(date) => {
-                  handleFilterChange('dateFrom', date ? date.toISOString().split('T')[0] : '');
+                selected={
+                  filters.dateFrom ? new Date(filters.dateFrom) : undefined
+                }
+                onSelect={date => {
+                  handleFilterChange(
+                    'dateFrom',
+                    date ? date.toISOString().split('T')[0] : ''
+                  );
                   setDateFromOpen(false);
                 }}
                 initialFocus
@@ -177,15 +194,20 @@ export default function AdManagementFilters() {
                 className="w-full justify-start text-left font-normal"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {filters.dateTo ? format(new Date(filters.dateTo), 'PPP') : 'Select date'}
+                {filters.dateTo
+                  ? format(new Date(filters.dateTo), 'PPP')
+                  : 'Select date'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={filters.dateTo ? new Date(filters.dateTo) : undefined}
-                onSelect={(date) => {
-                  handleFilterChange('dateTo', date ? date.toISOString().split('T')[0] : '');
+                onSelect={date => {
+                  handleFilterChange(
+                    'dateTo',
+                    date ? date.toISOString().split('T')[0] : ''
+                  );
                   setDateToOpen(false);
                 }}
                 initialFocus
@@ -198,17 +220,21 @@ export default function AdManagementFilters() {
       {/* Action Buttons */}
       <div className="flex space-x-2">
         <Button onClick={applyFilters} className="flex items-center">
-          <Search className="h-4 w-4 mr-2" />
+          <Search className="mr-2 h-4 w-4" />
           Apply Filters
         </Button>
-        
+
         {hasActiveFilters && (
-          <Button onClick={clearFilters} variant="outline" className="flex items-center">
-            <X className="h-4 w-4 mr-2" />
+          <Button
+            onClick={clearFilters}
+            variant="outline"
+            className="flex items-center"
+          >
+            <X className="mr-2 h-4 w-4" />
             Clear Filters
           </Button>
         )}
       </div>
     </div>
   );
-} 
+}

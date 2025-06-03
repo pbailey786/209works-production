@@ -18,6 +18,7 @@ src/app/jobs/[id]/
 ### Core Components
 
 #### 1. Server Component (`page.tsx`)
+
 - **Purpose**: Handles server-side rendering, metadata generation, and data fetching
 - **Key Functions**:
   - `getJob()`: Fetches job data from database
@@ -26,6 +27,7 @@ src/app/jobs/[id]/
   - `generateMetadata()`: Creates dynamic SEO metadata
 
 #### 2. Client Component (`JobDetailClient.tsx`)
+
 - **Purpose**: Handles interactive features and user actions
 - **Key Features**:
   - Save/unsave job functionality
@@ -37,6 +39,7 @@ src/app/jobs/[id]/
 ## Implemented Features
 
 ### 1. Job Information Display
+
 - **Complete Job Details**: Title, company, location, description, requirements
 - **Salary Information**: Range display with formatting (`$XX,XXX - $XX,XXX`)
 - **Job Metadata**: Type, categories, posted date
@@ -45,17 +48,20 @@ src/app/jobs/[id]/
 ### 2. User Interactions
 
 #### Save Job Feature
+
 - **Authentication Check**: Redirects to sign-in if not authenticated
 - **Toggle Functionality**: Save/unsave with immediate UI feedback
 - **Database Integration**: Uses `JobApplication` model with 'saved' status
 - **API Endpoint**: `POST /api/jobs/save`
 
 #### Share Job Feature
+
 - **Web Share API**: Native sharing on supported devices
 - **Clipboard Fallback**: Copy link to clipboard for non-supporting browsers
 - **Share Data**: Includes title, description, and current URL
 
 #### Report Job Feature
+
 - **Modal Interface**: User-friendly reporting form
 - **Validation**: Minimum 10 characters for report reason
 - **Logging System**: Stores reports in `job-reports.log` file
@@ -64,13 +70,16 @@ src/app/jobs/[id]/
 ### 3. Navigation & UX
 
 #### Breadcrumb Navigation
+
 ```typescript
 Home > Jobs > [Job Title]
 ```
+
 - **Responsive Design**: Truncates long job titles
 - **Navigation Links**: Clickable breadcrumb items
 
 #### Related Jobs
+
 - **Smart Recommendations**: Based on job categories and location
 - **Sidebar Display**: Shows 3-5 related positions
 - **Quick Navigation**: Direct links to other job detail pages
@@ -78,6 +87,7 @@ Home > Jobs > [Job Title]
 ### 4. SEO Optimization
 
 #### Dynamic Metadata
+
 ```typescript
 {
   title: `${job.title} at ${job.company} | 209Jobs`,
@@ -89,6 +99,7 @@ Home > Jobs > [Job Title]
 ```
 
 #### Structured Data (JSON-LD)
+
 ```json
 {
   "@context": "https://schema.org/",
@@ -102,6 +113,7 @@ Home > Jobs > [Job Title]
 ```
 
 ### 5. Application Process
+
 - **External Links**: Direct users to original job posting
 - **Apply Button**: Prominent call-to-action
 - **Source Attribution**: Clear indication of job source (e.g., Indeed, LinkedIn)
@@ -109,17 +121,20 @@ Home > Jobs > [Job Title]
 ## API Endpoints
 
 ### 1. Job Data (`GET /api/jobs/[id]`)
+
 - **Purpose**: Fetch individual job details
 - **Response**: Complete job object with all fields
 - **Error Handling**: 404 for non-existent jobs
 
 ### 2. Save Job (`POST /api/jobs/save`)
+
 - **Purpose**: Save or unsave jobs for authenticated users
 - **Request Body**: `{ jobId: string }`
 - **Response**: `{ saved: boolean, message: string }`
 - **Database**: Uses `JobApplication` model with 'saved' status
 
 ### 3. Report Job (`POST /api/jobs/report`)
+
 - **Purpose**: Report inappropriate or fraudulent job listings
 - **Request Body**: `{ jobId: string, reason: string, reporterUserId?: string }`
 - **Validation**: Minimum 10 characters for reason
@@ -128,6 +143,7 @@ Home > Jobs > [Job Title]
 ## Database Schema Integration
 
 ### Jobs Table
+
 ```sql
 Job {
   id: String (UUID)
@@ -147,6 +163,7 @@ Job {
 ```
 
 ### Job Applications Table
+
 ```sql
 JobApplication {
   id: String (UUID)
@@ -161,12 +178,14 @@ JobApplication {
 ## Responsive Design
 
 ### Mobile Optimization
+
 - **Flexible Layout**: Grid system adapts to screen size
 - **Touch-Friendly**: Large buttons and touch targets
 - **Readable Typography**: Optimized font sizes and line heights
 - **Compressed Navigation**: Collapsible elements on smaller screens
 
 ### Desktop Features
+
 - **Sidebar Layout**: Related jobs in dedicated sidebar
 - **Expanded Actions**: All action buttons visible
 - **Rich Typography**: Enhanced readability with larger screens
@@ -174,16 +193,19 @@ JobApplication {
 ## Performance Considerations
 
 ### Server-Side Rendering
+
 - **SEO Benefits**: Complete HTML rendered on server
 - **Fast Initial Load**: Content visible immediately
 - **Dynamic Metadata**: Generated per job for optimal sharing
 
 ### Client-Side Optimizations
+
 - **Code Splitting**: JobDetailClient loaded separately
 - **Image Optimization**: Next.js automatic image optimization
 - **Animation Performance**: Framer Motion with GPU acceleration
 
 ### Caching Strategy
+
 - **Database Queries**: Optimized with proper indexing
 - **Related Jobs**: Cached based on categories and location
 - **Static Assets**: Leverages Next.js static optimization
@@ -191,11 +213,13 @@ JobApplication {
 ## Accessibility Features
 
 ### ARIA Labels
+
 - **Screen Reader Support**: Descriptive labels for all interactive elements
 - **Semantic HTML**: Proper heading hierarchy and structure
 - **Focus Management**: Keyboard navigation support
 
 ### Visual Design
+
 - **Color Contrast**: WCAG 2.1 AA compliant color schemes
 - **Font Sizes**: Scalable typography for visual accessibility
 - **Interactive States**: Clear hover and focus indicators
@@ -203,11 +227,13 @@ JobApplication {
 ## Future Enhancements (Prepared For)
 
 ### Commute-Based Features
+
 - **Location Coordinates**: Jobs stored with lat/lng for distance calculations
 - **UI Placeholders**: Space reserved for commute time display
 - **API Integration Points**: Ready for Google Maps/transit APIs
 
 ### Advanced Interactions
+
 - **Job Comparison**: Framework for comparing multiple positions
 - **Application Tracking**: Enhanced status tracking for applied jobs
 - **Personalized Recommendations**: ML-based job suggestions
@@ -215,16 +241,19 @@ JobApplication {
 ## Testing Strategy
 
 ### Unit Tests
+
 - **Component Testing**: Individual component functionality
 - **API Testing**: Endpoint validation and error handling
 - **Utility Functions**: Date formatting, salary display, etc.
 
 ### Integration Tests
+
 - **User Flows**: Complete save/share/report workflows
 - **Database Integration**: Data persistence and retrieval
 - **Authentication**: Protected routes and user-specific features
 
 ### Cross-Browser Testing
+
 - **Modern Browsers**: Chrome, Firefox, Safari, Edge
 - **Mobile Browsers**: iOS Safari, Chrome Mobile
 - **Feature Degradation**: Graceful fallbacks for unsupported features
@@ -232,11 +261,13 @@ JobApplication {
 ## Error Handling
 
 ### Client-Side Errors
+
 - **Network Failures**: User-friendly error messages
 - **Authentication Issues**: Redirect to sign-in when appropriate
 - **Validation Errors**: Inline form validation feedback
 
 ### Server-Side Errors
+
 - **404 Handling**: Custom not found page for missing jobs
 - **Database Errors**: Graceful error responses
 - **External API Failures**: Fallback strategies for job data
@@ -244,11 +275,13 @@ JobApplication {
 ## Security Considerations
 
 ### Input Validation
+
 - **Report Reasons**: Server-side validation and sanitization
 - **SQL Injection**: Prisma ORM protections
 - **XSS Prevention**: Proper HTML escaping
 
 ### Authentication
+
 - **Protected Actions**: Save/report require authentication
 - **Session Management**: NextAuth.js integration
 - **CSRF Protection**: Built-in Next.js protections
@@ -256,11 +289,13 @@ JobApplication {
 ## Monitoring and Analytics
 
 ### Performance Monitoring
+
 - **Page Load Times**: Core Web Vitals tracking
 - **API Response Times**: Database query performance
 - **Error Rates**: Client and server error tracking
 
 ### User Analytics
+
 - **Job Views**: Track popular job listings
 - **Save Rates**: Monitor job save frequency
 - **Report Analytics**: Track report submissions and reasons
@@ -268,16 +303,19 @@ JobApplication {
 ## Development Guidelines
 
 ### Code Organization
+
 - **Separation of Concerns**: Server/client component split
 - **Reusable Components**: Shared UI elements
 - **Type Safety**: Full TypeScript implementation
 
 ### API Design
+
 - **RESTful Conventions**: Standard HTTP methods and status codes
 - **Error Responses**: Consistent error format
 - **Response Schemas**: Predictable data structures
 
 ### Database Design
+
 - **Normalization**: Efficient data storage
 - **Indexing**: Optimized query performance
-- **Relationships**: Proper foreign key constraints 
+- **Relationships**: Proper foreign key constraints

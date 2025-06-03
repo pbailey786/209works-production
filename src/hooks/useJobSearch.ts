@@ -18,7 +18,7 @@ interface UseJobSearchReturn {
   location: string;
   searchQuery: string;
   searchLocation: string;
-  
+
   // Actions
   setQuery: (query: string) => void;
   setLocation: (location: string) => void;
@@ -27,25 +27,27 @@ interface UseJobSearchReturn {
   refetch: () => void;
 }
 
-export function useJobSearch(options: UseJobSearchOptions = {}): UseJobSearchReturn {
+export function useJobSearch(
+  options: UseJobSearchOptions = {}
+): UseJobSearchReturn {
   const { pageSize = 20, debounceDelay = 500 } = options;
-  
+
   // Search state
   const [jobs, setJobs] = useState<JobWithOptionalFields[]>([]);
-  const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchLocation, setSearchLocation] = useState("");
+  const [query, setQuery] = useState('');
+  const [location, setLocation] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetched, setFetched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
+
   // Debounced values
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [debouncedLocation, setDebouncedLocation] = useState("");
-  
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [debouncedLocation, setDebouncedLocation] = useState('');
+
   // Abort controller for cleanup
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -55,7 +57,7 @@ export function useJobSearch(options: UseJobSearchOptions = {}): UseJobSearchRet
       setDebouncedQuery(searchQuery);
       setDebouncedLocation(searchLocation);
     }, debounceDelay);
-    
+
     return () => clearTimeout(handler);
   }, [searchQuery, searchLocation, debounceDelay]);
 
@@ -64,36 +66,38 @@ export function useJobSearch(options: UseJobSearchOptions = {}): UseJobSearchRet
     async function fetchJobs() {
       setLoading(true);
       setError(null);
-      
+
       // Abort previous request if any
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       const controller = new AbortController();
       abortControllerRef.current = controller;
-      
+
       try {
         const res = await fetch(
           `/api/jobs?query=${encodeURIComponent(debouncedQuery)}&location=${encodeURIComponent(debouncedLocation)}&page=${page}&pageSize=${pageSize}`,
           { signal: controller.signal }
         );
-        
+
         if (!res.ok) {
           throw new Error(`Server responded with status ${res.status}`);
         }
-        
+
         const data = await res.json();
         setJobs(data.jobs || []);
         setTotalPages(Math.max(1, Math.ceil((data.total || 0) / pageSize)));
       } catch (err: any) {
-        if (err.name === "AbortError") {
+        if (err.name === 'AbortError') {
           // Ignore aborted requests
           return;
         }
         setJobs([]);
-        setError(`Failed to load jobs: ${err instanceof Error ? err.message : 'Unknown error'}`);
-        console.error("Job fetch error:", err);
+        setError(
+          `Failed to load jobs: ${err instanceof Error ? err.message : 'Unknown error'}`
+        );
+        console.error('Job fetch error:', err);
       } finally {
         setLoading(false);
         setFetched(true);
@@ -101,10 +105,10 @@ export function useJobSearch(options: UseJobSearchOptions = {}): UseJobSearchRet
     }
 
     // Only fetch if debounced values change (not on every keystroke)
-    if (debouncedQuery !== "" || debouncedLocation !== "") {
+    if (debouncedQuery !== '' || debouncedLocation !== '') {
       fetchJobs();
     }
-    
+
     // Cleanup on unmount
     return () => {
       if (abortControllerRef.current) {
@@ -137,7 +141,7 @@ export function useJobSearch(options: UseJobSearchOptions = {}): UseJobSearchRet
     location,
     searchQuery,
     searchLocation,
-    
+
     // Actions
     setQuery,
     setLocation,
@@ -145,4 +149,4 @@ export function useJobSearch(options: UseJobSearchOptions = {}): UseJobSearchRet
     handleSearch,
     refetch,
   };
-} 
+}

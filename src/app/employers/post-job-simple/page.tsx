@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  Briefcase, 
-  MapPin, 
-  DollarSign, 
-  Clock, 
+import {
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Clock,
   Send,
   ArrowLeft,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 
 interface SimpleJobForm {
@@ -27,7 +27,7 @@ interface SimpleJobForm {
 export default function SimplePostJobPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
+
   const [form, setForm] = useState<SimpleJobForm>({
     title: '',
     company: '',
@@ -36,9 +36,9 @@ export default function SimplePostJobPage() {
     description: '',
     salaryMin: '',
     salaryMax: '',
-    contactEmail: ''
+    contactEmail: '',
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -46,12 +46,20 @@ export default function SimplePostJobPage() {
     { value: 'full-time', label: 'Full-time' },
     { value: 'part-time', label: 'Part-time' },
     { value: 'contract', label: 'Contract' },
-    { value: 'temporary', label: 'Temporary' }
+    { value: 'temporary', label: 'Temporary' },
   ];
 
   const centralValleyLocations = [
-    'Stockton, CA', 'Modesto, CA', 'Fresno, CA', 'Visalia, CA', 'Bakersfield, CA',
-    'Tracy, CA', 'Manteca, CA', 'Lodi, CA', 'Turlock, CA', 'Merced, CA'
+    'Stockton, CA',
+    'Modesto, CA',
+    'Fresno, CA',
+    'Visalia, CA',
+    'Bakersfield, CA',
+    'Tracy, CA',
+    'Manteca, CA',
+    'Lodi, CA',
+    'Turlock, CA',
+    'Merced, CA',
   ];
 
   // Auto-fill user email
@@ -59,7 +67,7 @@ export default function SimplePostJobPage() {
     if (session?.user?.email) {
       setForm(prev => ({
         ...prev,
-        contactEmail: session.user.email || ''
+        contactEmail: session.user.email || '',
       }));
     }
   }, [session]);
@@ -73,7 +81,8 @@ export default function SimplePostJobPage() {
     if (!form.description.trim() || form.description.length < 50) {
       newErrors.description = 'Description must be at least 50 characters';
     }
-    if (!form.contactEmail.trim()) newErrors.contactEmail = 'Contact email is required';
+    if (!form.contactEmail.trim())
+      newErrors.contactEmail = 'Contact email is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -81,9 +90,9 @@ export default function SimplePostJobPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/jobs', {
@@ -99,7 +108,7 @@ export default function SimplePostJobPage() {
           requirements: '',
           benefits: '',
           urgent: false,
-          featured: false
+          featured: false,
         }),
       });
 
@@ -118,8 +127,8 @@ export default function SimplePostJobPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -132,121 +141,135 @@ export default function SimplePostJobPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center">
             <button
               onClick={() => router.back()}
-              className="mr-4 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="mr-4 p-2 text-gray-400 transition-colors hover:text-gray-600"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="h-5 w-5" />
             </button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Post a Job</h1>
-              <p className="text-gray-600 mt-1">Quick and simple job posting</p>
+              <p className="mt-1 text-gray-600">Quick and simple job posting</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Form */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Job Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Job Title *
               </label>
               <input
                 type="text"
                 value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                onChange={e => setForm({ ...form, title: e.target.value })}
+                className={`w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
                   errors.title ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="e.g. Customer Service Representative"
               />
-              {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
+              {errors.title && (
+                <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+              )}
             </div>
 
             {/* Company and Location */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Company Name *
                 </label>
                 <input
                   type="text"
                   value={form.company}
-                  onChange={(e) => setForm({ ...form, company: e.target.value })}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  onChange={e => setForm({ ...form, company: e.target.value })}
+                  className={`w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
                     errors.company ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="Your company name"
                 />
-                {errors.company && <p className="text-red-600 text-sm mt-1">{errors.company}</p>}
+                {errors.company && (
+                  <p className="mt-1 text-sm text-red-600">{errors.company}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Location *
                 </label>
                 <select
                   value={form.location}
-                  onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  onChange={e => setForm({ ...form, location: e.target.value })}
+                  className={`w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
                     errors.location ? 'border-red-300' : 'border-gray-300'
                   }`}
                 >
                   <option value="">Select location</option>
-                  {centralValleyLocations.map((location) => (
-                    <option key={location} value={location}>{location}</option>
+                  {centralValleyLocations.map(location => (
+                    <option key={location} value={location}>
+                      {location}
+                    </option>
                   ))}
                 </select>
-                {errors.location && <p className="text-red-600 text-sm mt-1">{errors.location}</p>}
+                {errors.location && (
+                  <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+                )}
               </div>
             </div>
 
             {/* Job Type and Salary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Job Type *
                 </label>
                 <select
                   value={form.type}
-                  onChange={(e) => setForm({ ...form, type: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={e => setForm({ ...form, type: e.target.value })}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 >
-                  {jobTypes.map((type) => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
+                  {jobTypes.map(type => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Min Salary (optional)
                 </label>
                 <input
                   type="number"
                   value={form.salaryMin}
-                  onChange={(e) => setForm({ ...form, salaryMin: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={e =>
+                    setForm({ ...form, salaryMin: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="40000"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Max Salary (optional)
                 </label>
                 <input
                   type="number"
                   value={form.salaryMax}
-                  onChange={(e) => setForm({ ...form, salaryMax: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={e =>
+                    setForm({ ...form, salaryMax: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="60000"
                 />
               </div>
@@ -254,67 +277,82 @@ export default function SimplePostJobPage() {
 
             {/* Job Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Job Description *
               </label>
               <textarea
                 value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                onChange={e =>
+                  setForm({ ...form, description: e.target.value })
+                }
                 rows={6}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
                   errors.description ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Describe the job responsibilities, requirements, and what makes this role great..."
               />
-              <p className="text-sm text-gray-500 mt-1">{form.description.length} characters (minimum 50)</p>
-              {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description}</p>}
+              <p className="mt-1 text-sm text-gray-500">
+                {form.description.length} characters (minimum 50)
+              </p>
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.description}
+                </p>
+              )}
             </div>
 
             {/* Contact Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Contact Email *
               </label>
               <input
                 type="email"
                 value={form.contactEmail}
-                onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                onChange={e =>
+                  setForm({ ...form, contactEmail: e.target.value })
+                }
+                className={`w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
                   errors.contactEmail ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="hiring@company.com"
               />
-              {errors.contactEmail && <p className="text-red-600 text-sm mt-1">{errors.contactEmail}</p>}
+              {errors.contactEmail && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.contactEmail}
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}
-            <div className="pt-6 border-t border-gray-200">
+            <div className="border-t border-gray-200 pt-6">
               {errors.submit && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-red-600 text-sm">{errors.submit}</p>
+                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3">
+                  <p className="text-sm text-red-600">{errors.submit}</p>
                 </div>
               )}
-              
+
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
+                className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:bg-blue-400"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    <div className="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
                     Posting Job...
                   </>
                 ) : (
                   <>
-                    <Send className="w-5 h-5 mr-2" />
+                    <Send className="mr-2 h-5 w-5" />
                     Post Job - $99
                   </>
                 )}
               </button>
-              
-              <p className="text-center text-sm text-gray-500 mt-3">
-                Your job will be live for 30 days and reach thousands of local candidates
+
+              <p className="mt-3 text-center text-sm text-gray-500">
+                Your job will be live for 30 days and reach thousands of local
+                candidates
               </p>
             </div>
           </form>

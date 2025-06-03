@@ -3,17 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  User, 
-  Building, 
-  CreditCard, 
-  Bell, 
+import {
+  User,
+  Building,
+  CreditCard,
+  Bell,
   Save,
   ArrowLeft,
   Mail,
   Phone,
   Globe,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 
 interface CompanyProfile {
@@ -40,7 +40,7 @@ interface NotificationSettings {
 export default function SimpleSettingsPage() {
   const { data: session } = useSession();
   const router = useRouter();
-  
+
   const [activeTab, setActiveTab] = useState('profile');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
@@ -48,7 +48,7 @@ export default function SimpleSettingsPage() {
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: '',
     email: '',
-    phone: ''
+    phone: '',
   });
 
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile>({
@@ -57,13 +57,13 @@ export default function SimpleSettingsPage() {
     website: '',
     phone: '',
     address: '',
-    contactEmail: ''
+    contactEmail: '',
   });
 
   const [notifications, setNotifications] = useState<NotificationSettings>({
     emailApplications: true,
     emailWeeklyDigest: true,
-    emailMarketing: false
+    emailMarketing: false,
   });
 
   // Load user data
@@ -72,11 +72,11 @@ export default function SimpleSettingsPage() {
       setUserProfile({
         name: session.user.name || '',
         email: session.user.email || '',
-        phone: ''
+        phone: '',
       });
       setCompanyProfile(prev => ({
         ...prev,
-        contactEmail: session.user.email || ''
+        contactEmail: session.user.email || '',
       }));
     }
   }, [session]);
@@ -91,7 +91,7 @@ export default function SimpleSettingsPage() {
         const response = await fetch('/api/user/profile', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(userProfile)
+          body: JSON.stringify(userProfile),
         });
         if (!response.ok) throw new Error('Failed to save profile');
       }
@@ -101,7 +101,7 @@ export default function SimpleSettingsPage() {
         const response = await fetch('/api/company-profile', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(companyProfile)
+          body: JSON.stringify(companyProfile),
         });
         if (!response.ok) throw new Error('Failed to save company profile');
       }
@@ -111,7 +111,7 @@ export default function SimpleSettingsPage() {
         const response = await fetch('/api/user/notifications', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(notifications)
+          body: JSON.stringify(notifications),
         });
         if (!response.ok) throw new Error('Failed to save notifications');
       }
@@ -130,70 +130,76 @@ export default function SimpleSettingsPage() {
     { id: 'profile', name: 'Your Profile', icon: User },
     { id: 'company', name: 'Company Info', icon: Building },
     { id: 'notifications', name: 'Notifications', icon: Bell },
-    { id: 'billing', name: 'Billing', icon: CreditCard }
+    { id: 'billing', name: 'Billing', icon: CreditCard },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <button
                 onClick={() => router.back()}
-                className="mr-4 p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="mr-4 p-2 text-gray-400 transition-colors hover:text-gray-600"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="h-5 w-5" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
-                <p className="text-gray-600 mt-1">Manage your profile and preferences</p>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Account Settings
+                </h1>
+                <p className="mt-1 text-gray-600">
+                  Manage your profile and preferences
+                </p>
               </div>
             </div>
-            
+
             {activeTab !== 'billing' && (
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center"
+                className="flex items-center rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-blue-400"
               >
-                <Save className="w-4 h-4 mr-2" />
+                <Save className="mr-2 h-4 w-4" />
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
             )}
           </div>
-          
+
           {saveMessage && (
-            <div className={`mt-4 p-3 rounded-lg ${
-              saveMessage.includes('successfully') 
-                ? 'bg-green-50 text-green-700 border border-green-200' 
-                : 'bg-red-50 text-red-700 border border-red-200'
-            }`}>
+            <div
+              className={`mt-4 rounded-lg p-3 ${
+                saveMessage.includes('successfully')
+                  ? 'border border-green-200 bg-green-50 text-green-700'
+                  : 'border border-red-200 bg-red-50 text-red-700'
+              }`}
+            >
               {saveMessage}
             </div>
           )}
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
             <nav className="space-y-2">
-              {tabs.map((tab) => {
+              {tabs.map(tab => {
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors ${
+                    className={`flex w-full items-center rounded-lg px-4 py-3 text-left transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                        ? 'border border-blue-200 bg-blue-50 text-blue-700'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    <Icon className="w-5 h-5 mr-3" />
+                    <Icon className="mr-3 h-5 w-5" />
                     {tab.name}
                   </button>
                 );
@@ -203,47 +209,64 @@ export default function SimpleSettingsPage() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
               {/* Profile Tab */}
               {activeTab === 'profile' && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Profile</h2>
+                  <h2 className="mb-6 text-xl font-semibold text-gray-900">
+                    Your Profile
+                  </h2>
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
                         Full Name
                       </label>
                       <input
                         type="text"
                         value={userProfile.name}
-                        onChange={(e) => setUserProfile({ ...userProfile, name: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onChange={e =>
+                          setUserProfile({
+                            ...userProfile,
+                            name: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                         placeholder="Your full name"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
                         Email Address
                       </label>
                       <input
                         type="email"
                         value={userProfile.email}
-                        onChange={(e) => setUserProfile({ ...userProfile, email: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onChange={e =>
+                          setUserProfile({
+                            ...userProfile,
+                            email: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                         placeholder="your@email.com"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
                         Phone Number
                       </label>
                       <input
                         type="tel"
                         value={userProfile.phone}
-                        onChange={(e) => setUserProfile({ ...userProfile, phone: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onChange={e =>
+                          setUserProfile({
+                            ...userProfile,
+                            phone: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                         placeholder="(555) 123-4567"
                       />
                     </div>
@@ -254,71 +277,98 @@ export default function SimpleSettingsPage() {
               {/* Company Tab */}
               {activeTab === 'company' && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Company Information</h2>
+                  <h2 className="mb-6 text-xl font-semibold text-gray-900">
+                    Company Information
+                  </h2>
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
                         Company Name
                       </label>
                       <input
                         type="text"
                         value={companyProfile.name}
-                        onChange={(e) => setCompanyProfile({ ...companyProfile, name: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onChange={e =>
+                          setCompanyProfile({
+                            ...companyProfile,
+                            name: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                         placeholder="Your company name"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
                         Company Description
                       </label>
                       <textarea
                         value={companyProfile.description}
-                        onChange={(e) => setCompanyProfile({ ...companyProfile, description: e.target.value })}
+                        onChange={e =>
+                          setCompanyProfile({
+                            ...companyProfile,
+                            description: e.target.value,
+                          })
+                        }
                         rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                         placeholder="Brief description of your company..."
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
                           Website
                         </label>
                         <input
                           type="url"
                           value={companyProfile.website}
-                          onChange={(e) => setCompanyProfile({ ...companyProfile, website: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          onChange={e =>
+                            setCompanyProfile({
+                              ...companyProfile,
+                              website: e.target.value,
+                            })
+                          }
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                           placeholder="https://yourcompany.com"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
                           Phone
                         </label>
                         <input
                           type="tel"
                           value={companyProfile.phone}
-                          onChange={(e) => setCompanyProfile({ ...companyProfile, phone: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          onChange={e =>
+                            setCompanyProfile({
+                              ...companyProfile,
+                              phone: e.target.value,
+                            })
+                          }
+                          className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                           placeholder="(555) 123-4567"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
                         Address
                       </label>
                       <input
                         type="text"
                         value={companyProfile.address}
-                        onChange={(e) => setCompanyProfile({ ...companyProfile, address: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        onChange={e =>
+                          setCompanyProfile({
+                            ...companyProfile,
+                            address: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                         placeholder="123 Main St, Stockton, CA 95202"
                       />
                     </div>
@@ -329,53 +379,82 @@ export default function SimpleSettingsPage() {
               {/* Notifications Tab */}
               {activeTab === 'notifications' && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Notification Preferences</h2>
+                  <h2 className="mb-6 text-xl font-semibold text-gray-900">
+                    Notification Preferences
+                  </h2>
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900">New Applications</h3>
-                        <p className="text-sm text-gray-600">Get notified when someone applies to your jobs</p>
+                        <h3 className="font-medium text-gray-900">
+                          New Applications
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Get notified when someone applies to your jobs
+                        </p>
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
+                      <label className="relative inline-flex cursor-pointer items-center">
                         <input
                           type="checkbox"
                           checked={notifications.emailApplications}
-                          onChange={(e) => setNotifications({ ...notifications, emailApplications: e.target.checked })}
-                          className="sr-only peer"
+                          onChange={e =>
+                            setNotifications({
+                              ...notifications,
+                              emailApplications: e.target.checked,
+                            })
+                          }
+                          className="peer sr-only"
                         />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                       </label>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900">Weekly Digest</h3>
-                        <p className="text-sm text-gray-600">Weekly summary of your hiring activity</p>
+                        <h3 className="font-medium text-gray-900">
+                          Weekly Digest
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Weekly summary of your hiring activity
+                        </p>
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
+                      <label className="relative inline-flex cursor-pointer items-center">
                         <input
                           type="checkbox"
                           checked={notifications.emailWeeklyDigest}
-                          onChange={(e) => setNotifications({ ...notifications, emailWeeklyDigest: e.target.checked })}
-                          className="sr-only peer"
+                          onChange={e =>
+                            setNotifications({
+                              ...notifications,
+                              emailWeeklyDigest: e.target.checked,
+                            })
+                          }
+                          className="peer sr-only"
                         />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                       </label>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900">Marketing Updates</h3>
-                        <p className="text-sm text-gray-600">Tips and updates about 209.works</p>
+                        <h3 className="font-medium text-gray-900">
+                          Marketing Updates
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Tips and updates about 209.works
+                        </p>
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
+                      <label className="relative inline-flex cursor-pointer items-center">
                         <input
                           type="checkbox"
                           checked={notifications.emailMarketing}
-                          onChange={(e) => setNotifications({ ...notifications, emailMarketing: e.target.checked })}
-                          className="sr-only peer"
+                          onChange={e =>
+                            setNotifications({
+                              ...notifications,
+                              emailMarketing: e.target.checked,
+                            })
+                          }
+                          className="peer sr-only"
                         />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                       </label>
                     </div>
                   </div>
@@ -385,24 +464,35 @@ export default function SimpleSettingsPage() {
               {/* Billing Tab */}
               {activeTab === 'billing' && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">Billing & Subscription</h2>
+                  <h2 className="mb-6 text-xl font-semibold text-gray-900">
+                    Billing & Subscription
+                  </h2>
                   <div className="space-y-6">
-                    <div className="bg-gray-50 rounded-lg p-6">
-                      <h3 className="font-medium text-gray-900 mb-2">Current Plan</h3>
-                      <p className="text-gray-600 mb-4">Basic Plan - Pay per job post</p>
+                    <div className="rounded-lg bg-gray-50 p-6">
+                      <h3 className="mb-2 font-medium text-gray-900">
+                        Current Plan
+                      </h3>
+                      <p className="mb-4 text-gray-600">
+                        Basic Plan - Pay per job post
+                      </p>
                       <button
                         onClick={() => router.push('/employers/pricing-simple')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                        className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
                       >
                         Upgrade to Pro
                       </button>
                     </div>
 
                     <div>
-                      <h3 className="font-medium text-gray-900 mb-4">Billing History</h3>
+                      <h3 className="mb-4 font-medium text-gray-900">
+                        Billing History
+                      </h3>
                       <div className="text-gray-600">
                         <p>No billing history yet.</p>
-                        <p className="text-sm mt-1">Your payment history will appear here after your first purchase.</p>
+                        <p className="mt-1 text-sm">
+                          Your payment history will appear here after your first
+                          purchase.
+                        </p>
                       </div>
                     </div>
                   </div>

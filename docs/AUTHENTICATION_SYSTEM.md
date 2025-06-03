@@ -25,27 +25,27 @@ graph TD
     B -->|Credentials| C[Email/Password Validation]
     B -->|Google OAuth| D[Google OAuth Flow]
     B -->|Magic Link| E[Email Magic Link]
-    
+
     C --> F{User Exists & Valid?}
     F -->|Yes| G{Email Verified?}
     F -->|No| H[Authentication Failed]
-    
+
     G -->|Yes| I{Admin User?}
     G -->|No| J[Email Verification Required]
-    
+
     I -->|Yes| K{2FA Enabled?}
     I -->|No| L[Login Success]
-    
+
     K -->|Yes| M[2FA Code Required]
     K -->|No| L
-    
+
     M --> N{Valid 2FA Code?}
     N -->|Yes| L
     N -->|No| O[2FA Failed]
-    
+
     D --> P[Google Account Verification]
     P --> Q[Account Creation/Login]
-    
+
     E --> R[Magic Link Email Sent]
     R --> S[User Clicks Link]
     S --> T[Email Verification & Login]
@@ -54,18 +54,21 @@ graph TD
 ## Security Features
 
 ### 1. Password Security
+
 - **Hashing**: bcrypt with salt rounds of 12
 - **Strength Requirements**: Minimum 8 characters
 - **Reset Tokens**: Cryptographically secure random tokens
 - **Token Expiration**: 1 hour for password reset tokens
 
 ### 2. Session Management
+
 - **Strategy**: JWT tokens
 - **Expiration**: 30 days with 1-day update interval
 - **Secure Storage**: HTTP-only cookies in production
 - **Session Invalidation**: Automatic on logout
 
 ### 3. Two-Factor Authentication (2FA)
+
 - **Scope**: Admin accounts only
 - **Method**: TOTP (Time-based One-Time Password)
 - **Library**: Speakeasy
@@ -73,12 +76,14 @@ graph TD
 - **Backup**: Manual disable with current 2FA code
 
 ### 4. Rate Limiting
+
 - **Registration**: Heavy rate limiting
 - **Login**: Standard rate limiting
 - **Password Reset**: Rate limited per email
 - **2FA**: Rate limited per user
 
 ### 5. Email Verification
+
 - **Required**: For all new accounts
 - **Token Expiration**: 24 hours
 - **Secure Tokens**: Cryptographically random
@@ -89,9 +94,11 @@ graph TD
 ### Authentication Routes
 
 #### POST `/api/auth/register`
+
 Register a new user account.
 
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com",
@@ -105,6 +112,7 @@ Register a new user account.
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -115,9 +123,11 @@ Register a new user account.
 ```
 
 #### POST `/api/auth/password-reset`
+
 Request password reset.
 
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com"
@@ -125,9 +135,11 @@ Request password reset.
 ```
 
 #### PATCH `/api/auth/password-reset`
+
 Reset password with token.
 
 **Request Body**:
+
 ```json
 {
   "token": "reset-token",
@@ -136,16 +148,19 @@ Reset password with token.
 ```
 
 #### GET `/api/auth/verify?token=verification-token`
+
 Verify email address.
 
 ### 2FA Routes
 
 #### POST `/api/auth/2fa/setup`
+
 Setup 2FA for admin accounts.
 
 **Headers**: `Authorization: Bearer <jwt-token>`
 
 **Response**:
+
 ```json
 {
   "qrCode": "data:image/png;base64,...",
@@ -155,11 +170,13 @@ Setup 2FA for admin accounts.
 ```
 
 #### POST `/api/auth/2fa/verify`
+
 Verify and enable 2FA.
 
 **Headers**: `Authorization: Bearer <jwt-token>`
 
 **Request Body**:
+
 ```json
 {
   "code": "123456"
@@ -167,11 +184,13 @@ Verify and enable 2FA.
 ```
 
 #### POST `/api/auth/2fa/disable`
+
 Disable 2FA (requires current 2FA code).
 
 **Headers**: `Authorization: Bearer <jwt-token>`
 
 **Request Body**:
+
 ```json
 {
   "code": "123456"
@@ -181,6 +200,7 @@ Disable 2FA (requires current 2FA code).
 ## Database Schema
 
 ### User Model
+
 ```prisma
 model User {
   id                   String   @id @default(uuid())
@@ -189,19 +209,19 @@ model User {
   passwordHash         String
   isEmailVerified      Boolean  @default(false)
   role                 UserRole @default(jobseeker)
-  
+
   // Email verification
   magicLinkToken       String?
   magicLinkExpires     DateTime?
-  
+
   // Password reset
   passwordResetToken   String?
   passwordResetExpires DateTime?
-  
+
   // Two-factor authentication
   twoFactorSecret      String?
   twoFactorEnabled     Boolean @default(false)
-  
+
   // ... other fields
 }
 
@@ -245,6 +265,7 @@ enum UserRole {
 ## Error Handling
 
 ### Error Response Format
+
 ```json
 {
   "error": "ErrorType",
@@ -257,6 +278,7 @@ enum UserRole {
 ```
 
 ### Common Error Codes
+
 - `VALIDATION_ERROR`: Invalid input data
 - `AUTHENTICATION_ERROR`: Invalid credentials
 - `AUTHORIZATION_ERROR`: Insufficient permissions
@@ -268,12 +290,14 @@ enum UserRole {
 ### Test Coverage Areas
 
 1. **Unit Tests**:
+
    - Password hashing/verification
    - Token generation/validation
    - Input validation schemas
    - 2FA TOTP generation/verification
 
 2. **Integration Tests**:
+
    - Registration flow
    - Login flow
    - Password reset flow
@@ -325,6 +349,7 @@ ENCRYPTION_KEY="test-encryption-key-32-characters"
 ## Deployment Checklist
 
 ### Environment Variables
+
 - [ ] `NEXTAUTH_SECRET` - Strong random secret (32+ characters)
 - [ ] `DATABASE_URL` - Production database connection
 - [ ] `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - Production OAuth app
@@ -334,6 +359,7 @@ ENCRYPTION_KEY="test-encryption-key-32-characters"
 - [ ] Redis configuration - Production Redis instance
 
 ### Security Configuration
+
 - [ ] HTTPS enabled with valid SSL certificate
 - [ ] Security headers configured in middleware
 - [ ] Rate limiting enabled with appropriate limits
@@ -342,6 +368,7 @@ ENCRYPTION_KEY="test-encryption-key-32-characters"
 - [ ] Email service configured with proper authentication
 
 ### Monitoring Setup
+
 - [ ] Authentication event logging enabled
 - [ ] Error tracking configured (e.g., Sentry)
 - [ ] Performance monitoring enabled
@@ -353,6 +380,7 @@ ENCRYPTION_KEY="test-encryption-key-32-characters"
 ### Common Issues
 
 #### Email Not Sending
+
 1. Check email service credentials
 2. Verify SMTP settings and ports
 3. Check firewall/network restrictions
@@ -360,18 +388,21 @@ ENCRYPTION_KEY="test-encryption-key-32-characters"
 5. Test with Ethereal Email for development
 
 #### OAuth Issues
+
 1. Verify OAuth redirect URIs match exactly
 2. Check client ID and secret
 3. Ensure OAuth consent screen is configured
 4. Verify domain ownership for production
 
 #### 2FA Problems
+
 1. Check system time synchronization
 2. Verify TOTP secret generation
 3. Test with multiple authenticator apps
 4. Check for clock drift tolerance
 
 #### Session Issues
+
 1. Verify `NEXTAUTH_SECRET` is set and consistent
 2. Check domain configuration for cookies
 3. Verify HTTPS in production
@@ -380,6 +411,7 @@ ENCRYPTION_KEY="test-encryption-key-32-characters"
 ### Debug Mode
 
 Enable detailed logging:
+
 ```bash
 DEBUG="next-auth:*"
 LOG_LEVEL="debug"
@@ -389,24 +421,28 @@ PRISMA_QUERY_LOGGING="true"
 ## Future Roadmap
 
 ### Phase 1: Enhanced Security
+
 - [ ] Account lockout mechanism
 - [ ] Device fingerprinting
 - [ ] Suspicious activity detection
 - [ ] Enhanced audit logging
 
 ### Phase 2: User Experience
+
 - [ ] Social login providers (GitHub, LinkedIn)
 - [ ] Passwordless authentication
 - [ ] Biometric authentication support
 - [ ] Single Sign-On (SSO) integration
 
 ### Phase 3: Enterprise Features
+
 - [ ] Multi-tenant authentication
 - [ ] Advanced role-based permissions
 - [ ] API key management
 - [ ] Compliance reporting (SOC2, GDPR)
 
 ### Phase 4: Advanced Features
+
 - [ ] Risk-based authentication
 - [ ] Machine learning fraud detection
 - [ ] Zero-trust security model
@@ -415,17 +451,20 @@ PRISMA_QUERY_LOGGING="true"
 ## Compliance & Standards
 
 ### Security Standards
+
 - **OWASP Top 10**: Protection against common vulnerabilities
 - **NIST Cybersecurity Framework**: Aligned security practices
 - **ISO 27001**: Information security management principles
 
 ### Privacy Compliance
+
 - **GDPR**: User data protection and privacy rights
 - **CCPA**: California consumer privacy compliance
 - **Data Minimization**: Collect only necessary user data
 
 ### Industry Standards
+
 - **OAuth 2.0**: Standard authorization framework
 - **OpenID Connect**: Identity layer on OAuth 2.0
 - **JWT**: JSON Web Token standard
-- **TOTP**: Time-based One-Time Password standard 
+- **TOTP**: Time-based One-Time Password standard

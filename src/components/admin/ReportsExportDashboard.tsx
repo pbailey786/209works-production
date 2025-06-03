@@ -1,12 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -14,8 +20,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   BarChart3,
   CalendarIcon,
   Download,
@@ -28,7 +38,7 @@ import {
   Activity,
   AlertCircle,
   CheckCircle,
-  Clock
+  Clock,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -53,7 +63,9 @@ interface ExportRequest {
 
 export default function ReportsExportDashboard() {
   const [selectedReport, setSelectedReport] = useState<string>('');
-  const [exportFormat, setExportFormat] = useState<'csv' | 'pdf' | 'excel'>('csv');
+  const [exportFormat, setExportFormat] = useState<'csv' | 'pdf' | 'excel'>(
+    'csv'
+  );
   const [dateFrom, setDateFrom] = useState<Date | null>(null);
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -63,83 +75,91 @@ export default function ReportsExportDashboard() {
     {
       id: 'user_activity',
       name: 'User Activity Report',
-      description: 'Comprehensive user engagement, login patterns, and activity metrics',
+      description:
+        'Comprehensive user engagement, login patterns, and activity metrics',
       icon: Users,
       category: 'Users',
       estimatedRows: 15420,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 2),
-      status: 'available'
+      status: 'available',
     },
     {
       id: 'job_listings',
       name: 'Job Listings Report',
-      description: 'All job postings with status, applications, and performance metrics',
+      description:
+        'All job postings with status, applications, and performance metrics',
       icon: Briefcase,
       category: 'Jobs',
       estimatedRows: 8934,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 6),
-      status: 'available'
+      status: 'available',
     },
     {
       id: 'revenue_analytics',
       name: 'Revenue Analytics',
-      description: 'Financial performance, subscription revenue, and payment analytics',
+      description:
+        'Financial performance, subscription revenue, and payment analytics',
       icon: DollarSign,
       category: 'Finance',
       estimatedRows: 2156,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 12),
-      status: 'available'
+      status: 'available',
     },
     {
       id: 'system_performance',
       name: 'System Performance Report',
-      description: 'Server metrics, response times, error rates, and uptime statistics',
+      description:
+        'Server metrics, response times, error rates, and uptime statistics',
       icon: Activity,
       category: 'System',
       estimatedRows: 50000,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 30),
-      status: 'available'
+      status: 'available',
     },
     {
       id: 'application_analytics',
       name: 'Application Analytics',
-      description: 'Job application trends, success rates, and candidate insights',
+      description:
+        'Job application trends, success rates, and candidate insights',
       icon: TrendingUp,
       category: 'Analytics',
       estimatedRows: 12678,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      status: 'available'
+      status: 'available',
     },
     {
       id: 'moderation_log',
       name: 'Moderation Activity Log',
-      description: 'Content moderation actions, flagged content, and admin activities',
+      description:
+        'Content moderation actions, flagged content, and admin activities',
       icon: AlertCircle,
       category: 'Moderation',
       estimatedRows: 3421,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 8),
-      status: 'available'
+      status: 'available',
     },
     {
       id: 'advertisement_performance',
       name: 'Advertisement Performance',
-      description: 'Ad campaign metrics, click-through rates, and revenue attribution',
+      description:
+        'Ad campaign metrics, click-through rates, and revenue attribution',
       icon: BarChart3,
       category: 'Marketing',
       estimatedRows: 1876,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 24),
-      status: 'generating'
+      status: 'generating',
     },
     {
       id: 'security_audit',
       name: 'Security Audit Report',
-      description: 'Security events, failed login attempts, and access patterns',
+      description:
+        'Security events, failed login attempts, and access patterns',
       icon: AlertCircle,
       category: 'Security',
       estimatedRows: 8765,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 1),
-      status: 'available'
-    }
+      status: 'available',
+    },
   ];
 
   const getStatusColor = (status: string) => {
@@ -181,7 +201,7 @@ export default function ReportsExportDashboard() {
         reportType: selectedReport,
         format: exportFormat,
         dateFrom,
-        dateTo
+        dateTo,
       };
 
       const response = await fetch('/api/admin/reports/export', {
@@ -189,7 +209,7 @@ export default function ReportsExportDashboard() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(exportRequest)
+        body: JSON.stringify(exportRequest),
       });
 
       if (!response.ok) {
@@ -201,11 +221,12 @@ export default function ReportsExportDashboard() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      
-      const reportName = reportTypes.find(r => r.id === selectedReport)?.name || 'report';
+
+      const reportName =
+        reportTypes.find(r => r.id === selectedReport)?.name || 'report';
       const timestamp = format(new Date(), 'yyyy-MM-dd-HHmm');
       a.download = `${reportName.toLowerCase().replace(/\s+/g, '_')}_${timestamp}.${exportFormat}`;
-      
+
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -219,11 +240,10 @@ export default function ReportsExportDashboard() {
         format: exportFormat,
         timestamp: new Date(),
         status: 'completed',
-        fileSize: '2.4 MB' // Mock file size
+        fileSize: '2.4 MB', // Mock file size
       };
 
       setExportHistory(prev => [newExport, ...prev.slice(0, 9)]); // Keep last 10 exports
-
     } catch (error) {
       console.error('Export error:', error);
       alert('Export failed. Please try again.');
@@ -237,16 +257,16 @@ export default function ReportsExportDashboard() {
   return (
     <div className="space-y-6">
       {/* Report Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {reportTypes.map((report) => {
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {reportTypes.map(report => {
           const Icon = report.icon;
           const isSelected = selectedReport === report.id;
-          
+
           return (
-            <Card 
+            <Card
               key={report.id}
               className={`cursor-pointer transition-all hover:shadow-md ${
-                isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : ''
+                isSelected ? 'bg-blue-50 ring-2 ring-blue-500' : ''
               }`}
               onClick={() => setSelectedReport(report.id)}
             >
@@ -258,19 +278,29 @@ export default function ReportsExportDashboard() {
                       {report.category}
                     </Badge>
                   </div>
-                  <Badge className={`${getStatusColor(report.status || 'available')} flex items-center space-x-1`}>
+                  <Badge
+                    className={`${getStatusColor(report.status || 'available')} flex items-center space-x-1`}
+                  >
                     {getStatusIcon(report.status || 'available')}
-                    <span className="capitalize">{report.status || 'available'}</span>
+                    <span className="capitalize">
+                      {report.status || 'available'}
+                    </span>
                   </Badge>
                 </div>
-                <CardTitle className="text-sm font-medium">{report.name}</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {report.name}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xs text-gray-600 mb-3">{report.description}</p>
+                <p className="mb-3 text-xs text-gray-600">
+                  {report.description}
+                </p>
                 <div className="space-y-1 text-xs text-gray-500">
                   <div>~{report.estimatedRows?.toLocaleString()} rows</div>
                   {report.lastGenerated && (
-                    <div>Last: {format(report.lastGenerated, 'MMM dd, HH:mm')}</div>
+                    <div>
+                      Last: {format(report.lastGenerated, 'MMM dd, HH:mm')}
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -289,11 +319,14 @@ export default function ReportsExportDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               {/* Export Format */}
               <div className="space-y-2">
                 <Label>Export Format</Label>
-                <Select value={exportFormat} onValueChange={(value: any) => setExportFormat(value)}>
+                <Select
+                  value={exportFormat}
+                  onValueChange={(value: any) => setExportFormat(value)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -310,7 +343,10 @@ export default function ReportsExportDashboard() {
                 <Label>Date From</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {dateFrom ? format(dateFrom, 'PPP') : 'Select start date'}
                     </Button>
@@ -319,7 +355,7 @@ export default function ReportsExportDashboard() {
                     <Calendar
                       mode="single"
                       selected={dateFrom || undefined}
-                      onSelect={(date) => setDateFrom(date || null)}
+                      onSelect={date => setDateFrom(date || null)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -331,7 +367,10 @@ export default function ReportsExportDashboard() {
                 <Label>Date To</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {dateTo ? format(dateTo, 'PPP') : 'Select end date'}
                     </Button>
@@ -340,8 +379,8 @@ export default function ReportsExportDashboard() {
                     <Calendar
                       mode="single"
                       selected={dateTo || undefined}
-                      onSelect={(date) => setDateTo(date || null)}
-                      disabled={(date) => dateFrom ? date < dateFrom : false}
+                      onSelect={date => setDateTo(date || null)}
+                      disabled={date => (dateFrom ? date < dateFrom : false)}
                       initialFocus
                     />
                   </PopoverContent>
@@ -351,9 +390,11 @@ export default function ReportsExportDashboard() {
               {/* Export Button */}
               <div className="space-y-2">
                 <Label>&nbsp;</Label>
-                <Button 
-                  onClick={handleExport} 
-                  disabled={isExporting || selectedReportConfig?.status === 'generating'}
+                <Button
+                  onClick={handleExport}
+                  disabled={
+                    isExporting || selectedReportConfig?.status === 'generating'
+                  }
                   className="w-full"
                 >
                   {isExporting ? (
@@ -373,12 +414,14 @@ export default function ReportsExportDashboard() {
 
             {/* Export Preview Info */}
             {selectedReportConfig && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-medium text-sm mb-2">Export Preview</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="mt-4 rounded-lg bg-gray-50 p-4">
+                <h4 className="mb-2 text-sm font-medium">Export Preview</h4>
+                <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                   <div>
                     <span className="text-gray-600">Report:</span>
-                    <div className="font-medium">{selectedReportConfig.name}</div>
+                    <div className="font-medium">
+                      {selectedReportConfig.name}
+                    </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Format:</span>
@@ -387,13 +430,18 @@ export default function ReportsExportDashboard() {
                   <div>
                     <span className="text-gray-600">Estimated Size:</span>
                     <div className="font-medium">
-                      {exportFormat === 'pdf' ? '5-15 MB' : 
-                       exportFormat === 'excel' ? '2-8 MB' : '1-5 MB'}
+                      {exportFormat === 'pdf'
+                        ? '5-15 MB'
+                        : exportFormat === 'excel'
+                          ? '2-8 MB'
+                          : '1-5 MB'}
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Est. Rows:</span>
-                    <div className="font-medium">{selectedReportConfig.estimatedRows?.toLocaleString()}</div>
+                    <div className="font-medium">
+                      {selectedReportConfig.estimatedRows?.toLocaleString()}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -407,24 +455,32 @@ export default function ReportsExportDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Recent Exports</CardTitle>
-            <CardDescription>Your recent report exports and downloads</CardDescription>
+            <CardDescription>
+              Your recent report exports and downloads
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {exportHistory.map((exportItem) => (
-                <div key={exportItem.id} className="flex items-center justify-between p-3 border rounded-lg">
+              {exportHistory.map(exportItem => (
+                <div
+                  key={exportItem.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
                   <div className="flex items-center space-x-3">
                     <FileText className="h-4 w-4 text-gray-600" />
                     <div>
-                      <div className="font-medium text-sm">{exportItem.reportName}</div>
+                      <div className="text-sm font-medium">
+                        {exportItem.reportName}
+                      </div>
                       <div className="text-xs text-gray-500">
-                        {format(exportItem.timestamp, 'MMM dd, yyyy HH:mm')} • 
-                        {exportItem.format.toUpperCase()} • {exportItem.fileSize}
+                        {format(exportItem.timestamp, 'MMM dd, yyyy HH:mm')} •
+                        {exportItem.format.toUpperCase()} •{' '}
+                        {exportItem.fileSize}
                       </div>
                     </div>
                   </div>
                   <Badge className="bg-green-100 text-green-800">
-                    <CheckCircle className="h-3 w-3 mr-1" />
+                    <CheckCircle className="mr-1 h-3 w-3" />
                     Completed
                   </Badge>
                 </div>
@@ -435,4 +491,4 @@ export default function ReportsExportDashboard() {
       )}
     </div>
   );
-} 
+}

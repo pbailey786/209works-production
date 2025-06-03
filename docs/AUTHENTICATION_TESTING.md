@@ -9,7 +9,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 ### 1. User Registration Testing
 
 #### Test Case 1.1: Valid Registration (Jobseeker)
+
 **Steps:**
+
 1. Navigate to `/signup/jobseeker`
 2. Fill in valid email and password (8+ characters)
 3. Submit form
@@ -20,7 +22,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 **Expected Result:** User successfully registered and email verified
 
 #### Test Case 1.2: Valid Registration (Employer)
+
 **Steps:**
+
 1. Navigate to `/signup/employer`
 2. Fill in valid email, password, company name, and website
 3. Submit form
@@ -31,7 +35,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 **Expected Result:** Employer account successfully created
 
 #### Test Case 1.3: Invalid Registration Scenarios
+
 **Test Data:**
+
 - Weak password (< 8 characters)
 - Invalid email format
 - Duplicate email address
@@ -42,7 +48,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 ### 2. Login Testing
 
 #### Test Case 2.1: Valid Login (Regular User)
+
 **Steps:**
+
 1. Navigate to `/signin`
 2. Enter valid email and password
 3. Submit form
@@ -51,7 +59,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 **Expected Result:** Successful login and redirect
 
 #### Test Case 2.2: Valid Login (Admin with 2FA)
+
 **Steps:**
+
 1. Navigate to `/signin`
 2. Enter admin email and password
 3. Submit form
@@ -61,7 +71,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 **Expected Result:** Successful login after 2FA verification
 
 #### Test Case 2.3: Invalid Login Scenarios
+
 **Test Data:**
+
 - Wrong password
 - Non-existent email
 - Unverified email
@@ -72,7 +84,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 ### 3. Password Reset Testing
 
 #### Test Case 3.1: Valid Password Reset
+
 **Steps:**
+
 1. Navigate to `/password-reset-request`
 2. Enter valid email address
 3. Check email for reset link
@@ -84,7 +98,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 **Expected Result:** Password successfully reset
 
 #### Test Case 3.2: Invalid Password Reset Scenarios
+
 **Test Data:**
+
 - Non-existent email
 - Expired reset token
 - Weak new password
@@ -94,9 +110,11 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 ### 4. Two-Factor Authentication Testing
 
 #### Test Case 4.1: 2FA Setup (Admin Only)
+
 **Prerequisites:** Logged in as admin user
 
 **Steps:**
+
 1. Navigate to 2FA setup endpoint
 2. Scan QR code with authenticator app
 3. Enter TOTP code from app
@@ -105,9 +123,11 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 **Expected Result:** 2FA successfully enabled
 
 #### Test Case 4.2: 2FA Login
+
 **Prerequisites:** Admin user with 2FA enabled
 
 **Steps:**
+
 1. Login with email/password
 2. Enter 2FA code when prompted
 3. Verify successful login
@@ -115,9 +135,11 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 **Expected Result:** Login successful after 2FA
 
 #### Test Case 4.3: 2FA Disable
+
 **Prerequisites:** Admin user with 2FA enabled
 
 **Steps:**
+
 1. Navigate to 2FA disable endpoint
 2. Enter current 2FA code
 3. Verify 2FA is disabled
@@ -127,7 +149,9 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 ### 5. OAuth Testing
 
 #### Test Case 5.1: Google OAuth Login
+
 **Steps:**
+
 1. Navigate to `/signin`
 2. Click "Sign in with Google"
 3. Complete Google OAuth flow
@@ -140,6 +164,7 @@ This guide provides comprehensive testing procedures for the 209jobs authenticat
 ### Unit Tests
 
 #### Password Hashing Tests
+
 ```javascript
 // src/__tests__/auth/password.test.js
 import { hash, compare } from 'bcryptjs';
@@ -148,7 +173,7 @@ describe('Password Hashing', () => {
   test('should hash password correctly', async () => {
     const password = 'testpassword123';
     const hashedPassword = await hash(password, 12);
-    
+
     expect(hashedPassword).not.toBe(password);
     expect(hashedPassword.length).toBeGreaterThan(50);
   });
@@ -156,10 +181,10 @@ describe('Password Hashing', () => {
   test('should verify password correctly', async () => {
     const password = 'testpassword123';
     const hashedPassword = await hash(password, 12);
-    
+
     const isValid = await compare(password, hashedPassword);
     expect(isValid).toBe(true);
-    
+
     const isInvalid = await compare('wrongpassword', hashedPassword);
     expect(isInvalid).toBe(false);
   });
@@ -167,6 +192,7 @@ describe('Password Hashing', () => {
 ```
 
 #### Token Generation Tests
+
 ```javascript
 // src/__tests__/auth/tokens.test.js
 import { randomBytes } from 'crypto';
@@ -175,7 +201,7 @@ describe('Token Generation', () => {
   test('should generate secure random tokens', () => {
     const token1 = randomBytes(32).toString('hex');
     const token2 = randomBytes(32).toString('hex');
-    
+
     expect(token1).not.toBe(token2);
     expect(token1.length).toBe(64);
     expect(/^[a-f0-9]+$/.test(token1)).toBe(true);
@@ -184,6 +210,7 @@ describe('Token Generation', () => {
 ```
 
 #### 2FA Tests
+
 ```javascript
 // src/__tests__/auth/2fa.test.js
 import speakeasy from 'speakeasy';
@@ -193,9 +220,9 @@ describe('Two-Factor Authentication', () => {
     const secret = speakeasy.generateSecret({
       name: 'Test App',
       issuer: 'Test',
-      length: 32
+      length: 32,
     });
-    
+
     expect(secret.base32).toBeDefined();
     expect(secret.otpauth_url).toBeDefined();
   });
@@ -204,16 +231,16 @@ describe('Two-Factor Authentication', () => {
     const secret = speakeasy.generateSecret({ length: 32 });
     const token = speakeasy.totp({
       secret: secret.base32,
-      encoding: 'base32'
+      encoding: 'base32',
     });
-    
+
     const verified = speakeasy.totp.verify({
       secret: secret.base32,
       encoding: 'base32',
       token: token,
-      window: 2
+      window: 2,
     });
-    
+
     expect(verified).toBe(true);
   });
 });
@@ -222,6 +249,7 @@ describe('Two-Factor Authentication', () => {
 ### Integration Tests
 
 #### Registration API Tests
+
 ```javascript
 // src/__tests__/api/auth/register.test.js
 import { POST } from '@/app/api/auth/register/route';
@@ -234,8 +262,8 @@ describe('/api/auth/register', () => {
       body: JSON.stringify({
         email: 'test@example.com',
         password: 'testpassword123',
-        role: 'jobseeker'
-      })
+        role: 'jobseeker',
+      }),
     });
 
     const response = await POST(request);
@@ -247,26 +275,32 @@ describe('/api/auth/register', () => {
 
   test('should reject duplicate email', async () => {
     // First registration
-    const request1 = new NextRequest('http://localhost:3000/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({
-        email: 'duplicate@example.com',
-        password: 'testpassword123',
-        role: 'jobseeker'
-      })
-    });
+    const request1 = new NextRequest(
+      'http://localhost:3000/api/auth/register',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'duplicate@example.com',
+          password: 'testpassword123',
+          role: 'jobseeker',
+        }),
+      }
+    );
 
     await POST(request1);
 
     // Duplicate registration
-    const request2 = new NextRequest('http://localhost:3000/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({
-        email: 'duplicate@example.com',
-        password: 'testpassword123',
-        role: 'jobseeker'
-      })
-    });
+    const request2 = new NextRequest(
+      'http://localhost:3000/api/auth/register',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'duplicate@example.com',
+          password: 'testpassword123',
+          role: 'jobseeker',
+        }),
+      }
+    );
 
     const response = await POST(request2);
     expect(response.status).toBe(409);
@@ -275,6 +309,7 @@ describe('/api/auth/register', () => {
 ```
 
 #### Login API Tests
+
 ```javascript
 // src/__tests__/api/auth/login.test.js
 import { signIn } from 'next-auth/react';
@@ -284,7 +319,7 @@ describe('Login Flow', () => {
     const result = await signIn('credentials', {
       email: 'test@example.com',
       password: 'testpassword123',
-      redirect: false
+      redirect: false,
     });
 
     expect(result?.error).toBeNull();
@@ -295,7 +330,7 @@ describe('Login Flow', () => {
     const result = await signIn('credentials', {
       email: 'test@example.com',
       password: 'wrongpassword',
-      redirect: false
+      redirect: false,
     });
 
     expect(result?.error).toBeDefined();
@@ -309,7 +344,9 @@ describe('Login Flow', () => {
 ### 1. SQL Injection Testing
 
 #### Test Case: Registration SQL Injection
+
 **Test Data:**
+
 ```json
 {
   "email": "test'; DROP TABLE users; --",
@@ -320,7 +357,9 @@ describe('Login Flow', () => {
 **Expected Result:** Input sanitized, no SQL injection
 
 #### Test Case: Login SQL Injection
+
 **Test Data:**
+
 ```json
 {
   "email": "admin' OR '1'='1",
@@ -333,7 +372,9 @@ describe('Login Flow', () => {
 ### 2. XSS Testing
 
 #### Test Case: Registration XSS
+
 **Test Data:**
+
 ```json
 {
   "email": "<script>alert('xss')</script>@test.com",
@@ -346,7 +387,9 @@ describe('Login Flow', () => {
 ### 3. CSRF Testing
 
 #### Test Case: Cross-Site Request Forgery
+
 **Steps:**
+
 1. Create malicious form on external site
 2. Attempt to submit to registration endpoint
 3. Verify CSRF protection blocks request
@@ -356,7 +399,9 @@ describe('Login Flow', () => {
 ### 4. Rate Limiting Testing
 
 #### Test Case: Registration Rate Limiting
+
 **Steps:**
+
 1. Send multiple registration requests rapidly
 2. Verify rate limiting kicks in
 3. Check appropriate error response
@@ -364,7 +409,9 @@ describe('Login Flow', () => {
 **Expected Result:** Rate limiting prevents abuse
 
 #### Test Case: Login Brute Force Protection
+
 **Steps:**
+
 1. Send multiple failed login attempts
 2. Verify rate limiting/account lockout
 3. Check security logging
@@ -374,7 +421,9 @@ describe('Login Flow', () => {
 ### 5. Session Security Testing
 
 #### Test Case: Session Hijacking Prevention
+
 **Steps:**
+
 1. Login and capture session token
 2. Try using token from different IP/browser
 3. Verify session security measures
@@ -382,7 +431,9 @@ describe('Login Flow', () => {
 **Expected Result:** Session properly secured
 
 #### Test Case: Session Timeout
+
 **Steps:**
+
 1. Login and wait for session timeout
 2. Try accessing protected resource
 3. Verify session expired
@@ -394,6 +445,7 @@ describe('Login Flow', () => {
 ### 1. Load Testing
 
 #### Registration Load Test
+
 ```javascript
 // Load test script using Artillery or similar
 const config = {
@@ -413,17 +465,18 @@ const config = {
             json: {
               email: '{{ $randomEmail }}',
               password: 'testpassword123',
-              role: 'jobseeker'
-            }
-          }
-        }
-      ]
-    }
-  ]
+              role: 'jobseeker',
+            },
+          },
+        },
+      ],
+    },
+  ],
 };
 ```
 
 #### Login Load Test
+
 ```javascript
 const loginConfig = {
   target: 'http://localhost:3000',
@@ -440,27 +493,31 @@ const loginConfig = {
             url: '/api/auth/signin',
             json: {
               email: 'test@example.com',
-              password: 'testpassword123'
-            }
-          }
-        }
-      ]
-    }
-  ]
+              password: 'testpassword123',
+            },
+          },
+        },
+      ],
+    },
+  ],
 };
 ```
 
 ### 2. Database Performance
 
 #### Test Case: Concurrent User Creation
+
 **Metrics to Monitor:**
+
 - Database connection pool usage
 - Query execution time
 - Memory usage
 - CPU utilization
 
 #### Test Case: Session Lookup Performance
+
 **Metrics to Monitor:**
+
 - Session retrieval time
 - Database query optimization
 - Cache hit rates
@@ -489,20 +546,20 @@ export const testUsers = {
   jobseeker: {
     email: 'jobseeker@test.com',
     password: 'testpassword123',
-    role: 'jobseeker'
+    role: 'jobseeker',
   },
   employer: {
     email: 'employer@test.com',
     password: 'testpassword123',
     role: 'employer',
     companyName: 'Test Company',
-    companyWebsite: 'https://testcompany.com'
+    companyWebsite: 'https://testcompany.com',
   },
   admin: {
     email: 'admin@test.com',
     password: 'testpassword123',
-    role: 'admin'
-  }
+    role: 'admin',
+  },
 };
 
 export async function createTestUsers() {
@@ -512,8 +569,8 @@ export async function createTestUsers() {
       data: {
         ...user,
         passwordHash: await hash(user.password, 12),
-        isEmailVerified: true
-      }
+        isEmailVerified: true,
+      },
     });
   }
 }
@@ -523,9 +580,9 @@ export async function cleanupTestData() {
   await prisma.user.deleteMany({
     where: {
       email: {
-        endsWith: '@test.com'
-      }
-    }
+        endsWith: '@test.com',
+      },
+    },
   });
 }
 ```
@@ -536,7 +593,7 @@ export async function cleanupTestData() {
 // src/__tests__/mocks/emailService.js
 export const mockEmailService = {
   sendMail: jest.fn().mockResolvedValue({ messageId: 'test-message-id' }),
-  verify: jest.fn().mockResolvedValue(true)
+  verify: jest.fn().mockResolvedValue(true),
 };
 
 // src/__tests__/mocks/redisService.js
@@ -545,7 +602,7 @@ export const mockRedisService = {
   set: jest.fn(),
   del: jest.fn(),
   incr: jest.fn(),
-  expire: jest.fn()
+  expire: jest.fn(),
 };
 ```
 
@@ -566,7 +623,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -581,31 +638,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run database migrations
         run: npx prisma db push
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/209jobs_test
-      
+
       - name: Run authentication tests
         run: npm run test:auth
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/209jobs_test
           NEXTAUTH_SECRET: test-secret
           EMAIL_SERVER_HOST: smtp.ethereal.email
-      
+
       - name: Run security tests
         run: npm run test:security
-      
+
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
 ```
@@ -631,6 +688,7 @@ jobs:
 ### 1. Test Metrics
 
 **Key Metrics to Track:**
+
 - Test pass/fail rates
 - Test execution time
 - Code coverage percentage
@@ -640,6 +698,7 @@ jobs:
 ### 2. Automated Alerts
 
 **Alert Conditions:**
+
 - Test failures in CI/CD
 - Security test failures
 - Performance degradation
@@ -658,11 +717,11 @@ module.exports = {
       branches: 80,
       functions: 80,
       lines: 80,
-      statements: 80
-    }
+      statements: 80,
+    },
   },
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup/testSetup.js']
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup/testSetup.js'],
 };
 ```
 
@@ -671,16 +730,19 @@ module.exports = {
 ### Common Test Failures
 
 1. **Database Connection Issues**
+
    - Check test database is running
    - Verify connection string
    - Ensure proper cleanup between tests
 
 2. **Email Service Failures**
+
    - Use mock email service for tests
    - Check Ethereal Email credentials
    - Verify network connectivity
 
 3. **Rate Limiting in Tests**
+
    - Use separate rate limit config for tests
    - Reset rate limits between tests
    - Use different test user accounts
@@ -704,27 +766,31 @@ npm run test -- --verbose auth/login.test.js
 ## Best Practices
 
 ### 1. Test Organization
+
 - Group related tests in describe blocks
 - Use descriptive test names
 - Follow AAA pattern (Arrange, Act, Assert)
 - Keep tests independent and isolated
 
 ### 2. Test Data Management
+
 - Use factories for test data creation
 - Clean up test data after each test
 - Use separate test database
 - Avoid hardcoded test data
 
 ### 3. Security Testing
+
 - Test all authentication endpoints
 - Verify input validation
 - Check authorization controls
 - Test rate limiting effectiveness
 
 ### 4. Performance Testing
+
 - Establish baseline metrics
 - Test under realistic load
 - Monitor resource usage
 - Set performance thresholds
 
-This comprehensive testing guide ensures the authentication system is thoroughly tested for functionality, security, and performance. 
+This comprehensive testing guide ensures the authentication system is thoroughly tested for functionality, security, and performance.

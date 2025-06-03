@@ -6,20 +6,15 @@ import crypto from 'crypto';
 // Task Status Enum
 export const TaskStatus = z.enum([
   'pending',
-  'in-progress', 
+  'in-progress',
   'review',
   'done',
   'deferred',
-  'cancelled'
+  'cancelled',
 ]);
 
 // Task Priority Enum
-export const TaskPriority = z.enum([
-  'low',
-  'medium', 
-  'high',
-  'critical'
-]);
+export const TaskPriority = z.enum(['low', 'medium', 'high', 'critical']);
 
 // Subtask Schema
 export const SubtaskSchema = z.object({
@@ -29,7 +24,7 @@ export const SubtaskSchema = z.object({
   details: z.string().optional(),
   status: TaskStatus,
   dependencies: z.array(z.number().int().positive()).default([]),
-  parentTaskId: z.number().int().positive()
+  parentTaskId: z.number().int().positive(),
 });
 
 // Task Schema
@@ -48,7 +43,7 @@ export const TaskSchema = z.object({
   estimatedHours: z.number().positive().optional(),
   actualHours: z.number().positive().optional(),
   assignee: z.string().optional(),
-  tags: z.array(z.string()).default([])
+  tags: z.array(z.string()).default([]),
 });
 
 // Tasks Collection Schema
@@ -59,9 +54,9 @@ export const TasksCollectionSchema = z.object({
     createdAt: z.string().datetime(),
     lastModified: z.string().datetime(),
     totalTasks: z.number().int().nonnegative(),
-    checksum: z.string().optional()
+    checksum: z.string().optional(),
   }),
-  tasks: z.array(TaskSchema)
+  tasks: z.array(TaskSchema),
 });
 
 // Configuration Schema
@@ -71,20 +66,20 @@ export const TaskMasterConfigSchema = z.object({
       provider: z.string(),
       modelId: z.string(),
       maxTokens: z.number().int().positive(),
-      temperature: z.number().min(0).max(2)
+      temperature: z.number().min(0).max(2),
     }),
     research: z.object({
       provider: z.string(),
       modelId: z.string(),
       maxTokens: z.number().int().positive(),
-      temperature: z.number().min(0).max(2)
+      temperature: z.number().min(0).max(2),
     }),
     fallback: z.object({
       provider: z.string(),
       modelId: z.string(),
       maxTokens: z.number().int().positive(),
-      temperature: z.number().min(0).max(2)
-    })
+      temperature: z.number().min(0).max(2),
+    }),
   }),
   global: z.object({
     logLevel: z.enum(['debug', 'info', 'warn', 'error']),
@@ -98,8 +93,8 @@ export const TaskMasterConfigSchema = z.object({
     enableBackups: z.boolean().default(true),
     backupRetentionDays: z.number().int().positive().default(30),
     enableIntegrityChecks: z.boolean().default(true),
-    enablePerformanceOptimization: z.boolean().default(true)
-  })
+    enablePerformanceOptimization: z.boolean().default(true),
+  }),
 });
 
 export type Task = z.infer<typeof TaskSchema>;
@@ -131,14 +126,18 @@ export class TaskValidator {
     try {
       const configContent = await fs.readFile(configPath, 'utf-8');
       const configData = JSON.parse(configContent);
-      
+
       this.config = TaskMasterConfigSchema.parse(configData);
       return this.config;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        throw new Error(`Configuration validation failed: ${this.formatZodError(error)}`);
+        throw new Error(
+          `Configuration validation failed: ${this.formatZodError(error)}`
+        );
       }
-      throw new Error(`Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to load configuration: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -149,14 +148,16 @@ export class TaskValidator {
     try {
       // Basic schema validation
       const validatedTasks = TasksCollectionSchema.parse(tasksData);
-      
+
       // Additional integrity checks
       await this.performIntegrityChecks(validatedTasks);
-      
+
       return validatedTasks;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        throw new Error(`Tasks validation failed: ${this.formatZodError(error)}`);
+        throw new Error(
+          `Tasks validation failed: ${this.formatZodError(error)}`
+        );
       }
       throw error;
     }
@@ -165,7 +166,9 @@ export class TaskValidator {
   /**
    * Perform comprehensive integrity checks
    */
-  private async performIntegrityChecks(tasksCollection: TasksCollection): Promise<void> {
+  private async performIntegrityChecks(
+    tasksCollection: TasksCollection
+  ): Promise<void> {
     const errors: string[] = [];
 
     // Check for duplicate task IDs
@@ -195,7 +198,9 @@ export class TaskValidator {
 
     // Check metadata consistency
     if (tasksCollection.metadata.totalTasks !== tasksCollection.tasks.length) {
-      errors.push(`Metadata totalTasks (${tasksCollection.metadata.totalTasks}) doesn't match actual tasks count (${tasksCollection.tasks.length})`);
+      errors.push(
+        `Metadata totalTasks (${tasksCollection.metadata.totalTasks}) doesn't match actual tasks count (${tasksCollection.tasks.length})`
+      );
     }
 
     // Verify checksum if provided
@@ -264,7 +269,9 @@ export class TaskValidator {
     for (const task of tasks) {
       for (const depId of task.dependencies) {
         if (!taskIds.has(depId)) {
-          invalidDeps.push(`Task ${task.id} depends on non-existent task ${depId}`);
+          invalidDeps.push(
+            `Task ${task.id} depends on non-existent task ${depId}`
+          );
         }
       }
 
@@ -273,7 +280,9 @@ export class TaskValidator {
         for (const subtask of task.subtasks) {
           for (const depId of subtask.dependencies) {
             if (!taskIds.has(depId)) {
-              invalidDeps.push(`Subtask ${task.id}.${subtask.id} depends on non-existent task ${depId}`);
+              invalidDeps.push(
+                `Subtask ${task.id}.${subtask.id} depends on non-existent task ${depId}`
+              );
             }
           }
         }
@@ -292,17 +301,21 @@ export class TaskValidator {
     for (const task of tasks) {
       if (task.subtasks && task.subtasks.length > 0) {
         const subtaskIds = new Set<number>();
-        
+
         for (const subtask of task.subtasks) {
           // Check for duplicate subtask IDs within the task
           if (subtaskIds.has(subtask.id)) {
-            errors.push(`Duplicate subtask ID ${subtask.id} in task ${task.id}`);
+            errors.push(
+              `Duplicate subtask ID ${subtask.id} in task ${task.id}`
+            );
           }
           subtaskIds.add(subtask.id);
 
           // Check parent task ID consistency
           if (subtask.parentTaskId !== task.id) {
-            errors.push(`Subtask ${subtask.id} has incorrect parentTaskId (${subtask.parentTaskId}, should be ${task.id})`);
+            errors.push(
+              `Subtask ${subtask.id} has incorrect parentTaskId (${subtask.parentTaskId}, should be ${task.id})`
+            );
           }
         }
       }
@@ -324,12 +337,12 @@ export class TaskValidator {
    */
   validateStatusTransition(currentStatus: string, newStatus: string): boolean {
     const validTransitions: Record<string, string[]> = {
-      'pending': ['in-progress', 'deferred', 'cancelled'],
+      pending: ['in-progress', 'deferred', 'cancelled'],
       'in-progress': ['review', 'done', 'pending', 'deferred', 'cancelled'],
-      'review': ['done', 'in-progress', 'pending'],
-      'done': ['review'], // Allow reopening completed tasks
-      'deferred': ['pending', 'cancelled'],
-      'cancelled': ['pending'] // Allow reactivating cancelled tasks
+      review: ['done', 'in-progress', 'pending'],
+      done: ['review'], // Allow reopening completed tasks
+      deferred: ['pending', 'cancelled'],
+      cancelled: ['pending'], // Allow reactivating cancelled tasks
     };
 
     return validTransitions[currentStatus]?.includes(newStatus) ?? false;
@@ -361,10 +374,10 @@ export class TaskValidator {
   /**
    * Check if tasks collection exceeds size limits
    */
-  checkSizeLimits(tasksCollection: TasksCollection): { 
-    isValid: boolean; 
-    warnings: string[]; 
-    recommendations: string[] 
+  checkSizeLimits(tasksCollection: TasksCollection): {
+    isValid: boolean;
+    warnings: string[];
+    recommendations: string[];
   } {
     const warnings: string[] = [];
     const recommendations: string[] = [];
@@ -375,8 +388,12 @@ export class TaskValidator {
 
     if (taskCount > maxTasksPerFile) {
       isValid = false;
-      warnings.push(`Task count (${taskCount}) exceeds recommended limit (${maxTasksPerFile})`);
-      recommendations.push('Consider splitting tasks into multiple files or implementing pagination');
+      warnings.push(
+        `Task count (${taskCount}) exceeds recommended limit (${maxTasksPerFile})`
+      );
+      recommendations.push(
+        'Consider splitting tasks into multiple files or implementing pagination'
+      );
     }
 
     // Check JSON file size estimation
@@ -385,8 +402,12 @@ export class TaskValidator {
 
     if (estimatedSize > maxSizeBytes) {
       isValid = false;
-      warnings.push(`Estimated file size (${Math.round(estimatedSize / 1024)}KB) exceeds recommended limit (1MB)`);
-      recommendations.push('Consider implementing database storage or file chunking');
+      warnings.push(
+        `Estimated file size (${Math.round(estimatedSize / 1024)}KB) exceeds recommended limit (1MB)`
+      );
+      recommendations.push(
+        'Consider implementing database storage or file chunking'
+      );
     }
 
     // Check for tasks with excessive subtasks
@@ -395,8 +416,12 @@ export class TaskValidator {
     );
 
     if (tasksWithManySubtasks.length > 0) {
-      warnings.push(`${tasksWithManySubtasks.length} tasks have more than 20 subtasks`);
-      recommendations.push('Consider breaking down large tasks into smaller, more manageable tasks');
+      warnings.push(
+        `${tasksWithManySubtasks.length} tasks have more than 20 subtasks`
+      );
+      recommendations.push(
+        'Consider breaking down large tasks into smaller, more manageable tasks'
+      );
     }
 
     return { isValid, warnings, recommendations };
@@ -413,11 +438,11 @@ export class TaskUtils {
   static generateNewTaskId(existingTasks: Task[]): number {
     const existingIds = new Set(existingTasks.map(task => task.id));
     let newId = 1;
-    
+
     while (existingIds.has(newId)) {
       newId++;
     }
-    
+
     return newId;
   }
 
@@ -428,14 +453,14 @@ export class TaskUtils {
     if (!task.subtasks || task.subtasks.length === 0) {
       return 1;
     }
-    
+
     const existingIds = new Set(task.subtasks.map(subtask => subtask.id));
     let newId = 1;
-    
+
     while (existingIds.has(newId)) {
       newId++;
     }
-    
+
     return newId;
   }
 
@@ -444,12 +469,12 @@ export class TaskUtils {
    */
   static getReadyTasks(tasks: Task[]): Task[] {
     const taskMap = new Map(tasks.map(task => [task.id, task]));
-    
+
     return tasks.filter(task => {
       if (task.status !== 'pending') {
         return false;
       }
-      
+
       // Check if all dependencies are completed
       return task.dependencies.every(depId => {
         const depTask = taskMap.get(depId);
@@ -463,7 +488,7 @@ export class TaskUtils {
    */
   static calculateCompletionPercentage(tasks: Task[]): number {
     if (tasks.length === 0) return 0;
-    
+
     const completedTasks = tasks.filter(task => task.status === 'done').length;
     return Math.round((completedTasks / tasks.length) * 100);
   }
@@ -493,7 +518,10 @@ export class TaskUtils {
       byStatus,
       byPriority,
       completionPercentage: this.calculateCompletionPercentage(tasks),
-      averageSubtasks: tasks.length > 0 ? Math.round(totalSubtasks / tasks.length * 10) / 10 : 0
+      averageSubtasks:
+        tasks.length > 0
+          ? Math.round((totalSubtasks / tasks.length) * 10) / 10
+          : 0,
     };
   }
-} 
+}

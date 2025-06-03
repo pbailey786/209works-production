@@ -1,4 +1,10 @@
-import { cn, formatDate, absoluteUrl, truncate, getGitHubStars } from '../utils';
+import {
+  cn,
+  formatDate,
+  absoluteUrl,
+  truncate,
+  getGitHubStars,
+} from '../utils';
 
 // Mock fetch for getGitHubStars tests
 global.fetch = jest.fn();
@@ -15,7 +21,9 @@ describe('Utils', () => {
     });
 
     it('handles conditional classes', () => {
-      expect(cn('px-2', true && 'py-1', false && 'text-red-500')).toBe('px-2 py-1');
+      expect(cn('px-2', true && 'py-1', false && 'text-red-500')).toBe(
+        'px-2 py-1'
+      );
     });
 
     it('handles Tailwind conflicts correctly', () => {
@@ -24,15 +32,19 @@ describe('Utils', () => {
     });
 
     it('handles arrays of classes', () => {
-      expect(cn(['px-2', 'py-1'], 'text-red-500')).toBe('px-2 py-1 text-red-500');
+      expect(cn(['px-2', 'py-1'], 'text-red-500')).toBe(
+        'px-2 py-1 text-red-500'
+      );
     });
 
     it('handles objects with conditional classes', () => {
-      expect(cn({
-        'px-2': true,
-        'py-1': false,
-        'text-red-500': true
-      })).toBe('px-2 text-red-500');
+      expect(
+        cn({
+          'px-2': true,
+          'py-1': false,
+          'text-red-500': true,
+        })
+      ).toBe('px-2 text-red-500');
     });
 
     it('handles empty inputs', () => {
@@ -42,12 +54,14 @@ describe('Utils', () => {
     });
 
     it('handles complex combinations', () => {
-      expect(cn(
-        'px-2 py-1',
-        { 'text-red-500': true, 'bg-blue-500': false },
-        ['font-bold', 'text-lg'],
-        true && 'hover:bg-gray-100'
-      )).toBe('px-2 py-1 text-red-500 font-bold text-lg hover:bg-gray-100');
+      expect(
+        cn(
+          'px-2 py-1',
+          { 'text-red-500': true, 'bg-blue-500': false },
+          ['font-bold', 'text-lg'],
+          true && 'hover:bg-gray-100'
+        )
+      ).toBe('px-2 py-1 text-red-500 font-bold text-lg hover:bg-gray-100');
     });
   });
 
@@ -129,7 +143,9 @@ describe('Utils', () => {
 
     it('handles complex paths', () => {
       process.env.NEXT_PUBLIC_APP_URL = 'https://example.com';
-      expect(absoluteUrl('/api/jobs?query=developer&location=sf')).toBe('https://example.com/api/jobs?query=developer&location=sf');
+      expect(absoluteUrl('/api/jobs?query=developer&location=sf')).toBe(
+        'https://example.com/api/jobs?query=developer&location=sf'
+      );
     });
   });
 
@@ -182,12 +198,12 @@ describe('Utils', () => {
     it('returns star count on successful API call', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ stargazers_count: 42 })
+        json: jest.fn().mockResolvedValue({ stargazers_count: 42 }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
       const result = await getGitHubStars();
-      
+
       expect(result).toBe(42);
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.github.com/repos/pjborowiecki/SAASY-LAND-Next-14-Starters-With-Authentication-And-Database-Implemented',
@@ -205,80 +221,80 @@ describe('Utils', () => {
     it('returns null on API error response', async () => {
       const mockResponse = {
         ok: false,
-        status: 404
+        status: 404,
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
       const result = await getGitHubStars();
-      
+
       expect(result).toBeNull();
     });
 
     it('returns null on network error', async () => {
       mockFetch.mockRejectedValue(new Error('Network error'));
-      
+
       // Mock console.error to avoid noise in test output
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       const result = await getGitHubStars();
-      
+
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(new Error('Network error'));
-      
+
       consoleSpy.mockRestore();
     });
 
     it('returns null on JSON parsing error', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockRejectedValue(new Error('Invalid JSON'))
+        json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
-      
+
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       const result = await getGitHubStars();
-      
+
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(new Error('Invalid JSON'));
-      
+
       consoleSpy.mockRestore();
     });
 
     it('handles missing stargazers_count in response', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({})
+        json: jest.fn().mockResolvedValue({}),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
       const result = await getGitHubStars();
-      
+
       expect(result).toBeUndefined();
     });
 
     it('handles zero stars correctly', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ stargazers_count: 0 })
+        json: jest.fn().mockResolvedValue({ stargazers_count: 0 }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
       const result = await getGitHubStars();
-      
+
       expect(result).toBe(0);
     });
 
     it('handles large star counts', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ stargazers_count: 999999 })
+        json: jest.fn().mockResolvedValue({ stargazers_count: 999999 }),
       };
       mockFetch.mockResolvedValue(mockResponse as any);
 
       const result = await getGitHubStars();
-      
+
       expect(result).toBe(999999);
     });
   });
-}); 
+});

@@ -9,30 +9,29 @@ export async function GET(request: NextRequest) {
     if (region) {
       // Get stats for specific region
       const stats = await RegionalJobService.getRegionalStats(region);
-      
+
       return NextResponse.json({
         success: true,
-        data: stats
+        data: stats,
       });
     } else {
       // Get summary for all regions
       const summary = await RegionalJobService.getRegionSummary();
-      
+
       return NextResponse.json({
         success: true,
-        data: summary
+        data: summary,
       });
     }
-
   } catch (error) {
     console.error('Regional stats API error:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to fetch regional statistics' 
+      {
+        success: false,
+        error: 'Failed to fetch regional statistics',
       },
       { status: 500 }
     );
   }
-} 
+}

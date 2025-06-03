@@ -1,9 +1,9 @@
-"use client";
-import { useSession, signIn, signOut } from "next-auth/react";
-import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+'use client';
+import { useSession, signIn, signOut } from 'next-auth/react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
   Briefcase,
@@ -18,13 +18,13 @@ import {
   FileText,
   BarChart3,
   Users,
-  Building2
-} from "lucide-react";
-import Avatar from "./Avatar";
-import LoadingSpinner from "./ui/LoadingSpinner";
-import ErrorDisplay from "./ui/ErrorDisplay";
-import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+  Building2,
+} from 'lucide-react';
+import Avatar from './Avatar';
+import LoadingSpinner from './ui/LoadingSpinner';
+import ErrorDisplay from './ui/ErrorDisplay';
+import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -40,13 +40,15 @@ export default function Header() {
     { name: 'Contact', href: '/contact', icon: FileText },
   ];
 
-  const userNavigation = session?.user ? [
-    { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-    { name: 'Profile', href: '/profile', icon: User },
-    { name: 'Applications', href: '/profile/applications', icon: FileText },
-    { name: 'Saved Jobs', href: '/profile/saved', icon: Heart },
-    { name: 'Settings', href: '/profile/settings', icon: Settings },
-  ] : [];
+  const userNavigation = session?.user
+    ? [
+        { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+        { name: 'Profile', href: '/profile', icon: User },
+        { name: 'Applications', href: '/profile/applications', icon: FileText },
+        { name: 'Saved Jobs', href: '/profile/saved', icon: Heart },
+        { name: 'Settings', href: '/profile/settings', icon: Settings },
+      ]
+    : [];
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -55,7 +57,7 @@ export default function Header() {
     try {
       await signOut({
         redirect: false,
-        callbackUrl: '/'
+        callbackUrl: '/',
       });
       // Redirect to home page after sign out
       window.location.href = '/';
@@ -76,7 +78,10 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-50" role="banner">
+    <header
+      className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 shadow-sm backdrop-blur-md"
+      role="banner"
+    >
       {/* Auth Error Display */}
       <AnimatePresence>
         {authError && (
@@ -84,8 +89,8 @@ export default function Header() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-red-50 border-b border-red-200 px-4 py-2 overflow-hidden"
-            role="alert" 
+            className="overflow-hidden border-b border-red-200 bg-red-50 px-4 py-2"
+            role="alert"
             aria-live="assertive"
           >
             <ErrorDisplay
@@ -99,40 +104,48 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="group flex items-center space-x-3">
             <div className="relative">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#2d4a3e] rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <span className="text-[#9fdf9f] font-bold text-sm sm:text-base">209</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2d4a3e] shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl sm:h-10 sm:w-10">
+                <span className="text-sm font-bold text-[#9fdf9f] sm:text-base">
+                  209
+                </span>
               </div>
-              <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-[#ff6b35] rounded-full animate-pulse"></div>
+              <div className="absolute -right-1 -top-1 h-2 w-2 animate-pulse rounded-full bg-[#ff6b35] sm:h-3 sm:w-3"></div>
             </div>
             <div className="hidden sm:block">
               <span className="text-xl font-bold text-[#2d4a3e]">
                 209 Works
               </span>
-              <p className="text-xs text-gray-500 -mt-1">Your Local Job Platform</p>
+              <p className="-mt-1 text-xs text-gray-500">
+                Your Local Job Platform
+              </p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-1" role="navigation" aria-label="Main navigation">
-            {navigation.map((item) => {
+          <nav
+            className="hidden space-x-1 lg:flex"
+            role="navigation"
+            aria-label="Main navigation"
+          >
+            {navigation.map(item => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    "text-gray-700 hover:text-[#2d4a3e] hover:bg-[#9fdf9f]/10",
-                    "focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2"
+                    'flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200',
+                    'text-gray-700 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e]',
+                    'focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2'
                   )}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="h-4 w-4" />
                   {item.name}
                 </Link>
               );
@@ -140,15 +153,21 @@ export default function Header() {
           </nav>
 
           {/* User Actions */}
-          <div className="flex items-center space-x-3" role="region" aria-label="User account actions">
-            {status === "loading" && (
+          <div
+            className="flex items-center space-x-3"
+            role="region"
+            aria-label="User account actions"
+          >
+            {status === 'loading' && (
               <div className="flex items-center space-x-2" aria-live="polite">
                 <LoadingSpinner size="sm" variant="spinner" color="gray" />
-                <span className="text-sm text-gray-500 hidden sm:block">Loading...</span>
+                <span className="hidden text-sm text-gray-500 sm:block">
+                  Loading...
+                </span>
               </div>
             )}
-            
-            {status === "unauthenticated" && (
+
+            {status === 'unauthenticated' && (
               <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
@@ -159,14 +178,14 @@ export default function Header() {
                 </Button>
                 <Button
                   asChild
-                  className="bg-[#ff6b35] hover:bg-[#e55a2b] text-white"
+                  className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
                 >
                   <Link href="/signup">Sign Up</Link>
                 </Button>
               </div>
             )}
-            
-            {status === "authenticated" && session.user && (
+
+            {status === 'authenticated' && session.user && (
               <div className="relative">
                 <div className="flex items-center space-x-3">
                   {/* User Menu Dropdown */}
@@ -176,28 +195,30 @@ export default function Header() {
                       onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                       disabled={isSigningOut}
                       className={cn(
-                        "flex items-center space-x-2 h-10 px-3 rounded-lg",
-                        "hover:bg-gray-100 focus:ring-2 focus:ring-blue-500",
-                        isUserMenuOpen && "bg-gray-100"
+                        'flex h-10 items-center space-x-2 rounded-lg px-3',
+                        'hover:bg-gray-100 focus:ring-2 focus:ring-blue-500',
+                        isUserMenuOpen && 'bg-gray-100'
                       )}
                       aria-expanded={isUserMenuOpen}
                       aria-haspopup="true"
                       aria-label={`User menu for ${session.user.name || session.user.email}`}
                     >
-                      <Avatar 
-                        src={session.user.image || undefined} 
-                        alt={session.user.name || session.user.email || "User"} 
-                        size={32} 
+                      <Avatar
+                        src={session.user.image || undefined}
+                        alt={session.user.name || session.user.email || 'User'}
+                        size={32}
                       />
-                      <span className="hidden sm:block text-sm font-medium text-gray-700 max-w-[120px] truncate">
+                      <span className="hidden max-w-[120px] truncate text-sm font-medium text-gray-700 sm:block">
                         {session.user.name || session.user.email}
                       </span>
-                      <ChevronDown className={cn(
-                        "w-4 h-4 text-gray-500 transition-transform duration-200",
-                        isUserMenuOpen && "rotate-180"
-                      )} />
+                      <ChevronDown
+                        className={cn(
+                          'h-4 w-4 text-gray-500 transition-transform duration-200',
+                          isUserMenuOpen && 'rotate-180'
+                        )}
+                      />
                     </Button>
-                    
+
                     {/* Dropdown Menu */}
                     <AnimatePresence>
                       {isUserMenuOpen && (
@@ -206,56 +227,63 @@ export default function Header() {
                           animate={{ opacity: 1, scale: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.95, y: -10 }}
                           transition={{ duration: 0.2 }}
-                          className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50"
+                          className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
                           role="menu"
                           aria-label="User account menu"
                         >
                           {/* User Info */}
-                          <div className="px-4 py-3 border-b border-gray-100">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                          <div className="border-b border-gray-100 px-4 py-3">
+                            <p className="truncate text-sm font-medium text-gray-900">
                               {session.user.name || 'User'}
                             </p>
-                            <p className="text-xs text-gray-500 truncate">
+                            <p className="truncate text-xs text-gray-500">
                               {session.user.email}
                             </p>
                           </div>
 
                           {/* Menu Items */}
-                          {userNavigation.map((item) => {
+                          {userNavigation.map(item => {
                             const Icon = item.icon;
                             return (
                               <Link
                                 key={item.name}
                                 href={item.href}
-                                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-50"
                                 role="menuitem"
                                 onClick={() => setIsUserMenuOpen(false)}
                               >
-                                <Icon className="w-4 h-4 text-gray-400" />
+                                <Icon className="h-4 w-4 text-gray-400" />
                                 {item.name}
                               </Link>
                             );
                           })}
-                          
-                          <hr className="my-2 border-gray-100" role="separator" />
-                          
+
+                          <hr
+                            className="my-2 border-gray-100"
+                            role="separator"
+                          />
+
                           <button
                             onClick={() => {
                               setIsUserMenuOpen(false);
                               handleSignOut();
                             }}
                             disabled={isSigningOut}
-                            className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                            className="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                             role="menuitem"
                           >
                             {isSigningOut ? (
                               <>
-                                <LoadingSpinner size="sm" variant="spinner" color="gray" />
+                                <LoadingSpinner
+                                  size="sm"
+                                  variant="spinner"
+                                  color="gray"
+                                />
                                 Signing Out...
                               </>
                             ) : (
                               <>
-                                <LogOut className="w-4 h-4 text-gray-400" />
+                                <LogOut className="h-4 w-4 text-gray-400" />
                                 Sign Out
                               </>
                             )}
@@ -279,9 +307,9 @@ export default function Header() {
               aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="h-6 w-6" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="h-6 w-6" />
               )}
             </Button>
           </div>
@@ -296,39 +324,39 @@ export default function Header() {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden py-4 border-t border-gray-200 overflow-hidden"
+              className="overflow-hidden border-t border-gray-200 py-4 lg:hidden"
               role="navigation"
               aria-label="Mobile navigation menu"
             >
               <div className="space-y-1">
-                {navigation.map((item) => {
+                {navigation.map(item => {
                   const Icon = item.icon;
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="flex items-center gap-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors duration-200"
+                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <Icon className="w-5 h-5" />
+                      <Icon className="h-5 w-5" />
                       {item.name}
                     </Link>
                   );
                 })}
-                
+
                 {session?.user && (
                   <>
                     <hr className="my-3 border-gray-200" role="separator" />
-                    {userNavigation.map((item) => {
+                    {userNavigation.map(item => {
                       const Icon = item.icon;
                       return (
                         <Link
                           key={item.name}
                           href={item.href}
-                          className="flex items-center gap-3 px-3 py-3 text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors duration-200"
+                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          <Icon className="w-5 h-5" />
+                          <Icon className="h-5 w-5" />
                           {item.name}
                         </Link>
                       );
@@ -339,16 +367,20 @@ export default function Header() {
                         handleSignOut();
                       }}
                       disabled={isSigningOut}
-                      className="flex items-center gap-3 w-full px-3 py-3 text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {isSigningOut ? (
                         <>
-                          <LoadingSpinner size="sm" variant="spinner" color="gray" />
+                          <LoadingSpinner
+                            size="sm"
+                            variant="spinner"
+                            color="gray"
+                          />
                           Signing Out...
                         </>
                       ) : (
                         <>
-                          <LogOut className="w-5 h-5" />
+                          <LogOut className="h-5 w-5" />
                           Sign Out
                         </>
                       )}
@@ -371,4 +403,4 @@ export default function Header() {
       )}
     </header>
   );
-} 
+}

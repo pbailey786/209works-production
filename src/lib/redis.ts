@@ -2,7 +2,8 @@ import Redis from 'ioredis';
 import { getMockRedis } from './redis-mock';
 
 // Check if Redis is disabled or URL is empty
-const isRedisDisabled = process.env.REDIS_DISABLED === 'true' || !process.env.REDIS_URL;
+const isRedisDisabled =
+  process.env.REDIS_DISABLED === 'true' || !process.env.REDIS_URL;
 
 let redis: Redis | any = null;
 

@@ -11,7 +11,7 @@ export const apiConfigs = {
     cors: { enabled: true, config: getCORSConfig('public') },
     logging: { enabled: true },
   } as APIMiddlewareConfig,
-  
+
   // Authenticated endpoint
   authenticated: {
     requireAuthentication: true,
@@ -19,7 +19,7 @@ export const apiConfigs = {
     cors: { enabled: true },
     logging: { enabled: true },
   } as APIMiddlewareConfig,
-  
+
   // Admin only endpoint
   admin: {
     requiredRoles: ['admin'],
@@ -27,7 +27,7 @@ export const apiConfigs = {
     cors: { enabled: true },
     logging: { enabled: true, includeBody: true },
   } as APIMiddlewareConfig,
-  
+
   // Employer endpoint
   employer: {
     requiredRoles: ['admin', 'employer'],
@@ -35,7 +35,7 @@ export const apiConfigs = {
     cors: { enabled: true },
     logging: { enabled: true },
   } as APIMiddlewareConfig,
-  
+
   // Search endpoint (rate limited)
   search: {
     requireAuthentication: false,
@@ -43,7 +43,7 @@ export const apiConfigs = {
     cors: { enabled: true },
     logging: { enabled: true, includeQuery: true },
   } as APIMiddlewareConfig,
-  
+
   // Upload endpoint
   upload: {
     requireAuthentication: true,
@@ -51,7 +51,7 @@ export const apiConfigs = {
     cors: { enabled: true },
     logging: { enabled: true },
   } as APIMiddlewareConfig,
-  
+
   // Authentication endpoint (heavily rate limited)
   auth: {
     requireAuthentication: false,
@@ -86,4 +86,4 @@ export function mergeAPIConfig(
       ...overrides.monitoring,
     },
   };
-} 
+}

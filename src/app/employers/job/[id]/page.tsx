@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
-import { useState } from "react";
-import Link from "next/link";
-import { 
-  Eye, 
-  Users, 
-  Calendar, 
-  MapPin, 
-  DollarSign, 
-  Clock, 
-  Edit, 
-  Share2, 
-  BarChart3, 
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import Link from 'next/link';
+import {
+  Eye,
+  Users,
+  Calendar,
+  MapPin,
+  DollarSign,
+  Clock,
+  Edit,
+  Share2,
+  BarChart3,
   Star,
   MessageSquare,
   Download,
@@ -26,110 +26,164 @@ import {
   TrendingDown,
   AlertCircle,
   CheckCircle,
-  XCircle
-} from "lucide-react";
+  XCircle,
+} from 'lucide-react';
 
 export default function EmployerJobDetailsPage() {
   const params = useParams();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Mock job data - in real app this would come from API
   const jobData = {
     id: params.id,
-    title: "Senior Software Engineer",
-    company: "TechCorp Solutions",
-    location: "Stockton, CA",
-    type: "Full-time",
-    salary: "$85,000 - $120,000",
-    posted: "2024-01-15",
-    expires: "2024-02-15",
-    status: "active",
+    title: 'Senior Software Engineer',
+    company: 'TechCorp Solutions',
+    location: 'Stockton, CA',
+    type: 'Full-time',
+    salary: '$85,000 - $120,000',
+    posted: '2024-01-15',
+    expires: '2024-02-15',
+    status: 'active',
     views: 1247,
     applications: 23,
     shortlisted: 8,
     interviewed: 3,
     hired: 0,
-    description: "We are seeking a Senior Software Engineer to join our growing development team...",
+    description:
+      'We are seeking a Senior Software Engineer to join our growing development team...',
     requirements: [
-      "5+ years of software development experience",
-      "Proficiency in React, Node.js, and TypeScript",
-      "Experience with cloud platforms (AWS/Azure)",
-      "Strong problem-solving skills"
+      '5+ years of software development experience',
+      'Proficiency in React, Node.js, and TypeScript',
+      'Experience with cloud platforms (AWS/Azure)',
+      'Strong problem-solving skills',
     ],
     benefits: [
-      "Health, dental, and vision insurance",
-      "401(k) with company matching",
-      "Flexible work arrangements",
-      "Professional development budget"
-    ]
+      'Health, dental, and vision insurance',
+      '401(k) with company matching',
+      'Flexible work arrangements',
+      'Professional development budget',
+    ],
   };
 
   const applicantStats = [
-    { label: "Total Applications", value: jobData.applications, change: "+5", trend: "up" },
-    { label: "Views", value: jobData.views, change: "+127", trend: "up" },
-    { label: "Shortlisted", value: jobData.shortlisted, change: "+2", trend: "up" },
-    { label: "Interviewed", value: jobData.interviewed, change: "0", trend: "neutral" }
+    {
+      label: 'Total Applications',
+      value: jobData.applications,
+      change: '+5',
+      trend: 'up',
+    },
+    { label: 'Views', value: jobData.views, change: '+127', trend: 'up' },
+    {
+      label: 'Shortlisted',
+      value: jobData.shortlisted,
+      change: '+2',
+      trend: 'up',
+    },
+    {
+      label: 'Interviewed',
+      value: jobData.interviewed,
+      change: '0',
+      trend: 'neutral',
+    },
   ];
 
   const recentApplicants = [
-    { id: 1, name: "Sarah Johnson", score: 92, applied: "2 hours ago", status: "new" },
-    { id: 2, name: "Michael Chen", score: 88, applied: "1 day ago", status: "reviewed" },
-    { id: 3, name: "Emily Rodriguez", score: 85, applied: "2 days ago", status: "shortlisted" },
-    { id: 4, name: "David Kim", score: 82, applied: "3 days ago", status: "interviewed" }
+    {
+      id: 1,
+      name: 'Sarah Johnson',
+      score: 92,
+      applied: '2 hours ago',
+      status: 'new',
+    },
+    {
+      id: 2,
+      name: 'Michael Chen',
+      score: 88,
+      applied: '1 day ago',
+      status: 'reviewed',
+    },
+    {
+      id: 3,
+      name: 'Emily Rodriguez',
+      score: 85,
+      applied: '2 days ago',
+      status: 'shortlisted',
+    },
+    {
+      id: 4,
+      name: 'David Kim',
+      score: 82,
+      applied: '3 days ago',
+      status: 'interviewed',
+    },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "new": return "bg-blue-100 text-blue-800";
-      case "reviewed": return "bg-yellow-100 text-yellow-800";
-      case "shortlisted": return "bg-purple-100 text-purple-800";
-      case "interviewed": return "bg-green-100 text-green-800";
-      default: return "bg-gray-100 text-gray-800";
+      case 'new':
+        return 'bg-blue-100 text-blue-800';
+      case 'reviewed':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'shortlisted':
+        return 'bg-purple-100 text-purple-800';
+      case 'interviewed':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case "up": return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case "down": return <TrendingDown className="h-4 w-4 text-red-500" />;
-      default: return <div className="h-4 w-4" />;
+      case 'up':
+        return <TrendingUp className="h-4 w-4 text-green-500" />;
+      case 'down':
+        return <TrendingDown className="h-4 w-4 text-red-500" />;
+      default:
+        return <div className="h-4 w-4" />;
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link 
+            <Link
               href="/employers/my-jobs"
               className="text-gray-500 hover:text-gray-700"
             >
               ← Back to My Jobs
             </Link>
             <div className="flex items-center space-x-2">
-              <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                jobData.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              }`}>
+              <span
+                className={`rounded-full px-2 py-1 text-xs font-medium ${
+                  jobData.status === 'active'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}
+              >
                 {jobData.status === 'active' ? 'Active' : 'Inactive'}
               </span>
-              <span className="text-sm text-gray-500">Job ID: {jobData.id}</span>
+              <span className="text-sm text-gray-500">
+                Job ID: {jobData.id}
+              </span>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-3">
-            <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <button className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
               <Share2 className="h-4 w-4" />
               <span>Share</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <button className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
               <Copy className="h-4 w-4" />
               <span>Duplicate</span>
             </button>
-            <Link 
+            <Link
               href={`/employers/job/${jobData.id}/edit`}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
               <Edit className="h-4 w-4" />
               <span>Edit Job</span>
@@ -138,7 +192,9 @@ export default function EmployerJobDetailsPage() {
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{jobData.title}</h1>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">
+            {jobData.title}
+          </h1>
           <div className="flex items-center space-x-6 text-gray-600">
             <div className="flex items-center space-x-1">
               <MapPin className="h-4 w-4" />
@@ -154,27 +210,36 @@ export default function EmployerJobDetailsPage() {
             </div>
             <div className="flex items-center space-x-1">
               <Calendar className="h-4 w-4" />
-              <span>Posted {new Date(jobData.posted).toLocaleDateString()}</span>
+              <span>
+                Posted {new Date(jobData.posted).toLocaleDateString()}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
         {applicantStats.map((stat, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg border shadow-sm">
+          <div key={index} className="rounded-lg border bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  {stat.label}
+                </p>
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               </div>
               <div className="flex items-center space-x-1">
                 {getTrendIcon(stat.trend)}
-                <span className={`text-sm ${
-                  stat.trend === 'up' ? 'text-green-600' : 
-                  stat.trend === 'down' ? 'text-red-600' : 'text-gray-600'
-                }`}>
+                <span
+                  className={`text-sm ${
+                    stat.trend === 'up'
+                      ? 'text-green-600'
+                      : stat.trend === 'down'
+                        ? 'text-red-600'
+                        : 'text-gray-600'
+                  }`}
+                >
                   {stat.change}
                 </span>
               </div>
@@ -184,21 +249,21 @@ export default function EmployerJobDetailsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-8">
+      <div className="mb-8 border-b border-gray-200">
         <nav className="-mb-px flex space-x-8">
           {[
-            { id: "overview", label: "Overview", icon: Eye },
-            { id: "applicants", label: "Applicants", icon: Users },
-            { id: "analytics", label: "Analytics", icon: BarChart3 },
-            { id: "settings", label: "Settings", icon: Edit }
-          ].map((tab) => (
+            { id: 'overview', label: 'Overview', icon: Eye },
+            { id: 'applicants', label: 'Applicants', icon: Users },
+            { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+            { id: 'settings', label: 'Settings', icon: Edit },
+          ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`flex items-center space-x-2 border-b-2 px-1 py-4 text-sm font-medium ${
                 activeTab === tab.id
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
               }`}
             >
               <tab.icon className="h-4 w-4" />
@@ -209,45 +274,49 @@ export default function EmployerJobDetailsPage() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "overview" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {activeTab === 'overview' && (
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Job Details */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4">Job Description</h3>
-              <p className="text-gray-700 mb-6">{jobData.description}</p>
-              
-              <h4 className="font-semibold mb-3">Requirements</h4>
-              <ul className="list-disc list-inside space-y-1 mb-6">
+          <div className="space-y-6 lg:col-span-2">
+            <div className="rounded-lg border bg-white p-6">
+              <h3 className="mb-4 text-lg font-semibold">Job Description</h3>
+              <p className="mb-6 text-gray-700">{jobData.description}</p>
+
+              <h4 className="mb-3 font-semibold">Requirements</h4>
+              <ul className="mb-6 list-inside list-disc space-y-1">
                 {jobData.requirements.map((req, index) => (
-                  <li key={index} className="text-gray-700">{req}</li>
+                  <li key={index} className="text-gray-700">
+                    {req}
+                  </li>
                 ))}
               </ul>
 
-              <h4 className="font-semibold mb-3">Benefits</h4>
-              <ul className="list-disc list-inside space-y-1">
+              <h4 className="mb-3 font-semibold">Benefits</h4>
+              <ul className="list-inside list-disc space-y-1">
                 {jobData.benefits.map((benefit, index) => (
-                  <li key={index} className="text-gray-700">{benefit}</li>
+                  <li key={index} className="text-gray-700">
+                    {benefit}
+                  </li>
                 ))}
               </ul>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4">Job Performance</h3>
+            <div className="rounded-lg border bg-white p-6">
+              <h3 className="mb-4 text-lg font-semibold">Job Performance</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <span className="text-gray-600">Application Rate</span>
                   <span className="font-semibold">1.8%</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <span className="text-gray-600">Quality Score</span>
                   <span className="font-semibold">8.2/10</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <span className="text-gray-600">Time to Fill</span>
                   <span className="font-semibold">18 days</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <span className="text-gray-600">Source Performance</span>
                   <span className="font-semibold">Direct: 65%</span>
                 </div>
@@ -258,22 +327,22 @@ export default function EmployerJobDetailsPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+            <div className="rounded-lg border bg-white p-6">
+              <h3 className="mb-4 text-lg font-semibold">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <button className="flex w-full items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
                   <ExternalLink className="h-4 w-4" />
                   <span>View Public Listing</span>
                 </button>
-                <button className="w-full flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button className="flex w-full items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
                   <RefreshCw className="h-4 w-4" />
                   <span>Refresh Listing</span>
                 </button>
-                <button className="w-full flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button className="flex w-full items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
                   <Pause className="h-4 w-4" />
                   <span>Pause Job</span>
                 </button>
-                <button className="w-full flex items-center space-x-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50">
+                <button className="flex w-full items-center space-x-2 rounded-lg border border-red-300 px-4 py-2 text-red-600 hover:bg-red-50">
                   <Archive className="h-4 w-4" />
                   <span>Archive Job</span>
                 </button>
@@ -281,29 +350,40 @@ export default function EmployerJobDetailsPage() {
             </div>
 
             {/* Recent Applicants */}
-            <div className="bg-white p-6 rounded-lg border">
-              <div className="flex items-center justify-between mb-4">
+            <div className="rounded-lg border bg-white p-6">
+              <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Recent Applicants</h3>
-                <Link 
+                <Link
                   href={`/employers/applicants?job=${jobData.id}`}
-                  className="text-blue-600 hover:text-blue-500 text-sm"
+                  className="text-sm text-blue-600 hover:text-blue-500"
                 >
                   View All
                 </Link>
               </div>
               <div className="space-y-3">
-                {recentApplicants.map((applicant) => (
-                  <div key={applicant.id} className="flex items-center justify-between p-3 border rounded-lg">
+                {recentApplicants.map(applicant => (
+                  <div
+                    key={applicant.id}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
                     <div>
-                      <p className="font-medium text-gray-900">{applicant.name}</p>
-                      <p className="text-sm text-gray-500">{applicant.applied}</p>
+                      <p className="font-medium text-gray-900">
+                        {applicant.name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {applicant.applied}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center space-x-2 mb-1">
+                      <div className="mb-1 flex items-center space-x-2">
                         <Star className="h-4 w-4 text-yellow-400" />
-                        <span className="text-sm font-medium">{applicant.score}</span>
+                        <span className="text-sm font-medium">
+                          {applicant.score}
+                        </span>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(applicant.status)}`}>
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs ${getStatusColor(applicant.status)}`}
+                      >
                         {applicant.status}
                       </span>
                     </div>
@@ -313,8 +393,8 @@ export default function EmployerJobDetailsPage() {
             </div>
 
             {/* Job Status */}
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4">Job Status</h3>
+            <div className="rounded-lg border bg-white p-6">
+              <h3 className="mb-4 text-lg font-semibold">Job Status</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Status</span>
@@ -325,7 +405,9 @@ export default function EmployerJobDetailsPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Expires</span>
-                  <span className="text-gray-900">{new Date(jobData.expires).toLocaleDateString()}</span>
+                  <span className="text-gray-900">
+                    {new Date(jobData.expires).toLocaleDateString()}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Days Remaining</span>
@@ -341,19 +423,19 @@ export default function EmployerJobDetailsPage() {
         </div>
       )}
 
-      {activeTab === "applicants" && (
-        <div className="bg-white rounded-lg border">
-          <div className="p-6 border-b">
+      {activeTab === 'applicants' && (
+        <div className="rounded-lg border bg-white">
+          <div className="border-b p-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Applicants for this Job</h3>
               <div className="flex items-center space-x-3">
-                <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
                   <Download className="h-4 w-4" />
                   <span>Export</span>
                 </button>
-                <Link 
+                <Link
                   href={`/employers/applicants?job=${jobData.id}`}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                 >
                   <Users className="h-4 w-4" />
                   <span>Manage All</span>
@@ -361,62 +443,75 @@ export default function EmployerJobDetailsPage() {
               </div>
             </div>
           </div>
-          
+
           <div className="p-6">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Candidate
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Score
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Applied
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {recentApplicants.map((applicant) => (
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {recentApplicants.map(applicant => (
                     <tr key={applicant.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
                             <span className="text-sm font-medium text-gray-600">
-                              {applicant.name.split(' ').map(n => n[0]).join('')}
+                              {applicant.name
+                                .split(' ')
+                                .map(n => n[0])
+                                .join('')}
                             </span>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{applicant.name}</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {applicant.name}
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-6 py-4">
                         <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                          <span className="text-sm text-gray-900">{applicant.score}/100</span>
+                          <Star className="mr-1 h-4 w-4 text-yellow-400" />
+                          <span className="text-sm text-gray-900">
+                            {applicant.score}/100
+                          </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                         {applicant.applied}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(applicant.status)}`}>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span
+                          className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(applicant.status)}`}
+                        >
                           {applicant.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                         <div className="flex items-center space-x-2">
-                          <button className="text-blue-600 hover:text-blue-900">View</button>
-                          <button className="text-green-600 hover:text-green-900">Message</button>
+                          <button className="text-blue-600 hover:text-blue-900">
+                            View
+                          </button>
+                          <button className="text-green-600 hover:text-green-900">
+                            Message
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -428,18 +523,22 @@ export default function EmployerJobDetailsPage() {
         </div>
       )}
 
-      {activeTab === "analytics" && (
+      {activeTab === 'analytics' && (
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">Performance Analytics</h3>
-            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Analytics charts would be displayed here</p>
+          <div className="rounded-lg border bg-white p-6">
+            <h3 className="mb-4 text-lg font-semibold">
+              Performance Analytics
+            </h3>
+            <div className="flex h-64 items-center justify-center rounded-lg bg-gray-100">
+              <p className="text-gray-500">
+                Analytics charts would be displayed here
+              </p>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg border">
-              <h4 className="font-semibold mb-4">Traffic Sources</h4>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="rounded-lg border bg-white p-6">
+              <h4 className="mb-4 font-semibold">Traffic Sources</h4>
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span>Direct</span>
@@ -455,9 +554,9 @@ export default function EmployerJobDetailsPage() {
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white p-6 rounded-lg border">
-              <h4 className="font-semibold mb-4">Application Timeline</h4>
+
+            <div className="rounded-lg border bg-white p-6">
+              <h4 className="mb-4 font-semibold">Application Timeline</h4>
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span>Week 1</span>
@@ -477,55 +576,66 @@ export default function EmployerJobDetailsPage() {
         </div>
       )}
 
-      {activeTab === "settings" && (
-        <div className="bg-white p-6 rounded-lg border">
-          <h3 className="text-lg font-semibold mb-6">Job Settings</h3>
+      {activeTab === 'settings' && (
+        <div className="rounded-lg border bg-white p-6">
+          <h3 className="mb-6 text-lg font-semibold">Job Settings</h3>
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Job Status
               </label>
-              <select className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <select className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
                 <option>Active</option>
                 <option>Paused</option>
                 <option>Archived</option>
               </select>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Auto-renewal
               </label>
               <div className="flex items-center">
-                <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" defaultChecked />
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  defaultChecked
+                />
                 <label className="ml-2 block text-sm text-gray-900">
                   Automatically renew this job posting
                 </label>
               </div>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Application Notifications
               </label>
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" defaultChecked />
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    defaultChecked
+                  />
                   <label className="ml-2 block text-sm text-gray-900">
                     Email me when someone applies
                   </label>
                 </div>
                 <div className="flex items-center">
-                  <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
                   <label className="ml-2 block text-sm text-gray-900">
                     Daily application summary
                   </label>
                 </div>
               </div>
             </div>
-            
+
             <div className="pt-4">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
                 Save Settings
               </button>
             </div>
@@ -534,4 +644,4 @@ export default function EmployerJobDetailsPage() {
       )}
     </div>
   );
-} 
+}

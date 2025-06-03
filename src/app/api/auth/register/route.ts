@@ -6,13 +6,13 @@ import { UserRole } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   console.log('🚀 Registration API called');
-  
+
   try {
     const body = await req.json();
     console.log('📝 Request body received');
-    
+
     const { email, password, role } = body;
-    
+
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Determine role (default to jobseeker)
     const assignedRole = role || UserRole.jobseeker;
     console.log('👤 Assigned role:', assignedRole);
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     };
 
     console.log('🔍 Checking for existing user...');
-    
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -53,13 +53,13 @@ export async function POST(req: NextRequest) {
         { status: 409 }
       );
     }
-    
+
     console.log('✅ User does not exist, creating new user...');
-    
+
     // Create user
     const user = await prisma.user.create({ data: userData });
     console.log('✅ User created successfully:', user.id);
-    
+
     console.log('🎉 Registration completed successfully');
     return NextResponse.json(
       { message: 'User registered successfully! You can now sign in.' },

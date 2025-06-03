@@ -18,7 +18,7 @@ export const cursorPaginationSchema = z.object({
   direction: z.enum(['forward', 'backward']).default('forward'),
 });
 
-// Offset-based pagination parameters  
+// Offset-based pagination parameters
 export const offsetPaginationSchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce
@@ -112,11 +112,16 @@ export function buildCursorCondition(
 ): any {
   const cursorData = decodeCursor(cursor);
   if (!cursorData) return {};
-  
-  const operator = direction === 'forward' 
-    ? (sortOrder === 'asc' ? 'gt' : 'lt')
-    : (sortOrder === 'asc' ? 'lt' : 'gt');
-  
+
+  const operator =
+    direction === 'forward'
+      ? sortOrder === 'asc'
+        ? 'gt'
+        : 'lt'
+      : sortOrder === 'asc'
+        ? 'lt'
+        : 'gt';
+
   return {
     OR: [
       {
@@ -157,7 +162,7 @@ export function calculateOffsetPagination(
 ): { skip: number; take: number; meta: OffsetPaginationMeta } {
   const skip = (page - 1) * limit;
   const totalPages = Math.ceil(totalCount / limit);
-  
+
   return {
     skip,
     take: limit,
@@ -203,21 +208,21 @@ export function generatePaginationCacheKey(
   }
 ): string {
   const { cursor, page, limit, sortBy, sortOrder, filters } = params;
-  
+
   const keyParts = [baseKey];
-  
+
   if (cursor) {
     keyParts.push(`cursor:${cursor}`);
   } else if (page) {
     keyParts.push(`page:${page}`);
   }
-  
+
   keyParts.push(`limit:${limit}`);
-  
+
   if (sortBy) {
     keyParts.push(`sort:${sortBy}:${sortOrder}`);
   }
-  
+
   if (filters && Object.keys(filters).length > 0) {
     const filterString = Object.entries(filters)
       .sort(([a], [b]) => a.localeCompare(b))
@@ -225,7 +230,7 @@ export function generatePaginationCacheKey(
       .join(',');
     keyParts.push(`filters:${filterString}`);
   }
-  
+
   return keyParts.join(':');
 }
 
@@ -236,18 +241,18 @@ export function validatePaginationParams(params: any): {
   pagination: CursorPaginationParams | OffsetPaginationParams;
 } {
   const errors: string[] = [];
-  
+
   // Check if it's cursor or offset pagination
   const hasCursor = 'cursor' in params;
   const hasPage = 'page' in params;
-  
+
   if (hasCursor && hasPage) {
     errors.push('Cannot use both cursor and page parameters');
   }
-  
+
   try {
     let pagination: CursorPaginationParams | OffsetPaginationParams;
-    
+
     if (hasCursor || (!hasCursor && !hasPage)) {
       // Default to cursor pagination
       pagination = cursorPaginationSchema.parse(params);
@@ -255,7 +260,7 @@ export function validatePaginationParams(params: any): {
       // Use offset pagination
       pagination = offsetPaginationSchema.parse(params);
     }
-    
+
     return {
       isValid: errors.length === 0,
       errors,
@@ -267,7 +272,7 @@ export function validatePaginationParams(params: any): {
     } else {
       errors.push('Invalid pagination parameters');
     }
-    
+
     return {
       isValid: false,
       errors,
@@ -308,4 +313,4 @@ export const searchQuerySchema = z.intersection(
   searchFiltersSchema
 );
 
-export type SearchQueryParams = z.infer<typeof searchQuerySchema>; 
+export type SearchQueryParams = z.infer<typeof searchQuerySchema>;

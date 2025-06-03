@@ -4,29 +4,56 @@ import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '../auth/prisma';
 import { z } from 'zod';
 import { withAPIMiddleware } from '@/lib/middleware/api';
-import { alertQuerySchema, createAlertSchema as createAlertValidationSchema } from '@/lib/validations/alerts';
-import { createSuccessResponse, NotFoundError, AuthorizationError } from '@/lib/errors/api-errors';
-import { 
+import {
+  alertQuerySchema,
+  createAlertSchema as createAlertValidationSchema,
+} from '@/lib/validations/alerts';
+import {
+  createSuccessResponse,
+  NotFoundError,
+  AuthorizationError,
+} from '@/lib/errors/api-errors';
+import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags 
+  invalidateCacheByTags,
 } from '@/lib/cache/redis';
-import { 
+import {
   calculateOffsetPagination,
-  createPaginatedResponse 
+  createPaginatedResponse,
 } from '@/lib/cache/pagination';
 
 // Validation schemas
 const createAlertSchema = z.object({
-  type: z.enum(['job_title_alert', 'weekly_digest', 'job_category_alert', 'location_alert', 'company_alert']),
-  frequency: z.enum(['immediate', 'daily', 'weekly', 'monthly']).default('immediate'),
+  type: z.enum([
+    'job_title_alert',
+    'weekly_digest',
+    'job_category_alert',
+    'location_alert',
+    'company_alert',
+  ]),
+  frequency: z
+    .enum(['immediate', 'daily', 'weekly', 'monthly'])
+    .default('immediate'),
   jobTitle: z.string().optional(),
   keywords: z.array(z.string()).default([]),
   location: z.string().optional(),
   categories: z.array(z.string()).default([]),
-  jobTypes: z.array(z.enum(['full_time', 'part_time', 'contract', 'internship', 'temporary', 'volunteer', 'other'])).default([]),
+  jobTypes: z
+    .array(
+      z.enum([
+        'full_time',
+        'part_time',
+        'contract',
+        'internship',
+        'temporary',
+        'volunteer',
+        'other',
+      ])
+    )
+    .default([]),
   companies: z.array(z.string()).default([]),
   salaryMin: z.number().optional(),
   salaryMax: z.number().optional(),
@@ -37,7 +64,7 @@ const createAlertSchema = z.object({
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -55,9 +82,9 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
-          select: { jobs: true }
-        }
-      }
+          select: { jobs: true },
+        },
+      },
     });
 
     return NextResponse.json({ alerts });
@@ -74,7 +101,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -92,10 +119,11 @@ export async function POST(req: NextRequest) {
 
     // Check if user already has maximum alerts (optional business rule)
     const alertCount = await prisma.alert.count({
-      where: { userId: user.id, isActive: true }
+      where: { userId: user.id, isActive: true },
     });
 
-    if (alertCount >= 10) { // Max 10 active alerts per user
+    if (alertCount >= 10) {
+      // Max 10 active alerts per user
       return NextResponse.json(
         { error: 'Maximum number of alerts reached (10)' },
         { status: 400 }
@@ -130,31 +158,24 @@ export async function POST(req: NextRequest) {
 const GET_API = withAPIMiddleware(
   async (req, context) => {
     const { user, query, performance } = context;
-    
+
     // Extract query parameters
-    const {
-      isActive,
-      frequency,
-      page,
-      limit,
-      sortBy,
-      sortOrder,
-    } = query!;
-    
+    const { isActive, frequency, page, limit, sortBy, sortOrder } = query!;
+
     // Build where condition
     const whereCondition: any = {
       userId: user!.id, // Users can only see their own alerts
     };
-    
+
     // Apply filters
     if (isActive !== undefined) {
       whereCondition.isActive = isActive === 'true';
     }
-    
+
     if (frequency) {
       whereCondition.frequency = frequency;
     }
-    
+
     // Generate cache key
     const cacheKey = generateCacheKey(
       CACHE_PREFIXES.alerts,
@@ -163,7 +184,7 @@ const GET_API = withAPIMiddleware(
       JSON.stringify(whereCondition),
       `${page || 1}-${limit || 10}-${sortBy || 'createdAt'}-${sortOrder || 'desc'}`
     );
-    
+
     return getCacheOrExecute(
       cacheKey,
       async () => {
@@ -172,7 +193,7 @@ const GET_API = withAPIMiddleware(
         const totalCount = await prisma.jobAlert.count({
           where: whereCondition,
         });
-        
+
         // Get paginated alerts
         performance.trackDatabaseQuery();
         const alerts = await prisma.jobAlert.findMany({
@@ -194,10 +215,10 @@ const GET_API = withAPIMiddleware(
             updatedAt: true,
           },
         });
-        
+
         // Add statistics for each alert (optimized to avoid N+1 queries)
         const alertIds = alerts.map(alert => alert.id);
-        
+
         // Batch fetch recent matches for all alerts at once
         performance.trackDatabaseQuery();
         const recentMatchesData = await prisma.jobAlertMatch.groupBy({
@@ -212,14 +233,14 @@ const GET_API = withAPIMiddleware(
             id: true,
           },
         });
-        
+
         // Create lookup map for O(1) access
         const recentMatchesMap = new Map(
           recentMatchesData.map(item => [item.alertId, item._count.id])
         );
-        
+
         // Combine data without additional queries
-        const alertsWithStats = alerts.map((alert) => ({
+        const alertsWithStats = alerts.map(alert => ({
           ...alert,
           stats: {
             totalNotifications: 0, // TODO: Count from notifications table
@@ -227,14 +248,22 @@ const GET_API = withAPIMiddleware(
             lastMatchDate: alert.lastTriggered,
           },
         }));
-        
-        const { meta } = calculateOffsetPagination(page || 1, limit || 10, totalCount);
-        
-        const paginatedResponse = createPaginatedResponse(alertsWithStats, meta, {
-          queryTime: Date.now(),
-          cached: false,
-        });
-        
+
+        const { meta } = calculateOffsetPagination(
+          page || 1,
+          limit || 10,
+          totalCount
+        );
+
+        const paginatedResponse = createPaginatedResponse(
+          alertsWithStats,
+          meta,
+          {
+            queryTime: Date.now(),
+            cached: false,
+          }
+        );
+
         return createSuccessResponse(paginatedResponse);
       },
       {
@@ -256,20 +285,20 @@ const GET_API = withAPIMiddleware(
 const POST_API = withAPIMiddleware(
   async (req, context) => {
     const { user, body, performance } = context;
-    
+
     // Check if user already has too many alerts (prevent spam)
     performance.trackDatabaseQuery();
     const existingAlertsCount = await prisma.jobAlert.count({
       where: { userId: user!.id },
     });
-    
+
     const maxAlertsPerUser = user!.role === 'admin' ? 100 : 20;
     if (existingAlertsCount >= maxAlertsPerUser) {
       throw new AuthorizationError(
         `Maximum ${maxAlertsPerUser} alerts allowed per user`
       );
     }
-    
+
     // Create the alert
     performance.trackDatabaseQuery();
     const alert = await prisma.jobAlert.create({
@@ -292,14 +321,14 @@ const POST_API = withAPIMiddleware(
         updatedAt: true,
       },
     });
-    
+
     // Invalidate user's alerts cache
     await invalidateCacheByTags([`user:${user!.id}`, 'alerts']);
-    
+
     // Test the alert immediately to provide feedback
     // TODO: Implement actual job matching logic
     const estimatedMatches = Math.floor(Math.random() * 50);
-    
+
     return createSuccessResponse({
       ...alert,
       estimatedMatches,
@@ -313,4 +342,4 @@ const POST_API = withAPIMiddleware(
     logging: { enabled: true },
     cors: { enabled: true },
   }
-); 
+);

@@ -3,6 +3,7 @@
 ## ✅ Files Successfully Archived
 
 ### 📁 `archive/docs-old/` (Moved from root)
+
 - `ADZUNA_209_SETUP.md`
 - `BMAD_FRONTEND_IMPROVEMENTS.md`
 - `CHAT_SYSTEM_FIXES.md`
@@ -17,6 +18,7 @@
 - `user-flow-visual-tree.md`
 
 ### 📁 `archive/dev-files/` (Development artifacts)
+
 - All `tsc_output*.txt` files (TypeScript compilation logs)
 - `test-*.js` files (Test scripts)
 - `add-test-jobs.js`
@@ -24,6 +26,7 @@
 - `posthog-wizard-installation-error-*.log`
 
 ### 📁 `archive/build-artifacts/` (Build outputs)
+
 - `dist/` folder
 - `coverage/` folder
 - `playwright-report/` folder
@@ -31,9 +34,11 @@
 ## 🎯 Next Steps for Further Cleanup
 
 ### 1. **Docs Folder Optimization**
+
 The `docs/` folder still has 40+ files. Consider keeping only:
 
 **Essential (Keep):**
+
 - `README.md`
 - `AUTHENTICATION_SYSTEM.md`
 - `DEPLOYMENT_GUIDE.md`
@@ -42,6 +47,7 @@ The `docs/` folder still has 40+ files. Consider keeping only:
 - `NLP_JOBSGPT_COMPLETE.md`
 
 **Archive Candidates:**
+
 - Debug reports (`DEBUG_*.md`)
 - Phase completion docs (`PHASE_*.md`, `TASK_*.md`)
 - Old implementation docs
@@ -50,15 +56,19 @@ The `docs/` folder still has 40+ files. Consider keeping only:
 ### 2. **Remaining Large Folders to Consider**
 
 **`BMAD-METHOD/`** (Still in root)
+
 - Appears to be a separate methodology system
 - **Recommendation**: Move to `archive/legacy/BMAD-METHOD/`
 
 **`lib/`** (In root)
+
 - Check if this is actually used or if it's legacy
 - **Recommendation**: If unused, move to `archive/legacy/`
 
 ### 3. **Scripts Cleanup**
+
 The `scripts/` folder has some old files:
+
 - `addon-migration-report.json`
 - `task-complexity-report.json`
 - Various test scripts
@@ -66,6 +76,7 @@ The `scripts/` folder has some old files:
 ## 🚀 Current State
 
 **Root directory is now much cleaner with:**
+
 - Essential config files only
 - Core source code (`src/`)
 - Documentation (`docs/` - needs further cleanup)

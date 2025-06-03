@@ -105,7 +105,7 @@ async function testEmailQueue() {
 
     // Test helper methods
     console.log('6. Testing helper methods...');
-    
+
     // Test job alert email helper
     const jobAlertJob = await emailQueue.addJobAlertEmail(
       'jobalert@example.com',
@@ -169,27 +169,34 @@ async function testEmailQueue() {
 
     // Test queue management
     console.log('8. Testing queue management...');
-    
+
     console.log('   - Pausing queue...');
     await emailQueue.pauseQueue();
-    
+
     console.log('   - Resuming queue...');
     await emailQueue.resumeQueue();
-    
+
     console.log('✅ Queue management operations completed');
     console.log('');
 
     console.log('🎉 Email Queue System Test Completed Successfully!');
     console.log('');
     console.log('📝 Summary:');
-    console.log(`   - Initial jobs: ${initialStats.waiting + initialStats.active}`);
+    console.log(
+      `   - Initial jobs: ${initialStats.waiting + initialStats.active}`
+    );
     console.log(`   - Final jobs: ${finalStats.waiting + finalStats.active}`);
-    console.log(`   - Jobs added: ${finalStats.waiting + finalStats.active - (initialStats.waiting + initialStats.active)}`);
+    console.log(
+      `   - Jobs added: ${finalStats.waiting + finalStats.active - (initialStats.waiting + initialStats.active)}`
+    );
     console.log('');
     console.log('⚠️  Note: This test adds jobs to the actual queue.');
-    console.log('   In a production environment, these would be processed and emails would be sent.');
-    console.log('   Make sure to clear the queue if needed using: npm run queue:clear');
-
+    console.log(
+      '   In a production environment, these would be processed and emails would be sent.'
+    );
+    console.log(
+      '   Make sure to clear the queue if needed using: npm run queue:clear'
+    );
   } catch (error) {
     console.error('❌ Email Queue Test Failed:', error);
     process.exit(1);
@@ -209,4 +216,4 @@ if (require.main === module) {
   testEmailQueue().catch(console.error);
 }
 
-export { testEmailQueue }; 
+export { testEmailQueue };

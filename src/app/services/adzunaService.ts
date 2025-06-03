@@ -14,7 +14,58 @@ function assertCreds() {
 
 // Full list of 209 area cities
 const area209Cities = [
-  'Stockton, CA', 'Modesto, CA', 'Tracy, CA', 'Manteca, CA', 'Merced, CA', 'Turlock, CA', 'Lodi, CA', 'Ceres, CA', 'Atwater, CA', 'Los Banos, CA', 'Riverbank, CA', 'Oakdale, CA', 'Patterson, CA', 'Lathrop, CA', 'Ripon, CA', 'Escalon, CA', 'Galt, CA', 'Gustine, CA', 'Livingston, CA', 'Newman, CA', 'Valley Springs, CA', 'Angels Camp, CA', 'Copperopolis, CA', 'San Andreas, CA', 'Murphys, CA', 'Arnold, CA', 'Hughson, CA', 'Waterford, CA', 'Delhi, CA', 'Denair, CA', 'Hilmar, CA', 'Empire, CA', 'Planada, CA', 'Winton, CA', 'Snelling, CA', 'Ballico, CA', 'Keyes, CA', 'Farmington, CA', 'Linden, CA', 'Lockeford, CA', 'Clements, CA', 'Wallace, CA', 'West Point, CA', 'Rail Road Flat, CA', 'Mountain Ranch, CA', 'Burson, CA', 'Rancho Calaveras, CA', 'La Grange, CA', 'Catheys Valley, CA', 'Coulterville, CA', 'Hornitos, CA', 'Hickman, CA'
+  'Stockton, CA',
+  'Modesto, CA',
+  'Tracy, CA',
+  'Manteca, CA',
+  'Merced, CA',
+  'Turlock, CA',
+  'Lodi, CA',
+  'Ceres, CA',
+  'Atwater, CA',
+  'Los Banos, CA',
+  'Riverbank, CA',
+  'Oakdale, CA',
+  'Patterson, CA',
+  'Lathrop, CA',
+  'Ripon, CA',
+  'Escalon, CA',
+  'Galt, CA',
+  'Gustine, CA',
+  'Livingston, CA',
+  'Newman, CA',
+  'Valley Springs, CA',
+  'Angels Camp, CA',
+  'Copperopolis, CA',
+  'San Andreas, CA',
+  'Murphys, CA',
+  'Arnold, CA',
+  'Hughson, CA',
+  'Waterford, CA',
+  'Delhi, CA',
+  'Denair, CA',
+  'Hilmar, CA',
+  'Empire, CA',
+  'Planada, CA',
+  'Winton, CA',
+  'Snelling, CA',
+  'Ballico, CA',
+  'Keyes, CA',
+  'Farmington, CA',
+  'Linden, CA',
+  'Lockeford, CA',
+  'Clements, CA',
+  'Wallace, CA',
+  'West Point, CA',
+  'Rail Road Flat, CA',
+  'Mountain Ranch, CA',
+  'Burson, CA',
+  'Rancho Calaveras, CA',
+  'La Grange, CA',
+  'Catheys Valley, CA',
+  'Coulterville, CA',
+  'Hornitos, CA',
+  'Hickman, CA',
 ];
 
 export interface AdzunaJob extends Record<string, any> {
@@ -32,7 +83,12 @@ export interface AdzunaJob extends Record<string, any> {
   // Add more fields as needed
 }
 
-async function fetchAdzunaPageWithBackoff(city: string, page: number, resultsPerCity: number, maxRetries = 5): Promise<any> {
+async function fetchAdzunaPageWithBackoff(
+  city: string,
+  page: number,
+  resultsPerCity: number,
+  maxRetries = 5
+): Promise<any> {
   const url = `https://api.adzuna.com/v1/api/jobs/${ADZUNA_COUNTRY}/search/${page}`;
   const params = {
     app_id: ADZUNA_APP_ID,
@@ -46,7 +102,7 @@ async function fetchAdzunaPageWithBackoff(city: string, page: number, resultsPer
     try {
       const response = await axios.get(url, {
         params,
-        headers: { Accept: 'application/json' }
+        headers: { Accept: 'application/json' },
       });
       return response.data;
     } catch (error: any) {
@@ -63,7 +119,10 @@ async function fetchAdzunaPageWithBackoff(city: string, page: number, resultsPer
   }
 }
 
-export async function fetchAdzunaJobs(cities: string[] = area209Cities, resultsPerCity = 50): Promise<AdzunaJob[]> {
+export async function fetchAdzunaJobs(
+  cities: string[] = area209Cities,
+  resultsPerCity = 50
+): Promise<AdzunaJob[]> {
   assertCreds();
   const allJobs: AdzunaJob[] = [];
   const limit = pLimit(5);
@@ -83,13 +142,18 @@ export async function fetchAdzunaJobs(cities: string[] = area209Cities, resultsP
     } catch (error: any) {
       const status = error.response?.status;
       const url = `https://api.adzuna.com/v1/api/jobs/${ADZUNA_COUNTRY}/search/1`;
-      const params = { app_id: ADZUNA_APP_ID, app_key: ADZUNA_APP_KEY, where: city, results_per_page: resultsPerCity };
+      const params = {
+        app_id: ADZUNA_APP_ID,
+        app_key: ADZUNA_APP_KEY,
+        where: city,
+        results_per_page: resultsPerCity,
+      };
       console.error(`[Adzuna] Error fetching jobs for city ${city} (page 1):`, {
         status,
         url,
         params,
         data: error.response?.data,
-        message: error.message
+        message: error.message,
       });
       continue;
     }
@@ -97,7 +161,10 @@ export async function fetchAdzunaJobs(cities: string[] = area209Cities, resultsP
     console.dir(firstPageData, { depth: null });
     // (B) Warn if pagination is missing
     if (!('pagination' in firstPageData)) {
-      console.warn(`[Adzuna] No pagination object for ${city}. Response keys:`, Object.keys(firstPageData));
+      console.warn(
+        `[Adzuna] No pagination object for ${city}. Response keys:`,
+        Object.keys(firstPageData)
+      );
     }
     const jobs: AdzunaJob[] = firstPageData.results || [];
     if (jobs.length > 0) {
@@ -109,43 +176,63 @@ export async function fetchAdzunaJobs(cities: string[] = area209Cities, resultsP
       totalPages = firstPageData.pagination.pages;
     } else {
       if (jobs.length === resultsPerCity) {
-        console.warn(`[Adzuna] Pagination missing but max jobs returned for ${city}, assuming at least 2 pages.`);
+        console.warn(
+          `[Adzuna] Pagination missing but max jobs returned for ${city}, assuming at least 2 pages.`
+        );
         totalPages = 2;
       }
     }
-    console.log(`[Adzuna] ${city} | Page 1/${totalPages} | Jobs: ${jobs.length}`);
+    console.log(
+      `[Adzuna] ${city} | Page 1/${totalPages} | Jobs: ${jobs.length}`
+    );
 
     // Greedy scroll: keep fetching until a page returns < resultsPerCity jobs
     let greedyScroll = !firstPageData?.pagination?.pages;
     let lastPageReached = false;
     for (let page = 2; !lastPageReached && page <= totalPages; page++) {
-      cityPageTasks.push(() => limit(async () => {
-        try {
-          const pageData = await fetchAdzunaPageWithBackoff(city, page, resultsPerCity);
-          const pageJobs: AdzunaJob[] = pageData.results || [];
-          if (pageJobs.length > 0) {
-            allJobs.push(...pageJobs);
+      cityPageTasks.push(() =>
+        limit(async () => {
+          try {
+            const pageData = await fetchAdzunaPageWithBackoff(
+              city,
+              page,
+              resultsPerCity
+            );
+            const pageJobs: AdzunaJob[] = pageData.results || [];
+            if (pageJobs.length > 0) {
+              allJobs.push(...pageJobs);
+            }
+            console.log(
+              `[Adzuna] ${city} | Page ${page}/${totalPages} | Jobs: ${pageJobs.length}`
+            );
+            // If greedy scroll, keep going until a page returns < resultsPerCity jobs
+            if (greedyScroll && pageJobs.length < resultsPerCity) {
+              lastPageReached = true;
+            } else if (!greedyScroll && page === totalPages) {
+              lastPageReached = true;
+            }
+          } catch (error: any) {
+            const status = error.response?.status;
+            const url = `https://api.adzuna.com/v1/api/jobs/${ADZUNA_COUNTRY}/search/${page}`;
+            const params = {
+              app_id: ADZUNA_APP_ID,
+              app_key: ADZUNA_APP_KEY,
+              where: city,
+              results_per_page: resultsPerCity,
+            };
+            console.error(
+              `[Adzuna] Error fetching jobs for city ${city} (page ${page}):`,
+              {
+                status,
+                url,
+                params,
+                data: error.response?.data,
+                message: error.message,
+              }
+            );
           }
-          console.log(`[Adzuna] ${city} | Page ${page}/${totalPages} | Jobs: ${pageJobs.length}`);
-          // If greedy scroll, keep going until a page returns < resultsPerCity jobs
-          if (greedyScroll && pageJobs.length < resultsPerCity) {
-            lastPageReached = true;
-          } else if (!greedyScroll && page === totalPages) {
-            lastPageReached = true;
-          }
-        } catch (error: any) {
-          const status = error.response?.status;
-          const url = `https://api.adzuna.com/v1/api/jobs/${ADZUNA_COUNTRY}/search/${page}`;
-          const params = { app_id: ADZUNA_APP_ID, app_key: ADZUNA_APP_KEY, where: city, results_per_page: resultsPerCity };
-          console.error(`[Adzuna] Error fetching jobs for city ${city} (page ${page}):`, {
-            status,
-            url,
-            params,
-            data: error.response?.data,
-            message: error.message
-          });
-        }
-      }));
+        })
+      );
     }
   }
 
@@ -162,6 +249,8 @@ export async function fetchAdzunaJobs(cities: string[] = area209Cities, resultsP
     }
   }
 
-  console.log(`[Adzuna] Total unique jobs fetched from Adzuna: ${dedupedJobs.length}`);
+  console.log(
+    `[Adzuna] Total unique jobs fetched from Adzuna: ${dedupedJobs.length}`
+  );
   return dedupedJobs;
-} 
+}

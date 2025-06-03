@@ -10,41 +10,55 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   LineChart,
   Line,
   PieChart,
   Pie,
-  Cell
+  Cell,
 } from 'recharts';
-import { 
-  TrendingUp, 
-  Users, 
-  Search, 
-  MapPin, 
-  Briefcase, 
+import {
+  TrendingUp,
+  Users,
+  Search,
+  MapPin,
+  Briefcase,
   Eye,
   MousePointer,
   UserPlus,
   Calendar,
   Filter,
-  Download
+  Download,
 } from 'lucide-react';
 
 interface AnalyticsData {
   pageViews: Array<{ date: string; views: number; region: string }>;
   jobSearches: Array<{ date: string; searches: number; region: string }>;
   jobViews: Array<{ date: string; views: number; region: string }>;
-  userRegistrations: Array<{ date: string; registrations: number; region: string }>;
-  regionalBreakdown: Array<{ region: string; users: number; percentage: number }>;
+  userRegistrations: Array<{
+    date: string;
+    registrations: number;
+    region: string;
+  }>;
+  regionalBreakdown: Array<{
+    region: string;
+    users: number;
+    percentage: number;
+  }>;
   topSearchTerms: Array<{ term: string; count: number; region: string }>;
   conversionFunnel: Array<{ step: string; count: number; percentage: number }>;
 }
@@ -70,11 +84,15 @@ const TIME_RANGES = [
   { value: '1y', label: 'Last year' },
 ];
 
-export default function RegionalAnalyticsDashboard({ className = '' }: RegionalAnalyticsDashboardProps) {
+export default function RegionalAnalyticsDashboard({
+  className = '',
+}: RegionalAnalyticsDashboardProps) {
   const [selectedRegion, setSelectedRegion] = useState('all');
   const [timeRange, setTimeRange] = useState('30d');
   const [loading, setLoading] = useState(true);
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -125,7 +143,8 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
   };
 
   const generatePageViewsData = (range: string) => {
-    const days = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
+    const days =
+      range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
     const data = [];
 
     for (let i = days - 1; i >= 0; i--) {
@@ -146,7 +165,8 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
   };
 
   const generateJobSearchesData = (range: string) => {
-    const days = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
+    const days =
+      range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
     const data = [];
 
     for (let i = days - 1; i >= 0; i--) {
@@ -167,7 +187,8 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
   };
 
   const generateJobViewsData = (range: string) => {
-    const days = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
+    const days =
+      range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
     const data = [];
 
     for (let i = days - 1; i >= 0; i--) {
@@ -188,7 +209,8 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
   };
 
   const generateUserRegistrationsData = (range: string) => {
-    const days = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
+    const days =
+      range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 365;
     const data = [];
 
     for (let i = days - 1; i >= 0; i--) {
@@ -222,13 +244,13 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
     return (
       <div className={`space-y-6 ${className}`}>
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="mb-4 h-8 w-1/3 rounded bg-gray-200"></div>
+          <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+              <div key={i} className="h-24 rounded bg-gray-200"></div>
             ))}
           </div>
-          <div className="h-96 bg-gray-200 rounded"></div>
+          <div className="h-96 rounded bg-gray-200"></div>
         </div>
       </div>
     );
@@ -236,8 +258,8 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
 
   if (error) {
     return (
-      <div className={`text-center py-12 ${className}`}>
-        <div className="text-red-600 mb-4">{error}</div>
+      <div className={`py-12 text-center ${className}`}>
+        <div className="mb-4 text-red-600">{error}</div>
         <Button onClick={fetchAnalyticsData}>Retry</Button>
       </div>
     );
@@ -246,105 +268,141 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Regional Analytics</h1>
-          <p className="text-gray-600">PostHog insights for regional job board performance</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Regional Analytics
+          </h1>
+          <p className="text-gray-600">
+            PostHog insights for regional job board performance
+          </p>
         </div>
-        
+
         <div className="flex gap-3">
           <Select value={selectedRegion} onValueChange={setSelectedRegion}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Select region" />
             </SelectTrigger>
             <SelectContent>
-              {REGIONS.map((region) => (
+              {REGIONS.map(region => (
                 <SelectItem key={region.value} value={region.value}>
                   {region.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          
+
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Time range" />
             </SelectTrigger>
             <SelectContent>
-              {TIME_RANGES.map((range) => (
+              {TIME_RANGES.map(range => (
                 <SelectItem key={range.value} value={range.value}>
                   {range.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          
+
           <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Page Views</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {analyticsData ? formatNumber(calculateTotalMetric(analyticsData.pageViews, 'views')) : '0'}
+                  {analyticsData
+                    ? formatNumber(
+                        calculateTotalMetric(analyticsData.pageViews, 'views')
+                      )
+                    : '0'}
                 </p>
               </div>
-              <Eye className="w-8 h-8 text-blue-600" />
+              <Eye className="h-8 w-8 text-blue-600" />
             </div>
-            <p className="text-xs text-green-600 mt-2">↗ +12% from last period</p>
+            <p className="mt-2 text-xs text-green-600">
+              ↗ +12% from last period
+            </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Job Searches</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Job Searches
+                </p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {analyticsData ? formatNumber(calculateTotalMetric(analyticsData.jobSearches, 'searches')) : '0'}
+                  {analyticsData
+                    ? formatNumber(
+                        calculateTotalMetric(
+                          analyticsData.jobSearches,
+                          'searches'
+                        )
+                      )
+                    : '0'}
                 </p>
               </div>
-              <Search className="w-8 h-8 text-green-600" />
+              <Search className="h-8 w-8 text-green-600" />
             </div>
-            <p className="text-xs text-green-600 mt-2">↗ +8% from last period</p>
+            <p className="mt-2 text-xs text-green-600">
+              ↗ +8% from last period
+            </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Job Views</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {analyticsData ? formatNumber(calculateTotalMetric(analyticsData.jobViews, 'views')) : '0'}
+                  {analyticsData
+                    ? formatNumber(
+                        calculateTotalMetric(analyticsData.jobViews, 'views')
+                      )
+                    : '0'}
                 </p>
               </div>
-              <Briefcase className="w-8 h-8 text-purple-600" />
+              <Briefcase className="h-8 w-8 text-purple-600" />
             </div>
-            <p className="text-xs text-green-600 mt-2">↗ +15% from last period</p>
+            <p className="mt-2 text-xs text-green-600">
+              ↗ +15% from last period
+            </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">New Users</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {analyticsData ? formatNumber(calculateTotalMetric(analyticsData.userRegistrations, 'registrations')) : '0'}
+                  {analyticsData
+                    ? formatNumber(
+                        calculateTotalMetric(
+                          analyticsData.userRegistrations,
+                          'registrations'
+                        )
+                      )
+                    : '0'}
                 </p>
               </div>
-              <UserPlus className="w-8 h-8 text-orange-600" />
+              <UserPlus className="h-8 w-8 text-orange-600" />
             </div>
-            <p className="text-xs text-green-600 mt-2">↗ +22% from last period</p>
+            <p className="mt-2 text-xs text-green-600">
+              ↗ +22% from last period
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -357,7 +415,7 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
           <TabsTrigger value="search">Search Analytics</TabsTrigger>
           <TabsTrigger value="funnel">Conversion Funnel</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="trends" className="space-y-4">
           <Card>
             <CardHeader>
@@ -370,13 +428,18 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="views" stroke="#2563EB" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="views"
+                    stroke="#2563EB"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
-          
-          <div className="grid md:grid-cols-2 gap-4">
+
+          <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Job Searches</CardTitle>
@@ -393,7 +456,7 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>User Registrations</CardTitle>
@@ -405,16 +468,21 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="registrations" stroke="#F59E0B" strokeWidth={2} />
+                    <Line
+                      type="monotone"
+                      dataKey="registrations"
+                      stroke="#F59E0B"
+                      strokeWidth={2}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="regional">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Regional Distribution</CardTitle>
@@ -427,13 +495,18 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ region, percentage }) => `${region} (${percentage}%)`}
+                      label={({ region, percentage }) =>
+                        `${region} (${percentage}%)`
+                      }
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="users"
                     >
                       {analyticsData?.regionalBreakdown.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -441,7 +514,7 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Regional Performance</CardTitle>
@@ -449,17 +522,26 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
               <CardContent>
                 <div className="space-y-4">
                   {analyticsData?.regionalBreakdown.map((region, index) => (
-                    <div key={region.region} className="flex items-center justify-between">
+                    <div
+                      key={region.region}
+                      className="flex items-center justify-between"
+                    >
                       <div className="flex items-center gap-3">
-                        <div 
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        <div
+                          className="h-4 w-4 rounded-full"
+                          style={{
+                            backgroundColor: COLORS[index % COLORS.length],
+                          }}
                         />
                         <span className="font-medium">{region.region}</span>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold">{formatNumber(region.users)}</div>
-                        <div className="text-sm text-gray-500">{region.percentage}%</div>
+                        <div className="font-semibold">
+                          {formatNumber(region.users)}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {region.percentage}%
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -468,7 +550,7 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
             </Card>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="search">
           <Card>
             <CardHeader>
@@ -477,13 +559,18 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
             <CardContent>
               <div className="space-y-3">
                 {analyticsData?.topSearchTerms.map((term, index) => (
-                  <div key={term.term} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div
+                    key={term.term}
+                    className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                  >
                     <div className="flex items-center gap-3">
                       <Badge variant="outline">{index + 1}</Badge>
                       <span className="font-medium">{term.term}</span>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold">{formatNumber(term.count)}</div>
+                      <div className="font-semibold">
+                        {formatNumber(term.count)}
+                      </div>
                       <div className="text-sm text-gray-500">searches</div>
                     </div>
                   </div>
@@ -492,7 +579,7 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="funnel">
           <Card>
             <CardHeader>
@@ -502,20 +589,24 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
               <div className="space-y-4">
                 {analyticsData?.conversionFunnel.map((step, index) => (
                   <div key={step.step} className="relative">
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
                           {index + 1}
                         </div>
                         <span className="font-medium">{step.step}</span>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold">{formatNumber(step.count)}</div>
-                        <div className="text-sm text-gray-500">{step.percentage}%</div>
+                        <div className="font-semibold">
+                          {formatNumber(step.count)}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {step.percentage}%
+                        </div>
                       </div>
                     </div>
                     {index < analyticsData.conversionFunnel.length - 1 && (
-                      <div className="w-px h-4 bg-gray-300 ml-8 mt-2"></div>
+                      <div className="ml-8 mt-2 h-4 w-px bg-gray-300"></div>
                     )}
                   </div>
                 ))}
@@ -526,4 +617,4 @@ export default function RegionalAnalyticsDashboard({ className = '' }: RegionalA
       </Tabs>
     </div>
   );
-} 
+}

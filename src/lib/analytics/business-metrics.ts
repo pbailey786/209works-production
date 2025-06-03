@@ -15,7 +15,7 @@ export interface JobBoardKPIs {
   newUsersThisMonth: number;
   userRetentionRate: number;
   userGrowthRate: number;
-  
+
   // Job Metrics
   totalJobs: number;
   activeJobs: number;
@@ -24,7 +24,7 @@ export interface JobBoardKPIs {
   newJobsThisMonth: number;
   jobFillRate: number;
   averageTimeToFill: number;
-  
+
   // Application Metrics
   totalApplications: number;
   applicationsToday: number;
@@ -32,7 +32,7 @@ export interface JobBoardKPIs {
   applicationsThisMonth: number;
   applicationConversionRate: number;
   averageApplicationsPerJob: number;
-  
+
   // Search Metrics
   totalSearches: number;
   searchesToday: number;
@@ -40,7 +40,7 @@ export interface JobBoardKPIs {
   searchesThisMonth: number;
   searchToViewRate: number;
   searchToApplicationRate: number;
-  
+
   // Revenue Metrics (for employers)
   totalRevenue: number;
   revenueToday: number;
@@ -48,13 +48,13 @@ export interface JobBoardKPIs {
   revenueThisMonth: number;
   averageRevenuePerUser: number;
   customerLifetimeValue: number;
-  
+
   // Engagement Metrics
   averageSessionDuration: number;
   averagePageViews: number;
   bounceRate: number;
   returnVisitorRate: number;
-  
+
   // Quality Metrics
   jobQualityScore: number;
   applicationQualityScore: number;
@@ -112,7 +112,7 @@ export function useBusinessMetrics() {
   // Generate mock KPI data (in production, this would come from your analytics backend)
   const generateMockKPIs = (): JobBoardKPIs => {
     const baseDate = new Date();
-    const randomVariation = (base: number, variance: number = 0.2) => 
+    const randomVariation = (base: number, variance: number = 0.2) =>
       Math.floor(base * (1 + (Math.random() - 0.5) * variance));
 
     return {
@@ -124,7 +124,7 @@ export function useBusinessMetrics() {
       newUsersThisMonth: randomVariation(1240),
       userRetentionRate: 0.68 + (Math.random() - 0.5) * 0.1,
       userGrowthRate: 0.15 + (Math.random() - 0.5) * 0.05,
-      
+
       // Job Metrics
       totalJobs: randomVariation(2340),
       activeJobs: randomVariation(1890),
@@ -133,7 +133,7 @@ export function useBusinessMetrics() {
       newJobsThisMonth: randomVariation(620),
       jobFillRate: 0.72 + (Math.random() - 0.5) * 0.1,
       averageTimeToFill: randomVariation(18), // days
-      
+
       // Application Metrics
       totalApplications: randomVariation(45600),
       applicationsToday: randomVariation(234),
@@ -141,7 +141,7 @@ export function useBusinessMetrics() {
       applicationsThisMonth: randomVariation(6800),
       applicationConversionRate: 0.12 + (Math.random() - 0.5) * 0.03,
       averageApplicationsPerJob: 19.5 + (Math.random() - 0.5) * 5,
-      
+
       // Search Metrics
       totalSearches: randomVariation(123400),
       searchesToday: randomVariation(890),
@@ -149,7 +149,7 @@ export function useBusinessMetrics() {
       searchesThisMonth: randomVariation(24500),
       searchToViewRate: 0.34 + (Math.random() - 0.5) * 0.1,
       searchToApplicationRate: 0.08 + (Math.random() - 0.5) * 0.02,
-      
+
       // Revenue Metrics
       totalRevenue: randomVariation(234500),
       revenueToday: randomVariation(1200),
@@ -157,13 +157,13 @@ export function useBusinessMetrics() {
       revenueThisMonth: randomVariation(32000),
       averageRevenuePerUser: randomVariation(185),
       customerLifetimeValue: randomVariation(2400),
-      
+
       // Engagement Metrics
       averageSessionDuration: 420 + (Math.random() - 0.5) * 120, // seconds
       averagePageViews: 4.2 + (Math.random() - 0.5) * 1.5,
       bounceRate: 0.35 + (Math.random() - 0.5) * 0.1,
       returnVisitorRate: 0.42 + (Math.random() - 0.5) * 0.1,
-      
+
       // Quality Metrics
       jobQualityScore: 7.8 + (Math.random() - 0.5) * 1.0,
       applicationQualityScore: 8.2 + (Math.random() - 0.5) * 0.8,
@@ -172,22 +172,29 @@ export function useBusinessMetrics() {
   };
 
   // Generate trend data
-  const generateTrendData = (baseValue: number, periods: number = 30): TrendData[] => {
+  const generateTrendData = (
+    baseValue: number,
+    periods: number = 30
+  ): TrendData[] => {
     const data: TrendData[] = [];
     let currentValue = baseValue;
-    
+
     for (let i = periods; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      
+
       // Add some realistic variation
       const variation = (Math.random() - 0.5) * 0.2;
       currentValue = Math.max(0, currentValue * (1 + variation));
-      
-      const previousValue = i === periods ? currentValue : data[data.length - 1]?.value || currentValue;
+
+      const previousValue =
+        i === periods
+          ? currentValue
+          : data[data.length - 1]?.value || currentValue;
       const change = currentValue - previousValue;
-      const changePercent = previousValue > 0 ? (change / previousValue) * 100 : 0;
-      
+      const changePercent =
+        previousValue > 0 ? (change / previousValue) * 100 : 0;
+
       data.push({
         period: date.toISOString().split('T')[0],
         value: Math.round(currentValue),
@@ -195,7 +202,7 @@ export function useBusinessMetrics() {
         changePercent: Math.round(changePercent * 100) / 100,
       });
     }
-    
+
     return data;
   };
 
@@ -204,8 +211,9 @@ export function useBusinessMetrics() {
     const data = generateTrendData(currentValue);
     const previousValue = data[data.length - 2]?.value || currentValue;
     const change = currentValue - previousValue;
-    const changePercent = previousValue > 0 ? (change / previousValue) * 100 : 0;
-    
+    const changePercent =
+      previousValue > 0 ? (change / previousValue) * 100 : 0;
+
     return {
       current: currentValue,
       previous: previousValue,
@@ -219,7 +227,7 @@ export function useBusinessMetrics() {
   // Generate business insights
   const generateBusinessInsights = (kpis: JobBoardKPIs): BusinessInsight[] => {
     const insights: BusinessInsight[] = [];
-    
+
     // User growth insight
     if (kpis.userGrowthRate > 0.2) {
       insights.push({
@@ -234,7 +242,7 @@ export function useBusinessMetrics() {
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     // Application conversion insight
     if (kpis.applicationConversionRate < 0.1) {
       insights.push({
@@ -249,7 +257,7 @@ export function useBusinessMetrics() {
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     // Job fill rate insight
     if (kpis.jobFillRate > 0.8) {
       insights.push({
@@ -263,7 +271,7 @@ export function useBusinessMetrics() {
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     // Bounce rate insight
     if (kpis.bounceRate > 0.4) {
       insights.push({
@@ -273,12 +281,13 @@ export function useBusinessMetrics() {
         description: `Bounce rate of ${(kpis.bounceRate * 100).toFixed(1)}% suggests user experience issues`,
         impact: 'medium',
         actionable: true,
-        recommendation: 'Optimize landing pages and improve initial user experience',
+        recommendation:
+          'Optimize landing pages and improve initial user experience',
         metrics: ['bounceRate', 'averageSessionDuration'],
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     // Revenue opportunity
     if (kpis.averageRevenuePerUser < 200) {
       insights.push({
@@ -288,19 +297,20 @@ export function useBusinessMetrics() {
         description: `ARPU of $${kpis.averageRevenuePerUser} suggests potential for premium features`,
         impact: 'high',
         actionable: true,
-        recommendation: 'Consider introducing premium job posting features or subscription tiers',
+        recommendation:
+          'Consider introducing premium job posting features or subscription tiers',
         metrics: ['averageRevenuePerUser', 'customerLifetimeValue'],
         timestamp: new Date().toISOString(),
       });
     }
-    
+
     return insights;
   };
 
   // Get dashboard data
   const getDashboardData = (): DashboardData => {
     const kpis = generateMockKPIs();
-    
+
     return {
       kpis,
       trends: {
@@ -326,7 +336,10 @@ export function useBusinessMetrics() {
   };
 
   // Track insight interaction
-  const trackInsightInteraction = (insight: BusinessInsight, action: 'view' | 'dismiss' | 'act') => {
+  const trackInsightInteraction = (
+    insight: BusinessInsight,
+    action: 'view' | 'dismiss' | 'act'
+  ) => {
     if (!isInitialized) return;
 
     trackEvent('business_insight_interaction', {
@@ -352,9 +365,11 @@ export function useBusinessMetrics() {
   // Export dashboard data
   const exportDashboardData = (format: 'json' | 'csv' = 'json') => {
     const data = getDashboardData();
-    
+
     if (format === 'json') {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: 'application/json',
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -366,7 +381,7 @@ export function useBusinessMetrics() {
       const csvData = Object.entries(data.kpis)
         .map(([key, value]) => `${key},${value}`)
         .join('\n');
-      
+
       const blob = new Blob([`Metric,Value\n${csvData}`], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -385,16 +400,16 @@ export function useBusinessMetrics() {
   return {
     // Data functions
     getDashboardData,
-    
+
     // Tracking functions
     trackDashboardView,
     trackInsightInteraction,
     trackKPIDrillDown,
-    
+
     // Utility functions
     exportDashboardData,
-    
+
     // State
     isInitialized,
   };
-} 
+}

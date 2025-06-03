@@ -5,7 +5,10 @@ interface SpinnerProps {
   className?: string;
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({ size = 24, className = '' }) => (
+export const Spinner: React.FC<SpinnerProps> = ({
+  size = 24,
+  className = '',
+}) => (
   <div className={`flex items-center justify-center ${className}`}>
     <svg
       className="animate-spin text-blue-600"
@@ -32,4 +35,4 @@ export const Spinner: React.FC<SpinnerProps> = ({ size = 24, className = '' }) =
   </div>
 );
 
-export default Spinner; 
+export default Spinner;

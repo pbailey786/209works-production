@@ -1,14 +1,26 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Building2,
   MapPin,
@@ -17,10 +29,10 @@ import {
   Star,
   Users,
   Percent,
-  Award
-} from 'lucide-react'
-import Link from 'next/link'
-import PricingSection from '@/components/pricing/PricingSection'
+  Award,
+} from 'lucide-react';
+import Link from 'next/link';
+import PricingSection from '@/components/pricing/PricingSection';
 
 // Define pricing plans
 const pricingPlans = [
@@ -36,9 +48,9 @@ const pricingPlans = [
       '30-day job listing duration',
       'Basic analytics',
       'Email support',
-      'Local 209 targeting'
+      'Local 209 targeting',
     ],
-    chamberDiscount: 25
+    chamberDiscount: 25,
   },
   {
     id: 'professional',
@@ -53,11 +65,11 @@ const pricingPlans = [
       'Advanced analytics & insights',
       'Priority support',
       'JobsGPT AI matching',
-      'Resume database access'
+      'Resume database access',
     ],
     popular: true,
     badge: 'Most Popular',
-    chamberDiscount: 25
+    chamberDiscount: 25,
   },
   {
     id: 'enterprise',
@@ -72,24 +84,25 @@ const pricingPlans = [
       'Premium analytics dashboard',
       'Dedicated account manager',
       'Custom branding options',
-      'API access'
+      'API access',
     ],
-    chamberDiscount: 25
-  }
+    chamberDiscount: 25,
+  },
 ];
 
 export default function LocalBusinessSignupPage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-4">
+    <div className="container mx-auto max-w-4xl px-4 py-8">
+      <div className="mb-8 text-center">
+        <h1 className="mb-4 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-4xl font-bold text-transparent">
           Join 209 Works
         </h1>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+        <h2 className="mb-2 text-2xl font-semibold text-gray-900">
           Local Business Registration
         </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Built for the 209. Made for the people who work here. Special benefits for chamber members and local businesses.
+        <p className="mx-auto max-w-2xl text-lg text-gray-600">
+          Built for the 209. Made for the people who work here. Special benefits
+          for chamber members and local businesses.
         </p>
       </div>
 
@@ -97,56 +110,65 @@ export default function LocalBusinessSignupPage() {
       <Alert className="mb-8 border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
         <Award className="h-4 w-4 text-orange-600" />
         <AlertDescription className="text-orange-800">
-          <strong>Chamber Members:</strong> Enjoy 25% off your first year, priority support, and exclusive local business features!
+          <strong>Chamber Members:</strong> Enjoy 25% off your first year,
+          priority support, and exclusive local business features!
         </AlertDescription>
       </Alert>
 
       {/* Local Business Benefits */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="border-orange-200 hover:border-orange-300 transition-colors">
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Card className="border-orange-200 transition-colors hover:border-orange-300">
           <CardHeader className="text-center">
-            <div className="w-12 h-12 mx-auto bg-gradient-to-r from-orange-100 to-yellow-100 rounded-lg flex items-center justify-center mb-3">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-orange-100 to-yellow-100">
               <Percent className="h-6 w-6 text-orange-600" />
             </div>
-            <CardTitle className="text-lg text-gray-900">Chamber Discounts</CardTitle>
+            <CardTitle className="text-lg text-gray-900">
+              Chamber Discounts
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 text-center">
+            <p className="text-center text-sm text-gray-600">
               25% off for chamber members plus exclusive local business pricing
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-blue-200 hover:border-blue-300 transition-colors">
+        <Card className="border-blue-200 transition-colors hover:border-blue-300">
           <CardHeader className="text-center">
-            <div className="w-12 h-12 mx-auto bg-gradient-to-r from-blue-100 to-green-100 rounded-lg flex items-center justify-center mb-3">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-blue-100 to-green-100">
               <MapPin className="h-6 w-6 text-blue-600" />
             </div>
-            <CardTitle className="text-lg text-gray-900">Hyper-Local Focus</CardTitle>
+            <CardTitle className="text-lg text-gray-900">
+              Hyper-Local Focus
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 text-center">
-              Target local talent in the 209 and support your community's economic growth
+            <p className="text-center text-sm text-gray-600">
+              Target local talent in the 209 and support your community's
+              economic growth
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-green-200 hover:border-green-300 transition-colors">
+        <Card className="border-green-200 transition-colors hover:border-green-300">
           <CardHeader className="text-center">
-            <div className="w-12 h-12 mx-auto bg-gradient-to-r from-green-100 to-blue-100 rounded-lg flex items-center justify-center mb-3">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-green-100 to-blue-100">
               <Users className="h-6 w-6 text-green-600" />
             </div>
-            <CardTitle className="text-lg text-gray-900">Local Support</CardTitle>
+            <CardTitle className="text-lg text-gray-900">
+              Local Support
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 text-center">
-              Dedicated support team familiar with local business needs and the 209 area
+            <p className="text-center text-sm text-gray-600">
+              Dedicated support team familiar with local business needs and the
+              209 area
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Business Information */}
         <Card>
           <CardHeader>
@@ -154,17 +176,12 @@ export default function LocalBusinessSignupPage() {
               <Building2 className="h-5 w-5" />
               Business Information
             </CardTitle>
-            <CardDescription>
-              Tell us about your local business
-            </CardDescription>
+            <CardDescription>Tell us about your local business</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="businessName">Business Name *</Label>
-              <Input 
-                id="businessName" 
-                placeholder="Your Business Name"
-              />
+              <Input id="businessName" placeholder="Your Business Name" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -181,7 +198,9 @@ export default function LocalBusinessSignupPage() {
                     <SelectItem value="retail">Retail</SelectItem>
                     <SelectItem value="hospitality">Hospitality</SelectItem>
                     <SelectItem value="construction">Construction</SelectItem>
-                    <SelectItem value="professional-services">Professional Services</SelectItem>
+                    <SelectItem value="professional-services">
+                      Professional Services
+                    </SelectItem>
                     <SelectItem value="technology">Technology</SelectItem>
                     <SelectItem value="education">Education</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
@@ -208,8 +227,8 @@ export default function LocalBusinessSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="website">Business Website</Label>
-              <Input 
-                id="website" 
+              <Input
+                id="website"
                 type="url"
                 placeholder="https://yourbusiness.com"
               />
@@ -217,7 +236,7 @@ export default function LocalBusinessSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="description">Business Description</Label>
-              <Textarea 
+              <Textarea
                 id="description"
                 placeholder="Briefly describe your business and what you do..."
                 rows={4}
@@ -226,7 +245,9 @@ export default function LocalBusinessSignupPage() {
 
             {/* Chamber Membership */}
             <div className="space-y-4">
-              <Label className="text-base font-medium">Chamber Membership</Label>
+              <Label className="text-base font-medium">
+                Chamber Membership
+              </Label>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="chamberMember" />
@@ -235,18 +256,32 @@ export default function LocalBusinessSignupPage() {
                   </Label>
                 </div>
                 <div className="ml-6 space-y-2">
-                  <Label htmlFor="chamberName" className="text-sm">Chamber Name</Label>
+                  <Label htmlFor="chamberName" className="text-sm">
+                    Chamber Name
+                  </Label>
                   <Select>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your chamber" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="stockton">Stockton Chamber of Commerce</SelectItem>
-                      <SelectItem value="modesto">Modesto Chamber of Commerce</SelectItem>
-                      <SelectItem value="tracy">Tracy Chamber of Commerce</SelectItem>
-                      <SelectItem value="manteca">Manteca Chamber of Commerce</SelectItem>
-                      <SelectItem value="turlock">Turlock Chamber of Commerce</SelectItem>
-                      <SelectItem value="lodi">Lodi Chamber of Commerce</SelectItem>
+                      <SelectItem value="stockton">
+                        Stockton Chamber of Commerce
+                      </SelectItem>
+                      <SelectItem value="modesto">
+                        Modesto Chamber of Commerce
+                      </SelectItem>
+                      <SelectItem value="tracy">
+                        Tracy Chamber of Commerce
+                      </SelectItem>
+                      <SelectItem value="manteca">
+                        Manteca Chamber of Commerce
+                      </SelectItem>
+                      <SelectItem value="turlock">
+                        Turlock Chamber of Commerce
+                      </SelectItem>
+                      <SelectItem value="lodi">
+                        Lodi Chamber of Commerce
+                      </SelectItem>
                       <SelectItem value="other">Other Chamber</SelectItem>
                     </SelectContent>
                   </Select>
@@ -270,7 +305,7 @@ export default function LocalBusinessSignupPage() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="address">Business Address *</Label>
-              <Textarea 
+              <Textarea
                 id="address"
                 placeholder="Street address, city, state, zip"
                 rows={3}
@@ -298,11 +333,7 @@ export default function LocalBusinessSignupPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="zipCode">ZIP Code *</Label>
-                <Input 
-                  id="zipCode" 
-                  placeholder="95202"
-                  maxLength={5}
-                />
+                <Input id="zipCode" placeholder="95202" maxLength={5} />
               </div>
             </div>
 
@@ -319,16 +350,16 @@ export default function LocalBusinessSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="title">Title/Position *</Label>
-              <Input 
-                id="title" 
+              <Input
+                id="title"
                 placeholder="e.g., Owner, Manager, HR Director"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="email">Email Address *</Label>
-              <Input 
-                id="email" 
+              <Input
+                id="email"
                 type="email"
                 placeholder="john@yourbusiness.com"
               />
@@ -336,16 +367,14 @@ export default function LocalBusinessSignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number *</Label>
-              <Input 
-                id="phone" 
-                type="tel"
-                placeholder="(209) 555-0123"
-              />
+              <Input id="phone" type="tel" placeholder="(209) 555-0123" />
             </div>
 
             {/* Business Verification */}
             <div className="space-y-4">
-              <Label className="text-base font-medium">Business Verification</Label>
+              <Label className="text-base font-medium">
+                Business Verification
+              </Label>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Checkbox id="businessLicense" />
@@ -404,26 +433,34 @@ export default function LocalBusinessSignupPage() {
         <div className="flex items-start space-x-2">
           <Checkbox id="compliance" />
           <Label htmlFor="compliance" className="text-sm leading-relaxed">
-            I confirm that my business complies with all local, state, and federal employment laws and regulations.
+            I confirm that my business complies with all local, state, and
+            federal employment laws and regulations.
           </Label>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button size="lg" className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg">
-            <Shield className="h-4 w-4 mr-2" />
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <Button
+            size="lg"
+            className="flex-1 bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-lg hover:from-blue-700 hover:to-green-700"
+          >
+            <Shield className="mr-2 h-4 w-4" />
             Create Local Business Account
           </Button>
-          <Button variant="outline" size="lg" className="border-gray-300 hover:border-blue-300 hover:bg-blue-50" asChild>
-            <Link href="/employers/signup">
-              Standard Employer Signup
-            </Link>
+          <Button
+            variant="outline"
+            size="lg"
+            className="border-gray-300 hover:border-blue-300 hover:bg-blue-50"
+            asChild
+          >
+            <Link href="/employers/signup">Standard Employer Signup</Link>
           </Button>
         </div>
 
-        <p className="text-xs text-gray-500 text-center">
-          Local business verification may take 1-2 business days. Chamber member discounts will be applied after verification.
+        <p className="text-center text-xs text-gray-500">
+          Local business verification may take 1-2 business days. Chamber member
+          discounts will be applied after verification.
         </p>
       </div>
     </div>
-  )
-} 
+  );
+}

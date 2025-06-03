@@ -2,17 +2,17 @@
 
 /**
  * Cache System Migration Finalization Script
- * 
+ *
  * This script finalizes the migration from the old cache system to the new atomic cache system,
  * addressing all critical race conditions and data consistency issues identified in subtask 29.
  */
 
 import { getRedisClient, isRedisAvailable } from '../lib/cache/redis';
 import { getAtomicCacheManager } from '../lib/cache/atomic-cache-manager';
-import { 
-  CacheMigrationManager, 
+import {
+  CacheMigrationManager,
   CacheCompatibilityLayer,
-  MigrationUtils 
+  MigrationUtils,
 } from '../lib/cache/cache-migration-utility';
 import { CacheHealthMonitor } from '../lib/cache/enhanced-cache-services';
 
@@ -54,7 +54,10 @@ class CacheSystemFinalizer {
   /**
    * Add log entry
    */
-  private log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
+  private log(
+    message: string,
+    level: 'info' | 'warn' | 'error' = 'info'
+  ): void {
     const timestamp = new Date().toISOString();
     const logEntry = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
     this.logs.push(logEntry);
@@ -102,8 +105,9 @@ class CacheSystemFinalizer {
       }
 
       const duration = Date.now() - this.startTime;
-      this.log(`Cache system migration finalization completed successfully in ${Math.round(duration / 1000)}s`);
-
+      this.log(
+        `Cache system migration finalization completed successfully in ${Math.round(duration / 1000)}s`
+      );
     } catch (error) {
       this.log(`Cache system migration finalization failed: ${error}`, 'error');
       throw error;
@@ -118,7 +122,7 @@ class CacheSystemFinalizer {
 
     try {
       const readiness = await MigrationUtils.validateReadiness();
-      
+
       if (!readiness.ready) {
         this.log('Migration readiness check failed:', 'error');
         readiness.issues.forEach(issue => this.log(`  - ${issue}`, 'error'));
@@ -127,11 +131,12 @@ class CacheSystemFinalizer {
 
       if (readiness.recommendations.length > 0) {
         this.log('Migration recommendations:');
-        readiness.recommendations.forEach(rec => this.log(`  - ${rec}`, 'warn'));
+        readiness.recommendations.forEach(rec =>
+          this.log(`  - ${rec}`, 'warn')
+        );
       }
 
       this.log('Migration readiness validation passed');
-
     } catch (error) {
       this.log(`Readiness validation failed: ${error}`, 'error');
       throw error;
@@ -171,7 +176,6 @@ class CacheSystemFinalizer {
         this.log('Migration completed with errors:');
         status.errors.forEach(error => this.log(`  - ${error}`, 'warn'));
       }
-
     } catch (error) {
       this.log(`Migration failed: ${error}`, 'error');
       throw error;
@@ -203,7 +207,6 @@ class CacheSystemFinalizer {
       } else {
         this.log('[DRY RUN] Would enable new atomic cache system');
       }
-
     } catch (error) {
       this.log(`Failed to enable new system: ${error}`, 'error');
       throw error;
@@ -223,7 +226,6 @@ class CacheSystemFinalizer {
       } else {
         this.log('[DRY RUN] Would start cache health monitoring');
       }
-
     } catch (error) {
       this.log(`Failed to start monitoring: ${error}`, 'error');
       throw error;
@@ -241,7 +243,10 @@ class CacheSystemFinalizer {
 
       // Test basic operations
       const testKey = 'test:finalization:' + Date.now();
-      const testValue = { message: 'Cache system validation test', timestamp: Date.now() };
+      const testValue = {
+        message: 'Cache system validation test',
+        timestamp: Date.now(),
+      };
 
       // Test atomic set
       const setResult = await atomicManager.atomicSet(testKey, testValue, {
@@ -260,7 +265,9 @@ class CacheSystemFinalizer {
       });
 
       if (!getValue || JSON.stringify(getValue) !== JSON.stringify(testValue)) {
-        throw new Error('Atomic get operation failed or data integrity check failed');
+        throw new Error(
+          'Atomic get operation failed or data integrity check failed'
+        );
       }
 
       // Test atomic delete
@@ -280,7 +287,6 @@ class CacheSystemFinalizer {
       this.log(`Cache statistics: ${JSON.stringify(stats)}`);
 
       this.log('New cache system validation passed');
-
     } catch (error) {
       this.log(`New system validation failed: ${error}`, 'error');
       throw error;
@@ -349,8 +355,11 @@ Report generated at: ${new Date().toISOString()}
       // Write report to file
       const fs = require('fs');
       const path = require('path');
-      const reportPath = path.join(process.cwd(), 'cache-migration-finalization-report.txt');
-      
+      const reportPath = path.join(
+        process.cwd(),
+        'cache-migration-finalization-report.txt'
+      );
+
       if (!this.config.dryRun) {
         fs.writeFileSync(reportPath, report);
         this.log(`Final report written to: ${reportPath}`);
@@ -359,7 +368,6 @@ Report generated at: ${new Date().toISOString()}
       }
 
       console.log('\n' + report);
-
     } catch (error) {
       this.log(`Failed to generate report: ${error}`, 'error');
       throw error;
@@ -375,35 +383,41 @@ Report generated at: ${new Date().toISOString()}
     try {
       if (!this.config.dryRun) {
         const redis = await getRedisClient();
-        
+
         // Get old cache keys (non-atomic)
         const oldKeys = await redis.keys('*');
-        const cacheKeys = oldKeys.filter((key: string) =>
-          !key.startsWith('lock:') &&
-          !key.startsWith('version:') &&
-          !key.startsWith('tag:') &&
-          (key.startsWith('jobs:') || key.startsWith('users:') || key.startsWith('search:'))
+        const cacheKeys = oldKeys.filter(
+          (key: string) =>
+            !key.startsWith('lock:') &&
+            !key.startsWith('version:') &&
+            !key.startsWith('tag:') &&
+            (key.startsWith('jobs:') ||
+              key.startsWith('users:') ||
+              key.startsWith('search:'))
         );
 
         if (cacheKeys.length > 0) {
           this.log(`Found ${cacheKeys.length} old cache keys to clean up`);
-          
+
           // Delete in batches
           const batchSize = 100;
           for (let i = 0; i < cacheKeys.length; i += batchSize) {
             const batch = cacheKeys.slice(i, i + batchSize);
             await redis.del(...batch);
-            this.log(`Cleaned up batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(cacheKeys.length / batchSize)}`);
+            this.log(
+              `Cleaned up batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(cacheKeys.length / batchSize)}`
+            );
           }
-          
-          this.log(`Successfully cleaned up ${cacheKeys.length} old cache keys`);
+
+          this.log(
+            `Successfully cleaned up ${cacheKeys.length} old cache keys`
+          );
         } else {
           this.log('No old cache keys found to clean up');
         }
       } else {
         this.log('[DRY RUN] Would cleanup old cache system');
       }
-
     } catch (error) {
       this.log(`Cleanup failed: ${error}`, 'error');
       throw error;
@@ -478,9 +492,10 @@ Examples:
     const finalizer = new CacheSystemFinalizer(config);
     await finalizer.finalize();
 
-    console.log('\n✅ Cache system migration finalization completed successfully!');
+    console.log(
+      '\n✅ Cache system migration finalization completed successfully!'
+    );
     process.exit(0);
-
   } catch (error) {
     console.error('\n❌ Cache system migration finalization failed:', error);
     process.exit(1);
@@ -490,15 +505,15 @@ Examples:
 // Handle graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\nReceived SIGINT, shutting down gracefully...');
-  
+
   try {
     // Stop health monitoring
     CacheHealthMonitor.stopMonitoring();
-    
+
     // Shutdown atomic cache manager
     const atomicManager = await getAtomicCacheManager();
     await atomicManager.shutdown();
-    
+
     console.log('Graceful shutdown completed');
     process.exit(0);
   } catch (error) {
@@ -509,12 +524,12 @@ process.on('SIGINT', async () => {
 
 process.on('SIGTERM', async () => {
   console.log('\nReceived SIGTERM, shutting down gracefully...');
-  
+
   try {
     CacheHealthMonitor.stopMonitoring();
     const atomicManager = await getAtomicCacheManager();
     await atomicManager.shutdown();
-    
+
     console.log('Graceful shutdown completed');
     process.exit(0);
   } catch (error) {
@@ -532,4 +547,4 @@ if (require.main === module) {
 }
 
 export { CacheSystemFinalizer };
-export type { FinalizationConfig }; 
+export type { FinalizationConfig };

@@ -43,7 +43,7 @@ export class RegionalJobService {
       postedAfter,
       categories,
       limit = 20,
-      offset = 0
+      offset = 0,
     } = filters;
 
     const where: any = {
@@ -64,7 +64,7 @@ export class RegionalJobService {
     if (location) {
       where.location = {
         contains: location,
-        mode: 'insensitive'
+        mode: 'insensitive',
       };
     }
 
@@ -74,21 +74,21 @@ export class RegionalJobService {
         {
           title: {
             contains: keywords,
-            mode: 'insensitive'
-          }
+            mode: 'insensitive',
+          },
         },
         {
           description: {
             contains: keywords,
-            mode: 'insensitive'
-          }
+            mode: 'insensitive',
+          },
         },
         {
           company: {
             contains: keywords,
-            mode: 'insensitive'
-          }
-        }
+            mode: 'insensitive',
+          },
+        },
       ];
     }
 
@@ -99,16 +99,16 @@ export class RegionalJobService {
         where.AND.push({
           OR: [
             { salaryMin: { gte: salaryMin } },
-            { salaryMax: { gte: salaryMin } }
-          ]
+            { salaryMax: { gte: salaryMin } },
+          ],
         });
       }
       if (salaryMax) {
         where.AND.push({
           OR: [
             { salaryMax: { lte: salaryMax } },
-            { salaryMin: { lte: salaryMax } }
-          ]
+            { salaryMin: { lte: salaryMax } },
+          ],
         });
       }
     }
@@ -116,24 +116,21 @@ export class RegionalJobService {
     // Date filtering
     if (postedAfter) {
       where.postedAt = {
-        gte: postedAfter
+        gte: postedAfter,
       };
     }
 
     // Category filtering
     if (categories && categories.length > 0) {
       where.categories = {
-        hasSome: categories
+        hasSome: categories,
       };
     }
 
     const [jobs, totalCount] = await Promise.all([
       prisma.job.findMany({
         where,
-        orderBy: [
-          { isPinned: 'desc' },
-          { postedAt: 'desc' }
-        ],
+        orderBy: [{ isPinned: 'desc' }, { postedAt: 'desc' }],
         take: limit,
         skip: offset,
         include: {
@@ -141,12 +138,12 @@ export class RegionalJobService {
             select: {
               name: true,
               logo: true,
-              website: true
-            }
-          }
-        }
+              website: true,
+            },
+          },
+        },
       }),
-      prisma.job.count({ where })
+      prisma.job.count({ where }),
     ]);
 
     return {
@@ -157,8 +154,8 @@ export class RegionalJobService {
         limit,
         offset,
         totalPages: Math.ceil(totalCount / limit),
-        currentPage: Math.floor(offset / limit) + 1
-      }
+        currentPage: Math.floor(offset / limit) + 1,
+      },
     };
   }
 
@@ -173,8 +170,8 @@ export class RegionalJobService {
     const totalJobs = await prisma.job.count({
       where: {
         region,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
 
     // Get new jobs this week
@@ -183,9 +180,9 @@ export class RegionalJobService {
         region,
         deletedAt: null,
         postedAt: {
-          gte: oneWeekAgo
-        }
-      }
+          gte: oneWeekAgo,
+        },
+      },
     });
 
     // Get top categories
@@ -193,24 +190,27 @@ export class RegionalJobService {
       by: ['categories'],
       where: {
         region,
-        deletedAt: null
+        deletedAt: null,
       },
       _count: {
-        categories: true
+        categories: true,
       },
       orderBy: {
         _count: {
-          categories: 'desc'
-        }
+          categories: 'desc',
+        },
       },
-      take: 5
+      take: 5,
     });
 
     // Flatten categories and count them
     const categoryMap = new Map<string, number>();
     categoryStats.forEach(stat => {
       stat.categories.forEach(category => {
-        categoryMap.set(category, (categoryMap.get(category) || 0) + stat._count.categories);
+        categoryMap.set(
+          category,
+          (categoryMap.get(category) || 0) + stat._count.categories
+        );
       });
     });
 
@@ -224,42 +224,40 @@ export class RegionalJobService {
       where: {
         region,
         deletedAt: null,
-        OR: [
-          { salaryMin: { not: null } },
-          { salaryMax: { not: null } }
-        ]
+        OR: [{ salaryMin: { not: null } }, { salaryMax: { not: null } }],
       },
       _avg: {
         salaryMin: true,
-        salaryMax: true
-      }
+        salaryMax: true,
+      },
     });
 
-    const averageSalary = salaryStats._avg.salaryMin && salaryStats._avg.salaryMax
-      ? (salaryStats._avg.salaryMin + salaryStats._avg.salaryMax) / 2
-      : salaryStats._avg.salaryMin || salaryStats._avg.salaryMax || null;
+    const averageSalary =
+      salaryStats._avg.salaryMin && salaryStats._avg.salaryMax
+        ? (salaryStats._avg.salaryMin + salaryStats._avg.salaryMax) / 2
+        : salaryStats._avg.salaryMin || salaryStats._avg.salaryMax || null;
 
     // Get top companies
     const companyStats = await prisma.job.groupBy({
       by: ['company'],
       where: {
         region,
-        deletedAt: null
+        deletedAt: null,
       },
       _count: {
-        company: true
+        company: true,
       },
       orderBy: {
         _count: {
-          company: 'desc'
-        }
+          company: 'desc',
+        },
       },
-      take: 5
+      take: 5,
     });
 
     const topCompanies = companyStats.map(stat => ({
       company: stat.company,
-      count: stat._count.company
+      count: stat._count.company,
     }));
 
     return {
@@ -268,7 +266,7 @@ export class RegionalJobService {
       newJobsThisWeek,
       topCategories,
       averageSalary,
-      topCompanies
+      topCompanies,
     };
   }
 
@@ -280,20 +278,48 @@ export class RegionalJobService {
 
     // Central Valley (209)
     const centralValleyCities = [
-      'stockton', 'modesto', 'tracy', 'manteca', 'lodi', 'turlock', 'merced',
-      'fresno', 'visalia', 'bakersfield', 'delano', 'hanford', 'tulare'
+      'stockton',
+      'modesto',
+      'tracy',
+      'manteca',
+      'lodi',
+      'turlock',
+      'merced',
+      'fresno',
+      'visalia',
+      'bakersfield',
+      'delano',
+      'hanford',
+      'tulare',
     ];
 
     // Sacramento Metro (916)
     const sacramentoCities = [
-      'sacramento', 'elk grove', 'roseville', 'folsom', 'davis', 'woodland',
-      'west sacramento', 'citrus heights', 'rancho cordova', 'fair oaks'
+      'sacramento',
+      'elk grove',
+      'roseville',
+      'folsom',
+      'davis',
+      'woodland',
+      'west sacramento',
+      'citrus heights',
+      'rancho cordova',
+      'fair oaks',
     ];
 
     // East Bay (510)
     const eastBayCities = [
-      'oakland', 'berkeley', 'fremont', 'hayward', 'richmond', 'alameda',
-      'san leandro', 'union city', 'newark', 'emeryville', 'albany'
+      'oakland',
+      'berkeley',
+      'fremont',
+      'hayward',
+      'richmond',
+      'alameda',
+      'san leandro',
+      'union city',
+      'newark',
+      'emeryville',
+      'albany',
     ];
 
     // Check for specific regional matches
@@ -320,20 +346,29 @@ export class RegionalJobService {
       return '209';
     }
 
-    if (locationLower.includes('sacramento') || locationLower.includes('sac metro')) {
+    if (
+      locationLower.includes('sacramento') ||
+      locationLower.includes('sac metro')
+    ) {
       return '916';
     }
 
-    if (locationLower.includes('east bay') || locationLower.includes('oakland') || locationLower.includes('berkeley')) {
+    if (
+      locationLower.includes('east bay') ||
+      locationLower.includes('oakland') ||
+      locationLower.includes('berkeley')
+    ) {
       return '510';
     }
 
     // If it's in Northern California but not specific, assign to norcal
-    if (locationLower.includes('northern california') || 
-        locationLower.includes('norcal') || 
-        locationLower.includes('bay area') ||
-        locationLower.includes('san francisco') ||
-        locationLower.includes('silicon valley')) {
+    if (
+      locationLower.includes('northern california') ||
+      locationLower.includes('norcal') ||
+      locationLower.includes('bay area') ||
+      locationLower.includes('san francisco') ||
+      locationLower.includes('silicon valley')
+    ) {
       return 'norcal';
     }
 
@@ -347,12 +382,12 @@ export class RegionalJobService {
     const jobs = await prisma.job.findMany({
       where: {
         region: null,
-        deletedAt: null
+        deletedAt: null,
       },
       select: {
         id: true,
-        location: true
-      }
+        location: true,
+      },
     });
 
     const updates = [];
@@ -364,7 +399,7 @@ export class RegionalJobService {
         updates.push(
           prisma.job.update({
             where: { id: job.id },
-            data: { region }
+            data: { region },
           })
         );
         assignedCount++;
@@ -378,7 +413,7 @@ export class RegionalJobService {
     return {
       totalJobs: jobs.length,
       assignedJobs: assignedCount,
-      unassignedJobs: jobs.length - assignedCount
+      unassignedJobs: jobs.length - assignedCount,
     };
   }
 
@@ -390,29 +425,29 @@ export class RegionalJobService {
       by: ['region'],
       where: {
         deletedAt: null,
-        region: { not: null }
+        region: { not: null },
       },
       _count: {
-        region: true
+        region: true,
       },
       orderBy: {
         _count: {
-          region: 'desc'
-        }
-      }
+          region: 'desc',
+        },
+      },
     });
 
     const regionNames = {
       '209': 'Central Valley',
       '916': 'Sacramento Metro',
       '510': 'East Bay',
-      'norcal': 'Northern California'
+      norcal: 'Northern California',
     };
 
     return regionStats.map(stat => ({
       region: stat.region,
       name: regionNames[stat.region as keyof typeof regionNames] || stat.region,
-      jobCount: stat._count.region
+      jobCount: stat._count.region,
     }));
   }
 
@@ -425,26 +460,26 @@ export class RegionalJobService {
     limit: number = 20
   ) {
     const results = await Promise.all(
-      regions.map(async (region) => {
+      regions.map(async region => {
         const regionJobs = await this.getRegionalJobs({
           region,
           keywords: query,
-          limit: Math.ceil(limit / regions.length)
+          limit: Math.ceil(limit / regions.length),
         });
 
         return {
           region,
           jobs: regionJobs.jobs,
-          totalCount: regionJobs.totalCount
+          totalCount: regionJobs.totalCount,
         };
       })
     );
 
     // Combine and sort all jobs by relevance/date
-    const allJobs = results.flatMap(result => 
+    const allJobs = results.flatMap(result =>
       result.jobs.map(job => ({
         ...job,
-        sourceRegion: result.region
+        sourceRegion: result.region,
       }))
     );
 
@@ -460,9 +495,12 @@ export class RegionalJobService {
       jobs: allJobs.slice(0, limit),
       regionBreakdown: results.map(result => ({
         region: result.region,
-        count: result.totalCount
+        count: result.totalCount,
       })),
-      totalAcrossRegions: results.reduce((sum, result) => sum + result.totalCount, 0)
+      totalAcrossRegions: results.reduce(
+        (sum, result) => sum + result.totalCount,
+        0
+      ),
     };
   }
-} 
+}

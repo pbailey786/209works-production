@@ -14,7 +14,7 @@ export interface AccessibleIconProps {
 export function createDecorativeIconProps(): AccessibleIconProps {
   return {
     'aria-hidden': true,
-    role: 'presentation'
+    role: 'presentation',
   };
 }
 
@@ -25,7 +25,7 @@ export function createDecorativeIconProps(): AccessibleIconProps {
 export function createInformativeIconProps(label: string): AccessibleIconProps {
   return {
     'aria-label': label,
-    role: 'img'
+    role: 'img',
   };
 }
 
@@ -35,23 +35,30 @@ export function createInformativeIconProps(label: string): AccessibleIconProps {
  */
 export function createInteractiveIconProps(label: string): AccessibleIconProps {
   return {
-    'aria-label': label
+    'aria-label': label,
   };
 }
 
 /**
  * Generates appropriate alt text for different types of images
  */
-export function generateAltText(type: 'logo' | 'avatar' | 'decorative' | 'informative', context?: {
-  companyName?: string;
-  userName?: string;
-  description?: string;
-}): string {
+export function generateAltText(
+  type: 'logo' | 'avatar' | 'decorative' | 'informative',
+  context?: {
+    companyName?: string;
+    userName?: string;
+    description?: string;
+  }
+): string {
   switch (type) {
     case 'logo':
-      return context?.companyName ? `${context.companyName} logo` : 'Company logo';
+      return context?.companyName
+        ? `${context.companyName} logo`
+        : 'Company logo';
     case 'avatar':
-      return context?.userName ? `${context.userName}'s profile picture` : 'User profile picture';
+      return context?.userName
+        ? `${context.userName}'s profile picture`
+        : 'User profile picture';
     case 'decorative':
       return ''; // Empty alt for decorative images
     case 'informative':
@@ -71,7 +78,7 @@ export const ACCESSIBLE_ICONS = {
   search: createInformativeIconProps('Search'),
   filter: createInformativeIconProps('Filter'),
   sort: createInformativeIconProps('Sort'),
-  
+
   // Actions
   save: createInformativeIconProps('Save'),
   bookmark: createInformativeIconProps('Bookmark'),
@@ -79,14 +86,14 @@ export const ACCESSIBLE_ICONS = {
   edit: createInformativeIconProps('Edit'),
   delete: createInformativeIconProps('Delete'),
   download: createInformativeIconProps('Download'),
-  
+
   // Status and feedback
   success: createInformativeIconProps('Success'),
   error: createInformativeIconProps('Error'),
   warning: createInformativeIconProps('Warning'),
   info: createInformativeIconProps('Information'),
   loading: createInformativeIconProps('Loading'),
-  
+
   // Social and external
   facebook: createInformativeIconProps('Facebook'),
   twitter: createInformativeIconProps('Twitter'),
@@ -94,20 +101,20 @@ export const ACCESSIBLE_ICONS = {
   linkedin: createInformativeIconProps('LinkedIn'),
   email: createInformativeIconProps('Email'),
   phone: createInformativeIconProps('Phone'),
-  
+
   // Job-specific
   location: createInformativeIconProps('Location'),
   calendar: createInformativeIconProps('Date'),
   briefcase: createInformativeIconProps('Job type'),
   building: createInformativeIconProps('Company'),
   salary: createInformativeIconProps('Salary'),
-  
+
   // Visibility toggles
   showPassword: createInformativeIconProps('Show password'),
   hidePassword: createInformativeIconProps('Hide password'),
-  
+
   // Decorative (should be hidden from screen readers)
-  decorative: createDecorativeIconProps()
+  decorative: createDecorativeIconProps(),
 } as const;
 
 /**
@@ -134,21 +141,25 @@ export function validateMultimediaAccessibility(element: {
         recommendations.push('Add closed captions for all video content');
       }
       if (!element.hasTranscript) {
-        recommendations.push('Consider providing a transcript for better accessibility');
+        recommendations.push(
+          'Consider providing a transcript for better accessibility'
+        );
       }
       break;
-      
+
     case 'audio':
       if (!element.hasTranscript) {
         issues.push('Audio missing transcript');
         recommendations.push('Provide a text transcript for all audio content');
       }
       break;
-      
+
     case 'iframe':
       if (!element.title) {
         issues.push('iframe missing title attribute');
-        recommendations.push('Add a descriptive title attribute to iframe elements');
+        recommendations.push(
+          'Add a descriptive title attribute to iframe elements'
+        );
       }
       break;
   }
@@ -156,14 +167,17 @@ export function validateMultimediaAccessibility(element: {
   return {
     isValid: issues.length === 0,
     issues,
-    recommendations
+    recommendations,
   };
 }
 
 /**
  * Creates accessible props for form elements with icons
  */
-export function createFormIconProps(purpose: 'validation' | 'action' | 'decoration', label?: string): AccessibleIconProps {
+export function createFormIconProps(
+  purpose: 'validation' | 'action' | 'decoration',
+  label?: string
+): AccessibleIconProps {
   switch (purpose) {
     case 'validation':
       return createInformativeIconProps(label || 'Validation status');
@@ -174,4 +188,4 @@ export function createFormIconProps(purpose: 'validation' | 'action' | 'decorati
     default:
       return createDecorativeIconProps();
   }
-} 
+}

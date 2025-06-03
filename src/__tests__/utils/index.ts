@@ -1,8 +1,8 @@
 // Export all test utilities from a single entry point
-export * from './test-utils'
-export * from './mock-data'
-export * from './api-mocks'
-export * from './custom-matchers'
+export * from './test-utils';
+export * from './mock-data';
+export * from './api-mocks';
+export * from './custom-matchers';
 
 // Re-export commonly used testing library functions
 export {
@@ -24,6 +24,6 @@ export {
   findByText,
   findByLabelText,
   findByTestId,
-} from '@testing-library/react'
+} from '@testing-library/react';
 
-export { userEvent } from '@testing-library/user-event' 
+export { userEvent } from '@testing-library/user-event';

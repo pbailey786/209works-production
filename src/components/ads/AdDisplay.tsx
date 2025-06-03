@@ -40,13 +40,13 @@ interface AdDisplayProps {
   userId?: string;
 }
 
-export default function AdDisplay({ 
-  placement, 
-  className = '', 
+export default function AdDisplay({
+  placement,
+  className = '',
   maxAds = 1,
   userLocation,
   sessionId,
-  userId 
+  userId,
 }: AdDisplayProps) {
   const [ads, setAds] = useState<Advertisement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +89,9 @@ export default function AdDisplay({
         body: JSON.stringify({
           adId,
           userId,
-          sessionId: sessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          sessionId:
+            sessionId ||
+            `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           page: window.location.pathname,
           position: placement,
           userAgent: navigator.userAgent,
@@ -109,7 +111,9 @@ export default function AdDisplay({
         body: JSON.stringify({
           adId,
           userId,
-          sessionId: sessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          sessionId:
+            sessionId ||
+            `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           targetUrl,
           userAgent: navigator.userAgent,
           referrer: document.referrer,
@@ -135,7 +139,7 @@ export default function AdDisplay({
   if (loading) {
     return (
       <div className={`animate-pulse ${className}`}>
-        <div className="bg-gray-200 rounded-lg h-32"></div>
+        <div className="h-32 rounded-lg bg-gray-200"></div>
       </div>
     );
   }
@@ -145,37 +149,41 @@ export default function AdDisplay({
   }
 
   const renderBannerAd = (ad: Advertisement) => (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-center p-4">
-        <div className="flex-shrink-0 mr-4">
+        <div className="mr-4 flex-shrink-0">
           {ad.content.imageUrl ? (
-            <img 
-              src={ad.content.imageUrl} 
+            <img
+              src={ad.content.imageUrl}
               alt={ad.content.title}
-              className="w-16 h-16 rounded object-cover"
+              className="h-16 w-16 rounded object-cover"
             />
           ) : (
-            <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded bg-gray-200">
               <Building className="h-8 w-8 text-gray-400" />
             </div>
           )}
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">{ad.content.title}</h3>
-          <p className="text-gray-600 mb-2">{ad.content.businessName}</p>
+          <h3 className="mb-1 text-lg font-semibold text-gray-900">
+            {ad.content.title}
+          </h3>
+          <p className="mb-2 text-gray-600">{ad.content.businessName}</p>
           {ad.content.description && (
-            <p className="text-sm text-gray-500 mb-2 line-clamp-2">{ad.content.description}</p>
+            <p className="mb-2 line-clamp-2 text-sm text-gray-500">
+              {ad.content.description}
+            </p>
           )}
           {ad.targeting?.zipCodes && (
             <div className="flex items-center text-sm text-gray-500">
-              <MapPin className="h-4 w-4 mr-1" />
+              <MapPin className="mr-1 h-4 w-4" />
               <span>Serving {ad.targeting.zipCodes.join(', ')}</span>
             </div>
           )}
         </div>
         <div className="flex-shrink-0">
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="bg-blue-600 hover:bg-blue-700"
             onClick={() => handleAdClick(ad)}
           >
@@ -183,14 +191,14 @@ export default function AdDisplay({
           </Button>
         </div>
       </div>
-      <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
+      <div className="border-t border-gray-200 bg-gray-50 px-4 py-2">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>Sponsored</span>
-          <button 
+          <button
             onClick={() => handleAdClick(ad)}
-            className="flex items-center hover:text-blue-600 transition-colors"
+            className="flex items-center transition-colors hover:text-blue-600"
           >
-            <ExternalLink className="h-3 w-3 mr-1" />
+            <ExternalLink className="mr-1 h-3 w-3" />
             Visit Website
           </button>
         </div>
@@ -199,18 +207,18 @@ export default function AdDisplay({
   );
 
   const renderSidebarAd = (ad: Advertisement) => (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow max-w-xs">
+    <div className="max-w-xs overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="aspect-square">
         {ad.content.imageUrl ? (
-          <img 
-            src={ad.content.imageUrl} 
+          <img
+            src={ad.content.imageUrl}
             alt={ad.content.title}
-            className="w-full h-full object-cover cursor-pointer"
+            className="h-full w-full cursor-pointer object-cover"
             onClick={() => handleAdClick(ad)}
           />
         ) : (
-          <div 
-            className="w-full h-full bg-gray-200 flex items-center justify-center cursor-pointer"
+          <div
+            className="flex h-full w-full cursor-pointer items-center justify-center bg-gray-200"
             onClick={() => handleAdClick(ad)}
           >
             <Building className="h-16 w-16 text-gray-400" />
@@ -218,70 +226,80 @@ export default function AdDisplay({
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{ad.content.title}</h3>
-        <p className="text-sm text-gray-600 mb-2">{ad.content.businessName}</p>
+        <h3 className="mb-1 line-clamp-2 font-semibold text-gray-900">
+          {ad.content.title}
+        </h3>
+        <p className="mb-2 text-sm text-gray-600">{ad.content.businessName}</p>
         {ad.content.description && (
-          <p className="text-xs text-gray-500 mb-3 line-clamp-3">{ad.content.description}</p>
+          <p className="mb-3 line-clamp-3 text-xs text-gray-500">
+            {ad.content.description}
+          </p>
         )}
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           className="w-full bg-blue-600 hover:bg-blue-700"
           onClick={() => handleAdClick(ad)}
         >
           Learn More
         </Button>
       </div>
-      <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
+      <div className="border-t border-gray-200 bg-gray-50 px-4 py-2">
         <span className="text-xs text-gray-500">Sponsored</span>
       </div>
     </div>
   );
 
   const renderNativeAd = (ad: Advertisement) => (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="p-4">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0">
             {ad.content.imageUrl ? (
-              <img 
-                src={ad.content.imageUrl} 
+              <img
+                src={ad.content.imageUrl}
                 alt={ad.content.title}
-                className="w-12 h-12 rounded object-cover cursor-pointer"
+                className="h-12 w-12 cursor-pointer rounded object-cover"
                 onClick={() => handleAdClick(ad)}
               />
             ) : (
-              <div 
-                className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center cursor-pointer"
+              <div
+                className="flex h-12 w-12 cursor-pointer items-center justify-center rounded bg-gray-200"
                 onClick={() => handleAdClick(ad)}
               >
                 <Building className="h-6 w-6 text-gray-400" />
               </div>
             )}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between">
-              <h3 
-                className="text-sm font-medium text-gray-900 line-clamp-1 cursor-pointer hover:text-blue-600"
+              <h3
+                className="line-clamp-1 cursor-pointer text-sm font-medium text-gray-900 hover:text-blue-600"
                 onClick={() => handleAdClick(ad)}
               >
                 {ad.content.title}
               </h3>
-              <Badge variant="secondary" className="text-xs">Sponsored</Badge>
+              <Badge variant="secondary" className="text-xs">
+                Sponsored
+              </Badge>
             </div>
-            <p className="text-sm text-gray-600 mt-1">{ad.content.businessName}</p>
+            <p className="mt-1 text-sm text-gray-600">
+              {ad.content.businessName}
+            </p>
             {ad.content.description && (
-              <p className="text-sm text-gray-500 mt-2 line-clamp-2">{ad.content.description}</p>
+              <p className="mt-2 line-clamp-2 text-sm text-gray-500">
+                {ad.content.description}
+              </p>
             )}
-            <div className="flex items-center justify-between mt-3">
+            <div className="mt-3 flex items-center justify-between">
               {ad.targeting?.zipCodes && (
                 <div className="flex items-center text-xs text-gray-500">
-                  <MapPin className="h-3 w-3 mr-1" />
+                  <MapPin className="mr-1 h-3 w-3" />
                   <span>{ad.targeting.zipCodes.join(', ')}</span>
                 </div>
               )}
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="text-xs"
                 onClick={() => handleAdClick(ad)}
               >
@@ -295,9 +313,12 @@ export default function AdDisplay({
   );
 
   const renderSearchAd = (ad: Advertisement) => (
-    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 hover:bg-yellow-100 transition-colors">
-      <div className="flex items-center justify-between mb-2">
-        <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-800">
+    <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 transition-colors hover:bg-yellow-100">
+      <div className="mb-2 flex items-center justify-between">
+        <Badge
+          variant="secondary"
+          className="bg-yellow-100 text-xs text-yellow-800"
+        >
           Sponsored Result
         </Badge>
         <span className="text-xs text-gray-500">Ad</span>
@@ -305,15 +326,15 @@ export default function AdDisplay({
       <div className="flex items-start space-x-3">
         <div className="flex-shrink-0">
           {ad.content.imageUrl ? (
-            <img 
-              src={ad.content.imageUrl} 
+            <img
+              src={ad.content.imageUrl}
               alt={ad.content.title}
-              className="w-16 h-16 rounded object-cover cursor-pointer"
+              className="h-16 w-16 cursor-pointer rounded object-cover"
               onClick={() => handleAdClick(ad)}
             />
           ) : (
-            <div 
-              className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center cursor-pointer"
+            <div
+              className="flex h-16 w-16 cursor-pointer items-center justify-center rounded bg-gray-200"
               onClick={() => handleAdClick(ad)}
             >
               <Building className="h-8 w-8 text-gray-400" />
@@ -321,20 +342,24 @@ export default function AdDisplay({
           )}
         </div>
         <div className="flex-1">
-          <h3 
-            className="text-lg font-semibold text-blue-600 hover:text-blue-800 cursor-pointer"
+          <h3
+            className="cursor-pointer text-lg font-semibold text-blue-600 hover:text-blue-800"
             onClick={() => handleAdClick(ad)}
           >
             {ad.content.title}
           </h3>
-          <p className="text-green-600 text-sm mb-1">{ad.content.targetUrl}</p>
-          <p className="text-gray-700 text-sm mb-2">{ad.content.businessName}</p>
+          <p className="mb-1 text-sm text-green-600">{ad.content.targetUrl}</p>
+          <p className="mb-2 text-sm text-gray-700">
+            {ad.content.businessName}
+          </p>
           {ad.content.description && (
-            <p className="text-gray-600 text-sm line-clamp-2">{ad.content.description}</p>
+            <p className="line-clamp-2 text-sm text-gray-600">
+              {ad.content.description}
+            </p>
           )}
           {ad.targeting?.zipCodes && (
-            <div className="flex items-center text-sm text-gray-500 mt-2">
-              <MapPin className="h-4 w-4 mr-1" />
+            <div className="mt-2 flex items-center text-sm text-gray-500">
+              <MapPin className="mr-1 h-4 w-4" />
               <span>Serving {ad.targeting.zipCodes.join(', ')}</span>
             </div>
           )}
@@ -344,23 +369,23 @@ export default function AdDisplay({
   );
 
   const renderFeaturedAd = (ad: Advertisement) => (
-    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4 hover:from-blue-100 hover:to-purple-100 transition-colors">
-      <div className="flex items-center justify-between mb-3">
+    <div className="rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4 transition-colors hover:from-blue-100 hover:to-purple-100">
+      <div className="mb-3 flex items-center justify-between">
         <Badge className="bg-blue-100 text-blue-800">Featured Business</Badge>
         <span className="text-xs text-gray-500">Sponsored</span>
       </div>
       <div className="flex items-start space-x-4">
         <div className="flex-shrink-0">
           {ad.content.imageUrl ? (
-            <img 
-              src={ad.content.imageUrl} 
+            <img
+              src={ad.content.imageUrl}
               alt={ad.content.title}
-              className="w-20 h-20 rounded-lg object-cover cursor-pointer"
+              className="h-20 w-20 cursor-pointer rounded-lg object-cover"
               onClick={() => handleAdClick(ad)}
             />
           ) : (
-            <div 
-              className="w-20 h-20 bg-white rounded-lg flex items-center justify-center cursor-pointer shadow-sm"
+            <div
+              className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg bg-white shadow-sm"
               onClick={() => handleAdClick(ad)}
             >
               <Building className="h-10 w-10 text-gray-400" />
@@ -368,24 +393,28 @@ export default function AdDisplay({
           )}
         </div>
         <div className="flex-1">
-          <h3 
-            className="text-xl font-bold text-gray-900 mb-2 cursor-pointer hover:text-blue-600"
+          <h3
+            className="mb-2 cursor-pointer text-xl font-bold text-gray-900 hover:text-blue-600"
             onClick={() => handleAdClick(ad)}
           >
             {ad.content.title}
           </h3>
-          <p className="text-gray-700 font-medium mb-2">{ad.content.businessName}</p>
+          <p className="mb-2 font-medium text-gray-700">
+            {ad.content.businessName}
+          </p>
           {ad.content.description && (
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">{ad.content.description}</p>
+            <p className="mb-3 line-clamp-2 text-sm text-gray-600">
+              {ad.content.description}
+            </p>
           )}
           <div className="flex items-center justify-between">
             {ad.targeting?.zipCodes && (
               <div className="flex items-center text-sm text-gray-500">
-                <MapPin className="h-4 w-4 mr-1" />
+                <MapPin className="mr-1 h-4 w-4" />
                 <span>Serving {ad.targeting.zipCodes.join(', ')}</span>
               </div>
             )}
-            <Button 
+            <Button
               className="bg-blue-600 hover:bg-blue-700"
               onClick={() => handleAdClick(ad)}
             >
@@ -414,11 +443,9 @@ export default function AdDisplay({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {ads.map((ad) => (
-        <div key={ad.id}>
-          {renderAd(ad)}
-        </div>
+      {ads.map(ad => (
+        <div key={ad.id}>{renderAd(ad)}</div>
       ))}
     </div>
   );
-} 
+}

@@ -1,18 +1,18 @@
 import { prisma } from '../../app/api/auth/prisma';
-import { 
+import {
   EnhancedSearchFilters,
   SearchResult,
   TextProcessor,
   RelevanceScorer,
   GeolocationUtils,
-  SEARCH_CONFIG
+  SEARCH_CONFIG,
 } from './algorithms';
-import { 
-  getCache, 
-  setCache, 
+import {
+  getCache,
+  setCache,
   generateCacheKey,
   CACHE_PREFIXES,
-  DEFAULT_TTL 
+  DEFAULT_TTL,
 } from '../cache/redis';
 
 // Enhanced alert criteria interface
@@ -73,27 +73,27 @@ interface MatchQuality {
 export class EnhancedJobMatchingService {
   private static readonly CACHE_TTL = DEFAULT_TTL.short;
   private static readonly CACHE_TAGS = ['job-matching', 'alerts'];
-  
+
   // Weights for different matching criteria
   private static readonly MATCHING_WEIGHTS = {
-    semantic: 0.35,        // Title and description matching
-    skills: 0.25,          // Skills compatibility  
-    location: 0.15,        // Geographic relevance
-    experience: 0.10,      // Experience level match
-    salary: 0.10,          // Salary range compatibility
-    company: 0.05          // Company preference
+    semantic: 0.35, // Title and description matching
+    skills: 0.25, // Skills compatibility
+    location: 0.15, // Geographic relevance
+    experience: 0.1, // Experience level match
+    salary: 0.1, // Salary range compatibility
+    company: 0.05, // Company preference
   };
 
   // TF-IDF scoring thresholds
   private static readonly TFIDF_THRESHOLDS = {
     high: 0.7,
     medium: 0.4,
-    low: 0.2
+    low: 0.2,
   };
 
   // Main job matching function
   static async findMatchingJobs(
-    criteria: AlertCriteria, 
+    criteria: AlertCriteria,
     maxResults: number = 50,
     useAdvancedScoring: boolean = true
   ): Promise<JobMatchResult[]> {
@@ -113,7 +113,7 @@ export class EnhancedJobMatchingService {
     try {
       // Build enhanced database query
       const whereCondition = this.buildEnhancedWhereCondition(criteria);
-      
+
       // Get a larger pool for better scoring
       const jobPool = await prisma.job.findMany({
         where: whereCondition,
@@ -162,7 +162,7 @@ export class EnhancedJobMatchingService {
 
   // Advanced scoring with semantic analysis
   private static async scoreJobsAdvanced(
-    jobs: any[], 
+    jobs: any[],
     criteria: AlertCriteria
   ): Promise<JobMatchResult[]> {
     const scoredJobs: JobMatchResult[] = [];
@@ -174,12 +174,15 @@ export class EnhancedJobMatchingService {
         location: this.calculateLocationScore(job, criteria),
         experience: this.calculateExperienceScore(job, criteria),
         salary: this.calculateSalaryScore(job, criteria),
-        company: this.calculateCompanyScore(job, criteria)
+        company: this.calculateCompanyScore(job, criteria),
       };
 
       // Calculate weighted relevance score
       const relevanceScore = Object.entries(scores).reduce(
-        (total, [key, score]) => total + (score * this.MATCHING_WEIGHTS[key as keyof typeof this.MATCHING_WEIGHTS]),
+        (total, [key, score]) =>
+          total +
+          score *
+            this.MATCHING_WEIGHTS[key as keyof typeof this.MATCHING_WEIGHTS],
         0
       );
 
@@ -204,7 +207,7 @@ export class EnhancedJobMatchingService {
         semanticScore: scores.semantic,
         locationScore: scores.location,
         skillsScore: scores.skills,
-        experienceScore: scores.experience
+        experienceScore: scores.experience,
       });
     }
 
@@ -212,7 +215,10 @@ export class EnhancedJobMatchingService {
   }
 
   // Basic scoring (fallback)
-  private static scoreJobsBasic(jobs: any[], criteria: AlertCriteria): JobMatchResult[] {
+  private static scoreJobsBasic(
+    jobs: any[],
+    criteria: AlertCriteria
+  ): JobMatchResult[] {
     return jobs.map(job => {
       const relevanceScore = this.calculateBasicRelevanceScore(job, criteria);
       const matchedFields = this.getMatchedFields(job, criteria);
@@ -230,18 +236,22 @@ export class EnhancedJobMatchingService {
         description: job.description,
         createdAt: job.createdAt,
         relevanceScore,
-        matchedFields
+        matchedFields,
       };
     });
   }
 
   // Enhanced semantic scoring using TF-IDF-like approach
-  private static calculateSemanticScore(job: any, criteria: AlertCriteria): number {
-    const jobText = `${job.title} ${job.description} ${job.company}`.toLowerCase();
+  private static calculateSemanticScore(
+    job: any,
+    criteria: AlertCriteria
+  ): number {
+    const jobText =
+      `${job.title} ${job.description} ${job.company}`.toLowerCase();
     const searchTerms = [
       ...(criteria.keywords || []),
       ...(criteria.jobTitle ? [criteria.jobTitle] : []),
-      ...(criteria.company ? [criteria.company] : [])
+      ...(criteria.company ? [criteria.company] : []),
     ].map(term => term.toLowerCase());
 
     if (searchTerms.length === 0) return 0.5; // Neutral score
@@ -251,7 +261,10 @@ export class EnhancedJobMatchingService {
 
     for (const term of searchTerms) {
       // Calculate term frequency in job text
-      const termRegex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      const termRegex = new RegExp(
+        term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+        'gi'
+      );
       const matches = jobText.match(termRegex) || [];
       const termFrequency = matches.length;
 
@@ -267,7 +280,7 @@ export class EnhancedJobMatchingService {
         // Calculate TF-IDF-like score
         const tfScore = termFrequency / jobText.split(' ').length;
         const relevanceScore = Math.min(tfScore * positionWeight * 10, 1.0);
-        
+
         totalScore += relevanceScore;
       }
       termCount++;
@@ -277,16 +290,20 @@ export class EnhancedJobMatchingService {
   }
 
   // Skills compatibility scoring
-  private static calculateSkillsScore(job: any, criteria: AlertCriteria): number {
+  private static calculateSkillsScore(
+    job: any,
+    criteria: AlertCriteria
+  ): number {
     if (!criteria.skills || criteria.skills.length === 0) return 0.5;
     if (!job.skills || job.skills.length === 0) return 0;
 
     const jobSkills = job.skills.map((skill: string) => skill.toLowerCase());
     const requiredSkills = criteria.skills.map(skill => skill.toLowerCase());
 
-    const matchedSkills = requiredSkills.filter(skill => 
-      jobSkills.some((jobSkill: string) => 
-        jobSkill.includes(skill) || skill.includes(jobSkill)
+    const matchedSkills = requiredSkills.filter(skill =>
+      jobSkills.some(
+        (jobSkill: string) =>
+          jobSkill.includes(skill) || skill.includes(jobSkill)
       )
     );
 
@@ -294,7 +311,10 @@ export class EnhancedJobMatchingService {
   }
 
   // Location relevance scoring
-  private static calculateLocationScore(job: any, criteria: AlertCriteria): number {
+  private static calculateLocationScore(
+    job: any,
+    criteria: AlertCriteria
+  ): number {
     if (!criteria.location) return 0.5; // Neutral if no location preference
 
     const jobLocation = job.location?.toLowerCase() || '';
@@ -309,18 +329,21 @@ export class EnhancedJobMatchingService {
     // Partial location matching (city, state, etc.)
     const locationParts = preferredLocation.split(/[,\s]+/);
     let partialMatches = 0;
-    
+
     for (const part of locationParts) {
       if (part.length >= 3 && jobLocation.includes(part)) {
         partialMatches++;
       }
     }
 
-    return partialMatches / locationParts.length * 0.6;
+    return (partialMatches / locationParts.length) * 0.6;
   }
 
   // Experience level compatibility
-  private static calculateExperienceScore(job: any, criteria: AlertCriteria): number {
+  private static calculateExperienceScore(
+    job: any,
+    criteria: AlertCriteria
+  ): number {
     if (!criteria.experienceLevel || !job.experienceLevel) return 0.5;
 
     const jobLevel = job.experienceLevel.toLowerCase();
@@ -331,17 +354,22 @@ export class EnhancedJobMatchingService {
     // Create experience hierarchy
     const levels = ['entry', 'junior', 'mid', 'senior', 'lead', 'principal'];
     const jobIndex = levels.findIndex(level => jobLevel.includes(level));
-    const requiredIndex = levels.findIndex(level => requiredLevel.includes(level));
+    const requiredIndex = levels.findIndex(level =>
+      requiredLevel.includes(level)
+    );
 
     if (jobIndex === -1 || requiredIndex === -1) return 0.3;
 
     // Calculate proximity score
     const distance = Math.abs(jobIndex - requiredIndex);
-    return Math.max(0, 1 - (distance * 0.2));
+    return Math.max(0, 1 - distance * 0.2);
   }
 
   // Salary range compatibility
-  private static calculateSalaryScore(job: any, criteria: AlertCriteria): number {
+  private static calculateSalaryScore(
+    job: any,
+    criteria: AlertCriteria
+  ): number {
     if (!criteria.salaryMin && !criteria.salaryMax) return 0.5;
 
     const jobMin = job.salaryMin || 0;
@@ -367,15 +395,24 @@ export class EnhancedJobMatchingService {
   }
 
   // Company preference scoring
-  private static calculateCompanyScore(job: any, criteria: AlertCriteria): number {
-    if (!criteria.company && (!criteria.companies || criteria.companies.length === 0)) {
+  private static calculateCompanyScore(
+    job: any,
+    criteria: AlertCriteria
+  ): number {
+    if (
+      !criteria.company &&
+      (!criteria.companies || criteria.companies.length === 0)
+    ) {
       return 0.5; // Neutral if no company preference
     }
 
     const jobCompany = job.company.toLowerCase();
-    
+
     // Check direct company preference
-    if (criteria.company && jobCompany.includes(criteria.company.toLowerCase())) {
+    if (
+      criteria.company &&
+      jobCompany.includes(criteria.company.toLowerCase())
+    ) {
       return 1.0;
     }
 
@@ -392,31 +429,42 @@ export class EnhancedJobMatchingService {
   }
 
   // Basic relevance score (fallback)
-  private static calculateBasicRelevanceScore(job: any, criteria: AlertCriteria): number {
+  private static calculateBasicRelevanceScore(
+    job: any,
+    criteria: AlertCriteria
+  ): number {
     let score = 0;
     let maxScore = 100;
 
     // Title/keyword matching (30 points)
-    if (criteria.keywords?.some(keyword => 
-      job.title.toLowerCase().includes(keyword.toLowerCase())
-    )) {
+    if (
+      criteria.keywords?.some(keyword =>
+        job.title.toLowerCase().includes(keyword.toLowerCase())
+      )
+    ) {
       score += 30;
     }
 
     // Company match (20 points)
-    if (criteria.company && job.company.toLowerCase().includes(criteria.company.toLowerCase())) {
+    if (
+      criteria.company &&
+      job.company.toLowerCase().includes(criteria.company.toLowerCase())
+    ) {
       score += 20;
     }
 
     // Location match (15 points)
-    if (criteria.location && job.location?.toLowerCase().includes(criteria.location.toLowerCase())) {
+    if (
+      criteria.location &&
+      job.location?.toLowerCase().includes(criteria.location.toLowerCase())
+    ) {
       score += 15;
     }
 
     // Skills match (25 points)
     if (criteria.skills && job.skills) {
-      const matchedSkills = criteria.skills.filter(skill => 
-        job.skills.some((jobSkill: string) => 
+      const matchedSkills = criteria.skills.filter(skill =>
+        job.skills.some((jobSkill: string) =>
           jobSkill.toLowerCase().includes(skill.toLowerCase())
         )
       );
@@ -438,25 +486,22 @@ export class EnhancedJobMatchingService {
 
     // Basic active job filter
     andConditions.push({
-      OR: [
-        { expiresAt: null },
-        { expiresAt: { gt: new Date() } },
-      ],
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
     });
 
     // Text-based search conditions
     if (criteria.keywords?.length || criteria.jobTitle) {
       const searchTerms = [
         ...(criteria.keywords || []),
-        ...(criteria.jobTitle ? [criteria.jobTitle] : [])
+        ...(criteria.jobTitle ? [criteria.jobTitle] : []),
       ];
 
       const textConditions = {
         OR: searchTerms.flatMap(term => [
           { title: { contains: term, mode: 'insensitive' } },
           { description: { contains: term, mode: 'insensitive' } },
-          { company: { contains: term, mode: 'insensitive' } }
-        ])
+          { company: { contains: term, mode: 'insensitive' } },
+        ]),
       };
 
       andConditions.push(textConditions);
@@ -465,22 +510,22 @@ export class EnhancedJobMatchingService {
     // Company filtering
     if (criteria.company) {
       andConditions.push({
-        company: { contains: criteria.company, mode: 'insensitive' }
+        company: { contains: criteria.company, mode: 'insensitive' },
       });
     }
 
     if (criteria.companies?.length) {
       andConditions.push({
         OR: criteria.companies.map(company => ({
-          company: { contains: company, mode: 'insensitive' }
-        }))
+          company: { contains: company, mode: 'insensitive' },
+        })),
       });
     }
 
     // Location filtering
     if (criteria.location) {
       andConditions.push({
-        location: { contains: criteria.location, mode: 'insensitive' }
+        location: { contains: criteria.location, mode: 'insensitive' },
       });
     }
 
@@ -504,8 +549,8 @@ export class EnhancedJobMatchingService {
       andConditions.push({
         OR: [
           { salaryMin: { gte: criteria.salaryMin } },
-          { salaryMax: { gte: criteria.salaryMin } }
-        ]
+          { salaryMax: { gte: criteria.salaryMin } },
+        ],
       });
     }
 
@@ -513,8 +558,8 @@ export class EnhancedJobMatchingService {
       andConditions.push({
         OR: [
           { salaryMax: { lte: criteria.salaryMax } },
-          { salaryMin: { lte: criteria.salaryMax } }
-        ]
+          { salaryMin: { lte: criteria.salaryMax } },
+        ],
       });
     }
 
@@ -524,14 +569,14 @@ export class EnhancedJobMatchingService {
         OR: [
           { categories: { hasSome: criteria.skills } },
           // Add more sophisticated skills matching if skills field exists
-        ]
+        ],
       });
     }
 
     // Categories filtering
     if (criteria.categories?.length) {
       andConditions.push({
-        categories: { hasSome: criteria.categories }
+        categories: { hasSome: criteria.categories },
       });
     }
 
@@ -541,9 +586,9 @@ export class EnhancedJobMatchingService {
         NOT: {
           OR: criteria.excludeKeywords.flatMap(keyword => [
             { title: { contains: keyword, mode: 'insensitive' } },
-            { description: { contains: keyword, mode: 'insensitive' } }
-          ])
-        }
+            { description: { contains: keyword, mode: 'insensitive' } },
+          ]),
+        },
       });
     }
 
@@ -557,38 +602,51 @@ export class EnhancedJobMatchingService {
     // Check title matches
     const searchTerms = [
       ...(criteria.keywords || []),
-      ...(criteria.jobTitle ? [criteria.jobTitle] : [])
+      ...(criteria.jobTitle ? [criteria.jobTitle] : []),
     ];
 
-    if (searchTerms.some(term => 
-      job.title.toLowerCase().includes(term.toLowerCase())
-    )) {
+    if (
+      searchTerms.some(term =>
+        job.title.toLowerCase().includes(term.toLowerCase())
+      )
+    ) {
       matchedFields.push('title');
     }
 
     // Check company matches
-    if (criteria.company && job.company.toLowerCase().includes(criteria.company.toLowerCase())) {
+    if (
+      criteria.company &&
+      job.company.toLowerCase().includes(criteria.company.toLowerCase())
+    ) {
       matchedFields.push('company');
     }
 
     // Check location matches
-    if (criteria.location && job.location?.toLowerCase().includes(criteria.location.toLowerCase())) {
+    if (
+      criteria.location &&
+      job.location?.toLowerCase().includes(criteria.location.toLowerCase())
+    ) {
       matchedFields.push('location');
     }
 
     // Check skills matches
-    if (criteria.skills && job.skills?.some((skill: string) => 
-      criteria.skills!.some(reqSkill => 
-        skill.toLowerCase().includes(reqSkill.toLowerCase())
+    if (
+      criteria.skills &&
+      job.skills?.some((skill: string) =>
+        criteria.skills!.some(reqSkill =>
+          skill.toLowerCase().includes(reqSkill.toLowerCase())
+        )
       )
-    )) {
+    ) {
       matchedFields.push('skills');
     }
 
     // Check description matches
-    if (searchTerms.some(term => 
-      job.description.toLowerCase().includes(term.toLowerCase())
-    )) {
+    if (
+      searchTerms.some(term =>
+        job.description.toLowerCase().includes(term.toLowerCase())
+      )
+    ) {
       matchedFields.push('description');
     }
 
@@ -596,10 +654,14 @@ export class EnhancedJobMatchingService {
   }
 
   // Generate highlighted snippet
-  private static generateSnippet(job: any, criteria: AlertCriteria, maxLength: number = 200): string {
+  private static generateSnippet(
+    job: any,
+    criteria: AlertCriteria,
+    maxLength: number = 200
+  ): string {
     const searchTerms = [
       ...(criteria.keywords || []),
-      ...(criteria.jobTitle ? [criteria.jobTitle] : [])
+      ...(criteria.jobTitle ? [criteria.jobTitle] : []),
     ];
 
     if (searchTerms.length === 0) {
@@ -607,7 +669,7 @@ export class EnhancedJobMatchingService {
     }
 
     const description = job.description.toLowerCase();
-    
+
     // Find the best sentence that contains search terms
     const sentences = job.description.split(/[.!?]+/);
     let bestSentence = sentences[0] || '';
@@ -615,7 +677,7 @@ export class EnhancedJobMatchingService {
 
     for (const sentence of sentences) {
       const sentenceLower = sentence.toLowerCase();
-      const matches = searchTerms.filter(term => 
+      const matches = searchTerms.filter(term =>
         sentenceLower.includes(term.toLowerCase())
       ).length;
 
@@ -634,19 +696,23 @@ export class EnhancedJobMatchingService {
   }
 
   // Calculate comprehensive match quality
-  static calculateMatchQuality(criteria: AlertCriteria, jobs: JobMatchResult[]): MatchQuality {
+  static calculateMatchQuality(
+    criteria: AlertCriteria,
+    jobs: JobMatchResult[]
+  ): MatchQuality {
     if (jobs.length === 0) {
       return {
         score: 0,
         level: 'no_matches',
-        feedback: 'No jobs found matching your criteria. Consider broadening your search parameters.',
+        feedback:
+          'No jobs found matching your criteria. Consider broadening your search parameters.',
         distribution: { total: 0, excellent: 0, good: 0, fair: 0, poor: 0 },
         improvements: [
           'Try using broader keywords',
           'Expand location search radius',
           'Consider remote work options',
-          'Review salary expectations'
-        ]
+          'Review salary expectations',
+        ],
       };
     }
 
@@ -654,13 +720,18 @@ export class EnhancedJobMatchingService {
     const distribution = {
       total: jobs.length,
       excellent: jobs.filter(job => job.relevanceScore >= 80).length,
-      good: jobs.filter(job => job.relevanceScore >= 60 && job.relevanceScore < 80).length,
-      fair: jobs.filter(job => job.relevanceScore >= 40 && job.relevanceScore < 60).length,
-      poor: jobs.filter(job => job.relevanceScore < 40).length
+      good: jobs.filter(
+        job => job.relevanceScore >= 60 && job.relevanceScore < 80
+      ).length,
+      fair: jobs.filter(
+        job => job.relevanceScore >= 40 && job.relevanceScore < 60
+      ).length,
+      poor: jobs.filter(job => job.relevanceScore < 40).length,
     };
 
     // Calculate average relevance score
-    const avgScore = jobs.reduce((sum, job) => sum + job.relevanceScore, 0) / jobs.length;
+    const avgScore =
+      jobs.reduce((sum, job) => sum + job.relevanceScore, 0) / jobs.length;
 
     // Determine quality level and feedback
     let level: MatchQuality['level'];
@@ -669,10 +740,12 @@ export class EnhancedJobMatchingService {
 
     if (avgScore >= 80) {
       level = 'excellent';
-      feedback = 'Excellent matches! Your criteria are well-defined and producing high-quality results.';
+      feedback =
+        'Excellent matches! Your criteria are well-defined and producing high-quality results.';
     } else if (avgScore >= 60) {
       level = 'good';
-      feedback = 'Good matches found. Consider fine-tuning criteria for even better results.';
+      feedback =
+        'Good matches found. Consider fine-tuning criteria for even better results.';
       if (distribution.excellent < distribution.total * 0.3) {
         improvements.push('Add more specific keywords to improve relevance');
       }
@@ -683,7 +756,8 @@ export class EnhancedJobMatchingService {
       improvements.push('Consider adding more specific skills or requirements');
     } else {
       level = 'poor';
-      feedback = 'Few highly relevant matches found. Consider broadening your criteria.';
+      feedback =
+        'Few highly relevant matches found. Consider broadening your criteria.';
       improvements.push('Use broader, more general keywords');
       improvements.push('Expand location preferences');
       improvements.push('Consider adjusting salary expectations');
@@ -707,19 +781,21 @@ export class EnhancedJobMatchingService {
       level,
       feedback,
       distribution,
-      improvements: improvements.slice(0, 3) // Limit to top 3 suggestions
+      improvements: improvements.slice(0, 3), // Limit to top 3 suggestions
     };
   }
 
   // Generate optimization recommendations
   static generateOptimizationRecommendations(
-    criteria: AlertCriteria, 
+    criteria: AlertCriteria,
     jobs: JobMatchResult[]
   ): string[] {
     const recommendations: string[] = [];
 
     if (jobs.length === 0) {
-      recommendations.push('Consider removing or broadening location restrictions');
+      recommendations.push(
+        'Consider removing or broadening location restrictions'
+      );
       recommendations.push('Try using broader keywords or job titles');
       if (criteria.salaryMin && criteria.salaryMin > 50000) {
         recommendations.push('Consider lowering minimum salary requirements');
@@ -728,11 +804,14 @@ export class EnhancedJobMatchingService {
     }
 
     // Analyze job distribution for recommendations
-    const avgScore = jobs.reduce((sum, job) => sum + job.relevanceScore, 0) / jobs.length;
-    
+    const avgScore =
+      jobs.reduce((sum, job) => sum + job.relevanceScore, 0) / jobs.length;
+
     if (jobs.length > 50) {
       recommendations.push('Add more specific keywords to narrow results');
-      recommendations.push('Consider adding location or experience level filters');
+      recommendations.push(
+        'Consider adding location or experience level filters'
+      );
     }
 
     if (avgScore < 60) {
@@ -741,25 +820,35 @@ export class EnhancedJobMatchingService {
     }
 
     if (!criteria.excludeKeywords || criteria.excludeKeywords.length === 0) {
-      recommendations.push('Add exclude keywords to filter out unwanted job types');
+      recommendations.push(
+        'Add exclude keywords to filter out unwanted job types'
+      );
     }
 
     // Skills-based recommendations
-    const skillMatchRatio = jobs.filter(job => 
-      job.matchedFields.includes('skills')
-    ).length / jobs.length;
+    const skillMatchRatio =
+      jobs.filter(job => job.matchedFields.includes('skills')).length /
+      jobs.length;
 
-    if (skillMatchRatio < 0.3 && criteria.skills && criteria.skills.length > 0) {
-      recommendations.push('Consider adjusting skill requirements for better matches');
+    if (
+      skillMatchRatio < 0.3 &&
+      criteria.skills &&
+      criteria.skills.length > 0
+    ) {
+      recommendations.push(
+        'Consider adjusting skill requirements for better matches'
+      );
     }
 
     // Location-based recommendations
-    const locationMatchRatio = jobs.filter(job => 
-      job.matchedFields.includes('location') || job.isRemote
-    ).length / jobs.length;
+    const locationMatchRatio =
+      jobs.filter(job => job.matchedFields.includes('location') || job.isRemote)
+        .length / jobs.length;
 
     if (locationMatchRatio < 0.5 && criteria.location) {
-      recommendations.push('Consider expanding location search or including remote jobs');
+      recommendations.push(
+        'Consider expanding location search or including remote jobs'
+      );
     }
 
     return recommendations.slice(0, 5); // Return top 5 recommendations
@@ -768,7 +857,7 @@ export class EnhancedJobMatchingService {
 
 // Export the enhanced matching function for backward compatibility
 export async function findMatchingJobs(
-  criteria: AlertCriteria, 
+  criteria: AlertCriteria,
   maxResults: number = 50
 ): Promise<JobMatchResult[]> {
   return EnhancedJobMatchingService.findMatchingJobs(criteria, maxResults);
@@ -776,7 +865,7 @@ export async function findMatchingJobs(
 
 // Export quality calculation function
 export function calculateMatchQuality(
-  criteria: AlertCriteria, 
+  criteria: AlertCriteria,
   jobs: JobMatchResult[]
 ): MatchQuality {
   return EnhancedJobMatchingService.calculateMatchQuality(criteria, jobs);
@@ -784,8 +873,11 @@ export function calculateMatchQuality(
 
 // Export recommendations function
 export function generateOptimizationRecommendations(
-  criteria: AlertCriteria, 
+  criteria: AlertCriteria,
   jobs: JobMatchResult[]
 ): string[] {
-  return EnhancedJobMatchingService.generateOptimizationRecommendations(criteria, jobs);
-} 
+  return EnhancedJobMatchingService.generateOptimizationRecommendations(
+    criteria,
+    jobs
+  );
+}

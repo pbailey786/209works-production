@@ -4,7 +4,9 @@ interface AnalyticsProps {
   googleAnalyticsId?: string;
 }
 
-export default function Analytics({ googleAnalyticsId = 'G-XXXXXXXXXX' }: AnalyticsProps) {
+export default function Analytics({
+  googleAnalyticsId = 'G-XXXXXXXXXX',
+}: AnalyticsProps) {
   // Only load analytics in production
   if (process.env.NODE_ENV !== 'production') {
     return null;
@@ -148,4 +150,4 @@ export default function Analytics({ googleAnalyticsId = 'G-XXXXXXXXXX' }: Analyt
       </Script>
     </>
   );
-} 
+}

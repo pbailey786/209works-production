@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -14,7 +14,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { CalendarIcon, Upload, X } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -49,7 +53,7 @@ export default function AdCreationForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  
+
   const [formData, setFormData] = useState<AdFormData>({
     title: '',
     businessName: '',
@@ -60,12 +64,15 @@ export default function AdCreationForm() {
     startDate: null,
     endDate: null,
     type: '',
-    budget: ''
+    budget: '',
   });
 
   const [errors, setErrors] = useState<AdFormErrors>({});
 
-  const handleInputChange = (field: keyof AdFormData, value: string | Date | null) => {
+  const handleInputChange = (
+    field: keyof AdFormData,
+    value: string | Date | null
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
@@ -102,7 +109,11 @@ export default function AdCreationForm() {
       newErrors.endDate = 'End date is required';
     }
 
-    if (formData.startDate && formData.endDate && formData.startDate >= formData.endDate) {
+    if (
+      formData.startDate &&
+      formData.endDate &&
+      formData.startDate >= formData.endDate
+    ) {
       newErrors.endDate = 'End date must be after start date';
     }
 
@@ -125,7 +136,7 @@ export default function AdCreationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -135,13 +146,12 @@ export default function AdCreationForm() {
     try {
       // In a real implementation, you'd call an API endpoint to create the ad
       console.log('Creating ad with data:', formData);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       alert('Advertisement created successfully!');
       router.push('/admin/ads');
-      
     } catch (error) {
       console.error('Error creating ad:', error);
       alert('An error occurred while creating the advertisement');
@@ -152,18 +162,20 @@ export default function AdCreationForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Title */}
         <div className="space-y-2">
           <Label htmlFor="title">Advertisement Title *</Label>
           <Input
             id="title"
             value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
+            onChange={e => handleInputChange('title', e.target.value)}
             placeholder="Enter advertisement title"
             className={errors.title ? 'border-red-500' : ''}
           />
-          {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
+          {errors.title && (
+            <p className="text-sm text-red-500">{errors.title}</p>
+          )}
         </div>
 
         {/* Business Name */}
@@ -172,11 +184,13 @@ export default function AdCreationForm() {
           <Input
             id="businessName"
             value={formData.businessName}
-            onChange={(e) => handleInputChange('businessName', e.target.value)}
+            onChange={e => handleInputChange('businessName', e.target.value)}
             placeholder="Enter business name"
             className={errors.businessName ? 'border-red-500' : ''}
           />
-          {errors.businessName && <p className="text-sm text-red-500">{errors.businessName}</p>}
+          {errors.businessName && (
+            <p className="text-sm text-red-500">{errors.businessName}</p>
+          )}
         </div>
 
         {/* Target URL */}
@@ -186,11 +200,13 @@ export default function AdCreationForm() {
             id="targetUrl"
             type="url"
             value={formData.targetUrl}
-            onChange={(e) => handleInputChange('targetUrl', e.target.value)}
+            onChange={e => handleInputChange('targetUrl', e.target.value)}
             placeholder="https://example.com"
             className={errors.targetUrl ? 'border-red-500' : ''}
           />
-          {errors.targetUrl && <p className="text-sm text-red-500">{errors.targetUrl}</p>}
+          {errors.targetUrl && (
+            <p className="text-sm text-red-500">{errors.targetUrl}</p>
+          )}
         </div>
 
         {/* Image URL */}
@@ -200,16 +216,21 @@ export default function AdCreationForm() {
             id="imageUrl"
             type="url"
             value={formData.imageUrl}
-            onChange={(e) => handleInputChange('imageUrl', e.target.value)}
+            onChange={e => handleInputChange('imageUrl', e.target.value)}
             placeholder="https://example.com/image.jpg"
           />
-          <p className="text-xs text-gray-500">Optional: URL to the advertisement image</p>
+          <p className="text-xs text-gray-500">
+            Optional: URL to the advertisement image
+          </p>
         </div>
 
         {/* Ad Type */}
         <div className="space-y-2">
           <Label htmlFor="type">Advertisement Type *</Label>
-          <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
+          <Select
+            value={formData.type}
+            onValueChange={value => handleInputChange('type', value)}
+          >
             <SelectTrigger className={errors.type ? 'border-red-500' : ''}>
               <SelectValue placeholder="Select ad type" />
             </SelectTrigger>
@@ -233,10 +254,12 @@ export default function AdCreationForm() {
             min="0"
             step="0.01"
             value={formData.budget}
-            onChange={(e) => handleInputChange('budget', e.target.value)}
+            onChange={e => handleInputChange('budget', e.target.value)}
             placeholder="0.00"
           />
-          <p className="text-xs text-gray-500">Optional: Total campaign budget</p>
+          <p className="text-xs text-gray-500">
+            Optional: Total campaign budget
+          </p>
         </div>
       </div>
 
@@ -246,12 +269,16 @@ export default function AdCreationForm() {
         <Input
           id="zipCodes"
           value={formData.zipCodes}
-          onChange={(e) => handleInputChange('zipCodes', e.target.value)}
+          onChange={e => handleInputChange('zipCodes', e.target.value)}
           placeholder="12345, 67890, 54321"
           className={errors.zipCodes ? 'border-red-500' : ''}
         />
-        <p className="text-xs text-gray-500">Comma-separated list of zip codes to target</p>
-        {errors.zipCodes && <p className="text-sm text-red-500">{errors.zipCodes}</p>}
+        <p className="text-xs text-gray-500">
+          Comma-separated list of zip codes to target
+        </p>
+        {errors.zipCodes && (
+          <p className="text-sm text-red-500">{errors.zipCodes}</p>
+        )}
       </div>
 
       {/* Description */}
@@ -260,15 +287,17 @@ export default function AdCreationForm() {
         <Textarea
           id="description"
           value={formData.description}
-          onChange={(e) => handleInputChange('description', e.target.value)}
+          onChange={e => handleInputChange('description', e.target.value)}
           placeholder="Enter advertisement description..."
           rows={4}
         />
-        <p className="text-xs text-gray-500">Optional: Additional details about the advertisement</p>
+        <p className="text-xs text-gray-500">
+          Optional: Additional details about the advertisement
+        </p>
       </div>
 
       {/* Date Range */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Start Date */}
         <div className="space-y-2">
           <Label>Start Date *</Label>
@@ -279,23 +308,27 @@ export default function AdCreationForm() {
                 className={`w-full justify-start text-left font-normal ${errors.startDate ? 'border-red-500' : ''}`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {formData.startDate ? format(formData.startDate, 'PPP') : 'Select start date'}
+                {formData.startDate
+                  ? format(formData.startDate, 'PPP')
+                  : 'Select start date'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={formData.startDate || undefined}
-                onSelect={(date) => {
+                onSelect={date => {
                   handleInputChange('startDate', date || null);
                   setStartDateOpen(false);
                 }}
-                disabled={(date) => date < new Date()}
+                disabled={date => date < new Date()}
                 initialFocus
               />
             </PopoverContent>
           </Popover>
-          {errors.startDate && <p className="text-sm text-red-500">{errors.startDate}</p>}
+          {errors.startDate && (
+            <p className="text-sm text-red-500">{errors.startDate}</p>
+          )}
         </div>
 
         {/* End Date */}
@@ -308,23 +341,30 @@ export default function AdCreationForm() {
                 className={`w-full justify-start text-left font-normal ${errors.endDate ? 'border-red-500' : ''}`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {formData.endDate ? format(formData.endDate, 'PPP') : 'Select end date'}
+                {formData.endDate
+                  ? format(formData.endDate, 'PPP')
+                  : 'Select end date'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={formData.endDate || undefined}
-                onSelect={(date) => {
+                onSelect={date => {
                   handleInputChange('endDate', date || null);
                   setEndDateOpen(false);
                 }}
-                disabled={(date) => date < new Date() || (formData.startDate ? date <= formData.startDate : false)}
+                disabled={date =>
+                  date < new Date() ||
+                  (formData.startDate ? date <= formData.startDate : false)
+                }
                 initialFocus
               />
             </PopoverContent>
           </Popover>
-          {errors.endDate && <p className="text-sm text-red-500">{errors.endDate}</p>}
+          {errors.endDate && (
+            <p className="text-sm text-red-500">{errors.endDate}</p>
+          )}
         </div>
       </div>
 
@@ -333,9 +373,9 @@ export default function AdCreationForm() {
         <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Creating...' : 'Create Advertisement'}
         </Button>
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => router.push('/admin/ads')}
           disabled={isLoading}
         >
@@ -344,4 +384,4 @@ export default function AdCreationForm() {
       </div>
     </form>
   );
-} 
+}

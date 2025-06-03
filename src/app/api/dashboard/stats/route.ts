@@ -39,12 +39,12 @@ export async function GET(req: NextRequest) {
           status: 'saved',
         },
       }),
-      
+
       // Count total alerts
       prisma.alert.count({
         where: { userId },
       }),
-      
+
       // Count active alerts
       prisma.alert.count({
         where: {
@@ -52,12 +52,12 @@ export async function GET(req: NextRequest) {
           isActive: true,
         },
       }),
-      
+
       // Count search history
       prisma.searchHistory.count({
         where: { userId },
       }),
-      
+
       // Get recent searches (last 5)
       prisma.searchHistory.findMany({
         where: { userId },
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
           createdAt: true,
         },
       }),
-      
+
       // Get recent activity (saved jobs and alerts)
       prisma.jobApplication.findMany({
         where: {
@@ -110,8 +110,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

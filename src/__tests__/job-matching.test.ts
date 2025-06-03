@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { 
+import {
   EnhancedJobMatchingService,
   findMatchingJobs,
   calculateMatchQuality,
-  generateOptimizationRecommendations
+  generateOptimizationRecommendations,
 } from '../lib/search/job-matching';
 import { AlertCriteria } from '../lib/search/job-matching';
 
@@ -35,7 +35,8 @@ describe('Enhanced Job Matching Algorithm', () => {
       type: 'full_time',
       salaryMin: 120000,
       salaryMax: 160000,
-      description: 'We are looking for an experienced React developer to join our frontend team. You will work with modern JavaScript, TypeScript, and React ecosystem.',
+      description:
+        'We are looking for an experienced React developer to join our frontend team. You will work with modern JavaScript, TypeScript, and React ecosystem.',
       categories: ['technology', 'frontend'],
       createdAt: new Date(),
       skills: ['React', 'JavaScript', 'TypeScript', 'HTML', 'CSS'],
@@ -50,7 +51,8 @@ describe('Enhanced Job Matching Algorithm', () => {
       type: 'full_time',
       salaryMin: 90000,
       salaryMax: 130000,
-      description: 'Join our remote team as a Full Stack Engineer. Work with React, Node.js, and cloud technologies.',
+      description:
+        'Join our remote team as a Full Stack Engineer. Work with React, Node.js, and cloud technologies.',
       categories: ['technology', 'fullstack'],
       createdAt: new Date(),
       skills: ['React', 'Node.js', 'JavaScript', 'AWS', 'PostgreSQL'],
@@ -65,7 +67,8 @@ describe('Enhanced Job Matching Algorithm', () => {
       type: 'full_time',
       salaryMin: 65000,
       salaryMax: 85000,
-      description: 'Entry-level Python developer position. You will work on data processing and web applications using Django.',
+      description:
+        'Entry-level Python developer position. You will work on data processing and web applications using Django.',
       categories: ['technology', 'backend', 'python'],
       createdAt: new Date(),
       skills: ['Python', 'Django', 'SQL', 'Git'],
@@ -80,7 +83,8 @@ describe('Enhanced Job Matching Algorithm', () => {
       type: 'full_time',
       salaryMin: 110000,
       salaryMax: 140000,
-      description: 'DevOps Engineer to manage cloud infrastructure with AWS, Kubernetes, and CI/CD pipelines.',
+      description:
+        'DevOps Engineer to manage cloud infrastructure with AWS, Kubernetes, and CI/CD pipelines.',
       categories: ['technology', 'devops', 'cloud'],
       createdAt: new Date(),
       skills: ['AWS', 'Kubernetes', 'Docker', 'Linux', 'Terraform'],
@@ -107,11 +111,12 @@ describe('Enhanced Job Matching Algorithm', () => {
 
       expect(results).toBeDefined();
       expect(Array.isArray(results)).toBe(true);
-      
+
       // Should find React-related jobs
-      const reactJobs = results.filter(job => 
-        job.title.toLowerCase().includes('react') || 
-        job.skills?.includes('React')
+      const reactJobs = results.filter(
+        job =>
+          job.title.toLowerCase().includes('react') ||
+          job.skills?.includes('React')
       );
       expect(reactJobs.length).toBeGreaterThan(0);
     });
@@ -134,7 +139,7 @@ describe('Enhanced Job Matching Algorithm', () => {
       });
 
       // Senior React job should have high relevance
-      const seniorReactJob = results.find(job => 
+      const seniorReactJob = results.find(job =>
         job.title.includes('Senior React')
       );
       if (seniorReactJob) {
@@ -153,7 +158,7 @@ describe('Enhanced Job Matching Algorithm', () => {
       // Should find remote jobs with higher location scores
       const remoteJobs = results.filter(job => job.isRemote);
       expect(remoteJobs.length).toBeGreaterThan(0);
-      
+
       remoteJobs.forEach(job => {
         expect(job.locationScore).toBeGreaterThan(0.5);
       });
@@ -187,7 +192,7 @@ describe('Enhanced Job Matching Algorithm', () => {
         // Job should have some salary overlap with criteria
         expect(
           (job.salaryMin && job.salaryMin <= 150000) ||
-          (job.salaryMax && job.salaryMax >= 100000)
+            (job.salaryMax && job.salaryMax >= 100000)
         ).toBe(true);
       });
     });
@@ -200,10 +205,10 @@ describe('Enhanced Job Matching Algorithm', () => {
       const results = await findMatchingJobs(criteria, 10);
 
       // Senior jobs should be found in results
-      const seniorJobs = results.filter(job => 
+      const seniorJobs = results.filter(job =>
         job.title.toLowerCase().includes('senior')
       );
-      
+
       expect(seniorJobs.length).toBeGreaterThan(0);
     });
 
@@ -216,7 +221,7 @@ describe('Enhanced Job Matching Algorithm', () => {
       const results = await findMatchingJobs(criteria, 10);
 
       // Should not find jobs with "Junior" in title when excluded
-      const juniorJobs = results.filter(job => 
+      const juniorJobs = results.filter(job =>
         job.title.toLowerCase().includes('junior')
       );
       expect(juniorJobs.length).toBe(0);
@@ -278,20 +283,38 @@ describe('Enhanced Job Matching Algorithm', () => {
     it('should calculate excellent quality for high-scoring jobs', () => {
       const criteria = { keywords: ['React'] };
       const jobs = [
-        { 
-          id: '1', title: 'React Developer', company: 'TechCorp', location: 'SF', 
-          jobType: 'full_time', description: 'React job', createdAt: new Date(),
-          relevanceScore: 95, matchedFields: ['title', 'skills'] 
+        {
+          id: '1',
+          title: 'React Developer',
+          company: 'TechCorp',
+          location: 'SF',
+          jobType: 'full_time',
+          description: 'React job',
+          createdAt: new Date(),
+          relevanceScore: 95,
+          matchedFields: ['title', 'skills'],
         },
-        { 
-          id: '2', title: 'Frontend Dev', company: 'StartupXYZ', location: 'Remote', 
-          jobType: 'full_time', description: 'Frontend job', createdAt: new Date(),
-          relevanceScore: 88, matchedFields: ['title', 'description'] 
+        {
+          id: '2',
+          title: 'Frontend Dev',
+          company: 'StartupXYZ',
+          location: 'Remote',
+          jobType: 'full_time',
+          description: 'Frontend job',
+          createdAt: new Date(),
+          relevanceScore: 88,
+          matchedFields: ['title', 'description'],
         },
-        { 
-          id: '3', title: 'UI Developer', company: 'DataLabs', location: 'Austin', 
-          jobType: 'full_time', description: 'UI job', createdAt: new Date(),
-          relevanceScore: 92, matchedFields: ['skills'] 
+        {
+          id: '3',
+          title: 'UI Developer',
+          company: 'DataLabs',
+          location: 'Austin',
+          jobType: 'full_time',
+          description: 'UI job',
+          createdAt: new Date(),
+          relevanceScore: 92,
+          matchedFields: ['skills'],
         },
       ];
 
@@ -306,20 +329,38 @@ describe('Enhanced Job Matching Algorithm', () => {
     it('should calculate fair quality for medium-scoring jobs', () => {
       const criteria = { keywords: ['test'] };
       const jobs = [
-        { 
-          id: '1', title: 'Test Engineer', company: 'TechCorp', location: 'SF', 
-          jobType: 'full_time', description: 'Test job', createdAt: new Date(),
-          relevanceScore: 45, matchedFields: ['title'] 
+        {
+          id: '1',
+          title: 'Test Engineer',
+          company: 'TechCorp',
+          location: 'SF',
+          jobType: 'full_time',
+          description: 'Test job',
+          createdAt: new Date(),
+          relevanceScore: 45,
+          matchedFields: ['title'],
         },
-        { 
-          id: '2', title: 'QA Engineer', company: 'StartupXYZ', location: 'Remote', 
-          jobType: 'full_time', description: 'QA job', createdAt: new Date(),
-          relevanceScore: 52, matchedFields: ['description'] 
+        {
+          id: '2',
+          title: 'QA Engineer',
+          company: 'StartupXYZ',
+          location: 'Remote',
+          jobType: 'full_time',
+          description: 'QA job',
+          createdAt: new Date(),
+          relevanceScore: 52,
+          matchedFields: ['description'],
         },
-        { 
-          id: '3', title: 'Software Tester', company: 'DataLabs', location: 'Austin', 
-          jobType: 'full_time', description: 'Testing job', createdAt: new Date(),
-          relevanceScore: 48, matchedFields: ['title'] 
+        {
+          id: '3',
+          title: 'Software Tester',
+          company: 'DataLabs',
+          location: 'Austin',
+          jobType: 'full_time',
+          description: 'Testing job',
+          createdAt: new Date(),
+          relevanceScore: 48,
+          matchedFields: ['title'],
         },
       ];
 
@@ -334,25 +375,49 @@ describe('Enhanced Job Matching Algorithm', () => {
     it('should provide distribution statistics', () => {
       const criteria = { keywords: ['test'] };
       const jobs = [
-        { 
-          id: '1', title: 'Test Engineer', company: 'TechCorp', location: 'SF', 
-          jobType: 'full_time', description: 'Test job', createdAt: new Date(),
-          relevanceScore: 85, matchedFields: ['title'] 
+        {
+          id: '1',
+          title: 'Test Engineer',
+          company: 'TechCorp',
+          location: 'SF',
+          jobType: 'full_time',
+          description: 'Test job',
+          createdAt: new Date(),
+          relevanceScore: 85,
+          matchedFields: ['title'],
         }, // excellent
-        { 
-          id: '2', title: 'QA Engineer', company: 'StartupXYZ', location: 'Remote', 
-          jobType: 'full_time', description: 'QA job', createdAt: new Date(),
-          relevanceScore: 75, matchedFields: ['title'] 
+        {
+          id: '2',
+          title: 'QA Engineer',
+          company: 'StartupXYZ',
+          location: 'Remote',
+          jobType: 'full_time',
+          description: 'QA job',
+          createdAt: new Date(),
+          relevanceScore: 75,
+          matchedFields: ['title'],
         }, // good
-        { 
-          id: '3', title: 'Software Tester', company: 'DataLabs', location: 'Austin', 
-          jobType: 'full_time', description: 'Testing job', createdAt: new Date(),
-          relevanceScore: 55, matchedFields: ['title'] 
+        {
+          id: '3',
+          title: 'Software Tester',
+          company: 'DataLabs',
+          location: 'Austin',
+          jobType: 'full_time',
+          description: 'Testing job',
+          createdAt: new Date(),
+          relevanceScore: 55,
+          matchedFields: ['title'],
         }, // fair
-        { 
-          id: '4', title: 'Junior Tester', company: 'SmallCorp', location: 'Local', 
-          jobType: 'part_time', description: 'Entry test job', createdAt: new Date(),
-          relevanceScore: 25, matchedFields: ['title'] 
+        {
+          id: '4',
+          title: 'Junior Tester',
+          company: 'SmallCorp',
+          location: 'Local',
+          jobType: 'part_time',
+          description: 'Entry test job',
+          createdAt: new Date(),
+          relevanceScore: 25,
+          matchedFields: ['title'],
         }, // poor
       ];
 
@@ -366,22 +431,32 @@ describe('Enhanced Job Matching Algorithm', () => {
     });
 
     it('should suggest improvements based on criteria', () => {
-      const criteria = { 
+      const criteria = {
         keywords: ['test'],
         // Missing skills and excludeKeywords
       };
       const jobs = [
-        { 
-          id: '1', title: 'Test Engineer', company: 'TechCorp', location: 'SF', 
-          jobType: 'full_time', description: 'Test job', createdAt: new Date(),
-          relevanceScore: 60, matchedFields: ['title'] 
+        {
+          id: '1',
+          title: 'Test Engineer',
+          company: 'TechCorp',
+          location: 'SF',
+          jobType: 'full_time',
+          description: 'Test job',
+          createdAt: new Date(),
+          relevanceScore: 60,
+          matchedFields: ['title'],
         },
       ];
 
       const quality = calculateMatchQuality(criteria, jobs);
 
-      expect(quality.improvements).toContain('Add relevant skills to improve matching accuracy');
-      expect(quality.improvements).toContain('Use exclude keywords to filter out irrelevant jobs');
+      expect(quality.improvements).toContain(
+        'Add relevant skills to improve matching accuracy'
+      );
+      expect(quality.improvements).toContain(
+        'Use exclude keywords to filter out irrelevant jobs'
+      );
     });
   });
 
@@ -394,33 +469,51 @@ describe('Enhanced Job Matching Algorithm', () => {
       };
       const jobs: any[] = [];
 
-      const recommendations = generateOptimizationRecommendations(criteria, jobs);
+      const recommendations = generateOptimizationRecommendations(
+        criteria,
+        jobs
+      );
 
-      expect(recommendations).toContain('Consider removing or broadening location restrictions');
-      expect(recommendations).toContain('Try using broader keywords or job titles');
-      expect(recommendations).toContain('Consider lowering minimum salary requirements');
+      expect(recommendations).toContain(
+        'Consider removing or broadening location restrictions'
+      );
+      expect(recommendations).toContain(
+        'Try using broader keywords or job titles'
+      );
+      expect(recommendations).toContain(
+        'Consider lowering minimum salary requirements'
+      );
     });
 
     it('should recommend narrowing search for too many results', () => {
       const criteria = {
         keywords: ['Developer'],
       };
-      const jobs = Array(60).fill(null).map((_, i) => ({
-        id: i.toString(),
-        title: `Developer ${i}`,
-        company: 'TechCorp',
-        location: 'SF',
-        jobType: 'full_time',
-        description: 'Developer job',
-        createdAt: new Date(),
-        relevanceScore: 50,
-        matchedFields: ['title'],
-      }));
+      const jobs = Array(60)
+        .fill(null)
+        .map((_, i) => ({
+          id: i.toString(),
+          title: `Developer ${i}`,
+          company: 'TechCorp',
+          location: 'SF',
+          jobType: 'full_time',
+          description: 'Developer job',
+          createdAt: new Date(),
+          relevanceScore: 50,
+          matchedFields: ['title'],
+        }));
 
-      const recommendations = generateOptimizationRecommendations(criteria, jobs);
+      const recommendations = generateOptimizationRecommendations(
+        criteria,
+        jobs
+      );
 
-      expect(recommendations).toContain('Add more specific keywords to narrow results');
-      expect(recommendations).toContain('Consider adding location or experience level filters');
+      expect(recommendations).toContain(
+        'Add more specific keywords to narrow results'
+      );
+      expect(recommendations).toContain(
+        'Consider adding location or experience level filters'
+      );
     });
 
     it('should recommend keyword improvements for low relevance', () => {
@@ -428,19 +521,34 @@ describe('Enhanced Job Matching Algorithm', () => {
         keywords: ['test'],
       };
       const jobs = [
-        { 
-          id: '1', title: 'Test Engineer', company: 'TechCorp', location: 'SF', 
-          jobType: 'full_time', description: 'Test job', createdAt: new Date(),
-          relevanceScore: 40, matchedFields: ['title'] 
+        {
+          id: '1',
+          title: 'Test Engineer',
+          company: 'TechCorp',
+          location: 'SF',
+          jobType: 'full_time',
+          description: 'Test job',
+          createdAt: new Date(),
+          relevanceScore: 40,
+          matchedFields: ['title'],
         },
-        { 
-          id: '2', title: 'QA Engineer', company: 'StartupXYZ', location: 'Remote', 
-          jobType: 'full_time', description: 'QA job', createdAt: new Date(),
-          relevanceScore: 45, matchedFields: ['description'] 
+        {
+          id: '2',
+          title: 'QA Engineer',
+          company: 'StartupXYZ',
+          location: 'Remote',
+          jobType: 'full_time',
+          description: 'QA job',
+          createdAt: new Date(),
+          relevanceScore: 45,
+          matchedFields: ['description'],
         },
       ];
 
-      const recommendations = generateOptimizationRecommendations(criteria, jobs);
+      const recommendations = generateOptimizationRecommendations(
+        criteria,
+        jobs
+      );
 
       expect(recommendations).toContain('Review keywords for better relevance');
     });
@@ -450,21 +558,38 @@ describe('Enhanced Job Matching Algorithm', () => {
         skills: ['VeryRareSkill', 'AnotherRareSkill'],
       };
       const jobs = [
-        { 
-          id: '1', title: 'Engineer', company: 'TechCorp', location: 'SF', 
-          jobType: 'full_time', description: 'Engineering job', createdAt: new Date(),
-          relevanceScore: 60, matchedFields: ['title'] 
+        {
+          id: '1',
+          title: 'Engineer',
+          company: 'TechCorp',
+          location: 'SF',
+          jobType: 'full_time',
+          description: 'Engineering job',
+          createdAt: new Date(),
+          relevanceScore: 60,
+          matchedFields: ['title'],
         }, // No skills match
-        { 
-          id: '2', title: 'Developer', company: 'StartupXYZ', location: 'Remote', 
-          jobType: 'full_time', description: 'Development job', createdAt: new Date(),
-          relevanceScore: 65, matchedFields: ['title'] 
+        {
+          id: '2',
+          title: 'Developer',
+          company: 'StartupXYZ',
+          location: 'Remote',
+          jobType: 'full_time',
+          description: 'Development job',
+          createdAt: new Date(),
+          relevanceScore: 65,
+          matchedFields: ['title'],
         },
       ];
 
-      const recommendations = generateOptimizationRecommendations(criteria, jobs);
+      const recommendations = generateOptimizationRecommendations(
+        criteria,
+        jobs
+      );
 
-      expect(recommendations).toContain('Consider adjusting skill requirements for better matches');
+      expect(recommendations).toContain(
+        'Consider adjusting skill requirements for better matches'
+      );
     });
 
     it('should recommend location improvements for poor location matching', () => {
@@ -472,21 +597,40 @@ describe('Enhanced Job Matching Algorithm', () => {
         location: 'Specific City',
       };
       const jobs = [
-        { 
-          id: '1', title: 'Local Engineer', company: 'TechCorp', location: 'Different City', 
-          jobType: 'full_time', description: 'Local job', createdAt: new Date(),
-          relevanceScore: 60, matchedFields: ['title'], isRemote: false 
+        {
+          id: '1',
+          title: 'Local Engineer',
+          company: 'TechCorp',
+          location: 'Different City',
+          jobType: 'full_time',
+          description: 'Local job',
+          createdAt: new Date(),
+          relevanceScore: 60,
+          matchedFields: ['title'],
+          isRemote: false,
         },
-        { 
-          id: '2', title: 'Onsite Developer', company: 'StartupXYZ', location: 'Another City', 
-          jobType: 'full_time', description: 'Onsite job', createdAt: new Date(),
-          relevanceScore: 65, matchedFields: ['title'], isRemote: false 
+        {
+          id: '2',
+          title: 'Onsite Developer',
+          company: 'StartupXYZ',
+          location: 'Another City',
+          jobType: 'full_time',
+          description: 'Onsite job',
+          createdAt: new Date(),
+          relevanceScore: 65,
+          matchedFields: ['title'],
+          isRemote: false,
         },
       ];
 
-      const recommendations = generateOptimizationRecommendations(criteria, jobs);
+      const recommendations = generateOptimizationRecommendations(
+        criteria,
+        jobs
+      );
 
-      expect(recommendations).toContain('Consider expanding location search or including remote jobs');
+      expect(recommendations).toContain(
+        'Consider expanding location search or including remote jobs'
+      );
     });
 
     it('should limit recommendations to top 5', () => {
@@ -495,7 +639,10 @@ describe('Enhanced Job Matching Algorithm', () => {
       };
       const jobs: any[] = []; // Empty to trigger many recommendations
 
-      const recommendations = generateOptimizationRecommendations(criteria, jobs);
+      const recommendations = generateOptimizationRecommendations(
+        criteria,
+        jobs
+      );
 
       expect(recommendations.length).toBeLessThanOrEqual(5);
     });
@@ -541,7 +688,7 @@ describe('Enhanced Job Matching Algorithm', () => {
   describe('Performance Tests', () => {
     it('should complete matching within reasonable time', async () => {
       const startTime = Date.now();
-      
+
       const criteria = {
         keywords: ['Developer', 'Engineer'],
         skills: ['JavaScript', 'Python'],
@@ -551,7 +698,7 @@ describe('Enhanced Job Matching Algorithm', () => {
       };
 
       await findMatchingJobs(criteria, 50);
-      
+
       const duration = Date.now() - startTime;
       expect(duration).toBeLessThan(5000); // Should complete within 5 seconds
     });
@@ -559,11 +706,13 @@ describe('Enhanced Job Matching Algorithm', () => {
     it('should handle large result sets efficiently', async () => {
       // Mock a large dataset
       const { prisma } = require('../app/api/auth/prisma');
-      const largeJobSet = Array(500).fill(null).map((_, i) => ({
-        ...mockJobs[0],
-        id: i.toString(),
-        title: `Job ${i}`,
-      }));
+      const largeJobSet = Array(500)
+        .fill(null)
+        .map((_, i) => ({
+          ...mockJobs[0],
+          id: i.toString(),
+          title: `Job ${i}`,
+        }));
       prisma.job.findMany.mockResolvedValue(largeJobSet);
 
       const criteria = { keywords: ['Job'] };
@@ -589,11 +738,11 @@ describe('Enhanced Job Matching Algorithm', () => {
 
     it('should set cache for new results', async () => {
       const { setCache } = require('../lib/cache/redis');
-      
+
       const criteria = { keywords: ['React'] };
       await findMatchingJobs(criteria, 10);
 
       expect(setCache).toHaveBeenCalled();
     });
   });
-}); 
+});

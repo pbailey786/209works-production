@@ -37,24 +37,47 @@ export async function POST(req: NextRequest) {
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      return NextResponse.json({ error: 'File size too large (max 5MB)' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'File size too large (max 5MB)' },
+        { status: 400 }
+      );
     }
 
     // Validate file type
     if (type === 'profile') {
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const allowedTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+      ];
       if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json({ error: 'Invalid image format. Please use JPEG, PNG, or WebP.' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Invalid image format. Please use JPEG, PNG, or WebP.' },
+          { status: 400 }
+        );
       }
     } else if (type === 'resume') {
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      ];
       if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json({ error: 'Invalid resume format. Please use PDF, DOC, or DOCX.' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Invalid resume format. Please use PDF, DOC, or DOCX.' },
+          { status: 400 }
+        );
       }
     }
 
     // Create upload directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', type === 'profile' ? 'profiles' : 'resumes');
+    const uploadDir = path.join(
+      process.cwd(),
+      'public',
+      'uploads',
+      type === 'profile' ? 'profiles' : 'resumes'
+    );
     try {
       await mkdir(uploadDir, { recursive: true });
     } catch (error) {
@@ -76,9 +99,10 @@ export async function POST(req: NextRequest) {
     const publicUrl = `/uploads/${type === 'profile' ? 'profiles' : 'resumes'}/${fileName}`;
 
     // Update user record
-    const updateData = type === 'profile' 
-      ? { profilePictureUrl: publicUrl }
-      : { resumeUrl: publicUrl };
+    const updateData =
+      type === 'profile'
+        ? { profilePictureUrl: publicUrl }
+        : { resumeUrl: publicUrl };
 
     const updatedUser = await prisma.user.update({
       where: { id: currentUser.id },
@@ -90,16 +114,16 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: `${type === 'profile' ? 'Profile picture' : 'Resume'} uploaded successfully`,
       url: publicUrl,
-      user: updatedUser
+      user: updatedUser,
     });
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

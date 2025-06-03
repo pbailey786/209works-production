@@ -23,9 +23,13 @@ export class DomainEmailTemplates {
   /**
    * Generate job alert email template
    */
-  generateJobAlertEmail(data: EmailTemplateData): { subject: string; html: string; text: string } {
+  generateJobAlertEmail(data: EmailTemplateData): {
+    subject: string;
+    html: string;
+    text: string;
+  } {
     const subject = `New ${this.domainConfig.region} Job Alert: ${data.jobTitle} at ${data.companyName}`;
-    
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -105,10 +109,14 @@ Unsubscribe: ${data.unsubscribeUrl}
   /**
    * Generate weekly digest email template
    */
-  generateWeeklyDigestEmail(data: EmailTemplateData): { subject: string; html: string; text: string } {
+  generateWeeklyDigestEmail(data: EmailTemplateData): {
+    subject: string;
+    html: string;
+    text: string;
+  } {
     const jobCount = data.jobs?.length || 0;
     const subject = `${jobCount} New Jobs This Week in ${this.domainConfig.region} | ${this.domainConfig.displayName}`;
-    
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -142,7 +150,10 @@ Unsubscribe: ${data.unsubscribeUrl}
               <p>Hi ${data.recipientName || 'there'},</p>
               <p>Here are the latest job opportunities in <span class="cities">${this.domainConfig.cities.slice(0, 3).join(', ')}</span> and surrounding areas:</p>
               
-              ${data.jobs?.map(job => `
+              ${
+                data.jobs
+                  ?.map(
+                    job => `
                 <div class="job-card">
                   <div class="job-title">${job.title}</div>
                   <div class="job-meta">
@@ -151,7 +162,10 @@ Unsubscribe: ${data.unsubscribeUrl}
                   </div>
                   <a href="${job.url}" style="color: ${this.domainConfig.branding.primaryColor}; text-decoration: none;">View Details →</a>
                 </div>
-              `).join('') || '<p>No new jobs this week.</p>'}
+              `
+                  )
+                  .join('') || '<p>No new jobs this week.</p>'
+              }
               
               <div class="cta-section">
                 <h3>Looking for more opportunities?</h3>
@@ -182,11 +196,17 @@ Hi ${data.recipientName || 'there'},
 
 Here are ${jobCount} new job opportunities in ${this.domainConfig.region}:
 
-${data.jobs?.map(job => `
+${
+  data.jobs
+    ?.map(
+      job => `
 • ${job.title} at ${job.company}
   Location: ${job.location}${job.salary ? ` | Salary: ${job.salary}` : ''}
   Apply: ${job.url}
-`).join('\n') || 'No new jobs this week.'}
+`
+    )
+    .join('\n') || 'No new jobs this week.'
+}
 
 Browse all jobs: https://${this.domainConfig.domain}/jobs
 
@@ -205,9 +225,13 @@ Website: https://${this.domainConfig.domain}
   /**
    * Generate welcome email template
    */
-  generateWelcomeEmail(data: EmailTemplateData): { subject: string; html: string; text: string } {
+  generateWelcomeEmail(data: EmailTemplateData): {
+    subject: string;
+    html: string;
+    text: string;
+  } {
     const subject = `Welcome to ${this.domainConfig.displayName} - Your ${this.domainConfig.region} Job Search Starts Here!`;
-    
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -311,6 +335,8 @@ Unsubscribe: ${data.unsubscribeUrl}
 }
 
 // Factory function to create domain-specific email templates
-export function createDomainEmailTemplates(domainConfig: DomainConfig): DomainEmailTemplates {
+export function createDomainEmailTemplates(
+  domainConfig: DomainConfig
+): DomainEmailTemplates {
   return new DomainEmailTemplates(domainConfig);
-} 
+}

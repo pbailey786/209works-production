@@ -7,10 +7,17 @@ interface SwitchProps {
   className?: string;
 }
 
-export const Switch: React.FC<SwitchProps> = ({ checked, onChange, label, className = '' }) => (
-  <label className={`flex items-center gap-2 cursor-pointer select-none ${className}`}>
+export const Switch: React.FC<SwitchProps> = ({
+  checked,
+  onChange,
+  label,
+  className = '',
+}) => (
+  <label
+    className={`flex cursor-pointer select-none items-center gap-2 ${className}`}
+  >
     <span>{label}</span>
-    <span className="relative inline-block w-10 h-6">
+    <span className="relative inline-block h-6 w-10">
       <input
         type="checkbox"
         checked={checked}
@@ -18,13 +25,13 @@ export const Switch: React.FC<SwitchProps> = ({ checked, onChange, label, classN
         className="sr-only"
       />
       <span
-        className={`block w-10 h-6 rounded-full transition-colors duration-200 ${checked ? 'bg-blue-600' : 'bg-gray-300'}`}
+        className={`block h-6 w-10 rounded-full transition-colors duration-200 ${checked ? 'bg-blue-600' : 'bg-gray-300'}`}
       ></span>
       <span
-        className={`absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${checked ? 'translate-x-4' : ''}`}
+        className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${checked ? 'translate-x-4' : ''}`}
       ></span>
     </span>
   </label>
 );
 
-export default Switch; 
+export default Switch;

@@ -9,7 +9,9 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'employer') {
       return NextResponse.json(
-        { error: 'Authentication required. Only employers can view their jobs.' },
+        {
+          error: 'Authentication required. Only employers can view their jobs.',
+        },
         { status: 401 }
       );
     }
@@ -30,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     const where: any = {
       employerId: employerId,
-      deletedAt: null
+      deletedAt: null,
     };
 
     if (status && status !== 'all') {
@@ -63,12 +65,12 @@ export async function GET(req: NextRequest) {
           // Add application count if we have a jobApplications relation
           _count: {
             select: {
-              jobApplications: true
-            }
-          }
-        }
+              jobApplications: true,
+            },
+          },
+        },
       }),
-      prisma.job.count({ where })
+      prisma.job.count({ where }),
     ]);
 
     // Transform jobs to match the expected format
@@ -79,9 +81,10 @@ export async function GET(req: NextRequest) {
       location: job.location,
       type: job.jobType,
       jobType: job.jobType,
-      salary: job.salaryMin && job.salaryMax 
-        ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
-        : undefined,
+      salary:
+        job.salaryMin && job.salaryMax
+          ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
+          : undefined,
       salaryMin: job.salaryMin,
       salaryMax: job.salaryMax,
       description: job.description,
@@ -96,7 +99,7 @@ export async function GET(req: NextRequest) {
       interviewed: 0, // TODO: Add interviewed count when we have that feature
       hired: 0, // TODO: Add hired count when we have that feature
       performance: 'good', // TODO: Calculate performance based on metrics
-      source: job.source
+      source: job.source,
     }));
 
     return NextResponse.json({
@@ -106,10 +109,9 @@ export async function GET(req: NextRequest) {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     });
-
   } catch (error) {
     console.error('Get employer jobs error:', error);
     return NextResponse.json(

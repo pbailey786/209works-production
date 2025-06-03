@@ -13,7 +13,7 @@ const updatePostSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string  }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -56,7 +56,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string  }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -99,7 +99,7 @@ export async function PUT(
     // Handle rescheduling
     if (validatedData.scheduledAt) {
       const newScheduledAt = new Date(validatedData.scheduledAt);
-      
+
       if (newScheduledAt <= new Date()) {
         return NextResponse.json(
           { error: 'Scheduled time must be in the future' },
@@ -111,7 +111,7 @@ export async function PUT(
         // Update the scheduled time directly since reschedulePost doesn't exist
         await prisma.instagramPost.update({
           where: { id: (await params).id },
-          data: { scheduledFor: newScheduledAt }
+          data: { scheduledFor: newScheduledAt },
         });
       }
     }
@@ -136,7 +136,7 @@ export async function PUT(
     return NextResponse.json({ post: updatedPost });
   } catch (error) {
     console.error('Error updating Instagram post:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -153,7 +153,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string  }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -195,4 +195,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { 
-  CheckCircle, 
-  ArrowRight, 
+import {
+  CheckCircle,
+  ArrowRight,
   ArrowLeft,
   User,
   MapPin,
@@ -17,7 +17,7 @@ import {
   Building2,
   Users,
   Target,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 interface OnboardingStep {
@@ -33,7 +33,10 @@ interface OnboardingWizardProps {
   onComplete: () => void;
 }
 
-export default function OnboardingWizard({ userRole, onComplete }: OnboardingWizardProps) {
+export default function OnboardingWizard({
+  userRole,
+  onComplete,
+}: OnboardingWizardProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
@@ -48,36 +51,36 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
       title: 'Upload Your Resume',
       description: 'Let us extract your information automatically (optional)',
       icon: FileText,
-      required: false
+      required: false,
     },
     {
       id: 'profile',
       title: 'Complete Your Profile',
       description: 'Add your basic information to help employers find you',
       icon: User,
-      required: true
+      required: true,
     },
     {
       id: 'location',
       title: 'Set Your Location',
-      description: 'Tell us where you\'re looking for work',
+      description: "Tell us where you're looking for work",
       icon: MapPin,
-      required: true
+      required: true,
     },
     {
       id: 'experience',
       title: 'Add Your Experience',
       description: 'Share your skills and work history',
       icon: Briefcase,
-      required: true
+      required: true,
     },
     {
       id: 'preferences',
       title: 'Job Preferences',
       description: 'Set up job alerts and preferences',
       icon: Bell,
-      required: false
-    }
+      required: false,
+    },
   ];
 
   const employerSteps: OnboardingStep[] = [
@@ -86,36 +89,36 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
       title: 'Company Information',
       description: 'Tell job seekers about your company',
       icon: Building2,
-      required: true
+      required: true,
     },
     {
       id: 'location',
       title: 'Company Location',
       description: 'Where is your business located?',
       icon: MapPin,
-      required: true
+      required: true,
     },
     {
       id: 'details',
       title: 'Company Details',
       description: 'Industry, size, and other details',
       icon: Users,
-      required: true
+      required: true,
     },
     {
       id: 'first-job',
       title: 'Post Your First Job',
       description: 'Start attracting candidates right away',
       icon: Target,
-      required: false
-    }
+      required: false,
+    },
   ];
 
   const steps = userRole === 'jobseeker' ? jobseekerSteps : employerSteps;
 
   const handleNext = async () => {
     const currentStepData = steps[currentStep];
-    
+
     if (currentStepData.required) {
       // Validate required fields for current step
       const isValid = await validateStep(currentStepData.id);
@@ -155,9 +158,9 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
       case 'location':
         return formData.location && formData.location.trim().length > 0;
       case 'experience':
-        return userRole === 'jobseeker' ? 
-          (formData.skills && formData.skills.length > 0) :
-          (formData.industry && formData.industry.trim().length > 0);
+        return userRole === 'jobseeker'
+          ? formData.skills && formData.skills.length > 0
+          : formData.industry && formData.industry.trim().length > 0;
       case 'company':
         return formData.companyName && formData.companyName.trim().length > 0;
       default:
@@ -183,18 +186,25 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
           setFormData((prev: any) => ({
             ...prev,
             ...result.data,
-            resume: file // Keep the original file
+            resume: file, // Keep the original file
           }));
-          alert('Resume parsed successfully! Your information has been pre-filled in the next steps.');
+          alert(
+            'Resume parsed successfully! Your information has been pre-filled in the next steps.'
+          );
         }
       } else {
         const errorData = await response.json();
         console.error('Resume parsing failed:', errorData);
-        alert(errorData.error || 'Failed to parse resume. You can continue filling out the form manually.');
+        alert(
+          errorData.error ||
+            'Failed to parse resume. You can continue filling out the form manually.'
+        );
       }
     } catch (error) {
       console.error('Resume parsing error:', error);
-      alert('Failed to parse resume. You can continue filling out the form manually.');
+      alert(
+        'Failed to parse resume. You can continue filling out the form manually.'
+      );
     } finally {
       setIsParsingResume(false);
     }
@@ -210,14 +220,16 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         body: JSON.stringify({
           ...formData,
           onboardingCompleted: true,
-          completedSteps: Array.from(completedSteps)
-        })
+          completedSteps: Array.from(completedSteps),
+        }),
       });
 
       if (response.ok) {
         onComplete();
         // Redirect to appropriate dashboard
-        router.push(userRole === 'employer' ? '/employers/dashboard' : '/dashboard');
+        router.push(
+          userRole === 'employer' ? '/employers/dashboard' : '/dashboard'
+        );
       } else {
         const errorData = await response.json();
         console.error('Onboarding completion failed:', errorData);
@@ -233,33 +245,40 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
 
   const renderStepContent = () => {
     const step = steps[currentStep];
-    
+
     switch (step.id) {
       case 'profile':
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Full Name *
               </label>
               <input
                 type="text"
                 value={formData.name || ''}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter your full name"
               />
             </div>
             {userRole === 'jobseeker' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Current Job Title
                 </label>
                 <input
                   type="text"
                   value={formData.currentJobTitle || ''}
-                  onChange={(e) => setFormData({...formData, currentJobTitle: e.target.value})}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={e =>
+                    setFormData({
+                      ...formData,
+                      currentJobTitle: e.target.value,
+                    })
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Software Engineer, Marketing Manager"
                 />
               </div>
@@ -271,14 +290,19 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {userRole === 'jobseeker' ? 'Where are you looking for work?' : 'Where is your company located?'} *
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                {userRole === 'jobseeker'
+                  ? 'Where are you looking for work?'
+                  : 'Where is your company located?'}{' '}
+                *
               </label>
               <input
                 type="text"
                 value={formData.location || ''}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="City (e.g., Modesto, Stockton, Fresno)"
               />
             </div>
@@ -289,26 +313,38 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         return userRole === 'jobseeker' ? (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Your Skills *
               </label>
               <textarea
                 value={formData.skills?.join(', ') || ''}
-                onChange={(e) => setFormData({...formData, skills: e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0)})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({
+                    ...formData,
+                    skills: e.target.value
+                      .split(',')
+                      .map(s => s.trim())
+                      .filter(s => s.length > 0),
+                  })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 rows={3}
                 placeholder="e.g., JavaScript, Project Management, Customer Service"
               />
-              <p className="text-xs text-gray-500 mt-1">Separate skills with commas</p>
+              <p className="mt-1 text-xs text-gray-500">
+                Separate skills with commas
+              </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Years of Experience
               </label>
               <select
                 value={formData.experienceLevel || ''}
-                onChange={(e) => setFormData({...formData, experienceLevel: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({ ...formData, experienceLevel: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select experience level</option>
                 <option value="entry">Entry Level (0-2 years)</option>
@@ -321,13 +357,15 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Industry *
               </label>
               <select
                 value={formData.industry || ''}
-                onChange={(e) => setFormData({...formData, industry: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({ ...formData, industry: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select your industry</option>
                 <option value="agriculture">Agriculture</option>
@@ -347,26 +385,30 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Company Name *
               </label>
               <input
                 type="text"
                 value={formData.companyName || ''}
-                onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({ ...formData, companyName: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter your company name"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Company Website
               </label>
               <input
                 type="url"
                 value={formData.companyWebsite || ''}
-                onChange={(e) => setFormData({...formData, companyWebsite: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({ ...formData, companyWebsite: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="https://yourcompany.com"
               />
             </div>
@@ -377,13 +419,15 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Company Size
               </label>
               <select
                 value={formData.companySize || ''}
-                onChange={(e) => setFormData({...formData, companySize: e.target.value})}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={e =>
+                  setFormData({ ...formData, companySize: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select company size</option>
                 <option value="1-10">1-10 employees</option>
@@ -399,29 +443,35 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
       case 'resume':
         return (
           <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
               <div className="flex items-start">
-                <FileText className="w-5 h-5 text-blue-600 mr-2 mt-0.5" />
+                <FileText className="mr-2 mt-0.5 h-5 w-5 text-blue-600" />
                 <div>
-                  <h4 className="font-medium text-blue-900 mb-1">Save time with resume upload</h4>
+                  <h4 className="mb-1 font-medium text-blue-900">
+                    Save time with resume upload
+                  </h4>
                   <p className="text-sm text-blue-800">
-                    Upload your resume and we'll automatically extract your name, location, skills, and experience to fill out the next steps.
+                    Upload your resume and we'll automatically extract your
+                    name, location, skills, and experience to fill out the next
+                    steps.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-2">Upload your resume</p>
-              <p className="text-sm text-gray-500 mb-4">DOCX or DOC files (max 5MB) - PDF support coming soon!</p>
+            <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-blue-400">
+              <Upload className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+              <p className="mb-2 text-gray-600">Upload your resume</p>
+              <p className="mb-4 text-sm text-gray-500">
+                DOCX or DOC files (max 5MB) - PDF support coming soon!
+              </p>
               <input
                 type="file"
                 accept=".doc,.docx"
-                onChange={async (e) => {
+                onChange={async e => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    setFormData({...formData, resume: file});
+                    setFormData({ ...formData, resume: file });
                     // Automatically parse the resume
                     await parseResume(file);
                   }
@@ -432,26 +482,26 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
               />
               <label
                 htmlFor="resume-upload"
-                className={`inline-flex items-center px-6 py-3 rounded-lg transition-colors ${
+                className={`inline-flex items-center rounded-lg px-6 py-3 transition-colors ${
                   isParsingResume
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'cursor-pointer bg-blue-600 hover:bg-blue-700'
                 } text-white`}
               >
                 {isParsingResume ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                     Parsing Resume...
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4 mr-2" />
+                    <Upload className="mr-2 h-4 w-4" />
                     Choose File
                   </>
                 )}
               </label>
               {formData.resume && !isParsingResume && (
-                <p className="text-green-600 text-sm mt-2">
+                <p className="mt-2 text-sm text-green-600">
                   ✓ {formData.resume.name} uploaded and parsed
                 </p>
               )}
@@ -459,7 +509,8 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
 
             <div className="text-center">
               <p className="text-sm text-gray-500">
-                Don't have a resume ready? No problem! You can skip this step and fill out your information manually.
+                Don't have a resume ready? No problem! You can skip this step
+                and fill out your information manually.
               </p>
             </div>
           </div>
@@ -469,26 +520,34 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Job Types You're Interested In
               </label>
               <div className="space-y-2">
-                {['full-time', 'part-time', 'contract'].map((type) => (
+                {['full-time', 'part-time', 'contract'].map(type => (
                   <div key={type} className="flex items-center">
                     <input
                       type="checkbox"
                       id={type}
-                      checked={formData.preferredJobTypes?.includes(type) || false}
-                      onChange={(e) => {
+                      checked={
+                        formData.preferredJobTypes?.includes(type) || false
+                      }
+                      onChange={e => {
                         const current = formData.preferredJobTypes || [];
                         const updated = e.target.checked
                           ? [...current, type]
                           : current.filter((t: string) => t !== type);
-                        setFormData({...formData, preferredJobTypes: updated});
+                        setFormData({
+                          ...formData,
+                          preferredJobTypes: updated,
+                        });
                       }}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <label htmlFor={type} className="ml-2 text-sm text-gray-700 capitalize">
+                    <label
+                      htmlFor={type}
+                      className="ml-2 text-sm capitalize text-gray-700"
+                    >
                       {type.replace('-', ' ')}
                     </label>
                   </div>
@@ -500,20 +559,23 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
 
       case 'first-job':
         return (
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-              <Target className="w-8 h-8 text-blue-600" />
+          <div className="space-y-4 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+              <Target className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900">Ready to post your first job?</h3>
+            <h3 className="text-lg font-medium text-gray-900">
+              Ready to post your first job?
+            </h3>
             <p className="text-gray-600">
-              Start attracting qualified candidates by posting your first job listing.
+              Start attracting qualified candidates by posting your first job
+              listing.
             </p>
             <button
               onClick={() => router.push('/employers/create-job-post')}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
             >
               Post a Job
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="ml-2 h-4 w-4" />
             </button>
           </div>
         );
@@ -524,11 +586,11 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-      <div className="max-w-2xl w-full">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+      <div className="w-full max-w-2xl">
         {/* Progress Bar */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">
               Welcome to 209.works!
             </h2>
@@ -536,42 +598,40 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
               Step {currentStep + 1} of {steps.length}
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="h-2 w-full rounded-full bg-gray-200">
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              className="h-2 rounded-full bg-blue-600 transition-all duration-300"
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Step Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+        <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="mb-6 flex items-center">
+            <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
               {React.createElement(steps[currentStep].icon, {
-                className: "w-6 h-6 text-blue-600"
+                className: 'w-6 h-6 text-blue-600',
               })}
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900">
                 {steps[currentStep].title}
               </h3>
-              <p className="text-gray-600">
-                {steps[currentStep].description}
-              </p>
+              <p className="text-gray-600">{steps[currentStep].description}</p>
             </div>
           </div>
 
           {renderStepContent()}
 
           {/* Navigation */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+          <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
             <button
               onClick={handlePrevious}
               disabled={currentStep === 0}
-              className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Previous
             </button>
 
@@ -587,7 +647,7 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
               <button
                 onClick={handleNext}
                 disabled={isLoading}
-                className="flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                className="flex items-center rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
               >
                 {isLoading ? (
                   'Saving...'
@@ -596,7 +656,7 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
                 ) : (
                   <>
                     Next
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
               </button>
@@ -605,14 +665,16 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
         </div>
 
         {/* Benefits Reminder */}
-        <div className="mt-8 bg-blue-50 rounded-lg p-6">
+        <div className="mt-8 rounded-lg bg-blue-50 p-6">
           <div className="flex items-start">
-            <Zap className="w-6 h-6 text-blue-600 mr-3 mt-1" />
+            <Zap className="mr-3 mt-1 h-6 w-6 text-blue-600" />
             <div>
-              <h4 className="font-medium text-blue-900 mb-2">
-                {userRole === 'jobseeker' ? 'Complete your profile to:' : 'Complete setup to:'}
+              <h4 className="mb-2 font-medium text-blue-900">
+                {userRole === 'jobseeker'
+                  ? 'Complete your profile to:'
+                  : 'Complete setup to:'}
               </h4>
-              <ul className="text-sm text-blue-800 space-y-1">
+              <ul className="space-y-1 text-sm text-blue-800">
                 {userRole === 'jobseeker' ? (
                   <>
                     <li>• Get better job recommendations</li>
@@ -633,4 +695,4 @@ export default function OnboardingWizard({ userRole, onComplete }: OnboardingWiz
       </div>
     </div>
   );
-} 
+}

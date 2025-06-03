@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import authOptions from "../../../auth/authOptions";
-import { hasPermission, Permission } from "@/lib/rbac/permissions";
-import { prisma } from "@/lib/database/prisma";
-import { z } from "zod";
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import authOptions from '../../../auth/authOptions';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { prisma } from '@/lib/database/prisma';
+import { z } from 'zod';
 
 // Rate limiting store (in production, use Redis)
 const exportRateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -11,18 +11,18 @@ const exportRateLimit = new Map<string, { count: number; resetTime: number }>();
 const exportRequestSchema = z.object({
   reportType: z.enum([
     'user_activity',
-    'job_listings', 
+    'job_listings',
     'revenue_analytics',
     'system_performance',
     'application_analytics',
     'moderation_log',
     'advertisement_performance',
-    'security_audit'
+    'security_audit',
   ]),
   format: z.enum(['csv', 'excel', 'pdf']),
   dateFrom: z.string().optional().nullable(),
   dateTo: z.string().optional().nullable(),
-  filters: z.any().optional()
+  filters: z.any().optional(),
 });
 
 // Rate limiting: 10 exports per hour per user
@@ -52,10 +52,14 @@ function sanitizeData(data: any[]): any[] {
     const sanitized: any = {};
     for (const [key, value] of Object.entries(row)) {
       // Remove sensitive fields
-      if (['password', 'passwordHash', 'twoFactorSecret', 'resetToken'].includes(key)) {
+      if (
+        ['password', 'passwordHash', 'twoFactorSecret', 'resetToken'].includes(
+          key
+        )
+      ) {
         continue;
       }
-      
+
       // Sanitize email addresses (partial masking)
       if (key.toLowerCase().includes('email') && typeof value === 'string') {
         const [local, domain] = value.split('@');
@@ -75,22 +79,24 @@ function sanitizeData(data: any[]): any[] {
 // Generate CSV content
 function generateCSV(data: any[]): string {
   if (data.length === 0) return '';
-  
+
   const headers = Object.keys(data[0]);
   const csvContent = [
     headers.join(','),
-    ...data.map(row => 
-      headers.map(header => {
-        const value = row[header];
-        if (value === null || value === undefined) return '';
-        if (typeof value === 'string' && value.includes(',')) {
-          return `"${value.replace(/"/g, '""')}"`;
-        }
-        return String(value);
-      }).join(',')
-    )
+    ...data.map(row =>
+      headers
+        .map(header => {
+          const value = row[header];
+          if (value === null || value === undefined) return '';
+          if (typeof value === 'string' && value.includes(',')) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return String(value);
+        })
+        .join(',')
+    ),
   ].join('\n');
-  
+
   return csvContent;
 }
 
@@ -112,22 +118,30 @@ ${reportTitle} REPORT
 Generated: ${new Date().toISOString()}
 Total Records: ${data.length}
 
-${data.slice(0, 10).map((row, index) => 
-  `Record ${index + 1}:\n${Object.entries(row).map(([key, value]) => 
-    `  ${key}: ${value}`
-  ).join('\n')}`
-).join('\n\n')}
+${data
+  .slice(0, 10)
+  .map(
+    (row, index) =>
+      `Record ${index + 1}:\n${Object.entries(row)
+        .map(([key, value]) => `  ${key}: ${value}`)
+        .join('\n')}`
+  )
+  .join('\n\n')}
 
 ${data.length > 10 ? `\n... and ${data.length - 10} more records` : ''}
   `;
-  
+
   return Buffer.from(content, 'utf-8');
 }
 
-async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: Date): Promise<any[]> {
+async function generateReportData(
+  reportType: string,
+  dateFrom?: Date,
+  dateTo?: Date
+): Promise<any[]> {
   const baseWhere = {
     ...(dateFrom && { createdAt: { gte: dateFrom } }),
-    ...(dateTo && { createdAt: { lte: dateTo } })
+    ...(dateTo && { createdAt: { lte: dateTo } }),
   };
 
   switch (reportType) {
@@ -142,9 +156,9 @@ async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: 
           lastLoginAt: true,
           isActive: true,
           profilePictureUrl: true,
-          companyWebsite: true
+          companyWebsite: true,
         },
-        take: 10000 // Limit for performance
+        take: 10000, // Limit for performance
       });
 
     case 'job_listings':
@@ -161,25 +175,25 @@ async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: 
           status: true,
           createdAt: true,
           updatedAt: true,
-          postedAt: true
+          postedAt: true,
         },
-        take: 10000
+        take: 10000,
       });
 
     case 'application_analytics':
       return await prisma.jobApplication.findMany({
         where: {
           ...(dateFrom && { appliedAt: { gte: dateFrom } }),
-          ...(dateTo && { appliedAt: { lte: dateTo } })
+          ...(dateTo && { appliedAt: { lte: dateTo } }),
         },
         select: {
           id: true,
           jobId: true,
           userId: true,
           status: true,
-          appliedAt: true
+          appliedAt: true,
         },
-        take: 10000
+        take: 10000,
       });
 
     case 'revenue_analytics':
@@ -188,19 +202,19 @@ async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: 
         {
           id: '1',
           date: new Date().toISOString(),
-          revenue: 1250.00,
+          revenue: 1250.0,
           subscriptions: 45,
           jobPostings: 123,
-          premiumUsers: 28
+          premiumUsers: 28,
         },
         {
-          id: '2', 
+          id: '2',
           date: new Date(Date.now() - 86400000).toISOString(),
-          revenue: 980.50,
+          revenue: 980.5,
           subscriptions: 42,
           jobPostings: 98,
-          premiumUsers: 26
-        }
+          premiumUsers: 26,
+        },
       ];
 
     case 'system_performance':
@@ -213,8 +227,8 @@ async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: 
           activeUsers: 1247,
           cpuUsage: 45.2,
           memoryUsage: 67.8,
-          diskUsage: 34.1
-        }
+          diskUsage: 34.1,
+        },
       ];
 
     case 'moderation_log':
@@ -226,8 +240,8 @@ async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: 
           moderatorId: 'admin-123',
           resourceId: 'job-456',
           timestamp: new Date().toISOString(),
-          reason: 'Content meets guidelines'
-        }
+          reason: 'Content meets guidelines',
+        },
       ];
 
     case 'advertisement_performance':
@@ -243,9 +257,9 @@ async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: 
           bidding: true,
           currentSpend: true,
           createdAt: true,
-          updatedAt: true
+          updatedAt: true,
         },
-        take: 10000
+        take: 10000,
       });
 
     case 'security_audit':
@@ -257,8 +271,8 @@ async function generateReportData(reportType: string, dateFrom?: Date, dateTo?: 
           userId: 'user-123',
           ipAddress: '192.168.1.100',
           timestamp: new Date().toISOString(),
-          severity: 'medium'
-        }
+          severity: 'medium',
+        },
       ];
 
     default:
@@ -271,19 +285,19 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userRole = (session.user as any)?.role;
     if (!hasPermission(userRole, Permission.EXPORT_REPORTS)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Rate limiting
     const userId = (session.user as any)?.id;
     if (!checkRateLimit(userId)) {
       return NextResponse.json(
-        { error: "Rate limit exceeded. Maximum 10 exports per hour." },
+        { error: 'Rate limit exceeded. Maximum 10 exports per hour.' },
         { status: 429 }
       );
     }
@@ -298,8 +312,12 @@ export async function POST(request: NextRequest) {
     const parsedDateTo = dateTo ? new Date(dateTo) : undefined;
 
     // Generate report data
-    const rawData = await generateReportData(reportType, parsedDateFrom, parsedDateTo);
-    
+    const rawData = await generateReportData(
+      reportType,
+      parsedDateFrom,
+      parsedDateTo
+    );
+
     // Sanitize data
     const sanitizedData = sanitizeData(rawData);
 
@@ -314,21 +332,22 @@ export async function POST(request: NextRequest) {
         contentType = 'text/csv';
         fileExtension = 'csv';
         break;
-      
+
       case 'excel':
         fileContent = generateExcel(sanitizedData);
-        contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        contentType =
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
         fileExtension = 'xlsx';
         break;
-      
+
       case 'pdf':
         fileContent = generatePDF(sanitizedData, reportType);
         contentType = 'application/pdf';
         fileExtension = 'pdf';
         break;
-      
+
       default:
-        return NextResponse.json({ error: "Invalid format" }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid format' }, { status: 400 });
     }
 
     // Log the export action
@@ -336,7 +355,7 @@ export async function POST(request: NextRequest) {
 
     // Return file
     const fileName = `${reportType}_${new Date().toISOString().split('T')[0]}.${fileExtension}`;
-    
+
     return new NextResponse(fileContent, {
       headers: {
         'Content-Type': contentType,
@@ -344,20 +363,19 @@ export async function POST(request: NextRequest) {
         'Content-Length': fileContent.length.toString(),
       },
     });
-
   } catch (error) {
     console.error('Export error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Invalid request data", details: error.errors },
+        { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

@@ -25,18 +25,17 @@ export function createCachedFunction<T extends (...args: any[]) => any>(
     revalidate?: number;
   }
 ): T {
-  return unstable_cache(
-    fn,
-    [options.keyPrefix],
-    {
-      tags: options.tags,
-      revalidate: options.revalidate || CACHE_DURATIONS.MEDIUM,
-    }
-  ) as T;
+  return unstable_cache(fn, [options.keyPrefix], {
+    tags: options.tags,
+    revalidate: options.revalidate || CACHE_DURATIONS.MEDIUM,
+  }) as T;
 }
 
 // Cache key generators
-export function generateCacheKey(prefix: string, params: Record<string, any>): string {
+export function generateCacheKey(
+  prefix: string,
+  params: Record<string, any>
+): string {
   const sortedParams = Object.keys(params)
     .sort()
     .map(key => `${key}:${params[key]}`)
@@ -49,7 +48,11 @@ class MemoryCache {
   private cache = new Map<string, { data: any; expiry: number }>();
   private maxSize = 100; // Maximum number of entries
 
-  set(key: string, data: any, ttl: number = CACHE_DURATIONS.MEDIUM * 1000): void {
+  set(
+    key: string,
+    data: any,
+    ttl: number = CACHE_DURATIONS.MEDIUM * 1000
+  ): void {
     // Clean up expired entries if cache is full
     if (this.cache.size >= this.maxSize) {
       this.cleanup();
@@ -96,4 +99,4 @@ class MemoryCache {
   }
 }
 
-export const memoryCache = new MemoryCache(); 
+export const memoryCache = new MemoryCache();

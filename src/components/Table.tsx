@@ -11,13 +11,20 @@ interface TableProps {
   className?: string;
 }
 
-export const Table: React.FC<TableProps> = ({ columns, data, className = '' }) => (
+export const Table: React.FC<TableProps> = ({
+  columns,
+  data,
+  className = '',
+}) => (
   <div className={`overflow-x-auto ${className}`}>
-    <table className="min-w-full border border-gray-200 rounded">
+    <table className="min-w-full rounded border border-gray-200">
       <thead className="bg-gray-100">
         <tr>
           {columns.map(col => (
-            <th key={col.accessor} className="px-4 py-2 text-left font-semibold border-b border-gray-200">
+            <th
+              key={col.accessor}
+              className="border-b border-gray-200 px-4 py-2 text-left font-semibold"
+            >
               {col.header}
             </th>
           ))}
@@ -27,7 +34,10 @@ export const Table: React.FC<TableProps> = ({ columns, data, className = '' }) =
         {data.map((row, i) => (
           <tr key={i} className="even:bg-gray-50">
             {columns.map(col => (
-              <td key={col.accessor} className="px-4 py-2 border-b border-gray-100">
+              <td
+                key={col.accessor}
+                className="border-b border-gray-100 px-4 py-2"
+              >
                 {row[col.accessor]}
               </td>
             ))}
@@ -38,4 +48,4 @@ export const Table: React.FC<TableProps> = ({ columns, data, className = '' }) =
   </div>
 );
 
-export default Table; 
+export default Table;

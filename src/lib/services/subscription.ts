@@ -1,4 +1,8 @@
-import { PricingTier, SubscriptionStatus, BillingInterval } from '@prisma/client';
+import {
+  PricingTier,
+  SubscriptionStatus,
+  BillingInterval,
+} from '@prisma/client';
 import { prisma } from '@/lib/database/prisma';
 
 // Updated pricing configuration with 209 Works pricing
@@ -104,7 +108,7 @@ export interface SubscriptionFeatures {
   apiAccess?: boolean;
   whiteLabel?: boolean;
   customIntegrations?: boolean;
-  
+
   // Job seeker features
   profileVisibility?: boolean;
   priorityApplications?: boolean;
@@ -145,7 +149,7 @@ export class SubscriptionService {
     feature: keyof SubscriptionFeatures
   ): Promise<boolean> {
     const subscription = await this.getUserSubscription(userId);
-    
+
     if (!subscription) {
       // Free tier access - very limited
       const freeFeatures: SubscriptionFeatures = {
@@ -175,7 +179,7 @@ export class SubscriptionService {
     feature: keyof SubscriptionFeatures
   ): Promise<number> {
     const subscription = await this.getUserSubscription(userId);
-    
+
     if (!subscription) {
       // Free tier limits
       const freeLimits: Record<string, number> = {
@@ -189,11 +193,11 @@ export class SubscriptionService {
 
     const features = this.getFeatures(subscription.tier);
     const value = features[feature];
-    
+
     if (typeof value === 'number') {
       return value;
     }
-    
+
     return 0;
   }
 
@@ -207,12 +211,13 @@ export class SubscriptionService {
     startDate?: Date;
   }) {
     const config = PRICING_CONFIG[data.tier];
-    const price = data.billingCycle === 'yearly' ? config.yearlyPrice : config.price;
+    const price =
+      data.billingCycle === 'yearly' ? config.yearlyPrice : config.price;
 
     // Get user email for subscription
     const user = await prisma.user.findUnique({
       where: { id: data.userId },
-      select: { email: true }
+      select: { email: true },
     });
 
     if (!user) {
@@ -267,15 +272,15 @@ export class SubscriptionService {
    */
   static async canPostJob(userId: string): Promise<boolean> {
     const limit = await this.getFeatureLimit(userId, 'jobListings');
-    
+
     if (limit === -1) return true; // Unlimited
-    
+
     const activeJobs = await prisma.job.count({
       where: {
         companyRef: {
           users: {
-            some: { id: userId }
-          }
+            some: { id: userId },
+          },
         },
         status: 'active',
       },
@@ -315,4 +320,4 @@ export class SubscriptionService {
   }
 }
 
-export default SubscriptionService; 
+export default SubscriptionService;

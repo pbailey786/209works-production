@@ -2,21 +2,27 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowLeft, 
-  Save, 
-  Loader2, 
+import {
+  ArrowLeft,
+  Save,
+  Loader2,
   Calendar,
   DollarSign,
   Building,
   ExternalLink,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -110,7 +116,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -143,8 +149,11 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
       router.push('/admin/ads?updated=true');
     } catch (error) {
       console.error('Error updating advertisement:', error);
-      setErrors({ 
-        submit: error instanceof Error ? error.message : 'An error occurred while updating the advertisement' 
+      setErrors({
+        submit:
+          error instanceof Error
+            ? error.message
+            : 'An error occurred while updating the advertisement',
       });
     } finally {
       setLoading(false);
@@ -155,7 +164,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -164,21 +173,17 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link 
+          <Link
             href="/admin/ads"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Ads
           </Link>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="secondary">
-            ID: {ad.id.slice(0, 8)}...
-          </Badge>
-          <Badge variant="outline">
-            Created {formatDate(ad.createdAt)}
-          </Badge>
+          <Badge variant="secondary">ID: {ad.id.slice(0, 8)}...</Badge>
+          <Badge variant="outline">Created {formatDate(ad.createdAt)}</Badge>
         </div>
       </div>
 
@@ -194,13 +199,13 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0">
               {ad.imageUrl ? (
-                <img 
-                  src={ad.imageUrl} 
+                <img
+                  src={ad.imageUrl}
                   alt={ad.title}
-                  className="w-20 h-20 rounded object-cover"
+                  className="h-20 w-20 rounded object-cover"
                 />
               ) : (
-                <div className="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded bg-gray-200">
                   <Building className="h-8 w-8 text-gray-400" />
                 </div>
               )}
@@ -210,20 +215,22 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
               <p className="text-gray-600">{ad.businessName}</p>
               <div className="mt-2 space-y-1">
                 <div className="flex items-center text-sm text-gray-500">
-                  <MapPin className="h-4 w-4 mr-1" />
+                  <MapPin className="mr-1 h-4 w-4" />
                   <span>{ad.zipCodes}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-500">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  <span>{formatDate(ad.startDate)} - {formatDate(ad.endDate)}</span>
+                  <Calendar className="mr-1 h-4 w-4" />
+                  <span>
+                    {formatDate(ad.startDate)} - {formatDate(ad.endDate)}
+                  </span>
                 </div>
-                <a 
+                <a
                   href={ad.targetUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-sm text-blue-600 hover:text-blue-800"
                 >
-                  <ExternalLink className="h-4 w-4 mr-1" />
+                  <ExternalLink className="mr-1 h-4 w-4" />
                   {ad.targetUrl}
                 </a>
               </div>
@@ -248,7 +255,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
+                onChange={e => handleInputChange('title', e.target.value)}
                 placeholder="Enter advertisement title"
                 className={errors.title ? 'border-red-500' : ''}
               />
@@ -263,7 +270,9 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
               <Input
                 id="businessName"
                 value={formData.businessName}
-                onChange={(e) => handleInputChange('businessName', e.target.value)}
+                onChange={e =>
+                  handleInputChange('businessName', e.target.value)
+                }
                 placeholder="Enter business name"
                 className={errors.businessName ? 'border-red-500' : ''}
               />
@@ -278,7 +287,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
               <Input
                 id="imageUrl"
                 value={formData.imageUrl}
-                onChange={(e) => handleInputChange('imageUrl', e.target.value)}
+                onChange={e => handleInputChange('imageUrl', e.target.value)}
                 placeholder="Enter image URL (optional)"
                 className={errors.imageUrl ? 'border-red-500' : ''}
               />
@@ -296,7 +305,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
               <Input
                 id="targetUrl"
                 value={formData.targetUrl}
-                onChange={(e) => handleInputChange('targetUrl', e.target.value)}
+                onChange={e => handleInputChange('targetUrl', e.target.value)}
                 placeholder="https://example.com"
                 className={errors.targetUrl ? 'border-red-500' : ''}
               />
@@ -314,7 +323,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
               <Textarea
                 id="zipCodes"
                 value={formData.zipCodes}
-                onChange={(e) => handleInputChange('zipCodes', e.target.value)}
+                onChange={e => handleInputChange('zipCodes', e.target.value)}
                 placeholder="Enter zip codes (comma-separated)"
                 rows={3}
                 className={errors.zipCodes ? 'border-red-500' : ''}
@@ -328,14 +337,14 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
             </div>
 
             {/* Date Range */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="startDate">Start Date *</Label>
                 <Input
                   id="startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) => handleInputChange('startDate', e.target.value)}
+                  onChange={e => handleInputChange('startDate', e.target.value)}
                   className={errors.startDate ? 'border-red-500' : ''}
                 />
                 {errors.startDate && (
@@ -349,7 +358,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
                   id="endDate"
                   type="date"
                   value={formData.endDate}
-                  onChange={(e) => handleInputChange('endDate', e.target.value)}
+                  onChange={e => handleInputChange('endDate', e.target.value)}
                   className={errors.endDate ? 'border-red-500' : ''}
                 />
                 {errors.endDate && (
@@ -360,13 +369,13 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
 
             {/* Submit Error */}
             {errors.submit && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+              <div className="rounded-md border border-red-200 bg-red-50 p-4">
                 <p className="text-sm text-red-600">{errors.submit}</p>
               </div>
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <Link
                 href="/admin/ads"
                 className="text-gray-600 hover:text-gray-900"
@@ -376,12 +385,12 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
               <Button type="submit" disabled={loading}>
                 {loading ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Updating...
                   </>
                 ) : (
                   <>
-                    <Save className="h-4 w-4 mr-2" />
+                    <Save className="mr-2 h-4 w-4" />
                     Update Advertisement
                   </>
                 )}
@@ -392,4 +401,4 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
       </Card>
     </div>
   );
-} 
+}

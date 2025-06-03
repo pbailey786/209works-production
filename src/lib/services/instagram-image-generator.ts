@@ -11,7 +11,9 @@ try {
   registerFont = canvas.registerFont;
 } catch (error) {
   // Canvas not available - image generation will be disabled
-  console.warn('Canvas package not available. Instagram image generation disabled.');
+  console.warn(
+    'Canvas package not available. Instagram image generation disabled.'
+  );
 }
 
 export interface InstagramImageOptions {
@@ -45,7 +47,7 @@ export class InstagramImageGenerator {
     fontSize: 24,
     template: 'modern',
     brandColor: '#3b82f6',
-    domainConfig: getDomainConfig('209.works')
+    domainConfig: getDomainConfig('209.works'),
   };
 
   constructor(private options: InstagramImageOptions = {}) {
@@ -55,16 +57,21 @@ export class InstagramImageGenerator {
   /**
    * Generate an Instagram image for a job listing
    */
-  async generateJobImage(jobData: JobImageData, customOptions?: InstagramImageOptions): Promise<Buffer> {
+  async generateJobImage(
+    jobData: JobImageData,
+    customOptions?: InstagramImageOptions
+  ): Promise<Buffer> {
     // Check if canvas is available
     if (!createCanvas) {
-      throw new Error('Canvas package not available. Instagram image generation is disabled. Install the canvas package to enable this feature.');
+      throw new Error(
+        'Canvas package not available. Instagram image generation is disabled. Install the canvas package to enable this feature.'
+      );
     }
 
     const opts: Required<InstagramImageOptions> = {
       ...this.defaultOptions,
       ...this.options,
-      ...customOptions
+      ...customOptions,
     };
 
     // Get domain config if not provided
@@ -86,14 +93,13 @@ export class InstagramImageGenerator {
 
       // Convert canvas to buffer
       const buffer = canvas.toBuffer('image/png');
-      
+
       // Optimize with sharp
-      return await sharp(buffer)
-        .png({ quality: 90 })
-        .toBuffer();
+      return await sharp(buffer).png({ quality: 90 }).toBuffer();
     } catch (error) {
       console.error('Error generating Instagram image:', error);
-      const message = error instanceof Error ? error.message : 'Unknown error occurred';
+      const message =
+        error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to generate Instagram image: ${message}`);
     }
   }
@@ -101,16 +107,20 @@ export class InstagramImageGenerator {
   /**
    * Generate image from Job model
    */
-  async generateFromJob(job: Job, customOptions?: InstagramImageOptions): Promise<Buffer> {
+  async generateFromJob(
+    job: Job,
+    customOptions?: InstagramImageOptions
+  ): Promise<Buffer> {
     const jobData: JobImageData = {
       jobTitle: job.title,
       company: job.company,
       location: job.location,
-      salary: job.salaryMin && job.salaryMax 
-        ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
-        : undefined,
+      salary:
+        job.salaryMin && job.salaryMax
+          ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
+          : undefined,
       jobType: job.jobType.replace('_', ' ').toUpperCase(),
-      postedDate: job.createdAt.toLocaleDateString()
+      postedDate: job.createdAt.toLocaleDateString(),
     };
 
     return this.generateJobImage(jobData, customOptions);
@@ -120,8 +130,8 @@ export class InstagramImageGenerator {
    * Apply template-specific styling to the canvas
    */
   private async applyTemplate(
-    ctx: any, 
-    opts: Required<InstagramImageOptions>, 
+    ctx: any,
+    opts: Required<InstagramImageOptions>,
     jobData: JobImageData
   ): Promise<void> {
     const { width, height } = opts;
@@ -148,8 +158,8 @@ export class InstagramImageGenerator {
    * Modern template with geometric shapes and clean typography
    */
   private async applyModernTemplate(
-    ctx: any, 
-    opts: Required<InstagramImageOptions>, 
+    ctx: any,
+    opts: Required<InstagramImageOptions>,
     jobData: JobImageData
   ): Promise<void> {
     const { width, height, backgroundColor, textColor, brandColor } = opts;
@@ -178,7 +188,14 @@ export class InstagramImageGenerator {
     ctx.fillStyle = textColor;
     ctx.font = 'bold 48px Arial';
     ctx.textAlign = 'left';
-    this.wrapText(ctx, jobData.jobTitle, padding, contentY, width - (padding * 2), 60);
+    this.wrapText(
+      ctx,
+      jobData.jobTitle,
+      padding,
+      contentY,
+      width - padding * 2,
+      60
+    );
 
     // Company
     ctx.fillStyle = brandColor;
@@ -201,8 +218,8 @@ export class InstagramImageGenerator {
     // Call to action
     const ctaY = height - 200;
     ctx.fillStyle = brandColor;
-    ctx.fillRect(padding, ctaY, width - (padding * 2), 80);
-    
+    ctx.fillRect(padding, ctaY, width - padding * 2, 80);
+
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 28px Arial';
     ctx.textAlign = 'center';
@@ -220,8 +237,8 @@ export class InstagramImageGenerator {
    * Classic template with traditional layout
    */
   private async applyClassicTemplate(
-    ctx: any, 
-    opts: Required<InstagramImageOptions>, 
+    ctx: any,
+    opts: Required<InstagramImageOptions>,
     jobData: JobImageData
   ): Promise<void> {
     const { width, height, backgroundColor, textColor } = opts;
@@ -244,7 +261,7 @@ export class InstagramImageGenerator {
     // Content
     const contentY = 200;
     ctx.textAlign = 'left';
-    
+
     ctx.font = 'bold 42px Arial';
     this.wrapText(ctx, jobData.jobTitle, 60, contentY, width - 120, 50);
 
@@ -268,8 +285,8 @@ export class InstagramImageGenerator {
    * Minimal template with lots of white space
    */
   private async applyMinimalTemplate(
-    ctx: any, 
-    opts: Required<InstagramImageOptions>, 
+    ctx: any,
+    opts: Required<InstagramImageOptions>,
     jobData: JobImageData
   ): Promise<void> {
     const { width, height } = opts;
@@ -284,7 +301,15 @@ export class InstagramImageGenerator {
 
     // Job title
     ctx.font = 'bold 44px Arial';
-    this.wrapText(ctx, jobData.jobTitle, width / 2, 300, width - 120, 60, 'center');
+    this.wrapText(
+      ctx,
+      jobData.jobTitle,
+      width / 2,
+      300,
+      width - 120,
+      60,
+      'center'
+    );
 
     // Company
     ctx.font = '32px Arial';
@@ -312,8 +337,8 @@ export class InstagramImageGenerator {
    * Gradient template with colorful background
    */
   private async applyGradientTemplate(
-    ctx: any, 
-    opts: Required<InstagramImageOptions>, 
+    ctx: any,
+    opts: Required<InstagramImageOptions>,
     jobData: JobImageData
   ): Promise<void> {
     const { width, height, brandColor } = opts;
@@ -322,7 +347,7 @@ export class InstagramImageGenerator {
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, brandColor);
     gradient.addColorStop(1, '#8b5cf6');
-    
+
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
@@ -336,7 +361,15 @@ export class InstagramImageGenerator {
 
     // Job title
     ctx.font = 'bold 48px Arial';
-    this.wrapText(ctx, jobData.jobTitle, width / 2, 250, width - 120, 60, 'center');
+    this.wrapText(
+      ctx,
+      jobData.jobTitle,
+      width / 2,
+      250,
+      width - 120,
+      60,
+      'center'
+    );
 
     // Company
     ctx.font = 'bold 36px Arial';
@@ -354,7 +387,7 @@ export class InstagramImageGenerator {
     // CTA button
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
     ctx.fillRect(width / 2 - 150, 550, 300, 60);
-    
+
     ctx.fillStyle = brandColor;
     ctx.font = 'bold 24px Arial';
     const domain = opts.domainConfig?.domain || '209.works';
@@ -365,11 +398,11 @@ export class InstagramImageGenerator {
    * Utility function to wrap text
    */
   private wrapText(
-    ctx: any, 
-    text: string, 
-    x: number, 
-    y: number, 
-    maxWidth: number, 
+    ctx: any,
+    text: string,
+    x: number,
+    y: number,
+    maxWidth: number,
     lineHeight: number,
     align: 'left' | 'center' = 'left'
   ): void {
@@ -391,7 +424,7 @@ export class InstagramImageGenerator {
         line = testLine;
       }
     }
-    
+
     const textX = align === 'center' ? x : x;
     ctx.fillText(line, textX, currentY);
   }
@@ -399,9 +432,12 @@ export class InstagramImageGenerator {
   /**
    * Generate a batch of images for multiple jobs
    */
-  async generateBatch(jobs: Job[], customOptions?: InstagramImageOptions): Promise<Buffer[]> {
+  async generateBatch(
+    jobs: Job[],
+    customOptions?: InstagramImageOptions
+  ): Promise<Buffer[]> {
     const images: Buffer[] = [];
-    
+
     for (const job of jobs) {
       try {
         const image = await this.generateFromJob(job, customOptions);
@@ -411,7 +447,7 @@ export class InstagramImageGenerator {
         // Continue with other jobs
       }
     }
-    
+
     return images;
   }
 
@@ -423,4 +459,4 @@ export class InstagramImageGenerator {
   }
 }
 
-export default InstagramImageGenerator; 
+export default InstagramImageGenerator;

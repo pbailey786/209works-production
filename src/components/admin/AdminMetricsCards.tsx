@@ -1,12 +1,12 @@
-import { 
-  Users, 
-  FileText, 
-  Send, 
-  Bell, 
-  Shield, 
-  TrendingUp, 
+import {
+  Users,
+  FileText,
+  Send,
+  Bell,
+  Shield,
+  TrendingUp,
   PlayCircle,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 interface MetricsData {
@@ -36,7 +36,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Users,
       color: 'bg-blue-500',
       trend: `+${metrics.monthlySignups} this month`,
-      trendColor: 'text-green-600'
+      trendColor: 'text-green-600',
     },
     {
       title: 'Job Listings',
@@ -44,7 +44,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: FileText,
       color: 'bg-green-500',
       trend: `${metrics.pendingModerations} pending review`,
-      trendColor: 'text-orange-600'
+      trendColor: 'text-orange-600',
     },
     {
       title: 'Applications',
@@ -52,7 +52,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Send,
       color: 'bg-purple-500',
       trend: 'Total submissions',
-      trendColor: 'text-gray-600'
+      trendColor: 'text-gray-600',
     },
     {
       title: 'Active Alerts',
@@ -60,7 +60,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Bell,
       color: 'bg-yellow-500',
       trend: 'Email notifications',
-      trendColor: 'text-gray-600'
+      trendColor: 'text-gray-600',
     },
     {
       title: 'Moderation Queue',
@@ -68,7 +68,8 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Shield,
       color: 'bg-red-500',
       trend: 'Needs attention',
-      trendColor: metrics.pendingModerations > 0 ? 'text-red-600' : 'text-green-600'
+      trendColor:
+        metrics.pendingModerations > 0 ? 'text-red-600' : 'text-green-600',
     },
     {
       title: 'Advertisements',
@@ -76,7 +77,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: PlayCircle,
       color: 'bg-indigo-500',
       trend: 'Active campaigns',
-      trendColor: 'text-gray-600'
+      trendColor: 'text-gray-600',
     },
     {
       title: 'System Health',
@@ -84,7 +85,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Activity,
       color: 'bg-emerald-500',
       trend: `${metrics.systemHealth.responseTime} avg response`,
-      trendColor: 'text-gray-600'
+      trendColor: 'text-gray-600',
     },
     {
       title: 'Monthly Growth',
@@ -92,20 +93,20 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: TrendingUp,
       color: 'bg-teal-500',
       trend: 'New users this month',
-      trendColor: 'text-green-600'
-    }
+      trendColor: 'text-green-600',
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       {cards.map((card, index) => (
-        <div key={index} className="bg-white rounded-lg shadow p-6">
+        <div key={index} className="rounded-lg bg-white p-6 shadow">
           <div className="flex items-center">
-            <div className={`flex-shrink-0 p-3 rounded-lg ${card.color}`}>
+            <div className={`flex-shrink-0 rounded-lg p-3 ${card.color}`}>
               <card.icon className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4 flex-1">
-              <h3 className="text-sm font-medium text-gray-500 truncate">
+              <h3 className="truncate text-sm font-medium text-gray-500">
                 {card.title}
               </h3>
               <p className="text-2xl font-semibold text-gray-900">
@@ -114,12 +115,10 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
             </div>
           </div>
           <div className="mt-4">
-            <p className={`text-sm ${card.trendColor}`}>
-              {card.trend}
-            </p>
+            <p className={`text-sm ${card.trendColor}`}>{card.trend}</p>
           </div>
         </div>
       ))}
     </div>
   );
-} 
+}

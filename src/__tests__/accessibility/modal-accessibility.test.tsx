@@ -1,13 +1,17 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { 
-  useModalAccessibility, 
-  createDialogAriaProps, 
+import {
+  useModalAccessibility,
+  createDialogAriaProps,
   createModalId,
   getFocusableElements,
-  validateModalAccessibility 
+  validateModalAccessibility,
 } from '@/utils/modal-accessibility';
-import { AccessibleModal, ConfirmationModal, FormModal } from '@/components/ui/accessible-modal';
+import {
+  AccessibleModal,
+  ConfirmationModal,
+  FormModal,
+} from '@/components/ui/accessible-modal';
 import { SimpleAlertDialog } from '@/components/ui/alert-dialog';
 
 // Mock framer-motion to avoid animation issues in tests
@@ -87,13 +91,15 @@ describe('Modal Accessibility', () => {
         // Get the actual container div, not the wrapper
         const containerDiv = container.firstChild as HTMLElement;
         const focusableElements = getFocusableElements(containerDiv);
-        
+
         // In JSDOM, some elements might not be considered visible
         // Let's check that we at least find the basic focusable elements
         expect(focusableElements.length).toBeGreaterThan(0);
-        
+
         // Check that disabled elements are not included
-        const disabledButton = focusableElements.find(el => el.textContent === 'Disabled Button');
+        const disabledButton = focusableElements.find(
+          el => el.textContent === 'Disabled Button'
+        );
         expect(disabledButton).toBeUndefined();
       });
     });
@@ -127,7 +133,9 @@ describe('Modal Accessibility', () => {
 
         expect(validation.isValid).toBe(false);
         expect(validation.issues).toContain('Modal missing role attribute');
-        expect(validation.issues).toContain('Modal missing aria-modal attribute');
+        expect(validation.issues).toContain(
+          'Modal missing aria-modal attribute'
+        );
         expect(validation.issues).toContain('Modal missing accessible name');
         expect(validation.issues).toContain('Modal has no focusable elements');
       });
@@ -176,7 +184,7 @@ describe('Modal Accessibility', () => {
       );
 
       const modal = screen.getByTestId('test-modal');
-      
+
       // Test Escape key closes modal
       fireEvent.keyDown(modal, { key: 'Escape' });
       expect(onClose).toHaveBeenCalled();
@@ -310,7 +318,9 @@ describe('Modal Accessibility', () => {
       expect(modal).toHaveAttribute('aria-modal', 'true');
 
       expect(screen.getByText('Confirm Action')).toBeInTheDocument();
-      expect(screen.getByText('Are you sure you want to proceed?')).toBeInTheDocument();
+      expect(
+        screen.getByText('Are you sure you want to proceed?')
+      ).toBeInTheDocument();
       expect(screen.getByText('Confirm')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
@@ -490,14 +500,13 @@ describe('Modal Accessibility', () => {
     it('has proper focus management structure', async () => {
       const user = userEvent.setup();
       let isOpen = false;
-      const setIsOpen = jest.fn((value) => { isOpen = value; });
+      const setIsOpen = jest.fn(value => {
+        isOpen = value;
+      });
 
       const TestComponent = () => (
         <div>
-          <button 
-            data-testid="trigger-button"
-            onClick={() => setIsOpen(true)}
-          >
+          <button data-testid="trigger-button" onClick={() => setIsOpen(true)}>
             Open Modal
           </button>
           {isOpen && (
@@ -516,7 +525,7 @@ describe('Modal Accessibility', () => {
       render(<TestComponent />);
 
       const triggerButton = screen.getByTestId('trigger-button');
-      
+
       // Test that trigger button exists and is focusable
       expect(triggerButton).toBeInTheDocument();
       triggerButton.focus();
@@ -524,14 +533,14 @@ describe('Modal Accessibility', () => {
 
       // Test that modal elements exist when opened
       setIsOpen(true);
-      
+
       // Re-render to show modal
       const { rerender } = render(<TestComponent />);
-      
+
       // Check that modal elements are present
       expect(screen.getByTestId('test-modal')).toBeInTheDocument();
       expect(screen.getByLabelText('Close modal')).toBeInTheDocument();
       expect(screen.getByTestId('modal-button')).toBeInTheDocument();
     });
   });
-}); 
+});

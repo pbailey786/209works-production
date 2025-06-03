@@ -8,7 +8,10 @@ function isValidJobType(type: any): type is JobType {
 }
 
 // GET /api/jobs/:id - Get job by ID
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string  }> }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const job = await prisma.job.findUnique({ where: { id: (await params).id } });
   if (!job) {
     return NextResponse.json({ error: 'Job not found.' }, { status: 404 });
@@ -17,14 +20,26 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 // PUT /api/jobs/:id - Update job by ID (admin or employer only)
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string  }> }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await requireRole(req, ['admin', 'employer']);
   if (session instanceof NextResponse) return session;
   const body = await req.json();
   const updateData: any = {};
   const allowedFields = [
-    'title', 'description', 'company', 'location', 'type',
-    'salaryMin', 'salaryMax', 'categories', 'source', 'url', 'postedAt'
+    'title',
+    'description',
+    'company',
+    'location',
+    'type',
+    'salaryMin',
+    'salaryMax',
+    'categories',
+    'source',
+    'url',
+    'postedAt',
   ];
   for (const key of allowedFields) {
     if (body[key] !== undefined) updateData[key] = body[key];
@@ -35,7 +50,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
   // Validate categories if present
   if (updateData.categories && !Array.isArray(updateData.categories)) {
-    return NextResponse.json({ error: 'Categories must be an array.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Categories must be an array.' },
+      { status: 400 }
+    );
   }
   // Convert postedAt to Date if present
   if (updateData.postedAt) {
@@ -48,15 +66,21 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     });
     return NextResponse.json({ job });
   } catch (err) {
-    return NextResponse.json({ error: 'Job not found or update failed.' }, { status: 404 });
+    return NextResponse.json(
+      { error: 'Job not found or update failed.' },
+      { status: 404 }
+    );
   }
 }
 
 // DELETE /api/jobs/:id - Delete job by ID (admin or employer only)
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string  }> }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await requireRole(req, ['admin', 'employer']);
   if (session instanceof NextResponse) return session;
-  
+
   // Get user from database
   const user = await prisma.user.findUnique({
     where: { email: session.user?.email! },
@@ -67,7 +91,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   }
 
   try {
-    const { DataIntegrityService } = await import('@/lib/database/data-integrity');
+    const { DataIntegrityService } = await import(
+      '@/lib/database/data-integrity'
+    );
     const deletionResult = await DataIntegrityService.softDeleteJob(
       (await params).id,
       user.id,
@@ -75,17 +101,23 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     );
 
     if (!deletionResult.success) {
-      return NextResponse.json({ 
-        error: deletionResult.errors?.[0] || 'Failed to delete job safely' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: deletionResult.errors?.[0] || 'Failed to delete job safely',
+        },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Job deleted successfully',
-      auditRecordCreated: deletionResult.auditRecordCreated 
+      auditRecordCreated: deletionResult.auditRecordCreated,
     });
   } catch (err) {
-    return NextResponse.json({ error: 'Job not found or delete failed.' }, { status: 404 });
+    return NextResponse.json(
+      { error: 'Job not found or delete failed.' },
+      { status: 404 }
+    );
   }
-} 
+}

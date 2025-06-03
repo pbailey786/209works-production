@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
       location: 'Modesto, CA',
       salary: '$80,000 - $120,000',
       jobType: 'Full-time',
-      description: 'We are seeking a talented Senior Software Developer to join our growing team. You will be responsible for developing scalable web applications, collaborating with cross-functional teams, and mentoring junior developers. This is an excellent opportunity to work with modern technologies and make a significant impact.',
+      description:
+        'We are seeking a talented Senior Software Developer to join our growing team. You will be responsible for developing scalable web applications, collaborating with cross-functional teams, and mentoring junior developers. This is an excellent opportunity to work with modern technologies and make a significant impact.',
       jobUrl: 'https://209jobs.com/jobs/test-job',
       unsubscribeUrl: 'https://209jobs.com/unsubscribe',
     };
@@ -36,7 +37,11 @@ export async function POST(req: NextRequest) {
     if (result.success) {
       return NextResponse.json({
         message: 'Test email sent successfully!',
-        emailId: (result as any).data?.id || (result as any).id || (result as any).messageId || 'unknown',
+        emailId:
+          (result as any).data?.id ||
+          (result as any).id ||
+          (result as any).messageId ||
+          'unknown',
       });
     } else {
       return NextResponse.json(
@@ -47,9 +52,9 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Test email error:', error);
     return NextResponse.json(
-      { 
-        error: 'Internal server error', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -58,10 +63,11 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   return NextResponse.json({
-    message: 'Email test endpoint is ready. Send a POST request with {"to": "your-email@example.com"} to test.',
+    message:
+      'Email test endpoint is ready. Send a POST request with {"to": "your-email@example.com"} to test.',
     endpoints: {
       test: 'POST /api/test/email',
-      body: { to: 'your-email@example.com' }
-    }
+      body: { to: 'your-email@example.com' },
+    },
   });
-} 
+}

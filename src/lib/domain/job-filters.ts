@@ -10,7 +10,9 @@ export interface JobFilterParams {
   };
 }
 
-export function getDomainJobFilters(domainConfig: DomainConfig): JobFilterParams {
+export function getDomainJobFilters(
+  domainConfig: DomainConfig
+): JobFilterParams {
   return {
     location: domainConfig.region,
     radius: domainConfig.radius,
@@ -22,7 +24,7 @@ export function getDomainJobFilters(domainConfig: DomainConfig): JobFilterParams
 // Prisma-compatible filter object
 export function generatePrismaJobFilter(domainConfig: DomainConfig) {
   const filters = getDomainJobFilters(domainConfig);
-  
+
   const locationFilters: any[] = [];
 
   // Filter by cities
@@ -53,7 +55,10 @@ export function generatePrismaJobFilter(domainConfig: DomainConfig) {
 }
 
 // Helper to determine if a job matches the domain's region
-export function isJobInDomainRegion(job: any, domainConfig: DomainConfig): boolean {
+export function isJobInDomainRegion(
+  job: any,
+  domainConfig: DomainConfig
+): boolean {
   if (!job.location) return false;
 
   const location = job.location.toLowerCase();
@@ -74,4 +79,4 @@ export function isJobInDomainRegion(job: any, domainConfig: DomainConfig): boole
   }
 
   return false;
-} 
+}

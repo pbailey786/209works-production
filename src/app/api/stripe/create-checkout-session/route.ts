@@ -7,7 +7,7 @@ import { PricingTier, BillingInterval } from '@prisma/client';
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession();
-    
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -16,12 +16,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { 
-      priceId, 
-      tier, 
-      billingInterval, 
-      successUrl, 
-      cancelUrl 
+    const {
+      priceId,
+      tier,
+      billingInterval,
+      successUrl,
+      cancelUrl,
     }: {
       priceId: string;
       tier: PricingTier;
@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate the price ID matches the tier and billing interval
-    const expectedPriceId = STRIPE_PRICE_IDS[tier as keyof typeof STRIPE_PRICE_IDS]?.[billingInterval === BillingInterval.yearly ? 'yearly' : 'monthly'];
+    const expectedPriceId =
+      STRIPE_PRICE_IDS[tier as keyof typeof STRIPE_PRICE_IDS]?.[
+        billingInterval === BillingInterval.yearly ? 'yearly' : 'monthly'
+      ];
     if (priceId !== expectedPriceId) {
       return NextResponse.json(
         { error: 'Invalid price ID for selected plan' },
@@ -43,14 +46,11 @@ export async function POST(request: NextRequest) {
     let customer;
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, stripeCustomerId: true, name: true, email: true }
+      select: { id: true, stripeCustomerId: true, name: true, email: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.stripeCustomerId) {
@@ -95,7 +95,9 @@ export async function POST(request: NextRequest) {
           billingInterval,
         },
       },
-      success_url: successUrl || `${process.env.NEXTAUTH_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      success_url:
+        successUrl ||
+        `${process.env.NEXTAUTH_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl || `${process.env.NEXTAUTH_URL}/pricing`,
       metadata: {
         userId: user.id,
@@ -108,7 +110,6 @@ export async function POST(request: NextRequest) {
       sessionId: checkoutSession.id,
       url: checkoutSession.url,
     });
-
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return NextResponse.json(
@@ -116,4 +117,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

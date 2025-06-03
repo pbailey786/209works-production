@@ -151,26 +151,24 @@ export default function ErrorDisplay({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className={`
-        ${config.bgColor} 
-        ${config.borderColor} 
-        ${variantClass} 
-        ${sizeConfig.padding}
-        ${className}
-      `}
+      className={` ${config.bgColor} ${config.borderColor} ${variantClass} ${sizeConfig.padding} ${className} `}
     >
       <div className="flex items-start">
         {showIcon && (
           <div className="flex-shrink-0">
-            <config.icon className={`${sizeConfig.iconSize} ${config.iconColor}`} />
+            <config.icon
+              className={`${sizeConfig.iconSize} ${config.iconColor}`}
+            />
           </div>
         )}
-        
+
         <div className={`${showIcon ? 'ml-3' : ''} flex-1`}>
-          <h3 className={`font-medium ${config.textColor} ${sizeConfig.textSize}`}>
+          <h3
+            className={`font-medium ${config.textColor} ${sizeConfig.textSize}`}
+          >
             {getErrorTitle()}
           </h3>
-          
+
           <div className={`mt-1 ${config.textColor} ${sizeConfig.textSize}`}>
             <p>{errorMessage}</p>
             {type !== 'validation' && (
@@ -183,21 +181,9 @@ export default function ErrorDisplay({
               {shouldShowRetry && (
                 <button
                   onClick={onRetry}
-                  className={`
-                    inline-flex items-center 
-                    ${config.buttonColor} 
-                    text-white 
-                    ${sizeConfig.buttonSize} 
-                    rounded-md 
-                    font-medium 
-                    transition-colors
-                    focus:outline-none 
-                    focus:ring-2 
-                    focus:ring-offset-2 
-                    focus:ring-offset-white
-                  `}
+                  className={`inline-flex items-center ${config.buttonColor} text-white ${sizeConfig.buttonSize} rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white`}
                 >
-                  <ArrowPathIcon className="w-4 h-4 mr-1" />
+                  <ArrowPathIcon className="mr-1 h-4 w-4" />
                   {retryLabel}
                   {maxRetries > 1 && (
                     <span className="ml-1 text-xs opacity-75">
@@ -206,17 +192,11 @@ export default function ErrorDisplay({
                   )}
                 </button>
               )}
-              
+
               {onDismiss && (
                 <button
                   onClick={onDismiss}
-                  className={`
-                    ${sizeConfig.buttonSize} 
-                    text-gray-600 
-                    hover:text-gray-800 
-                    transition-colors
-                    focus:outline-none
-                  `}
+                  className={` ${sizeConfig.buttonSize} text-gray-600 transition-colors hover:text-gray-800 focus:outline-none`}
                 >
                   Dismiss
                 </button>
@@ -226,11 +206,12 @@ export default function ErrorDisplay({
 
           {currentAttempt >= maxRetries && (
             <div className="mt-2 text-xs opacity-75">
-              Maximum retry attempts reached. Please contact support if the problem persists.
+              Maximum retry attempts reached. Please contact support if the
+              problem persists.
             </div>
           )}
         </div>
       </div>
     </motion.div>
   );
-} 
+}

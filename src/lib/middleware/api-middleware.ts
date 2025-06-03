@@ -27,7 +27,10 @@ export function withValidation(
   handler: (req: ValidatedRequest) => Promise<Response>,
   options: ValidationOptions
 ) {
-  return async (req: NextRequest, context?: { params?: any }): Promise<Response> => {
+  return async (
+    req: NextRequest,
+    context?: { params?: any }
+  ): Promise<Response> => {
     try {
       const validatedReq = req as ValidatedRequest;
       const errors: FormError[] = [];
@@ -101,15 +104,17 @@ export function withValidation(
       return await handler(validatedReq);
     } catch (error) {
       console.error('API Middleware Error:', error);
-      
+
       return NextResponse.json(
         {
           error: 'Internal server error',
-          details: [{
-            field: 'general',
-            message: 'An unexpected error occurred',
-            type: 'server',
-          }],
+          details: [
+            {
+              field: 'general',
+              message: 'An unexpected error occurred',
+              type: 'server',
+            },
+          ],
         },
         { status: 500 }
       );
@@ -131,46 +136,53 @@ export function withRateLimit(
   const requests = new Map<string, { count: number; resetTime: number }>();
 
   return async (req: NextRequest): Promise<Response> => {
-    const key = options.keyGenerator ? 
-      options.keyGenerator(req) : 
-      req.headers.get('x-forwarded-for') || 'anonymous';
-    
+    const key = options.keyGenerator
+      ? options.keyGenerator(req)
+      : req.headers.get('x-forwarded-for') || 'anonymous';
+
     const now = Date.now();
     const windowStart = now - options.windowMs;
-    
+
     // Clean up old entries
     for (const [k, v] of requests.entries()) {
       if (v.resetTime < windowStart) {
         requests.delete(k);
       }
     }
-    
-    const current = requests.get(key) || { count: 0, resetTime: now + options.windowMs };
-    
+
+    const current = requests.get(key) || {
+      count: 0,
+      resetTime: now + options.windowMs,
+    };
+
     if (current.count >= options.maxRequests && current.resetTime > now) {
       return NextResponse.json(
         {
           error: 'Rate limit exceeded',
-          details: [{
-            field: 'general',
-            message: 'Too many requests. Please try again later.',
-            type: 'server',
-          }],
+          details: [
+            {
+              field: 'general',
+              message: 'Too many requests. Please try again later.',
+              type: 'server',
+            },
+          ],
         },
-        { 
+        {
           status: 429,
           headers: {
-            'Retry-After': Math.ceil((current.resetTime - now) / 1000).toString(),
+            'Retry-After': Math.ceil(
+              (current.resetTime - now) / 1000
+            ).toString(),
           },
         }
       );
     }
-    
+
     requests.set(key, {
       count: current.count + 1,
       resetTime: current.resetTime,
     });
-    
+
     return await handler(req);
   };
 }
@@ -190,28 +202,30 @@ export function withAuth(
       // Get auth token from header
       const authHeader = req.headers.get('authorization');
       const token = authHeader?.replace('Bearer ', '');
-      
+
       if (!token && options.required) {
         return NextResponse.json(
           {
             error: 'Authentication required',
-            details: [{
-              field: 'auth',
-              message: 'Authentication token is required',
-              type: 'server',
-            }],
+            details: [
+              {
+                field: 'auth',
+                message: 'Authentication token is required',
+                type: 'server',
+              },
+            ],
           },
           { status: 401 }
         );
       }
-      
+
       if (token) {
         // Verify token and get user (implement your auth logic here)
         // This is a placeholder - replace with your actual auth verification
         try {
           // const user = await verifyToken(token);
           // req.user = user;
-          
+
           // Check roles if specified
           if (options.roles && req.user) {
             const hasRole = options.roles.includes(req.user.role);
@@ -219,11 +233,14 @@ export function withAuth(
               return NextResponse.json(
                 {
                   error: 'Insufficient permissions',
-                  details: [{
-                    field: 'auth',
-                    message: 'You do not have permission to access this resource',
-                    type: 'server',
-                  }],
+                  details: [
+                    {
+                      field: 'auth',
+                      message:
+                        'You do not have permission to access this resource',
+                      type: 'server',
+                    },
+                  ],
                 },
                 { status: 403 }
               );
@@ -233,29 +250,33 @@ export function withAuth(
           return NextResponse.json(
             {
               error: 'Invalid token',
-              details: [{
-                field: 'auth',
-                message: 'Authentication token is invalid',
-                type: 'server',
-              }],
+              details: [
+                {
+                  field: 'auth',
+                  message: 'Authentication token is invalid',
+                  type: 'server',
+                },
+              ],
             },
             { status: 401 }
           );
         }
       }
-      
+
       return await handler(req);
     } catch (error) {
       console.error('Auth Middleware Error:', error);
-      
+
       return NextResponse.json(
         {
           error: 'Authentication error',
-          details: [{
-            field: 'auth',
-            message: 'An error occurred during authentication',
-            type: 'server',
-          }],
+          details: [
+            {
+              field: 'auth',
+              message: 'An error occurred during authentication',
+              type: 'server',
+            },
+          ],
         },
         { status: 500 }
       );
@@ -266,9 +287,14 @@ export function withAuth(
 /**
  * Compose multiple middleware functions
  */
-export function composeMiddleware(...middlewares: Array<(handler: any) => any>) {
+export function composeMiddleware(
+  ...middlewares: Array<(handler: any) => any>
+) {
   return (handler: any) => {
-    return middlewares.reduceRight((acc, middleware) => middleware(acc), handler);
+    return middlewares.reduceRight(
+      (acc, middleware) => middleware(acc),
+      handler
+    );
   };
 }
 
@@ -287,20 +313,18 @@ export class ApiResponse {
     );
   }
 
-  static error(
-    message: string,
-    details?: FormError[],
-    status = 400
-  ) {
+  static error(message: string, details?: FormError[], status = 400) {
     return NextResponse.json(
       {
         success: false,
         error: message,
-        details: details || [{
-          field: 'general',
-          message,
-          type: 'server' as const,
-        }],
+        details: details || [
+          {
+            field: 'general',
+            message,
+            type: 'server' as const,
+          },
+        ],
       },
       { status }
     );
@@ -316,4 +340,4 @@ export class ApiResponse {
       { status: 400 }
     );
   }
-} 
+}

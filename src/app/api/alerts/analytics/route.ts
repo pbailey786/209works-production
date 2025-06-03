@@ -55,16 +55,31 @@ export async function GET(request: NextRequest) {
     // Calculate email metrics
     const totalAlerts = userAlerts.length;
     const activeAlerts = userAlerts.filter(alert => alert.isActive).length;
-    
+
     // Mock email metrics (in a real app, this would come from your email service)
     const emailMetrics = {
-      totalSent: userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0),
-      delivered: Math.floor(userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.96),
-      opened: Math.floor(userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.58),
-      clicked: Math.floor(userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.22),
-      bounced: Math.floor(userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.04),
-      complaints: Math.floor(userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.001),
-      unsubscribed: Math.floor(userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.002),
+      totalSent: userAlerts.reduce(
+        (sum, alert) => sum + alert.totalJobsSent,
+        0
+      ),
+      delivered: Math.floor(
+        userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.96
+      ),
+      opened: Math.floor(
+        userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.58
+      ),
+      clicked: Math.floor(
+        userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.22
+      ),
+      bounced: Math.floor(
+        userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.04
+      ),
+      complaints: Math.floor(
+        userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.001
+      ),
+      unsubscribed: Math.floor(
+        userAlerts.reduce((sum, alert) => sum + alert.totalJobsSent, 0) * 0.002
+      ),
       deliveryRate: 96.0,
       openRate: 58.0,
       clickRate: 22.0,
@@ -80,14 +95,15 @@ export async function GET(request: NextRequest) {
       userEngagement: Math.floor(Math.random() * 30) + 70, // Mock engagement score
       successfulPlacements: Math.floor(alert.totalJobsSent * 0.05), // Mock placements
       isActive: alert.isActive,
-      lastTriggered: alert.lastTriggered?.toISOString() || alert.createdAt.toISOString(),
+      lastTriggered:
+        alert.lastTriggered?.toISOString() || alert.createdAt.toISOString(),
     }));
 
     // Generate time series data for the past period
     const timeSeriesData = Array.from({ length: daysNumber }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (daysNumber - 1 - i));
-      
+
       const baseSent = Math.floor(Math.random() * 100) + 50;
       return {
         date: date.toISOString().split('T')[0],
@@ -130,7 +146,6 @@ export async function GET(request: NextRequest) {
         generatedAt: new Date().toISOString(),
       },
     });
-
   } catch (error) {
     console.error('Analytics API error:', error);
     return NextResponse.json(
@@ -138,4 +153,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

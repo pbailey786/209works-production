@@ -1,7 +1,7 @@
 /**
  * Data Integrity Service
  * Task 45.14: Fix Cascading Delete Risks and Data Integrity Constraints
- * 
+ *
  * This service provides safe deletion operations and data integrity validation
  * to prevent cascading delete issues and maintain referential integrity.
  */
@@ -14,7 +14,13 @@ import { DEFAULT_TTL } from '@/lib/cache/config';
 export interface DeletionResult {
   success: boolean;
   entityId: string;
-  entityType: 'user' | 'company' | 'job' | 'jobApplication' | 'alert' | 'userAddOn';
+  entityType:
+    | 'user'
+    | 'company'
+    | 'job'
+    | 'jobApplication'
+    | 'alert'
+    | 'userAddOn';
   relatedRecords: Record<string, number>;
   auditRecordCreated: boolean;
   warnings?: string[];
@@ -59,7 +65,7 @@ export class DataIntegrityService {
   ): Promise<DeletionResult> {
     try {
       console.log(`Starting safe deletion of user: ${userId}`);
-      
+
       // Call the database function for safe user deletion
       const result = await prisma.$queryRaw<any[]>`
         SELECT safe_delete_user(
@@ -70,7 +76,7 @@ export class DataIntegrityService {
       `;
 
       const deletionResult = result[0]?.result;
-      
+
       if (!deletionResult?.success) {
         throw new Error('Safe user deletion failed');
       }
@@ -87,10 +93,9 @@ export class DataIntegrityService {
         relatedRecords: deletionResult.relatedRecords || {},
         auditRecordCreated: deletionResult.auditRecordCreated || false,
       };
-
     } catch (error) {
       console.error('Error in safe user deletion:', error);
-      
+
       return {
         success: false,
         entityId: userId,
@@ -113,7 +118,7 @@ export class DataIntegrityService {
   ): Promise<DeletionResult> {
     try {
       console.log(`Starting safe deletion of company: ${companyId}`);
-      
+
       // Call the database function for safe company deletion
       const result = await prisma.$queryRaw<any[]>`
         SELECT safe_delete_company(
@@ -124,7 +129,7 @@ export class DataIntegrityService {
       `;
 
       const deletionResult = result[0]?.result;
-      
+
       if (!deletionResult?.success) {
         throw new Error('Safe company deletion failed');
       }
@@ -141,10 +146,9 @@ export class DataIntegrityService {
         relatedRecords: deletionResult.relatedRecords || {},
         auditRecordCreated: deletionResult.auditRecordCreated || false,
       };
-
     } catch (error) {
       console.error('Error in safe company deletion:', error);
-      
+
       return {
         success: false,
         entityId: companyId,
@@ -169,7 +173,7 @@ export class DataIntegrityService {
 
       // Check if job exists and is not already deleted
       const job = await prisma.job.findFirst({
-        where: { 
+        where: {
           id: jobId,
           deletedAt: null,
         },
@@ -191,7 +195,7 @@ export class DataIntegrityService {
       };
 
       // Soft delete the job and related applications
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async tx => {
         // Soft delete job applications first
         await tx.jobApplication.updateMany({
           where: { jobId, deletedAt: null },
@@ -217,10 +221,9 @@ export class DataIntegrityService {
         relatedRecords,
         auditRecordCreated: false, // No audit table for jobs yet
       };
-
     } catch (error) {
       console.error('Error in soft job deletion:', error);
-      
+
       return {
         success: false,
         entityId: jobId,
@@ -238,7 +241,7 @@ export class DataIntegrityService {
    */
   static async validateDataIntegrity(): Promise<IntegrityIssues> {
     const cacheKey = `${this.CACHE_PREFIX}:integrity_check`;
-    
+
     try {
       // Check cache first (short TTL for integrity checks)
       const cached = await getCache<IntegrityIssues>(cacheKey);
@@ -252,37 +255,47 @@ export class DataIntegrityService {
       `;
 
       const integrityResult = result[0]?.result;
-      
+
       if (!integrityResult) {
         throw new Error('Failed to validate data integrity');
       }
 
       const issues: IntegrityIssues = {
         timestamp: new Date(integrityResult.timestamp),
-        totalIssues: Object.values(integrityResult.issues).reduce((sum: number, count: any) => sum + Number(count), 0),
+        totalIssues: Object.values(integrityResult.issues).reduce(
+          (sum: number, count: any) => sum + Number(count),
+          0
+        ),
         issues: {
           orphanedJobs: Number(integrityResult.issues.orphanedJobs),
-          orphanedJobApplications: Number(integrityResult.issues.orphanedJobApplications),
+          orphanedJobApplications: Number(
+            integrityResult.issues.orphanedJobApplications
+          ),
           orphanedUserAddOns: Number(integrityResult.issues.orphanedUserAddOns),
-          invalidSubscriptionDates: Number(integrityResult.issues.invalidSubscriptionDates),
+          invalidSubscriptionDates: Number(
+            integrityResult.issues.invalidSubscriptionDates
+          ),
         },
-        status: integrityResult.issues.orphanedJobs > 0 || 
-                integrityResult.issues.orphanedJobApplications > 0 ||
-                integrityResult.issues.orphanedUserAddOns > 0 ||
-                integrityResult.issues.invalidSubscriptionDates > 0 
-                ? 'ISSUES_FOUND' : 'HEALTHY',
+        status:
+          integrityResult.issues.orphanedJobs > 0 ||
+          integrityResult.issues.orphanedJobApplications > 0 ||
+          integrityResult.issues.orphanedUserAddOns > 0 ||
+          integrityResult.issues.invalidSubscriptionDates > 0
+            ? 'ISSUES_FOUND'
+            : 'HEALTHY',
       };
 
       // Cache the result for a short time
       await setCache(cacheKey, issues, { ttl: this.CACHE_TTL });
 
-      console.log(`Data integrity check completed. Status: ${issues.status}, Issues: ${issues.totalIssues}`);
+      console.log(
+        `Data integrity check completed. Status: ${issues.status}, Issues: ${issues.totalIssues}`
+      );
 
       return issues;
-
     } catch (error) {
       console.error('Error validating data integrity:', error);
-      
+
       return {
         timestamp: new Date(),
         totalIssues: -1,
@@ -301,7 +314,9 @@ export class DataIntegrityService {
    * Monitor data integrity and alert if issues found
    * Uses the monitor_data_integrity database function
    */
-  static async monitorDataIntegrity(): Promise<IntegrityIssues & { alertTriggered: boolean }> {
+  static async monitorDataIntegrity(): Promise<
+    IntegrityIssues & { alertTriggered: boolean }
+  > {
     try {
       console.log('Running data integrity monitoring...');
 
@@ -311,7 +326,7 @@ export class DataIntegrityService {
       `;
 
       const monitorResult = result[0]?.result;
-      
+
       if (!monitorResult) {
         throw new Error('Failed to monitor data integrity');
       }
@@ -321,9 +336,15 @@ export class DataIntegrityService {
         totalIssues: Number(monitorResult.totalIssues),
         issues: {
           orphanedJobs: Number(monitorResult.details.issues.orphanedJobs),
-          orphanedJobApplications: Number(monitorResult.details.issues.orphanedJobApplications),
-          orphanedUserAddOns: Number(monitorResult.details.issues.orphanedUserAddOns),
-          invalidSubscriptionDates: Number(monitorResult.details.issues.invalidSubscriptionDates),
+          orphanedJobApplications: Number(
+            monitorResult.details.issues.orphanedJobApplications
+          ),
+          orphanedUserAddOns: Number(
+            monitorResult.details.issues.orphanedUserAddOns
+          ),
+          invalidSubscriptionDates: Number(
+            monitorResult.details.issues.invalidSubscriptionDates
+          ),
         },
         status: monitorResult.status,
         alertTriggered: monitorResult.totalIssues > 0,
@@ -334,13 +355,14 @@ export class DataIntegrityService {
         await invalidateCache(`${this.CACHE_PREFIX}:integrity_check`);
       }
 
-      console.log(`Data integrity monitoring completed. Status: ${issues.status}, Issues: ${issues.totalIssues}`);
+      console.log(
+        `Data integrity monitoring completed. Status: ${issues.status}, Issues: ${issues.totalIssues}`
+      );
 
       return issues;
-
     } catch (error) {
       console.error('Error monitoring data integrity:', error);
-      
+
       return {
         timestamp: new Date(),
         totalIssues: -1,
@@ -360,9 +382,13 @@ export class DataIntegrityService {
    * Clean up soft-deleted records older than specified days
    * Uses the cleanup_soft_deleted_records database function
    */
-  static async cleanupSoftDeletedRecords(daysOld: number = 90): Promise<CleanupResult> {
+  static async cleanupSoftDeletedRecords(
+    daysOld: number = 90
+  ): Promise<CleanupResult> {
     try {
-      console.log(`Starting cleanup of soft-deleted records older than ${daysOld} days...`);
+      console.log(
+        `Starting cleanup of soft-deleted records older than ${daysOld} days...`
+      );
 
       // Call the database function for cleanup
       const result = await prisma.$queryRaw<any[]>`
@@ -370,14 +396,19 @@ export class DataIntegrityService {
       `;
 
       const cleanupResult = result[0]?.result;
-      
+
       if (!cleanupResult?.success) {
         throw new Error('Cleanup of soft-deleted records failed');
       }
 
-      const totalDeleted = Object.values(cleanupResult.deletedCounts).reduce((sum: number, count: any) => sum + Number(count), 0);
+      const totalDeleted = Object.values(cleanupResult.deletedCounts).reduce(
+        (sum: number, count: any) => sum + Number(count),
+        0
+      );
 
-      console.log(`Cleanup completed. Total records permanently deleted: ${totalDeleted}`);
+      console.log(
+        `Cleanup completed. Total records permanently deleted: ${totalDeleted}`
+      );
 
       return {
         success: true,
@@ -385,10 +416,9 @@ export class DataIntegrityService {
         deletedCounts: cleanupResult.deletedCounts,
         totalDeleted,
       };
-
     } catch (error) {
       console.error('Error cleaning up soft-deleted records:', error);
-      
+
       return {
         success: false,
         cutoffDate: new Date(),
@@ -437,7 +467,10 @@ export class DataIntegrityService {
   /**
    * Get billing audit records for a user
    */
-  static async getBillingAudit(userId: string, limit: number = 50): Promise<any[]> {
+  static async getBillingAudit(
+    userId: string,
+    limit: number = 50
+  ): Promise<any[]> {
     try {
       const auditRecords = await prisma.$queryRaw<any[]>`
         SELECT * FROM "BillingAudit" 
@@ -456,7 +489,10 @@ export class DataIntegrityService {
   /**
    * Restore a soft-deleted user (if within restoration window)
    */
-  static async restoreSoftDeletedUser(userId: string, restoredBy?: string): Promise<DeletionResult> {
+  static async restoreSoftDeletedUser(
+    userId: string,
+    restoredBy?: string
+  ): Promise<DeletionResult> {
     try {
       console.log(`Attempting to restore soft-deleted user: ${userId}`);
 
@@ -476,7 +512,7 @@ export class DataIntegrityService {
       }
 
       // Restore user and related records
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async tx => {
         // Restore user
         await tx.user.update({
           where: { id: userId },
@@ -512,10 +548,9 @@ export class DataIntegrityService {
         relatedRecords: {},
         auditRecordCreated: false,
       };
-
     } catch (error) {
       console.error('Error restoring soft-deleted user:', error);
-      
+
       return {
         success: false,
         entityId: userId,
@@ -546,7 +581,9 @@ export class DataIntegrityService {
   /**
    * Invalidate company-related caches
    */
-  private static async invalidateCompanyCaches(companyId: string): Promise<void> {
+  private static async invalidateCompanyCaches(
+    companyId: string
+  ): Promise<void> {
     try {
       await Promise.all([
         invalidateCache(`companies:${companyId}`),
@@ -578,12 +615,18 @@ export class DataIntegrityService {
    * Get soft-deleted records for recovery
    */
   static async getSoftDeletedRecords(
-    entityType: 'user' | 'company' | 'job' | 'jobApplication' | 'alert' | 'userAddOn',
+    entityType:
+      | 'user'
+      | 'company'
+      | 'job'
+      | 'jobApplication'
+      | 'alert'
+      | 'userAddOn',
     limit: number = 50
   ): Promise<any[]> {
     try {
       const tableName = this.getTableName(entityType);
-      
+
       const records = await prisma.$queryRawUnsafe(`
         SELECT * FROM "${tableName}" 
         WHERE "deletedAt" IS NOT NULL 
@@ -615,4 +658,4 @@ export class DataIntegrityService {
   }
 }
 
-export default DataIntegrityService; 
+export default DataIntegrityService;

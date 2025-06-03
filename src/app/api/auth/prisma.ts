@@ -16,4 +16,4 @@ if (!globalForPrisma.prisma) {
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
-} 
+}

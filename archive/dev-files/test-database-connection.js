@@ -28,11 +28,11 @@ async function testDatabase() {
         title: true,
         company: true,
         location: true,
-        jobType: true
-      }
+        jobType: true,
+      },
     });
     console.log(`   ✅ Retrieved ${jobs.length} jobs successfully`);
-    
+
     if (jobs.length > 0) {
       console.log('   📋 Sample job:');
       console.log(`       Title: ${jobs[0].title}`);
@@ -47,12 +47,9 @@ async function testDatabase() {
       status: 'active',
       AND: [
         {
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } },
-          ]
-        }
-      ]
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+        },
+      ],
     };
 
     const complexJobs = await prisma.job.findMany({
@@ -66,10 +63,10 @@ async function testDatabase() {
         location: true,
         jobType: true,
         status: true,
-        expiresAt: true
-      }
+        expiresAt: true,
+      },
     });
-    
+
     console.log(`   ✅ Complex query returned ${complexJobs.length} jobs`);
 
     // Test 5: Test the specific query that might be failing
@@ -79,36 +76,34 @@ async function testDatabase() {
         status: 'active',
         AND: [
           {
-            OR: [
-              { expiresAt: null },
-              { expiresAt: { gt: new Date() } },
-            ]
+            OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
           },
           {
             location: {
               contains: 'stockton',
-              mode: 'insensitive'
-            }
-          }
-        ]
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
       take: 3,
       select: {
         id: true,
         title: true,
         company: true,
-        location: true
-      }
+        location: true,
+      },
     });
-    
-    console.log(`   ✅ Location search returned ${locationJobs.length} jobs for Stockton`);
+
+    console.log(
+      `   ✅ Location search returned ${locationJobs.length} jobs for Stockton`
+    );
 
     console.log('\n🎉 All database tests passed!');
     console.log('\nIf your chat is still failing, the issue might be in:');
     console.log('   - API route configuration');
     console.log('   - Request/response handling');
     console.log('   - OpenAI API key setup');
-
   } catch (error) {
     console.error('\n❌ Database test failed:');
     console.error('Error:', error.message);
@@ -126,4 +121,4 @@ async function testDatabase() {
   }
 }
 
-testDatabase(); 
+testDatabase();

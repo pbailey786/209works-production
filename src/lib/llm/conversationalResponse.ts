@@ -10,9 +10,12 @@ interface ConversationalResponseParams {
 }
 
 // Convert conversation history to OpenAI chat format
-function formatConversationForOpenAI(conversationHistory: any[], currentUserMessage: string) {
+function formatConversationForOpenAI(
+  conversationHistory: any[],
+  currentUserMessage: string
+) {
   const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
-  
+
   // Add recent conversation history
   conversationHistory.slice(-6).forEach((msg: any) => {
     if (msg.type === 'user') {
@@ -26,10 +29,10 @@ function formatConversationForOpenAI(conversationHistory: any[], currentUserMess
       messages.push({ role: 'assistant', content });
     }
   });
-  
+
   // Add current user message
   messages.push({ role: 'user', content: currentUserMessage });
-  
+
   return messages;
 }
 
@@ -39,9 +42,8 @@ export async function generateConversationalResponse({
   jobs,
   conversationHistory = [],
   userProfile = null,
-  jobMatches = []
+  jobMatches = [],
 }: ConversationalResponseParams): Promise<string> {
-  
   // Build context from conversation history - properly formatted for OpenAI
   const conversationContext = conversationHistory
     .slice(-8) // Last 8 messages for better context (4 exchanges)
@@ -50,14 +52,18 @@ export async function generateConversationalResponse({
         return `Human: ${msg.content}`;
       } else {
         // Include job count if available for assistant messages
-        const jobInfo = msg.jobs && msg.jobs.length > 0 ? ` (Found ${msg.jobs.length} jobs)` : '';
+        const jobInfo =
+          msg.jobs && msg.jobs.length > 0
+            ? ` (Found ${msg.jobs.length} jobs)`
+            : '';
         return `Assistant: ${msg.content}${jobInfo}`;
       }
     })
     .join('\n');
 
   // Build user profile context
-  const profileContext = userProfile ? `
+  const profileContext = userProfile
+    ? `
 User Profile:
 - Experience: ${userProfile.experience || 'Not specified'}
 - Skills: ${userProfile.skills?.join(', ') || 'Not specified'}
@@ -65,32 +71,46 @@ User Profile:
 - Preferred Job Types: ${userProfile.preferences?.jobTypes?.join(', ') || 'Not specified'}
 - Salary Range: ${userProfile.preferences?.salaryRange ? `$${userProfile.preferences.salaryRange.min} - $${userProfile.preferences.salaryRange.max}` : 'Not specified'}
 - Remote Work: ${userProfile.preferences?.remoteWork ? 'Yes' : 'No'}
-` : '';
+`
+    : '';
 
   // Build job matches context
-  const matchesContext = jobMatches.length > 0 ? `
+  const matchesContext =
+    jobMatches.length > 0
+      ? `
 Job Match Analysis:
-${jobMatches.slice(0, 3).map((match: any) => 
-  `- ${match.title} at ${match.company}: ${match.matchScore}% match (${match.matchReason})`
-).join('\n')}
-` : '';
+${jobMatches
+  .slice(0, 3)
+  .map(
+    (match: any) =>
+      `- ${match.title} at ${match.company}: ${match.matchScore}% match (${match.matchReason})`
+  )
+  .join('\n')}
+`
+      : '';
 
   // Build job results summary with more detail
-  const jobsContext = jobs.length > 0 ? `
+  const jobsContext =
+    jobs.length > 0
+      ? `
 Found ${jobs.length} job${jobs.length !== 1 ? 's' : ''}:
-${jobs.slice(0, 5).map((job: any) => {
-  let salary = '';
-  if (job.salaryMin && job.salaryMax) {
-    salary = ` - $${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`;
-  } else if (job.salaryMin) {
-    salary = ` - from $${job.salaryMin.toLocaleString()}`;
-  } else if (job.salaryMax) {
-    salary = ` - up to $${job.salaryMax.toLocaleString()}`;
-  }
-  return `• ${job.title} at ${job.company} (${job.location})${salary}${job.jobType ? ` [${job.jobType}]` : ''}`;
-}).join('\n')}
+${jobs
+  .slice(0, 5)
+  .map((job: any) => {
+    let salary = '';
+    if (job.salaryMin && job.salaryMax) {
+      salary = ` - $${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`;
+    } else if (job.salaryMin) {
+      salary = ` - from $${job.salaryMin.toLocaleString()}`;
+    } else if (job.salaryMax) {
+      salary = ` - up to $${job.salaryMax.toLocaleString()}`;
+    }
+    return `• ${job.title} at ${job.company} (${job.location})${salary}${job.jobType ? ` [${job.jobType}]` : ''}`;
+  })
+  .join('\n')}
 ${jobs.length > 5 ? `... and ${jobs.length - 5} more positions` : ''}
-` : 'No jobs found matching the criteria.';
+`
+      : 'No jobs found matching the criteria.';
 
   // Build extracted filters summary
   const filtersContext = `
@@ -147,8 +167,11 @@ Example responses for context:
 
   // Try using proper chat format first if we have OpenAI
   try {
-    const chatMessages = formatConversationForOpenAI(conversationHistory, userMessage);
-    
+    const chatMessages = formatConversationForOpenAI(
+      conversationHistory,
+      userMessage
+    );
+
     // Enhance the system message with current context
     const enhancedSystemPrompt = `${systemPrompt}
 
@@ -164,10 +187,7 @@ ${matchesContext}
 Based on this context and the conversation history, provide a helpful, conversational response that feels natural and continues the conversation effectively.`;
 
     const response = await getChatCompletion(
-      [
-        { role: 'system', content: enhancedSystemPrompt },
-        ...chatMessages
-      ],
+      [{ role: 'system', content: enhancedSystemPrompt }, ...chatMessages],
       {
         model: 'gpt-4',
         temperature: 0.8,
@@ -177,10 +197,13 @@ Based on this context and the conversation history, provide a helpful, conversat
       }
     );
 
-    return response || generateFallbackResponse(jobs.length, filters, conversationHistory);
+    return (
+      response ||
+      generateFallbackResponse(jobs.length, filters, conversationHistory)
+    );
   } catch (error) {
     console.error('Error with chat format, trying fallback approach:', error);
-    
+
     // Fallback to the original prompt-based approach
     const userPrompt = `Current conversation context:
 ${conversationContext ? `\nRecent conversation:\n${conversationContext}\n` : ''}
@@ -208,7 +231,7 @@ Keep it engaging, insightful, and conversational - not just a search result summ
       const response = await getChatCompletion(
         [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: userPrompt },
         ],
         {
           model: 'gpt-4',
@@ -219,16 +242,27 @@ Keep it engaging, insightful, and conversational - not just a search result summ
         }
       );
 
-      return response || generateFallbackResponse(jobs.length, filters, conversationHistory);
+      return (
+        response ||
+        generateFallbackResponse(jobs.length, filters, conversationHistory)
+      );
     } catch (error) {
       console.error('Error generating conversational response:', error);
-      return generateFallbackResponse(jobs.length, filters, conversationHistory);
+      return generateFallbackResponse(
+        jobs.length,
+        filters,
+        conversationHistory
+      );
     }
   }
 }
 
 // Improved fallback response that considers conversation context
-function generateFallbackResponse(jobCount: number, filters: any, conversationHistory: any[]): string {
+function generateFallbackResponse(
+  jobCount: number,
+  filters: any,
+  conversationHistory: any[]
+): string {
   const isFollowUp = conversationHistory.length > 0;
   const location = filters.location;
 
@@ -240,15 +274,15 @@ function generateFallbackResponse(jobCount: number, filters: any, conversationHi
   }
 
   if (isFollowUp) {
-    return `Alright, found ${jobCount} with those tweaks. ${jobCount > 10 ? 'Solid lineup here.' : jobCount > 5 ? 'Some decent options in the mix.' : 'Here\'s what came up.'} Any of these look like they fit?`;
+    return `Alright, found ${jobCount} with those tweaks. ${jobCount > 10 ? 'Solid lineup here.' : jobCount > 5 ? 'Some decent options in the mix.' : "Here's what came up."} Any of these look like they fit?`;
   }
 
-  return `Scraped the job boards and found ${jobCount} that don't look like traps${location ? ` around ${location}` : ' in the 209'}. ${jobCount > 15 ? "That's a solid spread." : jobCount > 8 ? "Some good options to work with." : "Here's what's available."} Which ones are calling your name?`;
+  return `Scraped the job boards and found ${jobCount} that don't look like traps${location ? ` around ${location}` : ' in the 209'}. ${jobCount > 15 ? "That's a solid spread." : jobCount > 8 ? 'Some good options to work with.' : "Here's what's available."} Which ones are calling your name?`;
 }
 
 // Enhanced filter extraction with conversation context
 export async function extractJobSearchFiltersWithContext(
-  userMessage: string, 
+  userMessage: string,
   conversationHistory: any[] = []
 ): Promise<any> {
   // Build conversation context for better filter extraction
@@ -293,7 +327,7 @@ Return as JSON only.`;
     const response = await getChatCompletion(
       [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Extract filters from: "${userMessage}"` }
+        { role: 'user', content: `Extract filters from: "${userMessage}"` },
       ],
       {
         model: 'gpt-4',
@@ -309,7 +343,7 @@ Return as JSON only.`;
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error extracting filters with context:', error);

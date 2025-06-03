@@ -39,10 +39,10 @@ export default function LoadingSpinner({
       case 'dots':
         return (
           <div className="flex space-x-1">
-            {[0, 1, 2].map((i) => (
+            {[0, 1, 2].map(i => (
               <motion.div
                 key={i}
-                className={`w-2 h-2 rounded-full bg-current`}
+                className={`h-2 w-2 rounded-full bg-current`}
                 animate={{
                   scale: [1, 1.2, 1],
                   opacity: [0.5, 1, 0.5],
@@ -75,16 +75,16 @@ export default function LoadingSpinner({
       case 'skeleton':
         return (
           <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+            <div className="h-4 w-3/4 rounded bg-gray-200"></div>
+            <div className="h-4 w-1/2 rounded bg-gray-200"></div>
+            <div className="h-4 w-5/6 rounded bg-gray-200"></div>
           </div>
         );
 
       default: // spinner
         return (
           <motion.div
-            className={`${baseClasses} border-2 border-current border-t-transparent rounded-full`}
+            className={`${baseClasses} rounded-full border-2 border-current border-t-transparent`}
             animate={{ rotate: 360 }}
             transition={{
               duration: 1,
@@ -99,7 +99,7 @@ export default function LoadingSpinner({
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
       {renderSpinner()}
-      
+
       {message && (
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -109,16 +109,16 @@ export default function LoadingSpinner({
           {message}
         </motion.p>
       )}
-      
+
       {progress !== undefined && (
         <div className="mt-3 w-full max-w-xs">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <div className="mb-1 flex justify-between text-xs text-gray-500">
             <span>Progress</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="h-2 w-full rounded-full bg-gray-200">
             <motion.div
-              className="bg-blue-600 h-2 rounded-full"
+              className="h-2 rounded-full bg-blue-600"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
@@ -128,4 +128,4 @@ export default function LoadingSpinner({
       )}
     </div>
   );
-} 
+}

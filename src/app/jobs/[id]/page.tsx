@@ -42,78 +42,84 @@ const getJob = cache(async (id: string): Promise<Job | null> => {
 });
 
 // Cached helper function to get related jobs with optimized query
-const getRelatedJobs = cache(async (job: Job, limit: number = 4): Promise<Job[]> => {
-  try {
-    // Use a more efficient query with indexed fields
-    const relatedJobs = await prisma.job.findMany({
-      where: {
-        AND: [
-          { id: { not: job.id } },
-          {
-            OR: [
-              // Prioritize same company jobs first
-              { company: { equals: job.company, mode: 'insensitive' } },
-              // Then same job type
-              { jobType: job.jobType },
-              // Then jobs with overlapping categories
-              { 
-                categories: {
-                  hasSome: job.categories
-                }
-              },
-              // Finally same location
-              { location: { equals: job.location, mode: 'insensitive' } }
-            ]
-          }
-        ]
-      },
-      select: {
-        id: true,
-        title: true,
-        company: true,
-        location: true,
-        jobType: true,
-        postedAt: true,
-        salaryMin: true,
-        salaryMax: true,
-      },
-      orderBy: [
-        // Prioritize more recent jobs
-        { postedAt: 'desc' },
-        { createdAt: 'desc' }
-      ],
-      take: limit,
-    });
-    return relatedJobs as Job[];
-  } catch (error) {
-    console.error('Error fetching related jobs:', error);
-    return [];
+const getRelatedJobs = cache(
+  async (job: Job, limit: number = 4): Promise<Job[]> => {
+    try {
+      // Use a more efficient query with indexed fields
+      const relatedJobs = await prisma.job.findMany({
+        where: {
+          AND: [
+            { id: { not: job.id } },
+            {
+              OR: [
+                // Prioritize same company jobs first
+                { company: { equals: job.company, mode: 'insensitive' } },
+                // Then same job type
+                { jobType: job.jobType },
+                // Then jobs with overlapping categories
+                {
+                  categories: {
+                    hasSome: job.categories,
+                  },
+                },
+                // Finally same location
+                { location: { equals: job.location, mode: 'insensitive' } },
+              ],
+            },
+          ],
+        },
+        select: {
+          id: true,
+          title: true,
+          company: true,
+          location: true,
+          jobType: true,
+          postedAt: true,
+          salaryMin: true,
+          salaryMax: true,
+        },
+        orderBy: [
+          // Prioritize more recent jobs
+          { postedAt: 'desc' },
+          { createdAt: 'desc' },
+        ],
+        take: limit,
+      });
+      return relatedJobs as Job[];
+    } catch (error) {
+      console.error('Error fetching related jobs:', error);
+      return [];
+    }
   }
-});
+);
 
 // Cached helper function to check if job is saved by user
-const isJobSaved = cache(async (jobId: string, userId: string): Promise<boolean> => {
-  try {
-    const application = await prisma.jobApplication.findUnique({
-      where: {
-        userId_jobId: {
-          userId,
-          jobId,
+const isJobSaved = cache(
+  async (jobId: string, userId: string): Promise<boolean> => {
+    try {
+      const application = await prisma.jobApplication.findUnique({
+        where: {
+          userId_jobId: {
+            userId,
+            jobId,
+          },
         },
-      },
-      select: { id: true }, // Only select ID for performance
-    });
-    return !!application;
-  } catch (error) {
-    console.error('Error checking saved job:', error);
-    return false;
+        select: { id: true }, // Only select ID for performance
+      });
+      return !!application;
+    } catch (error) {
+      console.error('Error checking saved job:', error);
+      return false;
+    }
   }
-});
+);
 
-export async function generateMetadata({ params }: JobDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: JobDetailPageProps): Promise<Metadata> {
   const { id } = await params;
   const job = await getJob(id);
-  
+
   if (!job) {
     return {
       title: 'Job Not Found | 209Jobs',
@@ -123,21 +129,23 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
   }
 
   // Truncate description for better SEO
-  const truncatedDescription = job.description.length > 160 
-    ? `${job.description.substring(0, 157)}...`
-    : job.description;
+  const truncatedDescription =
+    job.description.length > 160
+      ? `${job.description.substring(0, 157)}...`
+      : job.description;
 
-  const salaryRange = job.salaryMin && job.salaryMax 
-    ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
-    : job.salaryMin 
-      ? `From $${job.salaryMin.toLocaleString()}`
-      : job.salaryMax 
-        ? `Up to $${job.salaryMax.toLocaleString()}`
-        : '';
+  const salaryRange =
+    job.salaryMin && job.salaryMax
+      ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
+      : job.salaryMin
+        ? `From $${job.salaryMin.toLocaleString()}`
+        : job.salaryMax
+          ? `Up to $${job.salaryMax.toLocaleString()}`
+          : '';
 
   // Enhanced metadata for better SEO
   const title = `${job.title} at ${job.company} | 209Jobs`;
-  const description = salaryRange 
+  const description = salaryRange
     ? `${truncatedDescription} ${salaryRange} in ${job.location}.`
     : `${truncatedDescription} Located in ${job.location}.`;
 
@@ -152,7 +160,7 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
       ...job.categories,
       'job search',
       'employment',
-      'career opportunities'
+      'career opportunities',
     ].join(', '),
     openGraph: {
       title,
@@ -191,29 +199,29 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const { id } = await params;
-  
+
   // Parallelize data fetching for better performance
   const [job, session] = await Promise.all([
     getJob(id),
     getServerSession(authOptions),
   ]);
-  
+
   if (!job) {
     notFound();
   }
 
   const isAuthenticated = !!session?.user;
-  
+
   // Get user ID if authenticated
   let userId: string | undefined;
   if (isAuthenticated && session?.user?.email) {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true }
+      select: { id: true },
     });
     userId = user?.id;
   }
-  
+
   // Parallelize related jobs and saved status check
   const [relatedJobs, isSaved] = await Promise.all([
     getRelatedJobs(job),
@@ -222,52 +230,53 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
   // Generate optimized structured data for SEO
   const structuredData = {
-    "@context": "https://schema.org/",
-    "@type": "JobPosting",
-    "title": job.title,
-    "description": job.description,
-    "datePosted": job.postedAt.toISOString(),
-    "validThrough": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-    "hiringOrganization": {
-      "@type": "Organization",
-      "name": job.company,
-      "sameAs": `https://209jobs.com/companies/${encodeURIComponent(job.company.toLowerCase())}`,
+    '@context': 'https://schema.org/',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description,
+    datePosted: job.postedAt.toISOString(),
+    validThrough: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: job.company,
+      sameAs: `https://209jobs.com/companies/${encodeURIComponent(job.company.toLowerCase())}`,
     },
-    "jobLocation": {
-      "@type": "Place",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": job.location.split(',')[0]?.trim(),
-        "addressRegion": job.location.split(',')[1]?.trim() || job.location,
-        "addressCountry": "US",
+    jobLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: job.location.split(',')[0]?.trim(),
+        addressRegion: job.location.split(',')[1]?.trim() || job.location,
+        addressCountry: 'US',
       },
     },
-    "employmentType": job.jobType.toUpperCase().replace('_', '_'),
-    "jobBenefits": "Competitive salary and benefits package",
-    "skills": job.categories.join(', '),
-    "identifier": {
-      "@type": "PropertyValue",
-      "name": "209Jobs Job ID",
-      "value": job.id,
+    employmentType: job.jobType.toUpperCase().replace('_', '_'),
+    jobBenefits: 'Competitive salary and benefits package',
+    skills: job.categories.join(', '),
+    identifier: {
+      '@type': 'PropertyValue',
+      name: '209Jobs Job ID',
+      value: job.id,
     },
-    "url": `https://209jobs.com/jobs/${job.id}`,
-    "applicationContact": {
-      "@type": "ContactPoint",
-      "url": job.url,
+    url: `https://209jobs.com/jobs/${job.id}`,
+    applicationContact: {
+      '@type': 'ContactPoint',
+      url: job.url,
     },
-    ...(job.salaryMin && job.salaryMax && {
-      "baseSalary": {
-        "@type": "MonetaryAmount",
-        "currency": "USD",
-        "value": {
-          "@type": "QuantitativeValue",
-          "minValue": job.salaryMin,
-          "maxValue": job.salaryMax,
-          "unitText": "YEAR"
-        }
-      }
-    }),
-    "industry": job.categories.slice(0, 3).join(', '), // Limit for performance
+    ...(job.salaryMin &&
+      job.salaryMax && {
+        baseSalary: {
+          '@type': 'MonetaryAmount',
+          currency: 'USD',
+          value: {
+            '@type': 'QuantitativeValue',
+            minValue: job.salaryMin,
+            maxValue: job.salaryMax,
+            unitText: 'YEAR',
+          },
+        },
+      }),
+    industry: job.categories.slice(0, 3).join(', '), // Limit for performance
   };
 
   return (
@@ -275,14 +284,20 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ 
-          __html: JSON.stringify(structuredData, null, 0) // Minified JSON for performance
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData, null, 0), // Minified JSON for performance
         }}
       />
-      
+
       {/* Preload critical resources */}
-      <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-      
+      <link
+        rel="preload"
+        href="/fonts/inter-var.woff2"
+        as="font"
+        type="font/woff2"
+        crossOrigin="anonymous"
+      />
+
       <JobDetailClient
         job={job}
         relatedJobs={relatedJobs}
@@ -304,7 +319,7 @@ export async function generateStaticParams() {
       take: 50,
     });
 
-    return recentJobs.map((job) => ({
+    return recentJobs.map(job => ({
       id: job.id,
     }));
   } catch (error) {
@@ -318,4 +333,4 @@ export const revalidate = 3600; // Revalidate every hour
 
 // Optimize runtime
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic'; // For authenticated features 
+export const dynamic = 'force-dynamic'; // For authenticated features

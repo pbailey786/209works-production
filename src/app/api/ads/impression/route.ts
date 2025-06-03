@@ -15,7 +15,7 @@ const impressionSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate request body
     const validatedData = impressionSchema.parse(body);
 
@@ -37,10 +37,9 @@ export async function POST(request: NextRequest) {
       message: 'Impression recorded successfully',
       data: result,
     });
-
   } catch (error) {
     console.error('Error recording impression:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
@@ -61,4 +60,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

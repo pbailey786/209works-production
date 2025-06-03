@@ -5,66 +5,75 @@ import InstagramPostAd from '@/components/ads/InstagramPostAd';
 export default function AdsShowcasePage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-4xl font-bold text-gray-900">
             Local Advertisement Platform
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comprehensive advertising solution with intelligent targeting, performance tracking, 
-            and multi-platform integration for local businesses.
+          <p className="mx-auto max-w-3xl text-xl text-gray-600">
+            Comprehensive advertising solution with intelligent targeting,
+            performance tracking, and multi-platform integration for local
+            businesses.
           </p>
           <div className="mt-6 flex justify-center space-x-4">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
               ✅ 100% Complete
             </span>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
               🎯 Geographic Targeting
             </span>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+            <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-800">
               📊 Performance Tracking
             </span>
           </div>
         </div>
 
         {/* Features Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Smart Ad Rotation</h3>
-            <p className="text-gray-600 text-sm">
-              Intelligent algorithm that optimizes ad display based on performance metrics, 
-              bid amounts, and user engagement.
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Smart Ad Rotation
+            </h3>
+            <p className="text-sm text-gray-600">
+              Intelligent algorithm that optimizes ad display based on
+              performance metrics, bid amounts, and user engagement.
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Multi-Platform</h3>
-            <p className="text-gray-600 text-sm">
-              Seamless integration across web, email newsletters, and social media platforms 
-              with consistent tracking.
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Multi-Platform
+            </h3>
+            <p className="text-sm text-gray-600">
+              Seamless integration across web, email newsletters, and social
+              media platforms with consistent tracking.
             </p>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Real-Time Analytics</h3>
-            <p className="text-gray-600 text-sm">
-              Comprehensive tracking of impressions, clicks, and conversions with 
-              detailed performance metrics.
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Real-Time Analytics
+            </h3>
+            <p className="text-sm text-gray-600">
+              Comprehensive tracking of impressions, clicks, and conversions
+              with detailed performance metrics.
             </p>
           </div>
         </div>
 
         {/* Ad Placement Demos */}
         <div className="space-y-12">
-          
           {/* Banner Ads */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Banner Advertisements</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-gray-600 mb-4">
-                Full-width banner ads perfect for header and footer placements with high visibility.
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Banner Advertisements
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <p className="mb-4 text-gray-600">
+                Full-width banner ads perfect for header and footer placements
+                with high visibility.
               </p>
-              <AdDisplay 
-                placement="banner" 
+              <AdDisplay
+                placement="banner"
                 maxAds={2}
                 userLocation="10001"
                 className="space-y-4"
@@ -74,22 +83,26 @@ export default function AdsShowcasePage() {
 
           {/* Sidebar Ads */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Sidebar Advertisements</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-3 bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold mb-4">Main Content Area</h3>
-                <p className="text-gray-600 mb-4">
-                  Sidebar ads are strategically placed alongside main content to capture user attention 
-                  without disrupting the user experience.
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Sidebar Advertisements
+            </h2>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+              <div className="rounded-lg bg-white p-6 shadow-sm lg:col-span-3">
+                <h3 className="mb-4 text-lg font-semibold">
+                  Main Content Area
+                </h3>
+                <p className="mb-4 text-gray-600">
+                  Sidebar ads are strategically placed alongside main content to
+                  capture user attention without disrupting the user experience.
                 </p>
-                <div className="bg-gray-100 rounded-lg p-8 text-center text-gray-500">
+                <div className="rounded-lg bg-gray-100 p-8 text-center text-gray-500">
                   Main content would appear here (job listings, articles, etc.)
                 </div>
               </div>
               <div className="lg:col-span-1">
-                <h3 className="text-lg font-semibold mb-4">Sidebar Ads</h3>
-                <AdDisplay 
-                  placement="sidebar" 
+                <h3 className="mb-4 text-lg font-semibold">Sidebar Ads</h3>
+                <AdDisplay
+                  placement="sidebar"
                   maxAds={3}
                   userLocation="10001"
                   className="space-y-4"
@@ -100,13 +113,16 @@ export default function AdsShowcasePage() {
 
           {/* Native Ads */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Native Advertisements</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-gray-600 mb-4">
-                Native ads blend seamlessly with content, providing a non-intrusive advertising experience.
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Native Advertisements
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <p className="mb-4 text-gray-600">
+                Native ads blend seamlessly with content, providing a
+                non-intrusive advertising experience.
               </p>
-              <AdDisplay 
-                placement="native" 
+              <AdDisplay
+                placement="native"
                 maxAds={3}
                 userLocation="10001"
                 className="space-y-4"
@@ -116,13 +132,16 @@ export default function AdsShowcasePage() {
 
           {/* Search Ads */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Search Result Advertisements</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-gray-600 mb-4">
-                Sponsored search results that appear prominently in search listings with clear labeling.
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Search Result Advertisements
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <p className="mb-4 text-gray-600">
+                Sponsored search results that appear prominently in search
+                listings with clear labeling.
               </p>
-              <AdDisplay 
-                placement="search" 
+              <AdDisplay
+                placement="search"
                 maxAds={2}
                 userLocation="10001"
                 className="space-y-4"
@@ -132,13 +151,16 @@ export default function AdsShowcasePage() {
 
           {/* Featured Ads */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Advertisements</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-gray-600 mb-4">
-                Premium featured ads with enhanced styling and prominent placement for maximum impact.
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Featured Advertisements
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <p className="mb-4 text-gray-600">
+                Premium featured ads with enhanced styling and prominent
+                placement for maximum impact.
               </p>
-              <AdDisplay 
-                placement="featured" 
+              <AdDisplay
+                placement="featured"
                 maxAds={2}
                 userLocation="10001"
                 className="space-y-4"
@@ -148,13 +170,16 @@ export default function AdsShowcasePage() {
 
           {/* Email Newsletter Ads */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Email Newsletter Integration</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-gray-600 mb-4">
-                Email-optimized ads with tracking pixels for comprehensive campaign analytics.
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Email Newsletter Integration
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <p className="mb-4 text-gray-600">
+                Email-optimized ads with tracking pixels for comprehensive
+                campaign analytics.
               </p>
-              <div className="bg-gray-50 rounded-lg p-6">
-                <EmailNewsletterAd 
+              <div className="rounded-lg bg-gray-50 p-6">
+                <EmailNewsletterAd
                   placement="inline"
                   maxAds={2}
                   userLocation="10001"
@@ -167,13 +192,16 @@ export default function AdsShowcasePage() {
 
           {/* Instagram Post Ads */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Social Media Integration</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <p className="text-gray-600 mb-4">
-                Instagram-style post ads with authentic social media appearance and engagement features.
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Social Media Integration
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <p className="mb-4 text-gray-600">
+                Instagram-style post ads with authentic social media appearance
+                and engagement features.
               </p>
               <div className="flex justify-center">
-                <InstagramPostAd 
+                <InstagramPostAd
                   maxAds={1}
                   userLocation="10001"
                   showEngagement={true}
@@ -184,10 +212,14 @@ export default function AdsShowcasePage() {
 
           {/* Technical Features */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Technical Features</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Tracking</h3>
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Technical Features
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="rounded-lg bg-white p-6 shadow-sm">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                  Performance Tracking
+                </h3>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li>✅ Real-time impression tracking</li>
                   <li>✅ Click-through rate monitoring</li>
@@ -196,8 +228,10 @@ export default function AdsShowcasePage() {
                   <li>✅ Budget management and alerts</li>
                 </ul>
               </div>
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Advanced Features</h3>
+              <div className="rounded-lg bg-white p-6 shadow-sm">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                  Advanced Features
+                </h3>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li>✅ ZIP code geographic targeting</li>
                   <li>✅ Intelligent ad rotation algorithm</li>
@@ -211,24 +245,48 @@ export default function AdsShowcasePage() {
 
           {/* API Endpoints */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">API Endpoints</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              API Endpoints
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Core Endpoints</h3>
-                  <ul className="space-y-2 text-sm font-mono text-gray-600">
-                    <li><span className="text-green-600">GET</span> /api/ads/display</li>
-                    <li><span className="text-blue-600">POST</span> /api/ads/impression</li>
-                    <li><span className="text-blue-600">POST</span> /api/ads/click</li>
-                    <li><span className="text-green-600">GET</span> /api/ads</li>
-                    <li><span className="text-blue-600">POST</span> /api/ads</li>
+                  <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                    Core Endpoints
+                  </h3>
+                  <ul className="space-y-2 font-mono text-sm text-gray-600">
+                    <li>
+                      <span className="text-green-600">GET</span>{' '}
+                      /api/ads/display
+                    </li>
+                    <li>
+                      <span className="text-blue-600">POST</span>{' '}
+                      /api/ads/impression
+                    </li>
+                    <li>
+                      <span className="text-blue-600">POST</span> /api/ads/click
+                    </li>
+                    <li>
+                      <span className="text-green-600">GET</span> /api/ads
+                    </li>
+                    <li>
+                      <span className="text-blue-600">POST</span> /api/ads
+                    </li>
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Email Tracking</h3>
-                  <ul className="space-y-2 text-sm font-mono text-gray-600">
-                    <li><span className="text-green-600">GET</span> /api/ads/email-impression</li>
-                    <li><span className="text-green-600">GET</span> /api/ads/email-click</li>
+                  <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                    Email Tracking
+                  </h3>
+                  <ul className="space-y-2 font-mono text-sm text-gray-600">
+                    <li>
+                      <span className="text-green-600">GET</span>{' '}
+                      /api/ads/email-impression
+                    </li>
+                    <li>
+                      <span className="text-green-600">GET</span>{' '}
+                      /api/ads/email-click
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -237,11 +295,15 @@ export default function AdsShowcasePage() {
 
           {/* Admin Features */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Admin Dashboard Features</h2>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900">
+              Admin Dashboard Features
+            </h2>
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Ad Management</h3>
+                  <h3 className="mb-3 text-lg font-semibold text-gray-900">
+                    Ad Management
+                  </h3>
                   <ul className="space-y-1 text-sm text-gray-600">
                     <li>• Create and edit advertisements</li>
                     <li>• Upload and manage images</li>
@@ -250,7 +312,9 @@ export default function AdsShowcasePage() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Analytics</h3>
+                  <h3 className="mb-3 text-lg font-semibold text-gray-900">
+                    Analytics
+                  </h3>
                   <ul className="space-y-1 text-sm text-gray-600">
                     <li>• Performance metrics dashboard</li>
                     <li>• Click-through rate analysis</li>
@@ -259,7 +323,9 @@ export default function AdsShowcasePage() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Business Tools</h3>
+                  <h3 className="mb-3 text-lg font-semibold text-gray-900">
+                    Business Tools
+                  </h3>
                   <ul className="space-y-1 text-sm text-gray-600">
                     <li>• Ad preview functionality</li>
                     <li>• Campaign scheduling</li>
@@ -270,38 +336,37 @@ export default function AdsShowcasePage() {
               </div>
             </div>
           </section>
-
         </div>
 
         {/* Footer */}
         <div className="mt-12 text-center">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <div className="rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-8">
+            <h3 className="mb-4 text-2xl font-bold text-gray-900">
               🎉 Local Advertisement Platform Complete!
             </h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              A comprehensive, enterprise-grade advertising solution with intelligent targeting, 
-              real-time analytics, and multi-platform integration. Ready for production deployment 
-              and immediate revenue generation.
+            <p className="mx-auto mb-6 max-w-2xl text-gray-600">
+              A comprehensive, enterprise-grade advertising solution with
+              intelligent targeting, real-time analytics, and multi-platform
+              integration. Ready for production deployment and immediate revenue
+              generation.
             </p>
             <div className="flex justify-center space-x-4">
-              <a 
-                href="/admin/ads" 
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              <a
+                href="/admin/ads"
+                className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700"
               >
                 View Admin Dashboard
               </a>
-              <a 
-                href="/jobs" 
-                className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              <a
+                href="/jobs"
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-6 py-3 text-base font-medium text-gray-700 hover:bg-gray-50"
               >
                 See Ads in Action
               </a>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
-} 
+}

@@ -51,13 +51,11 @@ export class MockRedis {
     // Simple pattern matching for development
     const allKeys = Array.from(this.data.keys());
     if (pattern === '*') return allKeys;
-    
+
     // Convert Redis pattern to regex
-    const regexPattern = pattern
-      .replace(/\*/g, '.*')
-      .replace(/\?/g, '.');
+    const regexPattern = pattern.replace(/\*/g, '.*').replace(/\?/g, '.');
     const regex = new RegExp(`^${regexPattern}$`);
-    
+
     return allKeys.filter(key => regex.test(key));
   }
 

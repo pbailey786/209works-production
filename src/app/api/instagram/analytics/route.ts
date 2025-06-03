@@ -37,35 +37,42 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     try {
       const validatedParams = analyticsQuerySchema.parse(queryParams);
-      
+
       const analyticsService = new InstagramAnalyticsService();
-      
+
       const filters = {
-        startDate: validatedParams.startDate ? new Date(validatedParams.startDate) : undefined,
-        endDate: validatedParams.endDate ? new Date(validatedParams.endDate) : undefined,
+        startDate: validatedParams.startDate
+          ? new Date(validatedParams.startDate)
+          : undefined,
+        endDate: validatedParams.endDate
+          ? new Date(validatedParams.endDate)
+          : undefined,
         postType: validatedParams.postType,
         jobId: validatedParams.jobId,
       };
 
       // Get analytics data
       const analytics = await analyticsService.getPostsAnalytics(filters);
-      
+
       // Limit results if specified
-      const limitedAnalytics = validatedParams.limit 
+      const limitedAnalytics = validatedParams.limit
         ? analytics.slice(0, validatedParams.limit)
         : analytics;
 
-      return NextResponse.json({ 
+      return NextResponse.json({
         analytics: limitedAnalytics,
-        total: analytics.length 
+        total: analytics.length,
       });
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
         return NextResponse.json(
-          { error: 'Invalid query parameters', details: validationError.errors },
+          {
+            error: 'Invalid query parameters',
+            details: validationError.errors,
+          },
           { status: 400 }
         );
       }
@@ -100,7 +107,7 @@ export async function POST(request: NextRequest) {
     const validatedData = fetchAnalyticsSchema.parse(body);
 
     const analyticsService = new InstagramAnalyticsService();
-    
+
     // Fetch analytics from Instagram API and store in database
     const analyticsData = await analyticsService.fetchPostAnalytics(
       validatedData.postId,
@@ -111,13 +118,16 @@ export async function POST(request: NextRequest) {
     // Check for engagement alerts
     await analyticsService.checkEngagementAlerts(validatedData.postId);
 
-    return NextResponse.json({ 
-      success: true,
-      analytics: analyticsData 
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        analytics: analyticsData,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error fetching post analytics:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -130,4 +140,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

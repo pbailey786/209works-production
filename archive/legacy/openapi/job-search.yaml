@@ -125,4 +125,4 @@ paths:
         '401':
           description: Unauthorized
         '500':
-          description: Internal server error 
+          description: Internal server error

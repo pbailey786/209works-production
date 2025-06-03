@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 // Log levels
 export enum LogLevel {
   ERROR = 'error',
-  WARN = 'warn', 
+  WARN = 'warn',
   INFO = 'info',
   DEBUG = 'debug',
 }
@@ -51,33 +51,33 @@ const performanceMetrics = new Map<string, PerformanceMetrics>();
 // Logger utility
 class APILogger {
   private isDevelopment = process.env.NODE_ENV === 'development';
-  
+
   private formatLog(entry: RequestLogEntry): string {
     if (this.isDevelopment) {
       return this.formatDevelopmentLog(entry);
     }
     return JSON.stringify(entry);
   }
-  
+
   private formatDevelopmentLog(entry: RequestLogEntry): string {
     const { method, path, statusCode, responseTime, userId, error } = entry;
     const userInfo = userId ? ` [User: ${userId}]` : '';
     const timeInfo = responseTime ? ` (${responseTime}ms)` : '';
     const errorInfo = error ? ` ERROR: ${error.message}` : '';
-    
+
     return `${method} ${path}${userInfo} -> ${statusCode}${timeInfo}${errorInfo}`;
   }
-  
+
   private getLogLevel(statusCode?: number, error?: any): LogLevel {
     if (error) return LogLevel.ERROR;
     if (statusCode && statusCode >= 500) return LogLevel.ERROR;
     if (statusCode && statusCode >= 400) return LogLevel.WARN;
     return LogLevel.INFO;
   }
-  
+
   log(entry: RequestLogEntry): void {
     const logString = this.formatLog(entry);
-    
+
     switch (entry.level) {
       case LogLevel.ERROR:
         console.error(logString);
@@ -91,11 +91,11 @@ class APILogger {
       default:
         console.log(logString);
     }
-    
+
     // In production, you might want to send logs to external service
     // this.sendToExternalLogger(entry);
   }
-  
+
   // Future: Send to external logging service (DataDog, LogRocket, etc.)
   private sendToExternalLogger(entry: RequestLogEntry): void {
     // Implementation for external logging service
@@ -113,19 +113,22 @@ function getClientIP(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
   const realIP = req.headers.get('x-real-ip');
   const cfConnectingIP = req.headers.get('cf-connecting-ip');
-  
+
   if (cfConnectingIP) return cfConnectingIP;
   if (realIP) return realIP;
   if (forwarded) return forwarded.split(',')[0].trim();
-  
+
   return 'unknown';
 }
 
 // Extract request information
-function extractRequestInfo(req: NextRequest, requestId: string): Partial<RequestLogEntry> {
+function extractRequestInfo(
+  req: NextRequest,
+  requestId: string
+): Partial<RequestLogEntry> {
   const url = new URL(req.url);
   const headers: Record<string, string> = {};
-  
+
   // Extract relevant headers (avoid logging sensitive data)
   const safeHeaders = [
     'user-agent',
@@ -137,20 +140,20 @@ function extractRequestInfo(req: NextRequest, requestId: string): Partial<Reques
     'x-real-ip',
     'cf-connecting-ip',
   ];
-  
+
   safeHeaders.forEach(headerName => {
     const value = req.headers.get(headerName);
     if (value) {
       headers[headerName] = value;
     }
   });
-  
+
   // Extract query parameters
   const query: Record<string, string> = {};
   url.searchParams.forEach((value, key) => {
     query[key] = value;
   });
-  
+
   return {
     requestId,
     timestamp: new Date().toISOString(),
@@ -176,24 +179,24 @@ export function startRequestLogging(
   }
 ): void {
   const requestInfo = extractRequestInfo(req, requestId);
-  
+
   if (options?.userId) {
     requestInfo.userId = options.userId;
   }
-  
+
   if (options?.userRole) {
     requestInfo.userRole = options.userRole;
   }
-  
+
   // Start performance tracking
   const metrics: PerformanceMetrics = {
     requestId,
     startTime: Date.now(),
     memoryUsage: process.memoryUsage(),
   };
-  
+
   performanceMetrics.set(requestId, metrics);
-  
+
   // Log request start (in development)
   if (process.env.NODE_ENV === 'development') {
     logger.log({
@@ -219,15 +222,15 @@ export function endRequestLogging(
 ): void {
   const metrics = performanceMetrics.get(requestId);
   if (!metrics) return;
-  
+
   // Calculate performance metrics
   metrics.endTime = Date.now();
   metrics.duration = metrics.endTime - metrics.startTime;
-  
+
   if (options?.additionalMetrics) {
     Object.assign(metrics, options.additionalMetrics);
   }
-  
+
   // Create log entry
   const logEntry: RequestLogEntry = {
     requestId,
@@ -243,27 +246,35 @@ export function endRequestLogging(
     responseSize: options?.responseSize,
     level: LogLevel.INFO,
   };
-  
+
   // Add error information if present
   if (options?.error) {
     logEntry.error = {
       message: options.error.message || 'Unknown error',
-      stack: process.env.NODE_ENV === 'development' ? options.error.stack : undefined,
+      stack:
+        process.env.NODE_ENV === 'development'
+          ? options.error.stack
+          : undefined,
       code: options.error.code || options.error.name,
     };
     logEntry.level = LogLevel.ERROR;
   } else {
-    logEntry.level = statusCode >= 500 ? LogLevel.ERROR : 
-                    statusCode >= 400 ? LogLevel.WARN : LogLevel.INFO;
+    logEntry.level =
+      statusCode >= 500
+        ? LogLevel.ERROR
+        : statusCode >= 400
+          ? LogLevel.WARN
+          : LogLevel.INFO;
   }
-  
+
   logger.log(logEntry);
-  
+
   // Clean up performance metrics
   performanceMetrics.delete(requestId);
-  
+
   // Log performance warning for slow requests
-  if (metrics.duration > 1000) { // More than 1 second
+  if (metrics.duration > 1000) {
+    // More than 1 second
     logger.log({
       ...logEntry,
       level: LogLevel.WARN,
@@ -272,7 +283,9 @@ export function endRequestLogging(
 }
 
 // Get current performance metrics
-export function getPerformanceMetrics(requestId: string): PerformanceMetrics | undefined {
+export function getPerformanceMetrics(
+  requestId: string
+): PerformanceMetrics | undefined {
   return performanceMetrics.get(requestId);
 }
 
@@ -300,4 +313,4 @@ export function trackCacheMiss(requestId: string): void {
 }
 
 // Export logger for custom logging
-export { logger }; 
+export { logger };

@@ -2,7 +2,10 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 
-export async function saveResumeFile(file: File, userId: string): Promise<string> {
+export async function saveResumeFile(
+  file: File,
+  userId: string
+): Promise<string> {
   try {
     // Create uploads directory if it doesn't exist
     const uploadsDir = join(process.cwd(), 'public', 'uploads', 'resumes');
@@ -33,11 +36,14 @@ export function getFileExtension(filename: string): string {
   return filename.split('.').pop()?.toLowerCase() || '';
 }
 
-export function isValidResumeFile(file: File): { valid: boolean; error?: string } {
+export function isValidResumeFile(file: File): {
+  valid: boolean;
+  error?: string;
+} {
   // Temporarily only support DOCX files until PDF parsing is fixed
   const allowedTypes = [
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/msword'
+    'application/msword',
   ];
 
   const maxSize = 5 * 1024 * 1024; // 5MB
@@ -45,14 +51,15 @@ export function isValidResumeFile(file: File): { valid: boolean; error?: string 
   if (!allowedTypes.includes(file.type)) {
     return {
       valid: false,
-      error: 'Currently only DOCX and DOC files are supported. PDF support coming soon!'
+      error:
+        'Currently only DOCX and DOC files are supported. PDF support coming soon!',
     };
   }
 
   if (file.size > maxSize) {
     return {
       valid: false,
-      error: 'File too large. Maximum size is 5MB.'
+      error: 'File too large. Maximum size is 5MB.',
     };
   }
 

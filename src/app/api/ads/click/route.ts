@@ -14,31 +14,27 @@ const clickSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate request body
     const validatedData = clickSchema.parse(body);
 
     // Record the click
-    const result = await AdRotationService.recordClick(
-      validatedData.adId,
-      {
-        userId: validatedData.userId,
-        sessionId: validatedData.sessionId,
-        targetUrl: validatedData.targetUrl,
-        userAgent: validatedData.userAgent,
-        referrer: validatedData.referrer,
-      }
-    );
+    const result = await AdRotationService.recordClick(validatedData.adId, {
+      userId: validatedData.userId,
+      sessionId: validatedData.sessionId,
+      targetUrl: validatedData.targetUrl,
+      userAgent: validatedData.userAgent,
+      referrer: validatedData.referrer,
+    });
 
     return NextResponse.json({
       success: true,
       message: 'Click recorded successfully',
       data: result,
     });
-
   } catch (error) {
     console.error('Error recording click:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
@@ -59,4 +55,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

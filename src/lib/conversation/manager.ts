@@ -1,9 +1,9 @@
-import { 
-  ConversationContext, 
-  ConversationSession, 
-  Message, 
+import {
+  ConversationContext,
+  ConversationSession,
+  Message,
   ConversationIntent,
-  UserProfile 
+  UserProfile,
 } from './types';
 
 // In-memory storage for conversation sessions (in production, use Redis or database)
@@ -18,7 +18,7 @@ export class ConversationManager {
   static createSession(userId?: string): ConversationSession {
     const sessionId = this.generateSessionId();
     const now = new Date();
-    
+
     const context: ConversationContext = {
       sessionId,
       userId,
@@ -49,7 +49,7 @@ export class ConversationManager {
    */
   static getSession(sessionId: string): ConversationSession | null {
     const session = conversationSessions.get(sessionId);
-    
+
     if (!session) {
       return null;
     }
@@ -67,11 +67,11 @@ export class ConversationManager {
    * Update conversation session with new message
    */
   static addMessage(
-    sessionId: string, 
+    sessionId: string,
     message: Omit<Message, 'id' | 'timestamp'>
   ): ConversationSession | null {
     const session = this.getSession(sessionId);
-    
+
     if (!session) {
       return null;
     }
@@ -141,9 +141,9 @@ export class ConversationManager {
    * Update last job search context
    */
   static updateSearchContext(
-    sessionId: string, 
-    query: string, 
-    filters: Record<string, any>, 
+    sessionId: string,
+    query: string,
+    filters: Record<string, any>,
     resultCount: number
   ): void {
     const session = this.getSession(sessionId);
@@ -181,7 +181,7 @@ export class ConversationManager {
   static async cleanupExpiredSessions(): Promise<void> {
     const now = new Date();
     const expiredSessions: string[] = [];
-    
+
     // Collect expired session IDs first - using Array.from for better TypeScript compatibility
     const sessionEntries = Array.from(conversationSessions.entries());
     for (const [sessionId, session] of sessionEntries) {
@@ -189,15 +189,17 @@ export class ConversationManager {
         expiredSessions.push(sessionId);
       }
     }
-    
+
     // Delete expired sessions
     for (const sessionId of expiredSessions) {
       conversationSessions.delete(sessionId);
     }
-    
+
     // Log cleanup stats if any sessions were cleaned up
     if (expiredSessions.length > 0) {
-      console.log(`Cleaned up ${expiredSessions.length} expired conversation sessions`);
+      console.log(
+        `Cleaned up ${expiredSessions.length} expired conversation sessions`
+      );
     }
   }
 
@@ -235,7 +237,7 @@ const asyncCleanupInterval = async () => {
     console.log('Cleanup already in progress, skipping this interval');
     return;
   }
-  
+
   cleanupInProgress = true;
   try {
     await ConversationManager.cleanupExpiredSessions();
@@ -265,8 +267,8 @@ if (typeof process !== 'undefined') {
     stopConversationCleanup();
     process.exit(0);
   };
-  
+
   process.on('SIGTERM', gracefulShutdown);
   process.on('SIGINT', gracefulShutdown);
   process.on('beforeExit', stopConversationCleanup);
-} 
+}

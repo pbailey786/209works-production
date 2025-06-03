@@ -4,11 +4,11 @@ import { prisma } from '@/lib/database/prisma';
 import { getServerSession } from 'next-auth';
 import authOptions from '@/app/api/auth/authOptions';
 import { z } from 'zod';
-import { 
-  enhancedIdSchema, 
-  messageSchema, 
+import {
+  enhancedIdSchema,
+  messageSchema,
   enhancedArraySchema,
-  validateInput 
+  validateInput,
 } from '@/lib/validations/input-validation';
 
 // Rate limiting - simple in-memory store (in production, use Redis)
@@ -32,8 +32,10 @@ const VALIDATION_LIMITS = {
 // Enhanced validation schema for JobBot requests
 const jobBotRequestSchema = z.object({
   jobId: enhancedIdSchema,
-  messages: enhancedArraySchema(messageSchema, 50)
-    .min(1, 'At least one message is required'),
+  messages: enhancedArraySchema(messageSchema, 50).min(
+    1,
+    'At least one message is required'
+  ),
 });
 
 type JobBotRequest = z.infer<typeof jobBotRequestSchema>;
@@ -45,15 +47,15 @@ interface JobContextData {
 }
 
 // Enhanced rate limiting helper with headers
-function checkRateLimit(identifier: string): { 
-  allowed: boolean; 
-  remaining: number; 
-  resetTime: number; 
-  limit: number; 
+function checkRateLimit(identifier: string): {
+  allowed: boolean;
+  remaining: number;
+  resetTime: number;
+  limit: number;
 } {
   const now = Date.now();
   const userLimit = rateLimitStore.get(identifier);
-  
+
   if (!userLimit || now > userLimit.resetTime) {
     const resetTime = now + RATE_LIMIT_WINDOW;
     rateLimitStore.set(identifier, { count: 1, resetTime });
@@ -61,25 +63,25 @@ function checkRateLimit(identifier: string): {
       allowed: true,
       remaining: RATE_LIMIT_MAX_REQUESTS - 1,
       resetTime,
-      limit: RATE_LIMIT_MAX_REQUESTS
+      limit: RATE_LIMIT_MAX_REQUESTS,
     };
   }
-  
+
   if (userLimit.count >= RATE_LIMIT_MAX_REQUESTS) {
     return {
       allowed: false,
       remaining: 0,
       resetTime: userLimit.resetTime,
-      limit: RATE_LIMIT_MAX_REQUESTS
+      limit: RATE_LIMIT_MAX_REQUESTS,
     };
   }
-  
+
   userLimit.count++;
   return {
     allowed: true,
     remaining: RATE_LIMIT_MAX_REQUESTS - userLimit.count,
     resetTime: userLimit.resetTime,
-    limit: RATE_LIMIT_MAX_REQUESTS
+    limit: RATE_LIMIT_MAX_REQUESTS,
   };
 }
 
@@ -88,7 +90,7 @@ function sanitizeString(input: string): string {
   if (typeof input !== 'string') {
     throw new Error('Input must be a string');
   }
-  
+
   // Remove null bytes and control characters except newlines and tabs
   return input.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
 }
@@ -97,91 +99,120 @@ function validateJobId(jobId: unknown): string {
   if (!jobId || typeof jobId !== 'string') {
     throw new Error('Missing or invalid jobId parameter');
   }
-  
+
   const sanitized = sanitizeString(jobId);
-  
+
   if (sanitized.length === 0) {
     throw new Error('JobId cannot be empty');
   }
-  
+
   if (sanitized.length > VALIDATION_LIMITS.MAX_JOB_ID_LENGTH) {
-    throw new Error(`JobId too long (max ${VALIDATION_LIMITS.MAX_JOB_ID_LENGTH} characters)`);
+    throw new Error(
+      `JobId too long (max ${VALIDATION_LIMITS.MAX_JOB_ID_LENGTH} characters)`
+    );
   }
-  
+
   // Basic format validation - should be alphanumeric with possible hyphens/underscores
   if (!/^[a-zA-Z0-9_-]+$/.test(sanitized)) {
     throw new Error('JobId contains invalid characters');
   }
-  
+
   return sanitized;
 }
 
-function validateMessages(messages: unknown): Array<{ role: 'user' | 'assistant' | 'system'; content: string; }> {
+function validateMessages(
+  messages: unknown
+): Array<{ role: 'user' | 'assistant' | 'system'; content: string }> {
   if (!messages || !Array.isArray(messages)) {
     throw new Error('Missing or invalid messages array');
   }
-  
+
   if (messages.length === 0) {
     throw new Error('Messages array cannot be empty');
   }
-  
+
   if (messages.length > VALIDATION_LIMITS.MAX_MESSAGES_COUNT) {
-    throw new Error(`Too many messages (max ${VALIDATION_LIMITS.MAX_MESSAGES_COUNT})`);
+    throw new Error(
+      `Too many messages (max ${VALIDATION_LIMITS.MAX_MESSAGES_COUNT})`
+    );
   }
-  
+
   let totalLength = 0;
-  const validatedMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string; }> = [];
-  
+  const validatedMessages: Array<{
+    role: 'user' | 'assistant' | 'system';
+    content: string;
+  }> = [];
+
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
-    
+
     if (!message || typeof message !== 'object') {
       throw new Error(`Message at index ${i} is invalid`);
     }
-    
+
     const { role, content } = message;
-    
+
     // Validate role
     if (!role || !['user', 'assistant', 'system'].includes(role)) {
-      throw new Error(`Invalid role at message ${i}. Must be 'user', 'assistant', or 'system'`);
+      throw new Error(
+        `Invalid role at message ${i}. Must be 'user', 'assistant', or 'system'`
+      );
     }
-    
+
     // Validate and sanitize content
     if (!content || typeof content !== 'string') {
       throw new Error(`Missing or invalid content at message ${i}`);
     }
-    
+
     const sanitizedContent = sanitizeString(content);
-    
+
     if (sanitizedContent.length < VALIDATION_LIMITS.MIN_MESSAGE_LENGTH) {
-      throw new Error(`Message ${i} is too short (min ${VALIDATION_LIMITS.MIN_MESSAGE_LENGTH} character)`);
+      throw new Error(
+        `Message ${i} is too short (min ${VALIDATION_LIMITS.MIN_MESSAGE_LENGTH} character)`
+      );
     }
-    
+
     if (sanitizedContent.length > VALIDATION_LIMITS.MAX_MESSAGE_LENGTH) {
-      throw new Error(`Message ${i} is too long (max ${VALIDATION_LIMITS.MAX_MESSAGE_LENGTH} characters)`);
+      throw new Error(
+        `Message ${i} is too long (max ${VALIDATION_LIMITS.MAX_MESSAGE_LENGTH} characters)`
+      );
     }
-    
+
     totalLength += sanitizedContent.length;
-    
+
     validatedMessages.push({
       role: role as 'user' | 'assistant' | 'system',
-      content: sanitizedContent
+      content: sanitizedContent,
     });
   }
-  
+
   if (totalLength > VALIDATION_LIMITS.MAX_TOTAL_CONVERSATION_LENGTH) {
-    throw new Error(`Total conversation too long (max ${VALIDATION_LIMITS.MAX_TOTAL_CONVERSATION_LENGTH} characters)`);
+    throw new Error(
+      `Total conversation too long (max ${VALIDATION_LIMITS.MAX_TOTAL_CONVERSATION_LENGTH} characters)`
+    );
   }
-  
+
   return validatedMessages;
 }
 
 // Rate limit headers helper
-function addRateLimitHeaders(response: NextResponse, rateLimitInfo: { remaining: number; resetTime: number; limit: number }): NextResponse {
+function addRateLimitHeaders(
+  response: NextResponse,
+  rateLimitInfo: { remaining: number; resetTime: number; limit: number }
+): NextResponse {
   response.headers.set('X-RateLimit-Limit', rateLimitInfo.limit.toString());
-  response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString());
-  response.headers.set('X-RateLimit-Reset', Math.ceil(rateLimitInfo.resetTime / 1000).toString());
-  response.headers.set('X-RateLimit-Window', (RATE_LIMIT_WINDOW / 1000).toString());
+  response.headers.set(
+    'X-RateLimit-Remaining',
+    rateLimitInfo.remaining.toString()
+  );
+  response.headers.set(
+    'X-RateLimit-Reset',
+    Math.ceil(rateLimitInfo.resetTime / 1000).toString()
+  );
+  response.headers.set(
+    'X-RateLimit-Window',
+    (RATE_LIMIT_WINDOW / 1000).toString()
+  );
   return response;
 }
 
@@ -215,11 +246,11 @@ async function loadJobContext(jobId: string): Promise<JobContextData | null> {
           include: {
             knowledgeBase: {
               where: { verified: true },
-              orderBy: { priority: 'desc' }
-            }
-          }
-        }
-      }
+              orderBy: { priority: 'desc' },
+            },
+          },
+        },
+      },
     });
 
     if (!job) {
@@ -232,17 +263,17 @@ async function loadJobContext(jobId: string): Promise<JobContextData | null> {
 
     if (!company && job.company) {
       company = await prisma.company.findFirst({
-        where: { 
-          name: { contains: job.company, mode: 'insensitive' }
+        where: {
+          name: { contains: job.company, mode: 'insensitive' },
         },
         include: {
           knowledgeBase: {
             where: { verified: true },
-            orderBy: { priority: 'desc' }
-          }
-        }
+            orderBy: { priority: 'desc' },
+          },
+        },
       });
-      
+
       if (company) {
         companyKnowledge = company.knowledgeBase;
       }
@@ -253,12 +284,12 @@ async function loadJobContext(jobId: string): Promise<JobContextData | null> {
     const contextData: JobContextData = {
       job,
       company,
-      companyKnowledge
+      companyKnowledge,
     };
 
     // Cache the result
     setCachedJobContext(jobId, contextData);
-    
+
     return contextData;
   } catch (error) {
     console.error('Error loading job context:', error);
@@ -269,7 +300,7 @@ async function loadJobContext(jobId: string): Promise<JobContextData | null> {
 // Build comprehensive system prompt
 function buildSystemPrompt(context: JobContextData): string {
   const { job, company, companyKnowledge } = context;
-  
+
   let prompt = `You are JobGenie 🧞‍♂️, a friendly and knowledgeable AI assistant that helps job seekers understand specific job opportunities. You have access to detailed information about this job posting and company.
 
 **Current Job Posting:**
@@ -284,13 +315,14 @@ function buildSystemPrompt(context: JobContextData): string {
 ${job.description}
 
 **Salary Information:**
-${job.salaryMin && job.salaryMax 
-  ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
-  : job.salaryMin 
-    ? `Starting at $${job.salaryMin.toLocaleString()}`
-    : job.salaryMax 
-      ? `Up to $${job.salaryMax.toLocaleString()}`
-      : 'Salary not disclosed'
+${
+  job.salaryMin && job.salaryMax
+    ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
+    : job.salaryMin
+      ? `Starting at $${job.salaryMin.toLocaleString()}`
+      : job.salaryMax
+        ? `Up to $${job.salaryMax.toLocaleString()}`
+        : 'Salary not disclosed'
 }`;
 
   // Add company information if available
@@ -310,33 +342,43 @@ ${company.description || 'No company description available.'}`;
   // Add company knowledge base information with null checks
   if (Array.isArray(companyKnowledge) && companyKnowledge.length > 0) {
     prompt += '\n\n**Additional Company Information:**\n';
-    
+
     // Group knowledge by category with validation
     const knowledgeByCategory = companyKnowledge
-      .filter(knowledge => 
-        knowledge && 
-        typeof knowledge === 'object' && 
-        knowledge.category && 
-        typeof knowledge.category === 'string'
+      .filter(
+        knowledge =>
+          knowledge &&
+          typeof knowledge === 'object' &&
+          knowledge.category &&
+          typeof knowledge.category === 'string'
       )
-      .reduce((acc, knowledge) => {
-        const category = knowledge.category.trim();
-        if (!acc[category]) {
-          acc[category] = [];
-        }
-        acc[category].push(knowledge);
-        return acc;
-      }, {} as Record<string, any[]>);
+      .reduce(
+        (acc, knowledge) => {
+          const category = knowledge.category.trim();
+          if (!acc[category]) {
+            acc[category] = [];
+          }
+          acc[category].push(knowledge);
+          return acc;
+        },
+        {} as Record<string, any[]>
+      );
 
     for (const [category, items] of Object.entries(knowledgeByCategory)) {
       if (Array.isArray(items) && items.length > 0) {
-        const categoryTitle = category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        const categoryTitle = category
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
         prompt += `\n**${categoryTitle}:**\n`;
-        
+
         items.forEach(item => {
-          if (item && item.title && item.content && 
-              typeof item.title === 'string' && 
-              typeof item.content === 'string') {
+          if (
+            item &&
+            item.title &&
+            item.content &&
+            typeof item.title === 'string' &&
+            typeof item.content === 'string'
+          ) {
             prompt += `- ${item.title.trim()}: ${item.content.trim()}\n`;
           }
         });
@@ -362,18 +404,21 @@ Remember: You're here to help job seekers make informed decisions about this spe
 
 export async function POST(req: NextRequest) {
   // Get client IP for rate limiting (outside try block for error handling)
-  const clientIP = req.headers.get('x-forwarded-for') || 
-                  req.headers.get('x-real-ip') || 
-                  'unknown';
+  const clientIP =
+    req.headers.get('x-forwarded-for') ||
+    req.headers.get('x-real-ip') ||
+    'unknown';
 
   try {
-
     // Check rate limits
     const rateLimitInfo = checkRateLimit(clientIP);
     if (!rateLimitInfo.allowed) {
       return addRateLimitHeaders(
         NextResponse.json(
-          { error: 'Rate limit exceeded. Please wait before sending more messages.' },
+          {
+            error:
+              'Rate limit exceeded. Please wait before sending more messages.',
+          },
           { status: 429 }
         ),
         rateLimitInfo
@@ -398,17 +443,23 @@ export async function POST(req: NextRequest) {
 
     // Validate required fields with enhanced validation
     let validatedJobId: string;
-    let validatedMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string; }>;
-    
+    let validatedMessages: Array<{
+      role: 'user' | 'assistant' | 'system';
+      content: string;
+    }>;
+
     try {
       validatedJobId = validateJobId(jobId);
       validatedMessages = validateMessages(messages);
     } catch (validationError) {
       return addRateLimitHeaders(
         NextResponse.json(
-          { 
-            error: validationError instanceof Error ? validationError.message : 'Validation failed',
-            type: 'validation_error'
+          {
+            error:
+              validationError instanceof Error
+                ? validationError.message
+                : 'Validation failed',
+            type: 'validation_error',
           },
           { status: 400 }
         ),
@@ -448,7 +499,7 @@ export async function POST(req: NextRequest) {
     });
 
     const reply = completion.choices[0]?.message?.content;
-    
+
     if (!reply) {
       return addRateLimitHeaders(
         NextResponse.json(
@@ -468,44 +519,53 @@ export async function POST(req: NextRequest) {
         contextLoaded: {
           hasCompanyInfo: !!jobContext.company,
           hasKnowledgeBase: jobContext.companyKnowledge.length > 0,
-          knowledgeCategories: [...new Set(jobContext.companyKnowledge.map(k => k.category))]
-        }
+          knowledgeCategories: [
+            ...new Set(jobContext.companyKnowledge.map(k => k.category)),
+          ],
+        },
       }),
       rateLimitInfo
     );
-
   } catch (error) {
     console.error('JobGenie API Error:', error);
-    
+
     // Handle specific OpenAI errors
     if (error instanceof Error) {
       if (error.message.includes('rate limit')) {
         return addRateLimitHeaders(
           NextResponse.json(
-            { error: 'AI service temporarily unavailable. Please try again in a moment.' },
+            {
+              error:
+                'AI service temporarily unavailable. Please try again in a moment.',
+            },
             { status: 429 }
           ),
           checkRateLimit(clientIP)
         );
       }
-      
-              if (error.message.includes('content policy')) {
-          return addRateLimitHeaders(
-            NextResponse.json(
-              { error: 'Message violates content policy. Please keep questions professional and job-related.' },
-              { status: 400 }
-            ),
-            checkRateLimit(clientIP)
-          );
-        }
-      }
 
-      return addRateLimitHeaders(
-        NextResponse.json(
-          { error: 'JobGenie is temporarily unavailable. Please try again later.' },
-          { status: 500 }
-        ),
-        checkRateLimit(clientIP)
-      );
+      if (error.message.includes('content policy')) {
+        return addRateLimitHeaders(
+          NextResponse.json(
+            {
+              error:
+                'Message violates content policy. Please keep questions professional and job-related.',
+            },
+            { status: 400 }
+          ),
+          checkRateLimit(clientIP)
+        );
+      }
+    }
+
+    return addRateLimitHeaders(
+      NextResponse.json(
+        {
+          error: 'JobGenie is temporarily unavailable. Please try again later.',
+        },
+        { status: 500 }
+      ),
+      checkRateLimit(clientIP)
+    );
   }
-} 
+}

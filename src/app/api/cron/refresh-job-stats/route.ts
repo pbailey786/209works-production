@@ -1,7 +1,7 @@
 /**
  * Cron Job: Refresh Job Statistics Materialized View
  * Task 45.13: Database Performance Optimization
- * 
+ *
  * This endpoint refreshes the materialized view that contains
  * aggregated job statistics by company to prevent N+1 queries
  */
@@ -18,13 +18,10 @@ export async function GET(request: NextRequest) {
     // Verify cron secret for security
     const headersList = await headers();
     const cronSecret = headersList.get('x-cron-secret');
-    
+
     if (cronSecret !== process.env.CRON_SECRET) {
       console.error('Unauthorized cron job access attempt');
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     console.log('Starting job statistics refresh...');
@@ -34,7 +31,7 @@ export async function GET(request: NextRequest) {
     await OptimizedJobSearchService.refreshCompanyStats();
 
     const duration = Date.now() - startTime;
-    
+
     console.log(`Job statistics refresh completed in ${duration}ms`);
 
     // Get performance metrics after refresh
@@ -50,10 +47,9 @@ export async function GET(request: NextRequest) {
         unusedIndexesCount: metrics.indexUsage.length,
       },
     });
-
   } catch (error) {
     console.error('Error refreshing job statistics:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
@@ -69,4 +65,4 @@ export async function GET(request: NextRequest) {
 // Also support POST for manual triggers
 export async function POST(request: NextRequest) {
   return GET(request);
-} 
+}

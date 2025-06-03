@@ -1,20 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import authOptions from "../../auth/authOptions";
-import { hasPermission, Permission } from "@/lib/rbac/permissions";
-import { prisma } from "@/lib/database/prisma";
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import authOptions from '../../auth/authOptions';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userRole = (session.user as any)?.role;
     if (!hasPermission(userRole, Permission.VIEW_SYSTEM_HEALTH)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Get system metrics
@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(metrics);
   } catch (error) {
-    console.error("Error fetching system health:", error);
+    console.error('Error fetching system health:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -33,21 +33,16 @@ export async function GET(request: NextRequest) {
 async function getSystemMetrics() {
   try {
     // Database metrics
-    const [
-      totalUsers,
-      totalJobs,
-      activeJobs,
-      totalApplications,
-      recentErrors
-    ] = await Promise.all([
-      prisma.user.count(),
-      prisma.job.count(),
-      prisma.job.count({ where: { status: 'ACTIVE' } }),
-      prisma.jobApplication.count(),
-      // Get recent error logs if you have an error logging table
-      // prisma.errorLog.count({ where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } } })
-      Promise.resolve(0) // Placeholder for error count
-    ]);
+    const [totalUsers, totalJobs, activeJobs, totalApplications, recentErrors] =
+      await Promise.all([
+        prisma.user.count(),
+        prisma.job.count(),
+        prisma.job.count({ where: { status: 'ACTIVE' } }),
+        prisma.jobApplication.count(),
+        // Get recent error logs if you have an error logging table
+        // prisma.errorLog.count({ where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } } })
+        Promise.resolve(0), // Placeholder for error count
+      ]);
 
     // Calculate database connection pool info
     const dbConnections = await getDatabaseConnections();
@@ -83,49 +78,50 @@ async function getSystemMetrics() {
         totalJobs,
         activeJobs,
         totalApplications,
-        recentErrors
+        recentErrors,
       },
       services: [
         {
           name: 'Web Server',
           status: 'online' as const,
           responseTime: Math.floor(Math.random() * 50) + 100,
-          lastCheck: new Date()
+          lastCheck: new Date(),
         },
         {
           name: 'Database',
           status: 'online' as const,
           responseTime: Math.floor(Math.random() * 30) + 20,
-          lastCheck: new Date()
+          lastCheck: new Date(),
         },
         {
           name: 'Redis Cache',
           status: 'online' as const,
           responseTime: Math.floor(Math.random() * 20) + 5,
-          lastCheck: new Date()
+          lastCheck: new Date(),
         },
         {
           name: 'Email Service',
           status: 'online' as const,
           responseTime: Math.floor(Math.random() * 100) + 50,
-          lastCheck: new Date()
+          lastCheck: new Date(),
         },
         {
           name: 'File Storage',
           status: 'online' as const,
           responseTime: Math.floor(Math.random() * 200) + 100,
-          lastCheck: new Date()
+          lastCheck: new Date(),
         },
         {
           name: 'Search Engine',
-          status: Math.random() > 0.8 ? 'degraded' as const : 'online' as const,
+          status:
+            Math.random() > 0.8 ? ('degraded' as const) : ('online' as const),
           responseTime: Math.floor(Math.random() * 500) + 200,
-          lastCheck: new Date()
-        }
-      ]
+          lastCheck: new Date(),
+        },
+      ],
     };
   } catch (error) {
-    console.error("Error getting system metrics:", error);
+    console.error('Error getting system metrics:', error);
     throw error;
   }
 }
@@ -135,10 +131,11 @@ async function getDatabaseConnections(): Promise<number> {
     // This is a simplified way to get connection info
     // In a real application, you might want to query the database directly
     // for connection pool statistics
-    const result = await prisma.$queryRaw`SELECT COUNT(*) as count FROM pg_stat_activity WHERE state = 'active'` as any[];
+    const result =
+      (await prisma.$queryRaw`SELECT COUNT(*) as count FROM pg_stat_activity WHERE state = 'active'`) as any[];
     return parseInt(result[0]?.count || '0');
   } catch (error) {
-    console.error("Error getting database connections:", error);
+    console.error('Error getting database connections:', error);
     return 0;
   }
-} 
+}

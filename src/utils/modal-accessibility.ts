@@ -69,46 +69,54 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
     'audio[controls]',
     'video[controls]',
     'details > summary',
-    'iframe'
+    'iframe',
   ].join(', ');
 
-  return Array.from(container.querySelectorAll(focusableSelectors))
-    .filter((element) => {
+  return Array.from(container.querySelectorAll(focusableSelectors)).filter(
+    element => {
       // Additional checks for visibility and interactivity
       const el = element as HTMLElement;
-      
+
       // Skip elements with aria-hidden
-      if (el.hasAttribute('aria-hidden') && el.getAttribute('aria-hidden') === 'true') {
+      if (
+        el.hasAttribute('aria-hidden') &&
+        el.getAttribute('aria-hidden') === 'true'
+      ) {
         return false;
       }
-      
+
       // In test environments like JSDOM, getComputedStyle might not work as expected
       // So we'll do basic checks that work in both real browsers and test environments
       try {
         const style = window.getComputedStyle(el);
-        
+
         // Check for display: none and visibility: hidden
         if (style.display === 'none' || style.visibility === 'hidden') {
           return false;
         }
-        
+
         // In JSDOM, offsetWidth/offsetHeight might always be 0
         // So we'll only check these in real browser environments
-        if (typeof window !== 'undefined' && window.navigator && !window.navigator.userAgent.includes('jsdom')) {
+        if (
+          typeof window !== 'undefined' &&
+          window.navigator &&
+          !window.navigator.userAgent.includes('jsdom')
+        ) {
           if (el.offsetWidth === 0 && el.offsetHeight === 0) {
             return false;
           }
         }
       } catch (error) {
-        // If getComputedStyle fails (like in some test environments), 
+        // If getComputedStyle fails (like in some test environments),
         // just check basic attributes
         if (el.style.display === 'none' || el.style.visibility === 'hidden') {
           return false;
         }
       }
-      
+
       return true;
-    }) as HTMLElement[];
+    }
+  ) as HTMLElement[];
 }
 
 /**
@@ -140,7 +148,7 @@ export function useModalAccessibility({
     if (preventScroll) {
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
-      
+
       return () => {
         document.body.style.overflow = originalOverflow;
       };
@@ -179,8 +187,9 @@ export function useModalAccessibility({
     if (isOpen) return;
 
     if (restoreFocus && previousActiveElementRef.current) {
-      const elementToFocus = finalFocusRef?.current || previousActiveElementRef.current;
-      
+      const elementToFocus =
+        finalFocusRef?.current || previousActiveElementRef.current;
+
       // Use a small delay to ensure the modal is fully unmounted
       const timeoutId = setTimeout(() => {
         if (elementToFocus && document.contains(elementToFocus)) {
@@ -193,53 +202,65 @@ export function useModalAccessibility({
   }, [isOpen, restoreFocus, finalFocusRef]);
 
   // Handle keyboard events
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (!isOpen || !modalRef.current) return;
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!isOpen || !modalRef.current) return;
 
-    // Close on Escape key
-    if (closeOnEscape && event.key === 'Escape') {
-      event.preventDefault();
-      onClose();
-      return;
-    }
-
-    // Handle focus trapping
-    if (trapFocus && event.key === 'Tab') {
-      const focusableElements = getFocusableElements(modalRef.current);
-      
-      if (focusableElements.length === 0) {
+      // Close on Escape key
+      if (closeOnEscape && event.key === 'Escape') {
         event.preventDefault();
+        onClose();
         return;
       }
 
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-      const activeElement = document.activeElement as HTMLElement;
+      // Handle focus trapping
+      if (trapFocus && event.key === 'Tab') {
+        const focusableElements = getFocusableElements(modalRef.current);
 
-      if (event.shiftKey) {
-        // Shift + Tab: moving backwards
-        if (activeElement === firstElement || !focusableElements.includes(activeElement)) {
+        if (focusableElements.length === 0) {
           event.preventDefault();
-          lastElement.focus();
-          lastFocusedElementRef.current = lastElement;
+          return;
         }
-      } else {
-        // Tab: moving forwards
-        if (activeElement === lastElement || !focusableElements.includes(activeElement)) {
-          event.preventDefault();
-          firstElement.focus();
-          lastFocusedElementRef.current = firstElement;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        const activeElement = document.activeElement as HTMLElement;
+
+        if (event.shiftKey) {
+          // Shift + Tab: moving backwards
+          if (
+            activeElement === firstElement ||
+            !focusableElements.includes(activeElement)
+          ) {
+            event.preventDefault();
+            lastElement.focus();
+            lastFocusedElementRef.current = lastElement;
+          }
+        } else {
+          // Tab: moving forwards
+          if (
+            activeElement === lastElement ||
+            !focusableElements.includes(activeElement)
+          ) {
+            event.preventDefault();
+            firstElement.focus();
+            lastFocusedElementRef.current = firstElement;
+          }
         }
       }
-    }
-  }, [isOpen, onClose, closeOnEscape, trapFocus]);
+    },
+    [isOpen, onClose, closeOnEscape, trapFocus]
+  );
 
   // Handle overlay clicks
-  const handleOverlayClick = useCallback((event: React.MouseEvent) => {
-    if (closeOnOverlayClick && event.target === event.currentTarget) {
-      onClose();
-    }
-  }, [onClose, closeOnOverlayClick]);
+  const handleOverlayClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (closeOnOverlayClick && event.target === event.currentTarget) {
+        onClose();
+      }
+    },
+    [onClose, closeOnOverlayClick]
+  );
 
   // Attach keyboard event listener
   useEffect(() => {
@@ -262,27 +283,37 @@ export function useModalAccessibility({
 /**
  * Hook for managing tab navigation within a modal
  */
-export function useTabNavigation(containerRef: React.RefObject<HTMLElement>, isActive: boolean = true) {
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (!isActive || !containerRef.current || event.key !== 'Tab') return;
+export function useTabNavigation(
+  containerRef: React.RefObject<HTMLElement>,
+  isActive: boolean = true
+) {
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!isActive || !containerRef.current || event.key !== 'Tab') return;
 
-    const focusableElements = getFocusableElements(containerRef.current);
-    if (focusableElements.length === 0) return;
+      const focusableElements = getFocusableElements(containerRef.current);
+      if (focusableElements.length === 0) return;
 
-    const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
-    let nextIndex: number;
+      const currentIndex = focusableElements.indexOf(
+        document.activeElement as HTMLElement
+      );
+      let nextIndex: number;
 
-    if (event.shiftKey) {
-      // Shift + Tab: move backwards
-      nextIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
-    } else {
-      // Tab: move forwards
-      nextIndex = currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
-    }
+      if (event.shiftKey) {
+        // Shift + Tab: move backwards
+        nextIndex =
+          currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
+      } else {
+        // Tab: move forwards
+        nextIndex =
+          currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
+      }
 
-    event.preventDefault();
-    focusableElements[nextIndex].focus();
-  }, [containerRef, isActive]);
+      event.preventDefault();
+      focusableElements[nextIndex].focus();
+    },
+    [containerRef, isActive]
+  );
 
   useEffect(() => {
     if (isActive) {
@@ -300,41 +331,48 @@ export function useArrowKeyNavigation(
   orientation: 'horizontal' | 'vertical' = 'horizontal',
   isActive: boolean = true
 ) {
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (!isActive || !containerRef.current) return;
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!isActive || !containerRef.current) return;
 
-    const isHorizontal = orientation === 'horizontal';
-    const nextKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
-    const prevKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
+      const isHorizontal = orientation === 'horizontal';
+      const nextKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
+      const prevKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
 
-    if (![nextKey, prevKey, 'Home', 'End'].includes(event.key)) return;
+      if (![nextKey, prevKey, 'Home', 'End'].includes(event.key)) return;
 
-    const focusableElements = getFocusableElements(containerRef.current);
-    if (focusableElements.length === 0) return;
+      const focusableElements = getFocusableElements(containerRef.current);
+      if (focusableElements.length === 0) return;
 
-    const currentIndex = focusableElements.indexOf(document.activeElement as HTMLElement);
-    let nextIndex: number;
+      const currentIndex = focusableElements.indexOf(
+        document.activeElement as HTMLElement
+      );
+      let nextIndex: number;
 
-    switch (event.key) {
-      case nextKey:
-        nextIndex = currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
-        break;
-      case prevKey:
-        nextIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
-        break;
-      case 'Home':
-        nextIndex = 0;
-        break;
-      case 'End':
-        nextIndex = focusableElements.length - 1;
-        break;
-      default:
-        return;
-    }
+      switch (event.key) {
+        case nextKey:
+          nextIndex =
+            currentIndex >= focusableElements.length - 1 ? 0 : currentIndex + 1;
+          break;
+        case prevKey:
+          nextIndex =
+            currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1;
+          break;
+        case 'Home':
+          nextIndex = 0;
+          break;
+        case 'End':
+          nextIndex = focusableElements.length - 1;
+          break;
+        default:
+          return;
+      }
 
-    event.preventDefault();
-    focusableElements[nextIndex].focus();
-  }, [containerRef, orientation, isActive]);
+      event.preventDefault();
+      focusableElements[nextIndex].focus();
+    },
+    [containerRef, orientation, isActive]
+  );
 
   useEffect(() => {
     if (isActive) {
@@ -366,7 +404,10 @@ export function validateModalAccessibility(modalElement: HTMLElement): {
     recommendations.push('Add aria-modal="true"');
   }
 
-  if (!modalElement.hasAttribute('aria-labelledby') && !modalElement.hasAttribute('aria-label')) {
+  if (
+    !modalElement.hasAttribute('aria-labelledby') &&
+    !modalElement.hasAttribute('aria-label')
+  ) {
     issues.push('Modal missing accessible name');
     recommendations.push('Add aria-labelledby pointing to title or aria-label');
   }
@@ -375,11 +416,15 @@ export function validateModalAccessibility(modalElement: HTMLElement): {
   const focusableElements = getFocusableElements(modalElement);
   if (focusableElements.length === 0) {
     issues.push('Modal has no focusable elements');
-    recommendations.push('Ensure modal contains at least one focusable element');
+    recommendations.push(
+      'Ensure modal contains at least one focusable element'
+    );
   }
 
   // Check for close button
-  const closeButtons = modalElement.querySelectorAll('[aria-label*="close" i], [aria-label*="dismiss" i]');
+  const closeButtons = modalElement.querySelectorAll(
+    '[aria-label*="close" i], [aria-label*="dismiss" i]'
+  );
   if (closeButtons.length === 0) {
     recommendations.push('Consider adding a clearly labeled close button');
   }
@@ -387,7 +432,7 @@ export function validateModalAccessibility(modalElement: HTMLElement): {
   return {
     isValid: issues.length === 0,
     issues,
-    recommendations
+    recommendations,
   };
 }
 
@@ -408,4 +453,4 @@ export function createModalId(prefix: string = 'modal'): {
     titleId: `${uniqueId}-title`,
     descriptionId: `${uniqueId}-description`,
   };
-} 
+}

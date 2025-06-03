@@ -83,7 +83,16 @@ export class InstagramAnalyticsService {
       const insights = await this.instagramAPI.getMediaInsights(
         mediaId,
         accessToken,
-        ['impressions', 'reach', 'likes', 'comments', 'shares', 'saves', 'profile_visits', 'website_clicks']
+        [
+          'impressions',
+          'reach',
+          'likes',
+          'comments',
+          'shares',
+          'saves',
+          'profile_visits',
+          'website_clicks',
+        ]
       );
 
       // Parse insights data
@@ -109,8 +118,11 @@ export class InstagramAnalyticsService {
   ): Promise<AccountMetricsData> {
     try {
       // Fetch account info
-      const accountInfo = await this.instagramAPI.getAccountInfo(accountId, accessToken);
-      
+      const accountInfo = await this.instagramAPI.getAccountInfo(
+        accountId,
+        accessToken
+      );
+
       // Fetch account insights
       const insights = await this.instagramAPI.getAccountInsights(
         accountId,
@@ -182,7 +194,9 @@ export class InstagramAnalyticsService {
   /**
    * Get performance insights and trends
    */
-  async getPerformanceInsights(filters: AnalyticsFilters = {}): Promise<PerformanceInsights> {
+  async getPerformanceInsights(
+    filters: AnalyticsFilters = {}
+  ): Promise<PerformanceInsights> {
     const analytics = await this.getPostsAnalytics(filters);
 
     if (analytics.length === 0) {
@@ -200,26 +214,46 @@ export class InstagramAnalyticsService {
     }
 
     const totalPosts = analytics.length;
-    const totalImpressions = analytics.reduce((sum, a) => sum + a.impressions, 0);
+    const totalImpressions = analytics.reduce(
+      (sum, a) => sum + a.impressions,
+      0
+    );
     const totalReach = analytics.reduce((sum, a) => sum + a.reach, 0);
-    const totalEngagements = analytics.reduce((sum, a) => sum + a.likes + a.comments + a.shares + a.saves, 0);
-    const averageEngagementRate = analytics.reduce((sum, a) => sum + a.engagementRate, 0) / totalPosts;
+    const totalEngagements = analytics.reduce(
+      (sum, a) => sum + a.likes + a.comments + a.shares + a.saves,
+      0
+    );
+    const averageEngagementRate =
+      analytics.reduce((sum, a) => sum + a.engagementRate, 0) / totalPosts;
 
     // Find best and worst performing posts
-    const sortedByEngagement = [...analytics].sort((a, b) => b.engagementRate - a.engagementRate);
-    const bestPerformingPost = sortedByEngagement[0] ? {
-      id: sortedByEngagement[0].postId,
-      caption: sortedByEngagement[0].post.caption.substring(0, 100) + '...',
-      engagementRate: sortedByEngagement[0].engagementRate,
-      impressions: sortedByEngagement[0].impressions,
-    } : null;
+    const sortedByEngagement = [...analytics].sort(
+      (a, b) => b.engagementRate - a.engagementRate
+    );
+    const bestPerformingPost = sortedByEngagement[0]
+      ? {
+          id: sortedByEngagement[0].postId,
+          caption: sortedByEngagement[0].post.caption.substring(0, 100) + '...',
+          engagementRate: sortedByEngagement[0].engagementRate,
+          impressions: sortedByEngagement[0].impressions,
+        }
+      : null;
 
-    const worstPerformingPost = sortedByEngagement[sortedByEngagement.length - 1] ? {
-      id: sortedByEngagement[sortedByEngagement.length - 1].postId,
-      caption: sortedByEngagement[sortedByEngagement.length - 1].post.caption.substring(0, 100) + '...',
-      engagementRate: sortedByEngagement[sortedByEngagement.length - 1].engagementRate,
-      impressions: sortedByEngagement[sortedByEngagement.length - 1].impressions,
-    } : null;
+    const worstPerformingPost = sortedByEngagement[
+      sortedByEngagement.length - 1
+    ]
+      ? {
+          id: sortedByEngagement[sortedByEngagement.length - 1].postId,
+          caption:
+            sortedByEngagement[
+              sortedByEngagement.length - 1
+            ].post.caption.substring(0, 100) + '...',
+          engagementRate:
+            sortedByEngagement[sortedByEngagement.length - 1].engagementRate,
+          impressions:
+            sortedByEngagement[sortedByEngagement.length - 1].impressions,
+        }
+      : null;
 
     // Calculate engagement trend
     const engagementTrend = this.calculateEngagementTrend(analytics);
@@ -289,7 +323,7 @@ export class InstagramAnalyticsService {
 
     for (const alert of alerts) {
       const shouldTrigger = this.shouldTriggerAlert(alert, analytics);
-      
+
       if (shouldTrigger) {
         await this.triggerAlert(alert, analytics);
       }
@@ -321,7 +355,9 @@ export class InstagramAnalyticsService {
   /**
    * Parse insights data from Instagram API response
    */
-  private parseInsightsData(insights: InstagramInsightsResponse): AnalyticsData {
+  private parseInsightsData(
+    insights: InstagramInsightsResponse
+  ): AnalyticsData {
     const data: AnalyticsData = {
       impressions: 0,
       reach: 0,
@@ -335,9 +371,9 @@ export class InstagramAnalyticsService {
       clickThroughRate: 0,
     };
 
-    insights.data.forEach((metric) => {
+    insights.data.forEach(metric => {
       const value = metric.values[0]?.value || 0;
-      
+
       switch (metric.name) {
         case 'impressions':
           data.impressions = value;
@@ -367,11 +403,14 @@ export class InstagramAnalyticsService {
     });
 
     // Calculate engagement rate
-    const totalEngagements = data.likes + data.comments + data.shares + data.saves;
-    data.engagementRate = data.impressions > 0 ? (totalEngagements / data.impressions) * 100 : 0;
+    const totalEngagements =
+      data.likes + data.comments + data.shares + data.saves;
+    data.engagementRate =
+      data.impressions > 0 ? (totalEngagements / data.impressions) * 100 : 0;
 
     // Calculate click-through rate
-    data.clickThroughRate = data.impressions > 0 ? (data.websiteClicks / data.impressions) * 100 : 0;
+    data.clickThroughRate =
+      data.impressions > 0 ? (data.websiteClicks / data.impressions) * 100 : 0;
 
     return data;
   }
@@ -379,7 +418,10 @@ export class InstagramAnalyticsService {
   /**
    * Extract metric value from insights response
    */
-  private extractMetricValue(insights: InstagramInsightsResponse, metricName: string): number {
+  private extractMetricValue(
+    insights: InstagramInsightsResponse,
+    metricName: string
+  ): number {
     const metric = insights.data.find(m => m.name === metricName);
     return metric?.values[0]?.value || 0;
   }
@@ -423,18 +465,28 @@ export class InstagramAnalyticsService {
   /**
    * Calculate engagement trend
    */
-  private calculateEngagementTrend(analytics: any[]): 'increasing' | 'decreasing' | 'stable' {
+  private calculateEngagementTrend(
+    analytics: any[]
+  ): 'increasing' | 'decreasing' | 'stable' {
     if (analytics.length < 2) return 'stable';
 
-    const sortedByDate = analytics.sort((a, b) => 
-      new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
+    const sortedByDate = analytics.sort(
+      (a, b) =>
+        new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
     );
 
-    const firstHalf = sortedByDate.slice(0, Math.floor(sortedByDate.length / 2));
+    const firstHalf = sortedByDate.slice(
+      0,
+      Math.floor(sortedByDate.length / 2)
+    );
     const secondHalf = sortedByDate.slice(Math.floor(sortedByDate.length / 2));
 
-    const firstHalfAvg = firstHalf.reduce((sum, a) => sum + a.engagementRate, 0) / firstHalf.length;
-    const secondHalfAvg = secondHalf.reduce((sum, a) => sum + a.engagementRate, 0) / secondHalf.length;
+    const firstHalfAvg =
+      firstHalf.reduce((sum, a) => sum + a.engagementRate, 0) /
+      firstHalf.length;
+    const secondHalfAvg =
+      secondHalf.reduce((sum, a) => sum + a.engagementRate, 0) /
+      secondHalf.length;
 
     const difference = secondHalfAvg - firstHalfAvg;
     const threshold = 0.5; // 0.5% threshold
@@ -448,9 +500,11 @@ export class InstagramAnalyticsService {
    * Analyze hashtags performance
    */
   private analyzeHashtags(analytics: any[]) {
-    const hashtagStats: { [key: string]: { count: number; totalEngagement: number } } = {};
+    const hashtagStats: {
+      [key: string]: { count: number; totalEngagement: number };
+    } = {};
 
-    analytics.forEach((analytic) => {
+    analytics.forEach(analytic => {
       const hashtags = analytic.post.hashtags || [];
       hashtags.forEach((hashtag: string) => {
         if (!hashtagStats[hashtag]) {
@@ -523,10 +577,12 @@ export class InstagramAnalyticsService {
 
     // TODO: Send email notification if enabled
     if (alert.emailNotification) {
-      console.log(`Alert triggered for user ${alert.userId}: ${alert.alertType}`);
+      console.log(
+        `Alert triggered for user ${alert.userId}: ${alert.alertType}`
+      );
       // Implement email notification logic here
     }
   }
 }
 
-export default InstagramAnalyticsService; 
+export default InstagramAnalyticsService;

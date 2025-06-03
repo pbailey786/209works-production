@@ -1,15 +1,18 @@
 import { Resend } from 'resend';
-import { 
-  emailSecurityValidator, 
-  emailAddressSchema, 
+import {
+  emailSecurityValidator,
+  emailAddressSchema,
   emailSubjectSchema,
   emailRecipientsSchema,
-  EMAIL_SECURITY_CONFIG 
+  EMAIL_SECURITY_CONFIG,
 } from './email/security';
 import { SecurityLogger } from './security/security-monitor';
 
 // Validate environment variables (but allow build-time flexibility)
-if (process.env.NODE_ENV !== 'development' || process.env.NEXT_PHASE !== 'phase-production-build') {
+if (
+  process.env.NODE_ENV !== 'development' ||
+  process.env.NEXT_PHASE !== 'phase-production-build'
+) {
   if (!process.env.RESEND_API_KEY) {
     console.warn('RESEND_API_KEY environment variable is not set');
   }
@@ -19,9 +22,13 @@ if (process.env.NODE_ENV !== 'development' || process.env.NEXT_PHASE !== 'phase-
   } else {
     // Validate FROM email address at runtime only
     try {
-      const fromEmailValidation = emailSecurityValidator.validateEmailAddress(process.env.RESEND_EMAIL_FROM);
+      const fromEmailValidation = emailSecurityValidator.validateEmailAddress(
+        process.env.RESEND_EMAIL_FROM
+      );
       if (!fromEmailValidation.isValid) {
-        console.warn(`FROM email address may be invalid: ${fromEmailValidation.errors.join(', ')}`);
+        console.warn(
+          `FROM email address may be invalid: ${fromEmailValidation.errors.join(', ')}`
+        );
       }
     } catch (error) {
       console.warn('Email validation error:', error);
@@ -56,7 +63,17 @@ export interface SecureEmailOptions {
 // Secure email sending wrapper with comprehensive validation
 export async function sendEmail(options: SecureEmailOptions) {
   const startTime = Date.now();
-  const { to, subject, react, html, text, userId, priority = 'normal', skipValidation = false, metadata } = options;
+  const {
+    to,
+    subject,
+    react,
+    html,
+    text,
+    userId,
+    priority = 'normal',
+    skipValidation = false,
+    metadata,
+  } = options;
 
   try {
     // Runtime validation of email configuration
@@ -69,9 +86,13 @@ export async function sendEmail(options: SecureEmailOptions) {
     }
 
     // Validate FROM email address at runtime
-    const fromEmailValidation = emailSecurityValidator.validateEmailAddress(process.env.RESEND_EMAIL_FROM);
+    const fromEmailValidation = emailSecurityValidator.validateEmailAddress(
+      process.env.RESEND_EMAIL_FROM
+    );
     if (!fromEmailValidation.isValid) {
-      throw new Error(`Invalid FROM email address: ${fromEmailValidation.errors.join(', ')}`);
+      throw new Error(
+        `Invalid FROM email address: ${fromEmailValidation.errors.join(', ')}`
+      );
     }
 
     // Convert to array for consistent handling
@@ -83,22 +104,37 @@ export async function sendEmail(options: SecureEmailOptions) {
       // Validate recipients
       const recipientsValidation = emailRecipientsSchema.safeParse(recipients);
       if (!recipientsValidation.success) {
-        const error = new Error(`Invalid recipients: ${recipientsValidation.error.message}`);
-        SecurityLogger.suspiciousRequest(clientIp, 'Invalid email recipients', { recipients, errors: recipientsValidation.error.errors }, userId);
+        const error = new Error(
+          `Invalid recipients: ${recipientsValidation.error.message}`
+        );
+        SecurityLogger.suspiciousRequest(
+          clientIp,
+          'Invalid email recipients',
+          { recipients, errors: recipientsValidation.error.errors },
+          userId
+        );
         throw error;
       }
 
       // Validate subject
       const subjectValidation = emailSecurityValidator.validateSubject(subject);
       if (!subjectValidation.isValid) {
-        const error = new Error(`Invalid subject: ${subjectValidation.errors.join(', ')}`);
-        SecurityLogger.suspiciousRequest(clientIp, 'Invalid email subject', { subject, errors: subjectValidation.errors }, userId);
+        const error = new Error(
+          `Invalid subject: ${subjectValidation.errors.join(', ')}`
+        );
+        SecurityLogger.suspiciousRequest(
+          clientIp,
+          'Invalid email subject',
+          { subject, errors: subjectValidation.errors },
+          userId
+        );
         throw error;
       }
 
       // Rate limiting check
       const rateLimitKey = userId || clientIp;
-      const rateLimitCheck = emailSecurityValidator.checkRateLimit(rateLimitKey);
+      const rateLimitCheck =
+        emailSecurityValidator.checkRateLimit(rateLimitKey);
       if (!rateLimitCheck.allowed) {
         const error = new Error('Rate limit exceeded for email sending');
         SecurityLogger.rateLimitExceeded(clientIp, 'email-send', userId);
@@ -110,7 +146,15 @@ export async function sendEmail(options: SecureEmailOptions) {
         const sanitizedHtml = emailSecurityValidator.sanitizeHtmlContent(html);
         if (sanitizedHtml !== html) {
           console.warn('[EMAIL-SECURITY] HTML content was sanitized');
-          SecurityLogger.suspiciousRequest(clientIp, 'Email HTML content sanitized', { originalLength: html.length, sanitizedLength: sanitizedHtml.length }, userId);
+          SecurityLogger.suspiciousRequest(
+            clientIp,
+            'Email HTML content sanitized',
+            {
+              originalLength: html.length,
+              sanitizedLength: sanitizedHtml.length,
+            },
+            userId
+          );
         }
         options.html = sanitizedHtml;
       }
@@ -148,24 +192,31 @@ export async function sendEmail(options: SecureEmailOptions) {
     // Log successful send
     const processingTime = Date.now() - startTime;
     if (emailConfig.isDevelopment) {
-      console.log(`[EMAIL] Successfully sent to ${recipients.join(', ')} in ${processingTime}ms:`, result);
+      console.log(
+        `[EMAIL] Successfully sent to ${recipients.join(', ')} in ${processingTime}ms:`,
+        result
+      );
     }
 
     // Security logging for successful sends
-    SecurityLogger.loginSuccess(userId || 'system', clientIp, `Email sent successfully: ${subject}`);
+    SecurityLogger.loginSuccess(
+      userId || 'system',
+      clientIp,
+      `Email sent successfully: ${subject}`
+    );
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       data: result,
       processingTime,
       recipients: recipients.length,
       messageId: result.data?.id || 'unknown',
     };
-
   } catch (error) {
     const processingTime = Date.now() - startTime;
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+
     console.error(`[EMAIL] Failed to send email in ${processingTime}ms:`, {
       error: errorMessage,
       to: Array.isArray(to) ? to : [to],
@@ -178,12 +229,16 @@ export async function sendEmail(options: SecureEmailOptions) {
     SecurityLogger.suspiciousRequest(
       metadata?.clientIp || 'unknown',
       'Email sending failed',
-      { error: errorMessage, subject, recipients: Array.isArray(to) ? to : [to] },
+      {
+        error: errorMessage,
+        subject,
+        recipients: Array.isArray(to) ? to : [to],
+      },
       userId
     );
 
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: errorMessage,
       processingTime,
       code: getErrorCode(error),
@@ -205,8 +260,10 @@ export async function sendEmailLegacy({
   html?: string;
   text?: string;
 }) {
-  console.warn('[EMAIL-SECURITY] Using legacy sendEmail function - consider upgrading to secure version');
-  
+  console.warn(
+    '[EMAIL-SECURITY] Using legacy sendEmail function - consider upgrading to secure version'
+  );
+
   return sendEmail({
     to,
     subject,
@@ -219,11 +276,17 @@ export async function sendEmailLegacy({
 }
 
 // Email validation utilities
-export function validateEmailAddress(email: string): { isValid: boolean; errors: string[] } {
+export function validateEmailAddress(email: string): {
+  isValid: boolean;
+  errors: string[];
+} {
   return emailSecurityValidator.validateEmailAddress(email);
 }
 
-export function validateEmailSubject(subject: string): { isValid: boolean; errors: string[] } {
+export function validateEmailSubject(subject: string): {
+  isValid: boolean;
+  errors: string[];
+} {
   return emailSecurityValidator.validateSubject(subject);
 }
 
@@ -238,10 +301,11 @@ export { EMAIL_SECURITY_CONFIG } from './email/security';
 function getErrorCode(error: unknown): string {
   if (error instanceof Error) {
     if (error.message.includes('Rate limit')) return 'RATE_LIMIT_EXCEEDED';
-    if (error.message.includes('Invalid recipients')) return 'INVALID_RECIPIENTS';
+    if (error.message.includes('Invalid recipients'))
+      return 'INVALID_RECIPIENTS';
     if (error.message.includes('Invalid subject')) return 'INVALID_SUBJECT';
     if (error.message.includes('API key')) return 'AUTHENTICATION_ERROR';
     if (error.message.includes('quota')) return 'QUOTA_EXCEEDED';
   }
   return 'EMAIL_SEND_ERROR';
-} 
+}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import JobCard from "./JobCard";
+import React, { useState, useEffect } from 'react';
+import JobCard from './JobCard';
 import { safeDateFormat } from '@/lib/utils/safe-operations';
 
 interface Job {
@@ -16,8 +16,8 @@ interface Job {
 export default function JobBoard() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,15 +35,17 @@ export default function JobBoard() {
           const res = await fetch('/api/jobs', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: { keyword: search, type: typeFilter } }),
-            signal
+            body: JSON.stringify({
+              query: { keyword: search, type: typeFilter },
+            }),
+            signal,
           });
 
           if (signal.aborted) return;
 
           const data = await res.json();
           setJobs(data.jobs || []);
-          
+
           // Auto-select the first job if none selected and jobs are available
           if (data.jobs && data.jobs.length > 0) {
             setSelectedJob(prevSelected => {
@@ -52,7 +54,9 @@ export default function JobBoard() {
                 return data.jobs[0];
               }
               // Check if the currently selected job still exists in the new results
-              const stillExists = data.jobs.find((job: Job) => job.id === prevSelected.id);
+              const stillExists = data.jobs.find(
+                (job: Job) => job.id === prevSelected.id
+              );
               return stillExists || data.jobs[0];
             });
           } else {
@@ -61,7 +65,7 @@ export default function JobBoard() {
         } catch (err) {
           if (signal.aborted) return;
           console.error('Error fetching jobs:', err);
-          setError("Failed to load jobs.");
+          setError('Failed to load jobs.');
           setJobs([]);
           setSelectedJob(null);
         } finally {
@@ -86,63 +90,77 @@ export default function JobBoard() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-full max-w-xs bg-white border-r flex flex-col h-full">
-        <div className="p-6 border-b">
-          <h1 className="text-2xl font-bold text-purple-700 mb-2">209Jobs</h1>
+      <aside className="flex h-full w-full max-w-xs flex-col border-r bg-white">
+        <div className="border-b p-6">
+          <h1 className="mb-2 text-2xl font-bold text-purple-700">209Jobs</h1>
           <input
             type="text"
             placeholder="Search jobs..."
-            className="w-full p-2 rounded border border-gray-300 mb-3"
+            className="mb-3 w-full rounded border border-gray-300 p-2"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <div className="flex gap-2 mb-2" role="radiogroup" aria-label="Job type filter">
-            {['', 'Full-time', 'Part-time', 'Contract'].map((type, idx, arr) => (
-              <button
-                key={type || 'all'}
-                className={`px-3 py-1 rounded-full text-xs font-semibold border ${typeFilter === type ? 'bg-purple-600 text-white border-purple-600' : 'bg-gray-100 text-gray-700 border-gray-200'}`}
-                onClick={() => setTypeFilter(type)}
-                aria-label={`Filter by ${type || 'All'} jobs`}
-                aria-pressed={typeFilter === type}
-                role="radio"
-                aria-checked={typeFilter === type}
-                tabIndex={typeFilter === type ? 0 : -1}
-                onKeyDown={e => {
-                  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    const nextIdx = (idx + 1) % arr.length;
-                    setTypeFilter(arr[nextIdx]);
-                  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    const prevIdx = (idx - 1 + arr.length) % arr.length;
-                    setTypeFilter(arr[prevIdx]);
-                  }
-                }}
-              >
-                {type || 'All'}
-              </button>
-            ))}
+          <div
+            className="mb-2 flex gap-2"
+            role="radiogroup"
+            aria-label="Job type filter"
+          >
+            {['', 'Full-time', 'Part-time', 'Contract'].map(
+              (type, idx, arr) => (
+                <button
+                  key={type || 'all'}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold ${typeFilter === type ? 'border-purple-600 bg-purple-600 text-white' : 'border-gray-200 bg-gray-100 text-gray-700'}`}
+                  onClick={() => setTypeFilter(type)}
+                  aria-label={`Filter by ${type || 'All'} jobs`}
+                  aria-pressed={typeFilter === type}
+                  role="radio"
+                  aria-checked={typeFilter === type}
+                  tabIndex={typeFilter === type ? 0 : -1}
+                  onKeyDown={e => {
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      const nextIdx = (idx + 1) % arr.length;
+                      setTypeFilter(arr[nextIdx]);
+                    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      const prevIdx = (idx - 1 + arr.length) % arr.length;
+                      setTypeFilter(arr[prevIdx]);
+                    }
+                  }}
+                >
+                  {type || 'All'}
+                </button>
+              )
+            )}
           </div>
         </div>
         {/* Job List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {loading && <div className="text-gray-400 text-center mt-10">Loading jobs...</div>}
-          {error && <div className="text-red-500 text-center mt-10">{error}</div>}
+        <div className="flex-1 space-y-3 overflow-y-auto p-4">
+          {loading && (
+            <div className="mt-10 text-center text-gray-400">
+              Loading jobs...
+            </div>
+          )}
+          {error && (
+            <div className="mt-10 text-center text-red-500">{error}</div>
+          )}
           {!loading && !error && filteredJobs.length === 0 && (
-            <div className="text-gray-400 text-center mt-10">No jobs found.</div>
+            <div className="mt-10 text-center text-gray-400">
+              No jobs found.
+            </div>
           )}
           {filteredJobs.map((job, index) => (
-            <div 
+            <div
               key={job.id}
               tabIndex={0}
               role="button"
               aria-pressed={selectedJob?.id === job.id}
-              onKeyDown={(e) => {
+              onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   setSelectedJob(job);
                 }
               }}
-              className="focus:outline-none focus:ring-2 focus:ring-purple-400 rounded"
+              className="rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
             >
               <JobCard
                 title={job.title}
@@ -160,22 +178,25 @@ export default function JobBoard() {
         </div>
       </aside>
       {/* Main Panel: Job Details */}
-      <main className="flex-1 flex items-center justify-center bg-white">
+      <main className="flex flex-1 items-center justify-center bg-white">
         {selectedJob ? (
-          <div className="max-w-2xl w-full p-10">
-            <h2 className="text-2xl font-bold mb-2">{selectedJob.title}</h2>
-            <div className="text-purple-700 font-semibold mb-1">{selectedJob.company}</div>
-            <div className="text-xs text-gray-500 mb-4">
-              {safeDateFormat(selectedJob.postedAt, { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-              }) || 'Date not available'} • {selectedJob.type}
+          <div className="w-full max-w-2xl p-10">
+            <h2 className="mb-2 text-2xl font-bold">{selectedJob.title}</h2>
+            <div className="mb-1 font-semibold text-purple-700">
+              {selectedJob.company}
             </div>
-            <div className="text-gray-700 mb-4">{selectedJob.description}</div>
+            <div className="mb-4 text-xs text-gray-500">
+              {safeDateFormat(selectedJob.postedAt, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              }) || 'Date not available'}{' '}
+              • {selectedJob.type}
+            </div>
+            <div className="mb-4 text-gray-700">{selectedJob.description}</div>
             <a
               href={selectedJob.url}
-              className="block w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold text-center shadow hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-400 text-lg"
+              className="block w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 py-3 text-center text-lg font-semibold text-white shadow hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -183,9 +204,11 @@ export default function JobBoard() {
             </a>
           </div>
         ) : (
-          <div className="text-gray-400 text-xl">Select a job to view details</div>
+          <div className="text-xl text-gray-400">
+            Select a job to view details
+          </div>
         )}
       </main>
     </div>
   );
-} 
+}

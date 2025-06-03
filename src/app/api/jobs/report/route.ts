@@ -17,18 +17,25 @@ interface JobReport {
 export async function POST(req: NextRequest) {
   try {
     const { jobId, reason, reporterUserId } = await req.json();
-    
+
     if (!jobId || !reason) {
-      return NextResponse.json({ 
-        error: 'Job ID and reason are required' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Job ID and reason are required',
+        },
+        { status: 400 }
+      );
     }
 
     // Validate reason length
     if (reason.trim().length < 10) {
-      return NextResponse.json({ 
-        error: 'Please provide a more detailed reason (at least 10 characters)' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error:
+            'Please provide a more detailed reason (at least 10 characters)',
+        },
+        { status: 400 }
+      );
     }
 
     // Check if job exists
@@ -42,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     // Get session for additional context
     const session = await getServerSession(authOptions);
-    
+
     // Get user ID from database if session exists
     let sessionUserId;
     if (session?.user?.email) {
@@ -51,7 +58,7 @@ export async function POST(req: NextRequest) {
       });
       sessionUserId = user?.id;
     }
-    
+
     // Create the report object
     const report: JobReport = {
       id: crypto.randomUUID(),
@@ -67,7 +74,7 @@ export async function POST(req: NextRequest) {
     // 1. Store reports in a dedicated table
     // 2. Send notifications to moderators
     // 3. Implement a review system
-    
+
     console.log('Job Report Submitted:', {
       reportId: report.id,
       jobId: report.jobId,
@@ -84,32 +91,32 @@ export async function POST(req: NextRequest) {
     // - Creating a JobReport model in Prisma schema
     // - Sending email notifications to moderators
     // - Implementing automated flagging for certain keywords
-    
+
     try {
       // Optional: Store in a simple log file for demonstration
       const fs = require('fs').promises;
       const path = require('path');
       const logPath = path.join(process.cwd(), 'job-reports.log');
-      
+
       const logEntry = `${new Date().toISOString()} - Report ID: ${report.id} - Job: ${job.title} at ${job.company} (${jobId}) - Reason: ${report.reason} - Reporter: ${report.reporterUserId || 'anonymous'}\n`;
-      
+
       await fs.appendFile(logPath, logEntry);
     } catch (fileError) {
       // Don't fail the request if logging fails
       console.error('Failed to write to log file:', fileError);
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      message: 'Report submitted successfully. Thank you for helping us maintain job quality.',
-      reportId: report.id
+      message:
+        'Report submitted successfully. Thank you for helping us maintain job quality.',
+      reportId: report.id,
     });
-
   } catch (error) {
     console.error('Error reporting job:', error);
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

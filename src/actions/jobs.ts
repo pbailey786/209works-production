@@ -1,4 +1,4 @@
-"use server"
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -13,7 +13,13 @@ const createJobSchema = z.object({
   description: z.string().min(50, 'Description must be at least 50 characters'),
   requirements: z.string().min(1, 'Requirements are required'),
   location: z.string().min(1, 'Location is required'),
-  jobType: z.enum(['full_time', 'part_time', 'contract', 'temporary', 'internship']),
+  jobType: z.enum([
+    'full_time',
+    'part_time',
+    'contract',
+    'temporary',
+    'internship',
+  ]),
   experienceLevel: z.enum(['entry', 'mid', 'senior', 'executive']),
   salaryMin: z.number().min(0).optional(),
   salaryMax: z.number().min(0).optional(),
@@ -31,7 +37,9 @@ const updateJobSchema = createJobSchema.partial().extend({
 
 const jobApplicationSchema = z.object({
   jobId: z.string().uuid('Invalid job ID'),
-  coverLetter: z.string().min(100, 'Cover letter must be at least 100 characters'),
+  coverLetter: z
+    .string()
+    .min(100, 'Cover letter must be at least 100 characters'),
   resumeUrl: z.string().url('Please provide a valid resume URL'),
   linkedinUrl: z.string().url().optional(),
   portfolioUrl: z.string().url().optional(),
@@ -45,7 +53,9 @@ const saveJobSchema = z.object({
 const jobSearchSchema = z.object({
   query: z.string().optional(),
   location: z.string().optional(),
-  jobType: z.enum(['full_time', 'part_time', 'contract', 'temporary', 'internship']).optional(),
+  jobType: z
+    .enum(['full_time', 'part_time', 'contract', 'temporary', 'internship'])
+    .optional(),
   experienceLevel: z.enum(['entry', 'mid', 'senior', 'executive']).optional(),
   salaryMin: z.number().min(0).optional(),
   salaryMax: z.number().min(0).optional(),
@@ -92,20 +102,31 @@ export async function createJobAction(
       location: formData.get('location') as string,
       jobType: formData.get('jobType') as any,
       experienceLevel: formData.get('experienceLevel') as any,
-      salaryMin: formData.get('salaryMin') ? Number(formData.get('salaryMin')) : undefined,
-      salaryMax: formData.get('salaryMax') ? Number(formData.get('salaryMax')) : undefined,
+      salaryMin: formData.get('salaryMin')
+        ? Number(formData.get('salaryMin'))
+        : undefined,
+      salaryMax: formData.get('salaryMax')
+        ? Number(formData.get('salaryMax'))
+        : undefined,
       benefits: formData.get('benefits') as string,
-      skills: formData.get('skills') ? JSON.parse(formData.get('skills') as string) : [],
+      skills: formData.get('skills')
+        ? JSON.parse(formData.get('skills') as string)
+        : [],
       isRemote: formData.get('isRemote') === 'true',
-      applicationUrl: formData.get('applicationUrl') as string || undefined,
-      applicationEmail: formData.get('applicationEmail') as string || undefined,
-      expiresAt: formData.get('expiresAt') as string || undefined,
+      applicationUrl: (formData.get('applicationUrl') as string) || undefined,
+      applicationEmail:
+        (formData.get('applicationEmail') as string) || undefined,
+      expiresAt: (formData.get('expiresAt') as string) || undefined,
     };
 
     const validatedData = createJobSchema.parse(rawData);
 
     // Validate salary range
-    if (validatedData.salaryMin && validatedData.salaryMax && validatedData.salaryMin > validatedData.salaryMax) {
+    if (
+      validatedData.salaryMin &&
+      validatedData.salaryMax &&
+      validatedData.salaryMin > validatedData.salaryMax
+    ) {
       return {
         success: false,
         message: 'Minimum salary cannot be greater than maximum salary',
@@ -118,11 +139,15 @@ export async function createJobAction(
         ...validatedData,
         companyId: userId,
         skills: validatedData.skills || [],
-        expiresAt: validatedData.expiresAt ? new Date(validatedData.expiresAt) : null,
+        expiresAt: validatedData.expiresAt
+          ? new Date(validatedData.expiresAt)
+          : null,
         status: 'active',
         // Required fields for Job model
         source: 'employer_portal',
-        url: validatedData.applicationUrl || `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${Date.now()}`,
+        url:
+          validatedData.applicationUrl ||
+          `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${Date.now()}`,
         postedAt: new Date(),
       },
     });
@@ -141,7 +166,9 @@ export async function createJobAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -195,21 +222,30 @@ export async function updateJobAction(
     // Extract and validate form data
     const rawData = {
       id: jobId,
-      title: formData.get('title') as string || undefined,
-      company: formData.get('company') as string || undefined,
-      description: formData.get('description') as string || undefined,
-      requirements: formData.get('requirements') as string || undefined,
-      location: formData.get('location') as string || undefined,
-      jobType: formData.get('jobType') as any || undefined,
-      experienceLevel: formData.get('experienceLevel') as any || undefined,
-      salaryMin: formData.get('salaryMin') ? Number(formData.get('salaryMin')) : undefined,
-      salaryMax: formData.get('salaryMax') ? Number(formData.get('salaryMax')) : undefined,
-      benefits: formData.get('benefits') as string || undefined,
-      skills: formData.get('skills') ? JSON.parse(formData.get('skills') as string) : undefined,
-      isRemote: formData.get('isRemote') ? formData.get('isRemote') === 'true' : undefined,
-      applicationUrl: formData.get('applicationUrl') as string || undefined,
-      applicationEmail: formData.get('applicationEmail') as string || undefined,
-      expiresAt: formData.get('expiresAt') as string || undefined,
+      title: (formData.get('title') as string) || undefined,
+      company: (formData.get('company') as string) || undefined,
+      description: (formData.get('description') as string) || undefined,
+      requirements: (formData.get('requirements') as string) || undefined,
+      location: (formData.get('location') as string) || undefined,
+      jobType: (formData.get('jobType') as any) || undefined,
+      experienceLevel: (formData.get('experienceLevel') as any) || undefined,
+      salaryMin: formData.get('salaryMin')
+        ? Number(formData.get('salaryMin'))
+        : undefined,
+      salaryMax: formData.get('salaryMax')
+        ? Number(formData.get('salaryMax'))
+        : undefined,
+      benefits: (formData.get('benefits') as string) || undefined,
+      skills: formData.get('skills')
+        ? JSON.parse(formData.get('skills') as string)
+        : undefined,
+      isRemote: formData.get('isRemote')
+        ? formData.get('isRemote') === 'true'
+        : undefined,
+      applicationUrl: (formData.get('applicationUrl') as string) || undefined,
+      applicationEmail:
+        (formData.get('applicationEmail') as string) || undefined,
+      expiresAt: (formData.get('expiresAt') as string) || undefined,
     };
 
     const validatedData = updateJobSchema.parse(rawData);
@@ -224,7 +260,9 @@ export async function updateJobAction(
 
     // Handle expiresAt conversion
     if (updateData.expiresAt) {
-      updateData.expiresAt = new Date(updateData.expiresAt as string).toISOString();
+      updateData.expiresAt = new Date(
+        updateData.expiresAt as string
+      ).toISOString();
     }
 
     // Update job
@@ -250,7 +288,9 @@ export async function updateJobAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -264,7 +304,10 @@ export async function updateJobAction(
 }
 
 // Delete job action
-export async function deleteJobAction(jobId: string, userId: string): Promise<ActionResult> {
+export async function deleteJobAction(
+  jobId: string,
+  userId: string
+): Promise<ActionResult> {
   try {
     // Verify job ownership
     const existingJob = await prisma.job.findFirst({
@@ -282,7 +325,9 @@ export async function deleteJobAction(jobId: string, userId: string): Promise<Ac
     }
 
     // Use soft deletion to prevent cascading delete issues
-    const { DataIntegrityService } = await import('@/lib/database/data-integrity');
+    const { DataIntegrityService } = await import(
+      '@/lib/database/data-integrity'
+    );
     const deletionResult = await DataIntegrityService.softDeleteJob(
       jobId,
       userId,
@@ -331,9 +376,9 @@ export async function applyToJobAction(
       jobId: formData.get('jobId') as string,
       coverLetter: formData.get('coverLetter') as string,
       resumeUrl: formData.get('resumeUrl') as string,
-      linkedinUrl: formData.get('linkedinUrl') as string || undefined,
-      portfolioUrl: formData.get('portfolioUrl') as string || undefined,
-      additionalNotes: formData.get('additionalNotes') as string || undefined,
+      linkedinUrl: (formData.get('linkedinUrl') as string) || undefined,
+      portfolioUrl: (formData.get('portfolioUrl') as string) || undefined,
+      additionalNotes: (formData.get('additionalNotes') as string) || undefined,
     };
 
     const validatedData = jobApplicationSchema.parse(rawData);
@@ -427,7 +472,9 @@ export async function applyToJobAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -520,7 +567,9 @@ export async function saveJobAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -541,14 +590,22 @@ export async function searchJobsAction(
   try {
     // Extract search parameters
     const rawData = {
-      query: formData.get('query') as string || undefined,
-      location: formData.get('location') as string || undefined,
-      jobType: formData.get('jobType') as any || undefined,
-      experienceLevel: formData.get('experienceLevel') as any || undefined,
-      salaryMin: formData.get('salaryMin') ? Number(formData.get('salaryMin')) : undefined,
-      salaryMax: formData.get('salaryMax') ? Number(formData.get('salaryMax')) : undefined,
-      remote: formData.get('remote') ? formData.get('remote') === 'true' : undefined,
-      skills: formData.get('skills') ? JSON.parse(formData.get('skills') as string) : undefined,
+      query: (formData.get('query') as string) || undefined,
+      location: (formData.get('location') as string) || undefined,
+      jobType: (formData.get('jobType') as any) || undefined,
+      experienceLevel: (formData.get('experienceLevel') as any) || undefined,
+      salaryMin: formData.get('salaryMin')
+        ? Number(formData.get('salaryMin'))
+        : undefined,
+      salaryMax: formData.get('salaryMax')
+        ? Number(formData.get('salaryMax'))
+        : undefined,
+      remote: formData.get('remote')
+        ? formData.get('remote') === 'true'
+        : undefined,
+      skills: formData.get('skills')
+        ? JSON.parse(formData.get('skills') as string)
+        : undefined,
       page: formData.get('page') ? Number(formData.get('page')) : 1,
       limit: formData.get('limit') ? Number(formData.get('limit')) : 20,
     };
@@ -558,10 +615,7 @@ export async function searchJobsAction(
     // Build where condition
     const whereCondition: any = {
       status: 'active',
-      OR: [
-        { expiresAt: null },
-        { expiresAt: { gt: new Date() } },
-      ],
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
     };
 
     // Add search filters
@@ -574,7 +628,10 @@ export async function searchJobsAction(
     }
 
     if (validatedData.location) {
-      whereCondition.location = { contains: validatedData.location, mode: 'insensitive' };
+      whereCondition.location = {
+        contains: validatedData.location,
+        mode: 'insensitive',
+      };
     }
 
     if (validatedData.jobType) {
@@ -691,4 +748,4 @@ export async function toggleJobStatusAction(
       message: 'An unexpected error occurred. Please try again.',
     };
   }
-} 
+}

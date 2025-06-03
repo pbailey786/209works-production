@@ -11,18 +11,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { PostHogProvider, usePostHog } from '@/lib/analytics/posthog-provider';
 import ConsentBanner from '@/components/analytics/ConsentBanner';
 import RegionalAnalyticsDashboard from '@/components/analytics/RegionalAnalyticsDashboard';
-import { 
-  Search, 
-  Shield, 
-  Settings,
-  Play,
-  Eye,
-  MapPin
-} from 'lucide-react';
+import { Search, Shield, Settings, Play, Eye, MapPin } from 'lucide-react';
 
 const DEMO_REGIONS = [
   { value: '209', label: 'Central Valley (209)' },
@@ -83,23 +82,28 @@ function SimpleAnalyticsDemo({ region }: { region: string }) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Play className="w-5 h-5" />
+            <Play className="h-5 w-5" />
             Interactive Analytics Demo
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium mb-2">Search Query</label>
+              <label className="mb-2 block text-sm font-medium">
+                Search Query
+              </label>
               <Input
                 placeholder="e.g., software engineer"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Job Type</label>
-              <Select value={selectedJobType} onValueChange={setSelectedJobType}>
+              <label className="mb-2 block text-sm font-medium">Job Type</label>
+              <Select
+                value={selectedJobType}
+                onValueChange={setSelectedJobType}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select job type" />
                 </SelectTrigger>
@@ -113,28 +117,44 @@ function SimpleAnalyticsDemo({ region }: { region: string }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Button onClick={handleTrackJobSearch} className="flex items-center gap-2">
-              <Search className="w-4 h-4" />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Button
+              onClick={handleTrackJobSearch}
+              className="flex items-center gap-2"
+            >
+              <Search className="h-4 w-4" />
               Track Search
             </Button>
-            <Button onClick={handleTrackJobView} variant="outline" className="flex items-center gap-2">
-              <Eye className="w-4 h-4" />
+            <Button
+              onClick={handleTrackJobView}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Eye className="h-4 w-4" />
               Track View
             </Button>
-            <Button onClick={handleTrackJobApplication} variant="outline" className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
+            <Button
+              onClick={handleTrackJobApplication}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <MapPin className="h-4 w-4" />
               Track Apply
             </Button>
-            <Button onClick={handleTrackRegionalNavigation} variant="outline" className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
+            <Button
+              onClick={handleTrackRegionalNavigation}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <MapPin className="h-4 w-4" />
               Track Navigation
             </Button>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="rounded-lg bg-blue-50 p-4">
             <p className="text-sm text-blue-800">
-              <strong>Analytics Status:</strong> {isInitialized ? '✅ Initialized' : '❌ Not initialized'}
+              <strong>Analytics Status:</strong>{' '}
+              {isInitialized ? '✅ Initialized' : '❌ Not initialized'}
               <br />
               <strong>Current Region:</strong> {region || 'None'}
             </p>
@@ -147,9 +167,9 @@ function SimpleAnalyticsDemo({ region }: { region: string }) {
           <CardTitle>Event Tracking Examples</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <h4 className="font-semibold mb-3">Job Board Events</h4>
+              <h4 className="mb-3 font-semibold">Job Board Events</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Job Search</span>
@@ -165,9 +185,9 @@ function SimpleAnalyticsDemo({ region }: { region: string }) {
                 </div>
               </div>
             </div>
-            
+
             <div>
-              <h4 className="font-semibold mb-3">Regional Events</h4>
+              <h4 className="mb-3 font-semibold">Regional Events</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Regional Navigation</span>
@@ -193,12 +213,14 @@ function PostHogAnalyticsDemoContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
+      <div className="border-b bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">PostHog Analytics Demo</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-3xl font-bold text-gray-900">
+                PostHog Analytics Demo
+              </h1>
+              <p className="mt-2 text-gray-600">
                 Regional analytics tracking with GDPR compliance for 209jobs
               </p>
             </div>
@@ -208,7 +230,7 @@ function PostHogAnalyticsDemoContent() {
                   <SelectValue placeholder="Select region" />
                 </SelectTrigger>
                 <SelectContent>
-                  {DEMO_REGIONS.map((region) => (
+                  {DEMO_REGIONS.map(region => (
                     <SelectItem key={region.value} value={region.value}>
                       {region.label}
                     </SelectItem>
@@ -219,7 +241,7 @@ function PostHogAnalyticsDemoContent() {
                 variant="outline"
                 onClick={() => setShowConsentBanner(!showConsentBanner)}
               >
-                <Shield className="w-4 h-4 mr-2" />
+                <Shield className="mr-2 h-4 w-4" />
                 Toggle Consent
               </Button>
             </div>
@@ -227,7 +249,7 @@ function PostHogAnalyticsDemoContent() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8">
         <Tabs defaultValue="demo" className="space-y-6">
           <TabsList>
             <TabsTrigger value="demo">Interactive Demo</TabsTrigger>
@@ -247,16 +269,16 @@ function PostHogAnalyticsDemoContent() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5" />
+                  <Settings className="h-5 w-5" />
                   Implementation Details
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h4 className="font-semibold mb-3">PostHog Configuration</h4>
-                  <div className="bg-gray-100 p-4 rounded-lg">
-                    <pre className="text-sm overflow-x-auto">
-{`// Environment Variables
+                  <h4 className="mb-3 font-semibold">PostHog Configuration</h4>
+                  <div className="rounded-lg bg-gray-100 p-4">
+                    <pre className="overflow-x-auto text-sm">
+                      {`// Environment Variables
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_project_api_key
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
@@ -273,10 +295,10 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-3">Basic Event Tracking</h4>
-                  <div className="bg-gray-100 p-4 rounded-lg">
-                    <pre className="text-sm overflow-x-auto">
-{`// Direct event tracking
+                  <h4 className="mb-3 font-semibold">Basic Event Tracking</h4>
+                  <div className="rounded-lg bg-gray-100 p-4">
+                    <pre className="overflow-x-auto text-sm">
+                      {`// Direct event tracking
 const { trackEvent } = usePostHog();
 
 trackEvent('job_search_performed', {
@@ -289,13 +311,19 @@ trackEvent('job_search_performed', {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-3">GDPR Compliance Features</h4>
+                  <h4 className="mb-3 font-semibold">
+                    GDPR Compliance Features
+                  </h4>
                   <ul className="space-y-2 text-sm">
                     <li>• Consent management with localStorage persistence</li>
                     <li>• Opt-out by default until consent is granted</li>
-                    <li>• Regional privacy law compliance (CCPA for California)</li>
+                    <li>
+                      • Regional privacy law compliance (CCPA for California)
+                    </li>
                     <li>• Data minimization and anonymization</li>
-                    <li>• User-friendly consent banner with detailed information</li>
+                    <li>
+                      • User-friendly consent banner with detailed information
+                    </li>
                     <li>• Easy consent revocation and preference management</li>
                   </ul>
                 </div>
@@ -313,7 +341,7 @@ trackEvent('job_search_performed', {
 
 export default function PostHogAnalyticsDemo() {
   return (
-    <PostHogProvider 
+    <PostHogProvider
       apiKey={process.env.NEXT_PUBLIC_POSTHOG_KEY}
       host={process.env.NEXT_PUBLIC_POSTHOG_HOST}
       region="209"
@@ -321,4 +349,4 @@ export default function PostHogAnalyticsDemo() {
       <PostHogAnalyticsDemoContent />
     </PostHogProvider>
   );
-} 
+}

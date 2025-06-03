@@ -1,20 +1,26 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Search, 
-  TrendingUp, 
-  MessageSquare, 
-  Users, 
+import {
+  Search,
+  TrendingUp,
+  MessageSquare,
+  Users,
   Calendar,
   Download,
   Eye,
-  Bot
+  Bot,
 } from 'lucide-react';
 
 interface ChatAnalytics {
@@ -49,7 +55,9 @@ export default function JobsGPTAnalyticsPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   // Check if user is admin
-  const isAdmin = session?.user?.role === 'admin' || session?.user?.email === 'admin@209jobs.com';
+  const isAdmin =
+    session?.user?.role === 'admin' ||
+    session?.user?.email === 'admin@209jobs.com';
 
   useEffect(() => {
     if (status === 'authenticated' && isAdmin) {
@@ -65,7 +73,7 @@ export default function JobsGPTAnalyticsPage() {
         page: page.toString(),
         limit: '20',
         dateFilter,
-        search: searchTerm
+        search: searchTerm,
       });
 
       const response = await fetch(`/api/admin/jobsgpt-analytics?${params}`);
@@ -83,7 +91,9 @@ export default function JobsGPTAnalyticsPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`/api/admin/jobsgpt-stats?dateFilter=${dateFilter}`);
+      const response = await fetch(
+        `/api/admin/jobsgpt-stats?dateFilter=${dateFilter}`
+      );
       if (response.ok) {
         const data = await response.json();
         setStats(data);
@@ -95,7 +105,9 @@ export default function JobsGPTAnalyticsPage() {
 
   const exportData = async () => {
     try {
-      const response = await fetch(`/api/admin/export-jobsgpt-analytics?dateFilter=${dateFilter}`);
+      const response = await fetch(
+        `/api/admin/export-jobsgpt-analytics?dateFilter=${dateFilter}`
+      );
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -114,43 +126,55 @@ export default function JobsGPTAnalyticsPage() {
 
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600">You don't have permission to view this page.</p>
+          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+            Access Denied
+          </h1>
+          <p className="text-gray-600">
+            You don't have permission to view this page.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
+        <div className="mb-2 flex items-center gap-3">
           <Bot className="h-8 w-8 text-purple-600" />
-          <h1 className="text-3xl font-bold text-gray-900">JobsGPT Analytics</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            JobsGPT Analytics
+          </h1>
         </div>
-        <p className="text-gray-600">Monitor AI chat interactions and user search patterns</p>
+        <p className="text-gray-600">
+          Monitor AI chat interactions and user search patterns
+        </p>
       </div>
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Questions</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Questions
+              </CardTitle>
               <MessageSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalQuestions.toLocaleString()}</div>
+              <div className="text-2xl font-bold">
+                {stats.totalQuestions.toLocaleString()}
+              </div>
               <p className="text-xs text-muted-foreground">
                 +{stats.questionsToday} today
               </p>
@@ -159,24 +183,30 @@ export default function JobsGPTAnalyticsPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Unique Users</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Unique Users
+              </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.uniqueUsers.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">
-                Using JobsGPT
-              </p>
+              <div className="text-2xl font-bold">
+                {stats.uniqueUsers.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">Using JobsGPT</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Response Time</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Avg Response Time
+              </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.avgResponseTime.toFixed(1)}s</div>
+              <div className="text-2xl font-bold">
+                {stats.avgResponseTime.toFixed(1)}s
+              </div>
               <p className="text-xs text-muted-foreground">
                 AI processing time
               </p>
@@ -189,10 +219,10 @@ export default function JobsGPTAnalyticsPage() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.questionsThisWeek.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">
-                Questions asked
-              </p>
+              <div className="text-2xl font-bold">
+                {stats.questionsThisWeek.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground">Questions asked</p>
             </CardContent>
           </Card>
         </div>
@@ -210,9 +240,14 @@ export default function JobsGPTAnalyticsPage() {
           <CardContent>
             <div className="space-y-3">
               {stats.topQuestions.slice(0, 5).map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                >
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{item.question}</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {item.question}
+                    </p>
                   </div>
                   <Badge variant="secondary">{item.count} times</Badge>
                 </div>
@@ -223,23 +258,23 @@ export default function JobsGPTAnalyticsPage() {
       )}
 
       {/* Filters and Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row">
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <Input
               placeholder="Search questions..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
         </div>
-        
+
         <select
           value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={e => setDateFilter(e.target.value)}
+          className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="1d">Last 24 hours</option>
           <option value="7d">Last 7 days</option>
@@ -248,7 +283,7 @@ export default function JobsGPTAnalyticsPage() {
         </select>
 
         <Button onClick={exportData} variant="outline">
-          <Download className="h-4 w-4 mr-2" />
+          <Download className="mr-2 h-4 w-4" />
           Export
         </Button>
       </div>
@@ -264,17 +299,23 @@ export default function JobsGPTAnalyticsPage() {
         <CardContent>
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
             </div>
           ) : (
             <div className="space-y-4">
-              {analytics.map((item) => (
-                <div key={item.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                  <div className="flex items-start justify-between mb-2">
+              {analytics.map(item => (
+                <div
+                  key={item.id}
+                  className="rounded-lg border p-4 hover:bg-gray-50"
+                >
+                  <div className="mb-2 flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-1">{item.question}</p>
-                      <p className="text-sm text-gray-600 mb-2">
-                        User: {item.userEmail} • {new Date(item.timestamp).toLocaleString()}
+                      <p className="mb-1 font-medium text-gray-900">
+                        {item.question}
+                      </p>
+                      <p className="mb-2 text-sm text-gray-600">
+                        User: {item.userEmail} •{' '}
+                        {new Date(item.timestamp).toLocaleString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -286,22 +327,22 @@ export default function JobsGPTAnalyticsPage() {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <details className="mt-2">
                     <summary className="cursor-pointer text-sm text-blue-600 hover:text-blue-800">
-                      <Eye className="inline h-3 w-3 mr-1" />
+                      <Eye className="mr-1 inline h-3 w-3" />
                       View AI Response
                     </summary>
-                    <div className="mt-2 p-3 bg-gray-50 rounded text-sm">
+                    <div className="mt-2 rounded bg-gray-50 p-3 text-sm">
                       {item.response.substring(0, 300)}
                       {item.response.length > 300 && '...'}
                     </div>
                   </details>
                 </div>
               ))}
-              
+
               {analytics.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="py-8 text-center text-gray-500">
                   No JobsGPT analytics data found for the selected period.
                 </div>
               )}
@@ -312,7 +353,7 @@ export default function JobsGPTAnalyticsPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
+        <div className="mt-6 flex justify-center">
           <div className="flex gap-2">
             <Button
               variant="outline"

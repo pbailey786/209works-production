@@ -11,12 +11,7 @@ const { execSync } = require('child_process');
 
 // Configuration
 const OLD_DOMAIN = '209jobs.com';
-const NEW_DOMAINS = [
-  '209.works',
-  '916.works', 
-  '510.works',
-  'norcal.works'
-];
+const NEW_DOMAINS = ['209.works', '916.works', '510.works', 'norcal.works'];
 
 const PRIMARY_DOMAIN = '209.works';
 
@@ -28,7 +23,7 @@ const FILE_PATTERNS = [
   'src/**/*.jsx',
   'docs/**/*.md',
   '*.md',
-  'package.json'
+  'package.json',
 ];
 
 // Exclude patterns
@@ -36,7 +31,7 @@ const EXCLUDE_PATTERNS = [
   'node_modules/**',
   '.next/**',
   'coverage/**',
-  '.git/**'
+  '.git/**',
 ];
 
 class DomainMigrator {
@@ -49,7 +44,9 @@ class DomainMigrator {
    * Main migration function
    */
   async migrate() {
-    console.log('🚀 Starting domain migration from 209jobs.com to .works domains...\n');
+    console.log(
+      '🚀 Starting domain migration from 209jobs.com to .works domains...\n'
+    );
 
     try {
       // Step 1: Backup current state
@@ -76,7 +73,6 @@ class DomainMigrator {
       console.log('\n✅ Domain migration completed successfully!');
       console.log('📋 Check migration-report.json for details');
       console.log('🔍 Review changes before committing');
-
     } catch (error) {
       console.error('\n❌ Migration failed:', error.message);
       console.log('🔄 Restoring from backup...');
@@ -90,17 +86,17 @@ class DomainMigrator {
    */
   async createBackup() {
     console.log('📦 Creating backup...');
-    
+
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupDir = `backup-${timestamp}`;
-    
+
     try {
       execSync(`mkdir -p ${backupDir}`);
       execSync(`cp -r src ${backupDir}/`);
       execSync(`cp -r docs ${backupDir}/`);
       execSync(`cp package.json ${backupDir}/`);
       execSync(`cp *.md ${backupDir}/`);
-      
+
       this.backupDir = backupDir;
       console.log(`✅ Backup created: ${backupDir}`);
     } catch (error) {
@@ -115,7 +111,7 @@ class DomainMigrator {
     console.log('🔄 Updating file references...');
 
     const files = this.findFiles(FILE_PATTERNS, EXCLUDE_PATTERNS);
-    
+
     for (const file of files) {
       try {
         const content = fs.readFileSync(file, 'utf8');
@@ -135,20 +131,20 @@ class DomainMigrator {
         const patterns = [
           {
             old: /https:\/\/209jobs\.com/g,
-            new: 'https://209.works'
+            new: 'https://209.works',
           },
           {
             old: /http:\/\/209jobs\.com/g,
-            new: 'https://209.works'
+            new: 'https://209.works',
           },
           {
             old: /@209jobs\.com/g,
-            new: '@209.works'
+            new: '@209.works',
           },
           {
             old: /209jobs\.com/g,
-            new: '209.works'
-          }
+            new: '209.works',
+          },
         ];
 
         for (const pattern of patterns) {
@@ -163,14 +159,14 @@ class DomainMigrator {
           this.changes.push({
             file,
             type: 'domain_reference',
-            description: `Updated domain references from ${OLD_DOMAIN} to ${PRIMARY_DOMAIN}`
+            description: `Updated domain references from ${OLD_DOMAIN} to ${PRIMARY_DOMAIN}`,
           });
           console.log(`  ✅ Updated: ${file}`);
         }
       } catch (error) {
         this.errors.push({
           file,
-          error: error.message
+          error: error.message,
         });
         console.log(`  ❌ Error updating ${file}: ${error.message}`);
       }
@@ -189,30 +185,44 @@ class DomainMigrator {
 
       // Update homepage URL
       if (packageJson.homepage && packageJson.homepage.includes(OLD_DOMAIN)) {
-        packageJson.homepage = packageJson.homepage.replace(OLD_DOMAIN, PRIMARY_DOMAIN);
+        packageJson.homepage = packageJson.homepage.replace(
+          OLD_DOMAIN,
+          PRIMARY_DOMAIN
+        );
         this.changes.push({
           file: packagePath,
           type: 'package_json',
-          description: 'Updated homepage URL'
+          description: 'Updated homepage URL',
         });
       }
 
       // Update repository URL if it exists
-      if (packageJson.repository && packageJson.repository.url && packageJson.repository.url.includes(OLD_DOMAIN)) {
-        packageJson.repository.url = packageJson.repository.url.replace(OLD_DOMAIN, PRIMARY_DOMAIN);
+      if (
+        packageJson.repository &&
+        packageJson.repository.url &&
+        packageJson.repository.url.includes(OLD_DOMAIN)
+      ) {
+        packageJson.repository.url = packageJson.repository.url.replace(
+          OLD_DOMAIN,
+          PRIMARY_DOMAIN
+        );
         this.changes.push({
           file: packagePath,
           type: 'package_json',
-          description: 'Updated repository URL'
+          description: 'Updated repository URL',
         });
       }
 
-      fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2), 'utf8');
+      fs.writeFileSync(
+        packagePath,
+        JSON.stringify(packageJson, null, 2),
+        'utf8'
+      );
       console.log('  ✅ Updated package.json');
     } catch (error) {
       this.errors.push({
         file: 'package.json',
-        error: error.message
+        error: error.message,
       });
       console.log(`  ❌ Error updating package.json: ${error.message}`);
     }
@@ -225,7 +235,7 @@ class DomainMigrator {
     console.log('🔧 Updating environment files...');
 
     const envFiles = ['.env.example', '.env.local.example'];
-    
+
     for (const envFile of envFiles) {
       if (fs.existsSync(envFile)) {
         try {
@@ -240,14 +250,14 @@ class DomainMigrator {
             this.changes.push({
               file: envFile,
               type: 'environment',
-              description: 'Updated domain references in environment file'
+              description: 'Updated domain references in environment file',
             });
             console.log(`  ✅ Updated: ${envFile}`);
           }
         } catch (error) {
           this.errors.push({
             file: envFile,
-            error: error.message
+            error: error.message,
           });
           console.log(`  ❌ Error updating ${envFile}: ${error.message}`);
         }
@@ -285,7 +295,9 @@ TWITTER_510=@510jobs
 `;
 
     fs.writeFileSync('.env.domains.example', envTemplate.trim(), 'utf8');
-    console.log('  ✅ Created .env.domains.example with multi-domain configuration');
+    console.log(
+      '  ✅ Created .env.domains.example with multi-domain configuration'
+    );
   }
 
   /**
@@ -300,7 +312,7 @@ TWITTER_510=@510jobs
       fs.mkdirSync(logosDir, { recursive: true });
     }
 
-    // Create og-images directory structure  
+    // Create og-images directory structure
     const ogImagesDir = 'public/og-images';
     if (!fs.existsSync(ogImagesDir)) {
       fs.mkdirSync(ogImagesDir, { recursive: true });
@@ -308,7 +320,7 @@ TWITTER_510=@510jobs
 
     // Generate placeholder files for each domain
     const domains = ['209', '916', '510', 'norcal'];
-    
+
     for (const domain of domains) {
       // Create placeholder logo files
       const logoPlaceholder = `${logosDir}/${domain}-works-logo.png`;
@@ -352,7 +364,9 @@ TWITTER_510=@510jobs
     if (fs.existsSync(middlewarePath)) {
       const content = fs.readFileSync(middlewarePath, 'utf8');
       if (!content.includes('getDomainConfig')) {
-        console.log('  ⚠️  Warning: Middleware may not be updated for domain routing');
+        console.log(
+          '  ⚠️  Warning: Middleware may not be updated for domain routing'
+        );
       }
     }
 
@@ -377,14 +391,14 @@ TWITTER_510=@510jobs
       migration: {
         from: OLD_DOMAIN,
         to: NEW_DOMAINS,
-        primary: PRIMARY_DOMAIN
+        primary: PRIMARY_DOMAIN,
       },
       changes: this.changes,
       errors: this.errors,
       summary: {
         filesChanged: this.changes.length,
         errorsCount: this.errors.length,
-        success: this.errors.length === 0
+        success: this.errors.length === 0,
       },
       nextSteps: [
         'Review all changes carefully',
@@ -393,11 +407,15 @@ TWITTER_510=@510jobs
         'Deploy to staging environment',
         'Update social media profiles',
         'Notify users of domain change',
-        'Monitor for issues post-migration'
-      ]
+        'Monitor for issues post-migration',
+      ],
     };
 
-    fs.writeFileSync('migration-report.json', JSON.stringify(report, null, 2), 'utf8');
+    fs.writeFileSync(
+      'migration-report.json',
+      JSON.stringify(report, null, 2),
+      'utf8'
+    );
     console.log('📋 Migration report generated: migration-report.json');
   }
 
@@ -420,33 +438,39 @@ TWITTER_510=@510jobs
    */
   findFiles(includePatterns, excludePatterns = []) {
     const files = [];
-    
+
     function walkDir(dir) {
       const items = fs.readdirSync(dir);
-      
+
       for (const item of items) {
         const fullPath = path.join(dir, item);
         const stat = fs.statSync(fullPath);
-        
+
         if (stat.isDirectory()) {
           // Skip excluded directories
-          if (!excludePatterns.some(pattern => 
-            fullPath.match(pattern.replace('**', '.*'))
-          )) {
+          if (
+            !excludePatterns.some(pattern =>
+              fullPath.match(pattern.replace('**', '.*'))
+            )
+          ) {
             walkDir(fullPath);
           }
         } else {
           // Check if file matches include patterns
-          if (includePatterns.some(pattern => {
-            const regex = new RegExp(pattern.replace('**', '.*').replace('*', '[^/]*'));
-            return regex.test(fullPath);
-          })) {
+          if (
+            includePatterns.some(pattern => {
+              const regex = new RegExp(
+                pattern.replace('**', '.*').replace('*', '[^/]*')
+              );
+              return regex.test(fullPath);
+            })
+          ) {
             files.push(fullPath);
           }
         }
       }
     }
-    
+
     walkDir('.');
     return files;
   }
@@ -457,18 +481,18 @@ TWITTER_510=@510jobs
   findRemainingReferences() {
     const references = [];
     const files = this.findFiles(['src/**/*', 'docs/**/*'], EXCLUDE_PATTERNS);
-    
+
     for (const file of files) {
       try {
         const content = fs.readFileSync(file, 'utf8');
         const lines = content.split('\n');
-        
+
         lines.forEach((line, index) => {
           if (line.includes(OLD_DOMAIN)) {
             references.push({
               file,
               line: index + 1,
-              content: line.trim()
+              content: line.trim(),
             });
           }
         });
@@ -476,7 +500,7 @@ TWITTER_510=@510jobs
         // Skip files that can't be read
       }
     }
-    
+
     return references;
   }
 }
@@ -484,10 +508,10 @@ TWITTER_510=@510jobs
 // CLI interface
 if (require.main === module) {
   const migrator = new DomainMigrator();
-  
+
   // Parse command line arguments
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
 Domain Migration Script
@@ -505,27 +529,30 @@ Examples:
     `);
     process.exit(0);
   }
-  
+
   if (args.includes('--dry-run')) {
     console.log('🔍 Dry run mode - no changes will be made\n');
     // TODO: Implement dry run mode
     process.exit(0);
   }
-  
+
   if (args.includes('--backup-only')) {
     console.log('📦 Backup only mode\n');
-    migrator.createBackup().then(() => {
-      console.log('✅ Backup completed');
-    }).catch(error => {
-      console.error('❌ Backup failed:', error.message);
-      process.exit(1);
-    });
+    migrator
+      .createBackup()
+      .then(() => {
+        console.log('✅ Backup completed');
+      })
+      .catch(error => {
+        console.error('❌ Backup failed:', error.message);
+        process.exit(1);
+      });
     return;
   }
-  
+
   // Run migration
   migrator.migrate().catch(error => {
     console.error('Migration failed:', error);
     process.exit(1);
   });
-} 
+}

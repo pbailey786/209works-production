@@ -52,12 +52,12 @@ export async function GET(req: NextRequest) {
       savedJobs: savedJobs.map(save => ({
         ...save.job,
         savedAt: save.savedAt,
-      }))
+      })),
     });
   } catch (error) {
     console.error('Error fetching saved jobs:', error);
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -82,9 +82,12 @@ export async function POST(req: NextRequest) {
     }
 
     const { jobId } = await req.json();
-    
+
     if (!jobId) {
-      return NextResponse.json({ error: 'Job ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Job ID is required' },
+        { status: 400 }
+      );
     }
 
     // Check if job exists
@@ -119,7 +122,7 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({
         saved: false,
-        message: 'Job removed from saved jobs'
+        message: 'Job removed from saved jobs',
       });
     } else {
       // Save the job
@@ -132,14 +135,14 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({
         saved: true,
-        message: 'Job saved successfully'
+        message: 'Job saved successfully',
       });
     }
   } catch (error) {
     console.error('Error saving job:', error);
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

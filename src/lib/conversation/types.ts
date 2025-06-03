@@ -11,9 +11,9 @@ export interface Message {
   };
 }
 
-export type ConversationIntent = 
+export type ConversationIntent =
   | 'job_search'
-  | 'company_info' 
+  | 'company_info'
   | 'career_guidance'
   | 'application_help'
   | 'market_insights'
@@ -99,4 +99,4 @@ export interface ConversationSession {
   context: ConversationContext;
   isActive: boolean;
   expiresAt: Date;
-} 
+}

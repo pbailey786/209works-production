@@ -3,7 +3,7 @@ import { getRedisClient, isRedisAvailable } from './redis';
 
 /**
  * Atomic Cache Manager
- * 
+ *
  * Provides atomic operations, versioning, and consistency guarantees for cache operations.
  * Fixes critical race conditions and data consistency issues in the caching system.
  */
@@ -52,7 +52,7 @@ const DEFAULT_CONSISTENCY_CONFIG: CacheConsistencyConfig = {
 
 /**
  * Atomic Cache Manager Class
- * 
+ *
  * Provides thread-safe cache operations with versioning and consistency guarantees
  */
 export class AtomicCacheManager {
@@ -68,7 +68,10 @@ export class AtomicCacheManager {
     consistencyConfig: Partial<CacheConsistencyConfig> = {}
   ) {
     this.lockConfig = { ...DEFAULT_LOCK_CONFIG, ...lockConfig };
-    this.consistencyConfig = { ...DEFAULT_CONSISTENCY_CONFIG, ...consistencyConfig };
+    this.consistencyConfig = {
+      ...DEFAULT_CONSISTENCY_CONFIG,
+      ...consistencyConfig,
+    };
   }
 
   /**
@@ -80,7 +83,9 @@ export class AtomicCacheManager {
         this.redis = await getRedisClient();
         console.log('AtomicCacheManager initialized successfully');
       } else {
-        console.warn('Redis not available, AtomicCacheManager running in fallback mode');
+        console.warn(
+          'Redis not available, AtomicCacheManager running in fallback mode'
+        );
       }
     } catch (error) {
       console.error('Failed to initialize AtomicCacheManager:', error);
@@ -103,7 +108,13 @@ export class AtomicCacheManager {
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        const result = await this.redis.set(lockFullKey, lockValue, 'PX', ttl, 'NX');
+        const result = await this.redis.set(
+          lockFullKey,
+          lockValue,
+          'PX',
+          ttl,
+          'NX'
+        );
         if (result === 'OK') {
           return lockValue;
         }
@@ -124,17 +135,22 @@ export class AtomicCacheManager {
       }
     }
 
-    throw new Error(`Failed to acquire lock for ${lockKey} after ${maxRetries} attempts`);
+    throw new Error(
+      `Failed to acquire lock for ${lockKey} after ${maxRetries} attempts`
+    );
   }
 
   /**
    * Release a distributed lock
    */
-  private async releaseLock(lockKey: string, lockValue: string): Promise<boolean> {
+  private async releaseLock(
+    lockKey: string,
+    lockValue: string
+  ): Promise<boolean> {
     if (!this.redis || !lockValue) return false;
 
     const lockFullKey = `lock:${lockKey}`;
-    
+
     // Use Lua script for atomic lock release
     const luaScript = `
       if redis.call("get", KEYS[1]) == ARGV[1] then
@@ -145,7 +161,12 @@ export class AtomicCacheManager {
     `;
 
     try {
-      const result = await this.redis.eval(luaScript, 1, lockFullKey, lockValue);
+      const result = await this.redis.eval(
+        luaScript,
+        1,
+        lockFullKey,
+        lockValue
+      );
       return result === 1;
     } catch (error) {
       console.error('Failed to release lock:', error);
@@ -229,7 +250,10 @@ export class AtomicCacheManager {
   /**
    * Validate cache data integrity
    */
-  private validateDataIntegrity(data: any, metadata: CacheVersionMetadata): boolean {
+  private validateDataIntegrity(
+    data: any,
+    metadata: CacheVersionMetadata
+  ): boolean {
     if (!this.consistencyConfig.enableChecksums) return true;
 
     const currentChecksum = this.generateChecksum(data);
@@ -272,19 +296,19 @@ export class AtomicCacheManager {
     } = {}
   ): Promise<boolean> {
     const lockKey = `set:${key}`;
-    
+
     return this.withLock(lockKey, async () => {
       if (!this.redis) return false;
 
       try {
         const { ttl = 3600, tags = [], dependencies = [] } = options;
-        
+
         // Generate version metadata
         const metadata = this.generateVersionMetadata(value, dependencies);
-        
+
         // Track dependencies
         this.trackDependencies(key, dependencies);
-        
+
         // Prepare cache entry
         const cacheEntry = {
           data: value,
@@ -293,27 +317,27 @@ export class AtomicCacheManager {
         };
 
         const serialized = JSON.stringify(cacheEntry);
-        
+
         // Use pipeline for atomic operations
         const pipeline = this.redis.pipeline();
-        
+
         // Set main cache entry
         pipeline.setex(key, ttl, serialized);
-        
+
         // Set version tracking
         if (this.consistencyConfig.enableVersioning) {
           pipeline.setex(`version:${key}`, ttl, metadata.version.toString());
         }
-        
+
         // Set tag associations
         for (const tag of tags) {
           pipeline.sadd(`tag:${tag}`, key);
           pipeline.expire(`tag:${tag}`, ttl);
         }
-        
+
         // Execute pipeline atomically
         const results = await pipeline.exec();
-        
+
         // Check for errors
         if (results) {
           for (const [error] of results) {
@@ -323,7 +347,7 @@ export class AtomicCacheManager {
             }
           }
         }
-        
+
         return true;
       } catch (error) {
         console.error('Failed to execute atomic set:', error);
@@ -343,13 +367,13 @@ export class AtomicCacheManager {
     } = {}
   ): Promise<T | null> {
     const lockKey = `get:${key}`;
-    
+
     return this.withLock(lockKey, async () => {
       if (!this.redis) return null;
 
       try {
         const { validateIntegrity = true, expectedVersion } = options;
-        
+
         const cached = await this.redis.get(key);
         if (!cached) return null;
 
@@ -358,7 +382,9 @@ export class AtomicCacheManager {
 
         // Version validation
         if (expectedVersion && metadata.version !== expectedVersion) {
-          console.warn(`Version mismatch for key ${key}: expected ${expectedVersion}, got ${metadata.version}`);
+          console.warn(
+            `Version mismatch for key ${key}: expected ${expectedVersion}, got ${metadata.version}`
+          );
           return null;
         }
 
@@ -382,36 +408,39 @@ export class AtomicCacheManager {
    */
   async atomicDelete(key: string): Promise<boolean> {
     const lockKey = `delete:${key}`;
-    
+
     return this.withLock(lockKey, async () => {
       if (!this.redis) return false;
 
       try {
         const pipeline = this.redis.pipeline();
-        
+
         // Get cache entry to find tags
         const cached = await this.redis.get(key);
         if (cached) {
           try {
             const cacheEntry = JSON.parse(cached);
             const { tags = [] } = cacheEntry;
-            
+
             // Remove from tag associations
             for (const tag of tags) {
               pipeline.srem(`tag:${tag}`, key);
             }
           } catch (parseError) {
-            console.warn('Failed to parse cache entry for tag cleanup:', parseError);
+            console.warn(
+              'Failed to parse cache entry for tag cleanup:',
+              parseError
+            );
           }
         }
-        
+
         // Delete main cache entry and version
         pipeline.del(key);
         pipeline.del(`version:${key}`);
-        
+
         // Execute pipeline
         const results = await pipeline.exec();
-        
+
         // Check for errors
         if (results) {
           for (const [error] of results) {
@@ -420,10 +449,10 @@ export class AtomicCacheManager {
             }
           }
         }
-        
+
         // Clean up dependencies
         this.dependencyGraph.delete(key);
-        
+
         return true;
       } catch (error) {
         console.error('Failed to execute atomic delete:', error);
@@ -443,16 +472,16 @@ export class AtomicCacheManager {
     } = {}
   ): Promise<boolean> {
     if (!tags || tags.length === 0) return true;
-    
+
     const lockKey = `invalidate:${tags.join(':')}`;
-    
+
     return this.withLock(lockKey, async () => {
       if (!this.redis) return false;
 
       try {
         const { cascadeDependencies = true, batchSize = 100 } = options;
         const keysToDelete = new Set<string>();
-        
+
         // Collect all keys associated with tags
         for (const tag of tags) {
           const tagKey = `tag:${tag}`;
@@ -460,7 +489,7 @@ export class AtomicCacheManager {
           keys.forEach(key => keysToDelete.add(key));
           keysToDelete.add(tagKey);
         }
-        
+
         // Cascade to dependent keys if enabled
         if (cascadeDependencies) {
           const dependentKeys = new Set<string>();
@@ -470,33 +499,36 @@ export class AtomicCacheManager {
           }
           dependentKeys.forEach(key => keysToDelete.add(key));
         }
-        
+
         // Delete keys in batches
         const keyArray = Array.from(keysToDelete);
         for (let i = 0; i < keyArray.length; i += batchSize) {
           const batch = keyArray.slice(i, i + batchSize);
-          
+
           const pipeline = this.redis.pipeline();
           batch.forEach(key => {
             pipeline.del(key);
             pipeline.del(`version:${key}`);
           });
-          
+
           const results = await pipeline.exec();
-          
+
           // Check for errors
           if (results) {
             for (const [error] of results) {
               if (error) {
-                console.error('Pipeline command failed in atomicInvalidateByTags:', error);
+                console.error(
+                  'Pipeline command failed in atomicInvalidateByTags:',
+                  error
+                );
               }
             }
           }
         }
-        
+
         // Clean up dependency tracking
         keyArray.forEach(key => this.dependencyGraph.delete(key));
-        
+
         return true;
       } catch (error) {
         console.error('Failed to execute atomic invalidation:', error);
@@ -517,19 +549,26 @@ export class AtomicCacheManager {
     }>
   ): Promise<Array<any>> {
     const lockKey = `batch:${operations.map(op => op.key).join(':')}`;
-    
+
     return this.withLock(lockKey, async () => {
       const results: any[] = [];
-      
+
       for (const operation of operations) {
         try {
           switch (operation.type) {
             case 'set':
-              const setResult = await this.atomicSet(operation.key, operation.value, operation.options);
+              const setResult = await this.atomicSet(
+                operation.key,
+                operation.value,
+                operation.options
+              );
               results.push(setResult);
               break;
             case 'get':
-              const getResult = await this.atomicGet(operation.key, operation.options);
+              const getResult = await this.atomicGet(
+                operation.key,
+                operation.options
+              );
               results.push(getResult);
               break;
             case 'delete':
@@ -537,13 +576,15 @@ export class AtomicCacheManager {
               results.push(deleteResult);
               break;
             default:
-              results.push(new Error(`Unknown operation type: ${operation.type}`));
+              results.push(
+                new Error(`Unknown operation type: ${operation.type}`)
+              );
           }
         } catch (error) {
           results.push(error);
         }
       }
-      
+
       return results;
     });
   }
@@ -639,7 +680,9 @@ export class AtomicCacheManager {
       // Wait for pending operations
       const pendingOperations = Array.from(this.operationQueue.values());
       if (pendingOperations.length > 0) {
-        console.log(`Waiting for ${pendingOperations.length} pending cache operations...`);
+        console.log(
+          `Waiting for ${pendingOperations.length} pending cache operations...`
+        );
         await Promise.allSettled(pendingOperations);
       }
 
@@ -690,19 +733,19 @@ export const AtomicCacheUtils = {
     } = {}
   ): Promise<T> {
     const manager = await getAtomicCacheManager();
-    
+
     // Try to get from cache first
     const cached = await manager.atomicGet<T>(key, {
       validateIntegrity: options.validateIntegrity,
     });
-    
+
     if (cached !== null) {
       return cached;
     }
-    
+
     // Execute fallback and cache result
     const result = await fallback();
-    
+
     if (result !== null && result !== undefined) {
       await manager.atomicSet(key, result, {
         ttl: options.ttl,
@@ -710,7 +753,7 @@ export const AtomicCacheUtils = {
         dependencies: options.dependencies,
       });
     }
-    
+
     return result;
   },
 
@@ -729,14 +772,14 @@ export const AtomicCacheUtils = {
     }>
   ): Promise<void> {
     const manager = await getAtomicCacheManager();
-    
+
     const operations = keys.map(({ key, fallback, options = {} }) => ({
       type: 'set' as const,
       key,
       value: fallback(),
       options,
     }));
-    
+
     await manager.atomicBatch(operations);
   },
 
@@ -748,12 +791,12 @@ export const AtomicCacheUtils = {
     tags: string[] = []
   ): Promise<void> {
     const manager = await getAtomicCacheManager();
-    
+
     // Delete specific keys
     for (const key of keys) {
       await manager.atomicDelete(key);
     }
-    
+
     // Invalidate by tags with dependency cascade
     if (tags.length > 0) {
       await manager.atomicInvalidateByTags(tags, {
@@ -761,4 +804,4 @@ export const AtomicCacheUtils = {
       });
     }
   },
-}; 
+};

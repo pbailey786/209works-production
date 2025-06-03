@@ -1,32 +1,58 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  AdminRole, 
-  Permission, 
-  ROLE_PERMISSIONS, 
+import {
+  AdminRole,
+  Permission,
+  ROLE_PERMISSIONS,
   ROLE_DISPLAY_INFO,
-  getUserPermissions 
+  getUserPermissions,
 } from '@/lib/rbac/permissions';
 import { usePermissions } from '@/hooks/usePermissions';
 import { PermissionGate } from './PermissionGate';
-import { 
-  Shield, 
-  Users, 
-  Settings, 
-  Eye, 
-  Edit, 
+import {
+  Shield,
+  Users,
+  Settings,
+  Eye,
+  Edit,
   Plus,
   Check,
-  X
+  X,
 } from 'lucide-react';
 
 interface RoleManagementProps {
@@ -47,7 +73,7 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
   const roleStats = Object.values(AdminRole).map(role => ({
     role,
     count: users.filter(user => user.role === role).length,
-    ...ROLE_DISPLAY_INFO[role]
+    ...ROLE_DISPLAY_INFO[role],
   }));
 
   const handleRoleChange = async (userId: string, newRole: string) => {
@@ -64,7 +90,7 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline" size="sm">
-            <Eye className="h-4 w-4 mr-2" />
+            <Eye className="mr-2 h-4 w-4" />
             View Permissions
           </Button>
         </DialogTrigger>
@@ -74,16 +100,19 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
               <Shield className="h-5 w-5" />
               <span>{roleInfo.name} Permissions</span>
             </DialogTitle>
-            <DialogDescription>
-              {roleInfo.description}
-            </DialogDescription>
+            <DialogDescription>{roleInfo.description}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {permissions.map(permission => (
-                <div key={permission} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                <div
+                  key={permission}
+                  className="flex items-center space-x-2 rounded bg-gray-50 p-2"
+                >
                   <Check className="h-4 w-4 text-green-500" />
-                  <span className="text-sm">{permission.replace(/_/g, ' ').toLowerCase()}</span>
+                  <span className="text-sm">
+                    {permission.replace(/_/g, ' ').toLowerCase()}
+                  </span>
                 </div>
               ))}
             </div>
@@ -96,7 +125,7 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
   return (
     <div className="space-y-6">
       {/* Role Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {roleStats.map(({ role, count, name, description, color }) => (
           <Card key={role}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -105,7 +134,7 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{count}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {description}
               </p>
               <div className="mt-3">
@@ -129,9 +158,9 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left p-2">Permission</th>
+                  <th className="p-2 text-left">Permission</th>
                   {Object.values(AdminRole).map(role => (
-                    <th key={role} className="text-center p-2 min-w-[120px]">
+                    <th key={role} className="min-w-[120px] p-2 text-center">
                       <div className="text-xs">
                         {ROLE_DISPLAY_INFO[role].name}
                       </div>
@@ -146,11 +175,11 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
                       {permission.replace(/_/g, ' ').toLowerCase()}
                     </td>
                     {Object.values(AdminRole).map(role => (
-                      <td key={role} className="text-center p-2">
+                      <td key={role} className="p-2 text-center">
                         {ROLE_PERMISSIONS[role].includes(permission) ? (
-                          <Check className="h-4 w-4 text-green-500 mx-auto" />
+                          <Check className="mx-auto h-4 w-4 text-green-500" />
                         ) : (
-                          <X className="h-4 w-4 text-gray-300 mx-auto" />
+                          <X className="mx-auto h-4 w-4 text-gray-300" />
                         )}
                       </td>
                     ))}
@@ -167,9 +196,7 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
         <Card>
           <CardHeader>
             <CardTitle>User Role Management</CardTitle>
-            <CardDescription>
-              Manage user roles and permissions
-            </CardDescription>
+            <CardDescription>Manage user roles and permissions</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -182,47 +209,64 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.filter(user => user.role !== 'jobseeker' && user.role !== 'employer').map(user => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={
-                        user.role === 'admin' ? 'destructive' :
-                        user.role.includes('admin') ? 'default' : 'secondary'
-                      }>
-                        {ROLE_DISPLAY_INFO[user.role as AdminRole]?.name || user.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Select
-                          value={user.role}
-                          onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
+                {users
+                  .filter(
+                    user =>
+                      user.role !== 'jobseeker' && user.role !== 'employer'
+                  )
+                  .map(user => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{user.name}</div>
+                          <div className="text-sm text-gray-500">
+                            {user.email}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            user.role === 'admin'
+                              ? 'destructive'
+                              : user.role.includes('admin')
+                                ? 'default'
+                                : 'secondary'
+                          }
                         >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="admin">Admin (Legacy)</SelectItem>
-                            {Object.values(AdminRole).map(role => (
-                              <SelectItem key={role} value={role}>
-                                {ROLE_DISPLAY_INFO[role].name}
+                          {ROLE_DISPLAY_INFO[user.role as AdminRole]?.name ||
+                            user.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(user.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-2">
+                          <Select
+                            value={user.role}
+                            onValueChange={newRole =>
+                              handleRoleChange(user.id, newRole)
+                            }
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="admin">
+                                Admin (Legacy)
                               </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                              {Object.values(AdminRole).map(role => (
+                                <SelectItem key={role} value={role}>
+                                  {ROLE_DISPLAY_INFO[role].name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </CardContent>
@@ -238,11 +282,16 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
             {getUserPermissions(userRole).map(permission => (
-              <div key={permission} className="flex items-center space-x-2 p-2 bg-green-50 rounded">
+              <div
+                key={permission}
+                className="flex items-center space-x-2 rounded bg-green-50 p-2"
+              >
                 <Check className="h-4 w-4 text-green-500" />
-                <span className="text-sm">{permission.replace(/_/g, ' ').toLowerCase()}</span>
+                <span className="text-sm">
+                  {permission.replace(/_/g, ' ').toLowerCase()}
+                </span>
               </div>
             ))}
           </div>
@@ -250,4 +299,4 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
       </Card>
     </div>
   );
-} 
+}

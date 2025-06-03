@@ -5,18 +5,18 @@ import { prisma } from '../../auth/prisma';
 function verifyCronRequest(req: NextRequest): boolean {
   const authHeader = req.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
-  
+
   // In production, verify the cron secret
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return false;
   }
-  
+
   // Alternatively, check for Vercel's cron headers
   const vercelCronHeader = req.headers.get('x-vercel-cron');
   if (vercelCronHeader === '1') {
     return true;
   }
-  
+
   // For development, allow requests with proper auth header
   return authHeader?.startsWith('Bearer ') || false;
 }
@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
     }
 
     console.log('[CRON] Starting expired token cleanup...');
-    
+
     const startTime = Date.now();
     const now = new Date();
-    
+
     const results = {
       magicLinksExpired: 0,
       passwordResetTokensExpired: 0,
@@ -55,9 +55,11 @@ export async function POST(req: NextRequest) {
         magicLinkExpires: null,
       },
     });
-    
+
     results.magicLinksExpired = magicLinkResult.count;
-    console.log(`[CRON] Cleaned ${magicLinkResult.count} expired magic link tokens`);
+    console.log(
+      `[CRON] Cleaned ${magicLinkResult.count} expired magic link tokens`
+    );
 
     // Clean up expired password reset tokens
     const passwordResetResult = await prisma.user.updateMany({
@@ -72,9 +74,11 @@ export async function POST(req: NextRequest) {
         passwordResetExpires: null,
       },
     });
-    
+
     results.passwordResetTokensExpired = passwordResetResult.count;
-    console.log(`[CRON] Cleaned ${passwordResetResult.count} expired password reset tokens`);
+    console.log(
+      `[CRON] Cleaned ${passwordResetResult.count} expired password reset tokens`
+    );
 
     // Clean up old email logs (older than 90 days)
     const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
@@ -84,8 +88,10 @@ export async function POST(req: NextRequest) {
         status: { in: ['sent', 'delivered', 'failed', 'bounced'] },
       },
     });
-    
-    console.log(`[CRON] Cleaned ${emailLogResult.count} old email logs (90+ days)`);
+
+    console.log(
+      `[CRON] Cleaned ${emailLogResult.count} old email logs (90+ days)`
+    );
 
     // Clean up old search analytics (older than 180 days)
     const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
@@ -94,14 +100,23 @@ export async function POST(req: NextRequest) {
         createdAt: { lt: sixMonthsAgo },
       },
     });
-    
-    console.log(`[CRON] Cleaned ${searchAnalyticsResult.count} old search analytics (180+ days)`);
 
-    results.totalCleaned = results.magicLinksExpired + results.passwordResetTokensExpired + emailLogResult.count + searchAnalyticsResult.count;
-    
+    console.log(
+      `[CRON] Cleaned ${searchAnalyticsResult.count} old search analytics (180+ days)`
+    );
+
+    results.totalCleaned =
+      results.magicLinksExpired +
+      results.passwordResetTokensExpired +
+      emailLogResult.count +
+      searchAnalyticsResult.count;
+
     const processingTime = Date.now() - startTime;
-    
-    console.log(`[CRON] Token cleanup completed in ${processingTime}ms`, results);
+
+    console.log(
+      `[CRON] Token cleanup completed in ${processingTime}ms`,
+      results
+    );
 
     return NextResponse.json({
       success: true,
@@ -115,13 +130,12 @@ export async function POST(req: NextRequest) {
         },
       },
     });
-
   } catch (error) {
     console.error('[CRON] Token cleanup failed:', error);
     return NextResponse.json(
-      { 
-        error: 'Internal server error', 
-        message: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -132,7 +146,7 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const now = new Date();
-    
+
     // Count tokens that will be cleaned up
     const expiredMagicLinks = await prisma.user.count({
       where: {
@@ -177,4 +191,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

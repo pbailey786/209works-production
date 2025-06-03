@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 
 // Types for UI state management
 export interface ToastState {
@@ -40,11 +47,17 @@ export type UIAction =
   | { type: 'REMOVE_TOAST'; payload: { id: string } }
   | { type: 'CLEAR_TOASTS' }
   | { type: 'ADD_LOADING'; payload: Omit<LoadingState, 'id' | 'timestamp'> }
-  | { type: 'UPDATE_LOADING'; payload: { id: string; progress?: number; message?: string } }
+  | {
+      type: 'UPDATE_LOADING';
+      payload: { id: string; progress?: number; message?: string };
+    }
   | { type: 'REMOVE_LOADING'; payload: { id: string } }
   | { type: 'CLEAR_LOADING' }
   | { type: 'ADD_MODAL'; payload: Omit<ModalState, 'id' | 'timestamp'> }
-  | { type: 'UPDATE_MODAL'; payload: { id: string; isOpen?: boolean; data?: any } }
+  | {
+      type: 'UPDATE_MODAL';
+      payload: { id: string; isOpen?: boolean; data?: any };
+    }
   | { type: 'REMOVE_MODAL'; payload: { id: string } }
   | { type: 'CLEAR_MODALS' }
   | { type: 'PUSH_FOCUS'; payload: { id: string } }
@@ -76,46 +89,52 @@ function uiReducer(state: UIState, action: UIAction): UIState {
           id: generateId(),
           timestamp: Date.now(),
         };
-        
+
         // Limit number of toasts to prevent memory issues
-        const updatedToasts = [newToast, ...state.toasts].slice(0, state.maxToasts);
-        
+        const updatedToasts = [newToast, ...state.toasts].slice(
+          0,
+          state.maxToasts
+        );
+
         return {
           ...state,
           toasts: updatedToasts,
         };
       }
-      
+
       case 'REMOVE_TOAST': {
         return {
           ...state,
           toasts: state.toasts.filter(toast => toast.id !== action.payload.id),
         };
       }
-      
+
       case 'CLEAR_TOASTS': {
         return {
           ...state,
           toasts: [],
         };
       }
-      
+
       case 'ADD_LOADING': {
         const newLoading: LoadingState = {
           ...action.payload,
           id: generateId(),
           timestamp: Date.now(),
         };
-        
+
         // Limit number of loading states
-        const updatedLoadingStates = [newLoading, ...state.loadingStates].slice(0, state.maxLoadingStates);
-        
+        const updatedLoadingStates = [newLoading, ...state.loadingStates].slice(
+          0,
+          state.maxLoadingStates
+        );
+
         return {
           ...state,
           loadingStates: updatedLoadingStates,
         };
       }
-      
+
       case 'UPDATE_LOADING': {
         return {
           ...state,
@@ -126,34 +145,36 @@ function uiReducer(state: UIState, action: UIAction): UIState {
           ),
         };
       }
-      
+
       case 'REMOVE_LOADING': {
         return {
           ...state,
-          loadingStates: state.loadingStates.filter(loading => loading.id !== action.payload.id),
+          loadingStates: state.loadingStates.filter(
+            loading => loading.id !== action.payload.id
+          ),
         };
       }
-      
+
       case 'CLEAR_LOADING': {
         return {
           ...state,
           loadingStates: [],
         };
       }
-      
+
       case 'ADD_MODAL': {
         const newModal: ModalState = {
           ...action.payload,
           id: generateId(),
           timestamp: Date.now(),
         };
-        
+
         return {
           ...state,
           modals: [...state.modals, newModal],
         };
       }
-      
+
       case 'UPDATE_MODAL': {
         return {
           ...state,
@@ -164,42 +185,42 @@ function uiReducer(state: UIState, action: UIAction): UIState {
           ),
         };
       }
-      
+
       case 'REMOVE_MODAL': {
         return {
           ...state,
           modals: state.modals.filter(modal => modal.id !== action.payload.id),
         };
       }
-      
+
       case 'CLEAR_MODALS': {
         return {
           ...state,
           modals: [],
         };
       }
-      
+
       case 'PUSH_FOCUS': {
         return {
           ...state,
           focusStack: [...state.focusStack, action.payload.id],
         };
       }
-      
+
       case 'POP_FOCUS': {
         return {
           ...state,
           focusStack: state.focusStack.slice(0, -1),
         };
       }
-      
+
       case 'CLEAR_FOCUS_STACK': {
         return {
           ...state,
           focusStack: [],
         };
       }
-      
+
       default:
         console.warn('Unknown UI action type:', (action as any).type);
         return state;
@@ -220,33 +241,33 @@ const UIStateContext = createContext<{
 export function UIStateProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(uiReducer, initialState);
   const cleanupTimersRef = useRef<Set<NodeJS.Timeout>>(new Set());
-  
+
   // Cleanup function for timers
   const addCleanupTimer = useCallback((timer: NodeJS.Timeout) => {
     cleanupTimersRef.current.add(timer);
   }, []);
-  
+
   const removeCleanupTimer = useCallback((timer: NodeJS.Timeout) => {
     cleanupTimersRef.current.delete(timer);
     clearTimeout(timer);
   }, []);
-  
+
   // Auto-cleanup expired toasts
   useEffect(() => {
     const activeTimers = new Set<NodeJS.Timeout>();
-    
+
     state.toasts.forEach(toast => {
       if (toast.duration && toast.duration > 0) {
         const timer = setTimeout(() => {
           dispatch({ type: 'REMOVE_TOAST', payload: { id: toast.id } });
           activeTimers.delete(timer);
         }, toast.duration);
-        
+
         activeTimers.add(timer);
         addCleanupTimer(timer);
       }
     });
-    
+
     // Cleanup function
     return () => {
       activeTimers.forEach(timer => {
@@ -255,7 +276,7 @@ export function UIStateProvider({ children }: { children: React.ReactNode }) {
       });
     };
   }, [state.toasts, addCleanupTimer, removeCleanupTimer]);
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -265,16 +286,17 @@ export function UIStateProvider({ children }: { children: React.ReactNode }) {
       cleanupTimersRef.current.clear();
     };
   }, []);
-  
-  const value = React.useMemo(() => ({
-    state,
-    dispatch,
-  }), [state]);
-  
+
+  const value = React.useMemo(
+    () => ({
+      state,
+      dispatch,
+    }),
+    [state]
+  );
+
   return (
-    <UIStateContext.Provider value={value}>
-      {children}
-    </UIStateContext.Provider>
+    <UIStateContext.Provider value={value}>{children}</UIStateContext.Provider>
   );
 }
 
@@ -290,19 +312,25 @@ export function useUIState() {
 // Custom hooks for specific UI components
 export function useToast() {
   const { state, dispatch } = useUIState();
-  
-  const addToast = useCallback((toast: Omit<ToastState, 'id' | 'timestamp'>) => {
-    dispatch({ type: 'ADD_TOAST', payload: toast });
-  }, [dispatch]);
-  
-  const removeToast = useCallback((id: string) => {
-    dispatch({ type: 'REMOVE_TOAST', payload: { id } });
-  }, [dispatch]);
-  
+
+  const addToast = useCallback(
+    (toast: Omit<ToastState, 'id' | 'timestamp'>) => {
+      dispatch({ type: 'ADD_TOAST', payload: toast });
+    },
+    [dispatch]
+  );
+
+  const removeToast = useCallback(
+    (id: string) => {
+      dispatch({ type: 'REMOVE_TOAST', payload: { id } });
+    },
+    [dispatch]
+  );
+
   const clearToasts = useCallback(() => {
     dispatch({ type: 'CLEAR_TOASTS' });
   }, [dispatch]);
-  
+
   return {
     toasts: state.toasts,
     addToast,
@@ -313,31 +341,43 @@ export function useToast() {
 
 export function useLoading() {
   const { state, dispatch } = useUIState();
-  
-  const addLoading = useCallback((loading: Omit<LoadingState, 'id' | 'timestamp'>) => {
-    dispatch({ type: 'ADD_LOADING', payload: loading });
-    return generateId(); // Return ID for tracking
-  }, [dispatch]);
-  
-  const updateLoading = useCallback((id: string, updates: { progress?: number; message?: string }) => {
-    dispatch({ type: 'UPDATE_LOADING', payload: { id, ...updates } });
-  }, [dispatch]);
-  
-  const removeLoading = useCallback((id: string) => {
-    dispatch({ type: 'REMOVE_LOADING', payload: { id } });
-  }, [dispatch]);
-  
+
+  const addLoading = useCallback(
+    (loading: Omit<LoadingState, 'id' | 'timestamp'>) => {
+      dispatch({ type: 'ADD_LOADING', payload: loading });
+      return generateId(); // Return ID for tracking
+    },
+    [dispatch]
+  );
+
+  const updateLoading = useCallback(
+    (id: string, updates: { progress?: number; message?: string }) => {
+      dispatch({ type: 'UPDATE_LOADING', payload: { id, ...updates } });
+    },
+    [dispatch]
+  );
+
+  const removeLoading = useCallback(
+    (id: string) => {
+      dispatch({ type: 'REMOVE_LOADING', payload: { id } });
+    },
+    [dispatch]
+  );
+
   const clearLoading = useCallback(() => {
     dispatch({ type: 'CLEAR_LOADING' });
   }, [dispatch]);
-  
-  const isLoading = useCallback((type?: LoadingState['type']) => {
-    if (type) {
-      return state.loadingStates.some(loading => loading.type === type);
-    }
-    return state.loadingStates.length > 0;
-  }, [state.loadingStates]);
-  
+
+  const isLoading = useCallback(
+    (type?: LoadingState['type']) => {
+      if (type) {
+        return state.loadingStates.some(loading => loading.type === type);
+      }
+      return state.loadingStates.length > 0;
+    },
+    [state.loadingStates]
+  );
+
   return {
     loadingStates: state.loadingStates,
     addLoading,
@@ -350,25 +390,34 @@ export function useLoading() {
 
 export function useModal() {
   const { state, dispatch } = useUIState();
-  
-  const addModal = useCallback((modal: Omit<ModalState, 'id' | 'timestamp'>) => {
-    const id = generateId();
-    dispatch({ type: 'ADD_MODAL', payload: modal });
-    return id;
-  }, [dispatch]);
-  
-  const updateModal = useCallback((id: string, updates: { isOpen?: boolean; data?: any }) => {
-    dispatch({ type: 'UPDATE_MODAL', payload: { id, ...updates } });
-  }, [dispatch]);
-  
-  const removeModal = useCallback((id: string) => {
-    dispatch({ type: 'REMOVE_MODAL', payload: { id } });
-  }, [dispatch]);
-  
+
+  const addModal = useCallback(
+    (modal: Omit<ModalState, 'id' | 'timestamp'>) => {
+      const id = generateId();
+      dispatch({ type: 'ADD_MODAL', payload: modal });
+      return id;
+    },
+    [dispatch]
+  );
+
+  const updateModal = useCallback(
+    (id: string, updates: { isOpen?: boolean; data?: any }) => {
+      dispatch({ type: 'UPDATE_MODAL', payload: { id, ...updates } });
+    },
+    [dispatch]
+  );
+
+  const removeModal = useCallback(
+    (id: string) => {
+      dispatch({ type: 'REMOVE_MODAL', payload: { id } });
+    },
+    [dispatch]
+  );
+
   const clearModals = useCallback(() => {
     dispatch({ type: 'CLEAR_MODALS' });
   }, [dispatch]);
-  
+
   return {
     modals: state.modals,
     addModal,
@@ -380,23 +429,26 @@ export function useModal() {
 
 export function useFocusManagement() {
   const { state, dispatch } = useUIState();
-  
-  const pushFocus = useCallback((id: string) => {
-    dispatch({ type: 'PUSH_FOCUS', payload: { id } });
-  }, [dispatch]);
-  
+
+  const pushFocus = useCallback(
+    (id: string) => {
+      dispatch({ type: 'PUSH_FOCUS', payload: { id } });
+    },
+    [dispatch]
+  );
+
   const popFocus = useCallback(() => {
     dispatch({ type: 'POP_FOCUS' });
   }, [dispatch]);
-  
+
   const clearFocusStack = useCallback(() => {
     dispatch({ type: 'CLEAR_FOCUS_STACK' });
   }, [dispatch]);
-  
+
   const getCurrentFocus = useCallback(() => {
     return state.focusStack[state.focusStack.length - 1] || null;
   }, [state.focusStack]);
-  
+
   return {
     focusStack: state.focusStack,
     pushFocus,
@@ -414,36 +466,41 @@ export class UIStateErrorBoundary extends React.Component<
   { children: React.ReactNode; fallback?: React.ReactNode },
   { hasError: boolean }
 > {
-  constructor(props: { children: React.ReactNode; fallback?: React.ReactNode }) {
+  constructor(props: {
+    children: React.ReactNode;
+    fallback?: React.ReactNode;
+  }) {
     super(props);
     this.state = { hasError: false };
   }
-  
+
   static getDerivedStateFromError(error: Error) {
     console.error('UI State Error Boundary caught an error:', error);
     return { hasError: true };
   }
-  
+
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('UI State Error Boundary error details:', error, errorInfo);
   }
-  
+
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="p-4 text-center text-red-600">
-          <h2 className="text-lg font-semibold">UI State Error</h2>
-          <p>Something went wrong with the UI state management.</p>
-          <button
-            onClick={() => this.setState({ hasError: false })}
-            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Try Again
-          </button>
-        </div>
+      return (
+        this.props.fallback || (
+          <div className="p-4 text-center text-red-600">
+            <h2 className="text-lg font-semibold">UI State Error</h2>
+            <p>Something went wrong with the UI state management.</p>
+            <button
+              onClick={() => this.setState({ hasError: false })}
+              className="mt-2 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            >
+              Try Again
+            </button>
+          </div>
+        )
       );
     }
-    
+
     return this.props.children;
   }
-} 
+}

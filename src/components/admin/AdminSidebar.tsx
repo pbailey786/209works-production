@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
+import {
   LayoutDashboard,
   FileText,
   Users,
@@ -20,7 +20,7 @@ import {
   X,
   ChevronDown,
   ChevronRight,
-  CloudDownload
+  CloudDownload,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Permission } from '@/lib/rbac/permissions';
@@ -63,7 +63,7 @@ const navigation: NavItem[] = [
         badge: '3',
         permission: Permission.HANDLE_REPORTS,
       },
-    ]
+    ],
   },
   {
     name: 'User Management',
@@ -89,7 +89,7 @@ const navigation: NavItem[] = [
         icon: Users,
         permission: Permission.VIEW_USERS,
       },
-    ]
+    ],
   },
   {
     name: 'Advertisement Management',
@@ -109,7 +109,7 @@ const navigation: NavItem[] = [
         icon: BarChart3,
         permission: Permission.VIEW_AD_PERFORMANCE,
       },
-    ]
+    ],
   },
   {
     name: 'Analytics',
@@ -147,7 +147,7 @@ const navigation: NavItem[] = [
         icon: BarChart3,
         permission: Permission.VIEW_EMAIL_ANALYTICS,
       },
-    ]
+    ],
   },
   {
     name: 'System Health',
@@ -188,10 +188,8 @@ export default function AdminSidebar() {
   const { hasPermission, hasAnyPermission } = usePermissions();
 
   const toggleExpanded = (href: string) => {
-    setExpandedItems(prev => 
-      prev.includes(href) 
-        ? prev.filter(item => item !== href)
-        : [...prev, href]
+    setExpandedItems(prev =>
+      prev.includes(href) ? prev.filter(item => item !== href) : [...prev, href]
     );
   };
 
@@ -206,7 +204,13 @@ export default function AdminSidebar() {
     return expandedItems.includes(href) || pathname.startsWith(href);
   };
 
-  const NavItemComponent = ({ item, level = 0 }: { item: NavItem; level?: number }) => {
+  const NavItemComponent = ({
+    item,
+    level = 0,
+  }: {
+    item: NavItem;
+    level?: number;
+  }) => {
     // Check permissions for this nav item
     const hasItemPermission = () => {
       if (item.permission && !hasPermission(item.permission)) {
@@ -242,18 +246,18 @@ export default function AdminSidebar() {
       <div key={item.href}>
         <div
           className={cn(
-            "flex items-center justify-between py-2 px-3 rounded-lg text-sm font-medium transition-colors",
-            level > 0 && "ml-4",
+            'flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+            level > 0 && 'ml-4',
             active
-              ? "bg-[#2d4a3e]/10 text-[#2d4a3e]"
-              : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              ? 'bg-[#2d4a3e]/10 text-[#2d4a3e]'
+              : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
           )}
         >
-          <Link href={item.href} className="flex items-center flex-1">
+          <Link href={item.href} className="flex flex-1 items-center">
             <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
             <span>{item.name}</span>
             {item.badge && (
-              <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+              <span className="ml-auto inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
                 {item.badge}
               </span>
             )}
@@ -261,7 +265,7 @@ export default function AdminSidebar() {
           {hasChildren && (
             <button
               onClick={() => toggleExpanded(item.href)}
-              className="p-1 hover:bg-gray-200 rounded"
+              className="rounded p-1 hover:bg-gray-200"
             >
               {expanded ? (
                 <ChevronDown className="h-4 w-4" />
@@ -274,7 +278,11 @@ export default function AdminSidebar() {
         {hasChildren && expanded && (
           <div className="mt-1 space-y-1">
             {visibleChildren!.map(child => (
-              <NavItemComponent key={child.href} item={child} level={level + 1} />
+              <NavItemComponent
+                key={child.href}
+                item={child}
+                level={level + 1}
+              />
             ))}
           </div>
         )}
@@ -285,10 +293,10 @@ export default function AdminSidebar() {
   return (
     <>
       {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+      <div className="fixed left-4 top-4 z-50 lg:hidden">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-md bg-white shadow-md"
+          className="rounded-md bg-white p-2 shadow-md"
         >
           {isMobileMenuOpen ? (
             <X className="h-6 w-6" />
@@ -301,31 +309,33 @@ export default function AdminSidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          'fixed inset-y-0 left-0 z-40 w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0',
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
+          <div className="flex h-16 items-center justify-center border-b border-gray-200 px-4">
             <Link href="/admin" className="flex items-center">
-              <div className="w-8 h-8 bg-[#2d4a3e] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2d4a3e]">
+                <span className="text-sm font-bold text-white">A</span>
               </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">Admin</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">
+                Admin
+              </span>
             </Link>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className="flex-1 space-y-2 overflow-y-auto px-4 py-6">
             {navigation.map(item => (
               <NavItemComponent key={item.href} item={item} />
             ))}
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="text-xs text-gray-500 text-center">
+          <div className="border-t border-gray-200 p-4">
+            <div className="text-center text-xs text-gray-500">
               209 Works Admin Panel
             </div>
           </div>
@@ -334,11 +344,11 @@ export default function AdminSidebar() {
 
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
     </>
   );
-} 
+}

@@ -21,9 +21,9 @@ The system provides:
 import { getCache, setCache, DEFAULT_TTL } from '@/lib/cache/redis';
 
 // Set cache
-await setCache('user:123', userData, { 
+await setCache('user:123', userData, {
   ttl: DEFAULT_TTL.medium,
-  tags: ['users', 'user:123'] 
+  tags: ['users', 'user:123'],
 });
 
 // Get cache
@@ -44,7 +44,7 @@ const results = await JobCacheService.getPaginatedJobs({
     q: 'developer',
     location: 'San Francisco',
     jobType: 'fulltime',
-  }
+  },
 });
 ```
 
@@ -58,12 +58,9 @@ import { JobCacheService } from '@/lib/cache/services';
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { query, performance } = context;
-    
-    const results = await JobCacheService.getPaginatedJobs(
-      query!,
-      performance
-    );
-    
+
+    const results = await JobCacheService.getPaginatedJobs(query!, performance);
+
     return createSuccessResponse(results);
   },
   {
@@ -87,9 +84,9 @@ The Redis client automatically detects and uses:
 
 ```typescript
 export const DEFAULT_TTL = {
-  short: 60 * 5,        // 5 minutes
-  medium: 60 * 30,      // 30 minutes  
-  long: 60 * 60 * 2,    // 2 hours
+  short: 60 * 5, // 5 minutes
+  medium: 60 * 30, // 30 minutes
+  long: 60 * 60 * 2, // 2 hours
   veryLong: 60 * 60 * 24, // 24 hours
 };
 ```
@@ -113,7 +110,7 @@ export const CACHE_PREFIXES = {
 ```typescript
 await setCache('jobs:paginated:page:1', jobsData, {
   ttl: DEFAULT_TTL.medium,
-  tags: ['jobs', 'jobs:list']
+  tags: ['jobs', 'jobs:list'],
 });
 ```
 
@@ -153,6 +150,7 @@ const key = generateCacheKey(CACHE_PREFIXES.jobs, 'paginated', userId);
 ### Cursor-based Pagination (Recommended)
 
 Better for:
+
 - Large datasets
 - Real-time data
 - Consistent ordering
@@ -189,6 +187,7 @@ Better for:
 ### Offset-based Pagination
 
 Better for:
+
 - Small datasets
 - Random access needed
 - Page number display
@@ -223,12 +222,14 @@ Better for:
 ### Pagination in API Requests
 
 #### Cursor Pagination
+
 ```
 GET /api/jobs?limit=20&sortBy=createdAt&sortOrder=desc
 GET /api/jobs?cursor=eyJjcmVhdGVkQXQiOiIyMDI0LTAxLTE1IiwiaWQiOiIxMjMifQ&limit=20
 ```
 
 #### Offset Pagination
+
 ```
 GET /api/jobs?page=2&limit=20&sortBy=createdAt&sortOrder=desc
 ```
@@ -255,8 +256,8 @@ const jobs = await JobCacheService.getPaginatedJobs({
     jobType: 'fulltime',
     salaryMin: 80000,
     remote: 'true',
-    datePosted: '7d'
-  }
+    datePosted: '7d',
+  },
 });
 
 // Get single job
@@ -265,7 +266,7 @@ const job = await JobCacheService.getJobById('job123');
 // Get jobs by employer
 const employerJobs = await JobCacheService.getJobsByEmployer('emp123', {
   page: 1,
-  limit: 10
+  limit: 10,
 });
 
 // Invalidate caches
@@ -274,16 +275,16 @@ await JobCacheService.invalidateJobCaches('job123', 'emp123');
 
 #### Search Filters
 
-| Filter | Type | Description |
-|--------|------|-------------|
-| `q` | string | Text search (title, description, company) |
-| `location` | string | Location filter |
-| `jobType` | string | Job type (fulltime, parttime, contract, etc.) |
-| `salaryMin` | number | Minimum salary |
-| `salaryMax` | number | Maximum salary |
-| `company` | string | Company name filter |
-| `remote` | 'true'/'false' | Remote work filter |
-| `datePosted` | '24h'/'7d'/'30d' | Date posted filter |
+| Filter       | Type             | Description                                   |
+| ------------ | ---------------- | --------------------------------------------- |
+| `q`          | string           | Text search (title, description, company)     |
+| `location`   | string           | Location filter                               |
+| `jobType`    | string           | Job type (fulltime, parttime, contract, etc.) |
+| `salaryMin`  | number           | Minimum salary                                |
+| `salaryMax`  | number           | Maximum salary                                |
+| `company`    | string           | Company name filter                           |
+| `remote`     | 'true'/'false'   | Remote work filter                            |
+| `datePosted` | '24h'/'7d'/'30d' | Date posted filter                            |
 
 ### UserCacheService
 
@@ -296,7 +297,7 @@ const user = await UserCacheService.getUserById('user123');
 // Get user applications with pagination
 const applications = await UserCacheService.getUserApplications('user123', {
   cursor: 'xyz',
-  limit: 20
+  limit: 20,
 });
 
 // Invalidate user caches
@@ -312,11 +313,11 @@ const searchResults = await SearchCacheService.searchJobs(
   'javascript developer',
   {
     location: 'New York',
-    jobType: 'fulltime'
+    jobType: 'fulltime',
   },
   {
     limit: 20,
-    sortBy: 'createdAt'
+    sortBy: 'createdAt',
   }
 );
 ```
@@ -326,26 +327,24 @@ const searchResults = await SearchCacheService.searchJobs(
 The system tracks performance metrics automatically:
 
 ```typescript
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { performance } = context;
-    
-    // Track database queries
-    performance.trackDatabaseQuery();
-    const data = await prisma.job.findMany();
-    
-    // Track cache operations
-    performance.trackCacheHit();   // or trackCacheMiss()
-    
-    return createSuccessResponse(data);
-  },
-  config
-);
+export const GET = withAPIMiddleware(async (req, context) => {
+  const { performance } = context;
+
+  // Track database queries
+  performance.trackDatabaseQuery();
+  const data = await prisma.job.findMany();
+
+  // Track cache operations
+  performance.trackCacheHit(); // or trackCacheMiss()
+
+  return createSuccessResponse(data);
+}, config);
 ```
 
 ### Performance Metrics
 
 Automatically logged:
+
 - Query execution time
 - Database query count
 - Cache hit/miss ratio
@@ -407,12 +406,14 @@ await invalidateCacheByTags(['jobs', 'search']);
 ### 3. Pagination Choice
 
 **Use Cursor Pagination when:**
+
 - Dataset > 10,000 records
 - Real-time data updates
 - Performance is critical
 - Consistent ordering important
 
 **Use Offset Pagination when:**
+
 - Small datasets
 - Need page numbers
 - Random access required
@@ -509,20 +510,23 @@ const job = await JobCacheService.getJobById(id, performance);
 ### Common Issues
 
 1. **Redis Connection Errors**
+
    ```bash
    # Check Redis connectivity
    redis-cli ping
-   
+
    # Verify environment variables
    echo $UPSTASH_REDIS_REST_URL
    ```
 
 2. **Cache Misses**
+
    - Check TTL values
    - Verify cache key generation
    - Monitor invalidation patterns
 
 3. **Pagination Issues**
+
    - Ensure consistent sorting
    - Check cursor encoding/decoding
    - Verify pagination parameters
@@ -553,7 +557,7 @@ import { JobCacheService } from '@/lib/cache/services';
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { query, performance } = context;
-    
+
     const results = await JobCacheService.getPaginatedJobs(
       {
         ...query!,
@@ -562,11 +566,11 @@ export const GET = withAPIMiddleware(
           location: query!.location,
           jobType: query!.jobType,
           remote: query!.remote,
-        }
+        },
       },
       performance
     );
-    
+
     return createSuccessResponse(results);
   },
   {
@@ -583,10 +587,10 @@ export const GET = withAPIMiddleware(
 ```typescript
 export class CustomCacheService {
   private static readonly CACHE_TTL = DEFAULT_TTL.medium;
-  
+
   static async getCustomData(id: string): Promise<any> {
     const cacheKey = generateCacheKey('custom', id);
-    
+
     return getCacheOrExecute(
       cacheKey,
       async () => {
@@ -594,13 +598,13 @@ export class CustomCacheService {
       },
       {
         ttl: this.CACHE_TTL,
-        tags: ['custom', `custom:${id}`]
+        tags: ['custom', `custom:${id}`],
       }
     );
   }
-  
+
   static async invalidateCustomCaches(id: string): Promise<void> {
     await invalidateCacheByTags(['custom', `custom:${id}`]);
   }
 }
-``` 
+```

@@ -12,7 +12,10 @@ export async function POST(
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'employer') {
       return NextResponse.json(
-        { error: 'Authentication required. Only employers can publish job posts.' },
+        {
+          error:
+            'Authentication required. Only employers can publish job posts.',
+        },
         { status: 401 }
       );
     }
@@ -29,7 +32,10 @@ export async function POST(
 
     if (!jobPostOptimizer) {
       return NextResponse.json(
-        { error: 'Job post not found or you do not have permission to publish it.' },
+        {
+          error:
+            'Job post not found or you do not have permission to publish it.',
+        },
         { status: 404 }
       );
     }
@@ -49,7 +55,8 @@ export async function POST(
       data: {
         title: jobPostOptimizer.jobTitle,
         company: jobPostOptimizer.companyName,
-        description: jobPostOptimizer.aiGeneratedOutput || 'Job description not available',
+        description:
+          jobPostOptimizer.aiGeneratedOutput || 'Job description not available',
         location: jobPostOptimizer.location,
         jobType: jobType,
         source: 'job_post_optimizer',
@@ -95,7 +102,6 @@ export async function POST(
       message: 'Job post published successfully!',
       jobUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${publishedJob.id}`,
     });
-
   } catch (error) {
     console.error('Publish job post error:', error);
     return NextResponse.json(
@@ -106,9 +112,18 @@ export async function POST(
 }
 
 // Helper function to extract job type from title
-function extractJobType(title: string): 'full_time' | 'part_time' | 'contract' | 'internship' | 'temporary' | 'volunteer' | 'other' {
+function extractJobType(
+  title: string
+):
+  | 'full_time'
+  | 'part_time'
+  | 'contract'
+  | 'internship'
+  | 'temporary'
+  | 'volunteer'
+  | 'other' {
   const titleLower = title.toLowerCase();
-  
+
   if (titleLower.includes('part-time') || titleLower.includes('part time')) {
     return 'part_time';
   }
@@ -124,7 +139,7 @@ function extractJobType(title: string): 'full_time' | 'part_time' | 'contract' |
   if (titleLower.includes('volunteer')) {
     return 'volunteer';
   }
-  
+
   // Default to full-time
   return 'full_time';
 }
@@ -132,39 +147,45 @@ function extractJobType(title: string): 'full_time' | 'part_time' | 'contract' |
 // Helper function to extract minimum salary
 function extractSalaryMin(payString?: string | null): number | null {
   if (!payString) return null;
-  
+
   const match = payString.match(/\$?(\d+(?:,\d{3})*(?:\.\d{2})?)/);
   if (match) {
     const amount = parseFloat(match[1].replace(/,/g, ''));
-    
+
     // Convert hourly to yearly (assuming 40 hours/week, 52 weeks/year)
-    if (payString.toLowerCase().includes('/hr') || payString.toLowerCase().includes('hour')) {
+    if (
+      payString.toLowerCase().includes('/hr') ||
+      payString.toLowerCase().includes('hour')
+    ) {
       return Math.round(amount * 40 * 52);
     }
-    
+
     // If it's already yearly or monthly, return as is
     return Math.round(amount);
   }
-  
+
   return null;
 }
 
 // Helper function to extract maximum salary
 function extractSalaryMax(payString?: string | null): number | null {
   if (!payString) return null;
-  
+
   const matches = payString.match(/\$?(\d+(?:,\d{3})*(?:\.\d{2})?)/g);
   if (matches && matches.length >= 2) {
     const amount = parseFloat(matches[1].replace(/[\$,]/g, ''));
-    
+
     // Convert hourly to yearly (assuming 40 hours/week, 52 weeks/year)
-    if (payString.toLowerCase().includes('/hr') || payString.toLowerCase().includes('hour')) {
+    if (
+      payString.toLowerCase().includes('/hr') ||
+      payString.toLowerCase().includes('hour')
+    ) {
       return Math.round(amount * 40 * 52);
     }
-    
+
     return Math.round(amount);
   }
-  
+
   return extractSalaryMin(payString); // Fallback to min if only one number
 }
 
@@ -172,76 +193,130 @@ function extractSalaryMax(payString?: string | null): number | null {
 function extractCategories(title: string): string[] {
   const titleLower = title.toLowerCase();
   const categories: string[] = [];
-  
+
   // Healthcare
-  if (titleLower.includes('nurse') || titleLower.includes('medical') || titleLower.includes('healthcare') || titleLower.includes('doctor')) {
+  if (
+    titleLower.includes('nurse') ||
+    titleLower.includes('medical') ||
+    titleLower.includes('healthcare') ||
+    titleLower.includes('doctor')
+  ) {
     categories.push('healthcare');
   }
-  
+
   // Technology
-  if (titleLower.includes('developer') || titleLower.includes('engineer') || titleLower.includes('programmer') || titleLower.includes('tech') || titleLower.includes('software')) {
+  if (
+    titleLower.includes('developer') ||
+    titleLower.includes('engineer') ||
+    titleLower.includes('programmer') ||
+    titleLower.includes('tech') ||
+    titleLower.includes('software')
+  ) {
     categories.push('technology');
   }
-  
+
   // Customer Service
-  if (titleLower.includes('customer service') || titleLower.includes('support') || titleLower.includes('representative')) {
+  if (
+    titleLower.includes('customer service') ||
+    titleLower.includes('support') ||
+    titleLower.includes('representative')
+  ) {
     categories.push('customer-service');
   }
-  
+
   // Sales
-  if (titleLower.includes('sales') || titleLower.includes('account manager') || titleLower.includes('business development')) {
+  if (
+    titleLower.includes('sales') ||
+    titleLower.includes('account manager') ||
+    titleLower.includes('business development')
+  ) {
     categories.push('sales');
   }
-  
+
   // Warehouse/Logistics
-  if (titleLower.includes('warehouse') || titleLower.includes('logistics') || titleLower.includes('driver') || titleLower.includes('delivery')) {
+  if (
+    titleLower.includes('warehouse') ||
+    titleLower.includes('logistics') ||
+    titleLower.includes('driver') ||
+    titleLower.includes('delivery')
+  ) {
     categories.push('logistics');
   }
-  
+
   // Administrative
-  if (titleLower.includes('admin') || titleLower.includes('assistant') || titleLower.includes('clerk') || titleLower.includes('receptionist')) {
+  if (
+    titleLower.includes('admin') ||
+    titleLower.includes('assistant') ||
+    titleLower.includes('clerk') ||
+    titleLower.includes('receptionist')
+  ) {
     categories.push('administrative');
   }
-  
+
   // Food Service
-  if (titleLower.includes('server') || titleLower.includes('cook') || titleLower.includes('chef') || titleLower.includes('restaurant') || titleLower.includes('food')) {
+  if (
+    titleLower.includes('server') ||
+    titleLower.includes('cook') ||
+    titleLower.includes('chef') ||
+    titleLower.includes('restaurant') ||
+    titleLower.includes('food')
+  ) {
     categories.push('food-service');
   }
-  
+
   // Retail
-  if (titleLower.includes('retail') || titleLower.includes('cashier') || titleLower.includes('store')) {
+  if (
+    titleLower.includes('retail') ||
+    titleLower.includes('cashier') ||
+    titleLower.includes('store')
+  ) {
     categories.push('retail');
   }
-  
+
   // Default category if none found
   if (categories.length === 0) {
     categories.push('other');
   }
-  
+
   return categories;
 }
 
 // Helper function to extract region from location
 function extractRegion(location: string): string {
   const locationLower = location.toLowerCase();
-  
+
   // 209 area code cities
   const cities209 = [
-    'stockton', 'modesto', 'tracy', 'manteca', 'lodi', 'turlock', 'merced',
-    'fresno', 'visalia', 'bakersfield', 'ceres', 'patterson', 'newman',
-    'gustine', 'los banos', 'atwater', 'livingston', 'winton'
+    'stockton',
+    'modesto',
+    'tracy',
+    'manteca',
+    'lodi',
+    'turlock',
+    'merced',
+    'fresno',
+    'visalia',
+    'bakersfield',
+    'ceres',
+    'patterson',
+    'newman',
+    'gustine',
+    'los banos',
+    'atwater',
+    'livingston',
+    'winton',
   ];
-  
+
   for (const city of cities209) {
     if (locationLower.includes(city)) {
       return '209';
     }
   }
-  
+
   // Default to Central Valley if in California
   if (locationLower.includes('ca') || locationLower.includes('california')) {
     return 'central-valley';
   }
-  
+
   return 'other';
 }

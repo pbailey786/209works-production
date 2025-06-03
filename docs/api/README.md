@@ -5,7 +5,7 @@ Welcome to the comprehensive documentation for the 209jobs API! This documentati
 ## 📋 Quick Start
 
 1. **[Get API Access](#getting-started)** - Sign up and get your credentials
-2. **[Authentication](#authentication)** - Set up secure API access  
+2. **[Authentication](#authentication)** - Set up secure API access
 3. **[First API Call](#first-api-call)** - Make your first request
 4. **[Explore Endpoints](#api-reference)** - Discover all available features
 
@@ -13,12 +13,12 @@ Welcome to the comprehensive documentation for the 209jobs API! This documentati
 
 ### Core Documentation
 
-| Document | Description | Audience |
-|----------|-------------|----------|
-| [OpenAPI Specification](./openapi.yaml) | Complete API reference with all endpoints, schemas, and examples | Developers |
-| [Usage Guide](./USAGE_GUIDE.md) | Comprehensive guide with practical examples and best practices | All users |
-| [Authentication Guide](./AUTHENTICATION.md) | Detailed authentication methods, security, and implementation | Developers |
-| [Postman Collection](./209jobs-api.postman_collection.json) | Ready-to-use collection for API testing | QA/Developers |
+| Document                                                    | Description                                                      | Audience      |
+| ----------------------------------------------------------- | ---------------------------------------------------------------- | ------------- |
+| [OpenAPI Specification](./openapi.yaml)                     | Complete API reference with all endpoints, schemas, and examples | Developers    |
+| [Usage Guide](./USAGE_GUIDE.md)                             | Comprehensive guide with practical examples and best practices   | All users     |
+| [Authentication Guide](./AUTHENTICATION.md)                 | Detailed authentication methods, security, and implementation    | Developers    |
+| [Postman Collection](./209jobs-api.postman_collection.json) | Ready-to-use collection for API testing                          | QA/Developers |
 
 ### Additional Resources
 
@@ -38,15 +38,16 @@ Welcome to the comprehensive documentation for the 209jobs API! This documentati
 
 ### API Endpoints
 
-| Environment | Base URL | Purpose |
-|-------------|----------|---------|
-| **Production** | `https://api.209jobs.com/v1` | Live applications |
-| **Staging** | `https://api-staging.209jobs.com/v1` | Testing and development |
-| **Local** | `http://localhost:3000/api` | Local development |
+| Environment    | Base URL                             | Purpose                 |
+| -------------- | ------------------------------------ | ----------------------- |
+| **Production** | `https://api.209jobs.com/v1`         | Live applications       |
+| **Staging**    | `https://api-staging.209jobs.com/v1` | Testing and development |
+| **Local**      | `http://localhost:3000/api`          | Local development       |
 
 ### Authentication Options
 
 1. **JWT Tokens** (Recommended for user-facing apps)
+
    - Secure, stateless authentication
    - Automatic expiration and refresh
    - Role-based access control
@@ -70,7 +71,9 @@ curl -X GET "https://api.209jobs.com/v1/jobs?query=software+engineer&location=Sa
 
 ```javascript
 // Using fetch API
-const response = await fetch('https://api.209jobs.com/v1/jobs?query=software+engineer');
+const response = await fetch(
+  'https://api.209jobs.com/v1/jobs?query=software+engineer'
+);
 const data = await response.json();
 console.log(data);
 ```
@@ -80,7 +83,7 @@ console.log(data);
 ```python
 import requests
 
-response = requests.get('https://api.209jobs.com/v1/jobs', 
+response = requests.get('https://api.209jobs.com/v1/jobs',
                        params={'query': 'software engineer'})
 data = response.json()
 print(data)
@@ -119,6 +122,7 @@ curl -X GET https://api.209jobs.com/v1/jobs \
 ### 🔍 Job Management
 
 **Search & Filter Jobs**
+
 - Full-text search across titles and descriptions
 - Location-based filtering with radius support
 - Salary range, job type, and experience level filters
@@ -126,12 +130,14 @@ curl -X GET https://api.209jobs.com/v1/jobs \
 - Advanced semantic search with AI
 
 **Job Posting (Employers)**
+
 - Create and manage job listings
 - Update job details and status
 - Track application metrics
 - Set expiration dates
 
 **Job Applications (Jobseekers)**
+
 - Submit applications with cover letters
 - Track application status
 - Save jobs for later
@@ -140,12 +146,14 @@ curl -X GET https://api.209jobs.com/v1/jobs \
 ### 👤 User Management
 
 **Profile Management**
+
 - Role-based profiles (jobseeker/employer/admin)
 - Privacy settings and visibility controls
 - Skills, experience, and preference management
 - Professional portfolio links
 
 **User Search (Employers)**
+
 - Find qualified candidates
 - Filter by skills, experience, and location
 - Respect user privacy settings
@@ -153,12 +161,14 @@ curl -X GET https://api.209jobs.com/v1/jobs \
 ### 🔔 Smart Alerts
 
 **AI-Powered Job Matching**
+
 - Create alerts with detailed criteria
 - 7-factor relevance scoring system
 - Smart recommendations for optimization
 - Test alerts before activation
 
 **Flexible Notifications**
+
 - Multiple frequency options (immediate, daily, weekly, monthly)
 - Email, push, and SMS notifications
 - Customizable result limits
@@ -166,12 +176,14 @@ curl -X GET https://api.209jobs.com/v1/jobs \
 ### 📈 Advertisement Platform
 
 **Campaign Management**
+
 - Multiple ad types (banner, sponsored search, native)
 - Advanced targeting options
 - Budget controls and optimization
 - A/B testing capabilities
 
 **Real-time Analytics**
+
 - Impressions, clicks, and conversion tracking
 - CTR and conversion rate analysis
 - ROI calculation and optimization insights
@@ -181,15 +193,16 @@ curl -X GET https://api.209jobs.com/v1/jobs \
 
 API endpoints are rate-limited to ensure fair usage:
 
-| Authentication Type | Requests per Minute |
-|-------------------|-------------------|
-| Unauthenticated | 20 |
-| JWT Token | 100 |
-| API Key (Development) | 50 |
-| API Key (Production) | 200 |
-| Admin | 500 |
+| Authentication Type   | Requests per Minute |
+| --------------------- | ------------------- |
+| Unauthenticated       | 20                  |
+| JWT Token             | 100                 |
+| API Key (Development) | 50                  |
+| API Key (Production)  | 200                 |
+| Admin                 | 500                 |
 
 **Rate Limit Headers:**
+
 - `X-RateLimit-Limit`: Request limit per time window
 - `X-RateLimit-Remaining`: Remaining requests in current window
 - `X-RateLimit-Reset`: Time when rate limit resets
@@ -199,43 +212,50 @@ API endpoints are rate-limited to ensure fair usage:
 All API responses follow a consistent format:
 
 ### Success Response
+
 ```json
 {
   "success": true,
   "message": "Operation completed successfully",
-  "data": { /* response data */ }
+  "data": {
+    /* response data */
+  }
 }
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
   "message": "Error description",
   "code": "ERROR_CODE",
-  "errors": { /* field-specific errors */ },
+  "errors": {
+    /* field-specific errors */
+  },
   "timestamp": "2024-01-15T10:30:00Z"
 }
 ```
 
 ### Common HTTP Status Codes
 
-| Code | Meaning | Description |
-|------|---------|-------------|
-| 200 | OK | Request successful |
-| 201 | Created | Resource created successfully |
-| 400 | Bad Request | Invalid request data |
-| 401 | Unauthorized | Authentication required |
-| 403 | Forbidden | Insufficient permissions |
-| 404 | Not Found | Resource not found |
-| 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | Server error |
+| Code | Meaning               | Description                   |
+| ---- | --------------------- | ----------------------------- |
+| 200  | OK                    | Request successful            |
+| 201  | Created               | Resource created successfully |
+| 400  | Bad Request           | Invalid request data          |
+| 401  | Unauthorized          | Authentication required       |
+| 403  | Forbidden             | Insufficient permissions      |
+| 404  | Not Found             | Resource not found            |
+| 429  | Too Many Requests     | Rate limit exceeded           |
+| 500  | Internal Server Error | Server error                  |
 
 ## 🔗 Webhooks
 
 Receive real-time notifications for important events:
 
 ### Supported Events
+
 - `job.applied` - New job application received
 - `alert.matched` - Job alert found matching jobs
 - `ad.performance` - Advertisement performance updates
@@ -243,6 +263,7 @@ Receive real-time notifications for important events:
 - `payment.completed` - Payment transaction completed
 
 ### Webhook Setup
+
 ```bash
 curl -X POST https://api.209jobs.com/v1/webhooks \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -257,6 +278,7 @@ curl -X POST https://api.209jobs.com/v1/webhooks \
 ## 📦 Official SDKs
 
 ### JavaScript/TypeScript
+
 ```bash
 npm install @209jobs/api-client
 ```
@@ -266,16 +288,17 @@ import { JobsAPI } from '@209jobs/api-client';
 
 const client = new JobsAPI({
   apiKey: 'your-api-key',
-  environment: 'production'
+  environment: 'production',
 });
 
 const jobs = await client.jobs.search({
   query: 'software engineer',
-  location: 'San Francisco'
+  location: 'San Francisco',
 });
 ```
 
 ### Python
+
 ```bash
 pip install py209jobs
 ```
@@ -288,6 +311,7 @@ jobs = client.jobs.search(query='software engineer', location='San Francisco')
 ```
 
 ### Other Languages
+
 - **PHP**: `composer require 209jobs/api-client`
 - **Java**: `com.209jobs:api-client`
 - **Ruby**: `gem install jobs209-api`
@@ -299,23 +323,28 @@ jobs = client.jobs.search(query='software engineer', location='San Francisco')
 
 ```javascript
 async function searchJobs() {
-  const response = await fetch('https://api.209jobs.com/v1/jobs?' + new URLSearchParams({
-    query: 'senior react developer',
-    location: 'San Francisco',
-    remote: 'true',
-    jobType: 'full-time',
-    salaryMin: '100000',
-    skills: 'React,TypeScript,Node.js',
-    page: '1',
-    limit: '20'
-  }));
-  
+  const response = await fetch(
+    'https://api.209jobs.com/v1/jobs?' +
+      new URLSearchParams({
+        query: 'senior react developer',
+        location: 'San Francisco',
+        remote: 'true',
+        jobType: 'full-time',
+        salaryMin: '100000',
+        skills: 'React,TypeScript,Node.js',
+        page: '1',
+        limit: '20',
+      })
+  );
+
   const data = await response.json();
-  
+
   if (data.success) {
     console.log(`Found ${data.data.totalCount} jobs`);
     data.data.jobs.forEach(job => {
-      console.log(`${job.title} at ${job.company} - $${job.salaryMin}-${job.salaryMax}`);
+      console.log(
+        `${job.title} at ${job.company} - $${job.salaryMin}-${job.salaryMax}`
+      );
     });
   }
 }
@@ -332,7 +361,7 @@ def create_job_alert(token):
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
-    
+
     alert_data = {
         'name': 'Senior React Developer Opportunities',
         'criteria': {
@@ -345,7 +374,7 @@ def create_job_alert(token):
         'frequency': 'daily',
         'maxResults': 10
     }
-    
+
     response = requests.post(url, json=alert_data, headers=headers)
     return response.json()
 ```
@@ -392,6 +421,7 @@ curl -X POST https://api.209jobs.com/v1/ads \
 ### Endpoint Categories
 
 #### Authentication
+
 - `POST /auth/register` - Register new user
 - `POST /auth/login` - User login
 - `POST /auth/refresh` - Refresh JWT token
@@ -399,6 +429,7 @@ curl -X POST https://api.209jobs.com/v1/ads \
 - `POST /auth/verify` - Verify email
 
 #### Jobs
+
 - `GET /jobs` - Search jobs
 - `POST /jobs` - Create job (employers)
 - `GET /jobs/{id}` - Get job details
@@ -408,12 +439,14 @@ curl -X POST https://api.209jobs.com/v1/ads \
 - `POST /jobs/semantic-search` - AI job search
 
 #### Users
+
 - `GET /users/{id}` - Get user profile
 - `PUT /users/{id}` - Update profile
 - `GET /users/{id}/applications` - Get applications
 - `GET /users/search` - Search users (employers)
 
 #### Alerts
+
 - `GET /alerts` - Get user alerts
 - `POST /alerts` - Create alert
 - `GET /alerts/{id}` - Get alert details
@@ -422,6 +455,7 @@ curl -X POST https://api.209jobs.com/v1/ads \
 - `POST /alerts/{id}/test` - Test alert
 
 #### Advertisements
+
 - `GET /ads` - Get advertisements
 - `POST /ads` - Create ad campaign
 - `GET /ads/{id}` - Get ad details & analytics
@@ -429,6 +463,7 @@ curl -X POST https://api.209jobs.com/v1/ads \
 - `DELETE /ads/{id}` - Delete advertisement
 
 #### Ad Tracking
+
 - `POST /ads/impression` - Track impression
 - `POST /ads/click` - Track click
 - `POST /ads/conversion` - Track conversion
@@ -446,18 +481,21 @@ Access our interactive API documentation:
 ## 💬 Support & Community
 
 ### Get Help
+
 - **Documentation**: You're here! 📚
 - **Support Portal**: [https://support.209jobs.com](https://support.209jobs.com)
 - **Email Support**: [api-support@209jobs.com](mailto:api-support@209jobs.com)
 - **Status Page**: [https://status.209jobs.com](https://status.209jobs.com)
 
 ### Community
+
 - **Developer Forum**: [https://community.209jobs.com](https://community.209jobs.com)
 - **Discord**: [Join our Discord](https://discord.gg/209jobs)
 - **GitHub**: [https://github.com/209jobs](https://github.com/209jobs)
 - **Twitter**: [@209jobs_dev](https://twitter.com/209jobs_dev)
 
 ### Contributing
+
 - **Report Issues**: [GitHub Issues](https://github.com/209jobs/api-docs/issues)
 - **Suggest Features**: [Feature Requests](https://github.com/209jobs/api-docs/discussions)
 - **Improve Docs**: [Documentation PRs](https://github.com/209jobs/api-docs/pulls)
@@ -465,6 +503,7 @@ Access our interactive API documentation:
 ## 📝 Changelog
 
 ### Version 1.0.0 (Current)
+
 - ✅ Complete API specification
 - ✅ Authentication system with JWT & API keys
 - ✅ Job management and search functionality
@@ -475,6 +514,7 @@ Access our interactive API documentation:
 - ✅ Rate limiting and security features
 
 ### Upcoming Features
+
 - 🔄 GraphQL API endpoint
 - 🔄 Bulk import/export functionality
 - 🔄 Advanced analytics dashboards
@@ -503,4 +543,4 @@ Happy coding! 🚀
 
 **Last Updated**: January 2024  
 **API Version**: v1.0.0  
-**Documentation Version**: 1.0.0 
+**Documentation Version**: 1.0.0

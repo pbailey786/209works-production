@@ -2,10 +2,10 @@
 
 /**
  * Adzuna Job Import Cron Script
- * 
+ *
  * Enhanced version with proper process management, error handling,
  * configuration support, and monitoring capabilities.
- * 
+ *
  * Features:
  * - Configurable scheduling via environment variables
  * - Comprehensive error handling and recovery
@@ -14,7 +14,7 @@
  * - Health checks and status reporting
  * - Secure configuration management
  * - Logging with rotation support
- * 
+ *
  * Usage:
  *   npm run cron:adzuna
  *   node dist/scripts/adzunaCron.js
@@ -64,7 +64,9 @@ class ConfigValidator {
   static validateNumber(value: string, min: number, max: number): number {
     const num = parseInt(value, 10);
     if (isNaN(num) || num < min || num > max) {
-      throw new Error(`Invalid number: ${value}. Must be between ${min} and ${max}`);
+      throw new Error(
+        `Invalid number: ${value}. Must be between ${min} and ${max}`
+      );
     }
     return num;
   }
@@ -72,7 +74,9 @@ class ConfigValidator {
   static validateLogLevel(level: string): 'debug' | 'info' | 'warn' | 'error' {
     const validLevels = ['debug', 'info', 'warn', 'error'];
     if (!validLevels.includes(level)) {
-      throw new Error(`Invalid log level: ${level}. Must be one of: ${validLevels.join(', ')}`);
+      throw new Error(
+        `Invalid log level: ${level}. Must be one of: ${validLevels.join(', ')}`
+      );
     }
     return level as 'debug' | 'info' | 'warn' | 'error';
   }
@@ -106,13 +110,25 @@ class Logger {
     return levels.indexOf(level) >= levels.indexOf(this.logLevel);
   }
 
-  private formatMessage(level: string, message: string, ...args: any[]): string {
+  private formatMessage(
+    level: string,
+    message: string,
+    ...args: any[]
+  ): string {
     const timestamp = new Date().toISOString();
     const pid = process.pid;
-    const formattedArgs = args.length > 0 ? ' ' + args.map(arg => 
-      typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-    ).join(' ') : '';
-    
+    const formattedArgs =
+      args.length > 0
+        ? ' ' +
+          args
+            .map(arg =>
+              typeof arg === 'object'
+                ? JSON.stringify(arg, null, 2)
+                : String(arg)
+            )
+            .join(' ')
+        : '';
+
     return `[${timestamp}] [${pid}] [${level.toUpperCase()}] ${message}${formattedArgs}`;
   }
 
@@ -120,7 +136,10 @@ class Logger {
     if (!this.logRotation) return;
 
     try {
-      const logFile = join(this.logDir, `adzuna-cron-${new Date().toISOString().split('T')[0]}.log`);
+      const logFile = join(
+        this.logDir,
+        `adzuna-cron-${new Date().toISOString().split('T')[0]}.log`
+      );
       writeFileSync(logFile, message + '\n', { flag: 'a' });
       this.rotateLogsIfNeeded();
     } catch (error) {
@@ -189,7 +208,7 @@ class ProcessManager {
     process.on('SIGUSR2', () => this.gracefulShutdown('SIGUSR2')); // For nodemon
 
     // Error handling
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', error => {
       this.logger.error('Uncaught Exception:', error);
       this.emergencyShutdown('uncaughtException');
     });
@@ -200,7 +219,7 @@ class ProcessManager {
     });
 
     // Memory warnings
-    process.on('warning', (warning) => {
+    process.on('warning', warning => {
       this.logger.warn('Process warning:', warning);
     });
   }
@@ -223,22 +242,22 @@ class ProcessManager {
   private performHealthCheck(): void {
     const memUsage = process.memoryUsage();
     const uptime = process.uptime();
-    
+
     this.logger.debug('Health check:', {
       uptime: `${Math.floor(uptime / 60)} minutes`,
       memory: {
         rss: `${Math.round(memUsage.rss / 1024 / 1024)} MB`,
         heapUsed: `${Math.round(memUsage.heapUsed / 1024 / 1024)} MB`,
         heapTotal: `${Math.round(memUsage.heapTotal / 1024 / 1024)} MB`,
-        external: `${Math.round(memUsage.external / 1024 / 1024)} MB`
+        external: `${Math.round(memUsage.external / 1024 / 1024)} MB`,
       },
-      activeOperations: this.activeOperations.size
+      activeOperations: this.activeOperations.size,
     });
 
     // Memory threshold check (500MB)
     if (memUsage.rss > 500 * 1024 * 1024) {
       this.logger.warn('High memory usage detected:', {
-        rss: `${Math.round(memUsage.rss / 1024 / 1024)} MB`
+        rss: `${Math.round(memUsage.rss / 1024 / 1024)} MB`,
       });
     }
   }
@@ -269,11 +288,13 @@ class ProcessManager {
 
     // Wait for active operations to complete (with timeout)
     if (this.activeOperations.size > 0) {
-      this.logger.info(`Waiting for ${this.activeOperations.size} active operations to complete...`);
-      
+      this.logger.info(
+        `Waiting for ${this.activeOperations.size} active operations to complete...`
+      );
+
       const timeout = new Promise(resolve => setTimeout(resolve, 30000)); // 30 second timeout
       const allOperations = Promise.all(Array.from(this.activeOperations));
-      
+
       try {
         await Promise.race([allOperations, timeout]);
       } catch (error) {
@@ -283,7 +304,7 @@ class ProcessManager {
 
     // Cleanup
     this.cleanup();
-    
+
     this.logger.info('Graceful shutdown completed');
     process.exit(0);
   }
@@ -324,11 +345,11 @@ class AdzunaCronService {
     this.config = this.loadConfiguration();
     this.logger = new Logger(this.config);
     this.processManager = new ProcessManager(this.config, this.logger);
-    
+
     this.logger.info('Adzuna cron service initialized', {
       schedule: this.config.schedule,
       timezone: this.config.timezone,
-      enabled: this.config.enabled
+      enabled: this.config.enabled,
     });
   }
 
@@ -338,16 +359,43 @@ class AdzunaCronService {
         schedule: process.env.ADZUNA_CRON_SCHEDULE || '0 2 * * *',
         timezone: process.env.ADZUNA_CRON_TIMEZONE || 'America/Los_Angeles',
         enabled: process.env.ADZUNA_CRON_ENABLED !== 'false',
-        maxRetries: ConfigValidator.validateNumber(process.env.ADZUNA_CRON_MAX_RETRIES || '3', 0, 10),
-        retryDelay: ConfigValidator.validateNumber(process.env.ADZUNA_CRON_RETRY_DELAY || '60000', 1000, 300000),
-        timeout: ConfigValidator.validateNumber(process.env.ADZUNA_CRON_TIMEOUT || '1800000', 60000, 3600000), // 30 minutes
-        healthCheckInterval: ConfigValidator.validateNumber(process.env.ADZUNA_CRON_HEALTH_INTERVAL || '300000', 60000, 600000), // 5 minutes
-        logLevel: ConfigValidator.validateLogLevel(process.env.ADZUNA_CRON_LOG_LEVEL || 'info'),
+        maxRetries: ConfigValidator.validateNumber(
+          process.env.ADZUNA_CRON_MAX_RETRIES || '3',
+          0,
+          10
+        ),
+        retryDelay: ConfigValidator.validateNumber(
+          process.env.ADZUNA_CRON_RETRY_DELAY || '60000',
+          1000,
+          300000
+        ),
+        timeout: ConfigValidator.validateNumber(
+          process.env.ADZUNA_CRON_TIMEOUT || '1800000',
+          60000,
+          3600000
+        ), // 30 minutes
+        healthCheckInterval: ConfigValidator.validateNumber(
+          process.env.ADZUNA_CRON_HEALTH_INTERVAL || '300000',
+          60000,
+          600000
+        ), // 5 minutes
+        logLevel: ConfigValidator.validateLogLevel(
+          process.env.ADZUNA_CRON_LOG_LEVEL || 'info'
+        ),
         logRotation: process.env.ADZUNA_CRON_LOG_ROTATION !== 'false',
-        maxLogFiles: ConfigValidator.validateNumber(process.env.ADZUNA_CRON_MAX_LOG_FILES || '7', 1, 30),
-        processTitle: process.env.ADZUNA_CRON_PROCESS_TITLE || 'adzuna-cron-service',
-        pidFile: process.env.ADZUNA_CRON_PID_FILE || join(process.cwd(), 'adzuna-cron.pid'),
-        lockFile: process.env.ADZUNA_CRON_LOCK_FILE || join(process.cwd(), 'adzuna-cron.lock')
+        maxLogFiles: ConfigValidator.validateNumber(
+          process.env.ADZUNA_CRON_MAX_LOG_FILES || '7',
+          1,
+          30
+        ),
+        processTitle:
+          process.env.ADZUNA_CRON_PROCESS_TITLE || 'adzuna-cron-service',
+        pidFile:
+          process.env.ADZUNA_CRON_PID_FILE ||
+          join(process.cwd(), 'adzuna-cron.pid'),
+        lockFile:
+          process.env.ADZUNA_CRON_LOCK_FILE ||
+          join(process.cwd(), 'adzuna-cron.lock'),
       };
 
       // Validate configuration
@@ -371,7 +419,7 @@ class AdzunaCronService {
       this.logger.warn('Lock file exists, another instance may be running');
       return false;
     }
-    
+
     try {
       writeFileSync(this.config.lockFile, process.pid.toString());
       return true;
@@ -397,20 +445,26 @@ class AdzunaCronService {
       return;
     }
 
-    if (!await this.checkLock()) {
+    if (!(await this.checkLock())) {
       this.logger.error('Failed to acquire lock, exiting');
       process.exit(1);
     }
 
     this.logger.info('Starting Adzuna cron scheduler...');
 
-    this.cronTask = cron.schedule(this.config.schedule, async () => {
-      await this.executeJob();
-    }, {
-      timezone: this.config.timezone
-    });
+    this.cronTask = cron.schedule(
+      this.config.schedule,
+      async () => {
+        await this.executeJob();
+      },
+      {
+        timezone: this.config.timezone,
+      }
+    );
 
-    this.logger.info(`Adzuna cron job scheduled with pattern: ${this.config.schedule}`);
+    this.logger.info(
+      `Adzuna cron job scheduled with pattern: ${this.config.schedule}`
+    );
     this.logger.info('Press Ctrl+C to stop the service');
 
     // Keep the process alive
@@ -420,41 +474,52 @@ class AdzunaCronService {
   private async executeJob(): Promise<void> {
     const jobId = `job-${Date.now()}`;
     this.logger.info(`Starting Adzuna job import (${jobId})...`);
-    
+
     const startTime = Date.now();
     let success = false;
-    
+
     try {
       // Create timeout promise
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Job execution timeout')), this.config.timeout);
+        setTimeout(
+          () => reject(new Error('Job execution timeout')),
+          this.config.timeout
+        );
       });
 
       // Execute the job with timeout protection
-      const jobPromise = this.processManager.trackOperation(upsertAdzunaJobsToDb());
-      
+      const jobPromise = this.processManager.trackOperation(
+        upsertAdzunaJobsToDb()
+      );
+
       await Promise.race([jobPromise, timeoutPromise]);
-      
+
       success = true;
       this.retryCount = 0; // Reset retry count on success
-      
+
       const duration = Date.now() - startTime;
-      this.logger.info(`Completed Adzuna job import (${jobId}) in ${duration}ms`);
-      
+      this.logger.info(
+        `Completed Adzuna job import (${jobId}) in ${duration}ms`
+      );
     } catch (error) {
       const duration = Date.now() - startTime;
-      this.logger.error(`Failed Adzuna job import (${jobId}) after ${duration}ms:`, error);
-      
+      this.logger.error(
+        `Failed Adzuna job import (${jobId}) after ${duration}ms:`,
+        error
+      );
+
       await this.handleJobFailure(error);
     }
   }
 
   private async handleJobFailure(error: any): Promise<void> {
     this.retryCount++;
-    
+
     if (this.retryCount <= this.config.maxRetries) {
-      this.logger.warn(`Scheduling retry ${this.retryCount}/${this.config.maxRetries} in ${this.config.retryDelay}ms`);
-      
+      this.logger.warn(
+        `Scheduling retry ${this.retryCount}/${this.config.maxRetries} in ${this.config.retryDelay}ms`
+      );
+
       setTimeout(async () => {
         try {
           await this.executeJob();
@@ -463,19 +528,21 @@ class AdzunaCronService {
         }
       }, this.config.retryDelay);
     } else {
-      this.logger.error(`Max retries (${this.config.maxRetries}) exceeded. Giving up until next scheduled run.`);
+      this.logger.error(
+        `Max retries (${this.config.maxRetries}) exceeded. Giving up until next scheduled run.`
+      );
       this.retryCount = 0; // Reset for next scheduled run
     }
   }
 
   stop(): void {
     this.logger.info('Stopping Adzuna cron service...');
-    
+
     if (this.cronTask) {
       this.cronTask.stop();
       this.logger.info('Cron task stopped');
     }
-    
+
     this.removeLock();
     this.logger.info('Adzuna cron service stopped');
   }
@@ -484,10 +551,10 @@ class AdzunaCronService {
 // Main execution
 async function main(): Promise<void> {
   const service = new AdzunaCronService();
-  
+
   // Store service reference for cleanup
   (global as any).adzunaCronService = service;
-  
+
   await service.start();
 }
 
@@ -500,7 +567,7 @@ process.on('exit', () => {
 });
 
 // Start the service
-main().catch((error) => {
+main().catch(error => {
   console.error('Failed to start Adzuna cron service:', error);
   process.exit(1);
-}); 
+});

@@ -11,6 +11,7 @@ The 209jobs API supports multiple authentication methods to accommodate differen
 JWT (JSON Web Token) authentication is the recommended method for most applications, especially web and mobile applications where users need to maintain sessions.
 
 #### Features
+
 - **Stateless**: No server-side session storage required
 - **Secure**: Cryptographically signed tokens
 - **Flexible**: Support for user roles and permissions
@@ -29,6 +30,7 @@ curl -X POST https://api.209jobs.com/v1/auth/login \
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -84,20 +86,20 @@ class AuthManager {
     const response = await fetch(`${this.baseURL}/auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await response.json();
-    
+
     if (data.success) {
       this.token = data.data.token;
       this.refreshToken = data.data.refreshToken;
-      
+
       localStorage.setItem('access_token', this.token);
       localStorage.setItem('refresh_token', this.refreshToken);
-      
+
       return data.data.user;
     } else {
       throw new Error(data.message);
@@ -112,13 +114,13 @@ class AuthManager {
     const response = await fetch(`${this.baseURL}/auth/refresh`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ refreshToken: this.refreshToken })
+      body: JSON.stringify({ refreshToken: this.refreshToken }),
     });
 
     const data = await response.json();
-    
+
     if (data.success) {
       this.token = data.data.token;
       localStorage.setItem('access_token', this.token);
@@ -132,7 +134,7 @@ class AuthManager {
   async makeAuthenticatedRequest(url, options = {}) {
     const headers = {
       'Content-Type': 'application/json',
-      ...options.headers
+      ...options.headers,
     };
 
     if (this.token) {
@@ -141,7 +143,7 @@ class AuthManager {
 
     let response = await fetch(url, {
       ...options,
-      headers
+      headers,
     });
 
     // Handle token expiration
@@ -149,10 +151,10 @@ class AuthManager {
       try {
         await this.refreshAccessToken();
         headers.Authorization = `Bearer ${this.token}`;
-        
+
         response = await fetch(url, {
           ...options,
-          headers
+          headers,
         });
       } catch (error) {
         throw new Error('Authentication failed');
@@ -176,6 +178,7 @@ class AuthManager {
 API keys are ideal for server-to-server integrations, automated scripts, and applications that don't require user-specific authentication.
 
 #### Features
+
 - **Simple**: No token exchange required
 - **Persistent**: Keys don't expire automatically
 - **Secure**: Can be revoked and rotated
@@ -204,16 +207,19 @@ curl -X GET https://api.209jobs.com/v1/jobs \
 #### API Key Types
 
 **Development Keys** (`sk_dev_...`):
+
 - For testing and development
 - Limited rate limits
 - Access to staging environment
 
 **Production Keys** (`sk_live_...`):
+
 - For production applications
 - Full rate limits
 - Access to production environment
 
 **Restricted Keys** (`sk_restricted_...`):
+
 - Limited permissions
 - Specific endpoint access only
 - Lower rate limits
@@ -268,7 +274,7 @@ class APIKeyAuth:
                 raise Exception(f"API Error: {error_data.get('message', 'Unknown error')}")
             except ValueError:
                 raise Exception(f"HTTP Error {response.status_code}")
-        
+
         return response.json()
 
 # Usage example
@@ -309,6 +315,7 @@ curl -X POST https://api.209jobs.com/v1/auth/login \
 ```
 
 Response when 2FA is required:
+
 ```json
 {
   "success": false,
@@ -340,9 +347,9 @@ class TwoFactorAuth {
     const loginResponse = await fetch('https://api.209jobs.com/v1/auth/login', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
 
     const loginData = await loginResponse.json();
@@ -353,10 +360,10 @@ class TwoFactorAuth {
       return { requiresTwoFactor: true };
     } else if (loginData.success) {
       // User doesn't have 2FA enabled
-      return { 
-        requiresTwoFactor: false, 
+      return {
+        requiresTwoFactor: false,
         user: loginData.data.user,
-        token: loginData.data.token 
+        token: loginData.data.token,
       };
     } else {
       throw new Error(loginData.message);
@@ -367,21 +374,21 @@ class TwoFactorAuth {
     const response = await fetch('https://api.209jobs.com/v1/auth/2fa/verify', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         sessionId: this.sessionId,
-        token: token
-      })
+        token: token,
+      }),
     });
 
     const data = await response.json();
-    
+
     if (data.success) {
       return {
         user: data.data.user,
         token: data.data.token,
-        refreshToken: data.data.refreshToken
+        refreshToken: data.data.refreshToken,
       };
     } else {
       throw new Error(data.message);
@@ -393,13 +400,13 @@ class TwoFactorAuth {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.authToken}`
+        Authorization: `Bearer ${this.authToken}`,
       },
-      body: JSON.stringify({ secret, token })
+      body: JSON.stringify({ secret, token }),
     });
 
     const data = await response.json();
-    
+
     if (!data.success) {
       throw new Error(data.message);
     }
@@ -416,7 +423,9 @@ The 209jobs API implements role-based access control with three primary roles:
 ### User Roles
 
 #### 1. Jobseeker (`jobseeker`)
+
 **Permissions:**
+
 - View public job listings
 - Apply to jobs
 - Create and manage job alerts
@@ -425,12 +434,15 @@ The 209jobs API implements role-based access control with three primary roles:
 - View application history
 
 **Restrictions:**
+
 - Cannot create job postings
 - Cannot view other users' applications
 - Cannot create advertisements
 
 #### 2. Employer (`employer`)
+
 **Permissions:**
+
 - All jobseeker permissions
 - Create, update, and delete job postings
 - View and manage job applications
@@ -439,11 +451,14 @@ The 209jobs API implements role-based access control with three primary roles:
 - View analytics for own content
 
 **Restrictions:**
+
 - Cannot view other employers' data
 - Cannot access admin functions
 
 #### 3. Admin (`admin`)
+
 **Permissions:**
+
 - All system permissions
 - View all users and content
 - Moderate content
@@ -464,7 +479,7 @@ function hasPermission(userRole, requiredPermission) {
       'alerts:update',
       'alerts:delete',
       'profile:update',
-      'applications:read'
+      'applications:read',
     ],
     employer: [
       'jobs:create',
@@ -477,7 +492,7 @@ function hasPermission(userRole, requiredPermission) {
       'ads:update',
       'ads:delete',
       'users:search',
-      'analytics:read'
+      'analytics:read',
     ],
     admin: [
       'system:read',
@@ -485,8 +500,8 @@ function hasPermission(userRole, requiredPermission) {
       'users:read',
       'users:write',
       'content:moderate',
-      'analytics:admin'
-    ]
+      'analytics:admin',
+    ],
   };
 
   const userPermissions = permissions[userRole] || [];
@@ -506,6 +521,7 @@ if (hasPermission(user.role, 'jobs:create')) {
 ### 1. Token Storage
 
 **Browser Applications:**
+
 ```javascript
 // Store tokens securely
 const storeTokens = (accessToken, refreshToken) => {
@@ -524,27 +540,28 @@ const clearTokens = () => {
 ```
 
 **Mobile Applications:**
+
 ```swift
 // iOS Keychain (Swift)
 import Security
 
 class TokenManager {
     private let service = "com.209jobs.app"
-    
+
     func storeToken(_ token: String, for key: String) {
         let data = token.data(using: .utf8)!
-        
+
         let query = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: key,
             kSecValueData as String: data
         ] as [String: Any]
-        
+
         SecItemDelete(query as CFDictionary)
         SecItemAdd(query as CFDictionary, nil)
     }
-    
+
     func getToken(for key: String) -> String? {
         let query = [
             kSecClass as String: kSecClassGenericPassword,
@@ -553,15 +570,15 @@ class TokenManager {
             kSecReturnData as String: kCFBooleanTrue!,
             kSecMatchLimit as String: kSecMatchLimitOne
         ] as [String: Any]
-        
+
         var dataTypeRef: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
-        
+
         if status == noErr {
             let data = dataTypeRef as! Data
             return String(data: data, encoding: .utf8)
         }
-        
+
         return nil
     }
 }
@@ -570,6 +587,7 @@ class TokenManager {
 ### 2. Token Validation
 
 **Server-side validation (Node.js):**
+
 ```javascript
 const jwt = require('jsonwebtoken');
 
@@ -578,17 +596,17 @@ const validateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Access token required' 
+    return res.status(401).json({
+      success: false,
+      message: 'Access token required',
     });
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Invalid or expired token' 
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid or expired token',
       });
     }
 
@@ -631,13 +649,14 @@ def get_rate_limit(request):
             return RATE_LIMITS['admin']
         else:
             return RATE_LIMITS['jwt_token']
-    
+
     return RATE_LIMITS['unauthenticated']
 ```
 
 ### 4. API Key Management
 
 **Best Practices:**
+
 - Use environment variables for API keys
 - Rotate keys regularly
 - Use different keys for different environments
@@ -681,16 +700,16 @@ curl -X DELETE https://api.209jobs.com/v1/api-keys/$OLD_KEY \
 
 ### Common Error Codes
 
-| Code | Status | Description | Action |
-|------|--------|-------------|---------|
-| `AUTH_REQUIRED` | 401 | No authentication provided | Provide valid credentials |
-| `INVALID_TOKEN` | 401 | Token is invalid or malformed | Refresh or re-authenticate |
-| `TOKEN_EXPIRED` | 401 | Token has expired | Refresh token |
-| `INVALID_CREDENTIALS` | 401 | Username/password incorrect | Check credentials |
-| `2FA_REQUIRED` | 422 | Two-factor authentication needed | Provide 2FA token |
-| `INSUFFICIENT_PERMISSIONS` | 403 | User lacks required permissions | Check user role |
-| `API_KEY_INVALID` | 401 | API key is invalid | Check API key |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests | Wait and retry |
+| Code                       | Status | Description                      | Action                     |
+| -------------------------- | ------ | -------------------------------- | -------------------------- |
+| `AUTH_REQUIRED`            | 401    | No authentication provided       | Provide valid credentials  |
+| `INVALID_TOKEN`            | 401    | Token is invalid or malformed    | Refresh or re-authenticate |
+| `TOKEN_EXPIRED`            | 401    | Token has expired                | Refresh token              |
+| `INVALID_CREDENTIALS`      | 401    | Username/password incorrect      | Check credentials          |
+| `2FA_REQUIRED`             | 422    | Two-factor authentication needed | Provide 2FA token          |
+| `INSUFFICIENT_PERMISSIONS` | 403    | User lacks required permissions  | Check user role            |
+| `API_KEY_INVALID`          | 401    | API key is invalid               | Check API key              |
+| `RATE_LIMIT_EXCEEDED`      | 429    | Too many requests                | Wait and retry             |
 
 ### Error Handling Implementation
 
@@ -705,9 +724,9 @@ class APIError extends Error {
   }
 }
 
-const handleAPIError = async (response) => {
+const handleAPIError = async response => {
   const data = await response.json();
-  
+
   switch (response.status) {
     case 401:
       if (data.code === '2FA_REQUIRED') {
@@ -721,18 +740,18 @@ const handleAPIError = async (response) => {
         window.location.href = '/login';
       }
       break;
-      
+
     case 403:
       // Show access denied message
       throw new APIError(response, data);
-      
+
     case 429:
       // Implement exponential backoff
       const retryAfter = response.headers.get('Retry-After') || 60;
       await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
       // Retry the request
       break;
-      
+
     default:
       throw new APIError(response, data);
   }
@@ -749,7 +768,7 @@ describe('Authentication', () => {
   test('should login with valid credentials', async () => {
     const auth = new AuthManager();
     const user = await auth.login('test@example.com', 'password123');
-    
+
     expect(user).toBeDefined();
     expect(user.email).toBe('test@example.com');
     expect(auth.token).toBeDefined();
@@ -757,7 +776,7 @@ describe('Authentication', () => {
 
   test('should handle invalid credentials', async () => {
     const auth = new AuthManager();
-    
+
     await expect(
       auth.login('test@example.com', 'wrongpassword')
     ).rejects.toThrow('Invalid credentials');
@@ -767,7 +786,7 @@ describe('Authentication', () => {
     const auth = new AuthManager();
     auth.token = 'expired_token';
     auth.refreshToken = 'valid_refresh_token';
-    
+
     const newToken = await auth.refreshAccessToken();
     expect(newToken).toBeDefined();
     expect(newToken).not.toBe('expired_token');
@@ -788,19 +807,19 @@ class TestAuthentication:
             'email': 'test@example.com',
             'password': 'password123'
         })
-        
+
         assert response.status_code == 200
         data = response.json()
         assert data['success'] is True
         assert 'token' in data['data']
-        
+
         # Test authenticated request
         token = data['data']['token']
         auth_response = requests.get(
             'https://api.209jobs.com/v1/jobs',
             headers={'Authorization': f'Bearer {token}'}
         )
-        
+
         assert auth_response.status_code == 200
 
     def test_api_key_authentication(self):
@@ -808,15 +827,15 @@ class TestAuthentication:
             'https://api.209jobs.com/v1/jobs',
             headers={'X-API-Key': 'sk_test_1234567890abcdef...'}
         )
-        
+
         assert response.status_code == 200
-        
+
     def test_invalid_authentication(self):
         response = requests.get(
             'https://api.209jobs.com/v1/jobs',
             headers={'Authorization': 'Bearer invalid_token'}
         )
-        
+
         assert response.status_code == 401
 ```
 
@@ -824,4 +843,4 @@ class TestAuthentication:
 
 The 209jobs API authentication system provides flexible, secure access control suitable for various application types. By following the security best practices outlined in this guide and implementing proper error handling, you can build robust integrations that protect user data and provide excellent user experiences.
 
-For additional security considerations and advanced authentication scenarios, please refer to our [Security Documentation](./SECURITY.md) and contact our support team for assistance. 
+For additional security considerations and advanced authentication scenarios, please refer to our [Security Documentation](./SECURITY.md) and contact our support team for assistance.

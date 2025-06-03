@@ -1,24 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import authOptions from "../../auth/authOptions";
-import { hasPermission, Permission } from "@/lib/rbac/permissions";
-import { prisma } from "@/lib/database/prisma";
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import authOptions from '../../auth/authOptions';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userRole = (session.user as any)?.role;
     if (!hasPermission(userRole, Permission.VIEW_AUDIT_LOGS)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);
-    
+
     // Parse query parameters
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         { event: { contains: search, mode: 'insensitive' } },
         { userEmail: { contains: search, mode: 'insensitive' } },
         { ipAddress: { contains: search } },
-        { category: { contains: search, mode: 'insensitive' } }
+        { category: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     // Get audit logs with pagination
     const [logs, totalCount] = await Promise.all([
       getAuditLogs(where, page, limit),
-      getAuditLogsCount(where)
+      getAuditLogsCount(where),
     ]);
 
     const totalPages = Math.ceil(totalCount / limit);
@@ -84,13 +84,13 @@ export async function GET(request: NextRequest) {
         totalCount,
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1,
-        limit
-      }
+        limit,
+      },
     });
   } catch (error) {
-    console.error("Error fetching audit logs:", error);
+    console.error('Error fetching audit logs:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -100,10 +100,10 @@ async function getAuditLogs(where: any, page: number, limit: number) {
   try {
     // Since we don't have a dedicated AuditLog table in the main schema yet,
     // we'll create a comprehensive audit log from various sources
-    
+
     // For now, let's create mock data that represents what real audit logs would look like
     // In a real implementation, you would query your actual audit log table
-    
+
     const mockLogs = [
       {
         id: '1',
@@ -112,14 +112,15 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         userEmail: 'admin@example.com',
         sessionId: 'session-abc',
         ipAddress: '192.168.1.100',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         timestamp: new Date(Date.now() - 1000 * 60 * 30),
         details: { loginMethod: 'email', success: true },
         severity: 'low' as const,
         category: 'authentication',
         success: true,
         resource: null,
-        resourceId: null
+        resourceId: null,
       },
       {
         id: '2',
@@ -128,14 +129,19 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         userEmail: 'moderator@example.com',
         sessionId: 'session-def',
         ipAddress: '192.168.1.101',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         timestamp: new Date(Date.now() - 1000 * 60 * 60),
-        details: { action: 'approve', reason: 'Content meets guidelines', jobTitle: 'Software Engineer' },
+        details: {
+          action: 'approve',
+          reason: 'Content meets guidelines',
+          jobTitle: 'Software Engineer',
+        },
         severity: 'medium' as const,
         category: 'moderation',
         success: true,
         resource: 'job',
-        resourceId: 'job-789'
+        resourceId: 'job-789',
       },
       {
         id: '3',
@@ -151,7 +157,7 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         category: 'security',
         success: false,
         resource: null,
-        resourceId: null
+        resourceId: null,
       },
       {
         id: '4',
@@ -160,14 +166,20 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         userEmail: 'superadmin@example.com',
         sessionId: 'session-ghi',
         ipAddress: '192.168.1.102',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3),
-        details: { targetUser: 'user-456', oldRole: 'user', newRole: 'admin', reason: 'Promotion to admin role' },
+        details: {
+          targetUser: 'user-456',
+          oldRole: 'user',
+          newRole: 'admin',
+          reason: 'Promotion to admin role',
+        },
         severity: 'high' as const,
         category: 'user_management',
         success: true,
         resource: 'user',
-        resourceId: 'user-456'
+        resourceId: 'user-456',
       },
       {
         id: '5',
@@ -176,14 +188,19 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         userEmail: 'analyst@example.com',
         sessionId: 'session-jkl',
         ipAddress: '192.168.1.103',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
-        details: { exportType: 'user_report', recordCount: 1500, format: 'CSV' },
+        details: {
+          exportType: 'user_report',
+          recordCount: 1500,
+          format: 'CSV',
+        },
         severity: 'medium' as const,
         category: 'data_access',
         success: true,
         resource: 'user_data',
-        resourceId: null
+        resourceId: null,
       },
       {
         id: '6',
@@ -192,14 +209,19 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         userEmail: 'marketing@example.com',
         sessionId: 'session-mno',
         ipAddress: '192.168.1.104',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
-        details: { adTitle: 'Premium Job Posting', businessName: 'TechCorp Inc', budget: 500 },
+        details: {
+          adTitle: 'Premium Job Posting',
+          businessName: 'TechCorp Inc',
+          budget: 500,
+        },
         severity: 'low' as const,
         category: 'advertisement',
         success: true,
         resource: 'advertisement',
-        resourceId: 'ad-123'
+        resourceId: 'ad-123',
       },
       {
         id: '7',
@@ -208,14 +230,19 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         userEmail: 'superadmin@example.com',
         sessionId: 'session-pqr',
         ipAddress: '192.168.1.102',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6),
-        details: { setting: 'max_file_upload_size', oldValue: '10MB', newValue: '25MB' },
+        details: {
+          setting: 'max_file_upload_size',
+          oldValue: '10MB',
+          newValue: '25MB',
+        },
         severity: 'medium' as const,
         category: 'system',
         success: true,
         resource: 'system_config',
-        resourceId: 'upload_settings'
+        resourceId: 'upload_settings',
       },
       {
         id: '8',
@@ -224,15 +251,20 @@ async function getAuditLogs(where: any, page: number, limit: number) {
         userEmail: 'moderator@example.com',
         sessionId: 'session-stu',
         ipAddress: '192.168.1.101',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 7),
-        details: { userCount: 25, reason: 'Spam accounts cleanup', criteria: 'inactive_90_days' },
+        details: {
+          userCount: 25,
+          reason: 'Spam accounts cleanup',
+          criteria: 'inactive_90_days',
+        },
         severity: 'high' as const,
         category: 'user_management',
         success: true,
         resource: 'users',
-        resourceId: null
-      }
+        resourceId: null,
+      },
     ];
 
     // Apply filtering
@@ -240,20 +272,25 @@ async function getAuditLogs(where: any, page: number, limit: number) {
 
     if (where.OR) {
       const searchTerm = where.OR[0].event.contains.toLowerCase();
-      filteredLogs = filteredLogs.filter(log => 
-        log.event.toLowerCase().includes(searchTerm) ||
-        log.userEmail?.toLowerCase().includes(searchTerm) ||
-        log.ipAddress.includes(searchTerm) ||
-        log.category.toLowerCase().includes(searchTerm)
+      filteredLogs = filteredLogs.filter(
+        log =>
+          log.event.toLowerCase().includes(searchTerm) ||
+          log.userEmail?.toLowerCase().includes(searchTerm) ||
+          log.ipAddress.includes(searchTerm) ||
+          log.category.toLowerCase().includes(searchTerm)
       );
     }
 
     if (where.category) {
-      filteredLogs = filteredLogs.filter(log => log.category === where.category);
+      filteredLogs = filteredLogs.filter(
+        log => log.category === where.category
+      );
     }
 
     if (where.severity) {
-      filteredLogs = filteredLogs.filter(log => log.severity === where.severity);
+      filteredLogs = filteredLogs.filter(
+        log => log.severity === where.severity
+      );
     }
 
     if (where.event) {
@@ -266,23 +303,26 @@ async function getAuditLogs(where: any, page: number, limit: number) {
 
     if (where.timestamp) {
       if (where.timestamp.gte) {
-        filteredLogs = filteredLogs.filter(log => log.timestamp >= where.timestamp.gte);
+        filteredLogs = filteredLogs.filter(
+          log => log.timestamp >= where.timestamp.gte
+        );
       }
       if (where.timestamp.lte) {
-        filteredLogs = filteredLogs.filter(log => log.timestamp <= where.timestamp.lte);
+        filteredLogs = filteredLogs.filter(
+          log => log.timestamp <= where.timestamp.lte
+        );
       }
     }
 
     // Apply pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    
+
     return filteredLogs
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(startIndex, endIndex);
-
   } catch (error) {
-    console.error("Error getting audit logs:", error);
+    console.error('Error getting audit logs:', error);
     return [];
   }
 }
@@ -291,16 +331,28 @@ async function getAuditLogsCount(where: any): Promise<number> {
   try {
     // In a real implementation, this would count records in your audit log table
     // For now, return the count of our mock data after filtering
-    
+
     const mockLogs = [
       { event: 'user_login', category: 'authentication', severity: 'low' },
       { event: 'job_moderation', category: 'moderation', severity: 'medium' },
       { event: 'failed_login_attempt', category: 'security', severity: 'high' },
-      { event: 'user_role_change', category: 'user_management', severity: 'high' },
+      {
+        event: 'user_role_change',
+        category: 'user_management',
+        severity: 'high',
+      },
       { event: 'data_export', category: 'data_access', severity: 'medium' },
       { event: 'ad_creation', category: 'advertisement', severity: 'low' },
-      { event: 'system_configuration_change', category: 'system', severity: 'medium' },
-      { event: 'bulk_user_deletion', category: 'user_management', severity: 'high' }
+      {
+        event: 'system_configuration_change',
+        category: 'system',
+        severity: 'medium',
+      },
+      {
+        event: 'bulk_user_deletion',
+        category: 'user_management',
+        severity: 'high',
+      },
     ];
 
     let count = mockLogs.length;
@@ -315,7 +367,7 @@ async function getAuditLogsCount(where: any): Promise<number> {
 
     return count;
   } catch (error) {
-    console.error("Error getting audit logs count:", error);
+    console.error('Error getting audit logs count:', error);
     return 0;
   }
-} 
+}

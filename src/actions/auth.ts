@@ -1,4 +1,4 @@
-"use server"
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -107,7 +107,8 @@ export async function signUpAction(
 
     return {
       success: true,
-      message: 'Account created successfully! Please check your email to verify your account.',
+      message:
+        'Account created successfully! Please check your email to verify your account.',
       data: { userId: user.id },
     };
   } catch (error) {
@@ -116,7 +117,9 @@ export async function signUpAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -220,7 +223,9 @@ export async function signInAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -238,11 +243,11 @@ export async function signOutAction(): Promise<void> {
   try {
     // TODO: Implement with NextAuth
     // await signOut();
-    
+
     // Clear any additional cookies
     const cookieStore = await cookies();
     cookieStore.delete('2fa_session');
-    
+
     redirect('/');
   } catch (error) {
     console.error('Sign out error:', error);
@@ -271,7 +276,8 @@ export async function requestPasswordResetAction(
       // Don't reveal if user exists for security
       return {
         success: true,
-        message: 'If an account with this email exists, you will receive a password reset link.',
+        message:
+          'If an account with this email exists, you will receive a password reset link.',
       };
     }
 
@@ -293,7 +299,8 @@ export async function requestPasswordResetAction(
 
     return {
       success: true,
-      message: 'If an account with this email exists, you will receive a password reset link.',
+      message:
+        'If an account with this email exists, you will receive a password reset link.',
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -301,7 +308,9 @@ export async function requestPasswordResetAction(
         success: false,
         message: 'Please enter a valid email address',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -359,7 +368,8 @@ export async function resetPasswordAction(
 
     return {
       success: true,
-      message: 'Password reset successfully. You can now sign in with your new password.',
+      message:
+        'Password reset successfully. You can now sign in with your new password.',
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -367,7 +377,9 @@ export async function resetPasswordAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -381,9 +393,7 @@ export async function resetPasswordAction(
 }
 
 // Verify email
-export async function verifyEmailAction(
-  token: string
-): Promise<ActionResult> {
+export async function verifyEmailAction(token: string): Promise<ActionResult> {
   try {
     // Find user by verification token
     // TODO: Implement proper email verification token system
@@ -471,7 +481,9 @@ export async function setup2FAAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -527,7 +539,9 @@ export async function verify2FAAction(
         success: false,
         message: 'Please enter a valid 6-digit code',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -562,4 +576,4 @@ export async function disable2FAAction(userId: string): Promise<ActionResult> {
       message: 'An unexpected error occurred. Please try again.',
     };
   }
-} 
+}

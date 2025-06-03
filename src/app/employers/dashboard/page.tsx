@@ -24,7 +24,7 @@ import {
   ArrowRight,
   Search,
   Settings,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -79,7 +79,7 @@ function DashboardContent() {
     totalApplications: 0,
     newApplications: 0,
     profileViews: 0,
-    responseRate: 0
+    responseRate: 0,
   });
 
   const [jobs, setJobs] = useState<JobListing[]>([]);
@@ -97,7 +97,7 @@ function DashboardContent() {
         totalApplications: 156,
         newApplications: 23,
         profileViews: 1240,
-        responseRate: 85
+        responseRate: 85,
       });
 
       setJobs([
@@ -111,7 +111,7 @@ function DashboardContent() {
           views: 128,
           status: 'active',
           featured: true,
-          urgent: false
+          urgent: false,
         },
         {
           id: '2',
@@ -123,7 +123,7 @@ function DashboardContent() {
           views: 95,
           status: 'active',
           featured: false,
-          urgent: true
+          urgent: true,
         },
         {
           id: '3',
@@ -135,7 +135,7 @@ function DashboardContent() {
           views: 67,
           status: 'active',
           featured: false,
-          urgent: false
+          urgent: false,
         },
         {
           id: '4',
@@ -147,8 +147,8 @@ function DashboardContent() {
           views: 156,
           status: 'expired',
           featured: false,
-          urgent: false
-        }
+          urgent: false,
+        },
       ]);
 
       setApplicants([
@@ -160,7 +160,7 @@ function DashboardContent() {
           appliedDate: '2025-01-15',
           status: 'new',
           matchScore: 92,
-          location: 'Stockton, CA'
+          location: 'Stockton, CA',
         },
         {
           id: '2',
@@ -170,7 +170,7 @@ function DashboardContent() {
           appliedDate: '2025-01-15',
           status: 'new',
           matchScore: 88,
-          location: 'Modesto, CA'
+          location: 'Modesto, CA',
         },
         {
           id: '3',
@@ -180,7 +180,7 @@ function DashboardContent() {
           appliedDate: '2025-01-14',
           status: 'reviewed',
           matchScore: 85,
-          location: 'Fresno, CA'
+          location: 'Fresno, CA',
         },
         {
           id: '4',
@@ -190,8 +190,8 @@ function DashboardContent() {
           appliedDate: '2025-01-14',
           status: 'shortlisted',
           matchScore: 90,
-          location: 'Stockton, CA'
-        }
+          location: 'Stockton, CA',
+        },
       ]);
 
       setIsLoading(false);
@@ -233,23 +233,31 @@ function DashboardContent() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-600 bg-green-100';
-      case 'paused': return 'text-yellow-600 bg-yellow-100';
-      case 'expired': return 'text-red-600 bg-red-100';
-      case 'new': return 'text-blue-600 bg-blue-100';
-      case 'reviewed': return 'text-purple-600 bg-purple-100';
-      case 'shortlisted': return 'text-green-600 bg-green-100';
-      case 'rejected': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'active':
+        return 'text-green-600 bg-green-100';
+      case 'paused':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'expired':
+        return 'text-red-600 bg-red-100';
+      case 'new':
+        return 'text-blue-600 bg-blue-100';
+      case 'reviewed':
+        return 'text-purple-600 bg-purple-100';
+      case 'shortlisted':
+        return 'text-green-600 bg-green-100';
+      case 'rejected':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -263,9 +271,9 @@ function DashboardContent() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
@@ -274,9 +282,9 @@ function DashboardContent() {
 
   if (status === 'unauthenticated') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="text-gray-600">Redirecting to sign-in...</p>
         </div>
       </div>
@@ -287,21 +295,26 @@ function DashboardContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Welcome Banner */}
       {isWelcome && (
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 border-b border-blue-200">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="border-b border-blue-200 bg-gradient-to-r from-blue-50 to-green-50">
+          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="bg-green-100 p-3 rounded-full mr-4">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
+                <div className="mr-4 rounded-full bg-green-100 p-3">
+                  <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">🎉 Welcome to 209.works!</h3>
-                  <p className="text-gray-600 mt-1">Your account is ready. Let's post your first job and start finding great candidates!</p>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    🎉 Welcome to 209.works!
+                  </h3>
+                  <p className="mt-1 text-gray-600">
+                    Your account is ready. Let's post your first job and start
+                    finding great candidates!
+                  </p>
                 </div>
               </div>
               <Link
                 href="/employers/post-job-simple"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-sm"
+                className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
               >
                 Post Your First Job →
               </Link>
@@ -312,86 +325,94 @@ function DashboardContent() {
 
       {/* Success Banner */}
       {isPosted && (
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 border-b border-green-200">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="border-b border-green-200 bg-gradient-to-r from-green-50 to-blue-50">
+          <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex items-center">
-              <div className="bg-green-100 p-2 rounded-full mr-3">
-                <CheckCircle className="w-6 h-6 text-green-600" />
+              <div className="mr-3 rounded-full bg-green-100 p-2">
+                <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Job Posted Successfully! 🚀</h3>
-                <p className="text-gray-600">Your job is now live and candidates can start applying.</p>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Job Posted Successfully! 🚀
+                </h3>
+                <p className="text-gray-600">
+                  Your job is now live and candidates can start applying.
+                </p>
               </div>
             </div>
           </div>
         </div>
       )}
 
-
-
       {/* Simplified Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
               Hey {session?.user?.name?.split(' ')[0] || 'there'}! 👋
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="mt-1 text-gray-600">
               Everything you need to hire great people, simplified.
             </p>
           </div>
           <div className="flex items-center space-x-3">
             <Link
               href="/employers/create-job-post"
-              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-lg flex items-center"
+              className="flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
+              <Sparkles className="mr-2 h-5 w-5" />
               Job Post Optimizer
             </Link>
             <Link
               href="/employers/post-job-simple"
-              className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors shadow-sm flex items-center"
+              className="flex items-center rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-gray-700"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className="mr-2 h-5 w-5" />
               Quick Post
             </Link>
           </div>
         </div>
 
         {/* Simple Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                <Briefcase className="w-6 h-6 text-blue-600" />
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
+                <Briefcase className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeJobs}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.activeJobs}
+                </p>
                 <p className="text-sm text-gray-600">Active Jobs</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                <Users className="w-6 h-6 text-green-600" />
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
+                <Users className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalApplications}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.totalApplications}
+                </p>
                 <p className="text-sm text-gray-600">Applications</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                <Eye className="w-6 h-6 text-purple-600" />
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
+                <Eye className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.profileViews.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.profileViews.toLocaleString()}
+                </p>
                 <p className="text-sm text-gray-600">Profile Views</p>
               </div>
             </div>
@@ -399,15 +420,17 @@ function DashboardContent() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Your Jobs */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="border-b border-gray-200 px-6 py-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Your Jobs</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Your Jobs
+                </h2>
                 <Link
                   href="/employers/my-jobs"
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700"
                 >
                   View All →
                 </Link>
@@ -415,46 +438,58 @@ function DashboardContent() {
             </div>
 
             <div className="divide-y divide-gray-200">
-              {jobs.slice(0, 3).map((job) => (
-                <div key={job.id} className="p-6 hover:bg-gray-50 transition-colors">
+              {jobs.slice(0, 3).map(job => (
+                <div
+                  key={job.id}
+                  className="p-6 transition-colors hover:bg-gray-50"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">{job.title}</h3>
-                      <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                      <h3 className="mb-2 text-lg font-medium text-gray-900">
+                        {job.title}
+                      </h3>
+                      <div className="mb-3 flex items-center space-x-4 text-sm text-gray-600">
                         <span className="flex items-center">
-                          <MapPin className="w-4 h-4 mr-1" />
+                          <MapPin className="mr-1 h-4 w-4" />
                           {job.location}
                         </span>
                         <span className="flex items-center">
-                          <Users className="w-4 h-4 mr-1" />
+                          <Users className="mr-1 h-4 w-4" />
                           {job.applications} applications
                         </span>
                       </div>
-                      <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(job.status)}`}>
-                        {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(job.status)}`}
+                      >
+                        {job.status.charAt(0).toUpperCase() +
+                          job.status.slice(1)}
                       </span>
                     </div>
                     <Link
                       href={`/employers/job/${job.id}`}
-                      className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                      className="rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
                     >
                       View →
                     </Link>
                   </div>
                 </div>
               ))}
-              </div>
+            </div>
 
             {jobs.length === 0 && (
               <div className="p-12 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Briefcase className="w-8 h-8 text-blue-600" />
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                  <Briefcase className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Ready to hire?</h3>
-                <p className="text-gray-600 mb-6">Post your first job and start finding great candidates.</p>
+                <h3 className="mb-2 text-lg font-medium text-gray-900">
+                  Ready to hire?
+                </h3>
+                <p className="mb-6 text-gray-600">
+                  Post your first job and start finding great candidates.
+                </p>
                 <Link
                   href="/employers/post-job-simple"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                  className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
                 >
                   Post Your First Job
                 </Link>
@@ -463,96 +498,117 @@ function DashboardContent() {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="border-b border-gray-200 px-6 py-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Quick Actions
+              </h2>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="space-y-4 p-6">
               <Link
                 href="/employers/create-job-post"
-                className="flex items-center justify-between p-4 rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 hover:from-blue-100 hover:to-green-100 transition-all group"
+                className="group flex items-center justify-between rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 p-4 transition-all hover:from-blue-100 hover:to-green-100"
               >
                 <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center mr-3">
-                    <Sparkles className="w-5 h-5 text-white" />
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-green-500">
+                    <Sparkles className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Job Post Optimizer</p>
-                    <p className="text-sm text-gray-600">Create compelling job listings with AI</p>
+                    <p className="font-medium text-gray-900">
+                      Job Post Optimizer
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Create compelling job listings with AI
+                    </p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
               </Link>
 
               <Link
                 href="/employers/applicants"
-                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors group"
+                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
               >
                 <div className="flex items-center">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                    <Users className="w-5 h-5 text-green-600" />
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
+                    <Users className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Review Applications</p>
-                    <p className="text-sm text-gray-600">{stats.totalApplications} waiting for review</p>
+                    <p className="font-medium text-gray-900">
+                      Review Applications
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {stats.totalApplications} waiting for review
+                    </p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
               </Link>
 
               <Link
                 href="/employers/my-jobs"
-                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors group"
+                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
               >
                 <div className="flex items-center">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                    <Briefcase className="w-5 h-5 text-blue-600" />
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                    <Briefcase className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Manage Jobs</p>
-                    <p className="text-sm text-gray-600">Edit, pause, or boost your listings</p>
+                    <p className="text-sm text-gray-600">
+                      Edit, pause, or boost your listings
+                    </p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
               </Link>
 
               <Link
                 href="/employers/settings-simple"
-                className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors group"
+                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
               >
                 <div className="flex items-center">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                    <Settings className="w-5 h-5 text-purple-600" />
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
+                    <Settings className="h-5 w-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Account Settings</p>
-                    <p className="text-sm text-gray-600">Profile, billing, and preferences</p>
+                    <p className="font-medium text-gray-900">
+                      Account Settings
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Profile, billing, and preferences
+                    </p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
               </Link>
             </div>
           </div>
         </div>
 
         {/* Simple Help Section */}
-        <div className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6">
+        <div className="mt-8 rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Need help getting started?</h3>
-              <p className="text-gray-600">We're here to help you find the perfect candidates for your team.</p>
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                Need help getting started?
+              </h3>
+              <p className="text-gray-600">
+                We're here to help you find the perfect candidates for your
+                team.
+              </p>
             </div>
             <div className="flex space-x-3">
               <Link
                 href="/employers/pricing-simple"
-                className="bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors border border-gray-200"
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
               >
                 View Pricing
               </Link>
               <Link
                 href="/employers/contact"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
               >
                 Contact Support
               </Link>
@@ -567,14 +623,16 @@ function DashboardContent() {
 // Main export component with Suspense boundary
 export default function EmployerDashboardPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <p className="text-gray-600">Loading your dashboard...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <DashboardContent />
     </Suspense>
   );

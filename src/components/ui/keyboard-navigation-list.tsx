@@ -1,4 +1,11 @@
-import React, { useState, useRef, useEffect, Children, cloneElement, isValidElement } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  Children,
+  cloneElement,
+  isValidElement,
+} from 'react';
 import { useRovingTabIndex } from '@/hooks/useKeyboardNavigation';
 
 interface KeyboardNavigationListProps {
@@ -65,11 +72,14 @@ export function KeyboardNavigationList({
       },
       tabIndex: index === activeIndex ? 0 : -1,
       'aria-selected': index === activeIndex,
-      role: role === 'list' ? 'listitem' : (childProps?.role || undefined),
+      role: role === 'list' ? 'listitem' : childProps?.role || undefined,
       onKeyDown: (event: KeyboardEvent) => {
         handleKeyDown(event, index);
         // Call original onKeyDown if it exists
-        if (childProps?.onKeyDown && typeof childProps.onKeyDown === 'function') {
+        if (
+          childProps?.onKeyDown &&
+          typeof childProps.onKeyDown === 'function'
+        ) {
           childProps.onKeyDown(event);
         }
       },
@@ -159,4 +169,4 @@ export function KeyboardNavigationRadioGroup({
   );
 }
 
-export default KeyboardNavigationList; 
+export default KeyboardNavigationList;

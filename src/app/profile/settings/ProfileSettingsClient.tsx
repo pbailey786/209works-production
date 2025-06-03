@@ -23,11 +23,16 @@ interface ProfileSettingsClientProps {
   userSettings: UserSettings;
 }
 
-export default function ProfileSettingsClient({ userSettings }: ProfileSettingsClientProps) {
+export default function ProfileSettingsClient({
+  userSettings,
+}: ProfileSettingsClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
+
   const [formData, setFormData] = useState({
     name: userSettings.name || '',
     email: userSettings.email,
@@ -37,7 +42,9 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
     companyWebsite: userSettings.companyWebsite || '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -67,7 +74,10 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
       router.refresh();
     } catch (error) {
       console.error('Error updating profile:', error);
-      setMessage({ type: 'error', text: 'Failed to update profile. Please try again.' });
+      setMessage({
+        type: 'error',
+        text: 'Failed to update profile. Please try again.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -92,11 +102,17 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
       }
 
       const result = await response.json();
-      setMessage({ type: 'success', text: `${type === 'profile' ? 'Profile picture' : 'Resume'} uploaded successfully!` });
+      setMessage({
+        type: 'success',
+        text: `${type === 'profile' ? 'Profile picture' : 'Resume'} uploaded successfully!`,
+      });
       router.refresh();
     } catch (error) {
       console.error(`Error uploading ${type}:`, error);
-      setMessage({ type: 'error', text: `Failed to upload ${type}. Please try again.` });
+      setMessage({
+        type: 'error',
+        text: `Failed to upload ${type}. Please try again.`,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -106,31 +122,43 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
     <div className="space-y-6">
       {/* Message Display */}
       {message && (
-        <div className={`p-4 rounded-md ${
-          message.type === 'success' 
-            ? 'bg-green-50 border border-green-200 text-green-800' 
-            : 'bg-red-50 border border-red-200 text-red-800'
-        }`}>
+        <div
+          className={`rounded-md p-4 ${
+            message.type === 'success'
+              ? 'border border-green-200 bg-green-50 text-green-800'
+              : 'border border-red-200 bg-red-50 text-red-800'
+          }`}
+        >
           {message.text}
         </div>
       )}
 
       {/* Profile Picture */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Profile Picture
         </label>
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-gray-200">
             {userSettings.profilePictureUrl ? (
-              <img 
-                src={userSettings.profilePictureUrl} 
-                alt="Profile" 
-                className="w-full h-full object-cover"
+              <img
+                src={userSettings.profilePictureUrl}
+                alt="Profile"
+                className="h-full w-full object-cover"
               />
             ) : (
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg
+                className="h-8 w-8 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
             )}
           </div>
@@ -138,7 +166,7 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => {
+              onChange={e => {
                 const file = e.target.files?.[0];
                 if (file) handleFileUpload('profile', file);
               }}
@@ -147,7 +175,7 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
             />
             <label
               htmlFor="profile-picture-upload"
-              className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex cursor-pointer items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Change Picture
             </label>
@@ -157,20 +185,30 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
 
       {/* Resume Upload */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Resume
         </label>
         <div className="flex items-center space-x-4">
           <div className="flex-1">
             {userSettings.resumeUrl ? (
               <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="h-5 w-5 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span className="text-sm text-gray-600">Resume uploaded</span>
-                <a 
-                  href={userSettings.resumeUrl} 
-                  target="_blank" 
+                <a
+                  href={userSettings.resumeUrl}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-blue-600 hover:text-blue-500"
                 >
@@ -185,7 +223,7 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
             <input
               type="file"
               accept=".pdf,.doc,.docx"
-              onChange={(e) => {
+              onChange={e => {
                 const file = e.target.files?.[0];
                 if (file) handleFileUpload('resume', file);
               }}
@@ -194,7 +232,7 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
             />
             <label
               htmlFor="resume-upload"
-              className="cursor-pointer inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex cursor-pointer items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               {userSettings.resumeUrl ? 'Update Resume' : 'Upload Resume'}
             </label>
@@ -204,9 +242,12 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
 
       {/* Profile Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="name"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
               Full Name
             </label>
             <input
@@ -215,13 +256,16 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="Enter your full name"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
               Email Address
             </label>
             <input
@@ -230,13 +274,16 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="Enter your email"
             />
           </div>
 
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="location"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
               Location
             </label>
             <input
@@ -245,13 +292,16 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
               name="location"
               value={formData.location}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="City, State"
             />
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="phone"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
               Phone Number
             </label>
             <input
@@ -260,13 +310,16 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="(555) 123-4567"
             />
           </div>
 
           <div>
-            <label htmlFor="companyWebsite" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="companyWebsite"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
               Company Website
             </label>
             <input
@@ -275,14 +328,17 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
               name="companyWebsite"
               value={formData.companyWebsite}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="https://company.com"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="bio"
+            className="mb-1 block text-sm font-medium text-gray-700"
+          >
             Bio
           </label>
           <textarea
@@ -291,7 +347,7 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
             rows={4}
             value={formData.bio}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
             placeholder="Tell us about yourself..."
           />
         </div>
@@ -300,7 +356,7 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
           <button
             type="submit"
             disabled={isLoading}
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
           </button>
@@ -308,4 +364,4 @@ export default function ProfileSettingsClient({ userSettings }: ProfileSettingsC
       </form>
     </div>
   );
-} 
+}

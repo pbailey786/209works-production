@@ -64,7 +64,7 @@ export class InstagramScheduler {
    */
   static async processScheduledPosts() {
     const posts = await this.getScheduledPosts();
-    
+
     for (const post of posts) {
       try {
         // In a real implementation, this would publish to Instagram
@@ -124,7 +124,7 @@ export class InstagramScheduler {
     // Simple cron generation - in real implementation would be more sophisticated
     const time = options.time || '09:00';
     const [hour, minute] = time.split(':');
-    
+
     switch (options.frequency) {
       case 'daily':
         return `${minute} ${hour} * * *`;
@@ -138,4 +138,4 @@ export class InstagramScheduler {
   }
 }
 
-export default InstagramScheduler; 
+export default InstagramScheduler;

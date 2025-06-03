@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function addJobs() {
   console.log('Adding test jobs...');
-  
+
   try {
     const job1 = await prisma.job.create({
       data: {
@@ -20,8 +20,8 @@ async function addJobs() {
         jobType: 'full_time',
         salaryMin: 18,
         salaryMax: 22,
-        status: 'active'
-      }
+        status: 'active',
+      },
     });
 
     const job2 = await prisma.job.create({
@@ -37,8 +37,8 @@ async function addJobs() {
         jobType: 'full_time',
         salaryMin: 16,
         salaryMax: 20,
-        status: 'active'
-      }
+        status: 'active',
+      },
     });
 
     const job3 = await prisma.job.create({
@@ -55,8 +55,8 @@ async function addJobs() {
         salaryMin: 65000,
         salaryMax: 85000,
         isRemote: true,
-        status: 'active'
-      }
+        status: 'active',
+      },
     });
 
     console.log('✅ Added 3 test jobs successfully!');
@@ -65,7 +65,6 @@ async function addJobs() {
     // Verify
     const count = await prisma.job.count();
     console.log(`Total jobs now: ${count}`);
-
   } catch (error) {
     console.error('Error:', error.message);
   } finally {
@@ -73,4 +72,4 @@ async function addJobs() {
   }
 }
 
-addJobs(); 
+addJobs();

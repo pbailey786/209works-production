@@ -26,10 +26,13 @@ const THRESHOLDS = {
   INP: { good: 200, poor: 500 },
 };
 
-function getRating(name: string, value: number): 'good' | 'needs-improvement' | 'poor' {
+function getRating(
+  name: string,
+  value: number
+): 'good' | 'needs-improvement' | 'poor' {
   const threshold = THRESHOLDS[name as keyof typeof THRESHOLDS];
   if (!threshold) return 'good';
-  
+
   if (value <= threshold.good) return 'good';
   if (value <= threshold.poor) return 'needs-improvement';
   return 'poor';
@@ -37,7 +40,7 @@ function getRating(name: string, value: number): 'good' | 'needs-improvement' | 
 
 export function reportWebVitals(metric: PerformanceMetrics) {
   const { name, value, id } = metric;
-  
+
   // Add rating based on thresholds
   const enhancedMetric = {
     ...metric,
@@ -72,7 +75,9 @@ function sendToAnalytics(metric: PerformanceMetrics) {
     (window as any).gtag('event', metric.name, {
       event_category: 'Web Vitals',
       event_label: metric.id,
-      value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+      value: Math.round(
+        metric.name === 'CLS' ? metric.value * 1000 : metric.value
+      ),
       custom_map: {
         metric_rating: metric.rating,
       },
@@ -86,7 +91,7 @@ function sendToAnalytics(metric: PerformanceMetrics) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(metric),
-  }).catch((error) => {
+  }).catch(error => {
     console.error('Failed to send web vitals:', error);
   });
 }
@@ -108,27 +113,30 @@ export class PerformanceMonitor {
 
     // Monitor navigation timing
     this.observeNavigationTiming();
-    
+
     // Monitor resource timing
     this.observeResourceTiming();
-    
+
     // Monitor long tasks
     this.observeLongTasks();
   }
 
   private observeNavigationTiming() {
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           if (entry.entryType === 'navigation') {
             const navEntry = entry as PerformanceNavigationTiming;
-            
+
             // Calculate custom metrics
             const metrics = {
-              domContentLoaded: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
+              domContentLoaded:
+                navEntry.domContentLoadedEventEnd -
+                navEntry.domContentLoadedEventStart,
               loadComplete: navEntry.loadEventEnd - navEntry.loadEventStart,
               firstByte: navEntry.responseStart - navEntry.requestStart,
-              domInteractive: navEntry.domInteractive - (navEntry.activationStart || 0),
+              domInteractive:
+                navEntry.domInteractive - (navEntry.activationStart || 0),
             };
 
             console.log('[Performance] Navigation Timing:', metrics);
@@ -145,15 +153,19 @@ export class PerformanceMonitor {
 
   private observeResourceTiming() {
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           if (entry.entryType === 'resource') {
             const resourceEntry = entry as PerformanceResourceTiming;
-            
+
             // Track slow resources
-            const duration = resourceEntry.responseEnd - resourceEntry.requestStart;
-            if (duration > 1000) { // Resources taking more than 1 second
-              console.warn(`[Performance] Slow resource: ${resourceEntry.name} (${duration}ms)`);
+            const duration =
+              resourceEntry.responseEnd - resourceEntry.requestStart;
+            if (duration > 1000) {
+              // Resources taking more than 1 second
+              console.warn(
+                `[Performance] Slow resource: ${resourceEntry.name} (${duration}ms)`
+              );
             }
           }
         }
@@ -168,10 +180,12 @@ export class PerformanceMonitor {
 
   private observeLongTasks() {
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           if (entry.entryType === 'longtask') {
-            console.warn(`[Performance] Long task detected: ${entry.duration}ms`);
+            console.warn(
+              `[Performance] Long task detected: ${entry.duration}ms`
+            );
           }
         }
       });
@@ -195,9 +209,9 @@ export function measurePerformance<T>(
   fn: () => T | Promise<T>
 ): T | Promise<T> {
   const start = performance.now();
-  
+
   const result = fn();
-  
+
   if (result instanceof Promise) {
     return result.finally(() => {
       const duration = performance.now() - start;
@@ -233,4 +247,4 @@ export function throttle<T extends (...args: any[]) => any>(
       setTimeout(() => (inThrottle = false), limit);
     }
   };
-} 
+}

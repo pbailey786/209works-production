@@ -1,15 +1,21 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import authOptions from "../../api/auth/authOptions";
-import { prisma } from "../../api/auth/prisma";
-import { hasPermission, Permission } from "@/lib/rbac/permissions";
-import AdManagementTable from "@/components/admin/AdManagementTable";
-import AdManagementFilters from "@/components/admin/AdManagementFilters";
-import AdManagementStats from "@/components/admin/AdManagementStats";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import authOptions from '../../api/auth/authOptions';
+import { prisma } from '../../api/auth/prisma';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import AdManagementTable from '@/components/admin/AdManagementTable';
+import AdManagementFilters from '@/components/admin/AdManagementFilters';
+import AdManagementStats from '@/components/admin/AdManagementStats';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
 
 interface SearchParams {
   status?: string;
@@ -24,7 +30,7 @@ interface SearchParams {
 }
 
 export default async function AdManagementPage({
-  searchParams
+  searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
@@ -32,22 +38,22 @@ export default async function AdManagementPage({
 
   // Check authentication and permissions
   if (!session) {
-    redirect("/signin?redirect=/admin/ads");
+    redirect('/signin?redirect=/admin/ads');
   }
 
   const userRole = (session.user as any)?.role;
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
-    redirect("/admin");
+    redirect('/admin');
   }
 
   // Await searchParams in Next.js 15
   const params = await searchParams;
 
   // Parse search parameters
-  const page = parseInt(params.page || "1");
-  const limit = parseInt(params.limit || "20");
-  const sortBy = params.sortBy || "createdAt";
-  const sortOrder = params.sortOrder || "desc";
+  const page = parseInt(params.page || '1');
+  const limit = parseInt(params.limit || '20');
+  const sortBy = params.sortBy || 'createdAt';
+  const sortOrder = params.sortOrder || 'desc';
   const status = params.status;
   const type = params.type;
   const advertiser = params.advertiser;
@@ -56,13 +62,13 @@ export default async function AdManagementPage({
 
   // Build where clause for filtering
   const where: any = {};
-  
+
   if (status) {
     // Map status to the simple Advertisement model
     if (status === 'active') {
       where.AND = [
         { startDate: { lte: new Date() } },
-        { endDate: { gte: new Date() } }
+        { endDate: { gte: new Date() } },
       ];
     } else if (status === 'expired') {
       where.endDate = { lt: new Date() };
@@ -89,7 +95,7 @@ export default async function AdManagementPage({
       skip: (page - 1) * limit,
       take: limit,
     }),
-    prisma.advertisement.count({ where })
+    prisma.advertisement.count({ where }),
   ]);
 
   // Get statistics
@@ -98,15 +104,15 @@ export default async function AdManagementPage({
     prisma.advertisement.count({
       where: {
         startDate: { lte: new Date() },
-        endDate: { gte: new Date() }
-      }
+        endDate: { gte: new Date() },
+      },
     }),
     prisma.advertisement.count({
-      where: { startDate: { gt: new Date() } }
+      where: { startDate: { gt: new Date() } },
     }),
     prisma.advertisement.count({
-      where: { endDate: { lt: new Date() } }
-    })
+      where: { endDate: { lt: new Date() } },
+    }),
   ]);
 
   const [totalAds, activeAds, scheduledAds, expiredAds] = stats;
@@ -119,16 +125,18 @@ export default async function AdManagementPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Advertisement Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Advertisement Management
+          </h1>
           <p className="text-muted-foreground">
             Manage and monitor all advertisements on the platform
           </p>
         </div>
         <Link href="/admin/ads/create">
           <Button>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Create Ad
           </Button>
         </Link>
@@ -159,9 +167,7 @@ export default async function AdManagementPage({
       <Card>
         <CardHeader>
           <CardTitle>Advertisements ({totalCount})</CardTitle>
-          <CardDescription>
-            All advertisements on the platform
-          </CardDescription>
+          <CardDescription>All advertisements on the platform</CardDescription>
         </CardHeader>
         <CardContent>
           <AdManagementTable
@@ -177,4 +183,4 @@ export default async function AdManagementPage({
       </Card>
     </div>
   );
-} 
+}

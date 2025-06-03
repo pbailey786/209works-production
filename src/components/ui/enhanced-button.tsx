@@ -2,8 +2,15 @@ import React, { forwardRef } from 'react';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { cn } from '@/lib/utils';
 
-interface EnhancedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+interface EnhancedButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   loading?: boolean;
   loadingText?: string;
@@ -12,8 +19,10 @@ interface EnhancedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEleme
 
 const buttonVariants = {
   default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-  destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-  outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+  destructive:
+    'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+  outline:
+    'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
   secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
   ghost: 'hover:bg-accent hover:text-accent-foreground',
   link: 'text-primary underline-offset-4 hover:underline',
@@ -26,19 +35,25 @@ const buttonSizes = {
   icon: 'h-10 w-10',
 };
 
-export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>(
-  ({ 
-    className, 
-    variant = 'default', 
-    size = 'default', 
-    loading = false,
-    loadingText = 'Loading...',
-    onActivate,
-    onClick,
-    children,
-    disabled,
-    ...props 
-  }, ref) => {
+export const EnhancedButton = forwardRef<
+  HTMLButtonElement,
+  EnhancedButtonProps
+>(
+  (
+    {
+      className,
+      variant = 'default',
+      size = 'default',
+      loading = false,
+      loadingText = 'Loading...',
+      onActivate,
+      onClick,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
     const { handleKeyDown } = useKeyboardNavigation({
       onEnter: onActivate,
       onSpace: onActivate,
@@ -72,7 +87,7 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
       >
         {loading && (
           <svg
-            className="animate-spin -ml-1 mr-2 h-4 w-4"
+            className="-ml-1 mr-2 h-4 w-4 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -101,4 +116,4 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
 
 EnhancedButton.displayName = 'EnhancedButton';
 
-export default EnhancedButton; 
+export default EnhancedButton;

@@ -6,26 +6,28 @@ import { Home, Search, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full text-center">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
-          <div className="mx-auto w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <Search className="w-12 h-12 text-blue-600" />
+          <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-blue-100">
+            <Search className="h-12 w-12 text-blue-600" />
           </div>
-          <h1 className="text-6xl font-bold text-gray-900 mb-2">404</h1>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+          <h1 className="mb-2 text-6xl font-bold text-gray-900">404</h1>
+          <h2 className="mb-4 text-2xl font-semibold text-gray-700">
             Page Not Found
           </h2>
         </div>
 
         {/* Error Message */}
         <div className="mb-8">
-          <p className="text-gray-600 mb-4">
-            Oops! The page you're looking for doesn't exist or may have been moved.
+          <p className="mb-4 text-gray-600">
+            Oops! The page you're looking for doesn't exist or may have been
+            moved.
           </p>
           <p className="text-sm text-gray-500">
-            Don't worry, we'll help you find your way back to finding great jobs!
+            Don't worry, we'll help you find your way back to finding great
+            jobs!
           </p>
         </div>
 
@@ -33,36 +35,36 @@ export default function NotFound() {
         <div className="space-y-4">
           <Button asChild className="w-full">
             <Link href="/">
-              <Home className="w-4 h-4 mr-2" />
+              <Home className="mr-2 h-4 w-4" />
               Go Home
             </Link>
           </Button>
-          
+
           <Button asChild variant="outline" className="w-full">
             <Link href="/jobs">
-              <Search className="w-4 h-4 mr-2" />
+              <Search className="mr-2 h-4 w-4" />
               Browse Jobs
             </Link>
           </Button>
-          
-          <Button 
-            variant="ghost" 
+
+          <Button
+            variant="ghost"
             onClick={() => window.history.back()}
             className="w-full"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Go Back
           </Button>
         </div>
 
         {/* Additional Help */}
-        <div className="mt-8 p-4 bg-white/50 rounded-lg">
-          <p className="text-sm text-gray-600 mb-2">
+        <div className="mt-8 rounded-lg bg-white/50 p-4">
+          <p className="mb-2 text-sm text-gray-600">
             Still can't find what you're looking for?
           </p>
-          <Link 
-            href="/contact" 
-            className="text-blue-600 hover:text-blue-800 font-medium text-sm underline"
+          <Link
+            href="/contact"
+            className="text-sm font-medium text-blue-600 underline hover:text-blue-800"
           >
             Contact our support team
           </Link>
@@ -70,4 +72,4 @@ export default function NotFound() {
       </div>
     </div>
   );
-} 
+}

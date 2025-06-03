@@ -7,7 +7,7 @@ import { prisma } from '../auth/prisma';
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
         id: true,
         name: true,
         email: true,
-      }
+      },
     });
 
     if (!user) {
@@ -51,7 +51,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ profile: userProfile });
   } catch (error) {
     console.error('Error fetching user profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -59,28 +62,28 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const body = await req.json();
-    const { 
-      experience, 
-      skills, 
-      location, 
-      preferences, 
-      careerGoals,
-      resume 
-    } = body;
+    const { experience, skills, location, preferences, careerGoals, resume } =
+      body;
 
     // Validate input
     if (skills && !Array.isArray(skills)) {
-      return NextResponse.json({ error: 'Skills must be an array' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Skills must be an array' },
+        { status: 400 }
+      );
     }
 
     if (careerGoals && !Array.isArray(careerGoals)) {
-      return NextResponse.json({ error: 'Career goals must be an array' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Career goals must be an array' },
+        { status: 400 }
+      );
     }
 
     // Build profile data
@@ -107,7 +110,7 @@ export async function POST(req: NextRequest) {
         id: true,
         name: true,
         email: true,
-      }
+      },
     });
 
     if (!updatedUser) {
@@ -121,11 +124,14 @@ export async function POST(req: NextRequest) {
         name: updatedUser.name,
         email: updatedUser.email,
         ...profileData,
-      }
+      },
     });
   } catch (error) {
     console.error('Error updating user profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -133,13 +139,13 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     const body = await req.json();
-    const { 
+    const {
       jobTitle,
       experienceYears,
       topSkills,
@@ -147,7 +153,7 @@ export async function PUT(req: NextRequest) {
       salaryMin,
       salaryMax,
       remoteWork,
-      jobTypes
+      jobTypes,
     } = body;
 
     // Build quick profile
@@ -157,10 +163,13 @@ export async function PUT(req: NextRequest) {
       location: preferredLocation || null,
       preferences: {
         jobTypes: jobTypes || [],
-        salaryRange: (salaryMin || salaryMax) ? {
-          min: salaryMin || null,
-          max: salaryMax || null
-        } : null,
+        salaryRange:
+          salaryMin || salaryMax
+            ? {
+                min: salaryMin || null,
+                max: salaryMax || null,
+              }
+            : null,
         remoteWork: remoteWork || false,
         industries: [],
       },
@@ -172,13 +181,16 @@ export async function PUT(req: NextRequest) {
     // For now, just simulate saving the profile
     // In a real implementation, you would save to a UserProfile table
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Quick profile setup completed',
-      profile: quickProfile
+      profile: quickProfile,
     });
   } catch (error) {
     console.error('Error in quick profile setup:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -186,7 +198,7 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
@@ -197,6 +209,9 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ message: 'Profile cleared successfully' });
   } catch (error) {
     console.error('Error clearing user profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

@@ -1,13 +1,13 @@
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "@/lib/database/prisma";
-import { compare } from "bcryptjs";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import type { NextAuthOptions, Session } from "next-auth";
-import type { JWT } from "next-auth/jwt";
-import type { User } from "@prisma/client";
-import speakeasy from "speakeasy";
-import type { SessionStrategy } from "next-auth";
+import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { prisma } from '@/lib/database/prisma';
+import { compare } from 'bcryptjs';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import type { NextAuthOptions, Session } from 'next-auth';
+import type { JWT } from 'next-auth/jwt';
+import type { User } from '@prisma/client';
+import speakeasy from 'speakeasy';
+import type { SessionStrategy } from 'next-auth';
 
 console.log('🔧 AuthOptions loading...');
 console.log('🔑 Environment check:');
@@ -21,7 +21,7 @@ const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt' as SessionStrategy,
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60,  // 1 day
+    updateAge: 24 * 60 * 60, // 1 day
   },
   // Override any environment URL configuration for development
   ...(process.env.NODE_ENV === 'development' && {
@@ -29,34 +29,34 @@ const authOptions: NextAuthOptions = {
   }),
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      id: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-        totp: { label: "TOTP Code", type: "text" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+        totp: { label: 'TOTP Code', type: 'text' },
       },
       async authorize(credentials, req) {
         console.log('🚨🚨🚨 AUTHORIZE FUNCTION CALLED! 🚨🚨🚨');
         console.log('🔐 Raw credentials object:', credentials);
         console.log('🔐 Email:', credentials?.email);
         console.log('🔐 Password length:', credentials?.password?.length);
-        
+
         if (!credentials?.email || !credentials?.password) {
           console.log('❌ FAILED: Missing email or password');
           console.log('❌ Has email:', !!credentials?.email);
           console.log('❌ Has password:', !!credentials?.password);
           return null;
         }
-        
+
         console.log('✅ Credentials validation passed, looking up user...');
-        
+
         try {
           console.log('🔍 Querying database for user:', credentials.email);
-          const user = await prisma.user.findUnique({ 
-            where: { email: credentials.email } 
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
           });
-          
+
           console.log('👤 Database query result:');
           console.log('  - User found:', !!user);
           if (user) {
@@ -67,43 +67,51 @@ const authOptions: NextAuthOptions = {
             console.log('  - Has password hash:', !!user.passwordHash);
             console.log('  - Email verified:', user.isEmailVerified);
           }
-          
+
           if (!user || !user.passwordHash) {
             console.log('❌ FAILED: No user found or no password hash');
             return null;
           }
-          
+
           console.log('🔑 Comparing passwords...');
           console.log('🔑 Input password:', credentials.password);
           console.log('🔑 Stored hash length:', user.passwordHash.length);
-          
-          const isValid = await compare(credentials.password, user.passwordHash);
+
+          const isValid = await compare(
+            credentials.password,
+            user.passwordHash
+          );
           console.log('🔑 Password comparison result:', isValid);
-          
+
           if (!isValid) {
             console.log('❌ FAILED: Password does not match');
             return null;
           }
-          
+
           if (!user.isEmailVerified) {
             console.log('❌ FAILED: Email not verified');
             return null;
           }
-          
+
           console.log('✅✅✅ AUTH SUCCESSFUL! Returning user object...');
-          const returnUser = { 
-            id: user.id, 
-            email: user.email, 
+          const returnUser = {
+            id: user.id,
+            email: user.email,
             name: user.name,
-            role: user.role 
+            role: user.role,
           };
           console.log('✅ Returning:', returnUser);
           return returnUser;
-          
         } catch (error) {
           console.error('💥💥💥 DATABASE ERROR during auth:', error);
-          console.error('💥 Error message:', error instanceof Error ? error.message : 'Unknown error');
-          console.error('💥 Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+          console.error(
+            '💥 Error message:',
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+          console.error(
+            '💥 Error stack:',
+            error instanceof Error ? error.stack : 'No stack trace'
+          );
           return null;
         }
       },
@@ -119,7 +127,12 @@ const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, account, profile, isNewUser }) {
-      console.log('🎟️ JWT callback - user:', !!user, 'token.email:', token.email);
+      console.log(
+        '🎟️ JWT callback - user:',
+        !!user,
+        'token.email:',
+        token.email
+      );
       if (user) {
         token.role = (user as any).role;
         token.onboardingCompleted = (user as any).onboardingCompleted;
@@ -127,7 +140,14 @@ const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
-      console.log('📋 Session callback - token.email:', token.email, 'token.role:', token.role, 'token.sub:', token.sub);
+      console.log(
+        '📋 Session callback - token.email:',
+        token.email,
+        'token.role:',
+        token.role,
+        'token.sub:',
+        token.sub
+      );
 
       // Fetch latest user data to include profile picture
       if (token.sub && session.user?.email) {
@@ -168,8 +188,7 @@ const authOptions: NextAuthOptions = {
         },
       };
     },
-
   },
 };
 
-export default authOptions; 
+export default authOptions;

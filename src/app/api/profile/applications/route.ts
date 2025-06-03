@@ -7,32 +7,33 @@ import { z } from 'zod';
 // Schema for updating application status
 const updateApplicationSchema = z.object({
   applicationId: z.string().uuid('Invalid application ID'),
-  status: z.enum(['pending', 'reviewing', 'interview', 'offer', 'rejected', 'withdrawn']),
+  status: z.enum([
+    'pending',
+    'reviewing',
+    'interview',
+    'offer',
+    'rejected',
+    'withdrawn',
+  ]),
 });
 
 // GET /api/profile/applications - Get user's job applications
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.role !== 'jobseeker') {
@@ -79,8 +80,8 @@ export async function GET(req: NextRequest) {
               isRemote: true,
               categories: true,
               url: true,
-            }
-          }
+            },
+          },
         },
         orderBy: { appliedAt: 'desc' },
         skip: offset,
@@ -103,12 +104,15 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const statusSummary = statusCounts.reduce((acc, item) => {
-      if (item.status) {
-        acc[item.status] = item._count.status;
-      }
-      return acc;
-    }, {} as Record<string, number>);
+    const statusSummary = statusCounts.reduce(
+      (acc, item) => {
+        if (item.status) {
+          acc[item.status] = item._count.status;
+        }
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     // Format the response
     const formattedApplications = applications.map(app => ({
@@ -148,7 +152,6 @@ export async function GET(req: NextRequest) {
         hasPrev: page > 1,
       },
     });
-
   } catch (error) {
     console.error('Get applications error:', error);
     return NextResponse.json(
@@ -162,25 +165,19 @@ export async function GET(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.role !== 'jobseeker') {
@@ -204,9 +201,9 @@ export async function PATCH(req: NextRequest) {
           select: {
             title: true,
             company: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     if (!application) {
@@ -228,32 +225,34 @@ export async function PATCH(req: NextRequest) {
             id: true,
             title: true,
             company: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     // Log the status change for tracking (using AuditLog instead of UserActivity)
-    await prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'application_status_updated',
-        resource: 'job_application',
-        resourceId: applicationId,
-        details: {
-          applicationId,
-          jobId: application.jobId,
-          jobTitle: application.job.title,
-          company: application.job.company,
-          oldStatus: application.status,
-          newStatus: status,
-          updatedAt: new Date().toISOString(),
-        }
-      }
-    }).catch(error => {
-      // Don't fail the request if activity logging fails
-      console.error('Failed to log application status update:', error);
-    });
+    await prisma.auditLog
+      .create({
+        data: {
+          userId: user.id,
+          action: 'application_status_updated',
+          resource: 'job_application',
+          resourceId: applicationId,
+          details: {
+            applicationId,
+            jobId: application.jobId,
+            jobTitle: application.job.title,
+            company: application.job.company,
+            oldStatus: application.status,
+            newStatus: status,
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      })
+      .catch(error => {
+        // Don't fail the request if activity logging fails
+        console.error('Failed to log application status update:', error);
+      });
 
     return NextResponse.json({
       success: true,
@@ -264,15 +263,14 @@ export async function PATCH(req: NextRequest) {
         job: updatedApplication.job,
       },
     });
-
   } catch (error) {
     console.error('Update application error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );
@@ -289,24 +287,18 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user || user.role !== 'jobseeker') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const url = new URL(req.url);
@@ -342,7 +334,6 @@ export async function DELETE(req: NextRequest) {
       success: true,
       message: 'Application withdrawn successfully',
     });
-
   } catch (error) {
     console.error('Withdraw application error:', error);
     return NextResponse.json(

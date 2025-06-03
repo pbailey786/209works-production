@@ -16,7 +16,10 @@ interface JobModerationFiltersProps {
   stats: ModerationStats;
 }
 
-export default function JobModerationFilters({ currentFilters, stats }: JobModerationFiltersProps) {
+export default function JobModerationFilters({
+  currentFilters,
+  stats,
+}: JobModerationFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(currentFilters.company || '');
@@ -37,27 +40,27 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
-    
+
     if (value === 'all' || value === '') {
       params.delete(key);
     } else {
       params.set(key, value);
     }
-    
+
     // Reset to first page when filtering
     params.delete('page');
-    
+
     router.push(`/admin/moderation/jobs?${params.toString()}`);
   };
 
   const handleSortChange = (value: string) => {
     const [sortBy, sortOrder] = value.split('-');
     const params = new URLSearchParams(searchParams);
-    
+
     params.set('sortBy', sortBy);
     params.set('sortOrder', sortOrder);
     params.delete('page');
-    
+
     router.push(`/admin/moderation/jobs?${params.toString()}`);
   };
 
@@ -71,24 +74,25 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
     router.push('/admin/moderation/jobs');
   };
 
-  const hasActiveFilters = currentFilters.status || currentFilters.company || currentFilters.category;
+  const hasActiveFilters =
+    currentFilters.status || currentFilters.company || currentFilters.category;
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="rounded-lg bg-white p-6 shadow">
       {/* Status Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        {statusOptions.map((option) => (
+      <div className="mb-6 flex flex-wrap gap-2">
+        {statusOptions.map(option => (
           <button
             key={option.value}
             onClick={() => handleFilterChange('status', option.value)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               (currentFilters.status || 'all') === option.value
-                ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                ? 'border border-blue-200 bg-blue-100 text-blue-700'
+                : 'border border-gray-200 bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
             {option.label}
-            <span className="ml-2 px-2 py-0.5 rounded-full text-xs bg-white bg-opacity-70">
+            <span className="ml-2 rounded-full bg-white bg-opacity-70 px-2 py-0.5 text-xs">
               {option.count}
             </span>
           </button>
@@ -96,17 +100,17 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
       </div>
 
       {/* Search and Sort Controls */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <div className="flex flex-col gap-4 md:flex-row">
         {/* Search */}
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <input
               type="text"
               placeholder="Search by company name..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </form>
@@ -115,10 +119,10 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
         <div className="flex items-center gap-4">
           <select
             value={`${currentFilters.sortBy || 'createdAt'}-${currentFilters.sortOrder || 'desc'}`}
-            onChange={(e) => handleSortChange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onChange={e => handleSortChange(e.target.value)}
+            className="rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
           >
-            {sortOptions.map((option) => (
+            {sortOptions.map(option => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -128,9 +132,9 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
             >
-              <X className="h-4 w-4 mr-1" />
+              <X className="mr-1 h-4 w-4" />
               Clear
             </button>
           )}
@@ -141,10 +145,14 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
       {hasActiveFilters && (
         <div className="mt-4 flex flex-wrap gap-2">
           <span className="text-sm text-gray-500">Active filters:</span>
-          
+
           {currentFilters.status && currentFilters.status !== 'all' && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-              Status: {statusOptions.find(s => s.value === currentFilters.status)?.label}
+            <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+              Status:{' '}
+              {
+                statusOptions.find(s => s.value === currentFilters.status)
+                  ?.label
+              }
               <button
                 onClick={() => handleFilterChange('status', 'all')}
                 className="ml-2 text-blue-600 hover:text-blue-800"
@@ -153,9 +161,9 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
               </button>
             </span>
           )}
-          
+
           {currentFilters.company && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
               Company: {currentFilters.company}
               <button
                 onClick={() => handleFilterChange('company', '')}
@@ -169,4 +177,4 @@ export default function JobModerationFilters({ currentFilters, stats }: JobModer
       )}
     </div>
   );
-} 
+}

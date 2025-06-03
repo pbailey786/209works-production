@@ -20,7 +20,7 @@ const REGIONS = [
     domain: '209.works',
     color: '#2563EB',
     accent: '#F59E0B',
-    description: 'Agricultural and logistics hub of California'
+    description: 'Agricultural and logistics hub of California',
   },
   {
     id: '916',
@@ -28,7 +28,8 @@ const REGIONS = [
     domain: '916.works',
     color: '#1E40AF',
     accent: '#D97706',
-    description: 'California\'s capital region with government and tech opportunities'
+    description:
+      "California's capital region with government and tech opportunities",
   },
   {
     id: '510',
@@ -36,7 +37,7 @@ const REGIONS = [
     domain: '510.works',
     color: '#0EA5E9',
     accent: '#EA580C',
-    description: 'Innovation ecosystem of the Bay Area'
+    description: 'Innovation ecosystem of the Bay Area',
   },
   {
     id: 'norcal',
@@ -44,8 +45,8 @@ const REGIONS = [
     domain: 'norcal.works',
     color: '#1D4ED8',
     accent: '#CA8A04',
-    description: 'Comprehensive Northern California job hub'
-  }
+    description: 'Comprehensive Northern California job hub',
+  },
 ];
 
 export default function RegionalLandingPagesDemo() {
@@ -57,13 +58,16 @@ export default function RegionalLandingPagesDemo() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
+      <div className="border-b bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Regional Landing Pages Demo</h1>
-              <p className="text-gray-600 mt-2">
-                Preview and test all regional landing page designs for the .works domain strategy
+              <h1 className="text-3xl font-bold text-gray-900">
+                Regional Landing Pages Demo
+              </h1>
+              <p className="mt-2 text-gray-600">
+                Preview and test all regional landing page designs for the
+                .works domain strategy
               </p>
             </div>
             <div className="flex gap-3">
@@ -71,14 +75,14 @@ export default function RegionalLandingPagesDemo() {
                 variant={viewMode === 'preview' ? 'default' : 'outline'}
                 onClick={() => setViewMode('preview')}
               >
-                <Eye className="w-4 h-4 mr-2" />
+                <Eye className="mr-2 h-4 w-4" />
                 Preview
               </Button>
               <Button
                 variant={viewMode === 'fullscreen' ? 'default' : 'outline'}
                 onClick={() => setViewMode('fullscreen')}
               >
-                <ExternalLink className="w-4 h-4 mr-2" />
+                <ExternalLink className="mr-2 h-4 w-4" />
                 Fullscreen
               </Button>
             </div>
@@ -87,48 +91,54 @@ export default function RegionalLandingPagesDemo() {
       </div>
 
       {viewMode === 'preview' ? (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid lg:grid-cols-4 gap-8">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="grid gap-8 lg:grid-cols-4">
             {/* Sidebar */}
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Palette className="w-5 h-5" />
+                    <Palette className="h-5 w-5" />
                     Regional Designs
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {REGIONS.map((region) => (
+                  {REGIONS.map(region => (
                     <div
                       key={region.id}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      className={`cursor-pointer rounded-lg border-2 p-4 transition-all ${
                         selectedRegion === region.id
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                       onClick={() => setSelectedRegion(region.id)}
                     >
-                      <div className="flex items-center gap-3 mb-2">
+                      <div className="mb-2 flex items-center gap-3">
                         <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white"
                           style={{ backgroundColor: region.color }}
                         >
                           {region.id.toUpperCase()}
                         </div>
                         <div>
-                          <div className="font-semibold text-sm">{region.name}</div>
-                          <div className="text-xs text-gray-500">{region.domain}</div>
+                          <div className="text-sm font-semibold">
+                            {region.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {region.domain}
+                          </div>
                         </div>
                       </div>
-                      <p className="text-xs text-gray-600">{region.description}</p>
-                      <div className="flex gap-1 mt-2">
+                      <p className="text-xs text-gray-600">
+                        {region.description}
+                      </p>
+                      <div className="mt-2 flex gap-1">
                         <div
-                          className="w-3 h-3 rounded-full"
+                          className="h-3 w-3 rounded-full"
                           style={{ backgroundColor: region.color }}
                         />
                         <div
-                          className="w-3 h-3 rounded-full"
+                          className="h-3 w-3 rounded-full"
                           style={{ backgroundColor: region.accent }}
                         />
                       </div>
@@ -146,36 +156,53 @@ export default function RegionalLandingPagesDemo() {
                   <CardContent>
                     <div className="space-y-3">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Domain</label>
-                        <div className="text-sm text-gray-900">{currentRegion.domain}</div>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-700">Primary Color</label>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-4 h-4 rounded"
-                            style={{ backgroundColor: currentRegion.color }}
-                          />
-                          <span className="text-sm text-gray-900">{currentRegion.color}</span>
+                        <label className="text-sm font-medium text-gray-700">
+                          Domain
+                        </label>
+                        <div className="text-sm text-gray-900">
+                          {currentRegion.domain}
                         </div>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Accent Color</label>
+                        <label className="text-sm font-medium text-gray-700">
+                          Primary Color
+                        </label>
                         <div className="flex items-center gap-2">
                           <div
-                            className="w-4 h-4 rounded"
+                            className="h-4 w-4 rounded"
+                            style={{ backgroundColor: currentRegion.color }}
+                          />
+                          <span className="text-sm text-gray-900">
+                            {currentRegion.color}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">
+                          Accent Color
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="h-4 w-4 rounded"
                             style={{ backgroundColor: currentRegion.accent }}
                           />
-                          <span className="text-sm text-gray-900">{currentRegion.accent}</span>
+                          <span className="text-sm text-gray-900">
+                            {currentRegion.accent}
+                          </span>
                         </div>
                       </div>
                       <div>
                         <Button
                           size="sm"
                           className="w-full"
-                          onClick={() => window.open(`/regional/${currentRegion.id}`, '_blank')}
+                          onClick={() =>
+                            window.open(
+                              `/regional/${currentRegion.id}`,
+                              '_blank'
+                            )
+                          }
                         >
-                          <ExternalLink className="w-4 h-4 mr-2" />
+                          <ExternalLink className="mr-2 h-4 w-4" />
                           Open in New Tab
                         </Button>
                       </div>
@@ -189,29 +216,27 @@ export default function RegionalLandingPagesDemo() {
             <div className="lg:col-span-3">
               <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <CardTitle>
                       {currentRegion?.name} Landing Page Preview
                     </CardTitle>
-                    <Badge variant="outline">
-                      {currentRegion?.domain}
-                    </Badge>
+                    <Badge variant="outline">{currentRegion?.domain}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <div className="border rounded-lg overflow-hidden">
-                    <div className="bg-gray-100 px-4 py-2 border-b flex items-center gap-2">
+                  <div className="overflow-hidden rounded-lg border">
+                    <div className="flex items-center gap-2 border-b bg-gray-100 px-4 py-2">
                       <div className="flex gap-1">
-                        <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                        <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                        <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                        <div className="h-3 w-3 rounded-full bg-red-400"></div>
+                        <div className="h-3 w-3 rounded-full bg-yellow-400"></div>
+                        <div className="h-3 w-3 rounded-full bg-green-400"></div>
                       </div>
-                      <div className="text-sm text-gray-600 ml-2">
+                      <div className="ml-2 text-sm text-gray-600">
                         https://{currentRegion?.domain}
                       </div>
                     </div>
                     <div className="h-[600px] overflow-auto">
-                      <div className="transform scale-75 origin-top-left w-[133.33%] h-[133.33%]">
+                      <div className="h-[133.33%] w-[133.33%] origin-top-left scale-75 transform">
                         <RegionalLandingPage region={selectedRegion} />
                       </div>
                     </div>
@@ -225,32 +250,41 @@ export default function RegionalLandingPagesDemo() {
           <Card className="mt-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Code className="w-5 h-5" />
+                <Code className="h-5 w-5" />
                 Implementation Features
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Dynamic Branding</h4>
+                  <h4 className="mb-2 font-semibold text-gray-900">
+                    Dynamic Branding
+                  </h4>
                   <p className="text-sm text-gray-600">
-                    Each region has unique colors, messaging, and visual identity
+                    Each region has unique colors, messaging, and visual
+                    identity
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Real-time Data</h4>
+                  <h4 className="mb-2 font-semibold text-gray-900">
+                    Real-time Data
+                  </h4>
                   <p className="text-sm text-gray-600">
                     Live job statistics and recent postings from regional APIs
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">SEO Optimized</h4>
+                  <h4 className="mb-2 font-semibold text-gray-900">
+                    SEO Optimized
+                  </h4>
                   <p className="text-sm text-gray-600">
                     Regional metadata, Open Graph images, and structured data
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Responsive Design</h4>
+                  <h4 className="mb-2 font-semibold text-gray-900">
+                    Responsive Design
+                  </h4>
                   <p className="text-sm text-gray-600">
                     Mobile-first design that works across all devices
                   </p>
@@ -267,4 +301,4 @@ export default function RegionalLandingPagesDemo() {
       )}
     </div>
   );
-} 
+}

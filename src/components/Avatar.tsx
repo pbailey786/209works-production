@@ -11,28 +11,28 @@ interface AvatarProps {
   userName?: string;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ 
-  src, 
-  alt, 
-  size = 40, 
-  fallback = '?', 
+const Avatar: React.FC<AvatarProps> = ({
+  src,
+  alt,
+  size = 40,
+  fallback = '?',
   className = '',
-  userName 
+  userName,
 }) => {
   // Generate appropriate alt text if not provided
   const altText = alt || generateAltText('avatar', { userName });
 
   return (
     <div
-      className={`inline-flex items-center justify-center rounded-full bg-gray-200 text-gray-600 font-bold overflow-hidden ${className}`}
+      className={`inline-flex items-center justify-center overflow-hidden rounded-full bg-gray-200 font-bold text-gray-600 ${className}`}
       style={{ width: size, height: size, fontSize: size * 0.45 }}
     >
       {src ? (
-        <OptimizedImage 
-          src={src} 
-          alt={altText} 
+        <OptimizedImage
+          src={src}
+          alt={altText}
           fill
-          className="object-cover" 
+          className="object-cover"
           sizes="(max-width: 768px) 40px, 48px"
         />
       ) : (
@@ -43,4 +43,4 @@ const Avatar: React.FC<AvatarProps> = ({
 };
 
 export { Avatar };
-export default Avatar; 
+export default Avatar;

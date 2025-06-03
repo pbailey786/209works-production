@@ -7,7 +7,14 @@ export interface ComponentInfo {
   version: string;
   deprecated?: boolean;
   replacement?: string;
-  category: 'form' | 'feedback' | 'overlay' | 'navigation' | 'layout' | 'data' | 'utility';
+  category:
+    | 'form'
+    | 'feedback'
+    | 'overlay'
+    | 'navigation'
+    | 'layout'
+    | 'data'
+    | 'utility';
   description?: string;
   props?: Record<string, any>;
   dependencies?: string[];
@@ -26,28 +33,30 @@ class UIComponentRegistry {
     aliases: new Map(),
     conflicts: new Map(),
   };
-  
+
   private listeners: Set<() => void> = new Set();
-  
+
   // Register a component
   register(info: ComponentInfo): void {
     const { name } = info;
-    
+
     // Check for conflicts
     if (this.registry.components.has(name)) {
       const existing = this.registry.components.get(name)!;
-      console.warn(`Component "${name}" is already registered. Replacing version ${existing.version} with ${info.version}`);
-      
+      console.warn(
+        `Component "${name}" is already registered. Replacing version ${existing.version} with ${info.version}`
+      );
+
       // Track conflicts
       if (!this.registry.conflicts.has(name)) {
         this.registry.conflicts.set(name, []);
       }
       this.registry.conflicts.get(name)!.push(existing.version);
     }
-    
+
     // Register component
     this.registry.components.set(name, info);
-    
+
     // Notify listeners
     this.notifyListeners();
   }
@@ -55,43 +64,45 @@ class UIComponentRegistry {
   // Register an alias for a component
   registerAlias(alias: string, componentName: string): void {
     if (!this.registry.components.has(componentName)) {
-      throw new Error(`Cannot create alias "${alias}" for non-existent component "${componentName}"`);
+      throw new Error(
+        `Cannot create alias "${alias}" for non-existent component "${componentName}"`
+      );
     }
-    
+
     if (this.registry.aliases.has(alias)) {
       console.warn(`Alias "${alias}" already exists. Overwriting.`);
     }
-    
+
     this.registry.aliases.set(alias, componentName);
     this.notifyListeners();
   }
-  
+
   // Get a component by name or alias
   get(nameOrAlias: string): ComponentInfo | null {
     // Check direct name first
     if (this.registry.components.has(nameOrAlias)) {
       return this.registry.components.get(nameOrAlias)!;
     }
-    
+
     // Check aliases
     const realName = this.registry.aliases.get(nameOrAlias);
     if (realName && this.registry.components.has(realName)) {
       return this.registry.components.get(realName)!;
     }
-    
+
     return null;
   }
-  
+
   // Get all components
   getAll(): ComponentInfo[] {
     return Array.from(this.registry.components.values());
   }
-  
+
   // Get conflicts for a component
   getConflicts(name: string): string[] {
     return this.registry.conflicts.get(name) || [];
   }
-  
+
   // Get component usage statistics
   getStats(): {
     total: number;
@@ -101,11 +112,12 @@ class UIComponentRegistry {
   } {
     const components = this.getAll();
     const byCategory: Record<string, number> = {};
-    
+
     components.forEach(component => {
-      byCategory[component.category] = (byCategory[component.category] || 0) + 1;
+      byCategory[component.category] =
+        (byCategory[component.category] || 0) + 1;
     });
-    
+
     return {
       total: components.length,
       byCategory,
@@ -113,13 +125,13 @@ class UIComponentRegistry {
       conflicts: this.registry.conflicts.size,
     };
   }
-  
+
   // Subscribe to registry changes
   subscribe(listener: () => void): () => void {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   }
-  
+
   // Notify all listeners
   private notifyListeners(): void {
     this.listeners.forEach(listener => {
@@ -130,7 +142,7 @@ class UIComponentRegistry {
       }
     });
   }
-  
+
   // Export registry state for debugging
   export(): {
     components: Array<[string, ComponentInfo]>;
@@ -158,7 +170,7 @@ export function withRegistry<P extends object>(
     ...info,
     component,
   });
-  
+
   // Return the component with type assertion to avoid complex forwardRef issues
   return component;
 }
@@ -186,4 +198,4 @@ export const createDataComponent = createComponentFactory('data');
 export const createUtilityComponent = createComponentFactory('utility');
 
 // Export registry for direct access (use sparingly)
-export { componentRegistry as registry }; 
+export { componentRegistry as registry };

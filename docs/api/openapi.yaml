@@ -3,34 +3,34 @@ info:
   title: 209jobs API
   description: |
     # 209jobs API Documentation
-    
+
     Welcome to the 209jobs API! This RESTful API provides comprehensive job board functionality including:
-    
+
     - **Job Management**: Create, update, search, and manage job postings
     - **User Management**: Handle user profiles, preferences, and authentication
     - **Alert System**: Smart job alerts with AI-powered matching
     - **Advertisement Platform**: Comprehensive ad management with tracking
     - **Application Tracking**: Manage job applications and candidate interactions
-    
+
     ## Authentication
-    
+
     The API uses JWT-based authentication with role-based access control:
     - **Jobseekers**: Can search jobs, apply, create alerts
     - **Employers**: Can post jobs, manage applications, create ads
     - **Admins**: Full system access
-    
+
     ## Rate Limiting
-    
+
     API endpoints are rate-limited to ensure fair usage:
     - **Standard endpoints**: 100 requests per minute
     - **Search endpoints**: 500 requests per minute  
     - **Tracking endpoints**: 1000 requests per minute
     - **Auth endpoints**: 200 requests per minute
-    
+
     ## Error Handling
-    
+
     All endpoints return consistent error responses with appropriate HTTP status codes and detailed error messages.
-    
+
   version: 1.0.0
   contact:
     name: 209jobs API Support
@@ -71,19 +71,19 @@ paths:
               jobseeker:
                 summary: Jobseeker registration
                 value:
-                  name: "John Doe"
-                  email: "john@example.com"
-                  password: "securePassword123"
-                  role: "jobseeker"
+                  name: 'John Doe'
+                  email: 'john@example.com'
+                  password: 'securePassword123'
+                  role: 'jobseeker'
               employer:
                 summary: Employer registration
                 value:
-                  name: "Jane Smith"
-                  email: "jane@company.com"
-                  password: "securePassword123"
-                  role: "employer"
-                  companyName: "Tech Corp"
-                  companyWebsite: "https://techcorp.com"
+                  name: 'Jane Smith'
+                  email: 'jane@company.com'
+                  password: 'securePassword123'
+                  role: 'employer'
+                  companyName: 'Tech Corp'
+                  companyWebsite: 'https://techcorp.com'
       responses:
         '201':
           description: User registered successfully
@@ -890,7 +890,7 @@ paths:
           description: Specific metrics to include (comma-separated)
           schema:
             type: string
-            example: "impressions,clicks,conversions,ctr,cost"
+            example: 'impressions,clicks,conversions,ctr,cost'
         - name: startDate
           in: query
           description: Start date for analytics (ISO 8601)
@@ -1964,7 +1964,16 @@ components:
               type: array
               items:
                 type: string
-                enum: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+                enum:
+                  [
+                    monday,
+                    tuesday,
+                    wednesday,
+                    thursday,
+                    friday,
+                    saturday,
+                    sunday,
+                  ]
             hours:
               type: object
               properties:
@@ -2388,7 +2397,8 @@ components:
 
     AdType:
       type: string
-      enum: [banner, sidebar, featured_job, sponsored_search, native, video, popup]
+      enum:
+        [banner, sidebar, featured_job, sponsored_search, native, video, popup]
 
     AdStatus:
       type: string
@@ -2415,10 +2425,10 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             success: false
-            message: "Validation failed"
+            message: 'Validation failed'
             errors:
-              email: ["Invalid email format"]
-              password: ["Password must be at least 8 characters"]
+              email: ['Invalid email format']
+              password: ['Password must be at least 8 characters']
 
     Unauthorized:
       description: Unauthorized - authentication required
@@ -2428,8 +2438,8 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             success: false
-            message: "Authentication required"
-            code: "UNAUTHORIZED"
+            message: 'Authentication required'
+            code: 'UNAUTHORIZED'
 
     Forbidden:
       description: Forbidden - insufficient permissions
@@ -2439,8 +2449,8 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             success: false
-            message: "Insufficient permissions"
-            code: "FORBIDDEN"
+            message: 'Insufficient permissions'
+            code: 'FORBIDDEN'
 
     NotFound:
       description: Resource not found
@@ -2450,8 +2460,8 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             success: false
-            message: "Resource not found"
-            code: "NOT_FOUND"
+            message: 'Resource not found'
+            code: 'NOT_FOUND'
 
     TooManyRequests:
       description: Rate limit exceeded
@@ -2461,8 +2471,8 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             success: false
-            message: "Rate limit exceeded. Try again later."
-            code: "RATE_LIMIT_EXCEEDED"
+            message: 'Rate limit exceeded. Try again later.'
+            code: 'RATE_LIMIT_EXCEEDED'
       headers:
         X-RateLimit-Limit:
           description: Request limit per time window
@@ -2499,4 +2509,4 @@ tags:
 
 externalDocs:
   description: 209jobs API Documentation
-  url: https://docs.209jobs.com 
+  url: https://docs.209jobs.com

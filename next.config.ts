@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   // Security headers configuration
@@ -10,24 +10,25 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
-            value: 'on'
+            value: 'on',
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY'
+            value: 'DENY',
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            value: 'nosniff',
           },
           {
             key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin',
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()'
-          }
+            value:
+              'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()',
+          },
         ],
       },
     ];
@@ -36,7 +37,7 @@ const nextConfig: NextConfig = {
   // Handle domain redirects and HTTPS enforcement
   async redirects() {
     const redirects = [];
-    
+
     if (process.env.NODE_ENV === 'production') {
       // Legacy domain redirects (209jobs.com -> 209.works)
       redirects.push(
@@ -114,7 +115,7 @@ const nextConfig: NextConfig = {
           permanent: true,
         }
       );
-      
+
       // HTTPS enforcement for all domains
       redirects.push({
         source: '/(.*)',
@@ -129,7 +130,7 @@ const nextConfig: NextConfig = {
         permanent: true,
       });
     }
-    
+
     return redirects;
   },
 
@@ -178,7 +179,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+
   // Security-related experimental features
   experimental: {
     // Enable strict mode for better security

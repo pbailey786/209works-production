@@ -9,9 +9,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Missing token.' }, { status: 400 });
   }
 
-  const user = await prisma.user.findFirst({ where: { magicLinkToken: token } });
+  const user = await prisma.user.findFirst({
+    where: { magicLinkToken: token },
+  });
   if (!user) {
-    return NextResponse.json({ error: 'Invalid or expired token.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Invalid or expired token.' },
+      { status: 400 }
+    );
   }
 
   if (!user.magicLinkExpires || user.magicLinkExpires < new Date()) {
@@ -28,4 +33,4 @@ export async function GET(req: NextRequest) {
   });
 
   return NextResponse.json({ message: 'Email verified successfully.' });
-} 
+}

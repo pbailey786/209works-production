@@ -16,18 +16,18 @@ const cronRequestSchema = z.object({
 function verifyCronRequest(req: NextRequest): boolean {
   const authHeader = req.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
-  
+
   // In production, verify the cron secret
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return false;
   }
-  
+
   // Alternatively, check for Vercel's cron headers
   const vercelCronHeader = req.headers.get('x-vercel-cron');
   if (vercelCronHeader === '1') {
     return true;
   }
-  
+
   // For development, allow requests with proper auth header
   return authHeader?.startsWith('Bearer ') || false;
 }
@@ -43,13 +43,19 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { frequency = 'immediate', limit, dryRun } = cronRequestSchema.parse({
+    const {
+      frequency = 'immediate',
+      limit,
+      dryRun,
+    } = cronRequestSchema.parse({
       ...body,
       authorization: req.headers.get('authorization'),
     });
 
-    console.log(`[CRON] Starting email alert processing for frequency: ${frequency}`);
-    
+    console.log(
+      `[CRON] Starting email alert processing for frequency: ${frequency}`
+    );
+
     const startTime = Date.now();
     const results = {
       processed: 0,
@@ -66,9 +72,12 @@ export async function POST(req: NextRequest) {
     for (const alert of alerts) {
       try {
         results.processed++;
-        
+
         // Skip if user has unsubscribed
-        const isUnsubscribed = await checkIfUserUnsubscribed(alert.user.email, 'job_alert');
+        const isUnsubscribed = await checkIfUserUnsubscribed(
+          alert.user.email,
+          'job_alert'
+        );
         if (isUnsubscribed) {
           results.skipped++;
           console.log(`[CRON] Skipping alert ${alert.id} - user unsubscribed`);
@@ -77,7 +86,7 @@ export async function POST(req: NextRequest) {
 
         // Find matching jobs using the enhanced algorithm
         const matchingJobs = await findMatchingJobs(alert);
-        
+
         if (matchingJobs.length === 0) {
           results.skipped++;
           console.log(`[CRON] No matching jobs found for alert ${alert.id}`);
@@ -94,7 +103,7 @@ export async function POST(req: NextRequest) {
             alert.user.id,
             'normal' // Priority can be adjusted based on alert settings
           );
-          
+
           // Update alert statistics
           await prisma.alert.update({
             where: { id: alert.id },
@@ -108,8 +117,9 @@ export async function POST(req: NextRequest) {
         }
 
         results.sent++;
-        console.log(`[CRON] Successfully processed alert ${alert.id} with ${matchingJobs.length} jobs`);
-
+        console.log(
+          `[CRON] Successfully processed alert ${alert.id} with ${matchingJobs.length} jobs`
+        );
       } catch (error) {
         results.failed++;
         const errorMsg = `Failed to process alert ${alert.id}: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -119,8 +129,11 @@ export async function POST(req: NextRequest) {
     }
 
     const processingTime = Date.now() - startTime;
-    
-    console.log(`[CRON] Email alert processing completed in ${processingTime}ms`, results);
+
+    console.log(
+      `[CRON] Email alert processing completed in ${processingTime}ms`,
+      results
+    );
 
     return NextResponse.json({
       success: true,
@@ -132,13 +145,12 @@ export async function POST(req: NextRequest) {
         ...results,
       },
     });
-
   } catch (error) {
     console.error('[CRON] Email alert processing failed:', error);
     return NextResponse.json(
-      { 
-        error: 'Internal server error', 
-        message: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -148,8 +160,9 @@ export async function POST(req: NextRequest) {
 // GET endpoint for health check and manual triggering
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const frequency = searchParams.get('frequency') as 'immediate' | 'daily' || 'immediate';
-  
+  const frequency =
+    (searchParams.get('frequency') as 'immediate' | 'daily') || 'immediate';
+
   try {
     const alertCount = await prisma.alert.count({
       where: {
@@ -176,7 +189,10 @@ export async function GET(req: NextRequest) {
 }
 
 // Helper function to get alerts that need processing
-async function getAlertsToProcess(frequency: 'immediate' | 'daily', limit: number) {
+async function getAlertsToProcess(
+  frequency: 'immediate' | 'daily',
+  limit: number
+) {
   const now = new Date();
   let timeCondition = {};
 
@@ -184,19 +200,13 @@ async function getAlertsToProcess(frequency: 'immediate' | 'daily', limit: numbe
     // For daily alerts, check if last triggered was more than 24 hours ago
     const yesterdayTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     timeCondition = {
-      OR: [
-        { lastTriggered: null },
-        { lastTriggered: { lt: yesterdayTime } },
-      ],
+      OR: [{ lastTriggered: null }, { lastTriggered: { lt: yesterdayTime } }],
     };
   } else {
     // For immediate alerts, check if last triggered was more than 5 minutes ago
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
     timeCondition = {
-      OR: [
-        { lastTriggered: null },
-        { lastTriggered: { lt: fiveMinutesAgo } },
-      ],
+      OR: [{ lastTriggered: null }, { lastTriggered: { lt: fiveMinutesAgo } }],
     };
   }
 
@@ -224,14 +234,20 @@ async function getAlertsToProcess(frequency: 'immediate' | 'daily', limit: numbe
 }
 
 // Helper function to check if user has unsubscribed
-async function checkIfUserUnsubscribed(email: string, emailType: string): Promise<boolean> {
+async function checkIfUserUnsubscribed(
+  email: string,
+  emailType: string
+): Promise<boolean> {
   const unsubscribe = await prisma.emailUnsubscribe.findUnique({
     where: { email },
   });
 
   if (!unsubscribe) return false;
-  
-  return unsubscribe.unsubscribeAll || unsubscribe.unsubscribeFrom.includes(emailType);
+
+  return (
+    unsubscribe.unsubscribeAll ||
+    unsubscribe.unsubscribeFrom.includes(emailType)
+  );
 }
 
 // Helper function to find matching jobs using enhanced algorithm
@@ -249,10 +265,13 @@ async function findMatchingJobs(alert: any) {
   };
 
   // Use enhanced matching algorithm
-  const results = await EnhancedJobMatchingService.findMatchingJobs(searchCriteria, 10);
+  const results = await EnhancedJobMatchingService.findMatchingJobs(
+    searchCriteria,
+    10
+  );
 
   return results.filter((job: any) => job.relevanceScore > 0.4);
 }
 
 // Note: Email sending is now handled by the email queue system
-// The emailQueue.addJobAlertEmail() method handles email creation, sending, and logging 
+// The emailQueue.addJobAlertEmail() method handles email creation, sending, and logging

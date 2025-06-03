@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '@/lib/utils';
 import { useModal, useFocusManagement } from '@/lib/ui/component-state-manager';
 import type { ModalState } from '@/lib/ui/component-state-manager';
@@ -40,25 +40,25 @@ function UnifiedModal({
   const { pushFocus, popFocus } = useFocusManagement();
   const modalRef = React.useRef<HTMLDivElement>(null);
   const previousActiveElement = React.useRef<HTMLElement | null>(null);
-  
+
   // Focus management
   React.useEffect(() => {
     if (modal.isOpen) {
       // Store the currently focused element
       previousActiveElement.current = document.activeElement as HTMLElement;
-      
+
       // Push to focus stack
       pushFocus(modal.id);
-      
+
       // Focus the modal
       if (modalRef.current) {
         modalRef.current.focus();
       }
-      
+
       return () => {
         // Pop from focus stack
         popFocus();
-        
+
         // Restore focus to previous element
         if (previousActiveElement.current) {
           previousActiveElement.current.focus();
@@ -66,42 +66,42 @@ function UnifiedModal({
       };
     }
   }, [modal.isOpen, modal.id, pushFocus, popFocus]);
-  
+
   // Escape key handler
   React.useEffect(() => {
     if (!modal.isOpen || !closeOnEscape) return;
-    
+
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         onClose(modal.id);
       }
     };
-    
+
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [modal.isOpen, modal.id, onClose, closeOnEscape]);
-  
+
   // Prevent body scroll when modal is open
   React.useEffect(() => {
     if (modal.isOpen) {
       const originalStyle = window.getComputedStyle(document.body).overflow;
       document.body.style.overflow = 'hidden';
-      
+
       return () => {
         document.body.style.overflow = originalStyle;
       };
     }
   }, [modal.isOpen]);
-  
+
   if (!modal.isOpen) return null;
-  
+
   const handleOverlayClick = (event: React.MouseEvent) => {
     if (closeOnOverlayClick && event.target === event.currentTarget) {
       onClose(modal.id);
     }
   };
-  
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -122,30 +122,30 @@ function UnifiedModal({
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2 }}
         className={cn(
-          'relative bg-white rounded-lg shadow-xl p-6 m-4',
+          'relative m-4 rounded-lg bg-white p-6 shadow-xl',
           'focus:outline-none focus:ring-2 focus:ring-blue-500',
           sizeClasses[size],
           size !== 'full' && 'max-h-[90vh] overflow-y-auto',
           className
         )}
         tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {showCloseButton && (
           <button
             onClick={() => onClose(modal.id)}
             className={cn(
-              'absolute top-4 right-4 p-1 rounded-md',
+              'absolute right-4 top-4 rounded-md p-1',
               'text-gray-400 hover:text-gray-600',
               'focus:outline-none focus:ring-2 focus:ring-blue-500',
               'transition-colors'
             )}
             aria-label="Close modal"
           >
-            <Cross2Icon className="w-5 h-5" />
+            <Cross2Icon className="h-5 w-5" />
           </button>
         )}
-        
+
         {children}
       </motion.div>
     </motion.div>
@@ -155,12 +155,12 @@ function UnifiedModal({
 // Modal container that manages all modals
 export function UnifiedModalContainer() {
   const { modals, removeModal } = useModal();
-  
+
   // Sort modals by timestamp to maintain proper z-index order
   const sortedModals = React.useMemo(() => {
     return [...modals].sort((a, b) => a.timestamp - b.timestamp);
   }, [modals]);
-  
+
   return (
     <AnimatePresence mode="wait">
       {sortedModals.map((modal, index) => (
@@ -184,47 +184,57 @@ export function UnifiedModalContainer() {
 
 // Hook for easy modal management
 export function useUnifiedModal() {
-  const { addModal, updateModal, removeModal, clearModals, modals } = useModal();
-  
-  const openModal = React.useCallback((
-    content: React.ReactNode,
-    options: {
-      type?: ModalState['type'];
-      size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
-      closeOnOverlayClick?: boolean;
-      closeOnEscape?: boolean;
-      showCloseButton?: boolean;
-      className?: string;
-      data?: any;
-    } = {}
-  ) => {
-    return addModal({
-      isOpen: true,
-      type: options.type || 'dialog',
-      data: {
-        content,
-        size: options.size || 'md',
-        closeOnOverlayClick: options.closeOnOverlayClick ?? true,
-        closeOnEscape: options.closeOnEscape ?? true,
-        showCloseButton: options.showCloseButton ?? true,
-        className: options.className,
-        ...options.data,
-      },
-    });
-  }, [addModal]);
-  
-  const closeModal = React.useCallback((id: string) => {
-    removeModal(id);
-  }, [removeModal]);
-  
-  const updateModalData = React.useCallback((id: string, data: any) => {
-    updateModal(id, { data });
-  }, [updateModal]);
-  
+  const { addModal, updateModal, removeModal, clearModals, modals } =
+    useModal();
+
+  const openModal = React.useCallback(
+    (
+      content: React.ReactNode,
+      options: {
+        type?: ModalState['type'];
+        size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+        closeOnOverlayClick?: boolean;
+        closeOnEscape?: boolean;
+        showCloseButton?: boolean;
+        className?: string;
+        data?: any;
+      } = {}
+    ) => {
+      return addModal({
+        isOpen: true,
+        type: options.type || 'dialog',
+        data: {
+          content,
+          size: options.size || 'md',
+          closeOnOverlayClick: options.closeOnOverlayClick ?? true,
+          closeOnEscape: options.closeOnEscape ?? true,
+          showCloseButton: options.showCloseButton ?? true,
+          className: options.className,
+          ...options.data,
+        },
+      });
+    },
+    [addModal]
+  );
+
+  const closeModal = React.useCallback(
+    (id: string) => {
+      removeModal(id);
+    },
+    [removeModal]
+  );
+
+  const updateModalData = React.useCallback(
+    (id: string, data: any) => {
+      updateModal(id, { data });
+    },
+    [updateModal]
+  );
+
   const closeAllModals = React.useCallback(() => {
     clearModals();
   }, [clearModals]);
-  
+
   return {
     openModal,
     closeModal,
@@ -262,13 +272,13 @@ export function ConfirmationModal({
           {message}
         </p>
       </div>
-      
+
       <div className="flex justify-end space-x-3">
         <button
           onClick={onCancel}
           className={cn(
-            'px-4 py-2 text-sm font-medium rounded-md',
-            'border border-gray-300 text-gray-700 bg-white',
+            'rounded-md px-4 py-2 text-sm font-medium',
+            'border border-gray-300 bg-white text-gray-700',
             'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500',
             'transition-colors'
           )}
@@ -278,7 +288,7 @@ export function ConfirmationModal({
         <button
           onClick={onConfirm}
           className={cn(
-            'px-4 py-2 text-sm font-medium rounded-md',
+            'rounded-md px-4 py-2 text-sm font-medium',
             'focus:outline-none focus:ring-2 focus:ring-offset-2',
             'transition-colors',
             variant === 'destructive'
@@ -311,23 +321,26 @@ export function AlertModal({
     warning: 'text-yellow-600',
     error: 'text-red-600',
   };
-  
+
   return (
     <div className="space-y-4">
       <div>
-        <h2 id="modal-title" className={cn('text-lg font-semibold', typeStyles[type])}>
+        <h2
+          id="modal-title"
+          className={cn('text-lg font-semibold', typeStyles[type])}
+        >
           {title}
         </h2>
         <p id="modal-description" className="mt-2 text-sm text-gray-600">
           {message}
         </p>
       </div>
-      
+
       <div className="flex justify-end">
         <button
           onClick={onClose}
           className={cn(
-            'px-4 py-2 text-sm font-medium rounded-md',
+            'rounded-md px-4 py-2 text-sm font-medium',
             'bg-blue-600 text-white hover:bg-blue-700',
             'focus:outline-none focus:ring-2 focus:ring-blue-500',
             'transition-colors'
@@ -345,4 +358,4 @@ export const UnifiedModalMemo = React.memo(UnifiedModal);
 export const UnifiedModalContainerMemo = React.memo(UnifiedModalContainer);
 
 // Default export
-export default UnifiedModalContainer; 
+export default UnifiedModalContainer;

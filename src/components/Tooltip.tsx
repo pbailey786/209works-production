@@ -43,7 +43,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       {children}
       {visible && (
         <div
-          className={`absolute z-20 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow transition-opacity duration-150 opacity-100 pointer-events-none ${getPosition()}`}
+          className={`pointer-events-none absolute z-20 rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-100 shadow transition-opacity duration-150 ${getPosition()}`}
           role="tooltip"
         >
           {content}
@@ -53,4 +53,4 @@ export const Tooltip: React.FC<TooltipProps> = ({
   );
 };
 
-export default Tooltip; 
+export default Tooltip;

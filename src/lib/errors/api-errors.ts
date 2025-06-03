@@ -78,7 +78,7 @@ export class ConflictError extends ApiError {
 
 export class RateLimitError extends ApiError {
   public readonly rateLimitResult?: any;
-  
+
   constructor(message: string = 'Rate limit exceeded', rateLimitResult?: any) {
     super(message, 429, ErrorCode.RATE_LIMIT_EXCEEDED);
     this.rateLimitResult = rateLimitResult;
@@ -165,7 +165,8 @@ export function createErrorResponse(
       error: 'ValidationError',
       message: 'Invalid database operation',
       code: ErrorCode.VALIDATION_ERROR,
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      details:
+        process.env.NODE_ENV === 'development' ? error.message : undefined,
       timestamp,
       requestId,
     };
@@ -176,7 +177,10 @@ export function createErrorResponse(
   if (error instanceof Error) {
     const response: ApiErrorResponse = {
       error: 'InternalServerError',
-      message: process.env.NODE_ENV === 'development' ? error.message : 'An unexpected error occurred',
+      message:
+        process.env.NODE_ENV === 'development'
+          ? error.message
+          : 'An unexpected error occurred',
       code: ErrorCode.INTERNAL_SERVER_ERROR,
       details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       timestamp,
@@ -231,4 +235,4 @@ export function createSuccessResponse<T>(
     },
     { status: statusCode }
   );
-} 
+}

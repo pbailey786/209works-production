@@ -19,19 +19,27 @@ const regionalJobsSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Parse query parameters
     const params = {
       region: searchParams.get('region') || undefined,
-      jobType: searchParams.get('jobType') as JobType || undefined,
+      jobType: (searchParams.get('jobType') as JobType) || undefined,
       location: searchParams.get('location') || undefined,
       keywords: searchParams.get('keywords') || undefined,
-      salaryMin: searchParams.get('salaryMin') ? parseInt(searchParams.get('salaryMin')!) : undefined,
-      salaryMax: searchParams.get('salaryMax') ? parseInt(searchParams.get('salaryMax')!) : undefined,
+      salaryMin: searchParams.get('salaryMin')
+        ? parseInt(searchParams.get('salaryMin')!)
+        : undefined,
+      salaryMax: searchParams.get('salaryMax')
+        ? parseInt(searchParams.get('salaryMax')!)
+        : undefined,
       postedAfter: searchParams.get('postedAfter') || undefined,
       categories: searchParams.get('categories')?.split(',') || undefined,
-      limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 20,
-      offset: searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : 0,
+      limit: searchParams.get('limit')
+        ? parseInt(searchParams.get('limit')!)
+        : 20,
+      offset: searchParams.get('offset')
+        ? parseInt(searchParams.get('offset')!)
+        : 0,
     };
 
     // Validate parameters
@@ -40,7 +48,9 @@ export async function GET(request: NextRequest) {
     // Convert postedAfter string to Date if provided
     const filters = {
       ...validatedParams,
-      postedAfter: validatedParams.postedAfter ? new Date(validatedParams.postedAfter) : undefined,
+      postedAfter: validatedParams.postedAfter
+        ? new Date(validatedParams.postedAfter)
+        : undefined,
     };
 
     // Get regional jobs
@@ -49,29 +59,28 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: result,
-      filters: filters
+      filters: filters,
     });
-
   } catch (error) {
     console.error('Regional jobs API error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid parameters', 
-          details: error.errors 
+        {
+          success: false,
+          error: 'Invalid parameters',
+          details: error.errors,
         },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to fetch regional jobs' 
+      {
+        success: false,
+        error: 'Failed to fetch regional jobs',
       },
       { status: 500 }
     );
   }
-} 
+}

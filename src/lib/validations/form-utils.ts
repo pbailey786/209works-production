@@ -16,7 +16,10 @@ export const validationPatterns = {
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number')
-    .regex(/[^a-zA-Z0-9]/, 'Password must contain at least one special character'),
+    .regex(
+      /[^a-zA-Z0-9]/,
+      'Password must contain at least one special character'
+    ),
 
   // Email validation with additional checks
   email: z
@@ -45,7 +48,7 @@ export const validationPatterns = {
     z
       .instanceof(File)
       .refine(
-        (file) => file.size <= maxSizeInMB * 1024 * 1024,
+        file => file.size <= maxSizeInMB * 1024 * 1024,
         `File size must be less than ${maxSizeInMB}MB`
       ),
 
@@ -53,7 +56,7 @@ export const validationPatterns = {
     z
       .instanceof(File)
       .refine(
-        (file) => allowedTypes.includes(file.type),
+        file => allowedTypes.includes(file.type),
         `File type must be one of: ${allowedTypes.join(', ')}`
       ),
 
@@ -67,21 +70,29 @@ export const validationPatterns = {
     .optional(),
 
   // Salary range validation
-  salaryRange: z.object({
-    min: z.coerce.number().min(0, 'Minimum salary must be positive').optional(),
-    max: z.coerce.number().min(0, 'Maximum salary must be positive').optional(),
-  }).refine(
-    (data) => {
-      if (data.min && data.max) {
-        return data.min <= data.max;
+  salaryRange: z
+    .object({
+      min: z.coerce
+        .number()
+        .min(0, 'Minimum salary must be positive')
+        .optional(),
+      max: z.coerce
+        .number()
+        .min(0, 'Maximum salary must be positive')
+        .optional(),
+    })
+    .refine(
+      data => {
+        if (data.min && data.max) {
+          return data.min <= data.max;
+        }
+        return true;
+      },
+      {
+        message: 'Minimum salary cannot be greater than maximum salary',
+        path: ['min'],
       }
-      return true;
-    },
-    {
-      message: 'Minimum salary cannot be greater than maximum salary',
-      path: ['min'],
-    }
-  ),
+    ),
 };
 
 // Form error types
@@ -110,7 +121,7 @@ export async function handleFormSubmission<T>(
 ): Promise<{ success: boolean; data?: T; errors?: FormError[] }> {
   try {
     const data = await submission();
-    
+
     if (options.onSuccess) {
       options.onSuccess(data);
     }
@@ -118,7 +129,7 @@ export async function handleFormSubmission<T>(
     return { success: true, data };
   } catch (error) {
     const formErrors = parseErrorToFormErrors(error);
-    
+
     if (options.onError) {
       options.onError(formErrors);
     }
@@ -130,7 +141,7 @@ export async function handleFormSubmission<T>(
 // Convert various error types to FormError[]
 export function parseErrorToFormErrors(error: unknown): FormError[] {
   if (error instanceof z.ZodError) {
-    return error.errors.map((err) => ({
+    return error.errors.map(err => ({
       field: err.path.join('.'),
       message: err.message,
       type: 'validation' as const,
@@ -154,18 +165,22 @@ export function parseErrorToFormErrors(error: unknown): FormError[] {
       }
     }
 
-    return [{
-      field: 'general',
-      message: error.message,
-      type: error.name === 'NetworkError' ? 'network' : 'server',
-    }];
+    return [
+      {
+        field: 'general',
+        message: error.message,
+        type: error.name === 'NetworkError' ? 'network' : 'server',
+      },
+    ];
   }
 
-  return [{
-    field: 'general',
-    message: 'An unexpected error occurred',
-    type: 'server' as const,
-  }];
+  return [
+    {
+      field: 'general',
+      message: 'An unexpected error occurred',
+      type: 'server' as const,
+    },
+  ];
 }
 
 // Form field validation helper
@@ -174,8 +189,8 @@ export function validateField<T extends FieldValues>(
   fieldName: FieldPath<T>,
   value: any
 ): Promise<boolean> {
-  return new Promise((resolve) => {
-    form.trigger(fieldName).then((isValid) => {
+  return new Promise(resolve => {
+    form.trigger(fieldName).then(isValid => {
       resolve(isValid);
     });
   });
@@ -227,4 +242,4 @@ export function useFormDirtyState<T extends FieldValues>(
 ): boolean {
   const { formState } = form;
   return Object.keys(formState.dirtyFields).length > 0;
-} 
+}

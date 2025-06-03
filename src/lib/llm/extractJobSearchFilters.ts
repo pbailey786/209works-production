@@ -45,19 +45,20 @@ export async function extractJobSearchFilters(
   userMessage: string,
   conversationHistory: any[] = []
 ): Promise<JobSearchFilters | null> {
-
   // Build conversation context
   const contextMessages = conversationHistory
     .slice(-3) // Last 3 messages for context
     .map((msg: any) => `${msg.type}: ${msg.content}`)
     .join('\n');
 
-  const contextPrompt = contextMessages ? `
+  const contextPrompt = contextMessages
+    ? `
 Previous conversation context:
 ${contextMessages}
 
 Consider this context when extracting filters from the current message.
-` : '';
+`
+    : '';
 
   const prompt = `${SYSTEM_PROMPT}
 
@@ -127,19 +128,19 @@ function normalizeJobType(jobType: string | null): string | null {
   const jobTypeMap: { [key: string]: string } = {
     'full-time': 'full_time',
     'full time': 'full_time',
-    'fulltime': 'full_time',
+    fulltime: 'full_time',
     'part-time': 'part_time',
     'part time': 'part_time',
-    'parttime': 'part_time',
-    'contract': 'contract',
-    'contractor': 'contract',
-    'freelance': 'contract',
-    'internship': 'internship',
-    'intern': 'internship',
-    'temporary': 'temporary',
-    'temp': 'temporary',
-    'volunteer': 'volunteer',
-    'other': 'other'
+    parttime: 'part_time',
+    contract: 'contract',
+    contractor: 'contract',
+    freelance: 'contract',
+    internship: 'internship',
+    intern: 'internship',
+    temporary: 'temporary',
+    temp: 'temporary',
+    volunteer: 'volunteer',
+    other: 'other',
   };
 
   return jobTypeMap[normalized] || normalized;
@@ -156,11 +157,18 @@ function validateAndCleanFilters(filters: any): JobSearchFilters {
     industry: typeof filters.industry === 'string' ? filters.industry : null,
     role: typeof filters.role === 'string' ? filters.role : null,
     salary: typeof filters.salary === 'string' ? filters.salary : null,
-    experience_level: typeof filters.experience_level === 'string' ? filters.experience_level : null,
+    experience_level:
+      typeof filters.experience_level === 'string'
+        ? filters.experience_level
+        : null,
     company: typeof filters.company === 'string' ? filters.company : null,
-    requirements: typeof filters.requirements === 'string' ? filters.requirements : null,
+    requirements:
+      typeof filters.requirements === 'string' ? filters.requirements : null,
     benefits: typeof filters.benefits === 'string' ? filters.benefits : null,
-    application_type: typeof filters.application_type === 'string' ? filters.application_type : null,
+    application_type:
+      typeof filters.application_type === 'string'
+        ? filters.application_type
+        : null,
     skills: Array.isArray(filters.skills) ? filters.skills : null,
     isRemote: typeof filters.isRemote === 'boolean' ? filters.isRemote : null,
     categories: Array.isArray(filters.categories) ? filters.categories : null,

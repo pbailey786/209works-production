@@ -14,25 +14,19 @@ const saveJobSchema = z.object({
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.role !== 'jobseeker') {
@@ -70,8 +64,8 @@ export async function GET(req: NextRequest) {
               expiresAt: true,
               isRemote: true,
               categories: true,
-            }
-          }
+            },
+          },
         },
         orderBy: { appliedAt: 'desc' },
         skip: offset,
@@ -115,7 +109,6 @@ export async function GET(req: NextRequest) {
         hasPrev: page > 1,
       },
     });
-
   } catch (error) {
     console.error('Get saved jobs error:', error);
     return NextResponse.json(
@@ -129,25 +122,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.role !== 'jobseeker') {
@@ -163,14 +150,11 @@ export async function POST(req: NextRequest) {
     // Check if job exists
     const job = await prisma.job.findUnique({
       where: { id: jobId },
-      select: { id: true, title: true, company: true }
+      select: { id: true, title: true, company: true },
     });
 
     if (!job) {
-      return NextResponse.json(
-        { error: 'Job not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     if (action === 'save') {
@@ -206,7 +190,6 @@ export async function POST(req: NextRequest) {
         message: `Saved "${job.title}" at ${job.company}`,
         applicationId: savedJob.id,
       });
-
     } else if (action === 'unsave') {
       // Remove the saved job
       const deletedSave = await prisma.jobApplication.deleteMany({
@@ -229,15 +212,14 @@ export async function POST(req: NextRequest) {
         message: `Removed "${job.title}" from saved jobs`,
       });
     }
-
   } catch (error) {
     console.error('Save/unsave job error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );
@@ -254,24 +236,18 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user || user.role !== 'jobseeker') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const url = new URL(req.url);
@@ -304,7 +280,6 @@ export async function DELETE(req: NextRequest) {
       success: true,
       message: 'Removed job from saved list',
     });
-
   } catch (error) {
     console.error('Delete saved job error:', error);
     return NextResponse.json(

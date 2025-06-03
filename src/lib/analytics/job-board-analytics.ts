@@ -36,7 +36,12 @@ export interface JobViewEvent {
   salaryMax?: number;
   categories: string[];
   postedAt: string;
-  viewSource: 'search_results' | 'featured' | 'related' | 'direct_link' | 'email';
+  viewSource:
+    | 'search_results'
+    | 'featured'
+    | 'related'
+    | 'direct_link'
+    | 'email';
   timeOnPage?: number; // seconds
 }
 
@@ -117,7 +122,7 @@ export function useJobBoardAnalytics() {
       search_query: event.searchQuery,
       search_query_length: event.searchQuery.length,
       search_has_query: event.searchQuery.length > 0,
-      
+
       // Filters
       filter_location: event.filters.location,
       filter_job_type: event.filters.jobType,
@@ -127,14 +132,17 @@ export function useJobBoardAnalytics() {
       filter_remote: event.filters.remote,
       filter_experience_level: event.filters.experienceLevel,
       filter_count: Object.values(event.filters).filter(Boolean).length,
-      
+
       // Results
       results_count: event.results.totalCount,
       results_has_more: event.results.hasMore,
       search_time_ms: event.results.searchTime,
       search_page: event.results.page,
-      results_per_page: event.results.totalCount > 0 ? Math.min(20, event.results.totalCount) : 0,
-      
+      results_per_page:
+        event.results.totalCount > 0
+          ? Math.min(20, event.results.totalCount)
+          : 0,
+
       // Context
       search_source: event.source,
       timestamp: new Date().toISOString(),
@@ -156,16 +164,22 @@ export function useJobBoardAnalytics() {
       job_salary_max: event.salaryMax,
       job_categories: event.categories,
       job_posted_at: event.postedAt,
-      job_age_days: Math.floor((Date.now() - new Date(event.postedAt).getTime()) / (1000 * 60 * 60 * 24)),
-      
+      job_age_days: Math.floor(
+        (Date.now() - new Date(event.postedAt).getTime()) /
+          (1000 * 60 * 60 * 24)
+      ),
+
       // View context
       view_source: event.viewSource,
       time_on_page: event.timeOnPage,
-      
+
       // Derived metrics
       has_salary: !!(event.salaryMin || event.salaryMax),
-      salary_range: event.salaryMin && event.salaryMax ? event.salaryMax - event.salaryMin : null,
-      
+      salary_range:
+        event.salaryMin && event.salaryMax
+          ? event.salaryMax - event.salaryMin
+          : null,
+
       timestamp: new Date().toISOString(),
     });
   };
@@ -179,21 +193,20 @@ export function useJobBoardAnalytics() {
       job_id: event.jobId,
       job_title: event.jobTitle,
       job_company: event.company,
-      
+
       // Application details
       application_method: event.applicationMethod,
       has_resume: event.hasResume,
       has_cover_letter: event.hasCoverLetter,
       application_source: event.applicationSource,
       time_to_apply: event.timeToApply,
-      
+
       // Application quality score
-      application_quality_score: (
+      application_quality_score:
         (event.hasResume ? 40 : 0) +
         (event.hasCoverLetter ? 30 : 0) +
-        (event.applicationMethod === 'direct' ? 30 : 20)
-      ),
-      
+        (event.applicationMethod === 'direct' ? 30 : 20),
+
       timestamp: new Date().toISOString(),
     });
   };
@@ -208,14 +221,12 @@ export function useJobBoardAnalytics() {
       registration_source: event.source,
       has_resume: event.hasResume,
       profile_completeness: event.profileCompleteness,
-      
+
       // Registration quality indicators
       is_complete_registration: event.profileCompleteness >= 80,
-      registration_quality_score: (
-        (event.hasResume ? 50 : 0) +
-        (event.profileCompleteness * 0.5)
-      ),
-      
+      registration_quality_score:
+        (event.hasResume ? 50 : 0) + event.profileCompleteness * 0.5,
+
       timestamp: new Date().toISOString(),
     });
   };
@@ -234,21 +245,20 @@ export function useJobBoardAnalytics() {
       job_salary_min: event.salaryMin,
       job_salary_max: event.salaryMax,
       job_categories: event.categories,
-      
+
       // Posting details
       posting_method: event.postingMethod,
       is_promoted: event.isPromoted,
       time_to_post: event.timeToPost,
-      
+
       // Job quality indicators
       has_salary: !!(event.salaryMin || event.salaryMax),
-      job_quality_score: (
+      job_quality_score:
         (event.jobTitle.length > 10 ? 20 : 10) +
         (event.salaryMin ? 30 : 0) +
         (event.categories.length > 0 ? 20 : 0) +
-        (event.isPromoted ? 30 : 0)
-      ),
-      
+        (event.isPromoted ? 30 : 0),
+
       timestamp: new Date().toISOString(),
     });
   };
@@ -263,22 +273,21 @@ export function useJobBoardAnalytics() {
       alert_type: event.alertType,
       alert_frequency: event.frequency,
       alert_source: event.source,
-      
+
       // Alert filters
       alert_keywords: event.filters.keywords,
       alert_location: event.filters.location,
       alert_job_type: event.filters.jobType,
       alert_categories: event.filters.categories,
       alert_filter_count: Object.values(event.filters).filter(Boolean).length,
-      
+
       // Alert quality
-      alert_specificity_score: (
+      alert_specificity_score:
         (event.filters.keywords?.length || 0) * 10 +
         (event.filters.location ? 20 : 0) +
         (event.filters.jobType ? 15 : 0) +
-        (event.filters.categories?.length || 0) * 5
-      ),
-      
+        (event.filters.categories?.length || 0) * 5,
+
       timestamp: new Date().toISOString(),
     });
   };
@@ -299,26 +308,31 @@ export function useJobBoardAnalytics() {
       bounce_rate: event.bounceRate,
       device_type: event.deviceType,
       traffic_source: event.trafficSource,
-      
+
       // Engagement quality metrics
-      engagement_score: (
+      engagement_score:
         (event.sessionDuration / 60) * 2 + // 2 points per minute
         event.pageViews * 5 +
         event.jobsViewed * 10 +
         event.searchesPerformed * 15 +
         event.applicationsStarted * 50 +
-        event.applicationsCompleted * 100
-      ),
-      
-      conversion_rate: event.applicationsCompleted / Math.max(event.jobsViewed, 1),
-      search_to_view_rate: event.jobsViewed / Math.max(event.searchesPerformed, 1),
-      
+        event.applicationsCompleted * 100,
+
+      conversion_rate:
+        event.applicationsCompleted / Math.max(event.jobsViewed, 1),
+      search_to_view_rate:
+        event.jobsViewed / Math.max(event.searchesPerformed, 1),
+
       timestamp: new Date().toISOString(),
     });
   };
 
   // Job Save/Unsave Tracking
-  const trackJobSave = (jobId: string, action: 'save' | 'unsave', jobData?: Partial<JobViewEvent>) => {
+  const trackJobSave = (
+    jobId: string,
+    action: 'save' | 'unsave',
+    jobData?: Partial<JobViewEvent>
+  ) => {
     if (!isInitialized) return;
 
     trackEvent('job_saved', {
@@ -328,23 +342,26 @@ export function useJobBoardAnalytics() {
       job_company: jobData?.company,
       job_type: jobData?.jobType,
       job_location: jobData?.location,
-      
+
       timestamp: new Date().toISOString(),
     });
   };
 
   // User Identification
-  const identifyJobBoardUser = (userId: string, userProperties: {
-    userType: 'jobseeker' | 'employer';
-    email?: string;
-    name?: string;
-    location?: string;
-    industry?: string;
-    experienceLevel?: string;
-    profileCompleteness: number;
-    registrationDate: string;
-    lastActiveDate: string;
-  }) => {
+  const identifyJobBoardUser = (
+    userId: string,
+    userProperties: {
+      userType: 'jobseeker' | 'employer';
+      email?: string;
+      name?: string;
+      location?: string;
+      industry?: string;
+      experienceLevel?: string;
+      profileCompleteness: number;
+      registrationDate: string;
+      lastActiveDate: string;
+    }
+  ) => {
     if (!isInitialized) return;
 
     identifyUser(userId, {
@@ -357,10 +374,15 @@ export function useJobBoardAnalytics() {
       profile_completeness: userProperties.profileCompleteness,
       registration_date: userProperties.registrationDate,
       last_active_date: userProperties.lastActiveDate,
-      
+
       // User quality indicators
-      is_active_user: new Date(userProperties.lastActiveDate) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      user_tenure_days: Math.floor((Date.now() - new Date(userProperties.registrationDate).getTime()) / (1000 * 60 * 60 * 24)),
+      is_active_user:
+        new Date(userProperties.lastActiveDate) >
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      user_tenure_days: Math.floor(
+        (Date.now() - new Date(userProperties.registrationDate).getTime()) /
+          (1000 * 60 * 60 * 24)
+      ),
     });
   };
 
@@ -374,11 +396,11 @@ export function useJobBoardAnalytics() {
     trackEmailAlert,
     trackUserSession,
     trackJobSave,
-    
+
     // User management
     identifyJobBoardUser,
-    
+
     // State
     isInitialized,
   };
-} 
+}

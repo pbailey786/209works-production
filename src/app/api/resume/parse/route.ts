@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get('resume') as File;
-    
+
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     // Get user ID for file naming
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true }
+      select: { id: true },
     });
 
     if (!user) {
@@ -53,15 +53,21 @@ export async function POST(request: NextRequest) {
     const fileText = await extractTextFromFile(fileBuffer, file.type);
 
     if (!fileText || fileText.trim().length === 0) {
-      return NextResponse.json({ error: 'Could not extract text from resume. Please try a different file or fill out the form manually.' }, { status: 400 });
+      return NextResponse.json(
+        {
+          error:
+            'Could not extract text from resume. Please try a different file or fill out the form manually.',
+        },
+        { status: 400 }
+      );
     }
 
     // Use OpenAI to parse the resume
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: 'gpt-3.5-turbo',
       messages: [
         {
-          role: "system",
+          role: 'system',
           content: `You are a resume parser. Extract structured information from resumes and return it as JSON. 
           
           Focus on extracting:
@@ -76,12 +82,12 @@ export async function POST(request: NextRequest) {
           
           Return only valid JSON that matches this schema. If information is not found, omit the field or return null.
           For skills, extract both technical skills (like "JavaScript", "Project Management") and soft skills.
-          For location, if only a city is mentioned, assume it's in California.`
+          For location, if only a city is mentioned, assume it's in California.`,
         },
         {
-          role: "user",
-          content: `Please parse this resume and extract the information as JSON:\n\n${fileText}`
-        }
+          role: 'user',
+          content: `Please parse this resume and extract the information as JSON:\n\n${fileText}`,
+        },
       ],
       temperature: 0.1,
       max_tokens: 1000,
@@ -89,7 +95,10 @@ export async function POST(request: NextRequest) {
 
     const aiResponse = completion.choices[0]?.message?.content;
     if (!aiResponse) {
-      return NextResponse.json({ error: 'Failed to parse resume with AI' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to parse resume with AI' },
+        { status: 500 }
+      );
     }
 
     // Parse the AI response as JSON
@@ -98,7 +107,10 @@ export async function POST(request: NextRequest) {
       parsedData = JSON.parse(aiResponse);
     } catch (error) {
       console.error('Failed to parse AI response as JSON:', aiResponse);
-      return NextResponse.json({ error: 'Failed to parse resume data' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Failed to parse resume data' },
+        { status: 500 }
+      );
     }
 
     // Validate the parsed data
@@ -115,55 +127,80 @@ export async function POST(request: NextRequest) {
         // Only update fields that were successfully extracted
         ...(validatedData.name && { name: validatedData.name }),
         ...(validatedData.location && { location: validatedData.location }),
-        ...(validatedData.currentJobTitle && { currentJobTitle: validatedData.currentJobTitle }),
-        ...(validatedData.experienceLevel && { experienceLevel: validatedData.experienceLevel }),
-        ...(validatedData.phoneNumber && { phoneNumber: validatedData.phoneNumber }),
-      }
+        ...(validatedData.currentJobTitle && {
+          currentJobTitle: validatedData.currentJobTitle,
+        }),
+        ...(validatedData.experienceLevel && {
+          experienceLevel: validatedData.experienceLevel,
+        }),
+        ...(validatedData.phoneNumber && {
+          phoneNumber: validatedData.phoneNumber,
+        }),
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: {
         ...validatedData,
-        resumeUrl
+        resumeUrl,
       },
-      message: 'Resume parsed and saved successfully!'
+      message: 'Resume parsed and saved successfully!',
     });
-
   } catch (error) {
     console.error('Resume parsing error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to parse resume. Please try again or fill out the form manually.' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error:
+          'Failed to parse resume. Please try again or fill out the form manually.',
+      },
+      { status: 500 }
+    );
   }
 }
 
 // Extract text from different file types
-async function extractTextFromFile(buffer: ArrayBuffer, mimeType: string): Promise<string> {
+async function extractTextFromFile(
+  buffer: ArrayBuffer,
+  mimeType: string
+): Promise<string> {
   try {
     const uint8Array = new Uint8Array(buffer);
 
     if (mimeType === 'application/pdf') {
       // For now, return a message asking user to use DOCX or manual entry
       // In production, you'd implement proper PDF parsing
-      throw new Error('PDF parsing is temporarily unavailable. Please upload a DOCX file or fill out the form manually.');
-    } else if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      throw new Error(
+        'PDF parsing is temporarily unavailable. Please upload a DOCX file or fill out the form manually.'
+      );
+    } else if (
+      mimeType ===
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ) {
       // Parse DOCX files using dynamic import
       try {
         const mammoth = (await import('mammoth')).default;
-        const result = await mammoth.extractRawText({ buffer: Buffer.from(uint8Array) });
+        const result = await mammoth.extractRawText({
+          buffer: Buffer.from(uint8Array),
+        });
         return result.value;
       } catch (error) {
-        throw new Error('Failed to parse DOCX file. Please try a different file or fill out the form manually.');
+        throw new Error(
+          'Failed to parse DOCX file. Please try a different file or fill out the form manually.'
+        );
       }
     } else if (mimeType === 'application/msword') {
       // For older DOC files, mammoth has limited support
       try {
         const mammoth = (await import('mammoth')).default;
-        const result = await mammoth.extractRawText({ buffer: Buffer.from(uint8Array) });
+        const result = await mammoth.extractRawText({
+          buffer: Buffer.from(uint8Array),
+        });
         return result.value;
       } catch (error) {
-        throw new Error('DOC files are not fully supported. Please convert to DOCX format or fill out the form manually.');
+        throw new Error(
+          'DOC files are not fully supported. Please convert to DOCX format or fill out the form manually.'
+        );
       }
     } else {
       // For plain text files

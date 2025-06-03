@@ -1,38 +1,40 @@
-"use client";
-import { useState } from "react";
-import Input from "../../components/Input";
-import Button from "../../components/Button";
+'use client';
+import { useState } from 'react';
+import Input from '../../components/Input';
+import Button from '../../components/Button';
 
 export default function PasswordResetRequestPage() {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
+    setMessage('');
     try {
-      const res = await fetch("/api/auth/password-reset", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/auth/password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage(data.message || "If that email exists, a reset link has been sent.");
+        setMessage(
+          data.message || 'If that email exists, a reset link has been sent.'
+        );
       } else {
-        setMessage(data.error || "Something went wrong.");
+        setMessage(data.error || 'Something went wrong.');
       }
     } catch {
-      setMessage("Something went wrong.");
+      setMessage('Something went wrong.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "40px auto" }}>
+    <div style={{ maxWidth: 400, margin: '40px auto' }}>
       <h2>Password Reset</h2>
       <form onSubmit={handleSubmit}>
         <Input
@@ -43,10 +45,10 @@ export default function PasswordResetRequestPage() {
           required
         />
         <Button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send Reset Link"}
+          {loading ? 'Sending...' : 'Send Reset Link'}
         </Button>
       </form>
       {message && <p style={{ marginTop: 16 }}>{message}</p>}
     </div>
   );
-} 
+}

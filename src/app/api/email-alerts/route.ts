@@ -6,13 +6,33 @@ import { z } from 'zod';
 
 // Validation schemas for the new email alert system
 const createEmailAlertSchema = z.object({
-  type: z.enum(['job_title_alert', 'weekly_digest', 'job_category_alert', 'location_alert', 'company_alert']),
-  frequency: z.enum(['immediate', 'daily', 'weekly', 'monthly']).default('immediate'),
+  type: z.enum([
+    'job_title_alert',
+    'weekly_digest',
+    'job_category_alert',
+    'location_alert',
+    'company_alert',
+  ]),
+  frequency: z
+    .enum(['immediate', 'daily', 'weekly', 'monthly'])
+    .default('immediate'),
   jobTitle: z.string().optional(),
   keywords: z.array(z.string()).default([]),
   location: z.string().optional(),
   categories: z.array(z.string()).default([]),
-  jobTypes: z.array(z.enum(['full_time', 'part_time', 'contract', 'internship', 'temporary', 'volunteer', 'other'])).default([]),
+  jobTypes: z
+    .array(
+      z.enum([
+        'full_time',
+        'part_time',
+        'contract',
+        'internship',
+        'temporary',
+        'volunteer',
+        'other',
+      ])
+    )
+    .default([]),
   companies: z.array(z.string()).default([]),
   salaryMin: z.number().min(0).optional(),
   salaryMax: z.number().min(0).optional(),
@@ -27,7 +47,7 @@ const updateEmailAlertSchema = createEmailAlertSchema.partial().extend({
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -45,11 +65,11 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get('type');
 
     const whereClause: any = { userId: user.id };
-    
+
     if (isActive !== null) {
       whereClause.isActive = isActive === 'true';
     }
-    
+
     if (type) {
       whereClause.type = type;
     }
@@ -59,12 +79,12 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
-          select: { 
+          select: {
             jobs: true,
-            emailLogs: true 
-          }
-        }
-      }
+            emailLogs: true,
+          },
+        },
+      },
     });
 
     // Get email statistics
@@ -72,21 +92,24 @@ export async function GET(req: NextRequest) {
       by: ['status'],
       where: {
         userId: user.id,
-        emailType: 'job_alert'
+        emailType: 'job_alert',
       },
-      _count: true
+      _count: true,
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       alerts,
       stats: {
         totalAlerts: alerts.length,
         activeAlerts: alerts.filter(a => a.isActive).length,
-        emailStats: emailStats.reduce((acc, stat) => {
-          acc[stat.status] = stat._count;
-          return acc;
-        }, {} as Record<string, number>)
-      }
+        emailStats: emailStats.reduce(
+          (acc, stat) => {
+            acc[stat.status] = stat._count;
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
+      },
     });
   } catch (error) {
     console.error('Get email alerts error:', error);
@@ -101,7 +124,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -119,7 +142,7 @@ export async function POST(req: NextRequest) {
 
     // Business rules validation
     const alertCount = await prisma.alert.count({
-      where: { userId: user.id, isActive: true }
+      where: { userId: user.id, isActive: true },
     });
 
     if (alertCount >= 10) {
@@ -130,8 +153,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate salary range
-    if (validatedData.salaryMin && validatedData.salaryMax && 
-        validatedData.salaryMin > validatedData.salaryMax) {
+    if (
+      validatedData.salaryMin &&
+      validatedData.salaryMax &&
+      validatedData.salaryMin > validatedData.salaryMax
+    ) {
       return NextResponse.json(
         { error: 'Minimum salary cannot be greater than maximum salary' },
         { status: 400 }
@@ -146,15 +172,18 @@ export async function POST(req: NextRequest) {
       },
       include: {
         _count: {
-          select: { jobs: true }
-        }
-      }
+          select: { jobs: true },
+        },
+      },
     });
 
-    return NextResponse.json({ 
-      message: 'Email alert created successfully',
-      alert 
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: 'Email alert created successfully',
+        alert,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -175,7 +204,7 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -193,24 +222,21 @@ export async function PATCH(req: NextRequest) {
 
     if (action === 'toggleAll') {
       const { isActive } = body;
-      
+
       await prisma.alert.updateMany({
-        where: { 
+        where: {
           userId: user.id,
-          ...(alertIds ? { id: { in: alertIds } } : {})
+          ...(alertIds ? { id: { in: alertIds } } : {}),
         },
-        data: { isActive }
+        data: { isActive },
       });
 
-      return NextResponse.json({ 
-        message: `Alerts ${isActive ? 'enabled' : 'disabled'} successfully` 
+      return NextResponse.json({
+        message: `Alerts ${isActive ? 'enabled' : 'disabled'} successfully`,
       });
     }
 
-    return NextResponse.json(
-      { error: 'Invalid action' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
     console.error('Bulk update email alerts error:', error);
     return NextResponse.json(
@@ -218,4 +244,4 @@ export async function PATCH(req: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

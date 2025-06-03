@@ -1,23 +1,28 @@
 # Task 47: Technical Architecture Refactoring & Strategic Implementation
 
 ## Overview
+
 Refactor 209Jobs architecture to align with strategic business model simplification. Remove over-engineered complexity (35+ add-ons, 7 pricing tiers) and implement missing strategic infrastructure for B2B2B partnerships and local business focus.
 
 ## Priority: CRITICAL
+
 **Timeline**: 6 weeks parallel to Task 46  
 **Impact**: High - Technical foundation for strategic goals  
-**Effort**: Large - Major architectural changes required  
+**Effort**: Large - Major architectural changes required
 
 ## Problem Statement
+
 Current codebase has 60% misalignment with strategic goals. Over-engineered add-on system (400+ lines) contradicts simplified pricing strategy. Missing critical B2B2B partnership infrastructure and local business onboarding systems that drive 70% of revenue strategy.
 
 ## Technical Context
+
 - **Current State**: Complex job board with over-engineered features
 - **Target State**: Simplified platform optimized for Central Valley economic development
 - **Architecture Goals**: Scalability, maintainability, strategic feature support
 - **Performance Requirements**: Maintain speed during major refactoring
 
 ## Success Criteria
+
 - [ ] Add-on system completely removed (400+ lines deleted)
 - [ ] Simplified 3-tier pricing system operational
 - [ ] Partnership infrastructure implemented and tested
@@ -30,21 +35,26 @@ Current codebase has 60% misalignment with strategic goals. Over-engineered add-
 ## Implementation Strategy
 
 ### Phase 1: Aggressive Pruning (Weeks 1-2)
+
 Remove over-engineered features and simplify core systems
 
 ### Phase 2: Strategic Infrastructure (Weeks 3-4)
+
 Build missing B2B2B and local business systems
 
 ### Phase 3: Optimization & Launch Prep (Weeks 5-6)
+
 Performance tuning and production readiness
 
 ## Dependencies
+
 - Task 46 strategic alignment coordination
 - Database migration planning and execution
 - API endpoint consolidation
 - Frontend component refactoring
 
 ## Risk Mitigation
+
 - Incremental database migrations to prevent data loss
 - Feature flags for gradual rollout of new systems
 - Comprehensive testing at each phase
@@ -55,6 +65,7 @@ Performance tuning and production readiness
 ## Subtasks
 
 ### 47.1: Add-On System Removal (CRITICAL)
+
 **Timeline**: Week 1  
 **Priority**: Highest  
 **Effort**: Large
@@ -62,12 +73,14 @@ Performance tuning and production readiness
 Completely remove the over-engineered add-on marketplace system.
 
 **Current Issues**:
+
 - 400+ lines of unnecessary complexity in `src/lib/services/addons.ts`
 - 35+ add-on types with complex compatibility matrices
 - Database tables for abandoned features
 - Frontend components for add-on marketplace
 
 **Files to Remove**:
+
 ```
 src/lib/services/addons.ts
 src/lib/types/addons.ts
@@ -77,6 +90,7 @@ src/app/employers/addons/
 ```
 
 **Database Cleanup**:
+
 ```sql
 DROP TABLE "AddOn";
 DROP TABLE "UserAddOn";
@@ -84,6 +98,7 @@ DROP TABLE "UserSubscriptionAddOn";
 ```
 
 **Implementation Steps**:
+
 - Audit all add-on related code and dependencies
 - Create data migration script for existing add-on subscribers
 - Remove add-on database tables and relationships
@@ -93,6 +108,7 @@ DROP TABLE "UserSubscriptionAddOn";
 - Test subscription flows without add-on dependencies
 
 ### 47.2: Pricing Schema Simplification (CRITICAL)
+
 **Timeline**: Week 1-2  
 **Priority**: Highest  
 **Effort**: Medium
@@ -100,6 +116,7 @@ DROP TABLE "UserSubscriptionAddOn";
 Implement simplified 3-tier pricing structure in database and application logic.
 
 **Target Schema**:
+
 ```sql
 model Subscription {
   id          String   @id @default(uuid())
@@ -121,6 +138,7 @@ enum PricingTier {
 ```
 
 **Implementation Steps**:
+
 - Design new simplified subscription schema
 - Create database migration scripts
 - Update subscription service logic
@@ -130,6 +148,7 @@ enum PricingTier {
 - Test subscription creation and management flows
 
 ### 47.3: API Endpoint Consolidation (HIGH)
+
 **Timeline**: Week 1-2  
 **Priority**: High  
 **Effort**: Medium
@@ -137,6 +156,7 @@ enum PricingTier {
 Remove unused API endpoints and consolidate subscription management.
 
 **Endpoints to Remove**:
+
 ```
 /api/addons/*
 /api/subscriptions/addons/*
@@ -145,6 +165,7 @@ Remove unused API endpoints and consolidate subscription management.
 ```
 
 **New Simplified Structure**:
+
 ```
 /api/subscriptions/
 ├── route.ts          // CRUD operations
@@ -154,6 +175,7 @@ Remove unused API endpoints and consolidate subscription management.
 ```
 
 **Implementation Steps**:
+
 - Audit all API endpoints for usage and necessity
 - Remove add-on related endpoints
 - Consolidate subscription management endpoints
@@ -163,6 +185,7 @@ Remove unused API endpoints and consolidate subscription management.
 - Test all endpoint functionality
 
 ### 47.4: Partnership System Infrastructure (CRITICAL)
+
 **Timeline**: Week 3-4  
 **Priority**: Highest  
 **Effort**: Large
@@ -170,6 +193,7 @@ Remove unused API endpoints and consolidate subscription management.
 Build B2B2B partnership infrastructure for chamber of commerce revenue strategy.
 
 **Database Schema**:
+
 ```sql
 model Partner {
   id              String   @id @default(uuid())
@@ -195,6 +219,7 @@ model Partnership {
 ```
 
 **Features to Implement**:
+
 - Partner dashboard with authentication
 - Revenue sharing calculation system
 - Co-branded job posting flows
@@ -202,6 +227,7 @@ model Partnership {
 - Partnership analytics and reporting
 
 **Implementation Steps**:
+
 - Design partnership database schema
 - Create partner authentication system
 - Build partner dashboard interface
@@ -212,6 +238,7 @@ model Partnership {
 - Test end-to-end partnership flows
 
 ### 47.5: Local Business Onboarding System (CRITICAL)
+
 **Timeline**: Week 2-3  
 **Priority**: High  
 **Effort**: Medium
@@ -219,6 +246,7 @@ model Partnership {
 Create simplified onboarding system optimized for local businesses.
 
 **Features Required**:
+
 - Simplified signup flow for $49 Starter plan
 - Local business directory integration
 - Chamber member verification system
@@ -226,6 +254,7 @@ Create simplified onboarding system optimized for local businesses.
 - Local business-specific value propositions
 
 **New Components**:
+
 ```
 src/app/signup/local-business/
 ├── page.tsx              // Simplified signup flow
@@ -241,6 +270,7 @@ src/components/local-business/
 ```
 
 **Implementation Steps**:
+
 - Design local business signup flow
 - Create chamber member verification system
 - Build business verification service
@@ -250,6 +280,7 @@ src/components/local-business/
 - Test complete onboarding experience
 
 ### 47.6: Database Performance Optimization (HIGH)
+
 **Timeline**: Week 2-3  
 **Priority**: High  
 **Effort**: Medium
@@ -257,12 +288,14 @@ src/components/local-business/
 Optimize database performance for new schema and strategic features.
 
 **Optimization Areas**:
+
 - Remove unused indexes from deleted add-on tables
 - Add strategic indexes for partnership queries
 - Optimize job search performance for local businesses
 - Implement caching for chamber member data
 
 **New Indexes**:
+
 ```sql
 -- Strategic indexes for new features
 CREATE INDEX idx_jobs_location_salary ON "Job" (location, "salaryMin", "salaryMax");
@@ -272,16 +305,18 @@ CREATE INDEX idx_partner_businesses ON "Partnership" ("partnerId", "businessId")
 ```
 
 **Caching Strategy**:
+
 ```typescript
 const CACHE_KEYS = {
   CHAMBER_MEMBERS: 'chamber:members:',
   LOCAL_BUSINESSES: 'local:businesses:',
   PARTNERSHIP_METRICS: 'partnership:metrics:',
-  PRICING_TIERS: 'pricing:tiers'
+  PRICING_TIERS: 'pricing:tiers',
 } as const;
 ```
 
 **Implementation Steps**:
+
 - Audit current database indexes and remove unused ones
 - Add strategic indexes for partnership and local business queries
 - Implement Redis caching for frequently accessed data
@@ -290,6 +325,7 @@ const CACHE_KEYS = {
 - Test query performance under load
 
 ### 47.7: Community Features Foundation (MEDIUM)
+
 **Timeline**: Week 4-5  
 **Priority**: Medium  
 **Effort**: Medium
@@ -297,6 +333,7 @@ const CACHE_KEYS = {
 Build foundation for community and networking features to drive job seeker retention.
 
 **Database Schema**:
+
 ```sql
 model Event {
   id          String   @id @default(uuid())
@@ -321,6 +358,7 @@ model Mentorship {
 ```
 
 **Features to Implement**:
+
 - Local networking events calendar
 - Professional meetup organization tools
 - Basic mentorship matching system
@@ -328,6 +366,7 @@ model Mentorship {
 - Community discussion forums
 
 **Implementation Steps**:
+
 - Design community database schema
 - Create events management system
 - Build mentorship matching algorithm
@@ -337,6 +376,7 @@ model Mentorship {
 - Test community engagement flows
 
 ### 47.8: Frontend Component Refactoring (HIGH)
+
 **Timeline**: Week 3-4  
 **Priority**: High  
 **Effort**: Medium
@@ -344,6 +384,7 @@ model Mentorship {
 Refactor frontend components to align with simplified business model.
 
 **Components to Refactor**:
+
 ```
 src/components/pricing/
 ├── SimplePricingCard.tsx     // Replace complex pricing tables
@@ -358,12 +399,14 @@ src/components/partnerships/
 ```
 
 **Components to Remove**:
+
 - AddOnMarketplace.tsx
 - ComplexTierComparison.tsx
 - AddOnCheckout.tsx
 - EnterpriseCustomization.tsx
 
 **Implementation Steps**:
+
 - Remove complex add-on marketplace components
 - Create simplified pricing card components
 - Build partnership dashboard components
@@ -373,6 +416,7 @@ src/components/partnerships/
 - Test all component interactions
 
 ### 47.9: Security & Monitoring Implementation (HIGH)
+
 **Timeline**: Week 4-5  
 **Priority**: High  
 **Effort**: Medium
@@ -380,18 +424,21 @@ src/components/partnerships/
 Implement security measures and monitoring for new strategic features.
 
 **Security Requirements**:
+
 - Partner API authentication and rate limiting
 - Revenue sharing audit logging
 - Business verification security
 - Community feature moderation
 
 **Monitoring Requirements**:
+
 - Partnership revenue accuracy tracking
 - Business onboarding success rates
 - Community engagement metrics
 - Performance monitoring for new features
 
 **Implementation Steps**:
+
 - Implement partner API authentication system
 - Add rate limiting for partner endpoints
 - Create audit logging for revenue sharing
@@ -402,6 +449,7 @@ Implement security measures and monitoring for new strategic features.
 - Test security measures and monitoring accuracy
 
 ### 47.10: Testing & Quality Assurance (CRITICAL)
+
 **Timeline**: Week 5-6  
 **Priority**: Highest  
 **Effort**: Medium
@@ -409,6 +457,7 @@ Implement security measures and monitoring for new strategic features.
 Comprehensive testing of refactored architecture and new strategic features.
 
 **Testing Areas**:
+
 - Pricing system functionality
 - Partnership revenue calculations
 - Business onboarding flows
@@ -417,6 +466,7 @@ Comprehensive testing of refactored architecture and new strategic features.
 - API endpoint security and functionality
 
 **Test Suites to Create**:
+
 ```
 src/__tests__/strategic/
 ├── pricing-simplification.test.ts
@@ -428,6 +478,7 @@ src/__tests__/strategic/
 ```
 
 **Implementation Steps**:
+
 - Create comprehensive test suites for new features
 - Implement integration tests for partnership flows
 - Test database migration and performance
@@ -440,15 +491,18 @@ src/__tests__/strategic/
 ---
 
 ## Notes
+
 This task represents a complete architectural transformation requiring careful coordination with Task 46 strategic alignment. Success depends on methodical execution and comprehensive testing at each phase.
 
 ## Related Tasks
+
 - Task 46: Strategic Business Model Alignment (parallel execution)
 - Future: Geographic expansion technical preparation
 - Future: Advanced community platform scaling
 
 ## Resources
+
 - BMAD Dev Agent Technical Review
 - Current Codebase Architecture Analysis
 - Database Migration Planning Documentation
-- Partnership System Technical Specifications 
+- Partnership System Technical Specifications

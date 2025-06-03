@@ -12,7 +12,7 @@ async function testRegionalAssignment() {
   console.log('📍 Test 1: Location-to-Region Assignment Logic');
   const testLocations = [
     'Stockton, CA',
-    'Sacramento, CA', 
+    'Sacramento, CA',
     'Oakland, CA',
     'Berkeley, CA',
     'Modesto, CA',
@@ -22,7 +22,7 @@ async function testRegionalAssignment() {
     'Los Angeles, CA', // Should not match any region
     'Remote - Northern California',
     'Central Valley Area',
-    'East Bay Region'
+    'East Bay Region',
   ];
 
   testLocations.forEach(location => {
@@ -42,15 +42,20 @@ async function testRegionalAssignment() {
   try {
     const searchResult = await RegionalJobService.getRegionalJobs({
       region: '209',
-      limit: 5
+      limit: 5,
     });
-    console.log(`  Found ${searchResult.totalCount} jobs in Central Valley (209)`);
-    console.log(`  Sample jobs:`, searchResult.jobs.slice(0, 2).map(job => ({
-      title: job.title,
-      company: job.company,
-      location: job.location,
-      region: job.region
-    })));
+    console.log(
+      `  Found ${searchResult.totalCount} jobs in Central Valley (209)`
+    );
+    console.log(
+      `  Sample jobs:`,
+      searchResult.jobs.slice(0, 2).map(job => ({
+        title: job.title,
+        company: job.company,
+        location: job.location,
+        region: job.region,
+      }))
+    );
   } catch (error) {
     console.log('  Error searching regional jobs:', error);
   }
@@ -62,7 +67,7 @@ async function testRegionalAssignment() {
       totalJobs: stats.totalJobs,
       newJobsThisWeek: stats.newJobsThisWeek,
       topCategories: stats.topCategories.slice(0, 3),
-      averageSalary: stats.averageSalary
+      averageSalary: stats.averageSalary,
     });
   } catch (error) {
     console.log('  Error getting regional stats:', error);
@@ -90,4 +95,4 @@ if (require.main === module) {
   testRegionalAssignment().catch(console.error);
 }
 
-export { testRegionalAssignment }; 
+export { testRegionalAssignment };

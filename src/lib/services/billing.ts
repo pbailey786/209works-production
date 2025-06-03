@@ -1,4 +1,8 @@
-import { PricingTier, BillingInterval, SubscriptionStatus } from '@prisma/client';
+import {
+  PricingTier,
+  BillingInterval,
+  SubscriptionStatus,
+} from '@prisma/client';
 import { prisma } from '@/lib/database/prisma';
 import { PRICING_CONFIG } from './subscription';
 
@@ -34,9 +38,12 @@ export class BillingService {
   /**
    * Calculate pricing for a tier and billing cycle
    */
-  static calculatePrice(tier: PricingTier, billingCycle: BillingInterval): number {
+  static calculatePrice(
+    tier: PricingTier,
+    billingCycle: BillingInterval
+  ): number {
     const config = PRICING_CONFIG[tier];
-    
+
     switch (billingCycle) {
       case 'yearly':
         return config.yearlyPrice;
@@ -60,17 +67,17 @@ export class BillingService {
   ): number {
     const currentPrice = this.calculatePrice(currentTier, billingCycle);
     const newPrice = this.calculatePrice(newTier, billingCycle);
-    
+
     const daysInCycle = billingCycle === 'yearly' ? 365 : 30;
     const dailyCurrentRate = currentPrice / daysInCycle;
     const dailyNewRate = newPrice / daysInCycle;
-    
+
     // Credit for unused time on current plan
     const credit = dailyCurrentRate * daysRemaining;
-    
+
     // Charge for remaining time on new plan
     const charge = dailyNewRate * daysRemaining;
-    
+
     return charge - credit;
   }
 
@@ -79,12 +86,12 @@ export class BillingService {
    */
   static async createSubscriptionWithBilling(data: BillingData) {
     const price = this.calculatePrice(data.tier, data.billingCycle);
-    
+
     try {
       // Get user email for subscription
       const user = await prisma.user.findUnique({
         where: { id: data.userId },
-        select: { email: true }
+        select: { email: true },
       });
 
       if (!user) {
@@ -107,7 +114,7 @@ export class BillingService {
 
       // In a real implementation, you would integrate with Stripe/PayPal here
       // For now, we'll simulate the billing process
-      
+
       return {
         subscription,
         paymentIntent: {
@@ -141,13 +148,17 @@ export class BillingService {
 
     const billingCycle = newBillingCycle || subscription.billingCycle;
     const newPrice = this.calculatePrice(newTier, billingCycle);
-    
+
     // Calculate proration if changing mid-cycle
     const now = new Date();
     const nextBillingDate = new Date(subscription.startDate || new Date());
-    nextBillingDate.setMonth(nextBillingDate.getMonth() + (billingCycle === 'yearly' ? 12 : 1));
-    
-    const daysRemaining = Math.ceil((nextBillingDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    nextBillingDate.setMonth(
+      nextBillingDate.getMonth() + (billingCycle === 'yearly' ? 12 : 1)
+    );
+
+    const daysRemaining = Math.ceil(
+      (nextBillingDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
     const prorationAmount = this.calculateProration(
       subscription.tier,
       newTier,
@@ -189,7 +200,7 @@ export class BillingService {
     try {
       // In a real implementation, charge the payment method here
       // For now, we'll simulate successful payment
-      
+
       const nextBillingDate = new Date();
       if (subscription.billingCycle === 'yearly') {
         nextBillingDate.setFullYear(nextBillingDate.getFullYear() + 1);
@@ -358,9 +369,9 @@ export class BillingService {
    */
   static applyDiscount(amount: number, discountCode: string): number {
     const discounts: Record<string, number> = {
-      'WELCOME10': 0.1, // 10% off
-      'ANNUAL20': 0.2,  // 20% off for annual plans
-      'STARTUP50': 0.5, // 50% off for startups
+      WELCOME10: 0.1, // 10% off
+      ANNUAL20: 0.2, // 20% off for annual plans
+      STARTUP50: 0.5, // 50% off for startups
     };
 
     const discount = discounts[discountCode.toUpperCase()];
@@ -368,4 +379,4 @@ export class BillingService {
   }
 }
 
-export default BillingService; 
+export default BillingService;

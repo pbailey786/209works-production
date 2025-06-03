@@ -29,7 +29,7 @@ export default async function OnboardingPage() {
       companyName: true,
       industry: true,
       createdAt: true,
-    }
+    },
   });
 
   if (!user) {

@@ -86,7 +86,6 @@ export async function GET(request: NextRequest) {
       data: transformedAds,
       count: transformedAds.length,
     });
-
   } catch (error) {
     console.error('Error fetching ads for display:', error);
     return NextResponse.json(
@@ -111,14 +110,14 @@ function selectAdsWithRotation(ads: any[], limit: number): any[] {
     const bidAmount = ad.bidding?.bidAmount || 0;
     const impressions = ad.impressions || 0;
     const clicks = ad.clicks || 0;
-    
+
     // Calculate CTR (click-through rate)
     const ctr = impressions > 0 ? clicks / impressions : 0;
-    
+
     // Weight formula: bid amount * (1 + CTR) / (1 + impressions/1000)
     // This favors higher bids, better performing ads, and gives newer ads a chance
     const weight = (bidAmount * (1 + ctr)) / (1 + impressions / 1000);
-    
+
     return {
       ...ad,
       weight: Math.max(weight, 0.1), // Minimum weight to ensure all ads have a chance
@@ -127,19 +126,22 @@ function selectAdsWithRotation(ads: any[], limit: number): any[] {
 
   // Sort by weight (descending) and take top ads
   adsWithWeights.sort((a, b) => b.weight - a.weight);
-  
+
   // Add some randomization to prevent the same ads always showing
-  const topAds = adsWithWeights.slice(0, Math.min(limit * 2, adsWithWeights.length));
-  
+  const topAds = adsWithWeights.slice(
+    0,
+    Math.min(limit * 2, adsWithWeights.length)
+  );
+
   // Randomly select from top performing ads
   const selectedAds = [];
   const availableAds = [...topAds];
-  
+
   for (let i = 0; i < limit && availableAds.length > 0; i++) {
     // Weighted random selection
     const totalWeight = availableAds.reduce((sum, ad) => sum + ad.weight, 0);
     let random = Math.random() * totalWeight;
-    
+
     let selectedIndex = 0;
     for (let j = 0; j < availableAds.length; j++) {
       random -= availableAds[j].weight;
@@ -148,10 +150,10 @@ function selectAdsWithRotation(ads: any[], limit: number): any[] {
         break;
       }
     }
-    
+
     selectedAds.push(availableAds[selectedIndex]);
     availableAds.splice(selectedIndex, 1);
   }
-  
+
   return selectedAds;
-} 
+}

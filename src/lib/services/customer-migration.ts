@@ -32,15 +32,15 @@ export class CustomerMigrationService {
    */
   private static readonly TIER_MIGRATION_MAP: Record<string, PricingTier> = {
     // Map old tiers to current valid tiers
-    'starter': 'starter',
-    'professional': 'professional',
-    'enterprise': 'enterprise',
-    'premium': 'premium',
-    
+    starter: 'starter',
+    professional: 'professional',
+    enterprise: 'enterprise',
+    premium: 'premium',
+
     // Legacy tiers that may exist in old data
-    'basic': 'starter',
-    'essential': 'starter', 
-    'professional_jobseeker': 'premium',
+    basic: 'starter',
+    essential: 'starter',
+    professional_jobseeker: 'premium',
   };
 
   private static readonly PRICING_TIER_MAPPING: Record<PricingTier, number> = {
@@ -60,12 +60,12 @@ export class CustomerMigrationService {
     const users = await prisma.user.findMany({
       where: {
         subscriptions: {
-          status: 'active'
-        }
+          status: 'active',
+        },
       },
       include: {
-        subscriptions: true
-      }
+        subscriptions: true,
+      },
     });
 
     const migrationPlans: MigrationPlan[] = [];
@@ -75,7 +75,7 @@ export class CustomerMigrationService {
       starter: 0,
       professional: 0,
       enterprise: 0,
-      premium: 0
+      premium: 0,
     };
 
     let currentMonthlyRevenue = 0;
@@ -84,7 +84,7 @@ export class CustomerMigrationService {
     for (const user of users) {
       const plan = await this.createMigrationPlan(user);
       migrationPlans.push(plan);
-      
+
       tierDistribution[plan.newTier]++;
       currentMonthlyRevenue += plan.currentPrice;
       projectedMonthlyRevenue += plan.newPrice;
@@ -94,16 +94,19 @@ export class CustomerMigrationService {
       currentMonthlyRevenue,
       projectedMonthlyRevenue,
       difference: projectedMonthlyRevenue - currentMonthlyRevenue,
-      percentageChange: currentMonthlyRevenue > 0 
-        ? ((projectedMonthlyRevenue - currentMonthlyRevenue) / currentMonthlyRevenue) * 100 
-        : 0
+      percentageChange:
+        currentMonthlyRevenue > 0
+          ? ((projectedMonthlyRevenue - currentMonthlyRevenue) /
+              currentMonthlyRevenue) *
+            100
+          : 0,
     };
 
     return {
       totalUsers: users.length,
       migrationPlans,
       tierDistribution,
-      revenueImpact
+      revenueImpact,
     };
   }
 
@@ -113,10 +116,10 @@ export class CustomerMigrationService {
   private static async createMigrationPlan(user: any): Promise<MigrationPlan> {
     const currentTier = user.currentTier;
     const activeSubscription = user.subscriptions;
-    
+
     // Determine new tier based on mapping
     const newTier = this.TIER_MIGRATION_MAP[currentTier] || 'starter';
-    
+
     // Calculate current and new pricing
     const currentPrice = activeSubscription?.price || 0;
     const newPrice = PRICING_CONFIG[newTier].price;
@@ -153,7 +156,7 @@ export class CustomerMigrationService {
       priceDifference,
       migrationReason,
       grandfatheredUntil,
-      notes
+      notes,
     };
   }
 
@@ -161,16 +164,16 @@ export class CustomerMigrationService {
    * Execute migration for a specific user
    */
   static async migrateUser(userId: string, plan: MigrationPlan): Promise<void> {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       // Update user's current tier
       await tx.user.update({
         where: { id: userId },
-        data: { currentTier: plan.newTier }
+        data: { currentTier: plan.newTier },
       });
 
       // Update or create new subscription
       const activeSubscription = await tx.subscription.findFirst({
-        where: { userId, status: 'active' }
+        where: { userId, status: 'active' },
       });
 
       if (activeSubscription) {
@@ -179,14 +182,14 @@ export class CustomerMigrationService {
           data: {
             tier: plan.newTier,
             price: plan.newPrice,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         });
       } else {
         // Create new subscription for users who didn't have one
         const user = await tx.user.findUnique({
           where: { id: userId },
-          select: { email: true }
+          select: { email: true },
         });
 
         if (!user) {
@@ -201,8 +204,8 @@ export class CustomerMigrationService {
             price: plan.newPrice,
             billingCycle: 'monthly',
             status: 'active',
-            startDate: new Date()
-          }
+            startDate: new Date(),
+          },
         });
       }
 
@@ -210,8 +213,8 @@ export class CustomerMigrationService {
       await tx.user.update({
         where: { id: userId },
         data: {
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       });
     });
   }
@@ -219,7 +222,11 @@ export class CustomerMigrationService {
   /**
    * Execute migration for all users
    */
-  static async executeFullMigration(): Promise<{ success: number; failed: number; errors: string[] }> {
+  static async executeFullMigration(): Promise<{
+    success: number;
+    failed: number;
+    errors: string[];
+  }> {
     const stats = await this.analyzeCustomerMigration();
     const results = { success: 0, failed: 0, errors: [] as string[] };
 
@@ -242,7 +249,7 @@ export class CustomerMigrationService {
    */
   static async generateMigrationReport(): Promise<string> {
     const stats = await this.analyzeCustomerMigration();
-    
+
     const report = `
 # Customer Migration Report - Pricing Schema Simplification
 
@@ -259,7 +266,9 @@ export class CustomerMigrationService {
 - **Premium (Job Seekers)**: ${stats.tierDistribution.premium} users
 
 ## Migration Strategies
-${stats.migrationPlans.map(plan => `
+${stats.migrationPlans
+  .map(
+    plan => `
 ### User ${plan.userId}
 - **Current**: ${plan.currentTier} ($${plan.currentPrice}/month)
 - **New**: ${plan.newTier} ($${plan.newPrice}/month)
@@ -267,7 +276,9 @@ ${stats.migrationPlans.map(plan => `
 - **Reason**: ${plan.migrationReason}
 - **Notes**: ${plan.notes}
 ${plan.grandfatheredUntil ? `- **Grandfathered Until**: ${plan.grandfatheredUntil.toLocaleDateString()}` : ''}
-`).join('\n')}
+`
+  )
+  .join('\n')}
 
 ## Recommendations
 1. **Communication**: Send personalized emails to affected customers explaining the changes
@@ -289,7 +300,10 @@ ${plan.grandfatheredUntil ? `- **Grandfathered Until**: ${plan.grandfatheredUnti
   /**
    * Send migration notification to a user
    */
-  static async sendMigrationNotification(userId: string, plan: MigrationPlan): Promise<void> {
+  static async sendMigrationNotification(
+    userId: string,
+    plan: MigrationPlan
+  ): Promise<void> {
     // In a real implementation, this would send an email
     // For now, we'll log the notification
     console.log(`Migration notification for user ${userId}:`, {
@@ -297,7 +311,7 @@ ${plan.grandfatheredUntil ? `- **Grandfathered Until**: ${plan.grandfatheredUnti
       newTier: plan.newTier,
       priceChange: plan.priceDifference,
       grandfathered: !!plan.grandfatheredUntil,
-      notes: plan.notes
+      notes: plan.notes,
     });
 
     // TODO: Integrate with email service to send actual notifications
@@ -317,16 +331,18 @@ ${plan.grandfatheredUntil ? `- **Grandfathered Until**: ${plan.grandfatheredUnti
     const totalUsers = await prisma.user.count({
       where: {
         subscriptions: {
-          status: 'active'
-        }
-      }
+          status: 'active',
+        },
+      },
     });
 
     const migratedUsers = await prisma.user.count({
       where: {
-        currentTier: { in: ['starter', 'professional', 'enterprise', 'premium'] },
-        updatedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // Updated in last 7 days
-      }
+        currentTier: {
+          in: ['starter', 'professional', 'enterprise', 'premium'],
+        },
+        updatedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }, // Updated in last 7 days
+      },
     });
 
     const pending = totalUsers - migratedUsers;
@@ -337,9 +353,10 @@ ${plan.grandfatheredUntil ? `- **Grandfathered Until**: ${plan.grandfatheredUnti
       migrated: migratedUsers,
       pending,
       failed,
-      completionPercentage: totalUsers > 0 ? (migratedUsers / totalUsers) * 100 : 0
+      completionPercentage:
+        totalUsers > 0 ? (migratedUsers / totalUsers) * 100 : 0,
     };
   }
 }
 
-export default CustomerMigrationService; 
+export default CustomerMigrationService;

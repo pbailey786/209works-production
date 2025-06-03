@@ -6,7 +6,7 @@ import { prisma } from '@/lib/database/prisma';
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession();
-    
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Get user with Stripe customer ID
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { stripeCustomerId: true }
+      select: { stripeCustomerId: true },
     });
 
     if (!user?.stripeCustomerId) {
@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       url: portalSession.url,
     });
-
   } catch (error) {
     console.error('Error creating portal session:', error);
     return NextResponse.json(
@@ -47,4 +46,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -15,12 +15,9 @@ const upsellSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session || session.user.role !== 'employer') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -52,13 +49,15 @@ export async function POST(request: NextRequest) {
 
     // In a real implementation, you would process payment here
     // For now, we'll simulate successful payment processing
-    
+
     // Update the job with upsell features
     const updatedJob = await prisma.job.update({
       where: { id: validatedData.jobId },
       data: {
-        socialMediaShoutout: validatedData.socialMediaShoutout || validatedData.upsellBundle,
-        placementBump: validatedData.placementBump || validatedData.upsellBundle,
+        socialMediaShoutout:
+          validatedData.socialMediaShoutout || validatedData.upsellBundle,
+        placementBump:
+          validatedData.placementBump || validatedData.upsellBundle,
         upsellBundle: validatedData.upsellBundle,
       },
     });
@@ -80,10 +79,9 @@ export async function POST(request: NextRequest) {
       job: updatedJob,
       totalCost,
     });
-
   } catch (error) {
     console.error('Error processing upsells:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
@@ -124,7 +122,7 @@ async function updateJobPriority(jobId: string) {
     // In a real implementation, this would update some priority scoring system
     // For now, we'll just log it
     console.log(`Updated priority for job: ${jobId}`);
-    
+
     // You could also update a priority field or create a separate priority table
     // await prisma.job.update({
     //   where: { id: jobId },
@@ -153,27 +151,26 @@ Apply now on 209Works.com!
 function generateHashtags(job: any): string[] {
   const baseHashtags = ['209Jobs', '209Works', 'Hiring', 'LocalJobs'];
   const locationTag = job.location.replace(/\s+/g, '').replace(/,/g, '');
-  const companyTag = job.company.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
-  
+  const companyTag = job.company
+    .replace(/\s+/g, '')
+    .replace(/[^a-zA-Z0-9]/g, '');
+
   return [
     ...baseHashtags,
     locationTag,
     companyTag,
     'JobAlert',
     'NowHiring',
-    'CareerOpportunity'
+    'CareerOpportunity',
   ];
 }
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session || session.user.role !== 'employer') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -212,7 +209,6 @@ export async function GET(request: NextRequest) {
       success: true,
       job,
     });
-
   } catch (error) {
     console.error('Error fetching upsell status:', error);
     return NextResponse.json(

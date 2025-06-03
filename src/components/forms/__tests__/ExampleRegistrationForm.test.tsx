@@ -5,7 +5,7 @@ import { ExampleRegistrationForm } from '../ExampleRegistrationForm';
 
 // Mock react-hook-form
 const mockUseForm = {
-  handleSubmit: jest.fn((onSubmit) => async (e: React.FormEvent) => {
+  handleSubmit: jest.fn(onSubmit => async (e: React.FormEvent) => {
     if (e && e.preventDefault) {
       e.preventDefault();
     }
@@ -63,66 +63,88 @@ jest.mock('@/components/ui/button', () => ({
 
 jest.mock('@/components/ui/form', () => ({
   Form: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormControl: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  FormControl: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  FormDescription: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   FormField: ({ render, name }: { render: Function; name: string }) => {
-    const [fieldValue, setFieldValue] = React.useState(name === 'acceptTerms' ? false : '');
-    
-    const field = { 
+    const [fieldValue, setFieldValue] = React.useState(
+      name === 'acceptTerms' ? false : ''
+    );
+
+    const field = {
       onChange: (value: any) => {
         if (name === 'acceptTerms') {
           setFieldValue(value);
         } else {
           setFieldValue(value.target ? value.target.value : value);
         }
-      }, 
-      onBlur: jest.fn(), 
-      value: fieldValue, 
-      name: name || 'test' 
+      },
+      onBlur: jest.fn(),
+      value: fieldValue,
+      name: name || 'test',
     };
-    
+
     return render({ field });
   },
-  FormItem: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormLabel: ({ children }: { children: React.ReactNode }) => <label>{children}</label>,
-  FormMessage: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  FormItem: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  FormLabel: ({ children }: { children: React.ReactNode }) => (
+    <label>{children}</label>
+  ),
+  FormMessage: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 jest.mock('@/components/ui/checkbox', () => ({
   Checkbox: ({ checked, onChange, ...props }: any) => {
     const [isChecked, setIsChecked] = React.useState(checked || false);
-    
+
     const handleChange = (e: any) => {
       setIsChecked(e.target.checked);
       if (onChange) onChange(e.target.checked);
     };
-    
+
     return (
-      <input 
-        type="checkbox" 
-        aria-labelledby="terms-label" 
+      <input
+        type="checkbox"
+        aria-labelledby="terms-label"
         checked={isChecked}
         onChange={handleChange}
-        {...props} 
+        {...props}
       />
     );
   },
 }));
 
 jest.mock('@/components/ui/form-input', () => ({
-  FormInput: ({ label, placeholder, required, error, value, onChange, ...props }: any) => {
+  FormInput: ({
+    label,
+    placeholder,
+    required,
+    error,
+    value,
+    onChange,
+    ...props
+  }: any) => {
     const fieldId = `input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
     const [inputValue, setInputValue] = React.useState(value || '');
-    
+
     const handleChange = (e: any) => {
       setInputValue(e.target.value);
       if (onChange) onChange(e);
     };
-    
+
     return (
       <div>
-        <label htmlFor={fieldId}>{label} {required && '*'}</label>
-        <input 
+        <label htmlFor={fieldId}>
+          {label} {required && '*'}
+        </label>
+        <input
           id={fieldId}
           placeholder={placeholder}
           aria-invalid={!!error}
@@ -131,23 +153,37 @@ jest.mock('@/components/ui/form-input', () => ({
           onChange={handleChange}
           {...props}
         />
-        {error && <div role="alert" className="error-message">{error}</div>}
+        {error && (
+          <div role="alert" className="error-message">
+            {error}
+          </div>
+        )}
       </div>
     );
   },
-  PasswordInput: ({ label, placeholder, required, error, value, onChange, ...props }: any) => {
+  PasswordInput: ({
+    label,
+    placeholder,
+    required,
+    error,
+    value,
+    onChange,
+    ...props
+  }: any) => {
     const fieldId = `input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
     const [inputValue, setInputValue] = React.useState(value || '');
-    
+
     const handleChange = (e: any) => {
       setInputValue(e.target.value);
       if (onChange) onChange(e);
     };
-    
+
     return (
       <div>
-        <label htmlFor={fieldId}>{label} {required && '*'}</label>
-        <input 
+        <label htmlFor={fieldId}>
+          {label} {required && '*'}
+        </label>
+        <input
           id={fieldId}
           type="password"
           placeholder={placeholder}
@@ -157,7 +193,11 @@ jest.mock('@/components/ui/form-input', () => ({
           onChange={handleChange}
           {...props}
         />
-        {error && <div role="alert" className="error-message">{error}</div>}
+        {error && (
+          <div role="alert" className="error-message">
+            {error}
+          </div>
+        )}
       </div>
     );
   },
@@ -166,24 +206,28 @@ jest.mock('@/components/ui/form-input', () => ({
     return (
       <div>
         <label htmlFor={fieldId}>{label}</label>
-        <textarea 
+        <textarea
           id={fieldId}
           placeholder={placeholder}
           aria-invalid={!!error}
           data-testid={fieldId}
           {...props}
         />
-        {error && <div role="alert" className="error-message">{error}</div>}
+        {error && (
+          <div role="alert" className="error-message">
+            {error}
+          </div>
+        )}
       </div>
     );
   },
   FileInput: ({ label, error, onChange, ...props }: any) => {
     const fieldId = `file-input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
-    
+
     return (
       <div>
         <label htmlFor={fieldId}>{label}</label>
-        <input 
+        <input
           id={fieldId}
           type="file"
           aria-invalid={!!error}
@@ -191,7 +235,11 @@ jest.mock('@/components/ui/form-input', () => ({
           onChange={onChange || jest.fn()}
           {...props}
         />
-        {error && <div role="alert" className="error-message">{error}</div>}
+        {error && (
+          <div role="alert" className="error-message">
+            {error}
+          </div>
+        )}
       </div>
     );
   },
@@ -206,7 +254,9 @@ jest.mock('@/components/ErrorBoundary', () => ({
 // Mock Lucide icons
 jest.mock('lucide-react', () => ({
   Loader2: ({ className }: { className?: string }) => (
-    <div className={className} data-testid="loader-icon">Loading...</div>
+    <div className={className} data-testid="loader-icon">
+      Loading...
+    </div>
   ),
 }));
 
@@ -220,8 +270,10 @@ describe('ExampleRegistrationForm', () => {
       render(<ExampleRegistrationForm />);
 
       expect(screen.getByText('Create Your Account')).toBeInTheDocument();
-      expect(screen.getByText('Join our platform to find your dream job')).toBeInTheDocument();
-      
+      expect(
+        screen.getByText('Join our platform to find your dream job')
+      ).toBeInTheDocument();
+
       // Check for form fields
       expect(screen.getByTestId('input-first-name')).toBeInTheDocument();
       expect(screen.getByTestId('input-last-name')).toBeInTheDocument();
@@ -236,21 +288,25 @@ describe('ExampleRegistrationForm', () => {
       expect(screen.getByTestId('input-phone-number')).toBeInTheDocument();
       expect(screen.getByTestId('input-linkedin-profile')).toBeInTheDocument();
       expect(screen.getByTestId('input-personal-website')).toBeInTheDocument();
-      expect(screen.getByTestId('textarea-professional-bio')).toBeInTheDocument();
+      expect(
+        screen.getByTestId('textarea-professional-bio')
+      ).toBeInTheDocument();
       expect(screen.getByTestId('file-input-resume')).toBeInTheDocument();
     });
 
     it('renders submit button', () => {
       render(<ExampleRegistrationForm />);
 
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
       expect(submitButton).toBeInTheDocument();
       expect(submitButton).toHaveAttribute('type', 'submit');
     });
 
     it('wraps form in error boundary', () => {
       render(<ExampleRegistrationForm />);
-      
+
       expect(screen.getByTestId('form-error-boundary')).toBeInTheDocument();
     });
   });
@@ -269,7 +325,9 @@ describe('ExampleRegistrationForm', () => {
         },
       };
 
-      require('react-hook-form').useForm = jest.fn().mockReturnValue(mockFormWithErrors);
+      require('react-hook-form').useForm = jest
+        .fn()
+        .mockReturnValue(mockFormWithErrors);
 
       render(<ExampleRegistrationForm />);
 
@@ -287,7 +345,9 @@ describe('ExampleRegistrationForm', () => {
         },
       };
 
-      require('react-hook-form').useForm = jest.fn().mockReturnValue(mockFormValidating);
+      require('react-hook-form').useForm = jest
+        .fn()
+        .mockReturnValue(mockFormValidating);
 
       render(<ExampleRegistrationForm />);
 
@@ -312,13 +372,15 @@ describe('ExampleRegistrationForm', () => {
       const user = userEvent.setup();
       render(<ExampleRegistrationForm />);
 
-      const file = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+      const file = new File(['resume content'], 'resume.pdf', {
+        type: 'application/pdf',
+      });
       const fileInput = screen.getByTestId('file-input-resume');
-      
+
       // Check that the file input exists and can accept files
       expect(fileInput).toBeInTheDocument();
       expect(fileInput).toHaveAttribute('type', 'file');
-      
+
       // Note: Due to JSDOM limitations, we can't actually test file upload behavior
       // but we can verify the input is properly configured
       expect(fileInput).toHaveAttribute('data-testid', 'file-input-resume');
@@ -340,14 +402,15 @@ describe('ExampleRegistrationForm', () => {
     let mockHandleFormSubmission: jest.Mock;
 
     beforeEach(() => {
-      mockHandleFormSubmission = require('@/lib/validations/form-utils').handleFormSubmission;
+      mockHandleFormSubmission =
+        require('@/lib/validations/form-utils').handleFormSubmission;
       mockHandleFormSubmission.mockClear();
-      
+
       // Mock the form as valid so submission can proceed
       mockUseForm.formState.isValid = true;
-      
+
       // Reset the handleSubmit mock to ensure it calls the onSubmit function
-      mockUseForm.handleSubmit.mockImplementation((onSubmit) => async (e) => {
+      mockUseForm.handleSubmit.mockImplementation(onSubmit => async e => {
         if (e && e.preventDefault) {
           e.preventDefault();
         }
@@ -371,7 +434,9 @@ describe('ExampleRegistrationForm', () => {
       const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
 
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
       await user.click(submitButton);
 
       expect(mockUseForm.handleSubmit).toHaveBeenCalled();
@@ -381,18 +446,22 @@ describe('ExampleRegistrationForm', () => {
       const user = userEvent.setup();
       render(<ExampleRegistrationForm />);
 
-      const submitButton = screen.getByRole('button', { name: /create account/i });
-      
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
+
       // The button should be disabled initially because form is not valid
       expect(submitButton).toBeDisabled();
     });
 
     it('handles successful submission', async () => {
       // Mock successful handleFormSubmission that calls onSuccess callback
-      mockHandleFormSubmission.mockImplementation(async (submitFn, { onSuccess }) => {
-        onSuccess({ success: true, userId: '123' });
-        return Promise.resolve();
-      });
+      mockHandleFormSubmission.mockImplementation(
+        async (submitFn, { onSuccess }) => {
+          onSuccess({ success: true, userId: '123' });
+          return Promise.resolve();
+        }
+      );
 
       const user = userEvent.setup();
       render(<ExampleRegistrationForm />);
@@ -413,18 +482,20 @@ describe('ExampleRegistrationForm', () => {
 
       expect(mockHandleFormSubmission).toHaveBeenCalled();
       expect(mockToast).toHaveBeenCalledWith({
-        title: "Success!",
-        description: "Your account has been created successfully.",
-        variant: "default",
+        title: 'Success!',
+        description: 'Your account has been created successfully.',
+        variant: 'default',
       });
       expect(mockUseForm.reset).toHaveBeenCalled();
     });
 
     it('handles submission errors', async () => {
-      mockHandleFormSubmission.mockImplementation(async (submitFn, { onError }) => {
-        onError([{ field: 'email', message: 'Email already exists' }]);
-        return Promise.resolve();
-      });
+      mockHandleFormSubmission.mockImplementation(
+        async (submitFn, { onError }) => {
+          onError([{ field: 'email', message: 'Email already exists' }]);
+          return Promise.resolve();
+        }
+      );
 
       const user = userEvent.setup();
       render(<ExampleRegistrationForm />);
@@ -451,10 +522,12 @@ describe('ExampleRegistrationForm', () => {
     });
 
     it('handles general submission errors with toast', async () => {
-      mockHandleFormSubmission.mockImplementation(async (submitFn, { onError }) => {
-        onError([{ field: 'general', message: 'Something went wrong' }]);
-        return Promise.resolve();
-      });
+      mockHandleFormSubmission.mockImplementation(
+        async (submitFn, { onError }) => {
+          onError([{ field: 'general', message: 'Something went wrong' }]);
+          return Promise.resolve();
+        }
+      );
 
       const user = userEvent.setup();
       render(<ExampleRegistrationForm />);
@@ -475,9 +548,9 @@ describe('ExampleRegistrationForm', () => {
 
       expect(mockHandleFormSubmission).toHaveBeenCalled();
       expect(mockToast).toHaveBeenCalledWith({
-        title: "Registration Failed",
-        description: "Something went wrong",
-        variant: "destructive",
+        title: 'Registration Failed',
+        description: 'Something went wrong',
+        variant: 'destructive',
       });
     });
   });
@@ -495,7 +568,10 @@ describe('ExampleRegistrationForm', () => {
       await user.type(emailInput, 'test@example.com');
 
       // Should call setValue and debounced validation
-      expect(mockUseForm.setValue).toHaveBeenCalledWith('email', expect.any(String));
+      expect(mockUseForm.setValue).toHaveBeenCalledWith(
+        'email',
+        expect.any(String)
+      );
     });
   });
 
@@ -509,11 +585,17 @@ describe('ExampleRegistrationForm', () => {
 
       const { unmount } = render(<ExampleRegistrationForm />);
 
-      expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function)
+      );
     });
 
     it('does not prevent unload when form is clean', () => {
@@ -567,7 +649,9 @@ describe('ExampleRegistrationForm', () => {
         },
       };
 
-      require('react-hook-form').useForm = jest.fn().mockReturnValue(mockFormWithErrors);
+      require('react-hook-form').useForm = jest
+        .fn()
+        .mockReturnValue(mockFormWithErrors);
 
       render(<ExampleRegistrationForm />);
 
@@ -586,7 +670,9 @@ describe('ExampleRegistrationForm', () => {
         },
       };
 
-      require('react-hook-form').useForm = jest.fn().mockReturnValue(mockFormWithErrors);
+      require('react-hook-form').useForm = jest
+        .fn()
+        .mockReturnValue(mockFormWithErrors);
 
       render(<ExampleRegistrationForm />);
 
@@ -594,4 +680,4 @@ describe('ExampleRegistrationForm', () => {
       expect(firstNameInput).toHaveAttribute('aria-invalid', 'true');
     });
   });
-}); 
+});

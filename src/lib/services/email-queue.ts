@@ -1,6 +1,10 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
 import IORedis from 'ioredis';
-import { sendEmail, validateEmailAddress, EMAIL_SECURITY_CONFIG } from '@/lib/email';
+import {
+  sendEmail,
+  validateEmailAddress,
+  EMAIL_SECURITY_CONFIG,
+} from '@/lib/email';
 import { emailSecurityValidator } from '@/lib/email/security';
 import { SecurityLogger } from '@/lib/security/security-monitor';
 import { prisma } from '../../app/api/auth/prisma';
@@ -10,7 +14,12 @@ import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
 // Email job types
 export interface EmailJobData {
   id: string;
-  type: 'job_alert' | 'weekly_digest' | 'password_reset' | 'verification' | 'generic';
+  type:
+    | 'job_alert'
+    | 'weekly_digest'
+    | 'password_reset'
+    | 'verification'
+    | 'generic';
   to: string;
   subject: string;
   template: string;
@@ -84,8 +93,9 @@ export class EmailQueueService {
 
   private constructor() {
     // Initialize Redis connection
-    const redisUrl = process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
-    
+    const redisUrl =
+      process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
+
     if (redisUrl) {
       this.redis = new IORedis(redisUrl, {
         maxRetriesPerRequest: 3,
@@ -154,7 +164,6 @@ export class EmailQueueService {
 
       this.isInitialized = true;
       console.log('[EMAIL-QUEUE] Email queue system initialized successfully');
-
     } catch (error) {
       console.error('[EMAIL-QUEUE] Failed to initialize:', error);
       throw error;
@@ -179,7 +188,9 @@ export class EmailQueueService {
     // Security validation before adding to queue
     const emailValidation = validateEmailAddress(jobData.to);
     if (!emailValidation.isValid) {
-      const error = new Error(`Invalid email address: ${emailValidation.errors.join(', ')}`);
+      const error = new Error(
+        `Invalid email address: ${emailValidation.errors.join(', ')}`
+      );
       SecurityLogger.suspiciousRequest(
         'queue-system',
         'Invalid email in queue job',
@@ -190,9 +201,13 @@ export class EmailQueueService {
     }
 
     // Validate subject
-    const subjectValidation = emailSecurityValidator.validateSubject(jobData.subject);
+    const subjectValidation = emailSecurityValidator.validateSubject(
+      jobData.subject
+    );
     if (!subjectValidation.isValid) {
-      const error = new Error(`Invalid email subject: ${subjectValidation.errors.join(', ')}`);
+      const error = new Error(
+        `Invalid email subject: ${subjectValidation.errors.join(', ')}`
+      );
       SecurityLogger.suspiciousRequest(
         'queue-system',
         'Invalid email subject in queue job',
@@ -204,10 +219,16 @@ export class EmailQueueService {
 
     // Rate limiting check for queue additions
     const rateLimitKey = jobData.userId || jobData.to;
-    const rateLimitCheck = emailSecurityValidator.checkRateLimit(`queue_${rateLimitKey}`);
+    const rateLimitCheck = emailSecurityValidator.checkRateLimit(
+      `queue_${rateLimitKey}`
+    );
     if (!rateLimitCheck.allowed) {
       const error = new Error('Rate limit exceeded for email queue additions');
-      SecurityLogger.rateLimitExceeded('queue-system', 'email-queue-add', jobData.userId);
+      SecurityLogger.rateLimitExceeded(
+        'queue-system',
+        'email-queue-add',
+        jobData.userId
+      );
       throw error;
     }
 
@@ -225,10 +246,16 @@ export class EmailQueueService {
     };
 
     const job = await this.queue.add('send-email', emailJobData, jobOptions);
-    
-    console.log(`[EMAIL-QUEUE] Added secure email job ${emailJobData.id} for ${emailJobData.to}`);
-    SecurityLogger.loginSuccess(jobData.userId || 'system', 'queue-system', `Email job added: ${jobData.subject}`);
-    
+
+    console.log(
+      `[EMAIL-QUEUE] Added secure email job ${emailJobData.id} for ${emailJobData.to}`
+    );
+    SecurityLogger.loginSuccess(
+      jobData.userId || 'system',
+      'queue-system',
+      `Email job added: ${jobData.subject}`
+    );
+
     return job;
   }
 
@@ -277,13 +304,20 @@ export class EmailQueueService {
     const startTime = Date.now();
 
     try {
-      console.log(`[EMAIL-QUEUE] Processing email job ${data.id} for ${data.to}`);
+      console.log(
+        `[EMAIL-QUEUE] Processing email job ${data.id} for ${data.to}`
+      );
 
       // Check if user has unsubscribed (for marketing emails)
       if (['job_alert', 'weekly_digest'].includes(data.type)) {
-        const isUnsubscribed = await this.checkIfUserUnsubscribed(data.to, data.type);
+        const isUnsubscribed = await this.checkIfUserUnsubscribed(
+          data.to,
+          data.type
+        );
         if (isUnsubscribed) {
-          console.log(`[EMAIL-QUEUE] Skipping email ${data.id} - user unsubscribed`);
+          console.log(
+            `[EMAIL-QUEUE] Skipping email ${data.id} - user unsubscribed`
+          );
           return;
         }
       }
@@ -309,21 +343,31 @@ export class EmailQueueService {
       });
 
       // Log email
-      await this.logEmail(data, result.success ? { data: result.data } : { error: new Error(result.error || 'Unknown error') }, startTime);
+      await this.logEmail(
+        data,
+        result.success
+          ? { data: result.data }
+          : { error: new Error(result.error || 'Unknown error') },
+        startTime
+      );
 
       if (!result.success) {
         const errorMessage = result.error || 'Unknown error occurred';
         throw new Error(errorMessage);
       }
 
-      console.log(`[EMAIL-QUEUE] Successfully sent email ${data.id} in ${Date.now() - startTime}ms`);
-
+      console.log(
+        `[EMAIL-QUEUE] Successfully sent email ${data.id} in ${Date.now() - startTime}ms`
+      );
     } catch (error) {
-      console.error(`[EMAIL-QUEUE] Failed to process email job ${data.id}:`, error);
-      
+      console.error(
+        `[EMAIL-QUEUE] Failed to process email job ${data.id}:`,
+        error
+      );
+
       // Log failed email
       await this.logEmail(data, { error: error as Error }, startTime);
-      
+
       throw error; // Re-throw to trigger retry mechanism
     }
   }
@@ -331,14 +375,16 @@ export class EmailQueueService {
   /**
    * Generate email content based on template
    */
-  private async generateEmailContent(data: EmailJobData): Promise<React.ReactElement> {
+  private async generateEmailContent(
+    data: EmailJobData
+  ): Promise<React.ReactElement> {
     switch (data.template) {
       case 'job-alert':
         return JobAlertEmail(data.data as JobAlertEmailProps);
-      
+
       case 'weekly-digest':
         return WeeklyDigestEmail(data.data as WeeklyDigestEmailProps);
-      
+
       // Add more templates as needed
       default:
         throw new Error(`Unknown email template: ${data.template}`);
@@ -348,14 +394,20 @@ export class EmailQueueService {
   /**
    * Check if user has unsubscribed
    */
-  private async checkIfUserUnsubscribed(email: string, emailType: string): Promise<boolean> {
+  private async checkIfUserUnsubscribed(
+    email: string,
+    emailType: string
+  ): Promise<boolean> {
     try {
       const unsubscribe = await prisma.emailUnsubscribe.findUnique({
         where: { email },
       });
 
       if (!unsubscribe) return false;
-      return unsubscribe.unsubscribeAll || unsubscribe.unsubscribeFrom.includes(emailType);
+      return (
+        unsubscribe.unsubscribeAll ||
+        unsubscribe.unsubscribeFrom.includes(emailType)
+      );
     } catch (error) {
       console.error('[EMAIL-QUEUE] Error checking unsubscribe status:', error);
       return false; // Default to not unsubscribed if check fails
@@ -381,15 +433,17 @@ export class EmailQueueService {
           status: result.error ? 'failed' : 'sent',
           statusMessage: result.error?.message,
           resendId: result.data?.id,
-          sentAt: result.error ? null : (() => {
-          try {
-            const now = new Date();
-            return isNaN(now.getTime()) ? null : now;
-          } catch (error) {
-            console.error('Error creating sentAt timestamp:', error);
-            return null;
-          }
-        })(),
+          sentAt: result.error
+            ? null
+            : (() => {
+                try {
+                  const now = new Date();
+                  return isNaN(now.getTime()) ? null : now;
+                } catch (error) {
+                  console.error('Error creating sentAt timestamp:', error);
+                  return null;
+                }
+              })(),
           // processingTime: Date.now() - startTime, // Field not yet in schema
           metadata: {
             jobId: data.id,
@@ -429,7 +483,10 @@ export class EmailQueueService {
     });
 
     this.worker.on('failed', (job: Job | undefined, err: Error) => {
-      console.error(`[EMAIL-QUEUE] Job ${job?.id || 'unknown'} failed:`, err.message);
+      console.error(
+        `[EMAIL-QUEUE] Job ${job?.id || 'unknown'} failed:`,
+        err.message
+      );
     });
 
     this.worker.on('stalled', (jobId: string) => {
@@ -531,7 +588,7 @@ export class EmailQueueService {
       }
       await this.queue.close();
       await this.redis.quit();
-      
+
       this.isInitialized = false;
       console.log('[EMAIL-QUEUE] Email queue system closed gracefully');
     } catch (error) {
@@ -551,39 +608,46 @@ export class EmailQueueService {
     priority: 'low' | 'normal' | 'high' | 'critical' = 'normal'
   ): Promise<Job<EmailJobData>> {
     const topJob = jobs[0];
-    
+
     const emailData = {
       userName,
       jobTitle: topJob.title,
       companyName: topJob.company,
       location: topJob.location,
-      salary: topJob.salaryMin && topJob.salaryMax 
-        ? (() => {
-            try {
-              const minSalary = typeof topJob.salaryMin === 'number' && isFinite(topJob.salaryMin) 
-                ? topJob.salaryMin.toLocaleString() 
-                : '0';
-              const maxSalary = typeof topJob.salaryMax === 'number' && isFinite(topJob.salaryMax) 
-                ? topJob.salaryMax.toLocaleString() 
-                : '0';
-              return `$${minSalary} - $${maxSalary}`;
-            } catch (error) {
-              console.error('Error formatting salary range:', error);
-              return 'Salary not specified';
-            }
-          })()
-        : 'Salary not specified',
+      salary:
+        topJob.salaryMin && topJob.salaryMax
+          ? (() => {
+              try {
+                const minSalary =
+                  typeof topJob.salaryMin === 'number' &&
+                  isFinite(topJob.salaryMin)
+                    ? topJob.salaryMin.toLocaleString()
+                    : '0';
+                const maxSalary =
+                  typeof topJob.salaryMax === 'number' &&
+                  isFinite(topJob.salaryMax)
+                    ? topJob.salaryMax.toLocaleString()
+                    : '0';
+                return `$${minSalary} - $${maxSalary}`;
+              } catch (error) {
+                console.error('Error formatting salary range:', error);
+                return 'Salary not specified';
+              }
+            })()
+          : 'Salary not specified',
       jobType: topJob.type || 'Full-time',
-      description: topJob.snippet || topJob.description?.substring(0, 200) + '...' || '',
+      description:
+        topJob.snippet || topJob.description?.substring(0, 200) + '...' || '',
       jobUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${topJob.id}`,
       unsubscribeUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/email-alerts/unsubscribe?email=${encodeURIComponent(userEmail)}&type=job_alert`,
       additionalJobsCount: jobs.length - 1,
       totalMatchingJobs: jobs.length,
     };
 
-    const subject = jobs.length === 1 
-      ? `🎯 New Job Alert: ${topJob.title} at ${topJob.company}`
-      : `🎯 ${jobs.length} New Job Matches: ${topJob.title} and more`;
+    const subject =
+      jobs.length === 1
+        ? `🎯 New Job Alert: ${topJob.title} at ${topJob.company}`
+        : `🎯 ${jobs.length} New Job Matches: ${topJob.title} and more`;
 
     return this.addEmailJob({
       type: 'job_alert',
@@ -619,9 +683,10 @@ export class EmailQueueService {
       manageAlertsUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/profile/alerts`,
     };
 
-    const subject = jobs.length > 0
-      ? `📊 Your Weekly Job Digest: ${jobs.length} New Jobs in ${location || '209 Area'}`
-      : `📊 Your Weekly Job Digest: Stay Updated in ${location || '209 Area'}`;
+    const subject =
+      jobs.length > 0
+        ? `📊 Your Weekly Job Digest: ${jobs.length} New Jobs in ${location || '209 Area'}`
+        : `📊 Your Weekly Job Digest: Stay Updated in ${location || '209 Area'}`;
 
     return this.addEmailJob({
       type: 'weekly_digest',
@@ -640,4 +705,4 @@ export class EmailQueueService {
 }
 
 // Export singleton instance
-export const emailQueue = EmailQueueService.getInstance(); 
+export const emailQueue = EmailQueueService.getInstance();

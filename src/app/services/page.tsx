@@ -1,19 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { 
-  Search, 
-  Building, 
-  MapPin, 
-  Sparkles, 
-  Users, 
+import {
+  Search,
+  Building,
+  MapPin,
+  Sparkles,
+  Users,
   TrendingUp,
   Briefcase,
   Bell,
   BarChart3,
   Target,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -26,44 +26,47 @@ const services = [
     services: [
       {
         name: 'AI-Powered Job Search',
-        description: 'Use our ChatGPT-style search to find jobs using natural language. Just describe what you want!',
+        description:
+          'Use our ChatGPT-style search to find jobs using natural language. Just describe what you want!',
         features: [
           'Conversational job search interface',
           'Natural language understanding',
           'Personalized job recommendations',
-          'Local market insights'
+          'Local market insights',
         ],
         cta: 'Search Jobs Now',
         href: '/jobs',
-        icon: Sparkles
+        icon: Sparkles,
       },
       {
         name: 'Job Alerts & Notifications',
-        description: 'Get notified instantly when new jobs matching your criteria are posted in the Central Valley.',
+        description:
+          'Get notified instantly when new jobs matching your criteria are posted in the Central Valley.',
         features: [
           'Real-time email notifications',
           'Custom search criteria',
           'Daily/weekly digest options',
-          'Mobile push notifications'
+          'Mobile push notifications',
         ],
         cta: 'Set Up Alerts',
         href: '/alerts',
-        icon: Bell
+        icon: Bell,
       },
       {
         name: 'Local Market Intelligence',
-        description: 'Access detailed information about Central Valley employers, salary ranges, and career opportunities.',
+        description:
+          'Access detailed information about Central Valley employers, salary ranges, and career opportunities.',
         features: [
           'Company profiles and insights',
           'Salary comparison tools',
           'Industry trend analysis',
-          'Commute vs. local job guidance'
+          'Commute vs. local job guidance',
         ],
         cta: 'Explore Market Data',
         href: '/jobs',
-        icon: BarChart3
-      }
-    ]
+        icon: BarChart3,
+      },
+    ],
   },
   {
     category: 'For Employers',
@@ -72,44 +75,47 @@ const services = [
     services: [
       {
         name: 'Job Posting & Management',
-        description: 'Post jobs and manage applications with our easy-to-use employer dashboard.',
+        description:
+          'Post jobs and manage applications with our easy-to-use employer dashboard.',
         features: [
           'AI-enhanced job descriptions',
           'Applicant tracking system',
           'Bulk job posting options',
-          'Performance analytics'
+          'Performance analytics',
         ],
         cta: 'Post a Job',
         href: '/employers/create-job-post',
-        icon: Briefcase
+        icon: Briefcase,
       },
       {
         name: 'Local Talent Pipeline',
-        description: 'Connect with qualified Central Valley workers who understand the local market.',
+        description:
+          'Connect with qualified Central Valley workers who understand the local market.',
         features: [
           'Local candidate database',
           'Skills-based matching',
           'Cultural fit assessment',
-          'Retention insights'
+          'Retention insights',
         ],
         cta: 'Find Talent',
         href: '/employers/signup',
-        icon: Target
+        icon: Target,
       },
       {
         name: 'Hiring Analytics',
-        description: 'Get insights into your hiring performance and local market trends.',
+        description:
+          'Get insights into your hiring performance and local market trends.',
         features: [
           'Application tracking metrics',
           'Time-to-hire analysis',
           'Salary benchmarking',
-          'Competitor insights'
+          'Competitor insights',
         ],
         cta: 'View Analytics',
         href: '/employers/dashboard',
-        icon: TrendingUp
-      }
-    ]
+        icon: TrendingUp,
+      },
+    ],
   },
   {
     category: 'For Local Businesses',
@@ -118,86 +124,92 @@ const services = [
     services: [
       {
         name: 'Local Business Advertising',
-        description: 'Promote your Central Valley business to local job seekers and community members.',
+        description:
+          'Promote your Central Valley business to local job seekers and community members.',
         features: [
           'Targeted local advertising',
           'Business profile listings',
           'Community event promotion',
-          'Local SEO optimization'
+          'Local SEO optimization',
         ],
         cta: 'Advertise Your Business',
         href: '/contact',
-        icon: Building
+        icon: Building,
       },
       {
         name: 'Community Partnerships',
-        description: 'Partner with 209 Works to support local workforce development and economic growth.',
+        description:
+          'Partner with 209 Works to support local workforce development and economic growth.',
         features: [
           'Workforce development programs',
           'Community event sponsorship',
           'Local hiring initiatives',
-          'Economic development support'
+          'Economic development support',
         ],
         cta: 'Partner With Us',
         href: '/contact',
-        icon: Users
-      }
-    ]
-  }
+        icon: Users,
+      },
+    ],
+  },
 ];
 
 const benefits = [
   {
     icon: Sparkles,
     title: 'AI-Powered Technology',
-    description: 'Our ChatGPT-style search understands natural language, making job hunting as easy as having a conversation.'
+    description:
+      'Our ChatGPT-style search understands natural language, making job hunting as easy as having a conversation.',
   },
   {
     icon: MapPin,
     title: 'Hyperlocal Focus',
-    description: 'Exclusively serving the Central Valley (209 area code) with deep local market knowledge and connections.'
+    description:
+      'Exclusively serving the Central Valley (209 area code) with deep local market knowledge and connections.',
   },
   {
     icon: TrendingUp,
     title: 'Real Results',
-    description: 'Connecting thousands of Central Valley workers with local employers who understand the community.'
+    description:
+      'Connecting thousands of Central Valley workers with local employers who understand the community.',
   },
   {
     icon: CheckCircle,
     title: 'Community First',
-    description: 'Built by locals, for locals. We understand the unique needs of Central Valley workers and employers.'
-  }
+    description:
+      'Built by locals, for locals. We understand the unique needs of Central Valley workers and employers.',
+  },
 ];
 
 const stats = [
   { number: '50,000+', label: 'Active Job Listings' },
   { number: '25,000+', label: 'Registered Job Seekers' },
   { number: '1,200+', label: 'Local Employers' },
-  { number: '95%', label: 'User Satisfaction' }
+  { number: '95%', label: 'User Satisfaction' },
 ];
 
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#2d4a3e] via-[#1d3a2e] to-[#2d4a3e] text-white overflow-hidden">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#2d4a3e] via-[#1d3a2e] to-[#2d4a3e] text-white">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-[#9fdf9f] rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#ff6b35] rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-96 h-96 bg-[#9fdf9f] rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+          <div className="animate-blob absolute left-0 top-0 h-96 w-96 rounded-full bg-[#9fdf9f] mix-blend-multiply blur-xl filter"></div>
+          <div className="animate-blob animation-delay-2000 absolute right-0 top-0 h-96 w-96 rounded-full bg-[#ff6b35] mix-blend-multiply blur-xl filter"></div>
+          <div className="animate-blob animation-delay-4000 absolute -bottom-8 left-20 h-96 w-96 rounded-full bg-[#9fdf9f] mix-blend-multiply blur-xl filter"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 py-24">
+        <div className="relative mx-auto max-w-7xl px-4 py-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-white to-[#9fdf9f] bg-clip-text text-transparent">
+            <h1 className="mb-6 bg-gradient-to-r from-white to-[#9fdf9f] bg-clip-text text-5xl font-extrabold text-transparent md:text-7xl">
               Our Services
             </h1>
-            <p className="text-xl md:text-2xl text-[#9fdf9f]/80 max-w-3xl mx-auto leading-relaxed">
+            <p className="mx-auto max-w-3xl text-xl leading-relaxed text-[#9fdf9f]/80 md:text-2xl">
               Connecting Central Valley workers and employers through innovative
               AI-powered job matching and local business solutions.
             </p>
@@ -206,9 +218,9 @@ export default function ServicesPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -217,12 +229,10 @@ export default function ServicesPage() {
                 transition={{ delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                <div className="mb-2 text-3xl font-bold text-gray-900 md:text-4xl">
                   {stat.number}
                 </div>
-                <div className="text-gray-600 font-medium">
-                  {stat.label}
-                </div>
+                <div className="font-medium text-gray-600">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -230,7 +240,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Sections */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="mx-auto max-w-7xl px-4 py-16">
         {services.map((category, categoryIndex) => {
           const CategoryIcon = category.icon;
           return (
@@ -242,17 +252,19 @@ export default function ServicesPage() {
               className="mb-20"
             >
               {/* Category Header */}
-              <div className="text-center mb-12">
-                <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${category.color} rounded-full mb-6`}>
-                  <CategoryIcon className="w-8 h-8 text-white" />
+              <div className="mb-12 text-center">
+                <div
+                  className={`inline-flex h-16 w-16 items-center justify-center bg-gradient-to-r ${category.color} mb-6 rounded-full`}
+                >
+                  <CategoryIcon className="h-8 w-8 text-white" />
                 </div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                <h2 className="mb-4 text-4xl font-bold text-gray-900">
                   {category.category}
                 </h2>
               </div>
 
               {/* Services Grid */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {category.services.map((service, serviceIndex) => {
                   const ServiceIcon = service.icon;
                   return (
@@ -261,33 +273,40 @@ export default function ServicesPage() {
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: serviceIndex * 0.1 }}
-                      className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200 hover:shadow-lg transition-shadow duration-300"
+                      className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-shadow duration-300 hover:shadow-lg"
                     >
-                      <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r ${category.color} rounded-xl mb-6`}>
-                        <ServiceIcon className="w-6 h-6 text-white" />
+                      <div
+                        className={`inline-flex h-12 w-12 items-center justify-center bg-gradient-to-r ${category.color} mb-6 rounded-xl`}
+                      >
+                        <ServiceIcon className="h-6 w-6 text-white" />
                       </div>
-                      
-                      <h3 className="text-xl font-bold text-gray-900 mb-4">
+
+                      <h3 className="mb-4 text-xl font-bold text-gray-900">
                         {service.name}
                       </h3>
-                      
-                      <p className="text-gray-600 mb-6 leading-relaxed">
+
+                      <p className="mb-6 leading-relaxed text-gray-600">
                         {service.description}
                       </p>
-                      
-                      <ul className="space-y-2 mb-8">
+
+                      <ul className="mb-8 space-y-2">
                         {service.features.map((feature, featureIndex) => (
-                          <li key={featureIndex} className="flex items-center text-gray-700">
-                            <CheckCircle className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
+                          <li
+                            key={featureIndex}
+                            className="flex items-center text-gray-700"
+                          >
+                            <CheckCircle className="mr-3 h-4 w-4 flex-shrink-0 text-green-500" />
                             {feature}
                           </li>
                         ))}
                       </ul>
-                      
+
                       <Link href={service.href}>
-                        <Button className={`w-full bg-gradient-to-r ${category.color} hover:opacity-90 transition-opacity`}>
+                        <Button
+                          className={`w-full bg-gradient-to-r ${category.color} transition-opacity hover:opacity-90`}
+                        >
                           {service.cta}
-                          <ArrowRight className="w-4 h-4 ml-2" />
+                          <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
                       </Link>
                     </motion.div>
@@ -300,23 +319,24 @@ export default function ServicesPage() {
       </div>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-7xl px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
+            className="mb-16 text-center"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
               Why Choose 209 Works?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We're not just another job board. We're the Central Valley's dedicated
-              employment platform, built specifically for our local community.
+            <p className="mx-auto max-w-3xl text-xl text-gray-600">
+              We're not just another job board. We're the Central Valley's
+              dedicated employment platform, built specifically for our local
+              community.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
               return (
@@ -327,13 +347,13 @@ export default function ServicesPage() {
                   transition={{ delay: index * 0.1 }}
                   className="text-center"
                 >
-                  <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] rounded-full mx-auto mb-6">
-                    <Icon className="w-8 h-8 text-[#9fdf9f]" />
+                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e]">
+                    <Icon className="h-8 w-8 text-[#9fdf9f]" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  <h3 className="mb-4 text-xl font-bold text-gray-900">
                     {benefit.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="leading-relaxed text-gray-600">
                     {benefit.description}
                   </p>
                 </motion.div>
@@ -344,32 +364,44 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
+      <section className="bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] py-20 text-white">
+        <div className="mx-auto max-w-4xl px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="mb-6 text-4xl font-bold md:text-5xl">
               Ready to Get Started?
             </h2>
-            <p className="text-xl text-[#9fdf9f]/80 mb-8 leading-relaxed">
-              Whether you're looking for your next opportunity or searching for talent,
-              209 Works has the tools and local expertise to help you succeed.
+            <p className="mb-8 text-xl leading-relaxed text-[#9fdf9f]/80">
+              Whether you're looking for your next opportunity or searching for
+              talent, 209 Works has the tools and local expertise to help you
+              succeed.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Link href="/jobs">
-                <Button size="lg" className="bg-[#ff6b35] hover:bg-[#e55a2b] text-white font-semibold px-8 py-4">
+                <Button
+                  size="lg"
+                  className="bg-[#ff6b35] px-8 py-4 font-semibold text-white hover:bg-[#e55a2b]"
+                >
                   Find Jobs
                 </Button>
               </Link>
               <Link href="/employers/signup">
-                <Button size="lg" variant="outline" className="border-[#9fdf9f] text-[#9fdf9f] hover:bg-[#9fdf9f] hover:text-[#2d4a3e] font-semibold px-8 py-4">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-[#9fdf9f] px-8 py-4 font-semibold text-[#9fdf9f] hover:bg-[#9fdf9f] hover:text-[#2d4a3e]"
+                >
                   Post Jobs
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button size="lg" variant="outline" className="border-[#9fdf9f] text-[#9fdf9f] hover:bg-[#9fdf9f] hover:text-[#2d4a3e] font-semibold px-8 py-4">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-[#9fdf9f] px-8 py-4 font-semibold text-[#9fdf9f] hover:bg-[#9fdf9f] hover:text-[#2d4a3e]"
+                >
                   Advertise Business
                 </Button>
               </Link>
@@ -379,4 +411,4 @@ export default function ServicesPage() {
       </section>
     </div>
   );
-} 
+}

@@ -1,7 +1,7 @@
 /**
  * Admin API: Database Performance Monitoring
  * Task 45.13: Database Performance Optimization
- * 
+ *
  * This endpoint provides database performance metrics for monitoring
  * slow queries, index usage, and overall database health
  */
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin role
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
@@ -34,11 +34,7 @@ export async function GET(request: NextRequest) {
     const metrics = await OptimizedJobSearchService.getPerformanceMetrics();
 
     // Get additional database statistics
-    const [
-      tableStats,
-      connectionStats,
-      cacheStats,
-    ] = await Promise.all([
+    const [tableStats, connectionStats, cacheStats] = await Promise.all([
       // Table size and row count statistics
       prisma.$queryRaw`
         SELECT 
@@ -56,7 +52,7 @@ export async function GET(request: NextRequest) {
         ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
         LIMIT 10
       `,
-      
+
       // Database connection statistics
       prisma.$queryRaw`
         SELECT 
@@ -91,22 +87,29 @@ export async function GET(request: NextRequest) {
           queries: metrics.slowQueries.slice(0, 5), // Top 5 slowest
         },
         indexUsage: {
-          unusedCount: metrics.indexUsage.filter(idx => idx.usage_status === 'UNUSED').length,
-          lowUsageCount: metrics.indexUsage.filter(idx => idx.usage_status === 'LOW_USAGE').length,
+          unusedCount: metrics.indexUsage.filter(
+            idx => idx.usage_status === 'UNUSED'
+          ).length,
+          lowUsageCount: metrics.indexUsage.filter(
+            idx => idx.usage_status === 'LOW_USAGE'
+          ).length,
           indexes: metrics.indexUsage.slice(0, 10),
         },
         tableStats: tableStats as any[],
         connectionStats: (connectionStats as any[])[0],
         cacheStats: (cacheStats as any[])[0],
       },
-      recommendations: generateRecommendations(metrics, tableStats as any[], (cacheStats as any[])[0]),
+      recommendations: generateRecommendations(
+        metrics,
+        tableStats as any[],
+        (cacheStats as any[])[0]
+      ),
     };
 
     return NextResponse.json(response);
-
   } catch (error) {
     console.error('Error fetching database performance metrics:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
@@ -137,10 +140,15 @@ function generateRecommendations(
   }
 
   // Index usage recommendations
-  const unusedIndexes = metrics.indexUsage.filter(idx => idx.usage_status === 'UNUSED');
+  const unusedIndexes = metrics.indexUsage.filter(
+    idx => idx.usage_status === 'UNUSED'
+  );
   if (unusedIndexes.length > 0) {
     recommendations.push(
-      `Found ${unusedIndexes.length} unused indexes. Consider dropping: ${unusedIndexes.slice(0, 3).map(idx => idx.indexname).join(', ')}`
+      `Found ${unusedIndexes.length} unused indexes. Consider dropping: ${unusedIndexes
+        .slice(0, 3)
+        .map(idx => idx.indexname)
+        .join(', ')}`
     );
   }
 
@@ -152,19 +160,26 @@ function generateRecommendations(
   }
 
   // Large table recommendations
-  const largeTables = tableStats.filter(table => 
-    table.size && (table.size.includes('GB') || 
-    (table.size.includes('MB') && parseInt(table.size) > 100))
+  const largeTables = tableStats.filter(
+    table =>
+      table.size &&
+      (table.size.includes('GB') ||
+        (table.size.includes('MB') && parseInt(table.size) > 100))
   );
   if (largeTables.length > 0) {
     recommendations.push(
-      `Large tables detected: ${largeTables.slice(0, 2).map(t => t.tablename).join(', ')}. Consider partitioning or archiving old data.`
+      `Large tables detected: ${largeTables
+        .slice(0, 2)
+        .map(t => t.tablename)
+        .join(', ')}. Consider partitioning or archiving old data.`
     );
   }
 
   // Default recommendation if no issues found
   if (recommendations.length === 0) {
-    recommendations.push('Database performance looks good! Continue monitoring regularly.');
+    recommendations.push(
+      'Database performance looks good! Continue monitoring regularly.'
+    );
   }
 
   return recommendations;
@@ -174,7 +189,7 @@ function generateRecommendations(
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
@@ -184,16 +199,15 @@ export async function POST(request: NextRequest) {
 
     // Refresh statistics and then return metrics
     await prisma.$executeRaw`ANALYZE`;
-    
+
     // Wait a moment for statistics to update
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     // Return updated metrics
     return GET(request);
-
   } catch (error) {
     console.error('Error refreshing database statistics:', error);
-    
+
     return NextResponse.json(
       {
         success: false,
@@ -203,4 +217,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

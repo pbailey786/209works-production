@@ -1,4 +1,4 @@
-"use server"
+'use server';
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -6,19 +6,19 @@ import { prisma } from '@/lib/database/prisma';
 import { ActionResult } from './auth';
 
 // Import validation schemas from existing files
-import { 
-  createAlertSchema, 
-  updateAlertSchema, 
+import {
+  createAlertSchema,
+  updateAlertSchema,
   testAlertSchema,
-  AlertCriteria 
+  AlertCriteria,
 } from '@/lib/validations/alerts';
 
 // Import enhanced job matching algorithm
-import { 
+import {
   EnhancedJobMatchingService,
   findMatchingJobs as enhancedFindMatchingJobs,
   calculateMatchQuality as enhancedCalculateMatchQuality,
-  generateOptimizationRecommendations as enhancedGenerateOptimizationRecommendations
+  generateOptimizationRecommendations as enhancedGenerateOptimizationRecommendations,
 } from '@/lib/search/job-matching';
 
 // Create job alert action
@@ -48,7 +48,7 @@ export async function createAlertAction(
     });
 
     const maxAlerts = user?.role === 'admin' ? 100 : 20;
-    
+
     if (alertCount >= maxAlerts) {
       return {
         success: false,
@@ -59,12 +59,21 @@ export async function createAlertAction(
     // Extract and validate form data
     const rawData = {
       title: formData.get('name') as string,
-      description: formData.get('description') as string || undefined,
+      description: (formData.get('description') as string) || undefined,
       keywords: JSON.parse(formData.get('criteria') as string).keywords || [],
-      location: JSON.parse(formData.get('criteria') as string).location || undefined,
-      jobType: JSON.parse(formData.get('criteria') as string).jobType as "contract" | "internship" | "temporary" | "full_time" | "part_time" | undefined,
-      salaryMin: JSON.parse(formData.get('criteria') as string).salaryMin || undefined,
-      salaryMax: JSON.parse(formData.get('criteria') as string).salaryMax || undefined,
+      location:
+        JSON.parse(formData.get('criteria') as string).location || undefined,
+      jobType: JSON.parse(formData.get('criteria') as string).jobType as
+        | 'contract'
+        | 'internship'
+        | 'temporary'
+        | 'full_time'
+        | 'part_time'
+        | undefined,
+      salaryMin:
+        JSON.parse(formData.get('criteria') as string).salaryMin || undefined,
+      salaryMax:
+        JSON.parse(formData.get('criteria') as string).salaryMax || undefined,
       frequency: formData.get('frequency') as any,
       isActive: formData.get('isActive') === 'true',
     };
@@ -100,7 +109,9 @@ export async function createAlertAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -154,20 +165,27 @@ export async function updateAlertAction(
     // Extract and validate form data
     const rawData = {
       id: alertId,
-      name: formData.get('name') as string || undefined,
-      description: formData.get('description') as string || undefined,
-      criteria: formData.get('criteria') ? JSON.parse(formData.get('criteria') as string) : undefined,
-      frequency: formData.get('frequency') as any || undefined,
-      isActive: formData.get('isActive') !== null ? formData.get('isActive') === 'true' : undefined,
-      maxResults: formData.get('maxResults') ? Number(formData.get('maxResults')) : undefined,
+      name: (formData.get('name') as string) || undefined,
+      description: (formData.get('description') as string) || undefined,
+      criteria: formData.get('criteria')
+        ? JSON.parse(formData.get('criteria') as string)
+        : undefined,
+      frequency: (formData.get('frequency') as any) || undefined,
+      isActive:
+        formData.get('isActive') !== null
+          ? formData.get('isActive') === 'true'
+          : undefined,
+      maxResults: formData.get('maxResults')
+        ? Number(formData.get('maxResults'))
+        : undefined,
     };
 
     const validatedData = updateAlertSchema.parse(rawData);
 
     // Remove undefined values and id
     const updateData = Object.fromEntries(
-      Object.entries(validatedData).filter(([key, value]) => 
-        value !== undefined && key !== 'id'
+      Object.entries(validatedData).filter(
+        ([key, value]) => value !== undefined && key !== 'id'
       )
     );
 
@@ -194,7 +212,9 @@ export async function updateAlertAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -336,19 +356,28 @@ export async function testAlertAction(
     const alertCriteria: AlertCriteria = {
       keywords: alert.keywords,
       location: alert.location || undefined,
-      jobType: alert.jobType as "contract" | "internship" | "temporary" | "full_time" | "part_time" | undefined,
+      jobType: alert.jobType as
+        | 'contract'
+        | 'internship'
+        | 'temporary'
+        | 'full_time'
+        | 'part_time'
+        | undefined,
       salaryMin: alert.salaryMin || undefined,
       salaryMax: alert.salaryMax || undefined,
     };
-    
+
     const matchingJobs = await enhancedFindMatchingJobs(alertCriteria, 10);
 
     // Calculate match quality using enhanced algorithm
-    const matchQuality = enhancedCalculateMatchQuality(alertCriteria, matchingJobs);
+    const matchQuality = enhancedCalculateMatchQuality(
+      alertCriteria,
+      matchingJobs
+    );
 
     // Generate recommendations using enhanced algorithm
     const recommendations = enhancedGenerateOptimizationRecommendations(
-      alertCriteria, 
+      alertCriteria,
       matchingJobs
     );
 
@@ -383,7 +412,9 @@ export async function testAlertAction(
         success: false,
         message: 'Please check your input',
         errors: Object.fromEntries(
-          Object.entries(error.flatten().fieldErrors).filter(([_, value]) => value !== undefined)
+          Object.entries(error.flatten().fieldErrors).filter(
+            ([_, value]) => value !== undefined
+          )
         ) as Record<string, string[]>,
       };
     }
@@ -477,7 +508,7 @@ export async function bulkAlertOperationAction(
 // Generate notification preview
 function generateNotificationPreview(alert: any, jobs: any[]): any {
   const topJobs = jobs.slice(0, 3);
-  
+
   return {
     subject: `${jobs.length} new job${jobs.length !== 1 ? 's' : ''} matching "${alert.title}"`,
     preview: `Found ${jobs.length} new opportunities including ${topJobs.map(job => job.title).join(', ')}`,
@@ -488,12 +519,16 @@ function generateNotificationPreview(alert: any, jobs: any[]): any {
         title: job.title,
         company: job.company,
         location: job.location,
-        salary: job.salaryMin && job.salaryMax 
-          ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
-          : 'Salary not specified',
+        salary:
+          job.salaryMin && job.salaryMax
+            ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
+            : 'Salary not specified',
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`,
       })),
-      footerText: jobs.length > 3 ? `View all ${jobs.length} matches on 209jobs` : undefined,
+      footerText:
+        jobs.length > 3
+          ? `View all ${jobs.length} matches on 209jobs`
+          : undefined,
     },
   };
-} 
+}

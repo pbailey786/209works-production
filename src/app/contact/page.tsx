@@ -2,18 +2,18 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  MessageCircle, 
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  MessageCircle,
   Send,
   CheckCircle,
   AlertCircle,
   Users,
   Building,
-  Headphones
+  Headphones,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -23,10 +23,12 @@ export default function ContactPage() {
     email: '',
     subject: '',
     category: '',
-    message: ''
+    message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
 
   const contactMethods = [
     {
@@ -35,7 +37,7 @@ export default function ContactPage() {
       description: 'Get help via email',
       contact: 'support@209.works',
       response: '24-48 hours',
-      color: 'blue'
+      color: 'blue',
     },
     {
       icon: MessageCircle,
@@ -43,7 +45,7 @@ export default function ContactPage() {
       description: 'Chat with our team',
       contact: 'Available on website',
       response: 'Instant during business hours',
-      color: 'green'
+      color: 'green',
     },
     {
       icon: Phone,
@@ -51,8 +53,8 @@ export default function ContactPage() {
       description: 'Speak with our team',
       contact: '(209) 555-WORK',
       response: 'Mon-Fri 9AM-6PM PST',
-      color: 'purple'
-    }
+      color: 'purple',
+    },
   ];
 
   const supportCategories = [
@@ -63,13 +65,13 @@ export default function ContactPage() {
     'Billing Questions',
     'Feature Request',
     'Partnership Inquiry',
-    'Media/Press'
+    'Media/Press',
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -81,7 +83,13 @@ export default function ContactPage() {
 
       if (response.ok) {
         setSubmitStatus('success');
-        setFormData({ name: '', email: '', subject: '', category: '', message: '' });
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          category: '',
+          message: '',
+        });
       } else {
         setSubmitStatus('error');
       }
@@ -92,43 +100,52 @@ export default function ContactPage() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <section className="bg-gradient-to-br from-[#2d4a3e] via-[#1d3a2e] to-[#2d4a3e] text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-br from-[#2d4a3e] via-[#1d3a2e] to-[#2d4a3e] py-20 text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="mb-6 text-4xl font-bold md:text-6xl">
               Get in Touch
             </h1>
-            <p className="text-xl md:text-2xl text-[#9fdf9f]/80 max-w-3xl mx-auto">
-              Have questions or need support? We're here to help you succeed in the Central Valley job market.
+            <p className="mx-auto max-w-3xl text-xl text-[#9fdf9f]/80 md:text-2xl">
+              Have questions or need support? We're here to help you succeed in
+              the Central Valley job market.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Contact Methods */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">How Can We Help?</h2>
-            <p className="text-lg text-gray-600">Choose the best way to reach us</p>
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">
+              How Can We Help?
+            </h2>
+            <p className="text-lg text-gray-600">
+              Choose the best way to reach us
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {contactMethods.map((method, index) => {
               const Icon = method.icon;
               return (
@@ -137,19 +154,27 @@ export default function ContactPage() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 text-center hover:shadow-xl transition-shadow"
+                  className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-lg transition-shadow hover:shadow-xl"
                 >
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 ${
-                    method.color === 'blue' ? 'bg-[#2d4a3e]/10 text-[#2d4a3e]' :
-                    method.color === 'green' ? 'bg-[#9fdf9f]/20 text-[#2d4a3e]' :
-                    'bg-[#ff6b35]/10 text-[#ff6b35]'
-                  }`}>
-                    <Icon className="w-8 h-8" />
+                  <div
+                    className={`mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full ${
+                      method.color === 'blue'
+                        ? 'bg-[#2d4a3e]/10 text-[#2d4a3e]'
+                        : method.color === 'green'
+                          ? 'bg-[#9fdf9f]/20 text-[#2d4a3e]'
+                          : 'bg-[#ff6b35]/10 text-[#ff6b35]'
+                    }`}
+                  >
+                    <Icon className="h-8 w-8" />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{method.title}</h3>
-                  <p className="text-gray-600 mb-4">{method.description}</p>
+                  <h3 className="mb-2 text-xl font-semibold text-gray-900">
+                    {method.title}
+                  </h3>
+                  <p className="mb-4 text-gray-600">{method.description}</p>
                   <div className="space-y-2">
-                    <p className="font-medium text-gray-900">{method.contact}</p>
+                    <p className="font-medium text-gray-900">
+                      {method.contact}
+                    </p>
                     <p className="text-sm text-gray-500">{method.response}</p>
                   </div>
                 </motion.div>
@@ -160,22 +185,29 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Form */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Send Us a Message</h2>
-            <p className="text-lg text-gray-600">We'll get back to you within 24 hours</p>
+      <section className="bg-gray-50 py-16">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">
+              Send Us a Message
+            </h2>
+            <p className="text-lg text-gray-600">
+              We'll get back to you within 24 hours
+            </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="rounded-2xl bg-white p-8 shadow-xl">
             {submitStatus === 'success' && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center"
+                className="mb-8 flex items-center rounded-lg border border-green-200 bg-green-50 p-4"
               >
-                <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                <p className="text-green-800">Thank you! Your message has been sent successfully. We'll get back to you soon.</p>
+                <CheckCircle className="mr-3 h-5 w-5 text-green-600" />
+                <p className="text-green-800">
+                  Thank you! Your message has been sent successfully. We'll get
+                  back to you soon.
+                </p>
               </motion.div>
             )}
 
@@ -183,17 +215,23 @@ export default function ContactPage() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center"
+                className="mb-8 flex items-center rounded-lg border border-red-200 bg-red-50 p-4"
               >
-                <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
-                <p className="text-red-800">Sorry, there was an error sending your message. Please try again or contact us directly.</p>
+                <AlertCircle className="mr-3 h-5 w-5 text-red-600" />
+                <p className="text-red-800">
+                  Sorry, there was an error sending your message. Please try
+                  again or contact us directly.
+                </p>
               </motion.div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="name"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
                     Your Name *
                   </label>
                   <input
@@ -203,13 +241,16 @@ export default function ContactPage() {
                     required
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[#2d4a3e]"
                     placeholder="Enter your full name"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="email"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
                     Email Address *
                   </label>
                   <input
@@ -219,15 +260,18 @@ export default function ContactPage() {
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[#2d4a3e]"
                     placeholder="Enter your email address"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="category"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
                     Category *
                   </label>
                   <select
@@ -236,17 +280,22 @@ export default function ContactPage() {
                     required
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[#2d4a3e]"
                   >
                     <option value="">Select a category</option>
-                    {supportCategories.map((category) => (
-                      <option key={category} value={category}>{category}</option>
+                    {supportCategories.map(category => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="subject"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
                     Subject *
                   </label>
                   <input
@@ -256,14 +305,17 @@ export default function ContactPage() {
                     required
                     value={formData.subject}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[#2d4a3e]"
                     placeholder="Brief description of your inquiry"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="message"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
                   Message *
                 </label>
                 <textarea
@@ -273,7 +325,7 @@ export default function ContactPage() {
                   rows={6}
                   value={formData.message}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2d4a3e] focus:border-transparent"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-[#2d4a3e]"
                   placeholder="Please provide details about your inquiry..."
                 />
               </div>
@@ -281,16 +333,16 @@ export default function ContactPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-[#ff6b35] to-[#e55a2b] hover:from-[#e55a2b] hover:to-[#d14d1f] text-white py-3 px-6 rounded-lg font-medium text-lg transition-all duration-200 flex items-center justify-center"
+                className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#ff6b35] to-[#e55a2b] px-6 py-3 text-lg font-medium text-white transition-all duration-200 hover:from-[#e55a2b] hover:to-[#d14d1f]"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    <div className="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
                     Sending...
                   </>
                 ) : (
                   <>
-                    <Send className="w-5 h-5 mr-2" />
+                    <Send className="mr-2 h-5 w-5" />
                     Send Message
                   </>
                 )}
@@ -301,24 +353,32 @@ export default function ContactPage() {
       </section>
 
       {/* Office Information */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Office</h2>
-            <p className="text-lg text-gray-600">Located in the heart of the Central Valley</p>
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">
+              Our Office
+            </h2>
+            <p className="text-lg text-gray-600">
+              Located in the heart of the Central Valley
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             <div className="space-y-8">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
-                  <MapPin className="w-6 h-6 text-[#2d4a3e]" />
+                  <MapPin className="h-6 w-6 text-[#2d4a3e]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Address</h3>
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    Address
+                  </h3>
                   <p className="text-gray-600">
-                    209 Works by Voodoo Rodeo<br />
-                    Stockton, CA 95202<br />
+                    209 Works by Voodoo Rodeo
+                    <br />
+                    Stockton, CA 95202
+                    <br />
                     Central Valley, California
                   </p>
                 </div>
@@ -326,42 +386,51 @@ export default function ContactPage() {
 
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
-                  <Clock className="w-6 h-6 text-[#9fdf9f]" />
+                  <Clock className="h-6 w-6 text-[#9fdf9f]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Business Hours</h3>
-                  <div className="text-gray-600 space-y-1">
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    Business Hours
+                  </h3>
+                  <div className="space-y-1 text-gray-600">
                     <p>Monday - Friday: 9:00 AM - 6:00 PM PST</p>
                     <p>Saturday: 10:00 AM - 2:00 PM PST</p>
                     <p>Sunday: Closed</p>
-                    <p className="text-sm text-[#2d4a3e] mt-2">Emergency support available 24/7</p>
+                    <p className="mt-2 text-sm text-[#2d4a3e]">
+                      Emergency support available 24/7
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
-                  <Headphones className="w-6 h-6 text-[#ff6b35]" />
+                  <Headphones className="h-6 w-6 text-[#ff6b35]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Support Team</h3>
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    Support Team
+                  </h3>
                   <p className="text-gray-600">
-                    Our dedicated support team is here to help you succeed. 
-                    We understand the Central Valley job market and are committed 
+                    Our dedicated support team is here to help you succeed. We
+                    understand the Central Valley job market and are committed
                     to providing personalized assistance.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gray-100 rounded-2xl p-8 text-center">
-              <Building className="w-16 h-16 text-[#2d4a3e] mx-auto mb-6" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Visit Our Office</h3>
-              <p className="text-gray-600 mb-6">
-                Schedule a meeting to discuss partnerships, enterprise solutions,
-                or get hands-on help with your job search or hiring needs.
+            <div className="rounded-2xl bg-gray-100 p-8 text-center">
+              <Building className="mx-auto mb-6 h-16 w-16 text-[#2d4a3e]" />
+              <h3 className="mb-4 text-2xl font-bold text-gray-900">
+                Visit Our Office
+              </h3>
+              <p className="mb-6 text-gray-600">
+                Schedule a meeting to discuss partnerships, enterprise
+                solutions, or get hands-on help with your job search or hiring
+                needs.
               </p>
-              <Button className="bg-[#ff6b35] hover:bg-[#e55a2b] text-white px-6 py-3 rounded-lg">
+              <Button className="rounded-lg bg-[#ff6b35] px-6 py-3 text-white hover:bg-[#e55a2b]">
                 Schedule a Visit
               </Button>
             </div>
@@ -370,37 +439,62 @@ export default function ContactPage() {
       </section>
 
       {/* FAQ Quick Links */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Quick Help</h2>
-            <p className="text-lg text-gray-600">Find answers to common questions</p>
+      <section className="bg-gray-50 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900">
+              Quick Help
+            </h2>
+            <p className="text-lg text-gray-600">
+              Find answers to common questions
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <Users className="w-8 h-8 text-[#2d4a3e] mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">For Job Seekers</h3>
-              <p className="text-gray-600 text-sm mb-4">Get help with your profile, applications, and job search.</p>
-              <a href="/faq#job-seekers" className="text-[#2d4a3e] hover:text-[#1d3a2e] font-medium text-sm">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <Users className="mb-4 h-8 w-8 text-[#2d4a3e]" />
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                For Job Seekers
+              </h3>
+              <p className="mb-4 text-sm text-gray-600">
+                Get help with your profile, applications, and job search.
+              </p>
+              <a
+                href="/faq#job-seekers"
+                className="text-sm font-medium text-[#2d4a3e] hover:text-[#1d3a2e]"
+              >
                 View FAQ →
               </a>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <Building className="w-8 h-8 text-[#9fdf9f] mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">For Employers</h3>
-              <p className="text-gray-600 text-sm mb-4">Learn about posting jobs, managing candidates, and billing.</p>
-              <a href="/faq#employers" className="text-[#9fdf9f] hover:text-[#8fd08f] font-medium text-sm">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <Building className="mb-4 h-8 w-8 text-[#9fdf9f]" />
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                For Employers
+              </h3>
+              <p className="mb-4 text-sm text-gray-600">
+                Learn about posting jobs, managing candidates, and billing.
+              </p>
+              <a
+                href="/faq#employers"
+                className="text-sm font-medium text-[#9fdf9f] hover:text-[#8fd08f]"
+              >
                 View FAQ →
               </a>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <Headphones className="w-8 h-8 text-[#ff6b35] mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Technical Support</h3>
-              <p className="text-gray-600 text-sm mb-4">Troubleshoot technical issues and platform features.</p>
-              <a href="/faq#technical" className="text-[#ff6b35] hover:text-[#e55a2b] font-medium text-sm">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <Headphones className="mb-4 h-8 w-8 text-[#ff6b35]" />
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                Technical Support
+              </h3>
+              <p className="mb-4 text-sm text-gray-600">
+                Troubleshoot technical issues and platform features.
+              </p>
+              <a
+                href="/faq#technical"
+                className="text-sm font-medium text-[#ff6b35] hover:text-[#e55a2b]"
+              >
                 View FAQ →
               </a>
             </div>
@@ -409,4 +503,4 @@ export default function ContactPage() {
       </section>
     </div>
   );
-} 
+}

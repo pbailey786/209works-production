@@ -1,15 +1,22 @@
 import { PrismaClient } from '@prisma/client';
-import { createCachedFunction, CACHE_TAGS, CACHE_DURATIONS } from './cache-utils';
+import {
+  createCachedFunction,
+  CACHE_TAGS,
+  CACHE_DURATIONS,
+} from './cache-utils';
 
 // Optimized job queries with caching
 export const getCachedJobs = createCachedFunction(
-  async (prisma: PrismaClient, filters: {
-    query?: string;
-    location?: string;
-    type?: string;
-    page?: number;
-    limit?: number;
-  }) => {
+  async (
+    prisma: PrismaClient,
+    filters: {
+      query?: string;
+      location?: string;
+      type?: string;
+      page?: number;
+      limit?: number;
+    }
+  ) => {
     const { query, location, type, page = 1, limit = 20 } = filters;
     const skip = (page - 1) * limit;
 
@@ -17,16 +24,22 @@ export const getCachedJobs = createCachedFunction(
     const where: any = {
       AND: [
         { isActive: true },
-        ...(query ? [{
-          OR: [
-            { title: { contains: query, mode: 'insensitive' } },
-            { description: { contains: query, mode: 'insensitive' } },
-            { company: { contains: query, mode: 'insensitive' } },
-          ]
-        }] : []),
-        ...(location ? [{ location: { contains: location, mode: 'insensitive' } }] : []),
+        ...(query
+          ? [
+              {
+                OR: [
+                  { title: { contains: query, mode: 'insensitive' } },
+                  { description: { contains: query, mode: 'insensitive' } },
+                  { company: { contains: query, mode: 'insensitive' } },
+                ],
+              },
+            ]
+          : []),
+        ...(location
+          ? [{ location: { contains: location, mode: 'insensitive' } }]
+          : []),
         ...(type ? [{ type }] : []),
-      ]
+      ],
     };
 
     // Use parallel queries for better performance
@@ -35,10 +48,7 @@ export const getCachedJobs = createCachedFunction(
         where,
         skip,
         take: limit,
-        orderBy: [
-          { isPinned: 'desc' },
-          { createdAt: 'desc' }
-        ],
+        orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
         select: {
           id: true,
           title: true,
@@ -51,9 +61,9 @@ export const getCachedJobs = createCachedFunction(
           url: true,
           createdAt: true,
           updatedAt: true,
-        }
+        },
       }),
-      prisma.job.count({ where })
+      prisma.job.count({ where }),
     ]);
 
     return {
@@ -83,7 +93,7 @@ export const getCachedUserAlerts = createCachedFunction(
         isActive: true,
         createdAt: true,
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   },
   {
@@ -147,22 +157,22 @@ export class QueryPerformanceMonitor {
 
   static startQuery(queryId: string): () => void {
     const start = performance.now();
-    
+
     return () => {
       const duration = performance.now() - start;
-      
+
       if (!this.queryTimes.has(queryId)) {
         this.queryTimes.set(queryId, []);
       }
-      
+
       const times = this.queryTimes.get(queryId)!;
       times.push(duration);
-      
+
       // Keep only last 100 measurements
       if (times.length > 100) {
         times.shift();
       }
-      
+
       // Log slow queries
       if (duration > 1000) {
         console.warn(`Slow query: ${queryId} took ${duration.toFixed(2)}ms`);
@@ -177,7 +187,7 @@ export class QueryPerformanceMonitor {
     const avg = times.reduce((a, b) => a + b, 0) / times.length;
     const min = Math.min(...times);
     const max = Math.max(...times);
-    
+
     return {
       count: times.length,
       average: avg,
@@ -202,7 +212,9 @@ export class QueryPerformanceMonitor {
     duration: number;
     [key: string]: any;
   }): void {
-    console.warn(`Slow query detected: ${metrics.operation} took ${metrics.duration}ms`);
+    console.warn(
+      `Slow query detected: ${metrics.operation} took ${metrics.duration}ms`
+    );
     console.warn(`Query: ${metrics.query.slice(0, 100)}...`);
   }
 }
@@ -213,7 +225,7 @@ export async function batchUpdateJobViews(
   jobViews: { jobId: string; views: number }[]
 ) {
   const endQuery = QueryPerformanceMonitor.startQuery('batch-update-job-views');
-  
+
   try {
     // Use transaction for consistency
     await prisma.$transaction(
@@ -244,7 +256,7 @@ export async function performOptimizedJobSearch(
   }
 ) {
   const endQuery = QueryPerformanceMonitor.startQuery('optimized-job-search');
-  
+
   try {
     const {
       query,
@@ -254,7 +266,7 @@ export async function performOptimizedJobSearch(
       salaryMax,
       isRemote,
       page = 1,
-      limit = 20
+      limit = 20,
     } = searchParams;
 
     const skip = (page - 1) * limit;
@@ -284,7 +296,7 @@ export async function performOptimizedJobSearch(
         ...(salaryMax ? [salaryMax] : []),
         ...(isRemote !== undefined ? [isRemote] : []),
         limit,
-        skip
+        skip,
       ];
 
       const jobs = await prisma.$queryRawUnsafe(searchQuery, ...params);
@@ -296,4 +308,4 @@ export async function performOptimizedJobSearch(
   } finally {
     endQuery();
   }
-} 
+}

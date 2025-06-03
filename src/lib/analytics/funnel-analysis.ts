@@ -14,7 +14,12 @@ export interface FunnelStep {
   description: string;
   order: number;
   isRequired: boolean;
-  category: 'awareness' | 'interest' | 'consideration' | 'conversion' | 'retention';
+  category:
+    | 'awareness'
+    | 'interest'
+    | 'consideration'
+    | 'conversion'
+    | 'retention';
 }
 
 // Funnel Data Types
@@ -54,7 +59,11 @@ export interface DropOffPoint {
 
 export interface OptimizationRecommendation {
   id: string;
-  type: 'ui_improvement' | 'content_optimization' | 'technical_fix' | 'process_simplification';
+  type:
+    | 'ui_improvement'
+    | 'content_optimization'
+    | 'technical_fix'
+    | 'process_simplification';
   priority: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   description: string;
@@ -81,7 +90,7 @@ export const JOB_SEEKER_FUNNEL: FunnelStep[] = [
     description: 'User visits the job board homepage or landing page',
     order: 1,
     isRequired: true,
-    category: 'awareness'
+    category: 'awareness',
   },
   {
     id: 'search',
@@ -89,7 +98,7 @@ export const JOB_SEEKER_FUNNEL: FunnelStep[] = [
     description: 'User performs their first job search',
     order: 2,
     isRequired: true,
-    category: 'interest'
+    category: 'interest',
   },
   {
     id: 'job_view',
@@ -97,7 +106,7 @@ export const JOB_SEEKER_FUNNEL: FunnelStep[] = [
     description: 'User clicks on and views a job listing',
     order: 3,
     isRequired: true,
-    category: 'consideration'
+    category: 'consideration',
   },
   {
     id: 'registration',
@@ -105,7 +114,7 @@ export const JOB_SEEKER_FUNNEL: FunnelStep[] = [
     description: 'User creates an account',
     order: 4,
     isRequired: false,
-    category: 'consideration'
+    category: 'consideration',
   },
   {
     id: 'application_start',
@@ -113,7 +122,7 @@ export const JOB_SEEKER_FUNNEL: FunnelStep[] = [
     description: 'User begins job application process',
     order: 5,
     isRequired: true,
-    category: 'conversion'
+    category: 'conversion',
   },
   {
     id: 'application_complete',
@@ -121,7 +130,7 @@ export const JOB_SEEKER_FUNNEL: FunnelStep[] = [
     description: 'User successfully submits job application',
     order: 6,
     isRequired: true,
-    category: 'conversion'
+    category: 'conversion',
   },
   {
     id: 'profile_complete',
@@ -129,8 +138,8 @@ export const JOB_SEEKER_FUNNEL: FunnelStep[] = [
     description: 'User completes their profile with resume and details',
     order: 7,
     isRequired: false,
-    category: 'retention'
-  }
+    category: 'retention',
+  },
 ];
 
 export const EMPLOYER_FUNNEL: FunnelStep[] = [
@@ -140,7 +149,7 @@ export const EMPLOYER_FUNNEL: FunnelStep[] = [
     description: 'Employer visits employer-focused pages',
     order: 1,
     isRequired: true,
-    category: 'awareness'
+    category: 'awareness',
   },
   {
     id: 'pricing_view',
@@ -148,7 +157,7 @@ export const EMPLOYER_FUNNEL: FunnelStep[] = [
     description: 'Employer views pricing information',
     order: 2,
     isRequired: true,
-    category: 'interest'
+    category: 'interest',
   },
   {
     id: 'employer_registration',
@@ -156,7 +165,7 @@ export const EMPLOYER_FUNNEL: FunnelStep[] = [
     description: 'Employer creates an account',
     order: 3,
     isRequired: true,
-    category: 'consideration'
+    category: 'consideration',
   },
   {
     id: 'job_post_start',
@@ -164,7 +173,7 @@ export const EMPLOYER_FUNNEL: FunnelStep[] = [
     description: 'Employer begins creating a job posting',
     order: 4,
     isRequired: true,
-    category: 'conversion'
+    category: 'conversion',
   },
   {
     id: 'payment',
@@ -172,7 +181,7 @@ export const EMPLOYER_FUNNEL: FunnelStep[] = [
     description: 'Employer completes payment for job posting',
     order: 5,
     isRequired: true,
-    category: 'conversion'
+    category: 'conversion',
   },
   {
     id: 'job_published',
@@ -180,7 +189,7 @@ export const EMPLOYER_FUNNEL: FunnelStep[] = [
     description: 'Job posting goes live on the platform',
     order: 6,
     isRequired: true,
-    category: 'conversion'
+    category: 'conversion',
   },
   {
     id: 'repeat_posting',
@@ -188,8 +197,8 @@ export const EMPLOYER_FUNNEL: FunnelStep[] = [
     description: 'Employer posts additional jobs',
     order: 7,
     isRequired: false,
-    category: 'retention'
-  }
+    category: 'retention',
+  },
 ];
 
 /**
@@ -215,7 +224,7 @@ export function useFunnelAnalysis() {
       user_id: userId,
       session_id: sessionId,
       step_timestamp: new Date().toISOString(),
-      ...metadata
+      ...metadata,
     });
   };
 
@@ -237,7 +246,7 @@ export function useFunnelAnalysis() {
       session_id: sessionId,
       drop_off_reason: reason,
       drop_off_timestamp: new Date().toISOString(),
-      ...metadata
+      ...metadata,
     });
   };
 
@@ -249,16 +258,19 @@ export function useFunnelAnalysis() {
   ): Promise<FunnelAnalysis> => {
     // In a real implementation, this would query your analytics database
     // For now, we'll generate mock data based on realistic patterns
-    
+
     const mockData = generateMockFunnelData(funnelId, steps, dateRange);
     const dropOffPoints = identifyDropOffPoints(mockData.steps);
-    const recommendations = generateOptimizationRecommendations(mockData.steps, dropOffPoints);
-    
+    const recommendations = generateOptimizationRecommendations(
+      mockData.steps,
+      dropOffPoints
+    );
+
     return {
       ...mockData,
       dropOffPoints,
       optimizationRecommendations: recommendations,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
   };
 
@@ -275,7 +287,7 @@ export function useFunnelAnalysis() {
     sampleSize: number;
   }> => {
     const tests: any[] = [];
-    
+
     funnelAnalysis.dropOffPoints.forEach(dropOff => {
       if (dropOff.severity === 'high' || dropOff.severity === 'critical') {
         tests.push({
@@ -285,11 +297,11 @@ export function useFunnelAnalysis() {
           testType: 'ui_change',
           expectedLift: dropOff.dropOffRate * 0.3,
           duration: 14,
-          sampleSize: Math.max(1000, dropOff.usersLost * 2)
+          sampleSize: Math.max(1000, dropOff.usersLost * 2),
         });
       }
     });
-    
+
     return tests;
   };
 
@@ -305,7 +317,7 @@ export function useFunnelAnalysis() {
       recommendation_id: recommendationId,
       implementation_type: implementationType,
       expected_impact: expectedImpact,
-      implementation_timestamp: new Date().toISOString()
+      implementation_timestamp: new Date().toISOString(),
     });
   };
 
@@ -313,20 +325,20 @@ export function useFunnelAnalysis() {
     // Core tracking functions
     trackFunnelStep,
     trackFunnelDropOff,
-    
+
     // Analysis functions
     analyzeFunnel,
     generateABTestRecommendations,
-    
+
     // Optimization tracking
     trackOptimizationImplemented,
-    
+
     // Predefined funnels
     jobSeekerFunnel: JOB_SEEKER_FUNNEL,
     employerFunnel: EMPLOYER_FUNNEL,
-    
+
     // State
-    isInitialized
+    isInitialized,
   };
 }
 
@@ -339,14 +351,14 @@ function generateMockFunnelData(
 ): Omit<FunnelAnalysis, 'dropOffPoints' | 'optimizationRecommendations'> {
   const totalUsers = Math.floor(Math.random() * 10000) + 5000;
   const totalSessions = Math.floor(totalUsers * 1.3); // Some users have multiple sessions
-  
+
   let currentUsers = totalUsers;
   const stepData: FunnelStepData[] = [];
-  
+
   steps.forEach((step, index) => {
     // Simulate realistic drop-off rates
     let dropOffRate = 0;
-    
+
     switch (step.category) {
       case 'awareness':
         dropOffRate = 0.1; // 10% drop-off
@@ -364,17 +376,18 @@ function generateMockFunnelData(
         dropOffRate = 0.2; // 20% drop-off
         break;
     }
-    
+
     // Add some randomness
     dropOffRate += (Math.random() - 0.5) * 0.1;
     dropOffRate = Math.max(0.05, Math.min(0.8, dropOffRate));
-    
+
     if (index > 0) {
       currentUsers = Math.floor(currentUsers * (1 - dropOffRate));
     }
-    
-    const completionRate = index === 0 ? 100 : (currentUsers / totalUsers) * 100;
-    
+
+    const completionRate =
+      index === 0 ? 100 : (currentUsers / totalUsers) * 100;
+
     stepData.push({
       step,
       users: currentUsers,
@@ -382,42 +395,53 @@ function generateMockFunnelData(
       completionRate,
       dropOffRate: dropOffRate * 100,
       averageTimeSpent: Math.floor(Math.random() * 300) + 30, // 30-330 seconds
-      conversionValue: step.category === 'conversion' ? Math.floor(Math.random() * 500) + 100 : undefined,
-      timestamp: new Date().toISOString()
+      conversionValue:
+        step.category === 'conversion'
+          ? Math.floor(Math.random() * 500) + 100
+          : undefined,
+      timestamp: new Date().toISOString(),
     });
   });
-  
-  const finalConversionRate = stepData.length > 0 ? 
-    (stepData[stepData.length - 1].users / totalUsers) * 100 : 0;
-  
+
+  const finalConversionRate =
+    stepData.length > 0
+      ? (stepData[stepData.length - 1].users / totalUsers) * 100
+      : 0;
+
   return {
     funnelId,
-    funnelName: funnelId === 'job_seeker' ? 'Job Seeker Journey' : 'Employer Journey',
+    funnelName:
+      funnelId === 'job_seeker' ? 'Job Seeker Journey' : 'Employer Journey',
     totalUsers,
     totalSessions,
     overallConversionRate: finalConversionRate,
     steps: stepData,
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   };
 }
 
 function identifyDropOffPoints(steps: FunnelStepData[]): DropOffPoint[] {
   const dropOffPoints: DropOffPoint[] = [];
-  
+
   for (let i = 0; i < steps.length - 1; i++) {
     const currentStep = steps[i];
     const nextStep = steps[i + 1];
-    
-    const dropOffRate = ((currentStep.users - nextStep.users) / currentStep.users) * 100;
+
+    const dropOffRate =
+      ((currentStep.users - nextStep.users) / currentStep.users) * 100;
     const usersLost = currentStep.users - nextStep.users;
-    
+
     let severity: 'low' | 'medium' | 'high' | 'critical' = 'low';
     if (dropOffRate > 70) severity = 'critical';
     else if (dropOffRate > 50) severity = 'high';
     else if (dropOffRate > 30) severity = 'medium';
-    
-    const primaryReasons = generateDropOffReasons(currentStep.step, nextStep.step, dropOffRate);
-    
+
+    const primaryReasons = generateDropOffReasons(
+      currentStep.step,
+      nextStep.step,
+      dropOffRate
+    );
+
     dropOffPoints.push({
       fromStep: currentStep.step.id,
       toStep: nextStep.step.id,
@@ -425,40 +449,47 @@ function identifyDropOffPoints(steps: FunnelStepData[]): DropOffPoint[] {
       usersLost,
       potentialRevenueLost: usersLost * 50, // Estimate $50 per lost user
       primaryReasons,
-      severity
+      severity,
     });
   }
-  
+
   return dropOffPoints;
 }
 
-function generateDropOffReasons(fromStep: FunnelStep, toStep: FunnelStep, dropOffRate: number): string[] {
+function generateDropOffReasons(
+  fromStep: FunnelStep,
+  toStep: FunnelStep,
+  dropOffRate: number
+): string[] {
   const reasons: string[] = [];
-  
+
   // Common reasons based on step transitions
   if (fromStep.category === 'awareness' && toStep.category === 'interest') {
     reasons.push('Landing page not compelling enough');
     reasons.push('Unclear value proposition');
     reasons.push('Poor page load performance');
   }
-  
+
   if (fromStep.category === 'interest' && toStep.category === 'consideration') {
     reasons.push('Search results not relevant');
     reasons.push('Limited job opportunities');
     reasons.push('Complex search interface');
   }
-  
-  if (fromStep.category === 'consideration' && toStep.category === 'conversion') {
+
+  if (
+    fromStep.category === 'consideration' &&
+    toStep.category === 'conversion'
+  ) {
     reasons.push('Registration process too complex');
     reasons.push('Lack of trust signals');
     reasons.push('Application process unclear');
   }
-  
+
   if (dropOffRate > 50) {
     reasons.push('Technical issues or errors');
     reasons.push('Mobile experience problems');
   }
-  
+
   return reasons.slice(0, 3); // Return top 3 reasons
 }
 
@@ -467,12 +498,12 @@ function generateOptimizationRecommendations(
   dropOffPoints: DropOffPoint[]
 ): OptimizationRecommendation[] {
   const recommendations: OptimizationRecommendation[] = [];
-  
+
   // Generate recommendations based on drop-off points
   dropOffPoints.forEach((dropOff, index) => {
     if (dropOff.severity === 'high' || dropOff.severity === 'critical') {
       const fromStep = steps.find(s => s.step.id === dropOff.fromStep);
-      
+
       if (fromStep) {
         recommendations.push({
           id: `rec_${dropOff.fromStep}_${index}`,
@@ -483,29 +514,32 @@ function generateOptimizationRecommendations(
           expectedImpact: `Reduce drop-off by 20-30%, potentially recovering ${Math.floor(dropOff.usersLost * 0.25)} users`,
           implementationEffort: 'medium',
           affectedSteps: [dropOff.fromStep, dropOff.toStep],
-          estimatedLift: 25
+          estimatedLift: 25,
         });
       }
     }
   });
-  
+
   // Add general recommendations
-  const overallConversionRate = steps.length > 0 ? 
-    (steps[steps.length - 1].users / steps[0].users) * 100 : 0;
-  
+  const overallConversionRate =
+    steps.length > 0
+      ? (steps[steps.length - 1].users / steps[0].users) * 100
+      : 0;
+
   if (overallConversionRate < 10) {
     recommendations.push({
       id: 'rec_overall_conversion',
       type: 'process_simplification',
       priority: 'high',
       title: 'Simplify Overall User Journey',
-      description: 'Low overall conversion rate suggests the funnel is too complex',
+      description:
+        'Low overall conversion rate suggests the funnel is too complex',
       expectedImpact: 'Increase overall conversion rate by 2-5%',
       implementationEffort: 'high',
       affectedSteps: steps.map(s => s.step.id),
-      estimatedLift: 35
+      estimatedLift: 35,
     });
   }
-  
+
   return recommendations;
-} 
+}

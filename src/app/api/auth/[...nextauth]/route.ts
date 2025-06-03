@@ -1,5 +1,5 @@
-import NextAuth from "next-auth";
-import authOptions from "../authOptions";
+import NextAuth from 'next-auth';
+import authOptions from '../authOptions';
 
 console.log('🚀 NextAuth route loaded');
 
@@ -21,7 +21,7 @@ const loggedGET = async (req: Request, context: any) => {
 const loggedPOST = async (req: Request, context: any) => {
   console.log('📤 NextAuth POST request:', req.url);
   console.log('📤 POST pathname:', new URL(req.url).pathname);
-  
+
   try {
     const clone = req.clone();
     const body = await clone.text();
@@ -29,16 +29,19 @@ const loggedPOST = async (req: Request, context: any) => {
   } catch (e) {
     console.log('📤 Could not read POST body');
   }
-  
+
   try {
     const result = await handler(req, context);
     console.log('✅ NextAuth POST completed successfully');
     return result;
   } catch (error) {
     console.error('💥 NextAuth POST Error:', error);
-    console.error('💥 Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error(
+      '💥 Error stack:',
+      error instanceof Error ? error.stack : 'No stack trace'
+    );
     throw error;
   }
 };
 
-export { loggedGET as GET, loggedPOST as POST }; 
+export { loggedGET as GET, loggedPOST as POST };

@@ -8,10 +8,10 @@ export const POST = withValidation(
   async (req, { body, requestId }) => {
     // This will only execute if validation passes
     return createSuccessResponse(
-      { 
+      {
         message: 'Validation passed!',
         validatedData: body,
-        requestId 
+        requestId,
       },
       'Test endpoint validation successful'
     );
@@ -31,4 +31,4 @@ export const POST = withValidation(
 //   "type": "full_time",
 //   "salaryMin": 80000,
 //   "salaryMax": 120000
-// } 
+// }

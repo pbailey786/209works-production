@@ -62,14 +62,13 @@ export default function JobAlertEmail({
               <Text style={locationStyle}>📍 {location}</Text>
               {salary && <Text style={salaryStyle}>💰 {salary}</Text>}
               <Text style={jobTypeStyle}>🕒 {jobType}</Text>
-              
+
               <Hr style={divider} />
-              
+
               <Text style={descriptionStyle}>
-                {description.length > 200 
-                  ? `${description.substring(0, 200)}...` 
-                  : description
-                }
+                {description.length > 200
+                  ? `${description.substring(0, 200)}...`
+                  : description}
               </Text>
 
               <Button style={applyButton} href={jobUrl}>
@@ -78,7 +77,8 @@ export default function JobAlertEmail({
             </Section>
 
             <Text style={footer}>
-              Happy job hunting!<br />
+              Happy job hunting!
+              <br />
               The 209jobs Team
             </Text>
           </Section>
@@ -104,7 +104,8 @@ export default function JobAlertEmail({
 // Styles
 const main = {
   backgroundColor: '#f6f9fc',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  fontFamily:
+    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {
@@ -243,4 +244,4 @@ const copyrightText = {
   fontSize: '12px',
   color: '#9ca3af',
   margin: '8px 0 0 0',
-}; 
+};

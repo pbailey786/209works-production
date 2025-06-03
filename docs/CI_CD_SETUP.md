@@ -66,6 +66,7 @@ Set up branch protection rules in GitHub:
 2. Add rules for `main`, `staging`, and `develop` branches:
 
 #### Main Branch (Production)
+
 - ✅ Require a pull request before merging
 - ✅ Require approvals: 2
 - ✅ Dismiss stale PR approvals when new commits are pushed
@@ -82,6 +83,7 @@ Set up branch protection rules in GitHub:
 - ✅ Restrict pushes that create files larger than 100MB
 
 #### Staging Branch
+
 - ✅ Require a pull request before merging
 - ✅ Require approvals: 1
 - ✅ Require status checks to pass before merging
@@ -91,6 +93,7 @@ Set up branch protection rules in GitHub:
   - `build`
 
 #### Develop Branch
+
 - ✅ Require a pull request before merging
 - ✅ Require status checks to pass before merging
 - ✅ Required status checks:
@@ -105,24 +108,30 @@ Create environments in GitHub:
 2. Create the following environments:
 
 #### preview
+
 - **Deployment branches**: Selected branches → `*` (all branches for PR previews)
 
 #### development
+
 - **Deployment branches**: Selected branches → `develop`
 
 #### staging
+
 - **Deployment branches**: Selected branches → `staging`
 
 #### production
+
 - **Deployment branches**: Selected branches → `main`
 - **Required reviewers**: Add team members
 - **Wait timer**: 5 minutes (optional delay before deployment)
 
 #### database-development, database-staging, database-production
+
 - Same branch restrictions as above
 - Used specifically for database migration approvals
 
 #### database-production-rollback
+
 - **Deployment branches**: Manual deployments only
 - **Required reviewers**: Add senior team members
 - **Wait timer**: 10 minutes
@@ -143,24 +152,30 @@ Create environments in GitHub:
 ### 2. Configure Project Settings
 
 #### General Settings
+
 - **Project Name**: `209jobs`
 - **Root Directory**: `./` (leave empty)
 
 #### Git Integration
+
 - **Production Branch**: `main`
 - **Automatic Deployments**: Enabled for all branches
 
 #### Domains
+
 Add the following domains:
 
 **Production**:
+
 - `209jobs.com` (primary)
 - `www.209jobs.com` (redirect to primary)
 
 **Staging**:
+
 - `staging-209jobs.vercel.app`
 
 **Development**:
+
 - `dev-209jobs.vercel.app`
 
 ### 3. Get Vercel Project IDs
@@ -180,6 +195,7 @@ vercel project ls
 ```
 
 Note down:
+
 - **Project ID**: Found in `.vercel/project.json`
 - **Organization ID**: Found in `.vercel/project.json`
 
@@ -190,6 +206,7 @@ Note down:
 Set up environment variables in Vercel for each environment:
 
 #### All Environments (Common Variables)
+
 ```bash
 NODE_ENV=production
 NEXTAUTH_SECRET=your-super-secret-nextauth-key
@@ -199,6 +216,7 @@ NEXT_TELEMETRY_DISABLED=1
 #### Environment-Specific Variables
 
 **Development**:
+
 ```bash
 NEXT_PUBLIC_APP_URL=https://dev-209jobs.vercel.app
 NEXTAUTH_URL=https://dev-209jobs.vercel.app
@@ -208,6 +226,7 @@ LOG_LEVEL=debug
 ```
 
 **Staging**:
+
 ```bash
 NEXT_PUBLIC_APP_URL=https://staging-209jobs.vercel.app
 NEXTAUTH_URL=https://staging-209jobs.vercel.app
@@ -217,6 +236,7 @@ ENABLE_PERFORMANCE_LOGGING=true
 ```
 
 **Production**:
+
 ```bash
 NEXT_PUBLIC_APP_URL=https://209jobs.com
 NEXTAUTH_URL=https://209jobs.com
@@ -229,17 +249,21 @@ LOG_LEVEL=warn
 ### 2. Configure External Services
 
 #### Database (PostgreSQL)
+
 Set up separate databases for each environment:
 
 **Recommended Providers**:
+
 - [Supabase](https://supabase.com) (Free tier available)
 - [Neon](https://neon.tech) (Serverless PostgreSQL)
 - [Railway](https://railway.app) (Simple deployment)
 
 #### Redis (Caching)
+
 Set up Redis for each environment:
 
 **Recommended Provider**:
+
 - [Upstash](https://upstash.com) (Serverless Redis)
 
 ```bash
@@ -249,6 +273,7 @@ UPSTASH_REDIS_REST_TOKEN=your-redis-token
 ```
 
 #### Authentication
+
 ```bash
 # Google OAuth
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
@@ -263,6 +288,7 @@ EMAIL_FROM=209jobs <noreply@209jobs.com>
 ```
 
 #### External APIs
+
 ```bash
 # OpenAI for AI features
 OPENAI_API_KEY=sk-your-openai-api-key
@@ -273,6 +299,7 @@ ADZUNA_APP_KEY=your-adzuna-api-key
 ```
 
 #### Security
+
 ```bash
 # Generate secure keys
 ENCRYPTION_KEY=your-32-character-encryption-key
@@ -288,6 +315,7 @@ Add the following secrets to your GitHub repository:
 2. Add the following **Repository secrets**:
 
 ### Vercel Configuration
+
 ```bash
 VERCEL_TOKEN=your-vercel-token
 VERCEL_ORG_ID=your-vercel-org-id
@@ -295,6 +323,7 @@ VERCEL_PROJECT_ID=your-vercel-project-id
 ```
 
 ### Database URLs
+
 ```bash
 DATABASE_URL_DEV=postgresql://user:pass@host:5432/209jobs_dev
 DATABASE_URL_STAGING=postgresql://user:pass@host:5432/209jobs_staging
@@ -302,6 +331,7 @@ DATABASE_URL_PRODUCTION=postgresql://user:pass@host:5432/209jobs_prod
 ```
 
 ### Monitoring & Notifications
+
 ```bash
 SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 SLACK_WEBHOOK=https://hooks.slack.com/services/your/slack/webhook
@@ -310,11 +340,13 @@ SLACK_WEBHOOK=https://hooks.slack.com/services/your/slack/webhook
 ### How to Get Secrets
 
 #### Vercel Token
+
 1. Go to [Vercel Account Settings](https://vercel.com/account/tokens)
 2. Create a new token with appropriate scopes
 3. Copy the token value
 
 #### Slack Webhook
+
 1. Go to your Slack workspace
 2. Create a new app or use existing one
 3. Enable Incoming Webhooks
@@ -322,6 +354,7 @@ SLACK_WEBHOOK=https://hooks.slack.com/services/your/slack/webhook
 5. Copy the webhook URL
 
 #### Sentry DSN
+
 1. Create a Sentry project at [sentry.io](https://sentry.io)
 2. Go to **Settings** → **Projects** → **Your Project** → **Client Keys (DSN)**
 3. Copy the DSN value
@@ -336,7 +369,7 @@ Create separate databases for each environment:
 -- Development
 CREATE DATABASE "209jobs_dev";
 
--- Staging  
+-- Staging
 CREATE DATABASE "209jobs_staging";
 
 -- Production
@@ -392,6 +425,7 @@ The application includes a comprehensive health check endpoint at `/api/health` 
 ### 3. Performance Monitoring
 
 Enable Vercel Analytics:
+
 1. Go to your Vercel project dashboard
 2. Navigate to **Analytics** tab
 3. Enable analytics for your project
@@ -401,11 +435,13 @@ Enable Vercel Analytics:
 ### 1. Test Development Deployment
 
 1. Create a feature branch:
+
    ```bash
    git checkout -b feature/test-deployment
    ```
 
 2. Make a small change and commit:
+
    ```bash
    echo "# Test" >> README.md
    git add README.md
@@ -413,6 +449,7 @@ Enable Vercel Analytics:
    ```
 
 3. Push to GitHub:
+
    ```bash
    git push origin feature/test-deployment
    ```
@@ -420,6 +457,7 @@ Enable Vercel Analytics:
 4. Create a Pull Request to `develop` branch
 
 5. Verify that CI checks pass:
+
    - Lint and format check
    - Unit tests
    - E2E tests
@@ -445,6 +483,7 @@ Enable Vercel Analytics:
 ### 4. Test Database Migration
 
 1. Create a simple migration:
+
    ```bash
    npx prisma migrate dev --name test_migration
    ```
@@ -458,21 +497,25 @@ Enable Vercel Analytics:
 ### Common Issues
 
 #### Build Failures
+
 - Check build logs in GitHub Actions
 - Verify all environment variables are set
 - Ensure TypeScript compilation passes locally
 
 #### Deployment Failures
+
 - Check Vercel deployment logs
 - Verify Vercel project configuration
 - Ensure GitHub secrets are correctly set
 
 #### Database Migration Failures
+
 - Check database connectivity
 - Verify migration syntax
 - Review database schema compatibility
 
 #### Health Check Failures
+
 - Check application logs
 - Verify external service connectivity
 - Review environment variable configuration
@@ -529,4 +572,4 @@ vercel logs [deployment-url]
 - Track error rates and response times
 - Review security scan results
 
-This completes the comprehensive CI/CD setup for the 209jobs application. The pipeline provides automated testing, deployment, and monitoring across all environments with proper safeguards and rollback capabilities. 
+This completes the comprehensive CI/CD setup for the 209jobs application. The pipeline provides automated testing, deployment, and monitoring across all environments with proper safeguards and rollback capabilities.

@@ -4,9 +4,9 @@
 
 // Default cache TTL values (in seconds)
 export const DEFAULT_TTL = {
-  short: 60 * 5,        // 5 minutes
-  medium: 60 * 30,      // 30 minutes  
-  long: 60 * 60 * 2,    // 2 hours
+  short: 60 * 5, // 5 minutes
+  medium: 60 * 30, // 30 minutes
+  long: 60 * 60 * 2, // 2 hours
   veryLong: 60 * 60 * 24, // 24 hours
 } as const;
 
@@ -28,16 +28,16 @@ export const CACHE_PREFIXES = {
 export const CACHE_CONFIG = {
   // Maximum cache key length
   maxKeyLength: 250,
-  
+
   // Maximum value size (in bytes)
   maxValueSize: 1024 * 1024 * 5, // 5MB
-  
+
   // Enable compression for large values
   compressionThreshold: 1024 * 10, // 10KB
-  
+
   // Cache versioning
   version: '1.0',
-  
+
   // Default options
   defaultOptions: {
     ttl: DEFAULT_TTL.medium,
@@ -71,4 +71,4 @@ export const initializeMetrics = (): CacheMetrics => ({
   deletes: 0,
   errors: 0,
   hitRate: 0,
-}); 
+});

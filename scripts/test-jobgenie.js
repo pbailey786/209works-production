@@ -1,7 +1,7 @@
 /**
  * Enhanced Test Script for JobGenie API
  * Run with: node scripts/test-jobgenie.js
- * 
+ *
  * Environment Variables:
  * - API_BASE_URL: Base URL for API (default: http://localhost:3000)
  * - TEST_TIMEOUT: Timeout for API calls in ms (default: 30000)
@@ -18,7 +18,7 @@ const CONFIG = {
   retryCount: parseInt(process.env.TEST_RETRY_COUNT) || 3,
   retryDelay: parseInt(process.env.TEST_RETRY_DELAY) || 1000,
   jobSearchQuery: process.env.TEST_JOB_SEARCH_QUERY || 'software engineer',
-  logLevel: process.env.TEST_LOG_LEVEL || 'info'
+  logLevel: process.env.TEST_LOG_LEVEL || 'info',
 };
 
 // Validation utilities
@@ -33,31 +33,33 @@ class TestValidator {
   }
 
   static isValidJobData(job) {
-    return job && 
-           typeof job.id === 'string' && 
-           job.id.length > 0 &&
-           typeof job.title === 'string' && 
-           job.title.length > 0 &&
-           typeof job.company === 'string' && 
-           job.company.length > 0;
+    return (
+      job &&
+      typeof job.id === 'string' &&
+      job.id.length > 0 &&
+      typeof job.title === 'string' &&
+      job.title.length > 0 &&
+      typeof job.company === 'string' &&
+      job.company.length > 0
+    );
   }
 
   static isValidJobGenieResponse(response) {
-    return response &&
-           typeof response.reply === 'string' &&
-           response.reply.length > 0 &&
-           typeof response.jobTitle === 'string' &&
-           typeof response.company === 'string' &&
-           response.contextLoaded &&
-           typeof response.contextLoaded.hasCompanyInfo === 'boolean' &&
-           typeof response.contextLoaded.hasKnowledgeBase === 'boolean' &&
-           Array.isArray(response.contextLoaded.knowledgeCategories);
+    return (
+      response &&
+      typeof response.reply === 'string' &&
+      response.reply.length > 0 &&
+      typeof response.jobTitle === 'string' &&
+      typeof response.company === 'string' &&
+      response.contextLoaded &&
+      typeof response.contextLoaded.hasCompanyInfo === 'boolean' &&
+      typeof response.contextLoaded.hasKnowledgeBase === 'boolean' &&
+      Array.isArray(response.contextLoaded.knowledgeCategories)
+    );
   }
 
   static isValidApiResponse(response) {
-    return response && 
-           typeof response === 'object' &&
-           !Array.isArray(response);
+    return response && typeof response === 'object' && !Array.isArray(response);
   }
 
   static sanitizeString(str) {
@@ -88,8 +90,8 @@ class ApiClient {
         headers: {
           'Content-Type': 'application/json',
           'User-Agent': 'JobGenie-Test-Script/1.0',
-          ...options.headers
-        }
+          ...options.headers,
+        },
       };
 
       Logger.debug(`Making request to: ${url}`);
@@ -107,8 +109,10 @@ class ApiClient {
         } catch {
           errorData = { error: errorText };
         }
-        
-        throw new Error(`HTTP ${response.status}: ${errorData.error || errorText}`);
+
+        throw new Error(
+          `HTTP ${response.status}: ${errorData.error || errorText}`
+        );
       }
 
       // Validate response content type
@@ -118,7 +122,7 @@ class ApiClient {
       }
 
       const data = await response.json();
-      
+
       // Validate response structure
       if (!TestValidator.isValidApiResponse(data)) {
         throw new Error('Invalid API response structure');
@@ -126,17 +130,18 @@ class ApiClient {
 
       Logger.debug(`Response received:`, data);
       return data;
-
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (error.name === 'AbortError') {
         throw new Error(`Request timeout after ${this.timeout}ms`);
       }
 
       // Retry logic for transient failures
       if (retryCount > 0 && this.shouldRetry(error)) {
-        Logger.warn(`Request failed, retrying in ${CONFIG.retryDelay}ms... (${retryCount} retries left)`);
+        Logger.warn(
+          `Request failed, retrying in ${CONFIG.retryDelay}ms... (${retryCount} retries left)`
+        );
         await this.delay(CONFIG.retryDelay);
         return this.makeRequest(endpoint, options, retryCount - 1);
       }
@@ -147,11 +152,13 @@ class ApiClient {
 
   shouldRetry(error) {
     // Retry on network errors, timeouts, and 5xx server errors
-    return error.message.includes('timeout') ||
-           error.message.includes('network') ||
-           error.message.includes('ECONNRESET') ||
-           error.message.includes('ENOTFOUND') ||
-           (error.message.includes('HTTP 5'));
+    return (
+      error.message.includes('timeout') ||
+      error.message.includes('network') ||
+      error.message.includes('ECONNRESET') ||
+      error.message.includes('ENOTFOUND') ||
+      error.message.includes('HTTP 5')
+    );
   }
 
   delay(ms) {
@@ -168,7 +175,7 @@ class Logger {
     if (Logger.levels[level] >= Logger.currentLevel) {
       const timestamp = new Date().toISOString();
       const prefix = `[${timestamp}] [${level.toUpperCase()}]`;
-      
+
       if (data) {
         console.log(`${prefix} ${message}`, data);
       } else {
@@ -177,10 +184,18 @@ class Logger {
     }
   }
 
-  static debug(message, data) { Logger.log('debug', message, data); }
-  static info(message, data) { Logger.log('info', message, data); }
-  static warn(message, data) { Logger.log('warn', message, data); }
-  static error(message, data) { Logger.log('error', message, data); }
+  static debug(message, data) {
+    Logger.log('debug', message, data);
+  }
+  static info(message, data) {
+    Logger.log('info', message, data);
+  }
+  static warn(message, data) {
+    Logger.log('warn', message, data);
+  }
+  static error(message, data) {
+    Logger.log('error', message, data);
+  }
 }
 
 // Test data cleanup manager
@@ -216,7 +231,7 @@ class JobGenieTestSuite {
     this.testResults = {
       passed: 0,
       failed: 0,
-      errors: []
+      errors: [],
     };
   }
 
@@ -236,7 +251,7 @@ class JobGenieTestSuite {
 
   async validateConfiguration() {
     Logger.info('Validating test configuration...');
-    
+
     // Validate API base URL
     if (!TestValidator.isValidUrl(CONFIG.apiBaseUrl)) {
       throw new Error(`Invalid API base URL: ${CONFIG.apiBaseUrl}`);
@@ -244,12 +259,16 @@ class JobGenieTestSuite {
 
     // Validate timeout values
     if (CONFIG.timeout < 1000 || CONFIG.timeout > 300000) {
-      throw new Error(`Invalid timeout value: ${CONFIG.timeout}ms (must be 1000-300000)`);
+      throw new Error(
+        `Invalid timeout value: ${CONFIG.timeout}ms (must be 1000-300000)`
+      );
     }
 
     // Validate retry configuration
     if (CONFIG.retryCount < 0 || CONFIG.retryCount > 10) {
-      throw new Error(`Invalid retry count: ${CONFIG.retryCount} (must be 0-10)`);
+      throw new Error(
+        `Invalid retry count: ${CONFIG.retryCount} (must be 0-10)`
+      );
     }
 
     // Test API connectivity
@@ -265,15 +284,17 @@ class JobGenieTestSuite {
 
   async fetchTestJob() {
     Logger.info(`Fetching test job with query: "${CONFIG.jobSearchQuery}"`);
-    
+
     const searchParams = new URLSearchParams({
       q: TestValidator.sanitizeString(CONFIG.jobSearchQuery),
       limit: '5', // Get multiple jobs to increase chances of finding a valid one
-      page: '1'
+      page: '1',
     });
 
-    const jobsData = await this.apiClient.makeRequest(`/api/jobs/search?${searchParams}`);
-    
+    const jobsData = await this.apiClient.makeRequest(
+      `/api/jobs/search?${searchParams}`
+    );
+
     // Validate response structure
     if (!jobsData.data || !Array.isArray(jobsData.data)) {
       throw new Error('Invalid jobs API response structure');
@@ -284,34 +305,40 @@ class JobGenieTestSuite {
     }
 
     // Find the first valid job
-    const validJob = jobsData.data.find(job => TestValidator.isValidJobData(job));
-    
+    const validJob = jobsData.data.find(job =>
+      TestValidator.isValidJobData(job)
+    );
+
     if (!validJob) {
       throw new Error('No valid jobs found in search results');
     }
 
-    Logger.info(`✅ Found valid test job: "${validJob.title}" at ${validJob.company} (ID: ${validJob.id})`);
+    Logger.info(
+      `✅ Found valid test job: "${validJob.title}" at ${validJob.company} (ID: ${validJob.id})`
+    );
     return validJob;
   }
 
   async testBasicJobGenieAPI(testJob) {
     Logger.info('Testing basic JobGenie API functionality...');
-    
+
     const testMessages = [
       {
         role: 'user',
-        content: TestValidator.sanitizeString('What are the main requirements for this job?')
-      }
+        content: TestValidator.sanitizeString(
+          'What are the main requirements for this job?'
+        ),
+      },
     ];
 
     const requestBody = {
       jobId: testJob.id,
-      messages: testMessages
+      messages: testMessages,
     };
 
     const response = await this.apiClient.makeRequest('/api/jobbot', {
       method: 'POST',
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     });
 
     // Validate JobGenie response structure
@@ -328,30 +355,41 @@ class JobGenieTestSuite {
     Logger.info(`   Reply length: ${response.reply.length} characters`);
     Logger.info(`   Job Title: ${response.jobTitle}`);
     Logger.info(`   Company: ${response.company}`);
-    Logger.info(`   Has Company Info: ${response.contextLoaded.hasCompanyInfo}`);
-    Logger.info(`   Has Knowledge Base: ${response.contextLoaded.hasKnowledgeBase}`);
-    Logger.info(`   Knowledge Categories: ${response.contextLoaded.knowledgeCategories.join(', ') || 'None'}`);
+    Logger.info(
+      `   Has Company Info: ${response.contextLoaded.hasCompanyInfo}`
+    );
+    Logger.info(
+      `   Has Knowledge Base: ${response.contextLoaded.hasKnowledgeBase}`
+    );
+    Logger.info(
+      `   Knowledge Categories: ${response.contextLoaded.knowledgeCategories.join(', ') || 'None'}`
+    );
 
     return response;
   }
 
   async testConversationFlow(testJob, previousResponse) {
     Logger.info('Testing conversation flow...');
-    
+
     const conversationMessages = [
       { role: 'user', content: 'What are the main requirements for this job?' },
       { role: 'assistant', content: previousResponse.reply },
-      { role: 'user', content: TestValidator.sanitizeString('What is the company culture like?') }
+      {
+        role: 'user',
+        content: TestValidator.sanitizeString(
+          'What is the company culture like?'
+        ),
+      },
     ];
 
     const requestBody = {
       jobId: testJob.id,
-      messages: conversationMessages
+      messages: conversationMessages,
     };
 
     const response = await this.apiClient.makeRequest('/api/jobbot', {
       method: 'POST',
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     });
 
     // Validate follow-up response
@@ -364,29 +402,38 @@ class JobGenieTestSuite {
     }
 
     Logger.info('✅ Conversation flow working correctly');
-    Logger.info(`   Follow-up reply length: ${response.reply.length} characters`);
+    Logger.info(
+      `   Follow-up reply length: ${response.reply.length} characters`
+    );
 
     return response;
   }
 
   async testErrorHandling() {
     Logger.info('Testing error handling scenarios...');
-    
+
     // Test 1: Invalid job ID
     try {
       await this.apiClient.makeRequest('/api/jobbot', {
         method: 'POST',
         body: JSON.stringify({
           jobId: 'invalid-job-id-12345',
-          messages: [{ role: 'user', content: 'Test message' }]
-        })
+          messages: [{ role: 'user', content: 'Test message' }],
+        }),
       });
-      throw new Error('Expected error for invalid job ID but request succeeded');
+      throw new Error(
+        'Expected error for invalid job ID but request succeeded'
+      );
     } catch (error) {
-      if (error.message.includes('HTTP 404') || error.message.includes('not found')) {
+      if (
+        error.message.includes('HTTP 404') ||
+        error.message.includes('not found')
+      ) {
         Logger.info('✅ Invalid job ID properly rejected');
       } else {
-        throw new Error(`Unexpected error for invalid job ID: ${error.message}`);
+        throw new Error(
+          `Unexpected error for invalid job ID: ${error.message}`
+        );
       }
     }
 
@@ -397,14 +444,21 @@ class JobGenieTestSuite {
         body: JSON.stringify({
           jobId: 'test',
           // Missing messages field
-        })
+        }),
       });
-      throw new Error('Expected error for malformed request but request succeeded');
+      throw new Error(
+        'Expected error for malformed request but request succeeded'
+      );
     } catch (error) {
-      if (error.message.includes('HTTP 400') || error.message.includes('validation')) {
+      if (
+        error.message.includes('HTTP 400') ||
+        error.message.includes('validation')
+      ) {
         Logger.info('✅ Malformed request properly rejected');
       } else {
-        Logger.warn(`Malformed request handling could be improved: ${error.message}`);
+        Logger.warn(
+          `Malformed request handling could be improved: ${error.message}`
+        );
       }
     }
 
@@ -414,15 +468,22 @@ class JobGenieTestSuite {
         method: 'POST',
         body: JSON.stringify({
           jobId: 'test',
-          messages: []
-        })
+          messages: [],
+        }),
       });
-      throw new Error('Expected error for empty messages but request succeeded');
+      throw new Error(
+        'Expected error for empty messages but request succeeded'
+      );
     } catch (error) {
-      if (error.message.includes('HTTP 400') || error.message.includes('validation')) {
+      if (
+        error.message.includes('HTTP 400') ||
+        error.message.includes('validation')
+      ) {
         Logger.info('✅ Empty messages properly rejected');
       } else {
-        Logger.warn(`Empty messages handling could be improved: ${error.message}`);
+        Logger.warn(
+          `Empty messages handling could be improved: ${error.message}`
+        );
       }
     }
 
@@ -431,7 +492,7 @@ class JobGenieTestSuite {
 
   async testPerformanceAndLimits(testJob) {
     Logger.info('Testing performance and limits...');
-    
+
     // Test with very long message
     const longMessage = 'A'.repeat(10000);
     try {
@@ -439,12 +500,15 @@ class JobGenieTestSuite {
         method: 'POST',
         body: JSON.stringify({
           jobId: testJob.id,
-          messages: [{ role: 'user', content: longMessage }]
-        })
+          messages: [{ role: 'user', content: longMessage }],
+        }),
       });
       Logger.info('✅ Long message handling works');
     } catch (error) {
-      if (error.message.includes('HTTP 413') || error.message.includes('too large')) {
+      if (
+        error.message.includes('HTTP 413') ||
+        error.message.includes('too large')
+      ) {
         Logger.info('✅ Long message properly rejected');
       } else {
         Logger.warn(`Long message handling: ${error.message}`);
@@ -457,11 +521,11 @@ class JobGenieTestSuite {
       method: 'POST',
       body: JSON.stringify({
         jobId: testJob.id,
-        messages: [{ role: 'user', content: 'Quick test message' }]
-      })
+        messages: [{ role: 'user', content: 'Quick test message' }],
+      }),
     });
     const responseTime = Date.now() - startTime;
-    
+
     Logger.info(`✅ Response time: ${responseTime}ms`);
     if (responseTime > 30000) {
       Logger.warn('Response time is quite slow, consider optimization');
@@ -471,10 +535,12 @@ class JobGenieTestSuite {
   async runAllTests() {
     const startTime = Date.now();
     Logger.info('🧞‍♂️ Starting Enhanced JobGenie API Test Suite...\n');
-    
+
     try {
       // Configuration validation
-      await this.runTest('Configuration Validation', () => this.validateConfiguration());
+      await this.runTest('Configuration Validation', () =>
+        this.validateConfiguration()
+      );
 
       // Fetch test job
       let testJob;
@@ -497,7 +563,9 @@ class JobGenieTestSuite {
       await this.runTest('Error Handling', () => this.testErrorHandling());
 
       // Performance and limits
-      await this.runTest('Performance and Limits', () => this.testPerformanceAndLimits(testJob));
+      await this.runTest('Performance and Limits', () =>
+        this.testPerformanceAndLimits(testJob)
+      );
 
       // Test summary
       const duration = Date.now() - startTime;
@@ -506,7 +574,7 @@ class JobGenieTestSuite {
       Logger.info(`   ✅ Passed: ${this.testResults.passed}`);
       Logger.info(`   ❌ Failed: ${this.testResults.failed}`);
       Logger.info(`   ⏱️  Duration: ${duration}ms`);
-      
+
       Logger.info('\n📝 JobGenie features verified:');
       Logger.info('   ✅ Configuration validation and environment support');
       Logger.info('   ✅ API connectivity and health checks');
@@ -518,17 +586,16 @@ class JobGenieTestSuite {
       Logger.info('   ✅ Performance monitoring and limits');
       Logger.info('   ✅ Retry logic and timeout handling');
       Logger.info('   ✅ Test data cleanup and isolation');
-
     } catch (error) {
       Logger.error('❌ Test suite failed:', error.message);
-      
+
       if (this.testResults.errors.length > 0) {
         Logger.error('\n📋 Error Summary:');
         this.testResults.errors.forEach((err, index) => {
           Logger.error(`   ${index + 1}. ${err.test}: ${err.error}`);
         });
       }
-      
+
       process.exit(1);
     } finally {
       // Cleanup test data
@@ -553,4 +620,4 @@ const testSuite = new JobGenieTestSuite();
 testSuite.runAllTests().catch(error => {
   Logger.error('Fatal error:', error.message);
   process.exit(1);
-}); 
+});

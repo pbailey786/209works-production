@@ -11,13 +11,17 @@ const createPostSchema = z.object({
   caption: z.string().min(1).max(2200),
   hashtags: z.array(z.string()).max(30),
   scheduledAt: z.string().datetime().optional(),
-  imageOptions: z.object({
-    template: z.enum(['modern', 'classic', 'minimal', 'gradient']).optional(),
-    backgroundColor: z.string().optional(),
-    textColor: z.string().optional(),
-    brandColor: z.string().optional(),
-  }).optional(),
-  type: z.enum(['job_listing', 'company_highlight', 'industry_news', 'custom']).optional(),
+  imageOptions: z
+    .object({
+      template: z.enum(['modern', 'classic', 'minimal', 'gradient']).optional(),
+      backgroundColor: z.string().optional(),
+      textColor: z.string().optional(),
+      brandColor: z.string().optional(),
+    })
+    .optional(),
+  type: z
+    .enum(['job_listing', 'company_highlight', 'industry_news', 'custom'])
+    .optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -43,22 +47,22 @@ export async function GET(request: NextRequest) {
     let posts;
     if (status === 'scheduled') {
       posts = await prisma.instagramPost.findMany({
-        where: { 
+        where: {
           creatorId: user.id,
-          status: 'scheduled'
+          status: 'scheduled',
         },
         include: { job: true },
-        orderBy: { scheduledFor: 'asc' }
+        orderBy: { scheduledFor: 'asc' },
       });
     } else if (status === 'published') {
       posts = await prisma.instagramPost.findMany({
-        where: { 
+        where: {
           creatorId: user.id,
-          status: 'published'
+          status: 'published',
         },
         include: { job: true },
         orderBy: { publishedAt: 'desc' },
-        take: limit
+        take: limit,
       });
     } else {
       // Get all posts
@@ -66,7 +70,7 @@ export async function GET(request: NextRequest) {
         where: { creatorId: user.id },
         include: { job: true },
         orderBy: { createdAt: 'desc' },
-        take: limit
+        take: limit,
       });
     }
 
@@ -100,7 +104,9 @@ export async function POST(request: NextRequest) {
     const validatedData = createPostSchema.parse(body);
 
     // Validate caption
-    const captionValidation = InstagramUtils.validateCaption(validatedData.caption);
+    const captionValidation = InstagramUtils.validateCaption(
+      validatedData.caption
+    );
     if (!captionValidation.isValid) {
       return NextResponse.json(
         { error: 'Invalid caption', details: captionValidation.errors },
@@ -109,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse scheduled date if provided
-    const scheduledAt = validatedData.scheduledAt 
+    const scheduledAt = validatedData.scheduledAt
       ? new Date(validatedData.scheduledAt)
       : undefined;
 
@@ -132,13 +138,13 @@ export async function POST(request: NextRequest) {
     // Get the created post
     const post = await prisma.instagramPost.findUnique({
       where: { id: postId },
-      include: { job: true }
+      include: { job: true },
     });
 
     return NextResponse.json({ post }, { status: 201 });
   } catch (error) {
     console.error('Error creating Instagram post:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation error', details: error.errors },
@@ -151,4 +157,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

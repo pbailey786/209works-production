@@ -21,25 +21,25 @@
   }
 
   /* Improve button and input touch targets on mobile */
-  button, 
-  input[type="button"], 
-  input[type="submit"], 
-  input[type="reset"] {
+  button,
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'] {
     min-height: 44px; /* iOS recommended minimum touch target */
     min-width: 44px;
   }
 
   /* Improve form input styling on mobile */
-  input, 
-  textarea, 
+  input,
+  textarea,
   select {
     /* Prevent zoom on iOS when focusing inputs */
     font-size: 16px;
   }
 
   @media (max-width: 640px) {
-    input, 
-    textarea, 
+    input,
+    textarea,
     select {
       font-size: 16px; /* Prevent zoom on mobile */
     }
@@ -129,7 +129,7 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', 'Poppins', sans-serif;
@@ -162,12 +162,12 @@
 @layer components {
   /* Mobile-friendly card component */
   .mobile-card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6;
+    @apply rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6;
   }
 
   /* Mobile-friendly button */
   .mobile-btn {
-    @apply min-h-[48px] px-4 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center;
+    @apply flex min-h-[48px] items-center justify-center rounded-lg px-4 py-3 font-medium transition-colors duration-200;
   }
 
   .mobile-btn-primary {
@@ -180,12 +180,12 @@
 
   /* Mobile-friendly form input */
   .mobile-input {
-    @apply w-full border border-gray-300 rounded-lg px-3 py-3 sm:py-4 text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200;
+    @apply w-full rounded-lg border border-gray-300 px-3 py-3 text-base transition-colors duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:py-4;
   }
 
   /* Mobile-friendly navigation */
   .mobile-nav-item {
-    @apply block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200;
+    @apply block rounded-md px-3 py-2 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50 hover:text-blue-600;
   }
 
   /* Mobile-friendly spacing utilities */
@@ -194,24 +194,24 @@
   }
 
   .mobile-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
   /* Mobile-friendly text utilities */
   .mobile-heading-1 {
-    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight;
+    @apply text-2xl font-bold leading-tight sm:text-3xl md:text-4xl lg:text-5xl;
   }
 
   .mobile-heading-2 {
-    @apply text-xl sm:text-2xl md:text-3xl font-bold leading-tight;
+    @apply text-xl font-bold leading-tight sm:text-2xl md:text-3xl;
   }
 
   .mobile-heading-3 {
-    @apply text-lg sm:text-xl md:text-2xl font-semibold leading-tight;
+    @apply text-lg font-semibold leading-tight sm:text-xl md:text-2xl;
   }
 
   .mobile-body {
-    @apply text-sm sm:text-base leading-relaxed;
+    @apply text-sm leading-relaxed sm:text-base;
   }
 
   /* Mobile-friendly grid utilities */
@@ -220,24 +220,24 @@
   }
 
   .mobile-grid-2 {
-    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6;
   }
 
   .mobile-grid-3 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3;
   }
 
   .mobile-grid-4 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6;
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4;
   }
 
   /* Mobile-friendly flex utilities */
   .mobile-flex-col {
-    @apply flex flex-col sm:flex-row gap-3 sm:gap-4;
+    @apply flex flex-col gap-3 sm:flex-row sm:gap-4;
   }
 
   .mobile-flex-center {
-    @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4;
+    @apply flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4;
   }
 
   /* Safe area utilities for mobile devices with notches */
@@ -445,7 +445,7 @@
   }
 
   .focus-ring-inset {
-    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset;
+    @apply focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500;
   }
 
   /* Glass morphism effect */

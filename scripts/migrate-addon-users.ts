@@ -12,26 +12,23 @@ interface AddOnMigrationPlan {
 
 async function analyzeAddOnUsers(): Promise<AddOnMigrationPlan[]> {
   console.log('🔍 Analyzing current add-on users...');
-  
+
   // Get all users with active add-ons
   const usersWithAddOns = await prisma.user.findMany({
     where: {
       UserAddOn: {
         some: {
           isActive: true,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } }
-          ]
-        }
-      }
+          OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+        },
+      },
     },
     include: {
       UserAddOn: {
         where: { isActive: true },
-        include: { AddOn: true }
-      }
-    }
+        include: { AddOn: true },
+      },
+    },
   });
 
   console.log(`📊 Found ${usersWithAddOns.length} users with active add-ons`);
@@ -40,21 +37,34 @@ async function analyzeAddOnUsers(): Promise<AddOnMigrationPlan[]> {
 
   for (const user of usersWithAddOns) {
     const addOnSlugs = user.UserAddOn.map(ua => ua.AddOn.slug);
-    const totalAddOnValue = user.UserAddOn.reduce((sum, ua) => sum + Number(ua.pricePaid), 0);
-    
+    const totalAddOnValue = user.UserAddOn.reduce(
+      (sum, ua) => sum + Number(ua.pricePaid),
+      0
+    );
+
     // Determine recommended tier based on add-ons
     let recommendedTier: 'starter' | 'professional' | 'enterprise' = 'starter';
     let strategy: 'upgrade' | 'credit' | 'refund' = 'upgrade';
-    
+
     // High-value or enterprise features -> Enterprise tier
-    if (addOnSlugs.some(slug => ['custom-hiring-campaign', 'white-label', 'api-access'].includes(slug)) || totalAddOnValue > 200) {
+    if (
+      addOnSlugs.some(slug =>
+        ['custom-hiring-campaign', 'white-label', 'api-access'].includes(slug)
+      ) ||
+      totalAddOnValue > 200
+    ) {
       recommendedTier = 'enterprise';
     }
     // Multiple add-ons or professional features -> Professional tier
-    else if (user.UserAddOn.length > 2 || addOnSlugs.some(slug => ['background-checks', 'sponsored-content'].includes(slug))) {
+    else if (
+      user.UserAddOn.length > 2 ||
+      addOnSlugs.some(slug =>
+        ['background-checks', 'sponsored-content'].includes(slug)
+      )
+    ) {
       recommendedTier = 'professional';
     }
-    
+
     // Determine grandfathering strategy
     if (totalAddOnValue > 100) {
       strategy = 'credit'; // Give account credit for high-value users
@@ -67,7 +77,7 @@ async function analyzeAddOnUsers(): Promise<AddOnMigrationPlan[]> {
       currentAddOns: addOnSlugs,
       recommendedTier,
       grandfatheringStrategy: strategy,
-      notes: `Current add-ons: ${addOnSlugs.join(', ')}. Total value: $${totalAddOnValue}`
+      notes: `Current add-ons: ${addOnSlugs.join(', ')}. Total value: $${totalAddOnValue}`,
     });
   }
 
@@ -77,11 +87,12 @@ async function analyzeAddOnUsers(): Promise<AddOnMigrationPlan[]> {
 async function generateMigrationReport(plans: AddOnMigrationPlan[]) {
   console.log('\n📋 MIGRATION REPORT');
   console.log('==================');
-  
+
   const summary = {
     total: plans.length,
     starter: plans.filter(p => p.recommendedTier === 'starter').length,
-    professional: plans.filter(p => p.recommendedTier === 'professional').length,
+    professional: plans.filter(p => p.recommendedTier === 'professional')
+      .length,
     enterprise: plans.filter(p => p.recommendedTier === 'enterprise').length,
     upgrades: plans.filter(p => p.grandfatheringStrategy === 'upgrade').length,
     credits: plans.filter(p => p.grandfatheringStrategy === 'credit').length,
@@ -100,7 +111,10 @@ async function generateMigrationReport(plans: AddOnMigrationPlan[]) {
 
   // Save detailed report
   const reportPath = 'scripts/addon-migration-report.json';
-  await require('fs').promises.writeFile(reportPath, JSON.stringify(plans, null, 2));
+  await require('fs').promises.writeFile(
+    reportPath,
+    JSON.stringify(plans, null, 2)
+  );
   console.log(`\n💾 Detailed report saved to: ${reportPath}`);
 }
 
@@ -108,14 +122,13 @@ async function main() {
   try {
     const plans = await analyzeAddOnUsers();
     await generateMigrationReport(plans);
-    
+
     console.log('\n✅ Migration analysis complete!');
     console.log('Next steps:');
     console.log('1. Review the migration report');
     console.log('2. Communicate changes to affected users');
     console.log('3. Execute the migration script');
     console.log('4. Remove add-on system code');
-    
   } catch (error) {
     console.error('❌ Migration analysis failed:', error);
   } finally {
@@ -127,4 +140,4 @@ if (require.main === module) {
   main();
 }
 
-export { analyzeAddOnUsers, generateMigrationReport }; 
+export { analyzeAddOnUsers, generateMigrationReport };

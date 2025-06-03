@@ -4,17 +4,27 @@ import { JobType } from '@prisma/client';
 
 function mapContractTimeToJobType(contract_time?: string): JobType {
   switch (contract_time) {
-    case 'full_time': return 'full_time';
-    case 'part_time': return 'part_time';
-    case 'contract': return 'contract';
-    case 'internship': return 'internship';
-    case 'temporary': return 'temporary';
-    case 'volunteer': return 'volunteer';
-    default: return 'other';
+    case 'full_time':
+      return 'full_time';
+    case 'part_time':
+      return 'part_time';
+    case 'contract':
+      return 'contract';
+    case 'internship':
+      return 'internship';
+    case 'temporary':
+      return 'temporary';
+    case 'volunteer':
+      return 'volunteer';
+    default:
+      return 'other';
   }
 }
 
-export async function upsertAdzunaJobsToDb(cities?: string[], resultsPerCity?: number) {
+export async function upsertAdzunaJobsToDb(
+  cities?: string[],
+  resultsPerCity?: number
+) {
   const adzunaJobs = await fetchAdzunaJobs(cities, resultsPerCity);
   let upserted = 0;
   for (const job of adzunaJobs) {
@@ -37,7 +47,7 @@ export async function upsertAdzunaJobsToDb(cities?: string[], resultsPerCity?: n
         update: jobData,
         create: {
           id: job.id,
-          ...jobData
+          ...jobData,
         },
       });
       upserted++;
@@ -53,4 +63,4 @@ if (require.main === module) {
   // Import the full city list from adzunaService
   const { area209Cities } = require('./adzunaService');
   upsertAdzunaJobsToDb(area209Cities, 50).then(() => process.exit(0));
-} 
+}

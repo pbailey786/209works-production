@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     // Redirect to sign-in page with success message
     const redirectUrl = new URL('/signin', req.url);
     redirectUrl.searchParams.set('verified', 'true');
-    
+
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error('Email verification error:', error);
@@ -60,10 +60,7 @@ export async function POST(req: NextRequest) {
     const { email } = body;
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     // Find user by email
@@ -72,10 +69,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     if (user.isEmailVerified) {
@@ -113,4 +107,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

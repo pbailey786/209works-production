@@ -27,4 +27,4 @@ describe('GET /api/jobs/search', () => {
     // Optionally check for expected fields
     // expect(Array.isArray(res.body.jobs)).toBe(true);
   });
-}); 
+});

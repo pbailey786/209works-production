@@ -12,7 +12,7 @@ const onboardingSchema = z.object({
   location: z.string().min(1, 'Location is required').max(200),
   phoneNumber: z.string().optional(),
   linkedinUrl: z.string().url().optional().or(z.literal('')),
-  
+
   // Job seeker specific
   skills: z.array(z.string()).optional(),
   experienceLevel: z.enum(['entry', 'mid', 'senior', 'executive']).optional(),
@@ -20,13 +20,13 @@ const onboardingSchema = z.object({
   openToRemote: z.boolean().optional(),
   expectedSalaryMin: z.number().optional(),
   expectedSalaryMax: z.number().optional(),
-  
+
   // Employer specific
   companyName: z.string().optional(),
   companyWebsite: z.string().url().optional().or(z.literal('')),
   industry: z.string().optional(),
   companySize: z.string().optional(),
-  
+
   // Onboarding tracking
   onboardingCompleted: z.boolean().default(true),
   completedSteps: z.array(z.string()).optional(),
@@ -35,25 +35,19 @@ const onboardingSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, role: true }
+      select: { id: true, role: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const body = await req.json();
@@ -102,26 +96,28 @@ export async function POST(req: NextRequest) {
         preferredJobTypes: true,
         companyName: true,
         industry: true,
-      }
+      },
     });
 
     // Log onboarding completion for debugging
-    console.log(`✅ Onboarding completed for user ${user.id} (${user.role}) with steps:`, validatedData.completedSteps);
+    console.log(
+      `✅ Onboarding completed for user ${user.id} (${user.role}) with steps:`,
+      validatedData.completedSteps
+    );
 
     return NextResponse.json({
       success: true,
       message: 'Onboarding completed successfully!',
       user: updatedUser,
     });
-
   } catch (error) {
     console.error('Onboarding error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );
@@ -140,10 +136,7 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -161,36 +154,39 @@ export async function GET(req: NextRequest) {
         companyName: true,
         industry: true,
         createdAt: true,
-      }
+      },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Calculate profile completeness
-    const requiredFields = user.role === 'jobseeker'
-      ? ['name', 'location', 'currentJobTitle', 'skills']
-      : ['name', 'location', 'companyName', 'industry'];
+    const requiredFields =
+      user.role === 'jobseeker'
+        ? ['name', 'location', 'currentJobTitle', 'skills']
+        : ['name', 'location', 'companyName', 'industry'];
 
     const completedFields = requiredFields.filter(field => {
       const value = user[field as keyof typeof user];
       return value && (Array.isArray(value) ? value.length > 0 : true);
     });
 
-    const profileCompleteness = Math.round((completedFields.length / requiredFields.length) * 100);
+    const profileCompleteness = Math.round(
+      (completedFields.length / requiredFields.length) * 100
+    );
 
     return NextResponse.json({
       user,
       profileCompleteness,
-      missingFields: requiredFields.filter(field => !completedFields.includes(field)),
-      isNewUser: !user.onboardingCompleted &&
-        new Date().getTime() - new Date(user.createdAt).getTime() < 24 * 60 * 60 * 1000, // Less than 24 hours old
+      missingFields: requiredFields.filter(
+        field => !completedFields.includes(field)
+      ),
+      isNewUser:
+        !user.onboardingCompleted &&
+        new Date().getTime() - new Date(user.createdAt).getTime() <
+          24 * 60 * 60 * 1000, // Less than 24 hours old
     });
-
   } catch (error) {
     console.error('Get onboarding status error:', error);
     return NextResponse.json(

@@ -6,17 +6,14 @@ import { hasPermission, Permission } from '@/lib/rbac/permissions';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string  }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
 
     // Check if user is authenticated and has moderation permissions
     if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userRole = (session.user as any)?.role;
@@ -33,27 +30,21 @@ export async function PATCH(
     // Validate action
     const validActions = ['approve', 'reject', 'flag'];
     if (!validActions.includes(action)) {
-      return NextResponse.json(
-        { error: 'Invalid action' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
     // Find the job
     const job = await prisma.job.findUnique({
-      where: { id: jobId }
+      where: { id: jobId },
     });
 
     if (!job) {
-      return NextResponse.json(
-        { error: 'Job not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     // For now, we'll use a simple approach since we don't have moderation fields in the schema yet
     // In a real implementation, you'd add fields like: moderationStatus, moderatedAt, moderatedBy, moderationReason
-    
+
     let updateData: any = {};
     let statusMessage = '';
 
@@ -77,7 +68,7 @@ export async function PATCH(
 
     const updatedJob = await prisma.job.update({
       where: { id: jobId },
-      data: updateData
+      data: updateData,
     });
 
     // In a real app, you'd also create an audit log entry here
@@ -101,10 +92,9 @@ export async function PATCH(
         company: job.company,
         action: action,
         moderatedAt: new Date(),
-        moderatedBy: session.user?.email
-      }
+        moderatedBy: session.user?.email,
+      },
     });
-
   } catch (error) {
     console.error('Moderation error:', error);
     return NextResponse.json(
@@ -112,4 +102,4 @@ export async function PATCH(
       { status: 500 }
     );
   }
-} 
+}

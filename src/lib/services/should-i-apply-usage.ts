@@ -5,38 +5,56 @@ export const SHOULD_I_APPLY_LIMITS = {
   free: {
     dailyLimit: 3,
     monthlyLimit: 50,
-    features: ['basic_analysis', 'skill_matching']
+    features: ['basic_analysis', 'skill_matching'],
   },
   basic: {
     dailyLimit: 10,
     monthlyLimit: 200,
-    features: ['basic_analysis', 'skill_matching', 'career_tips']
+    features: ['basic_analysis', 'skill_matching', 'career_tips'],
   },
   essential: {
     dailyLimit: 25,
     monthlyLimit: 500,
-    features: ['basic_analysis', 'skill_matching', 'career_tips']
+    features: ['basic_analysis', 'skill_matching', 'career_tips'],
   },
   professional: {
     dailyLimit: -1, // unlimited
     monthlyLimit: -1, // unlimited
-    features: ['basic_analysis', 'skill_matching', 'career_tips', 'detailed_insights', 'application_tips']
+    features: [
+      'basic_analysis',
+      'skill_matching',
+      'career_tips',
+      'detailed_insights',
+      'application_tips',
+    ],
   },
   premium: {
     dailyLimit: -1, // unlimited
     monthlyLimit: -1, // unlimited
-    features: ['basic_analysis', 'skill_matching', 'career_tips', 'detailed_insights', 'application_tips']
+    features: [
+      'basic_analysis',
+      'skill_matching',
+      'career_tips',
+      'detailed_insights',
+      'application_tips',
+    ],
   },
   enterprise: {
     dailyLimit: -1, // unlimited
     monthlyLimit: -1, // unlimited
-    features: ['basic_analysis', 'skill_matching', 'career_tips', 'detailed_insights', 'application_tips']
+    features: [
+      'basic_analysis',
+      'skill_matching',
+      'career_tips',
+      'detailed_insights',
+      'application_tips',
+    ],
   },
   starter: {
     dailyLimit: 5,
     monthlyLimit: 100,
-    features: ['basic_analysis', 'skill_matching']
-  }
+    features: ['basic_analysis', 'skill_matching'],
+  },
 };
 
 export interface UsageRecord {
@@ -65,8 +83,8 @@ export class ShouldIApplyUsageService {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        subscriptions: true
-      }
+        subscriptions: true,
+      },
     });
 
     if (!user) {
@@ -75,7 +93,9 @@ export class ShouldIApplyUsageService {
 
     // Determine user tier
     const userTier = user.subscriptions?.tier || 'free';
-    const limits = SHOULD_I_APPLY_LIMITS[userTier as keyof typeof SHOULD_I_APPLY_LIMITS] || SHOULD_I_APPLY_LIMITS.free;
+    const limits =
+      SHOULD_I_APPLY_LIMITS[userTier as keyof typeof SHOULD_I_APPLY_LIMITS] ||
+      SHOULD_I_APPLY_LIMITS.free;
 
     // Get today's usage
     const today = new Date();
@@ -88,23 +108,27 @@ export class ShouldIApplyUsageService {
         userId,
         usedAt: {
           gte: today,
-          lt: tomorrow
-        }
-      }
+          lt: tomorrow,
+        },
+      },
     });
 
     // Get this month's usage
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    const startOfNextMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1
+    );
 
     const usageThisMonth = await prisma.shouldIApplyUsage.count({
       where: {
         userId,
         usedAt: {
           gte: startOfMonth,
-          lt: startOfNextMonth
-        }
-      }
+          lt: startOfNextMonth,
+        },
+      },
     });
 
     // Check limits
@@ -114,7 +138,10 @@ export class ShouldIApplyUsageService {
     if (limits.dailyLimit > 0 && usageToday >= limits.dailyLimit) {
       canUse = false;
       reason = `Daily limit of ${limits.dailyLimit} analyses reached. Upgrade for unlimited access.`;
-    } else if (limits.monthlyLimit > 0 && usageThisMonth >= limits.monthlyLimit) {
+    } else if (
+      limits.monthlyLimit > 0 &&
+      usageThisMonth >= limits.monthlyLimit
+    ) {
       canUse = false;
       reason = `Monthly limit of ${limits.monthlyLimit} analyses reached. Upgrade for unlimited access.`;
     }
@@ -126,18 +153,22 @@ export class ShouldIApplyUsageService {
       usageThisMonth,
       dailyLimit: limits.dailyLimit,
       monthlyLimit: limits.monthlyLimit,
-      userTier
+      userTier,
     };
   }
 
   /**
    * Record usage of the "Should I Apply?" feature
    */
-  static async recordUsage(userId: string, jobId: string, analysisType: string = 'basic'): Promise<UsageRecord> {
+  static async recordUsage(
+    userId: string,
+    jobId: string,
+    analysisType: string = 'basic'
+  ): Promise<UsageRecord> {
     // Get user tier
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { subscriptions: true }
+      include: { subscriptions: true },
     });
 
     const userTier = user?.subscriptions?.tier || 'free';
@@ -148,8 +179,8 @@ export class ShouldIApplyUsageService {
         jobId,
         userTier,
         analysisType,
-        usedAt: new Date()
-      }
+        usedAt: new Date(),
+      },
     });
 
     return usage;
@@ -168,14 +199,16 @@ export class ShouldIApplyUsageService {
   }> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { subscriptions: true }
+      include: { subscriptions: true },
     });
 
     const userTier = user?.subscriptions?.tier || 'free';
-    const limits = SHOULD_I_APPLY_LIMITS[userTier as keyof typeof SHOULD_I_APPLY_LIMITS] || SHOULD_I_APPLY_LIMITS.free;
+    const limits =
+      SHOULD_I_APPLY_LIMITS[userTier as keyof typeof SHOULD_I_APPLY_LIMITS] ||
+      SHOULD_I_APPLY_LIMITS.free;
 
     const now = new Date();
-    
+
     // Today
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
@@ -189,20 +222,22 @@ export class ShouldIApplyUsageService {
     // This month
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    const [todayCount, weekCount, monthCount, allTimeCount] = await Promise.all([
-      prisma.shouldIApplyUsage.count({
-        where: { userId, usedAt: { gte: today, lt: tomorrow } }
-      }),
-      prisma.shouldIApplyUsage.count({
-        where: { userId, usedAt: { gte: startOfWeek } }
-      }),
-      prisma.shouldIApplyUsage.count({
-        where: { userId, usedAt: { gte: startOfMonth } }
-      }),
-      prisma.shouldIApplyUsage.count({
-        where: { userId }
-      })
-    ]);
+    const [todayCount, weekCount, monthCount, allTimeCount] = await Promise.all(
+      [
+        prisma.shouldIApplyUsage.count({
+          where: { userId, usedAt: { gte: today, lt: tomorrow } },
+        }),
+        prisma.shouldIApplyUsage.count({
+          where: { userId, usedAt: { gte: startOfWeek } },
+        }),
+        prisma.shouldIApplyUsage.count({
+          where: { userId, usedAt: { gte: startOfMonth } },
+        }),
+        prisma.shouldIApplyUsage.count({
+          where: { userId },
+        }),
+      ]
+    );
 
     return {
       today: todayCount,
@@ -210,14 +245,17 @@ export class ShouldIApplyUsageService {
       thisMonth: monthCount,
       allTime: allTimeCount,
       userTier,
-      limits
+      limits,
     };
   }
 
   /**
    * Get recent analyses for a user
    */
-  static async getRecentAnalyses(userId: string, limit: number = 10): Promise<any[]> {
+  static async getRecentAnalyses(
+    userId: string,
+    limit: number = 10
+  ): Promise<any[]> {
     const analyses = await prisma.shouldIApplyUsage.findMany({
       where: { userId },
       orderBy: { usedAt: 'desc' },
@@ -228,10 +266,10 @@ export class ShouldIApplyUsageService {
             id: true,
             title: true,
             company: true,
-            location: true
-          }
-        }
-      }
+            location: true,
+          },
+        },
+      },
     });
 
     return analyses;
@@ -243,11 +281,15 @@ export class ShouldIApplyUsageService {
   static async hasPremiumFeatures(userId: string): Promise<boolean> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { subscriptions: true }
+      include: { subscriptions: true },
     });
 
     const userTier = user?.subscriptions?.tier || 'free';
-    return userTier === 'professional' || userTier === 'premium' || userTier === 'enterprise';
+    return (
+      userTier === 'professional' ||
+      userTier === 'premium' ||
+      userTier === 'enterprise'
+    );
   }
 
   /**
@@ -260,32 +302,41 @@ export class ShouldIApplyUsageService {
     benefits: string[];
   }> {
     const stats = await this.getUserUsageStats(userId);
-    
-    if (stats.userTier === 'professional' || stats.userTier === 'premium' || stats.userTier === 'enterprise') {
+
+    if (
+      stats.userTier === 'professional' ||
+      stats.userTier === 'premium' ||
+      stats.userTier === 'enterprise'
+    ) {
       return {
         shouldSuggestUpgrade: false,
         reason: 'User already has premium access',
         suggestedTier: stats.userTier,
-        benefits: []
+        benefits: [],
       };
     }
 
     // Check if user is hitting limits frequently
-    const isHittingDailyLimit = stats.today >= stats.limits.dailyLimit && stats.limits.dailyLimit > 0;
-    const isHeavyUser = stats.thisMonth > (stats.limits.monthlyLimit * 0.8) && stats.limits.monthlyLimit > 0;
+    const isHittingDailyLimit =
+      stats.today >= stats.limits.dailyLimit && stats.limits.dailyLimit > 0;
+    const isHeavyUser =
+      stats.thisMonth > stats.limits.monthlyLimit * 0.8 &&
+      stats.limits.monthlyLimit > 0;
 
     if (isHittingDailyLimit || isHeavyUser) {
       return {
         shouldSuggestUpgrade: true,
-        reason: isHittingDailyLimit ? 'Daily limit reached' : 'Heavy usage detected',
+        reason: isHittingDailyLimit
+          ? 'Daily limit reached'
+          : 'Heavy usage detected',
         suggestedTier: 'professional',
         benefits: [
           'Unlimited job analyses',
           'Detailed career insights',
           'Personalized application tips',
           'Priority support',
-          'Advanced matching algorithm'
-        ]
+          'Advanced matching algorithm',
+        ],
       };
     }
 
@@ -293,7 +344,7 @@ export class ShouldIApplyUsageService {
       shouldSuggestUpgrade: false,
       reason: 'Usage within limits',
       suggestedTier: stats.userTier,
-      benefits: []
+      benefits: [],
     };
   }
 }

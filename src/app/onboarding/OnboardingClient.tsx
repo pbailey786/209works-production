@@ -30,14 +30,14 @@ export default function OnboardingClient({ user }: OnboardingClientProps) {
 
   const handleOnboardingComplete = async () => {
     setIsCompleting(true);
-    
+
     try {
       // The OnboardingWizard component will handle the API call
       // This is just a callback for when it's done
-      
+
       // Small delay to show completion state
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Redirect to appropriate dashboard
       if (user.role === 'employer') {
         router.push('/employers/dashboard');
@@ -52,10 +52,10 @@ export default function OnboardingClient({ user }: OnboardingClientProps) {
 
   if (isCompleting) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+          <h2 className="mb-2 text-xl font-semibold text-gray-900">
             Setting up your account...
           </h2>
           <p className="text-gray-600">

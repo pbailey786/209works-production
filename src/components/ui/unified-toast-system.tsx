@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast as useUIToast } from '@/lib/ui/component-state-manager';
@@ -12,7 +12,13 @@ import type { ToastState } from '@/lib/ui/component-state-manager';
 interface UnifiedToastProps {
   toast: ToastState;
   onClose: (id: string) => void;
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+  position?:
+    | 'top-right'
+    | 'top-left'
+    | 'bottom-right'
+    | 'bottom-left'
+    | 'top-center'
+    | 'bottom-center';
 }
 
 const typeIcons = {
@@ -36,20 +42,24 @@ const iconStyles = {
   warning: 'text-yellow-500',
 };
 
-function UnifiedToast({ toast, onClose, position = 'top-right' }: UnifiedToastProps) {
+function UnifiedToast({
+  toast,
+  onClose,
+  position = 'top-right',
+}: UnifiedToastProps) {
   const Icon = typeIcons[toast.type];
-  
+
   // Auto-dismiss timer
   React.useEffect(() => {
     if (toast.duration && toast.duration > 0) {
       const timer = setTimeout(() => {
         onClose(toast.id);
       }, toast.duration);
-      
+
       return () => clearTimeout(timer);
     }
   }, [toast.id, toast.duration, onClose]);
-  
+
   const getPositionClasses = () => {
     switch (position) {
       case 'top-left':
@@ -68,7 +78,7 @@ function UnifiedToast({ toast, onClose, position = 'top-right' }: UnifiedToastPr
         return 'top-4 right-4';
     }
   };
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -50, scale: 0.95 }}
@@ -76,7 +86,7 @@ function UnifiedToast({ toast, onClose, position = 'top-right' }: UnifiedToastPr
       exit={{ opacity: 0, y: -50, scale: 0.95 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        'fixed z-50 w-full max-w-sm p-4 rounded-lg border shadow-lg',
+        'fixed z-50 w-full max-w-sm rounded-lg border p-4 shadow-lg',
         'pointer-events-auto',
         typeStyles[toast.type],
         getPositionClasses()
@@ -86,27 +96,30 @@ function UnifiedToast({ toast, onClose, position = 'top-right' }: UnifiedToastPr
       aria-atomic="true"
     >
       <div className="flex items-start gap-3">
-        <Icon className={cn('w-5 h-5 mt-0.5 flex-shrink-0', iconStyles[toast.type])} />
-        
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium break-words">
-            {toast.message}
-          </p>
+        <Icon
+          className={cn('mt-0.5 h-5 w-5 flex-shrink-0', iconStyles[toast.type])}
+        />
+
+        <div className="min-w-0 flex-1">
+          <p className="break-words text-sm font-medium">{toast.message}</p>
         </div>
-        
+
         <button
           onClick={() => onClose(toast.id)}
           className={cn(
-            'flex-shrink-0 p-1 rounded-md transition-colors',
+            'flex-shrink-0 rounded-md p-1 transition-colors',
             'hover:bg-black/10 focus:outline-none focus:ring-2 focus:ring-offset-2',
-            toast.type === 'error' ? 'focus:ring-red-500' :
-            toast.type === 'success' ? 'focus:ring-green-500' :
-            toast.type === 'warning' ? 'focus:ring-yellow-500' :
-            'focus:ring-blue-500'
+            toast.type === 'error'
+              ? 'focus:ring-red-500'
+              : toast.type === 'success'
+                ? 'focus:ring-green-500'
+                : toast.type === 'warning'
+                  ? 'focus:ring-yellow-500'
+                  : 'focus:ring-blue-500'
           )}
           aria-label="Close notification"
         >
-          <Cross2Icon className="w-4 h-4" />
+          <Cross2Icon className="h-4 w-4" />
         </button>
       </div>
     </motion.div>
@@ -114,23 +127,23 @@ function UnifiedToast({ toast, onClose, position = 'top-right' }: UnifiedToastPr
 }
 
 // Toast container that manages multiple toasts
-export function UnifiedToastContainer({ 
+export function UnifiedToastContainer({
   position = 'top-right',
-  maxToasts = 5 
-}: { 
+  maxToasts = 5,
+}: {
   position?: UnifiedToastProps['position'];
   maxToasts?: number;
 }) {
   const { toasts, removeToast } = useUIToast();
-  
+
   // Limit displayed toasts
   const displayedToasts = React.useMemo(() => {
     return toasts.slice(0, maxToasts);
   }, [toasts, maxToasts]);
-  
+
   const getContainerClasses = () => {
     const baseClasses = 'fixed z-50 flex flex-col gap-2 pointer-events-none';
-    
+
     switch (position) {
       case 'top-left':
         return `${baseClasses} top-4 left-4`;
@@ -148,11 +161,11 @@ export function UnifiedToastContainer({
         return `${baseClasses} top-4 right-4`;
     }
   };
-  
+
   return (
     <div className={getContainerClasses()}>
       <AnimatePresence mode="popLayout">
-        {displayedToasts.map((toast) => (
+        {displayedToasts.map(toast => (
           <UnifiedToast
             key={toast.id}
             toast={toast}
@@ -168,35 +181,50 @@ export function UnifiedToastContainer({
 // Hook for easy toast management with backward compatibility
 export function useUnifiedToast() {
   const { addToast, removeToast, clearToasts, toasts } = useUIToast();
-  
-  const toast = React.useCallback((
-    message: string,
-    type: ToastState['type'] = 'info',
-    duration: number = 5000
-  ) => {
-    addToast({
-      message,
-      type,
-      duration,
-    });
-  }, [addToast]);
-  
-  const success = React.useCallback((message: string, duration?: number) => {
-    toast(message, 'success', duration);
-  }, [toast]);
-  
-  const error = React.useCallback((message: string, duration?: number) => {
-    toast(message, 'error', duration);
-  }, [toast]);
-  
-  const info = React.useCallback((message: string, duration?: number) => {
-    toast(message, 'info', duration);
-  }, [toast]);
-  
-  const warning = React.useCallback((message: string, duration?: number) => {
-    toast(message, 'warning', duration);
-  }, [toast]);
-  
+
+  const toast = React.useCallback(
+    (
+      message: string,
+      type: ToastState['type'] = 'info',
+      duration: number = 5000
+    ) => {
+      addToast({
+        message,
+        type,
+        duration,
+      });
+    },
+    [addToast]
+  );
+
+  const success = React.useCallback(
+    (message: string, duration?: number) => {
+      toast(message, 'success', duration);
+    },
+    [toast]
+  );
+
+  const error = React.useCallback(
+    (message: string, duration?: number) => {
+      toast(message, 'error', duration);
+    },
+    [toast]
+  );
+
+  const info = React.useCallback(
+    (message: string, duration?: number) => {
+      toast(message, 'info', duration);
+    },
+    [toast]
+  );
+
+  const warning = React.useCallback(
+    (message: string, duration?: number) => {
+      toast(message, 'warning', duration);
+    },
+    [toast]
+  );
+
   return {
     toast,
     success,
@@ -225,7 +253,7 @@ export function LegacyToastWrapper({
 }) {
   const { addToast } = useUIToast();
   const toastIdRef = React.useRef<string | null>(null);
-  
+
   React.useEffect(() => {
     if (open && !toastIdRef.current) {
       addToast({
@@ -233,26 +261,26 @@ export function LegacyToastWrapper({
         type,
         duration: autoHideDuration,
       });
-      
+
       // Auto-close after duration
       const timer = setTimeout(() => {
         onClose();
         toastIdRef.current = null;
       }, autoHideDuration);
-      
+
       return () => {
         clearTimeout(timer);
         toastIdRef.current = null;
       };
     }
   }, [open, message, type, autoHideDuration, addToast, onClose]);
-  
+
   React.useEffect(() => {
     if (!open) {
       toastIdRef.current = null;
     }
   }, [open]);
-  
+
   // This component doesn't render anything - it just manages state
   return null;
 }
@@ -262,4 +290,4 @@ export const UnifiedToastMemo = React.memo(UnifiedToast);
 export const UnifiedToastContainerMemo = React.memo(UnifiedToastContainer);
 
 // Default export
-export default UnifiedToastContainer; 
+export default UnifiedToastContainer;

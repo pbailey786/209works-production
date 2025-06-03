@@ -15,19 +15,21 @@ async function testJobSearch() {
     'Find nursing jobs in Stockton',
     'Show me warehouse jobs near Tracy',
     'What customer service jobs are available?',
-    'Remote tech jobs in the 209 area'
+    'Remote tech jobs in the 209 area',
   ];
 
   for (const query of testQueries) {
     console.log(`🔍 Testing: "${query}"`);
-    
+
     try {
       const result = await makeRequest(query);
-      
+
       if (result.success) {
         console.log(`✅ Success! Found ${result.data?.jobs?.length || 0} jobs`);
         if (result.data?.summary) {
-          console.log(`📝 AI Response: ${result.data.summary.substring(0, 100)}...`);
+          console.log(
+            `📝 AI Response: ${result.data.summary.substring(0, 100)}...`
+          );
         }
         if (result.data?.followUpQuestions?.length > 0) {
           console.log(`💡 Follow-up: ${result.data.followUpQuestions[0]}`);
@@ -38,7 +40,7 @@ async function testJobSearch() {
     } catch (error) {
       console.log(`❌ Error: ${error.message}`);
     }
-    
+
     console.log(''); // Empty line for readability
   }
 }
@@ -50,7 +52,7 @@ function makeRequest(query) {
       userMessage: query,
       conversationHistory: [],
       userProfile: null,
-      sessionId: 'test-session'
+      sessionId: 'test-session',
     });
 
     const options = {
@@ -60,14 +62,14 @@ function makeRequest(query) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(postData)
-      }
+        'Content-Length': Buffer.byteLength(postData),
+      },
     };
 
-    const req = https.request(options, (res) => {
+    const req = https.request(options, res => {
       let data = '';
 
-      res.on('data', (chunk) => {
+      res.on('data', chunk => {
         data += chunk;
       });
 
@@ -85,7 +87,7 @@ function makeRequest(query) {
       });
     });
 
-    req.on('error', (error) => {
+    req.on('error', error => {
       reject(error);
     });
 
@@ -97,27 +99,30 @@ function makeRequest(query) {
 // Check OpenAI API key status
 function checkApiKeyStatus() {
   console.log('🔑 Checking OpenAI API Key Status...\n');
-  
+
   const apiKey = process.env.OPENAI_API_KEY;
-  
+
   if (!apiKey) {
     console.log('❌ No OPENAI_API_KEY found in environment');
     console.log('📝 Add your API key to .env.local file');
     return false;
   }
-  
-  if (apiKey === 'your-openai-key' || apiKey === 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key') {
+
+  if (
+    apiKey === 'your-openai-key' ||
+    apiKey === 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key'
+  ) {
     console.log('⚠️  Placeholder API key detected');
     console.log('📝 Replace with your actual OpenAI API key');
     return false;
   }
-  
+
   if (apiKey.startsWith('sk-') || apiKey.startsWith('sk-proj-')) {
     console.log('✅ Valid API key format detected');
     console.log('🤖 AI-powered search should be available');
     return true;
   }
-  
+
   console.log('❌ Invalid API key format');
   console.log('📝 API key should start with "sk-" or "sk-proj-"');
   return false;
@@ -127,22 +132,24 @@ function checkApiKeyStatus() {
 async function main() {
   console.log('🚀 209Jobs OpenAI Setup Test\n');
   console.log('=' * 50);
-  
+
   const hasValidKey = checkApiKeyStatus();
   console.log('');
-  
+
   if (!hasValidKey) {
     console.log('🔄 Running in fallback mode (basic keyword search)');
-    console.log('📖 See OPENAI_SETUP.md for instructions to enable AI features');
+    console.log(
+      '📖 See OPENAI_SETUP.md for instructions to enable AI features'
+    );
   } else {
     console.log('🤖 Running with AI-powered search');
   }
-  
+
   console.log('');
-  
+
   // Test the job search functionality
   await testJobSearch();
-  
+
   console.log('🎉 Test completed!');
   console.log('');
   console.log('Next steps:');

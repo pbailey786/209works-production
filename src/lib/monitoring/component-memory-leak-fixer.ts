@@ -1,6 +1,6 @@
 /**
  * Component Memory Leak Fixer
- * 
+ *
  * Automatically detects and fixes common memory leak patterns in React components:
  * - Uncleaned timers (setTimeout, setInterval)
  * - Uncleaned event listeners
@@ -39,7 +39,11 @@ class ComponentMemoryLeakFixer {
     // Check for setTimeout without cleanup
     const timeoutMatches = componentCode.match(/setTimeout\s*\(/g);
     const timeoutCleanupMatches = componentCode.match(/clearTimeout\s*\(/g);
-    if (timeoutMatches && (!timeoutCleanupMatches || timeoutMatches.length > timeoutCleanupMatches.length)) {
+    if (
+      timeoutMatches &&
+      (!timeoutCleanupMatches ||
+        timeoutMatches.length > timeoutCleanupMatches.length)
+    ) {
       leaks.push({
         type: 'timer',
         description: 'setTimeout calls without proper cleanup in useEffect',
@@ -51,7 +55,11 @@ class ComponentMemoryLeakFixer {
     // Check for setInterval without cleanup
     const intervalMatches = componentCode.match(/setInterval\s*\(/g);
     const intervalCleanupMatches = componentCode.match(/clearInterval\s*\(/g);
-    if (intervalMatches && (!intervalCleanupMatches || intervalMatches.length > intervalCleanupMatches.length)) {
+    if (
+      intervalMatches &&
+      (!intervalCleanupMatches ||
+        intervalMatches.length > intervalCleanupMatches.length)
+    ) {
       leaks.push({
         type: 'timer',
         description: 'setInterval calls without proper cleanup in useEffect',
@@ -62,8 +70,14 @@ class ComponentMemoryLeakFixer {
 
     // Check for addEventListener without removeEventListener
     const addListenerMatches = componentCode.match(/addEventListener\s*\(/g);
-    const removeListenerMatches = componentCode.match(/removeEventListener\s*\(/g);
-    if (addListenerMatches && (!removeListenerMatches || addListenerMatches.length > removeListenerMatches.length)) {
+    const removeListenerMatches = componentCode.match(
+      /removeEventListener\s*\(/g
+    );
+    if (
+      addListenerMatches &&
+      (!removeListenerMatches ||
+        addListenerMatches.length > removeListenerMatches.length)
+    ) {
       leaks.push({
         type: 'listener',
         description: 'Event listeners without proper cleanup',
@@ -98,7 +112,10 @@ class ComponentMemoryLeakFixer {
 
     // Calculate score (100 - (leaks * severity weight))
     const severityWeights = { low: 5, medium: 15, high: 25, critical: 40 };
-    const totalDeduction = leaks.reduce((sum, leak) => sum + severityWeights[leak.severity], 0);
+    const totalDeduction = leaks.reduce(
+      (sum, leak) => sum + severityWeights[leak.severity],
+      0
+    );
     const score = Math.max(0, 100 - totalDeduction);
 
     // Generate recommendations
@@ -235,26 +252,44 @@ const safeSetState = useCallback((newState) => {
     const recommendations: string[] = [];
 
     if (leaks.some(leak => leak.type === 'timer')) {
-      recommendations.push('Use useRef to store timer IDs and clear them in useEffect cleanup');
-      recommendations.push('Consider using custom hooks like useSafeTimeout and useSafeInterval');
+      recommendations.push(
+        'Use useRef to store timer IDs and clear them in useEffect cleanup'
+      );
+      recommendations.push(
+        'Consider using custom hooks like useSafeTimeout and useSafeInterval'
+      );
     }
 
     if (leaks.some(leak => leak.type === 'listener')) {
-      recommendations.push('Always remove event listeners in useEffect cleanup functions');
-      recommendations.push('Use the same function reference for both add and remove operations');
+      recommendations.push(
+        'Always remove event listeners in useEffect cleanup functions'
+      );
+      recommendations.push(
+        'Use the same function reference for both add and remove operations'
+      );
     }
 
     if (leaks.some(leak => leak.type === 'async')) {
-      recommendations.push('Use AbortController to cancel pending async operations');
-      recommendations.push('Check if component is still mounted before updating state');
+      recommendations.push(
+        'Use AbortController to cancel pending async operations'
+      );
+      recommendations.push(
+        'Check if component is still mounted before updating state'
+      );
     }
 
     if (leaks.some(leak => leak.type === 'state')) {
-      recommendations.push('Implement mounted component checks before state updates');
-      recommendations.push('Use custom hooks that handle component lifecycle automatically');
+      recommendations.push(
+        'Implement mounted component checks before state updates'
+      );
+      recommendations.push(
+        'Use custom hooks that handle component lifecycle automatically'
+      );
     }
 
-    recommendations.push('Consider using the useMemoryLeakPrevention hook for automatic cleanup');
+    recommendations.push(
+      'Consider using the useMemoryLeakPrevention hook for automatic cleanup'
+    );
     recommendations.push('Run memory leak detection in development mode');
 
     return recommendations;
@@ -303,7 +338,7 @@ const safeSetState = useCallback((newState) => {
     recommendations: string[];
   } {
     const analyses = this.getAllAnalyses();
-    
+
     if (analyses.length === 0) {
       return {
         totalComponents: 0,
@@ -317,13 +352,20 @@ const safeSetState = useCallback((newState) => {
       };
     }
 
-    const totalScore = analyses.reduce((sum, analysis) => sum + analysis.score, 0);
+    const totalScore = analyses.reduce(
+      (sum, analysis) => sum + analysis.score,
+      0
+    );
     const averageScore = totalScore / analyses.length;
 
     const allLeaks = analyses.flatMap(analysis => analysis.leaks);
-    const criticalIssues = allLeaks.filter(leak => leak.severity === 'critical').length;
+    const criticalIssues = allLeaks.filter(
+      leak => leak.severity === 'critical'
+    ).length;
     const highIssues = allLeaks.filter(leak => leak.severity === 'high').length;
-    const mediumIssues = allLeaks.filter(leak => leak.severity === 'medium').length;
+    const mediumIssues = allLeaks.filter(
+      leak => leak.severity === 'medium'
+    ).length;
     const lowIssues = allLeaks.filter(leak => leak.severity === 'low').length;
 
     // Get top issues by frequency
@@ -339,7 +381,9 @@ const safeSetState = useCallback((newState) => {
       .map(([issue, count]) => `${issue} (${count} components)`);
 
     // Aggregate recommendations
-    const allRecommendations = analyses.flatMap(analysis => analysis.recommendations);
+    const allRecommendations = analyses.flatMap(
+      analysis => analysis.recommendations
+    );
     const uniqueRecommendations = Array.from(new Set(allRecommendations));
 
     return {
@@ -359,16 +403,28 @@ const safeSetState = useCallback((newState) => {
 const componentMemoryLeakFixer = new ComponentMemoryLeakFixer();
 
 // React hook for automatic memory leak detection and fixing
-export function useMemoryLeakDetection(componentName: string, componentCode?: string) {
+export function useMemoryLeakDetection(
+  componentName: string,
+  componentCode?: string
+) {
   const analysisRef = useRef<ComponentAnalysis | null>(null);
 
   useEffect(() => {
     if (componentCode) {
-      analysisRef.current = componentMemoryLeakFixer.analyzeComponent(componentName, componentCode);
-      
+      analysisRef.current = componentMemoryLeakFixer.analyzeComponent(
+        componentName,
+        componentCode
+      );
+
       // Log analysis in development
-      if (process.env.NODE_ENV === 'development' && analysisRef.current.leaks.length > 0) {
-        console.warn(`Memory leak analysis for ${componentName}:`, analysisRef.current);
+      if (
+        process.env.NODE_ENV === 'development' &&
+        analysisRef.current.leaks.length > 0
+      ) {
+        console.warn(
+          `Memory leak analysis for ${componentName}:`,
+          analysisRef.current
+        );
       }
     }
   }, [componentName, componentCode]);
@@ -378,7 +434,9 @@ export function useMemoryLeakDetection(componentName: string, componentCode?: st
   }, [componentName]);
 
   const getAnalysis = useCallback(() => {
-    return analysisRef.current || componentMemoryLeakFixer.getAnalysis(componentName);
+    return (
+      analysisRef.current || componentMemoryLeakFixer.getAnalysis(componentName)
+    );
   }, [componentName]);
 
   return {
@@ -389,7 +447,10 @@ export function useMemoryLeakDetection(componentName: string, componentCode?: st
 }
 
 // Utility functions
-export function analyzeComponentCode(componentName: string, code: string): ComponentAnalysis {
+export function analyzeComponentCode(
+  componentName: string,
+  code: string
+): ComponentAnalysis {
   return componentMemoryLeakFixer.analyzeComponent(componentName, code);
 }
 
@@ -397,8 +458,10 @@ export function generateMemoryLeakReport() {
   return componentMemoryLeakFixer.generateReport();
 }
 
-export function getComponentAnalysis(componentName: string): ComponentAnalysis | undefined {
+export function getComponentAnalysis(
+  componentName: string
+): ComponentAnalysis | undefined {
   return componentMemoryLeakFixer.getAnalysis(componentName);
 }
 
-export default componentMemoryLeakFixer; 
+export default componentMemoryLeakFixer;

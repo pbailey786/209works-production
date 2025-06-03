@@ -8,7 +8,10 @@ import { Task, TasksCollection, TaskValidator } from './validation';
  */
 export class TaskPerformanceOptimizer {
   private static instance: TaskPerformanceOptimizer;
-  private cache: Map<string, { data: TasksCollection; timestamp: number; checksum: string }> = new Map();
+  private cache: Map<
+    string,
+    { data: TasksCollection; timestamp: number; checksum: string }
+  > = new Map();
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
   private readonly MAX_CACHE_SIZE = 10;
   private readonly CHUNK_SIZE = 50; // Tasks per chunk
@@ -33,7 +36,7 @@ export class TaskPerformanceOptimizer {
     if (cached && this.isCacheValid(cached)) {
       const fileStats = await fs.stat(filePath);
       const currentChecksum = await this.calculateFileChecksum(filePath);
-      
+
       if (cached.checksum === currentChecksum) {
         return cached.data;
       }
@@ -42,7 +45,7 @@ export class TaskPerformanceOptimizer {
     // Load and cache new data
     const tasksData = await this.loadTasksFromFile(filePath);
     const checksum = await this.calculateFileChecksum(filePath);
-    
+
     this.updateCache(cacheKey, tasksData, checksum);
     return tasksData;
   }
@@ -50,7 +53,10 @@ export class TaskPerformanceOptimizer {
   /**
    * Save tasks with optimization for large files
    */
-  async saveTasksOptimized(filePath: string, tasksCollection: TasksCollection): Promise<void> {
+  async saveTasksOptimized(
+    filePath: string,
+    tasksCollection: TasksCollection
+  ): Promise<void> {
     // Create backup before saving
     await this.createBackup(filePath);
 
@@ -60,7 +66,8 @@ export class TaskPerformanceOptimizer {
     // Update metadata
     optimizedData.metadata.lastModified = new Date().toISOString();
     optimizedData.metadata.totalTasks = optimizedData.tasks.length;
-    optimizedData.metadata.checksum = TaskValidator.getInstance().calculateChecksum(optimizedData.tasks);
+    optimizedData.metadata.checksum =
+      TaskValidator.getInstance().calculateChecksum(optimizedData.tasks);
 
     // Write to temporary file first, then rename (atomic operation)
     const tempFilePath = `${filePath}.tmp`;
@@ -77,7 +84,7 @@ export class TaskPerformanceOptimizer {
    */
   async splitTaskFile(filePath: string, outputDir: string): Promise<string[]> {
     const tasksData = await this.loadTasksFromFile(filePath);
-    
+
     if (tasksData.tasks.length <= this.CHUNK_SIZE) {
       return [filePath]; // No need to split
     }
@@ -87,19 +94,19 @@ export class TaskPerformanceOptimizer {
 
     // Split tasks into chunks while preserving dependencies
     const sortedTasks = this.topologicalSort(tasks);
-    
+
     for (let i = 0; i < sortedTasks.length; i += this.CHUNK_SIZE) {
       const chunkTasks = sortedTasks.slice(i, i + this.CHUNK_SIZE);
-      
+
       const chunkData: TasksCollection = {
         version: tasksData.version,
         metadata: {
           ...tasksData.metadata,
           projectName: `${tasksData.metadata.projectName} - Chunk ${Math.floor(i / this.CHUNK_SIZE) + 1}`,
           totalTasks: chunkTasks.length,
-          lastModified: new Date().toISOString()
+          lastModified: new Date().toISOString(),
         },
-        tasks: chunkTasks
+        tasks: chunkTasks,
       };
 
       chunks.push(chunkData);
@@ -110,7 +117,7 @@ export class TaskPerformanceOptimizer {
     for (let i = 0; i < chunks.length; i++) {
       const chunkFileName = `tasks-chunk-${i + 1}.json`;
       const chunkFilePath = path.join(outputDir, chunkFileName);
-      
+
       await fs.writeFile(chunkFilePath, JSON.stringify(chunks[i], null, 2));
       chunkFiles.push(chunkFilePath);
     }
@@ -121,14 +128,17 @@ export class TaskPerformanceOptimizer {
   /**
    * Merge multiple task files into one
    */
-  async mergeTaskFiles(filePaths: string[], outputPath: string): Promise<TasksCollection> {
+  async mergeTaskFiles(
+    filePaths: string[],
+    outputPath: string
+  ): Promise<TasksCollection> {
     const allTasks: Task[] = [];
     let baseMetadata: TasksCollection['metadata'] | null = null;
 
     for (const filePath of filePaths) {
       const tasksData = await this.loadTasksFromFile(filePath);
       allTasks.push(...tasksData.tasks);
-      
+
       if (!baseMetadata) {
         baseMetadata = tasksData.metadata;
       }
@@ -136,16 +146,16 @@ export class TaskPerformanceOptimizer {
 
     // Remove duplicate tasks and resolve conflicts
     const uniqueTasks = this.deduplicateTasks(allTasks);
-    
+
     const mergedData: TasksCollection = {
       version: '1.0.0',
       metadata: {
         projectName: baseMetadata?.projectName || 'Merged Project',
         createdAt: baseMetadata?.createdAt || new Date().toISOString(),
         lastModified: new Date().toISOString(),
-        totalTasks: uniqueTasks.length
+        totalTasks: uniqueTasks.length,
       },
-      tasks: uniqueTasks
+      tasks: uniqueTasks,
     };
 
     await this.saveTasksOptimized(outputPath, mergedData);
@@ -167,19 +177,23 @@ export class TaskPerformanceOptimizer {
     // Check memory usage
     const heapUsedMB = memoryUsage.heapUsed / 1024 / 1024;
     if (heapUsedMB > 100) {
-      recommendations.push('High memory usage detected. Consider clearing cache or splitting large task files.');
+      recommendations.push(
+        'High memory usage detected. Consider clearing cache or splitting large task files.'
+      );
     }
 
     // Check cache size
     if (this.cache.size > this.MAX_CACHE_SIZE * 0.8) {
-      recommendations.push('Cache is nearly full. Consider increasing cache size or reducing TTL.');
+      recommendations.push(
+        'Cache is nearly full. Consider increasing cache size or reducing TTL.'
+      );
     }
 
     return {
       cacheSize: this.cache.size,
       cacheHitRate: this.calculateCacheHitRate(),
       memoryUsage,
-      recommendations
+      recommendations,
     };
   }
 
@@ -211,7 +225,7 @@ export class TaskPerformanceOptimizer {
       if (task.details && task.details.trim()) {
         optimizedTask.details = task.details.trim();
       }
-      
+
       if (task.testStrategy && task.testStrategy.trim()) {
         optimizedTask.testStrategy = task.testStrategy.trim();
       }
@@ -224,13 +238,14 @@ export class TaskPerformanceOptimizer {
           status: subtask.status,
           dependencies: subtask.dependencies || [],
           parentTaskId: subtask.parentTaskId,
-          ...(subtask.details && { details: subtask.details.trim() })
+          ...(subtask.details && { details: subtask.details.trim() }),
         }));
       }
 
       if (task.createdAt) optimizedTask.createdAt = task.createdAt;
       if (task.updatedAt) optimizedTask.updatedAt = task.updatedAt;
-      if (task.estimatedHours) optimizedTask.estimatedHours = task.estimatedHours;
+      if (task.estimatedHours)
+        optimizedTask.estimatedHours = task.estimatedHours;
       if (task.actualHours) optimizedTask.actualHours = task.actualHours;
       if (task.assignee) optimizedTask.assignee = task.assignee;
       if (task.tags && task.tags.length > 0) optimizedTask.tags = task.tags;
@@ -240,7 +255,7 @@ export class TaskPerformanceOptimizer {
 
     return {
       ...tasksCollection,
-      tasks: optimizedTasks
+      tasks: optimizedTasks,
     };
   }
 
@@ -254,7 +269,7 @@ export class TaskPerformanceOptimizer {
 
     const visit = (taskId: number): void => {
       if (visited.has(taskId)) return;
-      
+
       const task = taskMap.get(taskId);
       if (!task) return;
 
@@ -284,14 +299,18 @@ export class TaskPerformanceOptimizer {
 
     for (const task of tasks) {
       const existing = taskMap.get(task.id);
-      
+
       if (!existing) {
         taskMap.set(task.id, task);
       } else {
         // Resolve conflict by keeping the most recently updated task
-        const existingTime = new Date(existing.updatedAt || existing.createdAt || '1970-01-01').getTime();
-        const currentTime = new Date(task.updatedAt || task.createdAt || '1970-01-01').getTime();
-        
+        const existingTime = new Date(
+          existing.updatedAt || existing.createdAt || '1970-01-01'
+        ).getTime();
+        const currentTime = new Date(
+          task.updatedAt || task.createdAt || '1970-01-01'
+        ).getTime();
+
         if (currentTime > existingTime) {
           taskMap.set(task.id, task);
         }
@@ -308,10 +327,12 @@ export class TaskPerformanceOptimizer {
     try {
       const content = await fs.readFile(filePath, 'utf-8');
       const data = JSON.parse(content);
-      
+
       return await TaskValidator.getInstance().validateTasksCollection(data);
     } catch (error) {
-      throw new Error(`Failed to load tasks from ${filePath}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to load tasks from ${filePath}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -334,7 +355,11 @@ export class TaskPerformanceOptimizer {
   /**
    * Update cache with new data
    */
-  private updateCache(key: string, data: TasksCollection, checksum: string): void {
+  private updateCache(
+    key: string,
+    data: TasksCollection,
+    checksum: string
+  ): void {
     // Remove oldest entries if cache is full
     if (this.cache.size >= this.MAX_CACHE_SIZE) {
       const oldestKey = this.cache.keys().next().value;
@@ -346,7 +371,7 @@ export class TaskPerformanceOptimizer {
     this.cache.set(key, {
       data: JSON.parse(JSON.stringify(data)), // Deep clone
       timestamp: Date.now(),
-      checksum
+      checksum,
     });
   }
 
@@ -368,7 +393,9 @@ export class TaskPerformanceOptimizer {
       await fs.copyFile(filePath, backupPath);
     } catch (error) {
       // Backup creation is optional, don't fail the main operation
-      console.warn(`Failed to create backup: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.warn(
+        `Failed to create backup: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 }
@@ -412,7 +439,10 @@ export class TaskIndexer {
     }
 
     if (query.description) {
-      const descResults = this.searchInIndex(this.descriptionIndex, query.description);
+      const descResults = this.searchInIndex(
+        this.descriptionIndex,
+        query.description
+      );
       results.push(new Set(descResults));
     }
 
@@ -437,10 +467,12 @@ export class TaskIndexer {
 
     // Intersect all result sets
     if (results.length === 0) return [];
-    
+
     let intersection = results[0];
     for (let i = 1; i < results.length; i++) {
-      intersection = new Set([...intersection].filter(id => results[i].has(id)));
+      intersection = new Set(
+        [...intersection].filter(id => results[i].has(id))
+      );
     }
 
     return Array.from(intersection);
@@ -463,16 +495,16 @@ export class TaskIndexer {
   private indexTask(task: Task): void {
     // Index title
     this.addToIndex(this.titleIndex, task.title, task.id);
-    
+
     // Index description
     this.addToIndex(this.descriptionIndex, task.description, task.id);
-    
+
     // Index status
     this.addToSimpleIndex(this.statusIndex, task.status, task.id);
-    
+
     // Index priority
     this.addToSimpleIndex(this.priorityIndex, task.priority, task.id);
-    
+
     // Index tags
     if (task.tags) {
       for (const tag of task.tags) {
@@ -484,7 +516,11 @@ export class TaskIndexer {
   /**
    * Add to text-based index with tokenization
    */
-  private addToIndex(index: Map<string, number[]>, text: string, taskId: number): void {
+  private addToIndex(
+    index: Map<string, number[]>,
+    text: string,
+    taskId: number
+  ): void {
     const tokens = this.tokenize(text);
     for (const token of tokens) {
       if (!index.has(token)) {
@@ -497,7 +533,11 @@ export class TaskIndexer {
   /**
    * Add to simple key-value index
    */
-  private addToSimpleIndex(index: Map<string, number[]>, key: string, taskId: number): void {
+  private addToSimpleIndex(
+    index: Map<string, number[]>,
+    key: string,
+    taskId: number
+  ): void {
     if (!index.has(key)) {
       index.set(key, []);
     }
@@ -537,4 +577,4 @@ export class TaskIndexer {
 
     return intersection;
   }
-} 
+}

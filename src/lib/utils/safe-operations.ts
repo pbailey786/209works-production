@@ -8,9 +8,11 @@ export function isValidDate(date: any): date is Date {
   return date instanceof Date && !isNaN(date.getTime());
 }
 
-export function parseDate(input: string | number | Date | null | undefined): Date | null {
+export function parseDate(
+  input: string | number | Date | null | undefined
+): Date | null {
   if (!input) return null;
-  
+
   try {
     const date = new Date(input);
     return isValidDate(date) ? date : null;
@@ -26,7 +28,7 @@ export function safeDateFormat(
 ): string {
   const date = parseDate(input);
   if (!date) return '';
-  
+
   try {
     return date.toLocaleDateString(locale, options);
   } catch {
@@ -41,7 +43,7 @@ export function safeTimeFormat(
 ): string {
   const date = parseDate(input);
   if (!date) return '';
-  
+
   try {
     return date.toLocaleTimeString(locale, options);
   } catch {
@@ -56,13 +58,13 @@ export function safeDateTimeFormat(
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   },
   locale: string = 'en-US'
 ): string {
   const date = parseDate(input);
   if (!date) return '';
-  
+
   try {
     return date.toLocaleDateString(locale, options);
   } catch {
@@ -70,10 +72,12 @@ export function safeDateTimeFormat(
   }
 }
 
-export function safeISOString(input: string | number | Date | null | undefined): string {
+export function safeISOString(
+  input: string | number | Date | null | undefined
+): string {
   const date = parseDate(input);
   if (!date) return '';
-  
+
   try {
     return date.toISOString();
   } catch {
@@ -87,15 +91,19 @@ export function getRelativeTime(
 ): string {
   const date = parseDate(input);
   if (!date || !isValidDate(baseDate)) return '';
-  
+
   try {
     const diffMs = baseDate.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    
+
     if (diffDays > 30) {
-      return safeDateFormat(date, { year: 'numeric', month: 'short', day: 'numeric' });
+      return safeDateFormat(date, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
     } else if (diffDays > 0) {
       return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
     } else if (diffHours > 0) {
@@ -118,7 +126,7 @@ export function isValidString(input: any): input is string {
 export function safeString(input: any, fallback: string = ''): string {
   if (isValidString(input)) return input;
   if (input === null || input === undefined) return fallback;
-  
+
   try {
     return String(input);
   } catch {
@@ -143,7 +151,7 @@ export function safeSubstring(
 ): string {
   const str = safeString(input, fallback);
   if (!str) return fallback;
-  
+
   try {
     return str.substring(Math.max(0, start), end);
   } catch {
@@ -159,7 +167,7 @@ export function safeSlice(
 ): string {
   const str = safeString(input, fallback);
   if (!str) return fallback;
-  
+
   try {
     return str.slice(start, end);
   } catch {
@@ -175,7 +183,7 @@ export function safeSplit(
 ): string[] {
   const str = safeString(input);
   if (!str) return fallback;
-  
+
   try {
     return str.split(separator, limit);
   } catch {
@@ -191,7 +199,7 @@ export function safeIndexOf(
 ): number {
   const str = safeString(input);
   if (!str) return fallback;
-  
+
   try {
     return str.indexOf(searchValue, fromIndex);
   } catch {
@@ -206,7 +214,7 @@ export function safeCharAt(
 ): string {
   const str = safeString(input);
   if (!str || index < 0 || index >= str.length) return fallback;
-  
+
   try {
     return str.charAt(index);
   } catch {
@@ -235,7 +243,7 @@ export function safeToLowerCase(input: any, fallback: string = ''): string {
 export function capitalizeFirst(input: any, fallback: string = ''): string {
   const str = safeTrim(input, fallback);
   if (!str) return fallback;
-  
+
   try {
     return safeToUpperCase(safeCharAt(str, 0)) + safeSlice(str, 1);
   } catch {
@@ -246,7 +254,7 @@ export function capitalizeFirst(input: any, fallback: string = ''): string {
 export function capitalizeWords(input: any, fallback: string = ''): string {
   const str = safeTrim(input, fallback);
   if (!str) return fallback;
-  
+
   try {
     return safeSplit(str, ' ')
       .map(word => capitalizeFirst(word))
@@ -264,7 +272,7 @@ export function safeArraySlice<T>(
   fallback: T[] = []
 ): T[] {
   if (!Array.isArray(input)) return fallback;
-  
+
   try {
     return input.slice(start, end);
   } catch {
@@ -278,7 +286,7 @@ export function safeArrayJoin<T>(
   fallback: string = ''
 ): string {
   if (!Array.isArray(input)) return fallback;
-  
+
   try {
     return input.join(separator);
   } catch {
@@ -289,7 +297,7 @@ export function safeArrayJoin<T>(
 // Number operations
 export function safeNumber(input: any, fallback: number = 0): number {
   if (typeof input === 'number' && !isNaN(input)) return input;
-  
+
   try {
     const parsed = Number(input);
     return isNaN(parsed) ? fallback : parsed;
@@ -300,7 +308,7 @@ export function safeNumber(input: any, fallback: number = 0): number {
 
 export function safeToString(input: any, fallback: string = ''): string {
   if (input === null || input === undefined) return fallback;
-  
+
   try {
     return input.toString();
   } catch {
@@ -309,10 +317,13 @@ export function safeToString(input: any, fallback: string = ''): string {
 }
 
 // URL and encoding operations
-export function safeEncodeURIComponent(input: any, fallback: string = ''): string {
+export function safeEncodeURIComponent(
+  input: any,
+  fallback: string = ''
+): string {
   const str = safeString(input, fallback);
   if (!str) return fallback;
-  
+
   try {
     return encodeURIComponent(str);
   } catch {
@@ -320,10 +331,13 @@ export function safeEncodeURIComponent(input: any, fallback: string = ''): strin
   }
 }
 
-export function safeDecodeURIComponent(input: any, fallback: string = ''): string {
+export function safeDecodeURIComponent(
+  input: any,
+  fallback: string = ''
+): string {
   const str = safeString(input, fallback);
   if (!str) return fallback;
-  
+
   try {
     return decodeURIComponent(str);
   } catch {
@@ -338,7 +352,7 @@ export function isNonEmptyString(input: any): input is string {
 
 export function isValidEmail(input: any): boolean {
   if (!isNonEmptyString(input)) return false;
-  
+
   try {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(input);
@@ -349,11 +363,11 @@ export function isValidEmail(input: any): boolean {
 
 export function isValidURL(input: any): boolean {
   if (!isNonEmptyString(input)) return false;
-  
+
   try {
     new URL(input);
     return true;
   } catch {
     return false;
   }
-} 
+}

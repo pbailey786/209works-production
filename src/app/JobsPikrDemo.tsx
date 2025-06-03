@@ -61,7 +61,7 @@ const JobsPikrDemo: React.FC = () => {
       setShowSignInPrompt(true);
       return;
     }
-    setSavedJobIds((prev) => [...prev, jobId]);
+    setSavedJobIds(prev => [...prev, jobId]);
   };
 
   const handleSignIn = () => {
@@ -70,7 +70,14 @@ const JobsPikrDemo: React.FC = () => {
   };
 
   return (
-    <div style={{ margin: '2rem 0', padding: '1rem', border: '1px solid #ccc', borderRadius: 8 }}>
+    <div
+      style={{
+        margin: '2rem 0',
+        padding: '1rem',
+        border: '1px solid #ccc',
+        borderRadius: 8,
+      }}
+    >
       <h2>JobsPikr API Demo</h2>
       <div style={{ marginBottom: 8 }}>
         <input
@@ -126,21 +133,38 @@ const JobsPikrDemo: React.FC = () => {
       {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
       {showSignInPrompt && (
         <div style={{ color: 'blue', marginBottom: 8 }}>
-          Please <button onClick={handleSignIn} style={{ color: 'blue', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>sign in</button> to save jobs.
+          Please{' '}
+          <button
+            onClick={handleSignIn}
+            style={{
+              color: 'blue',
+              textDecoration: 'underline',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            sign in
+          </button>{' '}
+          to save jobs.
         </div>
       )}
       <ul>
         {jobs.map((job, idx) => (
           <li key={job.id || idx} style={{ marginBottom: 8 }}>
             <strong>{job.title}</strong> at {job.company} ({job.location})<br />
-            <a href={job.url} target="_blank" rel="noopener noreferrer">View Job</a>
+            <a href={job.url} target="_blank" rel="noopener noreferrer">
+              View Job
+            </a>
             <br />
             <button
               onClick={() => handleSave(job.id || idx.toString())}
               disabled={savedJobIds.includes(job.id || idx.toString())}
               style={{ marginTop: 4, marginRight: 8 }}
             >
-              {savedJobIds.includes(job.id || idx.toString()) ? 'Saved!' : 'Sign in to Save'}
+              {savedJobIds.includes(job.id || idx.toString())
+                ? 'Saved!'
+                : 'Sign in to Save'}
             </button>
           </li>
         ))}
@@ -150,4 +174,4 @@ const JobsPikrDemo: React.FC = () => {
   );
 };
 
-export default JobsPikrDemo; 
+export default JobsPikrDemo;

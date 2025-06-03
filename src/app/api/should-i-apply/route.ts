@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
     const { jobId } = await req.json();
 
     if (!jobId) {
-      return NextResponse.json({ error: 'Job ID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Job ID is required' },
+        { status: 400 }
+      );
     }
 
     // Get user by email
@@ -43,16 +46,19 @@ export async function POST(req: NextRequest) {
     const usageCheck = await ShouldIApplyUsageService.canUserAnalyze(user.id);
 
     if (!usageCheck.canUse) {
-      return NextResponse.json({
-        error: 'Usage limit exceeded',
-        reason: usageCheck.reason,
-        usageInfo: {
-          usageToday: usageCheck.usageToday,
-          dailyLimit: usageCheck.dailyLimit,
-          userTier: usageCheck.userTier
+      return NextResponse.json(
+        {
+          error: 'Usage limit exceeded',
+          reason: usageCheck.reason,
+          usageInfo: {
+            usageToday: usageCheck.usageToday,
+            dailyLimit: usageCheck.dailyLimit,
+            userTier: usageCheck.userTier,
+          },
+          upgradeRequired: true,
         },
-        upgradeRequired: true
-      }, { status: 429 });
+        { status: 429 }
+      );
     }
 
     // Get job details
@@ -79,7 +85,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine analysis type based on user tier
-    const hasPremium = await ShouldIApplyUsageService.hasPremiumFeatures(user.id);
+    const hasPremium = await ShouldIApplyUsageService.hasPremiumFeatures(
+      user.id
+    );
     const analysisType = hasPremium ? 'premium' : 'basic';
 
     // Generate AI-powered analysis
@@ -89,7 +97,8 @@ export async function POST(req: NextRequest) {
     await ShouldIApplyUsageService.recordUsage(user.id, jobId, analysisType);
 
     // Get upgrade suggestions if applicable
-    const upgradeSuggestions = await ShouldIApplyUsageService.getUpgradeSuggestions(user.id);
+    const upgradeSuggestions =
+      await ShouldIApplyUsageService.getUpgradeSuggestions(user.id);
 
     return NextResponse.json({
       ...analysis,
@@ -97,9 +106,11 @@ export async function POST(req: NextRequest) {
         usageToday: usageCheck.usageToday + 1,
         dailyLimit: usageCheck.dailyLimit,
         userTier: usageCheck.userTier,
-        analysisType
+        analysisType,
       },
-      upgradeSuggestions: upgradeSuggestions.shouldSuggestUpgrade ? upgradeSuggestions : null
+      upgradeSuggestions: upgradeSuggestions.shouldSuggestUpgrade
+        ? upgradeSuggestions
+        : null,
     });
   } catch (error) {
     console.error('Should I Apply API error:', error);
@@ -130,15 +141,20 @@ export async function GET(req: NextRequest) {
     }
 
     // Get usage statistics
-    const usageStats = await ShouldIApplyUsageService.getUserUsageStats(user.id);
+    const usageStats = await ShouldIApplyUsageService.getUserUsageStats(
+      user.id
+    );
     const usageCheck = await ShouldIApplyUsageService.canUserAnalyze(user.id);
-    const upgradeSuggestions = await ShouldIApplyUsageService.getUpgradeSuggestions(user.id);
+    const upgradeSuggestions =
+      await ShouldIApplyUsageService.getUpgradeSuggestions(user.id);
 
     return NextResponse.json({
       usageStats,
       canUse: usageCheck.canUse,
       reason: usageCheck.reason,
-      upgradeSuggestions: upgradeSuggestions.shouldSuggestUpgrade ? upgradeSuggestions : null
+      upgradeSuggestions: upgradeSuggestions.shouldSuggestUpgrade
+        ? upgradeSuggestions
+        : null,
     });
   } catch (error) {
     console.error('Should I Apply GET API error:', error);
@@ -150,7 +166,11 @@ export async function GET(req: NextRequest) {
 }
 
 // Enhanced AI-powered analysis function
-async function generateEnhancedAnalysis(job: any, user: any, analysisType: string) {
+async function generateEnhancedAnalysis(
+  job: any,
+  user: any,
+  analysisType: string
+) {
   try {
     // Build user profile context
     const userContext = `
@@ -233,7 +253,7 @@ Please analyze whether this job seeker should apply for this position and provid
     const response = await getChatCompletion(
       [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       {
         model: 'gpt-4',
@@ -253,18 +273,22 @@ Please analyze whether this job seeker should apply for this position and provid
       return {
         recommendation: analysis.recommendation || 'maybe',
         confidence: Math.min(100, Math.max(0, analysis.confidence || 50)),
-        explanation: analysis.explanation || 'Unable to generate detailed analysis.',
+        explanation:
+          analysis.explanation || 'Unable to generate detailed analysis.',
         skillMatch: {
           matching: (analysis.skillMatch?.matching || []).slice(0, 8),
           missing: (analysis.skillMatch?.missing || []).slice(0, 6),
-          score: Math.min(100, Math.max(0, analysis.skillMatch?.score || 0))
+          score: Math.min(100, Math.max(0, analysis.skillMatch?.score || 0)),
         },
         factors: {
           positive: (analysis.factors?.positive || []).slice(0, 5),
           negative: (analysis.factors?.negative || []).slice(0, 5),
-          neutral: (analysis.factors?.neutral || []).slice(0, 3)
+          neutral: (analysis.factors?.neutral || []).slice(0, 3),
         },
-        applicationTips: analysisType === 'premium' ? (analysis.applicationTips || []).slice(0, 5) : undefined
+        applicationTips:
+          analysisType === 'premium'
+            ? (analysis.applicationTips || []).slice(0, 5)
+            : undefined,
       };
     }
 
@@ -284,18 +308,26 @@ function generateBasicAnalysis(job: any, user: any) {
   const jobText = `${job.description} ${job.requirements}`.toLowerCase();
 
   // Calculate skill match
-  const matchingSkills = userSkills.filter((skill: string) =>
-    jobSkills.some((jobSkill: string) => jobSkill.toLowerCase().includes(skill.toLowerCase())) ||
-    jobText.includes(skill.toLowerCase())
+  const matchingSkills = userSkills.filter(
+    (skill: string) =>
+      jobSkills.some((jobSkill: string) =>
+        jobSkill.toLowerCase().includes(skill.toLowerCase())
+      ) || jobText.includes(skill.toLowerCase())
   );
 
-  const missingSkills = jobSkills.filter((jobSkill: string) =>
-    !userSkills.some((userSkill: string) => userSkill.toLowerCase().includes(jobSkill.toLowerCase()))
-  ).slice(0, 6);
+  const missingSkills = jobSkills
+    .filter(
+      (jobSkill: string) =>
+        !userSkills.some((userSkill: string) =>
+          userSkill.toLowerCase().includes(jobSkill.toLowerCase())
+        )
+    )
+    .slice(0, 6);
 
-  const skillMatchScore = jobSkills.length > 0
-    ? Math.round((matchingSkills.length / jobSkills.length) * 100)
-    : 50;
+  const skillMatchScore =
+    jobSkills.length > 0
+      ? Math.round((matchingSkills.length / jobSkills.length) * 100)
+      : 50;
 
   // Determine recommendation
   let recommendation: 'yes' | 'maybe' | 'no' = 'maybe';
@@ -315,7 +347,12 @@ function generateBasicAnalysis(job: any, user: any) {
   return {
     recommendation,
     confidence,
-    explanation: generateExplanation(recommendation, skillMatchScore, matchingSkills.length, missingSkills.length),
+    explanation: generateExplanation(
+      recommendation,
+      skillMatchScore,
+      matchingSkills.length,
+      missingSkills.length
+    ),
     skillMatch: {
       matching: matchingSkills.slice(0, 8),
       missing: missingSkills,
@@ -323,13 +360,23 @@ function generateBasicAnalysis(job: any, user: any) {
     },
     factors: {
       positive: [
-        ...(matchingSkills.length > 0 ? [`You have ${matchingSkills.length} relevant skills`] : []),
-        ...(user.currentJobTitle ? ['Your current experience is relevant'] : []),
-        ...(job.location === user.location ? ['Job location matches your preference'] : []),
+        ...(matchingSkills.length > 0
+          ? [`You have ${matchingSkills.length} relevant skills`]
+          : []),
+        ...(user.currentJobTitle
+          ? ['Your current experience is relevant']
+          : []),
+        ...(job.location === user.location
+          ? ['Job location matches your preference']
+          : []),
       ],
       negative: [
-        ...(missingSkills.length > 0 ? [`Missing ${missingSkills.length} key skills`] : []),
-        ...(skillMatchScore < 50 ? ['Limited skill overlap with requirements'] : []),
+        ...(missingSkills.length > 0
+          ? [`Missing ${missingSkills.length} key skills`]
+          : []),
+        ...(skillMatchScore < 50
+          ? ['Limited skill overlap with requirements']
+          : []),
       ],
       neutral: [
         'Consider the company culture fit',
@@ -340,22 +387,22 @@ function generateBasicAnalysis(job: any, user: any) {
 }
 
 function generateExplanation(
-  recommendation: string, 
-  skillMatchScore: number, 
-  matchingSkillsCount: number, 
+  recommendation: string,
+  skillMatchScore: number,
+  matchingSkillsCount: number,
   missingSkillsCount: number
 ): string {
   switch (recommendation) {
     case 'yes':
       return `Based on your profile analysis, this position appears to be an excellent match for your background. You have ${matchingSkillsCount} relevant skills that align well with the job requirements, giving you a ${skillMatchScore}% skill match. Your experience and qualifications make you a strong candidate for this role.`;
-    
+
     case 'maybe':
       return `This position shows moderate alignment with your profile. While you have ${matchingSkillsCount} relevant skills, there are ${missingSkillsCount} key areas where additional experience would strengthen your application. Consider highlighting your transferable skills and willingness to learn when applying.`;
-    
+
     case 'no':
       return `Based on the current analysis, this position may not be the best fit for your current skill set. You have ${matchingSkillsCount} matching skills, but there are significant gaps in the required qualifications. Consider developing the missing skills or looking for roles that better match your current expertise.`;
-    
+
     default:
       return 'Unable to generate recommendation at this time.';
   }
-} 
+}

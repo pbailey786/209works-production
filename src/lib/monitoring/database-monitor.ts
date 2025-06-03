@@ -73,7 +73,7 @@ export class DatabaseMonitoringService {
   public trackQuery(metrics: QueryMetrics): void {
     // Add to metrics history
     this.queryMetrics.push(metrics);
-    
+
     // Maintain metrics history size
     if (this.queryMetrics.length > this.maxMetricsHistory) {
       this.queryMetrics = this.queryMetrics.slice(-this.maxMetricsHistory);
@@ -130,12 +130,14 @@ export class DatabaseMonitoringService {
     let totalTime = 0;
     recentQueries.forEach(query => {
       totalTime += query.duration;
-      
+
       if (query.isSlowQuery) stats.slowQueries++;
       if (query.isCriticalQuery) stats.criticalQueries++;
-      
-      stats.queriesByModel[query.model] = (stats.queriesByModel[query.model] || 0) + 1;
-      stats.queriesByOperation[query.operation] = (stats.queriesByOperation[query.operation] || 0) + 1;
+
+      stats.queriesByModel[query.model] =
+        (stats.queriesByModel[query.model] || 0) + 1;
+      stats.queriesByOperation[query.operation] =
+        (stats.queriesByOperation[query.operation] || 0) + 1;
     });
 
     stats.averageQueryTime = totalTime / recentQueries.length;
@@ -153,11 +155,15 @@ export class DatabaseMonitoringService {
 
     // Check for performance issues
     if (stats.averageQueryTime > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_WARNING) {
-      issues.push(`High average query time: ${stats.averageQueryTime.toFixed(2)}ms`);
+      issues.push(
+        `High average query time: ${stats.averageQueryTime.toFixed(2)}ms`
+      );
     }
 
     if (stats.slowQueries > stats.totalQueries * 0.1) {
-      issues.push(`High slow query rate: ${((stats.slowQueries / stats.totalQueries) * 100).toFixed(1)}%`);
+      issues.push(
+        `High slow query rate: ${((stats.slowQueries / stats.totalQueries) * 100).toFixed(1)}%`
+      );
     }
 
     if (stats.criticalQueries > 0) {
@@ -165,7 +171,9 @@ export class DatabaseMonitoringService {
     }
 
     if (this.healthMetrics.activeQueries > 50) {
-      issues.push(`High number of active queries: ${this.healthMetrics.activeQueries}`);
+      issues.push(
+        `High number of active queries: ${this.healthMetrics.activeQueries}`
+      );
     }
 
     // Update health check timestamp
@@ -206,14 +214,17 @@ export class DatabaseMonitoringService {
 
     // Log slow queries
     if (metrics.duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_WARNING) {
-      const severity = metrics.duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL 
-        ? ErrorSeverity.CRITICAL 
-        : metrics.duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_ERROR 
-          ? ErrorSeverity.HIGH 
-          : ErrorSeverity.MEDIUM;
+      const severity =
+        metrics.duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL
+          ? ErrorSeverity.CRITICAL
+          : metrics.duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_ERROR
+            ? ErrorSeverity.HIGH
+            : ErrorSeverity.MEDIUM;
 
       ErrorLogger.database(
-        new Error(`Slow database query: ${metrics.operation} on ${metrics.model} took ${metrics.duration}ms`),
+        new Error(
+          `Slow database query: ${metrics.operation} on ${metrics.model} took ${metrics.duration}ms`
+        ),
         {
           requestId: metrics.requestId,
           userId: metrics.userId,
@@ -226,7 +237,9 @@ export class DatabaseMonitoringService {
             resultCount: metrics.resultCount,
             timestamp: metrics.timestamp.toISOString(),
             threshold: DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_WARNING,
-            performanceImpact: this.calculatePerformanceImpact(metrics.duration),
+            performanceImpact: this.calculatePerformanceImpact(
+              metrics.duration
+            ),
           },
         }
       );
@@ -235,7 +248,9 @@ export class DatabaseMonitoringService {
     // Log large queries
     if (metrics.querySize > DB_PERFORMANCE_THRESHOLDS.MAX_QUERY_SIZE) {
       ErrorLogger.database(
-        new Error(`Large database query detected: ${metrics.querySize} characters`),
+        new Error(
+          `Large database query detected: ${metrics.querySize} characters`
+        ),
         {
           requestId: metrics.requestId,
           userId: metrics.userId,
@@ -254,10 +269,14 @@ export class DatabaseMonitoringService {
     }
   }
 
-  private calculatePerformanceImpact(duration: number): 'low' | 'medium' | 'high' | 'critical' {
-    if (duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL) return 'critical';
+  private calculatePerformanceImpact(
+    duration: number
+  ): 'low' | 'medium' | 'high' | 'critical' {
+    if (duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL)
+      return 'critical';
     if (duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_ERROR) return 'high';
-    if (duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_WARNING) return 'medium';
+    if (duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_WARNING)
+      return 'medium';
     return 'low';
   }
 }
@@ -269,7 +288,7 @@ export function createDatabaseMonitoringMiddleware(): Prisma.Middleware {
   return async (params, next) => {
     const queryId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const startTime = Date.now();
-    
+
     // Start tracking
     monitor.startQuery(queryId);
 
@@ -280,7 +299,7 @@ export function createDatabaseMonitoringMiddleware(): Prisma.Middleware {
 
       // Calculate query size (approximate)
       const querySize = JSON.stringify(params.args || {}).length;
-      
+
       // Determine result count
       let resultCount: number | undefined;
       if (Array.isArray(result)) {
@@ -298,15 +317,15 @@ export function createDatabaseMonitoringMiddleware(): Prisma.Middleware {
         querySize,
         resultCount,
         isSlowQuery: duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_WARNING,
-        isCriticalQuery: duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL,
+        isCriticalQuery:
+          duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL,
       };
 
       monitor.trackQuery(metrics);
       return result;
-
     } catch (error) {
       const duration = Date.now() - startTime;
-      
+
       // Log database error
       ErrorLogger.database(error as Error, {
         requestId: queryId,
@@ -350,7 +369,7 @@ export class DatabaseConnectionMonitor {
 
   public recordConnectionFailure(error: Error): void {
     this.connectionFailures++;
-    
+
     ErrorLogger.database(error, {
       additionalData: {
         category: ErrorCategory.DATABASE,
@@ -370,9 +389,12 @@ export class DatabaseConnectionMonitor {
     return {
       attempts: this.connectionAttempts,
       failures: this.connectionFailures,
-      successRate: this.connectionAttempts > 0 
-        ? ((this.connectionAttempts - this.connectionFailures) / this.connectionAttempts) * 100 
-        : 100,
+      successRate:
+        this.connectionAttempts > 0
+          ? ((this.connectionAttempts - this.connectionFailures) /
+              this.connectionAttempts) *
+            100
+          : 100,
       lastCheck: this.lastConnectionCheck,
     };
   }
@@ -404,7 +426,8 @@ export function trackDatabaseQuery(
     requestId: options?.requestId,
     userId: options?.userId,
     isSlowQuery: duration > DB_PERFORMANCE_THRESHOLDS.SLOW_QUERY_WARNING,
-    isCriticalQuery: duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL,
+    isCriticalQuery:
+      duration > DB_PERFORMANCE_THRESHOLDS.VERY_SLOW_QUERY_CRITICAL,
   };
 
   databaseMonitor.trackQuery(metrics);
@@ -425,14 +448,22 @@ export async function getDatabaseHealthReport(): Promise<{
   const queryStats = databaseMonitor.getQueryStatistics();
 
   const performanceStatus = healthCheck.isHealthy ? 'healthy' : 'degraded';
-  const connectionStatus = connectionStats.successRate > 95 ? 'healthy' : 
-                          connectionStats.successRate > 80 ? 'degraded' : 'unhealthy';
+  const connectionStatus =
+    connectionStats.successRate > 95
+      ? 'healthy'
+      : connectionStats.successRate > 80
+        ? 'degraded'
+        : 'unhealthy';
   const queryStatus = queryStats.criticalQueries === 0 ? 'healthy' : 'degraded';
 
-  const overallStatus = [performanceStatus, connectionStatus, queryStatus].includes('unhealthy') 
-    ? 'unhealthy' 
-    : [performanceStatus, connectionStatus, queryStatus].includes('degraded') 
-      ? 'degraded' 
+  const overallStatus = [
+    performanceStatus,
+    connectionStatus,
+    queryStatus,
+  ].includes('unhealthy')
+    ? 'unhealthy'
+    : [performanceStatus, connectionStatus, queryStatus].includes('degraded')
+      ? 'degraded'
       : 'healthy';
 
   return {
@@ -456,4 +487,4 @@ export async function getDatabaseHealthReport(): Promise<{
     },
     timestamp: new Date().toISOString(),
   };
-} 
+}

@@ -2,23 +2,23 @@ import { z } from 'zod';
 
 // Ad types and formats
 export const adTypeSchema = z.enum([
-  'banner',          // Banner ads
-  'sidebar',         // Sidebar ads
-  'featured_job',    // Featured job listings
+  'banner', // Banner ads
+  'sidebar', // Sidebar ads
+  'featured_job', // Featured job listings
   'sponsored_search', // Sponsored search results
-  'native',          // Native content ads
-  'video',           // Video ads
-  'popup',           // Popup ads (limited use)
+  'native', // Native content ads
+  'video', // Video ads
+  'popup', // Popup ads (limited use)
 ]);
 
 // Ad status
 export const adStatusSchema = z.enum([
-  'draft',     // Being created/edited
-  'pending',   // Awaiting approval
-  'active',    // Currently running
-  'paused',    // Temporarily paused
-  'expired',   // Campaign ended
-  'rejected',  // Rejected during review
+  'draft', // Being created/edited
+  'pending', // Awaiting approval
+  'active', // Currently running
+  'paused', // Temporarily paused
+  'expired', // Campaign ended
+  'rejected', // Rejected during review
   'cancelled', // Cancelled by advertiser
 ]);
 
@@ -29,23 +29,25 @@ export const adTargetingSchema = z.object({
   states: z.array(z.string()).optional(),
   cities: z.array(z.string()).optional(),
   radius: z.number().min(1).max(100).optional(), // miles from location
-  
+
   // Demographic targeting
   ageMin: z.number().min(18).max(100).optional(),
   ageMax: z.number().min(18).max(100).optional(),
-  
+
   // Professional targeting
   jobTitles: z.array(z.string()).optional(),
   companies: z.array(z.string()).optional(),
   industries: z.array(z.string()).optional(),
-  experienceLevels: z.array(z.enum(['entry', 'mid', 'senior', 'executive'])).optional(),
+  experienceLevels: z
+    .array(z.enum(['entry', 'mid', 'senior', 'executive']))
+    .optional(),
   skills: z.array(z.string()).optional(),
-  
+
   // User behavior targeting
   searchKeywords: z.array(z.string()).optional(),
   visitedPages: z.array(z.string()).optional(),
   deviceTypes: z.array(z.enum(['desktop', 'mobile', 'tablet'])).optional(),
-  
+
   // Time-based targeting
   daysOfWeek: z.array(z.number().min(0).max(6)).optional(), // 0 = Sunday
   hoursOfDay: z.array(z.number().min(0).max(23)).optional(),
@@ -61,7 +63,7 @@ export const adContentSchema = z.object({
   ctaText: z.string().min(1).max(50).optional(), // Call-to-action text
   ctaUrl: z.string().url(),
   altText: z.string().max(200).optional(), // Alt text for images
-  
+
   // Rich content for job ads
   companyLogo: z.string().url().optional(),
   salaryRange: z.string().optional(),
@@ -112,7 +114,9 @@ export const adQuerySchema = z.object({
   isActive: z.enum(['true', 'false']).optional(),
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(20),
-  sortBy: z.enum(['name', 'createdAt', 'startDate', 'clicks', 'impressions', 'ctr']).default('createdAt'),
+  sortBy: z
+    .enum(['name', 'createdAt', 'startDate', 'clicks', 'impressions', 'ctr'])
+    .default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
   dateFrom: z.string().datetime().optional(),
   dateTo: z.string().datetime().optional(),
@@ -128,7 +132,10 @@ export const adImpressionSchema = z.object({
   referrer: z.string().url().optional(),
   page: z.string().optional(),
   position: z.string().optional(), // Ad position on page
-  timestamp: z.string().datetime().default(() => new Date().toISOString()),
+  timestamp: z
+    .string()
+    .datetime()
+    .default(() => new Date().toISOString()),
 });
 
 // Ad click tracking
@@ -141,7 +148,10 @@ export const adClickSchema = z.object({
   ipAddress: z.string().ip().optional(),
   referrer: z.string().url().optional(),
   targetUrl: z.string().url(),
-  timestamp: z.string().datetime().default(() => new Date().toISOString()),
+  timestamp: z
+    .string()
+    .datetime()
+    .default(() => new Date().toISOString()),
 });
 
 // Ad conversion tracking
@@ -152,7 +162,10 @@ export const adConversionSchema = z.object({
   type: z.enum(['job_view', 'job_apply', 'signup', 'purchase', 'custom']),
   value: z.number().min(0).optional(), // Conversion value in dollars
   customEvent: z.string().optional(), // For custom conversion types
-  timestamp: z.string().datetime().default(() => new Date().toISOString()),
+  timestamp: z
+    .string()
+    .datetime()
+    .default(() => new Date().toISOString()),
 });
 
 // Ad analytics request
@@ -162,10 +175,22 @@ export const adAnalyticsSchema = z.object({
   dateFrom: z.string().datetime(),
   dateTo: z.string().datetime(),
   groupBy: z.enum(['day', 'week', 'month', 'ad', 'type']).default('day'),
-  metrics: z.array(z.enum([
-    'impressions', 'clicks', 'ctr', 'cost', 'cpc', 'cpm', 
-    'conversions', 'conversion_rate', 'revenue', 'roas'
-  ])).default(['impressions', 'clicks', 'ctr', 'cost']),
+  metrics: z
+    .array(
+      z.enum([
+        'impressions',
+        'clicks',
+        'ctr',
+        'cost',
+        'cpc',
+        'cpm',
+        'conversions',
+        'conversion_rate',
+        'revenue',
+        'roas',
+      ])
+    )
+    .default(['impressions', 'clicks', 'ctr', 'cost']),
 });
 
 // Ad performance report
@@ -189,14 +214,16 @@ export const adReviewSchema = z.object({
   adId: z.string().uuid(),
   status: z.enum(['approved', 'rejected']),
   reviewerNotes: z.string().max(1000).optional(),
-  rejectionReason: z.enum([
-    'inappropriate_content',
-    'misleading_claims',
-    'poor_quality',
-    'policy_violation',
-    'technical_issues',
-    'other'
-  ]).optional(),
+  rejectionReason: z
+    .enum([
+      'inappropriate_content',
+      'misleading_claims',
+      'poor_quality',
+      'policy_violation',
+      'technical_issues',
+      'other',
+    ])
+    .optional(),
 });
 
 // Export types
@@ -215,4 +242,4 @@ export type AdConversion = z.infer<typeof adConversionSchema>;
 export type AdAnalytics = z.infer<typeof adAnalyticsSchema>;
 export type AdPerformance = z.infer<typeof adPerformanceSchema>;
 export type BulkAdOperation = z.infer<typeof bulkAdOperationSchema>;
-export type AdReview = z.infer<typeof adReviewSchema>; 
+export type AdReview = z.infer<typeof adReviewSchema>;

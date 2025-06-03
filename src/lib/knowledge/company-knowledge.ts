@@ -1,5 +1,9 @@
 import { prisma } from '@/app/api/auth/prisma';
-import { CompanyKnowledgeCategory, CompanyKnowledgeSource, Prisma } from '@prisma/client';
+import {
+  CompanyKnowledgeCategory,
+  CompanyKnowledgeSource,
+  Prisma,
+} from '@prisma/client';
 
 export interface CompanyInfo {
   id: string;
@@ -47,7 +51,6 @@ export interface CompanySearchParams {
 }
 
 export class CompanyKnowledgeService {
-  
   /**
    * Get comprehensive company information including knowledge base
    */
@@ -58,9 +61,9 @@ export class CompanyKnowledgeService {
         where: {
           OR: [
             { name: { equals: identifier, mode: 'insensitive' } },
-            { slug: identifier.toLowerCase() }
+            { slug: identifier.toLowerCase() },
           ],
-          isActive: true
+          isActive: true,
         },
         include: {
           knowledgeBase: {
@@ -68,10 +71,10 @@ export class CompanyKnowledgeService {
             orderBy: [
               { priority: 'desc' },
               { views: 'desc' },
-              { updatedAt: 'desc' }
-            ]
-          }
-        }
+              { updatedAt: 'desc' },
+            ],
+          },
+        },
       });
 
       if (!company) {
@@ -100,8 +103,8 @@ export class CompanyKnowledgeService {
           priority: entry.priority,
           views: entry.views,
           createdAt: entry.createdAt,
-          updatedAt: entry.updatedAt
-        }))
+          updatedAt: entry.updatedAt,
+        })),
       };
     } catch (error) {
       console.error('Error fetching company info:', error);
@@ -122,10 +125,10 @@ export class CompanyKnowledgeService {
         where: {
           OR: [
             { name: { equals: companyIdentifier, mode: 'insensitive' } },
-            { slug: companyIdentifier.toLowerCase() }
+            { slug: companyIdentifier.toLowerCase() },
           ],
-          isActive: true
-        }
+          isActive: true,
+        },
       });
 
       if (!company) {
@@ -135,7 +138,7 @@ export class CompanyKnowledgeService {
       // Build search conditions
       const searchConditions: any = {
         companyId: company.id,
-        verified: params.verified !== false // Default to verified entries
+        verified: params.verified !== false, // Default to verified entries
       };
 
       if (params.category) {
@@ -148,7 +151,7 @@ export class CompanyKnowledgeService {
         searchConditions.OR = [
           { title: { contains: params.query, mode: 'insensitive' } },
           { content: { contains: params.query, mode: 'insensitive' } },
-          { keywords: { hasSome: searchTerms } }
+          { keywords: { hasSome: searchTerms } },
         ];
       }
 
@@ -157,9 +160,9 @@ export class CompanyKnowledgeService {
         orderBy: [
           { priority: 'desc' },
           { views: 'desc' },
-          { updatedAt: 'desc' }
+          { updatedAt: 'desc' },
         ],
-        take: params.limit || 10
+        take: params.limit || 10,
       });
 
       // Update view counts for retrieved entries
@@ -178,7 +181,7 @@ export class CompanyKnowledgeService {
         priority: entry.priority,
         views: entry.views + 1, // Reflect the increment
         createdAt: entry.createdAt,
-        updatedAt: entry.updatedAt
+        updatedAt: entry.updatedAt,
       }));
     } catch (error) {
       console.error('Error searching company knowledge:', error);
@@ -193,13 +196,18 @@ export class CompanyKnowledgeService {
     companyIdentifier: string,
     category: CompanyKnowledgeCategory
   ): Promise<CompanyKnowledgeEntry[]> {
-    return this.searchCompanyKnowledge(companyIdentifier, { category, verified: true });
+    return this.searchCompanyKnowledge(companyIdentifier, {
+      category,
+      verified: true,
+    });
   }
 
   /**
    * Add new knowledge entry for a company
    */
-  static async addCompanyKnowledge(input: CompanyKnowledgeInput): Promise<CompanyKnowledgeEntry | null> {
+  static async addCompanyKnowledge(
+    input: CompanyKnowledgeInput
+  ): Promise<CompanyKnowledgeEntry | null> {
     try {
       const entry = await prisma.companyKnowledge.create({
         data: {
@@ -210,8 +218,9 @@ export class CompanyKnowledgeService {
           keywords: input.keywords || [],
           source: input.source || 'company_provided',
           priority: input.priority || 0,
-          verified: input.source === 'hr_verified' || input.source === 'admin_created'
-        }
+          verified:
+            input.source === 'hr_verified' || input.source === 'admin_created',
+        },
       });
 
       return {
@@ -225,7 +234,7 @@ export class CompanyKnowledgeService {
         priority: entry.priority,
         views: entry.views,
         createdAt: entry.createdAt,
-        updatedAt: entry.updatedAt
+        updatedAt: entry.updatedAt,
       };
     } catch (error) {
       console.error('Error adding company knowledge:', error);
@@ -245,8 +254,8 @@ export class CompanyKnowledgeService {
         where: { id: entryId },
         data: {
           ...updates,
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       });
 
       return {
@@ -260,7 +269,7 @@ export class CompanyKnowledgeService {
         priority: entry.priority,
         views: entry.views,
         createdAt: entry.createdAt,
-        updatedAt: entry.updatedAt
+        updatedAt: entry.updatedAt,
       };
     } catch (error) {
       console.error('Error updating company knowledge:', error);
@@ -276,7 +285,7 @@ export class CompanyKnowledgeService {
       // Use soft delete instead of hard delete to preserve audit trail
       await prisma.companyKnowledge.update({
         where: { id: entryId },
-        data: { deletedAt: new Date() }
+        data: { deletedAt: new Date() },
       });
       return true;
     } catch (error) {
@@ -288,24 +297,26 @@ export class CompanyKnowledgeService {
   /**
    * Get companies that have jobs posted (for migration/seeding)
    */
-  static async getCompaniesFromJobs(): Promise<{ name: string; count: number }[]> {
+  static async getCompaniesFromJobs(): Promise<
+    { name: string; count: number }[]
+  > {
     try {
       const companies = await prisma.job.groupBy({
         by: ['company'],
         _count: {
-          company: true
+          company: true,
         },
         orderBy: {
           _count: {
-            company: 'desc'
-          }
+            company: 'desc',
+          },
         },
-        take: 100 // Top 100 companies by job count
+        take: 100, // Top 100 companies by job count
       });
 
       return companies.map(company => ({
         name: company.company,
-        count: company._count.company
+        count: company._count.company,
       }));
     } catch (error) {
       console.error('Error getting companies from jobs:', error);
@@ -316,7 +327,9 @@ export class CompanyKnowledgeService {
   /**
    * Create company from job data (for migration)
    */
-  static async createCompanyFromJobData(companyName: string): Promise<string | null> {
+  static async createCompanyFromJobData(
+    companyName: string
+  ): Promise<string | null> {
     try {
       // Create slug from company name
       const slug = companyName
@@ -329,8 +342,8 @@ export class CompanyKnowledgeService {
           name: companyName,
           slug: slug,
           isActive: true,
-          subscriptionTier: 'basic' // Default tier for companies with jobs
-        }
+          subscriptionTier: 'basic', // Default tier for companies with jobs
+        },
       });
 
       return company.id;
@@ -343,16 +356,19 @@ export class CompanyKnowledgeService {
   /**
    * Link existing jobs to companies
    */
-  static async linkJobsToCompany(companyName: string, companyId: string): Promise<number> {
+  static async linkJobsToCompany(
+    companyName: string,
+    companyId: string
+  ): Promise<number> {
     try {
       const result = await prisma.job.updateMany({
         where: {
           company: companyName,
-          companyId: null
+          companyId: null,
         },
         data: {
-          companyId: companyId
-        }
+          companyId: companyId,
+        },
       });
 
       return result.count;
@@ -365,7 +381,10 @@ export class CompanyKnowledgeService {
   /**
    * Seed default knowledge for a company
    */
-  static async seedDefaultKnowledge(companyId: string, companyName: string): Promise<void> {
+  static async seedDefaultKnowledge(
+    companyId: string,
+    companyName: string
+  ): Promise<void> {
     const defaultEntries = [
       {
         category: 'general_info' as CompanyKnowledgeCategory,
@@ -373,7 +392,7 @@ export class CompanyKnowledgeService {
         content: `${companyName} is actively hiring and posting job opportunities on 209jobs. We're committed to finding great talent in the Central Valley region.`,
         keywords: ['company', 'about', 'overview'],
         source: 'admin_created' as CompanyKnowledgeSource,
-        priority: 10
+        priority: 10,
       },
       {
         category: 'hiring_process' as CompanyKnowledgeCategory,
@@ -381,14 +400,14 @@ export class CompanyKnowledgeService {
         content: `To apply for positions at ${companyName}, you can submit your application through our job postings on 209jobs. We review all applications carefully and will contact qualified candidates.`,
         keywords: ['application', 'hiring', 'process', 'apply'],
         source: 'admin_created' as CompanyKnowledgeSource,
-        priority: 8
-      }
+        priority: 8,
+      },
     ];
 
     for (const entry of defaultEntries) {
       await this.addCompanyKnowledge({
         companyId,
-        ...entry
+        ...entry,
       });
     }
   }
@@ -400,12 +419,12 @@ export class CompanyKnowledgeService {
     try {
       await prisma.companyKnowledge.updateMany({
         where: {
-          id: { in: entryIds }
+          id: { in: entryIds },
         },
         data: {
           views: { increment: 1 },
-          lastViewed: new Date()
-        }
+          lastViewed: new Date(),
+        },
       });
     } catch (error) {
       console.error('Error incrementing view counts:', error);
@@ -420,7 +439,7 @@ export class CompanyKnowledgeService {
     const patterns = [
       /(?:about|at|working at|tell me about|information about|company)\s+([A-Z][A-Za-z\s&.,]+?)(?:\s|$|\?)/i,
       /([A-Z][A-Za-z\s&.,]+?)\s+(?:company|corporation|corp|inc|llc)/i,
-      /working\s+(?:at|for)\s+([A-Z][A-Za-z\s&.,]+?)(?:\s|$|\?)/i
+      /working\s+(?:at|for)\s+([A-Z][A-Za-z\s&.,]+?)(?:\s|$|\?)/i,
     ];
 
     for (const pattern of patterns) {
@@ -443,16 +462,16 @@ export class CompanyKnowledgeService {
         where: { companyId },
         _count: { id: true },
         _sum: { views: true },
-        _avg: { views: true }
+        _avg: { views: true },
       });
 
       const totalEntries = await prisma.companyKnowledge.count({
-        where: { companyId }
+        where: { companyId },
       });
 
       const totalViews = await prisma.companyKnowledge.aggregate({
         where: { companyId },
-        _sum: { views: true }
+        _sum: { views: true },
       });
 
       return {
@@ -462,12 +481,12 @@ export class CompanyKnowledgeService {
           category: cat.category,
           entryCount: cat._count.id,
           totalViews: cat._sum.views || 0,
-          avgViews: Math.round(cat._avg.views || 0)
-        }))
+          avgViews: Math.round(cat._avg.views || 0),
+        })),
       };
     } catch (error) {
       console.error('Error getting analytics:', error);
       return null;
     }
   }
-} 
+}

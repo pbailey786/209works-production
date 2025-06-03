@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const { name, email, bio, location, phone, website, companyWebsite } = await req.json();
+    const { name, email, bio, location, phone, website, companyWebsite } =
+      await req.json();
 
     // Validate required fields
     if (!email) {
@@ -34,7 +35,10 @@ export async function POST(req: NextRequest) {
       });
 
       if (existingUser && existingUser.id !== currentUser.id) {
-        return NextResponse.json({ error: 'Email is already taken' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Email is already taken' },
+          { status: 400 }
+        );
       }
     }
 
@@ -60,15 +64,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Profile updated successfully',
-      user: updatedUser 
+      user: updatedUser,
     });
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
-} 
+}

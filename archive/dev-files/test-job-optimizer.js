@@ -1,16 +1,22 @@
 // Test script for Job Post Optimizer
 const testJobData = {
-  jobTitle: "Customer Service Representative",
-  companyName: "Central Valley Medical Group",
-  location: "Stockton, CA",
-  pay: "$18-22/hour",
-  schedule: "Monday-Friday, 8am-5pm",
-  companyDescription: "We're a family-owned medical practice serving the Stockton community for over 20 years. We provide comprehensive healthcare services with a focus on patient care and community wellness.",
-  idealFit: "Someone who loves helping people, stays calm under pressure, and has great communication skills. Previous customer service experience preferred but not required. We value empathy, reliability, and a positive attitude.",
-  culture: "Friendly team environment where everyone supports each other. We believe in work-life balance and treating our employees like family. Professional development is encouraged and supported.",
-  growthPath: "Opportunities to advance to senior customer service roles, medical office management, or specialized positions. We provide ongoing training and support career development goals.",
-  perks: "Health insurance, dental coverage, 2 weeks PTO, flexible scheduling when possible, employee wellness programs, and team building events.",
-  applicationCTA: "Ready to join our team? Send your resume to careers@cvmedical.com or call (209) 555-0123 to schedule an interview. We'd love to hear from you!"
+  jobTitle: 'Customer Service Representative',
+  companyName: 'Central Valley Medical Group',
+  location: 'Stockton, CA',
+  pay: '$18-22/hour',
+  schedule: 'Monday-Friday, 8am-5pm',
+  companyDescription:
+    "We're a family-owned medical practice serving the Stockton community for over 20 years. We provide comprehensive healthcare services with a focus on patient care and community wellness.",
+  idealFit:
+    'Someone who loves helping people, stays calm under pressure, and has great communication skills. Previous customer service experience preferred but not required. We value empathy, reliability, and a positive attitude.',
+  culture:
+    'Friendly team environment where everyone supports each other. We believe in work-life balance and treating our employees like family. Professional development is encouraged and supported.',
+  growthPath:
+    'Opportunities to advance to senior customer service roles, medical office management, or specialized positions. We provide ongoing training and support career development goals.',
+  perks:
+    'Health insurance, dental coverage, 2 weeks PTO, flexible scheduling when possible, employee wellness programs, and team building events.',
+  applicationCTA:
+    "Ready to join our team? Send your resume to careers@cvmedical.com or call (209) 555-0123 to schedule an interview. We'd love to hear from you!",
 };
 
 console.log('Test Job Post Optimizer Data:');

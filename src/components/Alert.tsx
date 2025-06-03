@@ -32,15 +32,17 @@ export const Alert: React.FC<AlertProps> = ({
   };
 
   return (
-    <div 
-      className={`border-l-4 p-4 mb-4 rounded ${typeStyles[type]} ${className}`.trim()}
+    <div
+      className={`mb-4 rounded border-l-4 p-4 ${typeStyles[type]} ${className}`.trim()}
       role={getRole()}
-      aria-live={type === 'error' || type === 'warning' ? 'assertive' : 'polite'}
+      aria-live={
+        type === 'error' || type === 'warning' ? 'assertive' : 'polite'
+      }
     >
-      {title && <h3 className="font-semibold mb-1">{title}</h3>}
+      {title && <h3 className="mb-1 font-semibold">{title}</h3>}
       <div>{children}</div>
     </div>
   );
 };
 
-export default Alert; 
+export default Alert;

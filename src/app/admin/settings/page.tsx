@@ -1,21 +1,27 @@
-import { getServerSession } from "next-auth";
-import authOptions from "../../api/auth/authOptions";
-import { prisma } from "../../api/auth/prisma";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import RoleManagement from "@/components/admin/RoleManagement";
-import { PermissionGate } from "@/components/admin/PermissionGate";
-import { Permission } from "@/lib/rbac/permissions";
-import { 
-  Settings, 
-  Shield, 
-  Users, 
-  Database, 
-  Mail, 
+import { getServerSession } from 'next-auth';
+import authOptions from '../../api/auth/authOptions';
+import { prisma } from '../../api/auth/prisma';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import RoleManagement from '@/components/admin/RoleManagement';
+import { PermissionGate } from '@/components/admin/PermissionGate';
+import { Permission } from '@/lib/rbac/permissions';
+import {
+  Settings,
+  Shield,
+  Users,
+  Database,
+  Mail,
   Bell,
   Lock,
-  Globe
-} from "lucide-react";
+  Globe,
+} from 'lucide-react';
 
 export default async function AdminSettingsPage() {
   const session = await getServerSession(authOptions);
@@ -23,10 +29,7 @@ export default async function AdminSettingsPage() {
   // Fetch admin users for role management
   const adminUsers = await prisma.user.findMany({
     where: {
-      OR: [
-        { role: 'admin' },
-        { role: 'admin' }
-      ]
+      OR: [{ role: 'admin' }, { role: 'admin' }],
     },
     select: {
       id: true,
@@ -36,17 +39,17 @@ export default async function AdminSettingsPage() {
       createdAt: true,
     },
     orderBy: {
-      createdAt: 'desc'
-    }
+      createdAt: 'desc',
+    },
   });
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Settings</h1>
-          <p className="text-gray-600 mt-1">
+          <p className="mt-1 text-gray-600">
             Manage system settings, roles, and configurations
           </p>
         </div>
@@ -71,7 +74,10 @@ export default async function AdminSettingsPage() {
             <Mail className="h-4 w-4" />
             <span>Email</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="notifications"
+            className="flex items-center space-x-2"
+          >
             <Bell className="h-4 w-4" />
             <span>Notifications</span>
           </TabsTrigger>
@@ -83,7 +89,7 @@ export default async function AdminSettingsPage() {
 
         {/* Role Management Tab */}
         <TabsContent value="roles">
-          <PermissionGate 
+          <PermissionGate
             permission={Permission.MANAGE_ADMIN_ROLES}
             fallback={
               <Card>
@@ -95,11 +101,13 @@ export default async function AdminSettingsPage() {
               </Card>
             }
           >
-            <RoleManagement users={adminUsers.map(user => ({
-              ...user,
-              name: user.name || 'Unknown User',
-              role: user.role as string
-            }))} />
+            <RoleManagement
+              users={adminUsers.map(user => ({
+                ...user,
+                name: user.name || 'Unknown User',
+                role: user.role as string,
+              }))}
+            />
           </PermissionGate>
         </TabsContent>
 
@@ -110,29 +118,44 @@ export default async function AdminSettingsPage() {
               <CardHeader>
                 <CardTitle>User Management Settings</CardTitle>
                 <CardDescription>
-                  Configure user registration, verification, and account settings
+                  Configure user registration, verification, and account
+                  settings
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-lg">Registration Settings</CardTitle>
+                        <CardTitle className="text-lg">
+                          Registration Settings
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Allow new registrations</span>
-                            <span className="text-green-600 text-sm">Enabled</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">
+                              Allow new registrations
+                            </span>
+                            <span className="text-sm text-green-600">
+                              Enabled
+                            </span>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Email verification required</span>
-                            <span className="text-green-600 text-sm">Enabled</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">
+                              Email verification required
+                            </span>
+                            <span className="text-sm text-green-600">
+                              Enabled
+                            </span>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Auto-approve employers</span>
-                            <span className="text-yellow-600 text-sm">Manual Review</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">
+                              Auto-approve employers
+                            </span>
+                            <span className="text-sm text-yellow-600">
+                              Manual Review
+                            </span>
                           </div>
                         </div>
                       </CardContent>
@@ -140,21 +163,29 @@ export default async function AdminSettingsPage() {
 
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-lg">Account Policies</CardTitle>
+                        <CardTitle className="text-lg">
+                          Account Policies
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Password minimum length</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">
+                              Password minimum length
+                            </span>
                             <span className="text-sm">8 characters</span>
                           </div>
-                          <div className="flex justify-between items-center">
+                          <div className="flex items-center justify-between">
                             <span className="text-sm">Session timeout</span>
                             <span className="text-sm">24 hours</span>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm">Two-factor authentication</span>
-                            <span className="text-blue-600 text-sm">Optional</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">
+                              Two-factor authentication
+                            </span>
+                            <span className="text-sm text-blue-600">
+                              Optional
+                            </span>
                           </div>
                         </div>
                       </CardContent>
@@ -178,7 +209,7 @@ export default async function AdminSettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <h4 className="font-medium">Database</h4>
                       <div className="text-sm text-gray-600">
@@ -208,19 +239,19 @@ export default async function AdminSettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>Job scraping from external sources</span>
                       <span className="text-green-600">Enabled</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>AI-powered job matching</span>
                       <span className="text-green-600">Enabled</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>Real-time notifications</span>
                       <span className="text-green-600">Enabled</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>Advanced analytics</span>
                       <span className="text-blue-600">Beta</span>
                     </div>
@@ -243,7 +274,7 @@ export default async function AdminSettingsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <h4 className="font-medium">SMTP Settings</h4>
                       <div className="text-sm text-gray-600">
@@ -279,19 +310,19 @@ export default async function AdminSettingsPage() {
             <CardContent>
               <div className="space-y-4">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>New user registrations</span>
                     <span className="text-green-600">Enabled</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>Job posting approvals needed</span>
                     <span className="text-green-600">Enabled</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>System errors</span>
                     <span className="text-green-600">Enabled</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span>Weekly analytics reports</span>
                     <span className="text-blue-600">Weekly</span>
                   </div>
@@ -314,7 +345,7 @@ export default async function AdminSettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <div className="space-y-2">
                         <h4 className="font-medium">Authentication</h4>
                         <div className="text-sm text-gray-600">
@@ -345,19 +376,19 @@ export default async function AdminSettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>Audit logging</span>
                       <span className="text-green-600">Enabled</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>Failed login monitoring</span>
                       <span className="text-green-600">Enabled</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>Data retention policy</span>
                       <span className="text-blue-600">2 years</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span>GDPR compliance</span>
                       <span className="text-green-600">Active</span>
                     </div>
@@ -370,4 +401,4 @@ export default async function AdminSettingsPage() {
       </Tabs>
     </div>
   );
-} 
+}

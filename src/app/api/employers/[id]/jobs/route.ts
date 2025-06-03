@@ -10,10 +10,10 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    
+
     // Try to fetch real jobs from database for this employer
     let jobs: any[] = [];
-    
+
     try {
       // First, try to find the employer by company ID
       let employer = await prisma.company.findUnique({
@@ -22,14 +22,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           jobs: {
             where: {
               status: 'active',
-              deletedAt: null
+              deletedAt: null,
             },
             orderBy: {
-              postedAt: 'desc'
+              postedAt: 'desc',
             },
-            take: 20
-          }
-        }
+            take: 20,
+          },
+        },
       });
 
       // If not found by company ID, try to find by user ID
@@ -42,26 +42,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                 jobs: {
                   where: {
                     status: 'active',
-                    deletedAt: null
+                    deletedAt: null,
                   },
                   orderBy: {
-                    postedAt: 'desc'
+                    postedAt: 'desc',
                   },
-                  take: 20
-                }
-              }
+                  take: 20,
+                },
+              },
             },
             employerJobs: {
               where: {
                 status: 'active',
-                deletedAt: null
+                deletedAt: null,
               },
               orderBy: {
-                postedAt: 'desc'
+                postedAt: 'desc',
               },
-              take: 20
-            }
-          }
+              take: 20,
+            },
+          },
         });
 
         if (user) {
@@ -82,35 +82,36 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         salaryMax: job.salaryMax,
         description: job.description,
         postedAt: job.postedAt?.toISOString() || job.createdAt?.toISOString(),
-        saved: false // This would be determined by user session in production
+        saved: false, // This would be determined by user session in production
       }));
 
       return NextResponse.json({
         jobs: transformedJobs,
         count: transformedJobs.length,
-        source: 'database'
+        source: 'database',
       });
-
     } catch (dbError) {
       console.error('Database error:', dbError);
-      
+
       // Fallback to mock data for known employer IDs
       const mockJobs = getMockJobsForEmployer(id);
-      
+
       return NextResponse.json({
         jobs: mockJobs,
         count: mockJobs.length,
-        source: 'mock'
+        source: 'mock',
       });
     }
-
   } catch (error) {
     console.error('Error fetching employer jobs:', error);
-    
-    return NextResponse.json({
-      jobs: [],
-      error: 'Failed to fetch jobs'
-    }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        jobs: [],
+        error: 'Failed to fetch jobs',
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -126,8 +127,9 @@ function getMockJobsForEmployer(employerId: string) {
         type: 'full_time',
         salaryMin: 75000,
         salaryMax: 95000,
-        description: 'Join our ICU team providing critical care to patients. Requires RN license and ICU experience.',
-        postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+        description:
+          'Join our ICU team providing critical care to patients. Requires RN license and ICU experience.',
+        postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         id: 'cvh-admin-1',
@@ -137,9 +139,10 @@ function getMockJobsForEmployer(employerId: string) {
         type: 'full_time',
         salaryMin: 35000,
         salaryMax: 45000,
-        description: 'Support our medical team with administrative tasks, scheduling, and patient communication.',
-        postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-      }
+        description:
+          'Support our medical team with administrative tasks, scheduling, and patient communication.',
+        postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
     ],
     'manteca-unified': [
       {
@@ -150,9 +153,10 @@ function getMockJobsForEmployer(employerId: string) {
         type: 'full_time',
         salaryMin: 50000,
         salaryMax: 70000,
-        description: 'Teach elementary students in a supportive environment. Teaching credential required.',
-        postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-      }
+        description:
+          'Teach elementary students in a supportive environment. Teaching credential required.',
+        postedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
     ],
     'tracy-logistics': [
       {
@@ -163,8 +167,9 @@ function getMockJobsForEmployer(employerId: string) {
         type: 'full_time',
         salaryMin: 45000,
         salaryMax: 60000,
-        description: 'Local delivery driver position with competitive pay and benefits. CDL preferred.',
-        postedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+        description:
+          'Local delivery driver position with competitive pay and benefits. CDL preferred.',
+        postedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         id: 'tl-warehouse-1',
@@ -174,10 +179,11 @@ function getMockJobsForEmployer(employerId: string) {
         type: 'full_time',
         salaryMin: 35000,
         salaryMax: 45000,
-        description: 'Join our warehouse team handling inventory and shipping operations.',
-        postedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
-      }
-    ]
+        description:
+          'Join our warehouse team handling inventory and shipping operations.',
+        postedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
   };
 
   return mockJobsMap[employerId] || [];

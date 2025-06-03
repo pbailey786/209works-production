@@ -4,14 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  Check, 
-  Star, 
-  CreditCard, 
-  Zap,
-  Shield,
-  Award
-} from 'lucide-react';
+import { Check, Star, CreditCard, Zap, Shield, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 // import { toast } from 'sonner';
@@ -43,22 +36,25 @@ export default function InteractivePricingCard({
   billingInterval,
   isChamberMember = false,
   onSelect,
-  className = ''
+  className = '',
 }: InteractivePricingCardProps) {
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
 
-  const basePrice = billingInterval === 'yearly' ? plan.yearlyPrice / 12 : plan.monthlyPrice;
-  const chamberPrice = isChamberMember && plan.chamberDiscount 
-    ? basePrice * (1 - plan.chamberDiscount / 100) 
-    : basePrice;
-  
+  const basePrice =
+    billingInterval === 'yearly' ? plan.yearlyPrice / 12 : plan.monthlyPrice;
+  const chamberPrice =
+    isChamberMember && plan.chamberDiscount
+      ? basePrice * (1 - plan.chamberDiscount / 100)
+      : basePrice;
+
   const displayPrice = Math.round(chamberPrice);
   const originalPrice = billingInterval === 'yearly' ? plan.monthlyPrice : null;
-  const savings = billingInterval === 'yearly' 
-    ? Math.round((plan.monthlyPrice * 12) - plan.yearlyPrice)
-    : 0;
+  const savings =
+    billingInterval === 'yearly'
+      ? Math.round(plan.monthlyPrice * 12 - plan.yearlyPrice)
+      : 0;
 
   const handleSelect = async () => {
     if (!session) {
@@ -111,7 +107,7 @@ export default function InteractivePricingCard({
     <motion.div
       whileHover={{ scale: 1.02, y: -5 }}
       transition={{ duration: 0.2 }}
-      className={`relative rounded-xl border-2 p-6 cursor-pointer transition-all ${
+      className={`relative cursor-pointer rounded-xl border-2 p-6 transition-all ${
         plan.popular
           ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-green-50 shadow-xl'
           : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-lg'
@@ -120,9 +116,9 @@ export default function InteractivePricingCard({
     >
       {/* Popular Badge */}
       {plan.popular && (
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <Badge className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-4 py-1">
-            <Star className="w-3 h-3 mr-1" />
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
+          <Badge className="bg-gradient-to-r from-blue-600 to-green-600 px-4 py-1 text-white">
+            <Star className="mr-1 h-3 w-3" />
             {plan.badge || 'Most Popular'}
           </Badge>
         </div>
@@ -131,7 +127,7 @@ export default function InteractivePricingCard({
       {/* Yearly Savings Badge */}
       {billingInterval === 'yearly' && savings > 0 && (
         <div className="absolute -top-3 right-4">
-          <Badge className="bg-green-500 text-white px-3 py-1">
+          <Badge className="bg-green-500 px-3 py-1 text-white">
             Save ${savings}
           </Badge>
         </div>
@@ -139,34 +135,36 @@ export default function InteractivePricingCard({
 
       {/* Chamber Member Badge */}
       {isChamberMember && plan.chamberDiscount && (
-        <div className="absolute top-4 right-4">
-          <Badge variant="outline" className="border-orange-300 text-orange-700 bg-orange-50">
-            <Award className="w-3 h-3 mr-1" />
-            -{plan.chamberDiscount}%
+        <div className="absolute right-4 top-4">
+          <Badge
+            variant="outline"
+            className="border-orange-300 bg-orange-50 text-orange-700"
+          >
+            <Award className="mr-1 h-3 w-3" />-{plan.chamberDiscount}%
           </Badge>
         </div>
       )}
 
       {/* Plan Header */}
-      <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-        
+      <div className="mb-6 text-center">
+        <h3 className="mb-2 text-xl font-bold text-gray-900">{plan.name}</h3>
+
         {/* Pricing */}
         <div className="mb-3">
           <div className="flex items-baseline justify-center">
             <span className="text-4xl font-bold text-blue-600">
               ${displayPrice}
             </span>
-            <span className="text-gray-600 ml-1">
+            <span className="ml-1 text-gray-600">
               /{billingInterval === 'yearly' ? 'mo' : 'month'}
             </span>
           </div>
-          
+
           {/* Original Price (crossed out) */}
           {originalPrice && billingInterval === 'yearly' && (
             <div className="text-sm text-gray-500">
               <span className="line-through">${originalPrice}/mo</span>
-              <span className="text-green-600 ml-2 font-medium">
+              <span className="ml-2 font-medium text-green-600">
                 {plan.yearlyDiscount}% off
               </span>
             </div>
@@ -174,27 +172,27 @@ export default function InteractivePricingCard({
 
           {/* Chamber Member Pricing */}
           {isChamberMember && plan.chamberDiscount && (
-            <div className="text-sm text-orange-700 font-medium">
+            <div className="text-sm font-medium text-orange-700">
               Chamber price: ${Math.round(basePrice)} → ${displayPrice}
             </div>
           )}
 
           {/* Yearly Billing Note */}
           {billingInterval === 'yearly' && (
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="mt-1 text-xs text-gray-500">
               Billed annually (${Math.round(plan.yearlyPrice)}/year)
             </div>
           )}
         </div>
 
-        <p className="text-gray-600 text-sm">{plan.description}</p>
+        <p className="text-sm text-gray-600">{plan.description}</p>
       </div>
 
       {/* Features */}
-      <ul className="space-y-3 mb-6">
+      <ul className="mb-6 space-y-3">
         {plan.features.map((feature, index) => (
           <li key={index} className="flex items-start">
-            <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+            <Check className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500" />
             <span className="text-sm text-gray-700">{feature}</span>
           </li>
         ))}
@@ -203,11 +201,16 @@ export default function InteractivePricingCard({
       {/* Limitations */}
       {plan.limitations && plan.limitations.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">Limitations:</h4>
+          <h4 className="mb-2 text-sm font-medium text-gray-900">
+            Limitations:
+          </h4>
           <ul className="space-y-1">
             {plan.limitations.map((limitation, index) => (
-              <li key={index} className="text-xs text-gray-500 flex items-start">
-                <span className="w-1 h-1 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0"></span>
+              <li
+                key={index}
+                className="flex items-start text-xs text-gray-500"
+              >
+                <span className="mr-2 mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-gray-400"></span>
                 {limitation}
               </li>
             ))}
@@ -219,23 +222,23 @@ export default function InteractivePricingCard({
       <Button
         className={`w-full ${
           plan.popular
-            ? 'bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg'
-            : 'bg-gray-900 hover:bg-gray-800 text-white'
+            ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white shadow-lg hover:from-blue-700 hover:to-green-700'
+            : 'bg-gray-900 text-white hover:bg-gray-800'
         }`}
         disabled={loading}
-        onClick={(e) => {
+        onClick={e => {
           e.stopPropagation();
           handleSelect();
         }}
       >
         {loading ? (
           <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
             Processing...
           </>
         ) : (
           <>
-            <CreditCard className="w-4 h-4 mr-2" />
+            <CreditCard className="mr-2 h-4 w-4" />
             Get Started
           </>
         )}
@@ -243,7 +246,7 @@ export default function InteractivePricingCard({
 
       {/* Security Note */}
       <div className="mt-4 flex items-center justify-center text-xs text-gray-500">
-        <Shield className="w-3 h-3 mr-1" />
+        <Shield className="mr-1 h-3 w-3" />
         Secure payment with Stripe
       </div>
     </motion.div>

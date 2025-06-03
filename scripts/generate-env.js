@@ -2,7 +2,7 @@
 
 /**
  * Environment Variable Generator for 209jobs
- * 
+ *
  * This script generates secure environment variables for development.
  * Run with: node scripts/generate-env.js
  */
@@ -27,7 +27,7 @@ const envExamplePath = path.join(process.cwd(), '.env.example');
 if (fs.existsSync(envPath)) {
   console.log('⚠️  .env file already exists!');
   console.log('   To regenerate, delete .env first or run with --force flag');
-  
+
   if (!process.argv.includes('--force')) {
     process.exit(1);
   }
@@ -47,7 +47,7 @@ if (fs.existsSync(envExamplePath)) {
 // Generate secure values
 const secrets = {
   JWT_SECRET: generateSecret(64),
-  SESSION_SECRET: generateSecret(64), 
+  SESSION_SECRET: generateSecret(64),
   API_KEY_SALT: generateSecret(32),
   ENCRYPTION_KEY: generateBase64Secret(32),
   NEXTAUTH_SECRET: generateSecret(64),
@@ -108,7 +108,9 @@ console.log(`   JWT_SECRET: ${secrets.JWT_SECRET.substring(0, 16)}...`);
 console.log(`   SESSION_SECRET: ${secrets.SESSION_SECRET.substring(0, 16)}...`);
 console.log(`   API_KEY_SALT: ${secrets.API_KEY_SALT.substring(0, 16)}...`);
 console.log(`   ENCRYPTION_KEY: ${secrets.ENCRYPTION_KEY.substring(0, 16)}...`);
-console.log(`   NEXTAUTH_SECRET: ${secrets.NEXTAUTH_SECRET.substring(0, 16)}...`);
+console.log(
+  `   NEXTAUTH_SECRET: ${secrets.NEXTAUTH_SECRET.substring(0, 16)}...`
+);
 
 console.log('\n📝 Next steps:');
 console.log('   1. Update database URLs in .env');

@@ -14,7 +14,7 @@ const applySchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -28,33 +28,27 @@ export async function POST(request: NextRequest) {
     // Get user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, name: true, email: true, resumeUrl: true }
+      select: { id: true, name: true, email: true, resumeUrl: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Get job details
     const job = await prisma.job.findUnique({
       where: { id: validatedData.jobId },
-      select: { 
-        id: true, 
-        title: true, 
-        company: true, 
+      select: {
+        id: true,
+        title: true,
+        company: true,
         url: true,
-        status: true 
-      }
+        status: true,
+      },
     });
 
     if (!job) {
-      return NextResponse.json(
-        { error: 'Job not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     if (job.status !== 'active') {
@@ -69,9 +63,9 @@ export async function POST(request: NextRequest) {
       where: {
         userId_jobId: {
           userId: user.id,
-          jobId: validatedData.jobId
-        }
-      }
+          jobId: validatedData.jobId,
+        },
+      },
     });
 
     if (existingApplication) {
@@ -90,27 +84,29 @@ export async function POST(request: NextRequest) {
         coverLetter: validatedData.coverLetter,
         resumeUrl: validatedData.resumeUrl || user.resumeUrl,
         appliedAt: new Date(),
-      }
+      },
     });
 
     // Log the application for tracking
-    await prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'job_application_submitted',
-        resource: 'job_application',
-        resourceId: application.id,
-        details: {
-          jobId: job.id,
-          jobTitle: job.title,
-          company: job.company,
-          applicationId: application.id,
-          appliedAt: new Date().toISOString(),
-        }
-      }
-    }).catch(error => {
-      console.error('Failed to log job application:', error);
-    });
+    await prisma.auditLog
+      .create({
+        data: {
+          userId: user.id,
+          action: 'job_application_submitted',
+          resource: 'job_application',
+          resourceId: application.id,
+          details: {
+            jobId: job.id,
+            jobTitle: job.title,
+            company: job.company,
+            applicationId: application.id,
+            appliedAt: new Date().toISOString(),
+          },
+        },
+      })
+      .catch(error => {
+        console.error('Failed to log job application:', error);
+      });
 
     // If job has external URL, provide it for reference
     const response = {
@@ -118,16 +114,15 @@ export async function POST(request: NextRequest) {
       message: 'Application submitted successfully!',
       applicationId: application.id,
       externalUrl: job.url, // Include external URL if available
-      nextSteps: job.url 
+      nextSteps: job.url
         ? 'Your application has been recorded. You may also want to apply directly on the company website.'
-        : 'Your application has been submitted and the employer will be notified.'
+        : 'Your application has been submitted and the employer will be notified.',
     };
 
     return NextResponse.json(response, { status: 201 });
-
   } catch (error) {
     console.error('Job application error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid application data', details: error.errors },
@@ -145,7 +140,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -166,14 +161,11 @@ export async function GET(request: NextRequest) {
     // Get user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true }
+      select: { id: true },
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Check if user has already applied
@@ -181,22 +173,21 @@ export async function GET(request: NextRequest) {
       where: {
         userId_jobId: {
           userId: user.id,
-          jobId: jobId
-        }
+          jobId: jobId,
+        },
       },
       select: {
         id: true,
         status: true,
         appliedAt: true,
-        coverLetter: true
-      }
+        coverLetter: true,
+      },
     });
 
     return NextResponse.json({
       hasApplied: !!application,
-      application: application || null
+      application: application || null,
     });
-
   } catch (error) {
     console.error('Check application error:', error);
     return NextResponse.json(

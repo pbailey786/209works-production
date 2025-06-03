@@ -46,13 +46,13 @@ export function AccessibleVideo({
   autoPlay = false,
   controls = true,
   width,
-  height
+  height,
 }: AccessibleVideoProps) {
   const validation = validateMultimediaAccessibility({
     type: 'video',
     hasCaption: !!captionSrc,
     hasTranscript: !!transcriptSrc,
-    title
+    title,
   });
 
   return (
@@ -67,7 +67,7 @@ export function AccessibleVideo({
         controls={controls}
         width={width}
         height={height}
-        className="w-full h-auto"
+        className="h-auto w-full"
       >
         {captionSrc && (
           <track
@@ -79,46 +79,53 @@ export function AccessibleVideo({
           />
         )}
         <p>
-          Your browser doesn't support HTML video. 
-          <a href={src} download>Download the video file</a>.
+          Your browser doesn't support HTML video.
+          <a href={src} download>
+            Download the video file
+          </a>
+          .
         </p>
       </video>
-      
+
       {description && (
         <div id={`${title}-description`} className="sr-only">
           {description}
         </div>
       )}
-      
+
       {transcriptSrc && (
         <div className="mt-4">
-          <details className="bg-gray-50 p-4 rounded-lg">
-            <summary className="font-medium cursor-pointer">
+          <details className="rounded-lg bg-gray-50 p-4">
+            <summary className="cursor-pointer font-medium">
               View Transcript
             </summary>
             <div className="mt-2">
               <iframe
                 src={transcriptSrc}
                 title={`Transcript for ${title}`}
-                className="w-full h-32 border-0"
+                className="h-32 w-full border-0"
               />
             </div>
           </details>
         </div>
       )}
-      
+
       {!validation.isValid && process.env.NODE_ENV === 'development' && (
-        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+        <div className="mt-2 rounded border border-yellow-200 bg-yellow-50 p-2 text-sm">
           <strong>Accessibility Issues:</strong>
-          <ul className="list-disc list-inside mt-1">
+          <ul className="mt-1 list-inside list-disc">
             {validation.issues.map((issue, index) => (
-              <li key={index} className="text-yellow-800">{issue}</li>
+              <li key={index} className="text-yellow-800">
+                {issue}
+              </li>
             ))}
           </ul>
-          <strong className="block mt-2">Recommendations:</strong>
-          <ul className="list-disc list-inside mt-1">
+          <strong className="mt-2 block">Recommendations:</strong>
+          <ul className="mt-1 list-inside list-disc">
             {validation.recommendations.map((rec, index) => (
-              <li key={index} className="text-yellow-800">{rec}</li>
+              <li key={index} className="text-yellow-800">
+                {rec}
+              </li>
             ))}
           </ul>
         </div>
@@ -134,12 +141,12 @@ export function AccessibleAudio({
   transcriptSrc,
   className = '',
   autoPlay = false,
-  controls = true
+  controls = true,
 }: AccessibleAudioProps) {
   const validation = validateMultimediaAccessibility({
     type: 'audio',
     hasTranscript: !!transcriptSrc,
-    title
+    title,
   });
 
   return (
@@ -154,46 +161,53 @@ export function AccessibleAudio({
         className="w-full"
       >
         <p>
-          Your browser doesn't support HTML audio. 
-          <a href={src} download>Download the audio file</a>.
+          Your browser doesn't support HTML audio.
+          <a href={src} download>
+            Download the audio file
+          </a>
+          .
         </p>
       </audio>
-      
+
       {description && (
         <div id={`${title}-description`} className="sr-only">
           {description}
         </div>
       )}
-      
+
       {transcriptSrc && (
         <div className="mt-4">
-          <details className="bg-gray-50 p-4 rounded-lg">
-            <summary className="font-medium cursor-pointer">
+          <details className="rounded-lg bg-gray-50 p-4">
+            <summary className="cursor-pointer font-medium">
               View Transcript
             </summary>
             <div className="mt-2">
               <iframe
                 src={transcriptSrc}
                 title={`Transcript for ${title}`}
-                className="w-full h-32 border-0"
+                className="h-32 w-full border-0"
               />
             </div>
           </details>
         </div>
       )}
-      
+
       {!validation.isValid && process.env.NODE_ENV === 'development' && (
-        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+        <div className="mt-2 rounded border border-yellow-200 bg-yellow-50 p-2 text-sm">
           <strong>Accessibility Issues:</strong>
-          <ul className="list-disc list-inside mt-1">
+          <ul className="mt-1 list-inside list-disc">
             {validation.issues.map((issue, index) => (
-              <li key={index} className="text-yellow-800">{issue}</li>
+              <li key={index} className="text-yellow-800">
+                {issue}
+              </li>
             ))}
           </ul>
-          <strong className="block mt-2">Recommendations:</strong>
-          <ul className="list-disc list-inside mt-1">
+          <strong className="mt-2 block">Recommendations:</strong>
+          <ul className="mt-1 list-inside list-disc">
             {validation.recommendations.map((rec, index) => (
-              <li key={index} className="text-yellow-800">{rec}</li>
+              <li key={index} className="text-yellow-800">
+                {rec}
+              </li>
             ))}
           </ul>
         </div>
@@ -209,11 +223,11 @@ export function AccessibleIframe({
   width,
   height,
   className = '',
-  allowFullScreen = false
+  allowFullScreen = false,
 }: AccessibleIframeProps) {
   const validation = validateMultimediaAccessibility({
     type: 'iframe',
-    title
+    title,
   });
 
   return (
@@ -228,25 +242,29 @@ export function AccessibleIframe({
         allowFullScreen={allowFullScreen}
         className="w-full border-0"
       />
-      
+
       {description && (
         <div id={`${title}-description`} className="sr-only">
           {description}
         </div>
       )}
-      
+
       {!validation.isValid && process.env.NODE_ENV === 'development' && (
-        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+        <div className="mt-2 rounded border border-yellow-200 bg-yellow-50 p-2 text-sm">
           <strong>Accessibility Issues:</strong>
-          <ul className="list-disc list-inside mt-1">
+          <ul className="mt-1 list-inside list-disc">
             {validation.issues.map((issue, index) => (
-              <li key={index} className="text-yellow-800">{issue}</li>
+              <li key={index} className="text-yellow-800">
+                {issue}
+              </li>
             ))}
           </ul>
-          <strong className="block mt-2">Recommendations:</strong>
-          <ul className="list-disc list-inside mt-1">
+          <strong className="mt-2 block">Recommendations:</strong>
+          <ul className="mt-1 list-inside list-disc">
             {validation.recommendations.map((rec, index) => (
-              <li key={index} className="text-yellow-800">{rec}</li>
+              <li key={index} className="text-yellow-800">
+                {rec}
+              </li>
             ))}
           </ul>
         </div>
@@ -260,9 +278,11 @@ export function AccessibleMediaExamples() {
   return (
     <div className="space-y-8 p-6">
       <h2 className="text-2xl font-bold">Accessible Media Examples</h2>
-      
+
       <div>
-        <h3 className="text-lg font-semibold mb-4">Video with Captions and Transcript</h3>
+        <h3 className="mb-4 text-lg font-semibold">
+          Video with Captions and Transcript
+        </h3>
         <AccessibleVideo
           src="/videos/job-interview-tips.mp4"
           poster="/images/video-poster.jpg"
@@ -272,9 +292,9 @@ export function AccessibleMediaExamples() {
           transcriptSrc="/transcripts/job-interview-tips.html"
         />
       </div>
-      
+
       <div>
-        <h3 className="text-lg font-semibold mb-4">Audio with Transcript</h3>
+        <h3 className="mb-4 text-lg font-semibold">Audio with Transcript</h3>
         <AccessibleAudio
           src="/audio/career-advice-podcast.mp3"
           title="Career Advice Podcast Episode 1"
@@ -282,9 +302,9 @@ export function AccessibleMediaExamples() {
           transcriptSrc="/transcripts/career-advice-podcast.html"
         />
       </div>
-      
+
       <div>
-        <h3 className="text-lg font-semibold mb-4">Embedded Content</h3>
+        <h3 className="mb-4 text-lg font-semibold">Embedded Content</h3>
         <AccessibleIframe
           src="https://www.youtube.com/embed/example"
           title="Resume Building Tutorial"
@@ -296,4 +316,4 @@ export function AccessibleMediaExamples() {
       </div>
     </div>
   );
-} 
+}

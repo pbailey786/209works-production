@@ -6,9 +6,13 @@ import { prisma } from '../../auth/prisma';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     // Check if user is admin
-    if (!session?.user || (session.user.role !== 'admin' && session.user.email !== 'admin@209jobs.com')) {
+    if (
+      !session?.user ||
+      (session.user.role !== 'admin' &&
+        session.user.email !== 'admin@209jobs.com')
+    ) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -21,7 +25,7 @@ export async function GET(request: NextRequest) {
     // Calculate date range
     const now = new Date();
     let startDate: Date;
-    
+
     switch (dateFilter) {
       case '1d':
         startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -42,20 +46,20 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const whereClause: any = {
       createdAt: {
-        gte: startDate
-      }
+        gte: startDate,
+      },
     };
 
     if (search) {
       whereClause.question = {
         contains: search,
-        mode: 'insensitive'
+        mode: 'insensitive',
       };
     }
 
     // Get total count for pagination
     const totalCount = await prisma.chatAnalytics.count({
-      where: whereClause
+      where: whereClause,
     });
 
     const totalPages = Math.ceil(totalCount / limit);
@@ -68,15 +72,15 @@ export async function GET(request: NextRequest) {
         user: {
           select: {
             email: true,
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
       skip,
-      take: limit
+      take: limit,
     });
 
     // Format the response
@@ -89,16 +93,15 @@ export async function GET(request: NextRequest) {
       timestamp: item.createdAt.toISOString(),
       sessionId: item.sessionId,
       jobsFound: item.jobsFound || 0,
-      responseTime: item.responseTime || 0
+      responseTime: item.responseTime || 0,
     }));
 
     return NextResponse.json({
       analytics: formattedAnalytics,
       totalPages,
       currentPage: page,
-      totalCount
+      totalCount,
     });
-
   } catch (error) {
     console.error('Error fetching JobsGPT analytics:', error);
     return NextResponse.json(

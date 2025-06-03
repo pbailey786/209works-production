@@ -9,24 +9,28 @@ The Instagram Post Automation System is a comprehensive solution for automatical
 ### ✅ Completed Features
 
 1. **Dynamic Image Generation**
+
    - 4 professional templates (Modern, Classic, Minimal, Gradient)
    - Customizable colors, fonts, and layouts
    - Automatic job data integration
    - High-quality PNG output (1080x1080)
 
 2. **Post Scheduling System**
+
    - Queue-based scheduling with Redis/BullMQ
    - Automatic retry logic for failed posts
    - Flexible scheduling options
    - Post status tracking (draft, scheduled, published, failed)
 
 3. **Database Models**
+
    - `InstagramPost` - Individual post records
    - `InstagramTemplate` - Reusable post templates
    - `InstagramSchedule` - Automated posting schedules
    - Full Prisma integration
 
 4. **API Integration Layer**
+
    - Meta Graph API ready structure
    - Comprehensive error handling
    - Credential validation
@@ -40,6 +44,7 @@ The Instagram Post Automation System is a comprehensive solution for automatical
 ### 🚧 Pending Features (Requires Meta API Setup)
 
 1. **Analytics and Engagement Tracking**
+
    - Post performance metrics
    - Engagement analytics dashboard
    - Audience insights
@@ -75,6 +80,7 @@ The Instagram Post Automation System is a comprehensive solution for automatical
 ### 1. Dependencies
 
 The following packages have been installed:
+
 ```bash
 npm install canvas sharp
 ```
@@ -82,6 +88,7 @@ npm install canvas sharp
 ### 2. Database Migration
 
 Run the Prisma migration to create the Instagram tables:
+
 ```bash
 npx prisma generate
 npx prisma db push
@@ -90,6 +97,7 @@ npx prisma db push
 ### 3. Environment Variables
 
 Add to your `.env` file:
+
 ```env
 # Instagram API (when ready)
 INSTAGRAM_ACCESS_TOKEN=your_access_token
@@ -103,6 +111,7 @@ REDIS_URL=redis://localhost:6379
 ### 4. Test the System
 
 Run the test script to verify everything works:
+
 ```bash
 npx ts-node src/scripts/test-instagram-automation.ts
 ```
@@ -126,7 +135,7 @@ const jobData = {
 
 const imageBuffer = await generator.generateJobImage(jobData, {
   template: 'modern',
-  brandColor: '#3b82f6'
+  brandColor: '#3b82f6',
 });
 ```
 
@@ -139,7 +148,7 @@ const scheduler = new InstagramScheduler();
 
 const post = await scheduler.scheduleJobPost(userId, jobId, {
   scheduledAt: new Date('2024-01-15T10:00:00Z'),
-  imageOptions: { template: 'gradient' }
+  imageOptions: { template: 'gradient' },
 });
 ```
 
@@ -150,10 +159,11 @@ const template = await prisma.instagramTemplate.create({
   data: {
     name: 'Job Alert Template',
     type: 'job_listing',
-    captionTemplate: '🚀 New Job Alert!\n\n📋 {{jobTitle}}\n🏢 {{company}}\n📍 {{location}}\n\n#209jobs #hiring',
+    captionTemplate:
+      '🚀 New Job Alert!\n\n📋 {{jobTitle}}\n🏢 {{company}}\n📍 {{location}}\n\n#209jobs #hiring',
     hashtags: ['209jobs', 'hiring', 'jobs'],
     creatorId: userId,
-  }
+  },
 });
 ```
 
@@ -164,6 +174,7 @@ const template = await prisma.instagramTemplate.create({
 Create a new Instagram post.
 
 **Request Body:**
+
 ```json
 {
   "jobId": "job-uuid",
@@ -183,6 +194,7 @@ Create a new Instagram post.
 Get user's Instagram posts.
 
 **Query Parameters:**
+
 - `status` - Filter by status (scheduled, published)
 - `limit` - Number of posts to return (default: 20)
 
@@ -191,6 +203,7 @@ Get user's Instagram posts.
 Generate an Instagram image.
 
 **Request Body:**
+
 ```json
 {
   "jobId": "job-uuid",
@@ -206,24 +219,28 @@ Generate an Instagram image.
 ## Image Templates
 
 ### 1. Modern Template
+
 - Clean geometric design
 - Brand accent colors
 - Professional typography
 - Call-to-action button
 
 ### 2. Classic Template
+
 - Traditional layout
 - Border design
 - Formal presentation
 - Company-focused
 
 ### 3. Minimal Template
+
 - Lots of white space
 - Simple typography
 - Clean lines
 - Subtle branding
 
 ### 4. Gradient Template
+
 - Colorful gradient background
 - Eye-catching design
 - Modern aesthetic
@@ -232,6 +249,7 @@ Generate an Instagram image.
 ## Database Schema
 
 ### InstagramPost
+
 ```sql
 - id: UUID (Primary Key)
 - caption: Text
@@ -251,6 +269,7 @@ Generate an Instagram image.
 ```
 
 ### InstagramTemplate
+
 ```sql
 - id: UUID (Primary Key)
 - name: String
@@ -268,6 +287,7 @@ Generate an Instagram image.
 ```
 
 ### InstagramSchedule
+
 ```sql
 - id: UUID (Primary Key)
 - name: String
@@ -297,11 +317,13 @@ The system uses Redis and BullMQ for reliable post scheduling:
 The system includes comprehensive error handling:
 
 1. **Image Generation Errors**
+
    - Canvas rendering failures
    - Font loading issues
    - Memory constraints
 
 2. **Scheduling Errors**
+
    - Invalid dates
    - Queue connection issues
    - Database constraints
@@ -324,6 +346,7 @@ npm test -- instagram
 ```
 
 The test script verifies:
+
 - ✅ Image generation (all templates)
 - ✅ Database models and relationships
 - ✅ Post scheduling logic
@@ -336,16 +359,19 @@ The test script verifies:
 ### For Meta API Integration:
 
 1. **Set up Meta Developer Account**
+
    - Create Facebook App
    - Add Instagram Basic Display API
    - Get access tokens
 
 2. **Configure Webhooks**
+
    - Set up webhook endpoints
    - Handle Instagram events
    - Update post metrics
 
 3. **Implement Image Upload**
+
    - CDN integration (AWS S3, Cloudinary)
    - Image optimization
    - URL generation
@@ -358,11 +384,13 @@ The test script verifies:
 ### Alternative Solutions:
 
 1. **Make.com Integration**
+
    - Webhook-based posting
    - Visual workflow builder
    - No API limits
 
 2. **Zapier Integration**
+
    - Pre-built Instagram connectors
    - Easy setup
    - Multiple trigger options
@@ -375,11 +403,13 @@ The test script verifies:
 ## Security Considerations
 
 1. **API Keys**
+
    - Store in environment variables
    - Rotate regularly
    - Use least privilege access
 
 2. **Image Data**
+
    - Validate image content
    - Limit file sizes
    - Sanitize user inputs
@@ -392,11 +422,13 @@ The test script verifies:
 ## Performance Optimization
 
 1. **Image Generation**
+
    - Cache generated images
    - Optimize canvas operations
    - Use worker threads for heavy processing
 
 2. **Database Queries**
+
    - Index frequently queried fields
    - Use connection pooling
    - Implement query optimization
@@ -419,4 +451,4 @@ The system includes comprehensive logging:
 
 The Instagram Post Automation System provides a solid foundation for automated social media marketing. The modular architecture allows for easy extension and customization, while the comprehensive error handling ensures reliable operation.
 
-The system is ready for Meta API integration when credentials become available, and can be easily adapted to work with alternative solutions like Make.com or third-party scheduling services. 
+The system is ready for Meta API integration when credentials become available, and can be easily adapted to work with alternative solutions like Make.com or third-party scheduling services.

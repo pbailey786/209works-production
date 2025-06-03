@@ -2,18 +2,18 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, 
-  Megaphone, 
-  TrendingUp, 
-  Package, 
-  Check, 
+import {
+  X,
+  Megaphone,
+  TrendingUp,
+  Package,
+  Check,
   Star,
   Instagram,
   MessageSquare,
   Sparkles,
   DollarSign,
-  CreditCard
+  CreditCard,
 } from 'lucide-react';
 
 interface JobUpsellModalProps {
@@ -39,11 +39,13 @@ export default function JobUpsellModal({
   currentUpsells = {
     socialMediaShoutout: false,
     placementBump: false,
-    upsellBundle: false
+    upsellBundle: false,
   },
-  onSuccess
+  onSuccess,
 }: JobUpsellModalProps) {
-  const [selectedOptions, setSelectedOptions] = useState<Set<string>>(new Set());
+  const [selectedOptions, setSelectedOptions] = useState<Set<string>>(
+    new Set()
+  );
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,15 +54,17 @@ export default function JobUpsellModal({
       id: 'social-media',
       name: 'Social Media Shoutout',
       price: 29,
-      description: 'Promote your job across our Instagram and X (Twitter) channels',
+      description:
+        'Promote your job across our Instagram and X (Twitter) channels',
       features: [
         'Custom branded graphics for your job post',
         'Posted to 209 Works Instagram (5K+ local followers)',
         'Shared on X with relevant hashtags',
-        'Reaches hyper-local 209 area audience'
+        'Reaches hyper-local 209 area audience',
       ],
-      icon: <Instagram className="w-6 h-6" />,
-      disabled: currentUpsells.socialMediaShoutout || currentUpsells.upsellBundle,
+      icon: <Instagram className="h-6 w-6" />,
+      disabled:
+        currentUpsells.socialMediaShoutout || currentUpsells.upsellBundle,
     },
     {
       id: 'placement-bump',
@@ -71,9 +75,9 @@ export default function JobUpsellModal({
         'AI chatbot recommends your job to relevant users',
         'Higher visibility in search results',
         'Priority placement in chat responses',
-        'Increased application conversion rates'
+        'Increased application conversion rates',
       ],
-      icon: <TrendingUp className="w-6 h-6" />,
+      icon: <TrendingUp className="h-6 w-6" />,
       popular: true,
       disabled: currentUpsells.placementBump || currentUpsells.upsellBundle,
     },
@@ -87,9 +91,9 @@ export default function JobUpsellModal({
         'Everything from Social Media Shoutout',
         'Everything from On-Site Placement Bump',
         'Priority customer support',
-        'Extended promotion duration'
+        'Extended promotion duration',
       ],
-      icon: <Package className="w-6 h-6" />,
+      icon: <Package className="h-6 w-6" />,
       badge: 'SAVE $8',
       disabled: currentUpsells.upsellBundle,
     },
@@ -99,7 +103,7 @@ export default function JobUpsellModal({
 
   const handleOptionToggle = (optionId: string) => {
     const newSelection = new Set(selectedOptions);
-    
+
     if (optionId === 'bundle') {
       if (newSelection.has('bundle')) {
         newSelection.delete('bundle');
@@ -115,13 +119,13 @@ export default function JobUpsellModal({
         newSelection.add(optionId);
       }
     }
-    
+
     setSelectedOptions(newSelection);
   };
 
   const calculateTotal = () => {
     if (selectedOptions.has('bundle')) return 50;
-    
+
     let total = 0;
     if (selectedOptions.has('social-media')) total += 29;
     if (selectedOptions.has('placement-bump')) total += 29;
@@ -142,8 +146,12 @@ export default function JobUpsellModal({
         },
         body: JSON.stringify({
           jobId,
-          socialMediaShoutout: selectedOptions.has('social-media') || selectedOptions.has('bundle'),
-          placementBump: selectedOptions.has('placement-bump') || selectedOptions.has('bundle'),
+          socialMediaShoutout:
+            selectedOptions.has('social-media') ||
+            selectedOptions.has('bundle'),
+          placementBump:
+            selectedOptions.has('placement-bump') ||
+            selectedOptions.has('bundle'),
           upsellBundle: selectedOptions.has('bundle'),
         }),
       });
@@ -154,14 +162,15 @@ export default function JobUpsellModal({
       }
 
       const data = await response.json();
-      
+
       // Success! Close modal and notify parent
       onSuccess?.();
       onClose();
-      
     } catch (error) {
       console.error('Error processing upsells:', error);
-      setError(error instanceof Error ? error.message : 'Failed to process upsells');
+      setError(
+        error instanceof Error ? error.message : 'Failed to process upsells'
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -176,22 +185,24 @@ export default function JobUpsellModal({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+          className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white shadow-xl"
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-green-600 px-6 py-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Boost Your Job's Visibility</h2>
+                <h2 className="text-2xl font-bold">
+                  Boost Your Job's Visibility
+                </h2>
                 <p className="text-blue-100">
                   {jobTitle} at {company}
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                className="rounded-lg p-2 transition-colors hover:bg-white/20"
               >
-                <X className="w-6 h-6" />
+                <X className="h-6 w-6" />
               </button>
             </div>
           </div>
@@ -199,33 +210,34 @@ export default function JobUpsellModal({
           {/* Content */}
           <div className="p-6">
             {availableOptions.length === 0 ? (
-              <div className="text-center py-8">
-                <Sparkles className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <div className="py-8 text-center">
+                <Sparkles className="mx-auto mb-4 h-16 w-16 text-green-500" />
+                <h3 className="mb-2 text-xl font-semibold text-gray-900">
                   All Promotions Active!
                 </h3>
                 <p className="text-gray-600">
-                  Your job is already getting maximum visibility with all available promotion features.
+                  Your job is already getting maximum visibility with all
+                  available promotion features.
                 </p>
               </div>
             ) : (
               <>
-                <div className="text-center mb-6">
+                <div className="mb-6 text-center">
                   <p className="text-gray-600">
                     Get more qualified applicants with our promotion add-ons
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  {availableOptions.map((option) => {
+                <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+                  {availableOptions.map(option => {
                     const isSelected = selectedOptions.has(option.id);
-                    
+
                     return (
                       <motion.div
                         key={option.id}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className={`relative rounded-xl border-2 p-6 cursor-pointer transition-all ${
+                        className={`relative cursor-pointer rounded-xl border-2 p-6 transition-all ${
                           isSelected
                             ? 'border-blue-500 bg-blue-50 shadow-lg'
                             : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
@@ -234,9 +246,9 @@ export default function JobUpsellModal({
                       >
                         {/* Popular Badge */}
                         {option.popular && (
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                            <span className="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center">
-                              <Star className="w-3 h-3 mr-1" />
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
+                            <span className="flex items-center rounded-full bg-orange-500 px-3 py-1 text-xs font-bold text-white">
+                              <Star className="mr-1 h-3 w-3" />
                               POPULAR
                             </span>
                           </div>
@@ -245,33 +257,41 @@ export default function JobUpsellModal({
                         {/* Save Badge */}
                         {option.badge && (
                           <div className="absolute -top-3 right-4">
-                            <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                            <span className="rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
                               {option.badge}
                             </span>
                           </div>
                         )}
 
                         {/* Selection Indicator */}
-                        <div className="absolute top-4 right-4">
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                            isSelected 
-                              ? 'border-blue-500 bg-blue-500' 
-                              : 'border-gray-300'
-                          }`}>
-                            {isSelected && <Check className="w-4 h-4 text-white" />}
+                        <div className="absolute right-4 top-4">
+                          <div
+                            className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
+                              isSelected
+                                ? 'border-blue-500 bg-blue-500'
+                                : 'border-gray-300'
+                            }`}
+                          >
+                            {isSelected && (
+                              <Check className="h-4 w-4 text-white" />
+                            )}
                           </div>
                         </div>
 
                         {/* Icon */}
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
-                          isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-                        }`}>
+                        <div
+                          className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${
+                            isSelected
+                              ? 'bg-blue-100 text-blue-600'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
                           {option.icon}
                         </div>
 
                         {/* Title and Price */}
                         <div className="mb-3">
-                          <h4 className="text-lg font-semibold text-gray-900 mb-1">
+                          <h4 className="mb-1 text-lg font-semibold text-gray-900">
                             {option.name}
                           </h4>
                           <div className="flex items-center space-x-2">
@@ -287,15 +307,18 @@ export default function JobUpsellModal({
                         </div>
 
                         {/* Description */}
-                        <p className="text-gray-600 text-sm mb-4">
+                        <p className="mb-4 text-sm text-gray-600">
                           {option.description}
                         </p>
 
                         {/* Features */}
                         <ul className="space-y-2">
                           {option.features.slice(0, 3).map((feature, index) => (
-                            <li key={index} className="flex items-start text-sm text-gray-600">
-                              <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                            <li
+                              key={index}
+                              className="flex items-start text-sm text-gray-600"
+                            >
+                              <Check className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
                               {feature}
                             </li>
                           ))}
@@ -307,29 +330,29 @@ export default function JobUpsellModal({
 
                 {/* Total and Purchase */}
                 {selectedOptions.size > 0 && (
-                  <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-xl p-6">
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 p-6">
+                    <div className="mb-4 flex items-center justify-between">
                       <div>
                         <h4 className="text-lg font-semibold text-gray-900">
                           Total: ${calculateTotal()}
                         </h4>
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-sm text-gray-600">
                           One-time payment for enhanced visibility
                         </p>
                       </div>
                       <button
                         onClick={handlePurchase}
                         disabled={isProcessing}
-                        className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-lg font-semibold transition-all shadow-lg disabled:opacity-50"
+                        className="flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700 disabled:opacity-50"
                       >
                         {isProcessing ? (
                           <>
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                            <div className="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
                             Processing...
                           </>
                         ) : (
                           <>
-                            <CreditCard className="w-5 h-5 mr-2" />
+                            <CreditCard className="mr-2 h-5 w-5" />
                             Purchase Now
                           </>
                         )}
@@ -337,8 +360,8 @@ export default function JobUpsellModal({
                     </div>
 
                     {error && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                        <p className="text-red-600 text-sm">{error}</p>
+                      <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                        <p className="text-sm text-red-600">{error}</p>
                       </div>
                     )}
                   </div>

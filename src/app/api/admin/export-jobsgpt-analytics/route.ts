@@ -6,9 +6,13 @@ import { prisma } from '../../auth/prisma';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     // Check if user is admin
-    if (!session?.user || (session.user.role !== 'admin' && session.user.email !== 'admin@209jobs.com')) {
+    if (
+      !session?.user ||
+      (session.user.role !== 'admin' &&
+        session.user.email !== 'admin@209jobs.com')
+    ) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -18,7 +22,7 @@ export async function GET(request: NextRequest) {
     // Calculate date range
     const now = new Date();
     let startDate: Date;
-    
+
     switch (dateFilter) {
       case '1d':
         startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -40,20 +44,20 @@ export async function GET(request: NextRequest) {
     const analytics = await prisma.chatAnalytics.findMany({
       where: {
         createdAt: {
-          gte: startDate
-        }
+          gte: startDate,
+        },
       },
       include: {
         user: {
           select: {
             email: true,
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
     // Convert to CSV format
@@ -66,7 +70,7 @@ export async function GET(request: NextRequest) {
       'Response',
       'Jobs Found',
       'Response Time (seconds)',
-      'Metadata'
+      'Metadata',
     ];
 
     const csvRows = analytics.map(item => [
@@ -78,13 +82,13 @@ export async function GET(request: NextRequest) {
       `"${item.response.replace(/"/g, '""')}"`, // Escape quotes in CSV
       item.jobsFound || 0,
       item.responseTime || 0,
-      `"${JSON.stringify(item.metadata || {}).replace(/"/g, '""')}"` // Escape quotes in JSON
+      `"${JSON.stringify(item.metadata || {}).replace(/"/g, '""')}"`, // Escape quotes in JSON
     ]);
 
     // Combine headers and rows
     const csvContent = [
       csvHeaders.join(','),
-      ...csvRows.map(row => row.join(','))
+      ...csvRows.map(row => row.join(',')),
     ].join('\n');
 
     // Create response with CSV content
@@ -92,12 +96,11 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'text/csv',
-        'Content-Disposition': `attachment; filename="jobsgpt-analytics-${dateFilter}-${new Date().toISOString().split('T')[0]}.csv"`
-      }
+        'Content-Disposition': `attachment; filename="jobsgpt-analytics-${dateFilter}-${new Date().toISOString().split('T')[0]}.csv"`,
+      },
     });
 
     return response;
-
   } catch (error) {
     console.error('Error exporting JobsGPT analytics:', error);
     return NextResponse.json(

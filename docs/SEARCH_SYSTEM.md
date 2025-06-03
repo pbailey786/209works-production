@@ -59,6 +59,7 @@ GET /api/search/suggestions?type=trending&category=all&limit=10
 **Endpoint:** `GET /api/jobs/search`
 
 **Features:**
+
 - Full-text search with relevance scoring
 - Geolocation-based filtering
 - Faceted search capabilities
@@ -67,24 +68,24 @@ GET /api/search/suggestions?type=trending&category=all&limit=10
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `q` | string | Search query |
-| `location` | string | Location filter |
-| `lat`, `lng` | number | Coordinates for geolocation search |
-| `radius` | number | Search radius in miles (1-100) |
-| `jobType` | enum | Job type filter |
-| `company` | string | Company name filter |
-| `remote` | boolean | Remote work filter |
-| `salaryMin`, `salaryMax` | number | Salary range filters |
-| `datePosted` | enum | Date posted filter (`24h`, `7d`, `30d`) |
-| `skills` | array | Skills filter |
-| `experience` | enum | Experience level |
-| `includeSnippets` | boolean | Include text snippets |
-| `includeFacets` | boolean | Include search facets |
-| `useRelevanceScoring` | boolean | Use relevance scoring |
-| `page`, `limit` | number | Pagination |
-| `cursor` | string | Cursor-based pagination |
+| Parameter                | Type    | Description                             |
+| ------------------------ | ------- | --------------------------------------- |
+| `q`                      | string  | Search query                            |
+| `location`               | string  | Location filter                         |
+| `lat`, `lng`             | number  | Coordinates for geolocation search      |
+| `radius`                 | number  | Search radius in miles (1-100)          |
+| `jobType`                | enum    | Job type filter                         |
+| `company`                | string  | Company name filter                     |
+| `remote`                 | boolean | Remote work filter                      |
+| `salaryMin`, `salaryMax` | number  | Salary range filters                    |
+| `datePosted`             | enum    | Date posted filter (`24h`, `7d`, `30d`) |
+| `skills`                 | array   | Skills filter                           |
+| `experience`             | enum    | Experience level                        |
+| `includeSnippets`        | boolean | Include text snippets                   |
+| `includeFacets`          | boolean | Include search facets                   |
+| `useRelevanceScoring`    | boolean | Use relevance scoring                   |
+| `page`, `limit`          | number  | Pagination                              |
+| `cursor`                 | string  | Cursor-based pagination                 |
 
 **Example Response:**
 
@@ -148,15 +149,15 @@ GET /api/search/suggestions?type=trending&category=all&limit=10
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `q` | string | Search query |
-| `location` | string | Location filter |
-| `skills` | array | Required skills |
-| `experience` | enum | Experience level |
-| `education` | enum | Education level |
-| `remote` | boolean | Remote availability |
-| `workAuthorization` | enum | Work authorization status |
+| Parameter           | Type    | Description               |
+| ------------------- | ------- | ------------------------- |
+| `q`                 | string  | Search query              |
+| `location`          | string  | Location filter           |
+| `skills`            | array   | Required skills           |
+| `experience`        | enum    | Experience level          |
+| `education`         | enum    | Education level           |
+| `remote`            | boolean | Remote availability       |
+| `workAuthorization` | enum    | Work authorization status |
 
 **Example:**
 
@@ -172,12 +173,12 @@ GET /api/users/search?q=javascript&skills=react,node.js&experience=senior&remote
 
 **Parameters:**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `lat` | number | ✓ | Latitude (-90 to 90) |
-| `lng` | number | ✓ | Longitude (-180 to 180) |
-| `radius` | number | ✓ | Search radius in miles |
-| `query` | string | ✗ | Optional search query |
+| Parameter | Type   | Required | Description             |
+| --------- | ------ | -------- | ----------------------- |
+| `lat`     | number | ✓        | Latitude (-90 to 90)    |
+| `lng`     | number | ✓        | Longitude (-180 to 180) |
+| `radius`  | number | ✓        | Search radius in miles  |
+| `query`   | string | ✗        | Optional search query   |
 
 **Example Response:**
 
@@ -203,17 +204,13 @@ GET /api/users/search?q=javascript&skills=react,node.js&experience=senior&remote
     ],
     "insights": {
       "averageDistance": 12.4,
-      "jobTypes": [
-        { "type": "full-time", "count": 35, "percentage": 83.3 }
-      ],
+      "jobTypes": [{ "type": "full-time", "count": 35, "percentage": 83.3 }],
       "salaryRange": {
         "min": 70000,
         "max": 180000,
         "average": 125000
       },
-      "topCompanies": [
-        { "company": "Google", "jobCount": 8 }
-      ],
+      "topCompanies": [{ "company": "Google", "jobCount": 8 }],
       "remotePercentage": 45.2
     }
   }
@@ -228,11 +225,11 @@ GET /api/users/search?q=javascript&skills=react,node.js&experience=senior&remote
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `q` | string | Search query (min 1 char) |
-| `type` | enum | Suggestion type (`jobs`, `companies`, `locations`, `skills`) |
-| `limit` | number | Max suggestions (1-20) |
+| Parameter | Type   | Description                                                  |
+| --------- | ------ | ------------------------------------------------------------ |
+| `q`       | string | Search query (min 1 char)                                    |
+| `type`    | enum   | Suggestion type (`jobs`, `companies`, `locations`, `skills`) |
+| `limit`   | number | Max suggestions (1-20)                                       |
 
 **Example Response:**
 
@@ -261,11 +258,11 @@ GET /api/users/search?q=javascript&skills=react,node.js&experience=senior&remote
 
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `type` | enum | Suggestion type (`trending`, `popular`, `recent`) |
-| `category` | enum | Category (`all`, `jobs`, `locations`, `companies`, `skills`) |
-| `limit` | number | Max suggestions |
+| Parameter  | Type   | Description                                                  |
+| ---------- | ------ | ------------------------------------------------------------ |
+| `type`     | enum   | Suggestion type (`trending`, `popular`, `recent`)            |
+| `category` | enum   | Category (`all`, `jobs`, `locations`, `companies`, `skills`) |
+| `limit`    | number | Max suggestions                                              |
 
 **Example Response:**
 
@@ -300,6 +297,7 @@ GET /api/users/search?q=javascript&skills=react,node.js&experience=senior&remote
 The relevance scoring algorithm considers multiple factors:
 
 **Weight Factors:**
+
 - **Title Match** (Weight: 10): Direct matches in job title
 - **Exact Title Match** (Weight: 20): Exact phrase match in title
 - **Description Match** (Weight: 5): Matches in job description
@@ -309,6 +307,7 @@ The relevance scoring algorithm considers multiple factors:
 - **Recency** (Weight: 3): Newer jobs score higher
 
 **Scoring Formula:**
+
 ```
 Total Score = Σ(FieldMatch × Weight) + RecencyBonus
 ```
@@ -316,12 +315,14 @@ Total Score = Σ(FieldMatch × Weight) + RecencyBonus
 ### Text Processing
 
 **Normalization:**
+
 - Convert to lowercase
 - Remove special characters
 - Normalize whitespace
 - Filter stop words
 
 **Keyword Extraction:**
+
 - Extract meaningful terms (2+ characters)
 - Remove common stop words
 - Generate partial matches for longer words
@@ -336,12 +337,15 @@ function calculateDistance(lat1, lng1, lat2, lng2) {
   const R = 3959; // Earth's radius in miles
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
-  
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-            Math.sin(dLng/2) * Math.sin(dLng/2);
-  
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 ```
@@ -384,12 +388,14 @@ The system automatically generates facets for search results:
 ### Caching Strategy
 
 **Cache Layers:**
+
 1. **Redis Cache**: Primary caching layer
 2. **Search Result Caching**: TTL varies by search type
 3. **Autocomplete Caching**: Medium TTL for suggestions
 4. **Facet Caching**: Short TTL for dynamic data
 
 **Cache Keys:**
+
 ```
 search:jobs-enhanced:{query}:{filters}:{pagination}
 search:autocomplete:{type}:{query}:{limit}
@@ -397,6 +403,7 @@ search:suggestions:{type}:{category}:{limit}
 ```
 
 **TTL Strategy:**
+
 - **Search Results**: 5 minutes (short TTL)
 - **Autocomplete**: 30 minutes (medium TTL)
 - **Suggestions**: 15 minutes (trending data)
@@ -433,6 +440,7 @@ CREATE INDEX idx_user_role ON "user"(role);
 ### Common Error Responses
 
 **Validation Errors:**
+
 ```json
 {
   "success": false,
@@ -447,6 +455,7 @@ CREATE INDEX idx_user_role ON "user"(role);
 ```
 
 **Rate Limiting:**
+
 ```json
 {
   "success": false,
@@ -469,7 +478,7 @@ import { useState, useEffect } from 'react';
 export function useJobSearch(filters) {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
     const searchJobs = async () => {
       setLoading(true);
@@ -484,12 +493,12 @@ export function useJobSearch(filters) {
         setLoading(false);
       }
     };
-    
+
     if (filters.q) {
       searchJobs();
     }
   }, [filters]);
-  
+
   return { results, loading };
 }
 ```
@@ -503,26 +512,26 @@ function SearchAutocomplete({ onSelect }) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const debouncedQuery = useDebounce(query, 300);
-  
+
   useEffect(() => {
     if (debouncedQuery.length >= 2) {
       fetchSuggestions(debouncedQuery);
     }
   }, [debouncedQuery]);
-  
-  const fetchSuggestions = async (q) => {
+
+  const fetchSuggestions = async q => {
     const response = await fetch(
       `/api/search/autocomplete?q=${encodeURIComponent(q)}&type=jobs`
     );
     const data = await response.json();
     setSuggestions(data.data.suggestions);
   };
-  
+
   return (
     <div>
-      <input 
+      <input
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={e => setQuery(e.target.value)}
         placeholder="Search jobs..."
       />
       {suggestions.length > 0 && (
@@ -544,7 +553,7 @@ function SearchAutocomplete({ onSelect }) {
 ### Rate Limiting
 
 - **Search endpoints**: 30 requests/minute
-- **Autocomplete**: 60 requests/minute  
+- **Autocomplete**: 60 requests/minute
 - **Premium users**: Higher limits
 
 ### Data Privacy
@@ -571,6 +580,7 @@ function SearchAutocomplete({ onSelect }) {
 ### Logging
 
 Search queries are logged for:
+
 - Performance monitoring
 - Popular query analysis
 - Error tracking
@@ -590,8 +600,8 @@ Search queries are logged for:
 
 ```sql
 -- Add indexes for better search performance
-CREATE INDEX CONCURRENTLY idx_job_search_composite 
-ON job(created_at DESC, salary_min, job_type) 
+CREATE INDEX CONCURRENTLY idx_job_search_composite
+ON job(created_at DESC, salary_min, job_type)
 WHERE created_at > NOW() - INTERVAL '90 days';
 
 -- Add geolocation columns if implementing location search
@@ -621,6 +631,7 @@ CREATE INDEX idx_job_coordinates ON job USING gist(ll_to_earth(latitude, longitu
 ---
 
 For more information, see:
+
 - [API Middleware Documentation](./API_MIDDLEWARE.md)
 - [Caching and Pagination Documentation](./CACHING_PAGINATION.md)
-- [API Validation Documentation](./API_VALIDATION.md) 
+- [API Validation Documentation](./API_VALIDATION.md)

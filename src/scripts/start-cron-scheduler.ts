@@ -2,13 +2,13 @@
 
 /**
  * Cron Scheduler Startup Script
- * 
+ *
  * Enhanced version with proper process management, error handling,
  * configuration support, and monitoring capabilities.
- * 
+ *
  * This script initializes and starts the cron scheduler for local development.
  * In production, cron jobs are handled by Vercel Cron.
- * 
+ *
  * Features:
  * - Proper process management without memory leaks
  * - Comprehensive error handling and recovery
@@ -16,7 +16,7 @@
  * - Health monitoring and status reporting
  * - Graceful shutdown handling
  * - Resource cleanup and management
- * 
+ *
  * Usage:
  *   npm run cron:start
  *   npm run cron:stop
@@ -47,18 +47,38 @@ interface SchedulerConfig {
 class ConfigManager {
   static load(): SchedulerConfig {
     return {
-      pidFile: process.env.CRON_SCHEDULER_PID_FILE || join(process.cwd(), 'cron-scheduler.pid'),
-      lockFile: process.env.CRON_SCHEDULER_LOCK_FILE || join(process.cwd(), 'cron-scheduler.lock'),
-      logLevel: this.validateLogLevel(process.env.CRON_SCHEDULER_LOG_LEVEL || 'info'),
-      healthCheckInterval: this.validateNumber(process.env.CRON_SCHEDULER_HEALTH_INTERVAL || '60000', 30000, 300000),
-      shutdownTimeout: this.validateNumber(process.env.CRON_SCHEDULER_SHUTDOWN_TIMEOUT || '30000', 5000, 60000),
-      testTimeout: this.validateNumber(process.env.CRON_SCHEDULER_TEST_TIMEOUT || '10000', 5000, 30000),
+      pidFile:
+        process.env.CRON_SCHEDULER_PID_FILE ||
+        join(process.cwd(), 'cron-scheduler.pid'),
+      lockFile:
+        process.env.CRON_SCHEDULER_LOCK_FILE ||
+        join(process.cwd(), 'cron-scheduler.lock'),
+      logLevel: this.validateLogLevel(
+        process.env.CRON_SCHEDULER_LOG_LEVEL || 'info'
+      ),
+      healthCheckInterval: this.validateNumber(
+        process.env.CRON_SCHEDULER_HEALTH_INTERVAL || '60000',
+        30000,
+        300000
+      ),
+      shutdownTimeout: this.validateNumber(
+        process.env.CRON_SCHEDULER_SHUTDOWN_TIMEOUT || '30000',
+        5000,
+        60000
+      ),
+      testTimeout: this.validateNumber(
+        process.env.CRON_SCHEDULER_TEST_TIMEOUT || '10000',
+        5000,
+        30000
+      ),
       baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-      cronSecret: process.env.CRON_SECRET || 'test'
+      cronSecret: process.env.CRON_SECRET || 'test',
     };
   }
 
-  private static validateLogLevel(level: string): 'debug' | 'info' | 'warn' | 'error' {
+  private static validateLogLevel(
+    level: string
+  ): 'debug' | 'info' | 'warn' | 'error' {
     const validLevels = ['debug', 'info', 'warn', 'error'];
     if (!validLevels.includes(level)) {
       console.warn(`Invalid log level: ${level}. Using 'info' as default.`);
@@ -67,10 +87,16 @@ class ConfigManager {
     return level as 'debug' | 'info' | 'warn' | 'error';
   }
 
-  private static validateNumber(value: string, min: number, max: number): number {
+  private static validateNumber(
+    value: string,
+    min: number,
+    max: number
+  ): number {
     const num = parseInt(value, 10);
     if (isNaN(num) || num < min || num > max) {
-      console.warn(`Invalid number: ${value}. Using default within range ${min}-${max}.`);
+      console.warn(
+        `Invalid number: ${value}. Using default within range ${min}-${max}.`
+      );
       return Math.max(min, Math.min(max, 60000)); // Default to middle value
     }
     return num;
@@ -89,13 +115,25 @@ class Logger {
     return levels.indexOf(level) >= levels.indexOf(this.logLevel);
   }
 
-  private formatMessage(level: string, message: string, ...args: any[]): string {
+  private formatMessage(
+    level: string,
+    message: string,
+    ...args: any[]
+  ): string {
     const timestamp = new Date().toISOString();
     const pid = process.pid;
-    const formattedArgs = args.length > 0 ? ' ' + args.map(arg => 
-      typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-    ).join(' ') : '';
-    
+    const formattedArgs =
+      args.length > 0
+        ? ' ' +
+          args
+            .map(arg =>
+              typeof arg === 'object'
+                ? JSON.stringify(arg, null, 2)
+                : String(arg)
+            )
+            .join(' ')
+        : '';
+
     return `[${timestamp}] [${pid}] [${level.toUpperCase()}] ${message}${formattedArgs}`;
   }
 
@@ -139,7 +177,7 @@ class ProcessManager {
     process.on('SIGUSR2', () => this.gracefulShutdown('SIGUSR2')); // For nodemon
 
     // Error handling
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', error => {
       this.logger.error('Uncaught Exception:', error);
       this.emergencyShutdown('uncaughtException');
     });
@@ -150,7 +188,7 @@ class ProcessManager {
     });
 
     // Memory warnings
-    process.on('warning', (warning) => {
+    process.on('warning', warning => {
       this.logger.warn('Process warning:', warning);
     });
   }
@@ -170,7 +208,7 @@ class ProcessManager {
       try {
         const lockPid = readFileSync(this.config.lockFile, 'utf8').trim();
         this.logger.warn(`Lock file exists with PID: ${lockPid}`);
-        
+
         // Check if process is still running
         try {
           process.kill(parseInt(lockPid), 0); // Signal 0 checks if process exists
@@ -185,7 +223,7 @@ class ProcessManager {
         this.logger.warn('Error reading lock file:', error);
       }
     }
-    
+
     try {
       writeFileSync(this.config.lockFile, process.pid.toString());
       return true;
@@ -210,27 +248,29 @@ class ProcessManager {
     this.healthCheckTimer = setInterval(() => {
       this.performHealthCheck();
     }, this.config.healthCheckInterval);
-    
-    this.logger.debug(`Health check started with interval: ${this.config.healthCheckInterval}ms`);
+
+    this.logger.debug(
+      `Health check started with interval: ${this.config.healthCheckInterval}ms`
+    );
   }
 
   private performHealthCheck(): void {
     const memUsage = process.memoryUsage();
     const uptime = process.uptime();
-    
+
     this.logger.debug('Health check:', {
       uptime: `${Math.floor(uptime / 60)} minutes`,
       memory: {
         rss: `${Math.round(memUsage.rss / 1024 / 1024)} MB`,
         heapUsed: `${Math.round(memUsage.heapUsed / 1024 / 1024)} MB`,
-        heapTotal: `${Math.round(memUsage.heapTotal / 1024 / 1024)} MB`
-      }
+        heapTotal: `${Math.round(memUsage.heapTotal / 1024 / 1024)} MB`,
+      },
     });
 
     // Memory threshold check (200MB for scheduler)
     if (memUsage.rss > 200 * 1024 * 1024) {
       this.logger.warn('High memory usage detected:', {
-        rss: `${Math.round(memUsage.rss / 1024 / 1024)} MB`
+        rss: `${Math.round(memUsage.rss / 1024 / 1024)} MB`,
       });
     }
   }
@@ -260,7 +300,7 @@ class ProcessManager {
 
     // Cleanup
     this.cleanup();
-    
+
     this.logger.info('Graceful shutdown completed');
     process.exit(0);
   }
@@ -305,8 +345,9 @@ class CronEndpointTester {
     ];
 
     this.logger.info('🌐 Testing cron endpoints...');
-    
-    const results: { endpoint: string; success: boolean; message: string }[] = [];
+
+    const results: { endpoint: string; success: boolean; message: string }[] =
+      [];
 
     for (const endpoint of endpoints) {
       const result = await this.testEndpoint(endpoint);
@@ -316,33 +357,40 @@ class CronEndpointTester {
     // Summary
     const successful = results.filter(r => r.success).length;
     const total = results.length;
-    
-    this.logger.info(`🧪 Endpoint testing completed: ${successful}/${total} successful`);
-    
+
+    this.logger.info(
+      `🧪 Endpoint testing completed: ${successful}/${total} successful`
+    );
+
     if (successful < total) {
       this.logger.warn('Some endpoints failed testing');
       process.exit(1);
     }
   }
 
-  private async testEndpoint(endpoint: string): Promise<{ endpoint: string; success: boolean; message: string }> {
+  private async testEndpoint(
+    endpoint: string
+  ): Promise<{ endpoint: string; success: boolean; message: string }> {
     try {
       this.logger.debug(`📡 Testing ${endpoint}...`);
-      
+
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.config.testTimeout);
-      
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        this.config.testTimeout
+      );
+
       const response = await fetch(`${this.config.baseUrl}${endpoint}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${this.config.cronSecret}`,
+          Authorization: `Bearer ${this.config.cronSecret}`,
           'Content-Type': 'application/json',
         },
-        signal: controller.signal
+        signal: controller.signal,
       });
-      
+
       clearTimeout(timeoutId);
-      
+
       if (response.ok) {
         const data = await response.json();
         const message = data.message || 'Success';
@@ -376,10 +424,12 @@ class CronSchedulerManager {
 
   async start(): Promise<void> {
     this.logger.info('🚀 Starting cron scheduler...');
-    
+
     // Check for existing instance
     if (!this.processManager.checkLock()) {
-      this.logger.error('Failed to acquire lock, another instance may be running');
+      this.logger.error(
+        'Failed to acquire lock, another instance may be running'
+      );
       process.exit(1);
     }
 
@@ -395,14 +445,13 @@ class CronSchedulerManager {
       this.processManager.startHealthCheck();
 
       this.logger.info('✅ Cron scheduler is running. Press Ctrl+C to stop.');
-      
+
       // Keep the process alive without setInterval memory leak
       // Use a promise that never resolves instead of setInterval
       await new Promise<void>(() => {
         // This promise will never resolve, keeping the process alive
         // until it's terminated by a signal
       });
-      
     } catch (error) {
       this.logger.error('Failed to initialize cron scheduler:', error);
       this.processManager.removeLock();
@@ -412,31 +461,33 @@ class CronSchedulerManager {
 
   stop(): void {
     this.logger.info('⏹️  Stopping cron scheduler...');
-    
+
     try {
       cronScheduler.stop();
       this.logger.info('✅ Cron scheduler stopped.');
     } catch (error) {
       this.logger.error('Error stopping cron scheduler:', error);
     }
-    
+
     this.processManager.removeLock();
     process.exit(0);
   }
 
   status(): void {
     this.logger.info('📊 Cron scheduler status:');
-    
+
     try {
       const status = cronScheduler.getStatus();
-      
+
       if (status.length === 0) {
         this.logger.warn('❌ No cron jobs are currently scheduled.');
       } else {
         this.logger.info('📋 Scheduled tasks:');
         status.forEach(({ name, running }) => {
           const icon = running ? '✅' : '❌';
-          this.logger.info(`  ${icon} ${name}: ${running ? 'Running' : 'Stopped'}`);
+          this.logger.info(
+            `  ${icon} ${name}: ${running ? 'Running' : 'Stopped'}`
+          );
         });
       }
     } catch (error) {
@@ -458,20 +509,38 @@ class CronSchedulerManager {
     this.logger.info('  npm run cron:test   - Test cron endpoints');
     this.logger.info('');
     this.logger.info('📋 Available cron jobs:');
-    this.logger.info('  • immediate-alerts   - Process immediate job alerts (every 5 minutes)');
-    this.logger.info('  • daily-alerts       - Process daily job alerts (9:00 AM daily)');
-    this.logger.info('  • weekly-digests     - Send weekly digests (9:00 AM Monday)');
-    this.logger.info('  • token-cleanup      - Clean expired tokens (2:00 AM daily)');
-    this.logger.info('  • job-rankings       - Update job rankings (every 6 hours)');
-    this.logger.info('  • db-maintenance     - Database maintenance (3:00 AM daily)');
+    this.logger.info(
+      '  • immediate-alerts   - Process immediate job alerts (every 5 minutes)'
+    );
+    this.logger.info(
+      '  • daily-alerts       - Process daily job alerts (9:00 AM daily)'
+    );
+    this.logger.info(
+      '  • weekly-digests     - Send weekly digests (9:00 AM Monday)'
+    );
+    this.logger.info(
+      '  • token-cleanup      - Clean expired tokens (2:00 AM daily)'
+    );
+    this.logger.info(
+      '  • job-rankings       - Update job rankings (every 6 hours)'
+    );
+    this.logger.info(
+      '  • db-maintenance     - Database maintenance (3:00 AM daily)'
+    );
     this.logger.info('');
     this.logger.info('🔧 Environment Variables:');
-    this.logger.info('  CRON_SCHEDULER_LOG_LEVEL     - Log level (debug, info, warn, error)');
-    this.logger.info('  CRON_SCHEDULER_HEALTH_INTERVAL - Health check interval in ms');
+    this.logger.info(
+      '  CRON_SCHEDULER_LOG_LEVEL     - Log level (debug, info, warn, error)'
+    );
+    this.logger.info(
+      '  CRON_SCHEDULER_HEALTH_INTERVAL - Health check interval in ms'
+    );
     this.logger.info('  CRON_SCHEDULER_PID_FILE      - PID file location');
     this.logger.info('  CRON_SCHEDULER_LOCK_FILE     - Lock file location');
     this.logger.info('  NEXT_PUBLIC_BASE_URL         - Base URL for testing');
-    this.logger.info('  CRON_SECRET                  - Secret for cron endpoint authentication');
+    this.logger.info(
+      '  CRON_SECRET                  - Secret for cron endpoint authentication'
+    );
   }
 }
 
@@ -482,25 +551,25 @@ async function main(): Promise<void> {
 
   console.log('📅 209jobs Cron Scheduler Management');
   console.log('=====================================');
-  
+
   try {
     switch (command) {
       case 'start':
         await manager.start();
         break;
-        
+
       case 'stop':
         manager.stop();
         break;
-        
+
       case 'status':
         manager.status();
         break;
-        
+
       case 'test':
         await manager.test();
         break;
-        
+
       default:
         manager.showHelp();
         break;
@@ -512,4 +581,4 @@ async function main(): Promise<void> {
 }
 
 // Run the main function
-main(); 
+main();

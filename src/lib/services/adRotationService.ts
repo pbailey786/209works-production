@@ -72,7 +72,7 @@ export class AdRotationService {
       const ads = await prisma.advertisement.findMany({
         where: whereClause,
         orderBy: {
-          createdAt: 'desc'
+          createdAt: 'desc',
         },
         take: limit * 5, // Get more ads for better rotation
       });
@@ -170,20 +170,27 @@ export class AdRotationService {
     const bidWeight = Math.min(bidAmount / 100, 1); // Assuming max bid of $100
 
     // Performance multiplier (CTR + conversion rate)
-    const performanceMultiplier = 1 + (ctr * 2) + (conversionRate * 3);
+    const performanceMultiplier = 1 + ctr * 2 + conversionRate * 3;
 
     // Freshness factor (newer ads get slight boost)
-    const daysSinceCreated = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
-    const freshnessFactor = Math.max(0.5, 1 - (daysSinceCreated / 30)); // Decay over 30 days
+    const daysSinceCreated =
+      (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+    const freshnessFactor = Math.max(0.5, 1 - daysSinceCreated / 30); // Decay over 30 days
 
     // Impression fatigue (reduce weight for overexposed ads)
-    const impressionFatigue = Math.max(0.1, 1 - (impressions / 10000)); // Reduce after 10k impressions
+    const impressionFatigue = Math.max(0.1, 1 - impressions / 10000); // Reduce after 10k impressions
 
     // Quality score (based on engagement)
-    const qualityScore = impressions > 0 ? Math.min(2, 1 + (clicks / impressions) * 5) : 1;
+    const qualityScore =
+      impressions > 0 ? Math.min(2, 1 + (clicks / impressions) * 5) : 1;
 
     // Final weight calculation
-    const weight = bidWeight * performanceMultiplier * freshnessFactor * impressionFatigue * qualityScore;
+    const weight =
+      bidWeight *
+      performanceMultiplier *
+      freshnessFactor *
+      impressionFatigue *
+      qualityScore;
 
     return Math.max(0.01, weight); // Minimum weight to ensure all ads have a chance
   }
@@ -191,24 +198,30 @@ export class AdRotationService {
   /**
    * Weighted random selection of ads
    */
-  private static weightedRandomSelection(adsWithMetrics: AdPerformanceMetrics[], limit: number): any[] {
+  private static weightedRandomSelection(
+    adsWithMetrics: AdPerformanceMetrics[],
+    limit: number
+  ): any[] {
     if (adsWithMetrics.length <= limit) {
       return adsWithMetrics;
     }
 
     // Sort by weight (descending) and take top performers
     const sortedAds = [...adsWithMetrics].sort((a, b) => b.weight - a.weight);
-    
+
     // Create a pool of top performers (2x the limit)
-    const topPerformers = sortedAds.slice(0, Math.min(limit * 2, sortedAds.length));
-    
+    const topPerformers = sortedAds.slice(
+      0,
+      Math.min(limit * 2, sortedAds.length)
+    );
+
     // Weighted random selection from top performers
     const selectedAds = [];
     const availableAds = [...topPerformers];
 
     for (let i = 0; i < limit && availableAds.length > 0; i++) {
       const totalWeight = availableAds.reduce((sum, ad) => sum + ad.weight, 0);
-      
+
       if (totalWeight === 0) {
         // If no weight, select randomly
         const randomIndex = Math.floor(Math.random() * availableAds.length);
@@ -238,15 +251,18 @@ export class AdRotationService {
   /**
    * Update ad performance metrics after impression
    */
-  static async recordImpression(adId: string, metadata: {
-    userId?: string;
-    sessionId: string;
-    page: string;
-    position: string;
-    userAgent: string;
-    referrer: string;
-    ipAddress?: string;
-  }) {
+  static async recordImpression(
+    adId: string,
+    metadata: {
+      userId?: string;
+      sessionId: string;
+      page: string;
+      position: string;
+      userAgent: string;
+      referrer: string;
+      ipAddress?: string;
+    }
+  ) {
     try {
       // Record impression in database
       await prisma.adImpression.create({
@@ -281,13 +297,16 @@ export class AdRotationService {
   /**
    * Update ad performance metrics after click
    */
-  static async recordClick(adId: string, metadata: {
-    userId?: string;
-    sessionId: string;
-    targetUrl: string;
-    userAgent: string;
-    referrer: string;
-  }) {
+  static async recordClick(
+    adId: string,
+    metadata: {
+      userId?: string;
+      sessionId: string;
+      targetUrl: string;
+      userAgent: string;
+      referrer: string;
+    }
+  ) {
     try {
       // Record click in database
       await prisma.adClick.create({
@@ -322,10 +341,13 @@ export class AdRotationService {
   /**
    * Get ad performance analytics
    */
-  static async getAdAnalytics(adId: string, dateRange?: { start: Date; end: Date }) {
+  static async getAdAnalytics(
+    adId: string,
+    dateRange?: { start: Date; end: Date }
+  ) {
     try {
       const whereClause: any = { adId };
-      
+
       if (dateRange) {
         whereClause.timestamp = {
           gte: dateRange.start,
@@ -354,4 +376,4 @@ export class AdRotationService {
       throw error;
     }
   }
-} 
+}

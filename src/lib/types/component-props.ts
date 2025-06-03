@@ -1,7 +1,7 @@
 /**
  * Comprehensive TypeScript interfaces for component props
  * Fixes critical type safety issues identified in Task 45.15
- * 
+ *
  * This file provides proper type definitions to replace unsafe 'any' types
  * and ensures runtime prop validation with default values.
  */
@@ -73,7 +73,8 @@ export interface EmployeeTestimonial {
   role: string;
 }
 
-export interface EnhancedJobData extends Omit<JobWithOptionalFields, 'benefits' | 'skills'> {
+export interface EnhancedJobData
+  extends Omit<JobWithOptionalFields, 'benefits' | 'skills'> {
   companyInfo: CompanyInfo;
   skills: JobSkill[];
   benefits?: string[];
@@ -126,7 +127,7 @@ export interface JobListProps {
 export interface WireframeSection {
   title: string;
   description: string;
-  wireframeType: "table" | "cards" | "form" | "chart" | "list" | "buttons";
+  wireframeType: 'table' | 'cards' | 'form' | 'chart' | 'list' | 'buttons';
   items?: string[];
 }
 
@@ -151,7 +152,14 @@ export interface PlaceholderPageProps {
 // ===== UTILITY TYPES FOR VALIDATION =====
 
 export type JobStatus = 'active' | 'inactive' | 'expired' | 'draft';
-export type JobType = 'full_time' | 'part_time' | 'contract' | 'temporary' | 'internship' | 'volunteer' | 'other';
+export type JobType =
+  | 'full_time'
+  | 'part_time'
+  | 'contract'
+  | 'temporary'
+  | 'internship'
+  | 'volunteer'
+  | 'other';
 export type ExperienceLevel = 'entry' | 'mid' | 'senior' | 'executive';
 
 // ===== PROP VALIDATION HELPERS =====
@@ -161,7 +169,14 @@ export const validateJobProps = (job: any): JobWithOptionalFields => {
     throw new Error('Job object is required');
   }
 
-  const requiredFields = ['id', 'title', 'company', 'type', 'postedAt', 'description'];
+  const requiredFields = [
+    'id',
+    'title',
+    'company',
+    'type',
+    'postedAt',
+    'description',
+  ];
   for (const field of requiredFields) {
     if (!job[field]) {
       throw new Error(`Required field '${field}' is missing from job object`);
@@ -177,16 +192,25 @@ export const validateJobProps = (job: any): JobWithOptionalFields => {
     throw new Error('Company name must be a non-empty string');
   }
 
-  if (typeof job.description !== 'string' || job.description.trim().length === 0) {
+  if (
+    typeof job.description !== 'string' ||
+    job.description.trim().length === 0
+  ) {
     throw new Error('Job description must be a non-empty string');
   }
 
   // Validate optional numeric fields
-  if (job.salaryMin !== undefined && (typeof job.salaryMin !== 'number' || job.salaryMin < 0)) {
+  if (
+    job.salaryMin !== undefined &&
+    (typeof job.salaryMin !== 'number' || job.salaryMin < 0)
+  ) {
     throw new Error('Salary minimum must be a positive number');
   }
 
-  if (job.salaryMax !== undefined && (typeof job.salaryMax !== 'number' || job.salaryMax < 0)) {
+  if (
+    job.salaryMax !== undefined &&
+    (typeof job.salaryMax !== 'number' || job.salaryMax < 0)
+  ) {
     throw new Error('Salary maximum must be a positive number');
   }
 
@@ -204,10 +228,21 @@ export const validateJobProps = (job: any): JobWithOptionalFields => {
 };
 
 export const validateJobCardProps = (props: any): JobCardProps => {
-  const requiredFields = ['title', 'company', 'type', 'postedAt', 'description', 'applyUrl'];
-  
+  const requiredFields = [
+    'title',
+    'company',
+    'type',
+    'postedAt',
+    'description',
+    'applyUrl',
+  ];
+
   for (const field of requiredFields) {
-    if (!props[field] || typeof props[field] !== 'string' || props[field].trim().length === 0) {
+    if (
+      !props[field] ||
+      typeof props[field] !== 'string' ||
+      props[field].trim().length === 0
+    ) {
       throw new Error(`Required prop '${field}' is missing or invalid`);
     }
   }
@@ -227,12 +262,22 @@ export const validateJobCardProps = (props: any): JobCardProps => {
   return props as JobCardProps;
 };
 
-export const validatePlaceholderPageProps = (props: any): PlaceholderPageProps => {
-  if (!props.title || typeof props.title !== 'string' || props.title.trim().length === 0) {
+export const validatePlaceholderPageProps = (
+  props: any
+): PlaceholderPageProps => {
+  if (
+    !props.title ||
+    typeof props.title !== 'string' ||
+    props.title.trim().length === 0
+  ) {
     throw new Error('Title is required and must be a non-empty string');
   }
 
-  if (!props.description || typeof props.description !== 'string' || props.description.trim().length === 0) {
+  if (
+    !props.description ||
+    typeof props.description !== 'string' ||
+    props.description.trim().length === 0
+  ) {
     throw new Error('Description is required and must be a non-empty string');
   }
 
@@ -244,10 +289,19 @@ export const validatePlaceholderPageProps = (props: any): PlaceholderPageProps =
   if (props.sections) {
     for (const section of props.sections) {
       if (!section.title || !section.description || !section.wireframeType) {
-        throw new Error('Each section must have title, description, and wireframeType');
+        throw new Error(
+          'Each section must have title, description, and wireframeType'
+        );
       }
-      
-      const validWireframeTypes = ["table", "cards", "form", "chart", "list", "buttons"];
+
+      const validWireframeTypes = [
+        'table',
+        'cards',
+        'form',
+        'chart',
+        'list',
+        'buttons',
+      ];
       if (!validWireframeTypes.includes(section.wireframeType)) {
         throw new Error(`Invalid wireframeType: ${section.wireframeType}`);
       }
@@ -287,7 +341,7 @@ export const defaultEnhancedJobModalProps: Partial<EnhancedJobModalProps> = {
 };
 
 export const defaultPlaceholderPageProps: Partial<PlaceholderPageProps> = {
-  icon: "📄",
+  icon: '📄',
   sections: [],
   quickActions: [],
   comingSoon: false,
@@ -311,7 +365,7 @@ export const safeParseDate = (dateString: string): Date => {
 export const safeFormatSalary = (min?: number, max?: number): string => {
   const safeMin = safeNumber(min);
   const safeMax = safeNumber(max);
-  
+
   try {
     if (min !== undefined && max !== undefined && safeMin > 0 && safeMax > 0) {
       return `$${safeMin.toLocaleString()} - $${safeMax.toLocaleString()}`;
@@ -327,7 +381,9 @@ export const safeFormatSalary = (min?: number, max?: number): string => {
   }
 };
 
-export const safeFormatDate = (dateString: string | Date | null | undefined): string => {
+export const safeFormatDate = (
+  dateString: string | Date | null | undefined
+): string => {
   // Use the new safe date formatting utility with relative time
   return getRelativeTime(dateString) || 'Date unavailable';
 };
@@ -402,7 +458,9 @@ export interface EnhancedJobGenieProps extends EnhancedComponentProps {
 
 // ===== ENHANCED JOB CARD PROPS =====
 
-export interface EnhancedJobCardProps extends JobCardProps, EnhancedComponentProps {
+export interface EnhancedJobCardProps
+  extends JobCardProps,
+    EnhancedComponentProps {
   // Enhanced loading states
   saveLoading?: boolean;
   applyLoading?: boolean;
@@ -445,7 +503,7 @@ export const handleAsyncError = (
   onError?: (error: Error) => void
 ): AsyncOperationState => {
   onError?.(error);
-  
+
   return {
     ...state,
     isLoading: false,
@@ -494,8 +552,14 @@ export const createRetryFunction = (
       await operation();
     } catch (error) {
       if (currentAttempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, currentAttempt)));
-        return createRetryFunction(operation, maxRetries, delay)(currentAttempt + 1);
+        await new Promise(resolve =>
+          setTimeout(resolve, delay * Math.pow(2, currentAttempt))
+        );
+        return createRetryFunction(
+          operation,
+          maxRetries,
+          delay
+        )(currentAttempt + 1);
       }
       throw error;
     }
@@ -515,4 +579,4 @@ export const withTimeout = <T>(
       setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
     ),
   ]);
-}; 
+};

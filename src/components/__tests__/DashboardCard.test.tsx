@@ -14,7 +14,9 @@ describe('DashboardCard', () => {
       render(<DashboardCard {...defaultProps} />);
 
       expect(screen.getByText('Test Dashboard Card')).toBeInTheDocument();
-      expect(screen.getByText('This is a test dashboard card description')).toBeInTheDocument();
+      expect(
+        screen.getByText('This is a test dashboard card description')
+      ).toBeInTheDocument();
     });
 
     it('renders children when provided', () => {
@@ -30,7 +32,9 @@ describe('DashboardCard', () => {
     it('renders Open button with correct label', () => {
       render(<DashboardCard {...defaultProps} />);
 
-      const button = screen.getByRole('button', { name: 'Open Test Dashboard Card widget' });
+      const button = screen.getByRole('button', {
+        name: 'Open Test Dashboard Card widget',
+      });
       expect(button).toBeInTheDocument();
       expect(button).toHaveTextContent('Open');
     });
@@ -78,7 +82,9 @@ describe('DashboardCard', () => {
         </DashboardCard>
       );
 
-      expect(screen.queryByText('Should not be visible')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Should not be visible')
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -103,7 +109,9 @@ describe('DashboardCard', () => {
         </DashboardCard>
       );
 
-      expect(screen.queryByText('Should not be visible')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Should not be visible')
+      ).not.toBeInTheDocument();
     });
 
     it('prioritizes loading over empty state', () => {
@@ -148,9 +156,11 @@ describe('DashboardCard', () => {
 
       // Should not show empty state unless explicitly set
       expect(screen.queryByText('No items yet.')).not.toBeInTheDocument();
-      
+
       // Content area should be empty but present
-      const contentArea = screen.getByRole('region').querySelector('.mb-4.flex-1');
+      const contentArea = screen
+        .getByRole('region')
+        .querySelector('.mb-4.flex-1');
       expect(contentArea).toBeInTheDocument();
     });
   });
@@ -160,13 +170,15 @@ describe('DashboardCard', () => {
       const user = userEvent.setup();
       render(<DashboardCard {...defaultProps} />);
 
-      const button = screen.getByRole('button', { name: 'Open Test Dashboard Card widget' });
-      
+      const button = screen.getByRole('button', {
+        name: 'Open Test Dashboard Card widget',
+      });
+
       // Button should be clickable
       expect(button).toBeEnabled();
-      
+
       await user.click(button);
-      
+
       // Since no onClick handler is provided in the component,
       // we just verify the button is interactive
       expect(button).toHaveFocus();
@@ -196,7 +208,7 @@ describe('DashboardCard', () => {
       render(<DashboardCard {...defaultProps} />);
 
       const button = screen.getByRole('button');
-      
+
       await user.tab();
       expect(button).toHaveFocus();
     });
@@ -208,7 +220,7 @@ describe('DashboardCard', () => {
 
       const card = screen.getByRole('region');
       expect(card).toHaveAttribute('aria-labelledby');
-      
+
       const headingId = card.getAttribute('aria-labelledby');
       const heading = document.getElementById(headingId!);
       expect(heading).toBeInTheDocument();
@@ -216,12 +228,16 @@ describe('DashboardCard', () => {
     });
 
     it('generates unique heading IDs for different titles', () => {
-      const { rerender } = render(<DashboardCard title="First Card" description="First" />);
+      const { rerender } = render(
+        <DashboardCard title="First Card" description="First" />
+      );
       const firstHeading = screen.getByRole('heading', { name: 'First Card' });
       const firstId = firstHeading.getAttribute('id');
 
       rerender(<DashboardCard title="Second Card" description="Second" />);
-      const secondHeading = screen.getByRole('heading', { name: 'Second Card' });
+      const secondHeading = screen.getByRole('heading', {
+        name: 'Second Card',
+      });
       const secondId = secondHeading.getAttribute('id');
 
       expect(firstId).not.toBe(secondId);
@@ -230,7 +246,9 @@ describe('DashboardCard', () => {
     });
 
     it('handles titles with spaces and special characters', () => {
-      render(<DashboardCard title="My Special Card Title!" description="Test" />);
+      render(
+        <DashboardCard title="My Special Card Title!" description="Test" />
+      );
 
       const heading = screen.getByRole('heading');
       expect(heading).toHaveAttribute('id', 'my-special-card-title!-heading');
@@ -245,10 +263,20 @@ describe('DashboardCard', () => {
     });
 
     it('button has accessible label', () => {
-      render(<DashboardCard title="Analytics Dashboard" description="View analytics" />);
+      render(
+        <DashboardCard
+          title="Analytics Dashboard"
+          description="View analytics"
+        />
+      );
 
-      const button = screen.getByRole('button', { name: 'Open Analytics Dashboard widget' });
-      expect(button).toHaveAttribute('aria-label', 'Open Analytics Dashboard widget');
+      const button = screen.getByRole('button', {
+        name: 'Open Analytics Dashboard widget',
+      });
+      expect(button).toHaveAttribute(
+        'aria-label',
+        'Open Analytics Dashboard widget'
+      );
     });
   });
 
@@ -299,14 +327,15 @@ describe('DashboardCard', () => {
     });
 
     it('handles very long titles', () => {
-      const longTitle = 'This is a very long title that might cause layout issues if not handled properly';
+      const longTitle =
+        'This is a very long title that might cause layout issues if not handled properly';
       render(<DashboardCard title={longTitle} description="Test" />);
 
       const heading = screen.getByRole('heading');
       expect(heading).toHaveTextContent(longTitle);
-      
-      const button = screen.getByRole('button', { 
-        name: `Open ${longTitle} widget` 
+
+      const button = screen.getByRole('button', {
+        name: `Open ${longTitle} widget`,
       });
       expect(button).toBeInTheDocument();
     });
@@ -332,10 +361,10 @@ describe('DashboardCard', () => {
 
       card = screen.getByRole('region');
       expect(card).toHaveClass('h-full');
-      
+
       // Button should still be at the bottom
       const button = screen.getByRole('button');
       expect(button).toHaveClass('mt-auto');
     });
   });
-}); 
+});

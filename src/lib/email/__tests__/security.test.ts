@@ -1,10 +1,10 @@
-import { 
-  EmailSecurityValidator, 
+import {
+  EmailSecurityValidator,
   emailSecurityValidator,
   emailAddressSchema,
   emailSubjectSchema,
   emailRecipientsSchema,
-  EMAIL_SECURITY_CONFIG 
+  EMAIL_SECURITY_CONFIG,
 } from '../security';
 
 describe('EmailSecurityValidator', () => {
@@ -76,7 +76,7 @@ describe('EmailSecurityValidator', () => {
     it('should detect homograph attacks', () => {
       const homographEmails = [
         'tеst@example.com', // Cyrillic 'е' instead of 'e'
-        'usеr@domain.com',  // Mixed characters
+        'usеr@domain.com', // Mixed characters
       ];
 
       homographEmails.forEach(email => {
@@ -103,9 +103,11 @@ describe('EmailSecurityValidator', () => {
     });
 
     it('should reject subjects that are too long', () => {
-      const longSubject = 'A'.repeat(EMAIL_SECURITY_CONFIG.MAX_SUBJECT_LENGTH + 1);
+      const longSubject = 'A'.repeat(
+        EMAIL_SECURITY_CONFIG.MAX_SUBJECT_LENGTH + 1
+      );
       const result = validator.validateSubject(longSubject);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Subject too long');
     });
@@ -143,14 +145,14 @@ describe('EmailSecurityValidator', () => {
     it('should preserve safe HTML', () => {
       const safeHtml = '<p>Hello <strong>world</strong>!</p>';
       const result = validator.sanitizeHtmlContent(safeHtml);
-      
+
       expect(result).toBe(safeHtml);
     });
 
     it('should remove dangerous scripts', () => {
       const dangerousHtml = '<p>Hello</p><script>alert("xss")</script>';
       const result = validator.sanitizeHtmlContent(dangerousHtml);
-      
+
       expect(result).not.toContain('<script>');
       expect(result).toContain('<p>Hello</p>');
     });
@@ -158,7 +160,7 @@ describe('EmailSecurityValidator', () => {
     it('should remove event handlers', () => {
       const maliciousHtml = '<div onclick="alert(\'xss\')">Click me</div>';
       const result = validator.sanitizeHtmlContent(maliciousHtml);
-      
+
       expect(result).not.toContain('onclick');
       expect(result).toContain('<div>Click me</div>');
     });
@@ -166,7 +168,7 @@ describe('EmailSecurityValidator', () => {
     it('should remove dangerous protocols', () => {
       const dangerousHtml = '<a href="javascript:alert(\'xss\')">Link</a>';
       const result = validator.sanitizeHtmlContent(dangerousHtml);
-      
+
       expect(result).not.toContain('javascript:');
     });
   });
@@ -175,10 +177,10 @@ describe('EmailSecurityValidator', () => {
     it('should validate proper headers', () => {
       const validHeaders = {
         'Message-ID': '<123@example.com>',
-        'Date': 'Mon, 01 Jan 2024 12:00:00 GMT',
-        'From': 'sender@example.com',
-        'To': 'recipient@example.com',
-        'Subject': 'Test Email',
+        Date: 'Mon, 01 Jan 2024 12:00:00 GMT',
+        From: 'sender@example.com',
+        To: 'recipient@example.com',
+        Subject: 'Test Email',
       };
 
       const result = validator.validateHeaders(validHeaders);
@@ -188,8 +190,8 @@ describe('EmailSecurityValidator', () => {
 
     it('should detect missing required headers', () => {
       const incompleteHeaders = {
-        'From': 'sender@example.com',
-        'To': 'recipient@example.com',
+        From: 'sender@example.com',
+        To: 'recipient@example.com',
         // Missing Message-ID, Date, Subject
       };
 
@@ -201,11 +203,11 @@ describe('EmailSecurityValidator', () => {
     it('should detect forbidden headers', () => {
       const forbiddenHeaders = {
         'Message-ID': '<123@example.com>',
-        'Date': 'Mon, 01 Jan 2024 12:00:00 GMT',
-        'From': 'sender@example.com',
-        'To': 'recipient@example.com',
-        'Subject': 'Test Email',
-        'Bcc': 'hidden@example.com', // Forbidden
+        Date: 'Mon, 01 Jan 2024 12:00:00 GMT',
+        From: 'sender@example.com',
+        To: 'recipient@example.com',
+        Subject: 'Test Email',
+        Bcc: 'hidden@example.com', // Forbidden
       };
 
       const result = validator.validateHeaders(forbiddenHeaders);
@@ -216,22 +218,24 @@ describe('EmailSecurityValidator', () => {
     it('should detect header injection', () => {
       const maliciousHeaders = {
         'Message-ID': '<123@example.com>',
-        'Date': 'Mon, 01 Jan 2024 12:00:00 GMT',
-        'From': 'sender@example.com',
-        'To': 'recipient@example.com',
-        'Subject': 'Test\r\nBcc: hacker@evil.com', // Header injection
+        Date: 'Mon, 01 Jan 2024 12:00:00 GMT',
+        From: 'sender@example.com',
+        To: 'recipient@example.com',
+        Subject: 'Test\r\nBcc: hacker@evil.com', // Header injection
       };
 
       const result = validator.validateHeaders(maliciousHeaders);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(error => error.includes('Header injection'))).toBe(true);
+      expect(
+        result.errors.some(error => error.includes('Header injection'))
+      ).toBe(true);
     });
   });
 
   describe('checkRateLimit', () => {
     it('should allow emails within rate limit', () => {
       const identifier = 'test-user-1';
-      
+
       for (let i = 0; i < EMAIL_SECURITY_CONFIG.MAX_EMAILS_PER_MINUTE; i++) {
         const result = validator.checkRateLimit(identifier);
         expect(result.allowed).toBe(true);
@@ -240,12 +244,12 @@ describe('EmailSecurityValidator', () => {
 
     it('should block emails exceeding rate limit', () => {
       const identifier = 'test-user-2';
-      
+
       // Fill up the rate limit
       for (let i = 0; i < EMAIL_SECURITY_CONFIG.MAX_EMAILS_PER_MINUTE; i++) {
         validator.checkRateLimit(identifier);
       }
-      
+
       // Next request should be blocked
       const result = validator.checkRateLimit(identifier);
       expect(result.allowed).toBe(false);
@@ -254,27 +258,27 @@ describe('EmailSecurityValidator', () => {
 
     it('should reset rate limit after time window', async () => {
       const identifier = 'test-user-3';
-      
+
       // Mock time to test reset
       const originalNow = Date.now;
       let mockTime = Date.now();
       Date.now = jest.fn(() => mockTime);
-      
+
       // Fill up rate limit
       for (let i = 0; i < EMAIL_SECURITY_CONFIG.MAX_EMAILS_PER_MINUTE; i++) {
         validator.checkRateLimit(identifier);
       }
-      
+
       // Should be blocked
       expect(validator.checkRateLimit(identifier).allowed).toBe(false);
-      
+
       // Advance time past reset window
       mockTime += 61 * 1000; // 61 seconds
-      
+
       // Should be allowed again
       const result = validator.checkRateLimit(identifier);
       expect(result.allowed).toBe(true);
-      
+
       // Restore original Date.now
       Date.now = originalNow;
     });
@@ -395,7 +399,7 @@ describe('Email Schema Validation', () => {
       const invalidEmails = [
         'invalid-email',
         'test@tempmail.org', // Blocked domain
-        'tеst@example.com',  // Homograph
+        'tеst@example.com', // Homograph
       ];
 
       invalidEmails.forEach(email => {
@@ -406,11 +410,7 @@ describe('Email Schema Validation', () => {
 
   describe('emailSubjectSchema', () => {
     it('should validate normal subjects', () => {
-      const validSubjects = [
-        'Welcome!',
-        'Your job alert',
-        'Password reset',
-      ];
+      const validSubjects = ['Welcome!', 'Your job alert', 'Password reset'];
 
       validSubjects.forEach(subject => {
         expect(() => emailSubjectSchema.parse(subject)).not.toThrow();
@@ -446,7 +446,9 @@ describe('Email Schema Validation', () => {
       const invalidRecipients = [
         [], // Empty array
         ['invalid-email'], // Invalid email
-        Array(EMAIL_SECURITY_CONFIG.MAX_RECIPIENTS + 1).fill('test@example.com'), // Too many
+        Array(EMAIL_SECURITY_CONFIG.MAX_RECIPIENTS + 1).fill(
+          'test@example.com'
+        ), // Too many
       ];
 
       invalidRecipients.forEach(recipients => {
@@ -474,4 +476,4 @@ describe('Security Configuration', () => {
     expect(EMAIL_SECURITY_CONFIG.REQUIRED_HEADERS).toContain('From');
     expect(EMAIL_SECURITY_CONFIG.FORBIDDEN_HEADERS).toContain('Bcc');
   });
-}); 
+});

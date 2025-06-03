@@ -2,20 +2,55 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, PieChart, Pie, Cell, Area, AreaChart
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  Area,
+  AreaChart,
 } from 'recharts';
-import { 
-  Mail, TrendingUp, Users, Target, Clock, CheckCircle, 
-  XCircle, AlertTriangle, Eye, MousePointer, Calendar,
-  Filter, Download, RefreshCw
+import {
+  Mail,
+  TrendingUp,
+  Users,
+  Target,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Eye,
+  MousePointer,
+  Calendar,
+  Filter,
+  Download,
+  RefreshCw,
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
@@ -72,10 +107,12 @@ export default function AlertAnalytics() {
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState('30');
   const [selectedMetric, setSelectedMetric] = useState('all');
-  
+
   // Analytics data
   const [emailMetrics, setEmailMetrics] = useState<EmailMetrics | null>(null);
-  const [alertPerformance, setAlertPerformance] = useState<AlertPerformance[]>([]);
+  const [alertPerformance, setAlertPerformance] = useState<AlertPerformance[]>(
+    []
+  );
   const [timeSeriesData, setTimeSeriesData] = useState<TimeSeriesData[]>([]);
   const [userEngagement, setUserEngagement] = useState<UserEngagement[]>([]);
   const [topAlerts, setTopAlerts] = useState<AlertPerformance[]>([]);
@@ -91,9 +128,9 @@ export default function AlertAnalytics() {
       setLoading(true);
       const response = await fetch(`/api/alerts/analytics?days=${dateRange}`);
       if (!response.ok) throw new Error('Failed to load analytics');
-      
+
       const data = await response.json();
-      
+
       setEmailMetrics(data.emailMetrics);
       setAlertPerformance(data.alertPerformance);
       setTimeSeriesData(data.timeSeriesData);
@@ -126,7 +163,9 @@ export default function AlertAnalytics() {
 
     // Mock time series data
     const mockTimeData = Array.from({ length: 30 }, (_, i) => ({
-      date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
       sent: Math.floor(Math.random() * 500) + 300,
       delivered: Math.floor(Math.random() * 450) + 280,
       opened: Math.floor(Math.random() * 300) + 150,
@@ -195,7 +234,9 @@ export default function AlertAnalytics() {
 
   const exportData = async () => {
     try {
-      const response = await fetch(`/api/alerts/analytics/export?days=${dateRange}`);
+      const response = await fetch(
+        `/api/alerts/analytics/export?days=${dateRange}`
+      );
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -205,7 +246,7 @@ export default function AlertAnalytics() {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      
+
       toast({
         title: 'Success',
         description: 'Analytics data exported successfully!',
@@ -221,7 +262,7 @@ export default function AlertAnalytics() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="max-w-7xl mx-auto py-16 px-4">
+      <div className="mx-auto max-w-7xl px-4 py-16">
         <div className="flex items-center justify-center">
           <LoadingSpinner size="lg" />
         </div>
@@ -231,30 +272,34 @@ export default function AlertAnalytics() {
 
   if (status === 'unauthenticated') {
     return (
-      <div className="max-w-2xl mx-auto py-16 px-4 text-center">
-        <h1 className="text-3xl font-bold mb-4">Alert Analytics</h1>
-        <p className="text-gray-700 mb-6">Please sign in to view analytics.</p>
-        <Button onClick={() => window.location.href = '/signin'}>
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <h1 className="mb-4 text-3xl font-bold">Alert Analytics</h1>
+        <p className="mb-6 text-gray-700">Please sign in to view analytics.</p>
+        <Button onClick={() => (window.location.href = '/signin')}>
           Sign In
         </Button>
       </div>
     );
   }
 
-  const pieData = emailMetrics ? [
-    { name: 'Delivered', value: emailMetrics.delivered, color: '#00C49F' },
-    { name: 'Opened', value: emailMetrics.opened, color: '#0088FE' },
-    { name: 'Clicked', value: emailMetrics.clicked, color: '#FFBB28' },
-    { name: 'Bounced', value: emailMetrics.bounced, color: '#FF8042' },
-  ] : [];
+  const pieData = emailMetrics
+    ? [
+        { name: 'Delivered', value: emailMetrics.delivered, color: '#00C49F' },
+        { name: 'Opened', value: emailMetrics.opened, color: '#0088FE' },
+        { name: 'Clicked', value: emailMetrics.clicked, color: '#FFBB28' },
+        { name: 'Bounced', value: emailMetrics.bounced, color: '#FF8042' },
+      ]
+    : [];
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4">
+    <div className="mx-auto max-w-7xl px-4 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Email Alert Analytics</h1>
-          <p className="text-gray-600 mt-2">Monitor alert performance and email engagement metrics</p>
+          <p className="mt-2 text-gray-600">
+            Monitor alert performance and email engagement metrics
+          </p>
         </div>
         <div className="flex items-center space-x-4">
           <Select value={dateRange} onValueChange={setDateRange}>
@@ -269,11 +314,11 @@ export default function AlertAnalytics() {
             </SelectContent>
           </Select>
           <Button variant="outline" onClick={loadAnalytics}>
-            <RefreshCw className="w-4 h-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
           <Button onClick={exportData}>
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
         </div>
@@ -281,19 +326,23 @@ export default function AlertAnalytics() {
 
       {/* Key Metrics */}
       {emailMetrics && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Emails Sent</p>
-                  <p className="text-3xl font-bold">{emailMetrics.totalSent.toLocaleString()}</p>
-                  <p className="text-sm text-green-600 flex items-center mt-1">
-                    <TrendingUp className="w-4 h-4 mr-1" />
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Emails Sent
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {emailMetrics.totalSent.toLocaleString()}
+                  </p>
+                  <p className="mt-1 flex items-center text-sm text-green-600">
+                    <TrendingUp className="mr-1 h-4 w-4" />
                     +12% from last period
                   </p>
                 </div>
-                <Mail className="w-8 h-8 text-blue-500" />
+                <Mail className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
@@ -302,14 +351,18 @@ export default function AlertAnalytics() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Delivery Rate</p>
-                  <p className="text-3xl font-bold">{emailMetrics.deliveryRate}%</p>
-                  <p className="text-sm text-green-600 flex items-center mt-1">
-                    <CheckCircle className="w-4 h-4 mr-1" />
+                  <p className="text-sm font-medium text-gray-600">
+                    Delivery Rate
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {emailMetrics.deliveryRate}%
+                  </p>
+                  <p className="mt-1 flex items-center text-sm text-green-600">
+                    <CheckCircle className="mr-1 h-4 w-4" />
                     Excellent
                   </p>
                 </div>
-                <Target className="w-8 h-8 text-green-500" />
+                <Target className="h-8 w-8 text-green-500" />
               </div>
             </CardContent>
           </Card>
@@ -320,12 +373,12 @@ export default function AlertAnalytics() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Open Rate</p>
                   <p className="text-3xl font-bold">{emailMetrics.openRate}%</p>
-                  <p className="text-sm text-blue-600 flex items-center mt-1">
-                    <Eye className="w-4 h-4 mr-1" />
+                  <p className="mt-1 flex items-center text-sm text-blue-600">
+                    <Eye className="mr-1 h-4 w-4" />
                     Above industry avg
                   </p>
                 </div>
-                <Eye className="w-8 h-8 text-purple-500" />
+                <Eye className="h-8 w-8 text-purple-500" />
               </div>
             </CardContent>
           </Card>
@@ -334,14 +387,18 @@ export default function AlertAnalytics() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Click Rate</p>
-                  <p className="text-3xl font-bold">{emailMetrics.clickRate}%</p>
-                  <p className="text-sm text-orange-600 flex items-center mt-1">
-                    <MousePointer className="w-4 h-4 mr-1" />
+                  <p className="text-sm font-medium text-gray-600">
+                    Click Rate
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {emailMetrics.clickRate}%
+                  </p>
+                  <p className="mt-1 flex items-center text-sm text-orange-600">
+                    <MousePointer className="mr-1 h-4 w-4" />
                     Strong engagement
                   </p>
                 </div>
-                <MousePointer className="w-8 h-8 text-orange-500" />
+                <MousePointer className="h-8 w-8 text-orange-500" />
               </div>
             </CardContent>
           </Card>
@@ -357,12 +414,14 @@ export default function AlertAnalytics() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Email Performance Chart */}
             <Card>
               <CardHeader>
                 <CardTitle>Email Performance Distribution</CardTitle>
-                <CardDescription>How your emails are performing</CardDescription>
+                <CardDescription>
+                  How your emails are performing
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -372,7 +431,9 @@ export default function AlertAnalytics() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
@@ -391,23 +452,34 @@ export default function AlertAnalytics() {
             <Card>
               <CardHeader>
                 <CardTitle>Top Performing Alerts</CardTitle>
-                <CardDescription>Alerts with highest engagement</CardDescription>
+                <CardDescription>
+                  Alerts with highest engagement
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {topAlerts.map((alert, index) => (
-                    <div key={alert.alertId} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div
+                      key={alert.alertId}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-medium text-blue-600">#{index + 1}</span>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+                          <span className="text-sm font-medium text-blue-600">
+                            #{index + 1}
+                          </span>
                         </div>
                         <div>
                           <p className="font-medium">{alert.alertName}</p>
-                          <p className="text-sm text-gray-500">{alert.totalSent} emails sent</p>
+                          <p className="text-sm text-gray-500">
+                            {alert.totalSent} emails sent
+                          </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-green-600">{alert.userEngagement}%</p>
+                        <p className="font-medium text-green-600">
+                          {alert.userEngagement}%
+                        </p>
                         <p className="text-sm text-gray-500">engagement</p>
                       </div>
                     </div>
@@ -422,39 +494,50 @@ export default function AlertAnalytics() {
           <Card>
             <CardHeader>
               <CardTitle>Alert Performance Metrics</CardTitle>
-              <CardDescription>Detailed performance data for each alert</CardDescription>
+              <CardDescription>
+                Detailed performance data for each alert
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {alertPerformance.map(alert => (
-                  <div key={alert.alertId} className="p-4 border rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
+                  <div key={alert.alertId} className="rounded-lg border p-4">
+                    <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <h3 className="font-medium">{alert.alertName}</h3>
-                        <Badge variant={alert.isActive ? 'default' : 'secondary'}>
+                        <Badge
+                          variant={alert.isActive ? 'default' : 'secondary'}
+                        >
                           {alert.isActive ? 'Active' : 'Paused'}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-500">
-                        Last triggered: {new Date(alert.lastTriggered).toLocaleDateString()}
+                        Last triggered:{' '}
+                        {new Date(alert.lastTriggered).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                       <div>
                         <p className="text-sm text-gray-600">Emails Sent</p>
                         <p className="text-xl font-bold">{alert.totalSent}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Avg. Matches</p>
-                        <p className="text-xl font-bold">{alert.averageMatches}</p>
+                        <p className="text-xl font-bold">
+                          {alert.averageMatches}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Engagement</p>
-                        <p className="text-xl font-bold text-green-600">{alert.userEngagement}%</p>
+                        <p className="text-xl font-bold text-green-600">
+                          {alert.userEngagement}%
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Placements</p>
-                        <p className="text-xl font-bold text-blue-600">{alert.successfulPlacements}</p>
+                        <p className="text-xl font-bold text-blue-600">
+                          {alert.successfulPlacements}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -468,29 +551,43 @@ export default function AlertAnalytics() {
           <Card>
             <CardHeader>
               <CardTitle>User Engagement Summary</CardTitle>
-              <CardDescription>How users are interacting with their alerts</CardDescription>
+              <CardDescription>
+                How users are interacting with their alerts
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {userEngagement.map(user => (
-                  <div key={user.userId} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={user.userId}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Users className="w-5 h-5 text-gray-600" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                        <Users className="h-5 w-5 text-gray-600" />
                       </div>
                       <div>
                         <p className="font-medium">{user.email}</p>
                         <p className="text-sm text-gray-500">
-                          {user.alertsCount} alerts • {user.emailsReceived} emails received
+                          {user.alertsCount} alerts • {user.emailsReceived}{' '}
+                          emails received
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
                       <div className="text-right">
-                        <p className="font-medium text-green-600">{user.engagementScore}%</p>
-                        <p className="text-sm text-gray-500">engagement score</p>
+                        <p className="font-medium text-green-600">
+                          {user.engagementScore}%
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          engagement score
+                        </p>
                       </div>
-                      <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={
+                          user.status === 'active' ? 'default' : 'secondary'
+                        }
+                      >
                         {user.status}
                       </Badge>
                     </div>
@@ -505,7 +602,9 @@ export default function AlertAnalytics() {
           <Card>
             <CardHeader>
               <CardTitle>Email Activity Trends</CardTitle>
-              <CardDescription>Track email performance over time</CardDescription>
+              <CardDescription>
+                Track email performance over time
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
@@ -514,10 +613,38 @@ export default function AlertAnalytics() {
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
-                  <Area type="monotone" dataKey="sent" stackId="1" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="delivered" stackId="2" stroke="#00C49F" fill="#00C49F" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="opened" stackId="3" stroke="#0088FE" fill="#0088FE" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="clicked" stackId="4" stroke="#FFBB28" fill="#FFBB28" fillOpacity={0.6} />
+                  <Area
+                    type="monotone"
+                    dataKey="sent"
+                    stackId="1"
+                    stroke="#8884d8"
+                    fill="#8884d8"
+                    fillOpacity={0.6}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="delivered"
+                    stackId="2"
+                    stroke="#00C49F"
+                    fill="#00C49F"
+                    fillOpacity={0.6}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="opened"
+                    stackId="3"
+                    stroke="#0088FE"
+                    fill="#0088FE"
+                    fillOpacity={0.6}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="clicked"
+                    stackId="4"
+                    stroke="#FFBB28"
+                    fill="#FFBB28"
+                    fillOpacity={0.6}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -526,4 +653,4 @@ export default function AlertAnalytics() {
       </Tabs>
     </div>
   );
-} 
+}

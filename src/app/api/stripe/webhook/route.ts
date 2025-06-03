@@ -3,7 +3,11 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe, STRIPE_WEBHOOK_EVENTS } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
-import { PricingTier, BillingInterval, SubscriptionStatus } from '@prisma/client';
+import {
+  PricingTier,
+  BillingInterval,
+  SubscriptionStatus,
+} from '@prisma/client';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -26,32 +30,39 @@ export async function POST(request: NextRequest) {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
+        await handleCheckoutSessionCompleted(
+          event.data.object as Stripe.Checkout.Session
+        );
         break;
 
       case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data.object as Stripe.Subscription);
+        await handleSubscriptionCreated(
+          event.data.object as Stripe.Subscription
+        );
         break;
 
       case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        await handleSubscriptionUpdated(
+          event.data.object as Stripe.Subscription
+        );
         break;
 
       case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        await handleSubscriptionDeleted(
+          event.data.object as Stripe.Subscription
+        );
         break;
 
       case 'invoice.payment_succeeded':
-        await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
+        await handleInvoicePaymentSucceeded(
+          event.data.object as Stripe.Invoice
+        );
         break;
 
       case 'invoice.payment_failed':
@@ -63,7 +74,6 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-
   } catch (error) {
     console.error('Webhook error:', error);
     return NextResponse.json(
@@ -73,7 +83,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutSessionCompleted(
+  session: Stripe.Checkout.Session
+) {
   const userId = session.metadata?.userId;
   const tier = session.metadata?.tier as PricingTier;
   const billingInterval = session.metadata?.billingInterval as BillingInterval;
@@ -94,19 +106,21 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
     // Create or update subscription record
     if (session.subscription && typeof session.subscription === 'string') {
-      const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription);
-      
+      const stripeSubscription = await stripe.subscriptions.retrieve(
+        session.subscription
+      );
+
       // Get user email
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { email: true }
+        select: { email: true },
       });
 
       if (!user) {
         console.error('User not found:', userId);
         return;
       }
-      
+
       await prisma.subscription.upsert({
         where: { userId },
         update: {
@@ -114,8 +128,12 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
           tier,
           billingCycle: billingInterval,
           status: stripeSubscription.status === 'trialing' ? 'trial' : 'active',
-          startDate: new Date((stripeSubscription as any).current_period_start * 1000),
-          endDate: new Date((stripeSubscription as any).current_period_end * 1000),
+          startDate: new Date(
+            (stripeSubscription as any).current_period_start * 1000
+          ),
+          endDate: new Date(
+            (stripeSubscription as any).current_period_end * 1000
+          ),
           price: stripeSubscription.items.data[0]?.price.unit_amount || 0,
         },
         create: {
@@ -125,8 +143,12 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
           tier,
           billingCycle: billingInterval,
           status: stripeSubscription.status === 'trialing' ? 'trial' : 'active',
-          startDate: new Date((stripeSubscription as any).current_period_start * 1000),
-          endDate: new Date((stripeSubscription as any).current_period_end * 1000),
+          startDate: new Date(
+            (stripeSubscription as any).current_period_start * 1000
+          ),
+          endDate: new Date(
+            (stripeSubscription as any).current_period_end * 1000
+          ),
           price: stripeSubscription.items.data[0]?.price.unit_amount || 0,
         },
       });
@@ -140,7 +162,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
-  
+
   if (!userId) {
     console.error('Missing userId in subscription metadata:', subscription.id);
     return;
@@ -150,7 +172,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     // Get user email
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { email: true }
+      select: { email: true },
     });
 
     if (!user) {
@@ -187,7 +209,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
-  
+
   if (!userId) {
     console.error('Missing userId in subscription metadata:', subscription.id);
     return;
@@ -227,7 +249,10 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  if ((invoice as any).subscription && typeof (invoice as any).subscription === 'string') {
+  if (
+    (invoice as any).subscription &&
+    typeof (invoice as any).subscription === 'string'
+  ) {
     try {
       await prisma.subscription.update({
         where: { stripeSubscriptionId: (invoice as any).subscription },
@@ -236,7 +261,9 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
         },
       });
 
-      console.log(`Invoice payment succeeded for subscription: ${(invoice as any).subscription}`);
+      console.log(
+        `Invoice payment succeeded for subscription: ${(invoice as any).subscription}`
+      );
     } catch (error) {
       console.error('Error handling invoice payment succeeded:', error);
     }
@@ -244,7 +271,10 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  if ((invoice as any).subscription && typeof (invoice as any).subscription === 'string') {
+  if (
+    (invoice as any).subscription &&
+    typeof (invoice as any).subscription === 'string'
+  ) {
     try {
       await prisma.subscription.update({
         where: { stripeSubscriptionId: (invoice as any).subscription },
@@ -253,14 +283,18 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
         },
       });
 
-      console.log(`Invoice payment failed for subscription: ${(invoice as any).subscription}`);
+      console.log(
+        `Invoice payment failed for subscription: ${(invoice as any).subscription}`
+      );
     } catch (error) {
       console.error('Error handling invoice payment failed:', error);
     }
   }
 }
 
-function mapStripeStatusToSubscriptionStatus(stripeStatus: string): SubscriptionStatus {
+function mapStripeStatusToSubscriptionStatus(
+  stripeStatus: string
+): SubscriptionStatus {
   switch (stripeStatus) {
     case 'active':
       return 'active';
@@ -276,4 +310,4 @@ function mapStripeStatusToSubscriptionStatus(stripeStatus: string): Subscription
     default:
       return 'active';
   }
-} 
+}

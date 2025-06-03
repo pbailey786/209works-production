@@ -117,8 +117,10 @@ export class ErrorMonitoringService {
       const enhancedContext = {
         ...context,
         timestamp: context.timestamp || new Date().toISOString(),
-        environment: context.environment || process.env.NODE_ENV || 'development',
-        version: context.version || process.env.npm_package_version || 'unknown',
+        environment:
+          context.environment || process.env.NODE_ENV || 'development',
+        version:
+          context.version || process.env.npm_package_version || 'unknown',
         category,
         severity,
       };
@@ -130,8 +132,12 @@ export class ErrorMonitoringService {
       this.sendToSentry(error, enhancedContext, severity, category);
 
       // Send to external logging service if configured
-      this.sendToExternalLogger('error', errorMessage, enhancedContext, errorStack);
-
+      this.sendToExternalLogger(
+        'error',
+        errorMessage,
+        enhancedContext,
+        errorStack
+      );
     } catch (loggingError) {
       console.error('Failed to log error:', loggingError);
       // Fallback logging
@@ -151,8 +157,9 @@ export class ErrorMonitoringService {
       const defaultThreshold = threshold || 1000; // 1 second default
 
       if (duration > defaultThreshold) {
-        const severity = duration > 5000 ? ErrorSeverity.HIGH : ErrorSeverity.MEDIUM;
-        
+        const severity =
+          duration > 5000 ? ErrorSeverity.HIGH : ErrorSeverity.MEDIUM;
+
         const performanceContext = {
           ...context,
           operation,
@@ -162,8 +169,12 @@ export class ErrorMonitoringService {
           severity,
         };
 
-        this.logToConsole('PERFORMANCE', `Slow operation: ${operation} (${duration}ms)`, performanceContext);
-        
+        this.logToConsole(
+          'PERFORMANCE',
+          `Slow operation: ${operation} (${duration}ms)`,
+          performanceContext
+        );
+
         // Send to Sentry as performance issue
         Sentry.addBreadcrumb({
           message: `Slow operation: ${operation}`,
@@ -171,7 +182,11 @@ export class ErrorMonitoringService {
           data: performanceContext,
         });
 
-        this.sendToExternalLogger('performance', `Slow operation: ${operation}`, performanceContext);
+        this.sendToExternalLogger(
+          'performance',
+          `Slow operation: ${operation}`,
+          performanceContext
+        );
       }
     } catch (error) {
       console.error('Failed to log performance issue:', error);
@@ -188,10 +203,18 @@ export class ErrorMonitoringService {
         type: 'audit_event',
       };
 
-      this.logToConsole('AUDIT', `${event.action} on ${event.resource}`, auditContext);
-      
+      this.logToConsole(
+        'AUDIT',
+        `${event.action} on ${event.resource}`,
+        auditContext
+      );
+
       // Send to external logging service
-      this.sendToExternalLogger('audit', `${event.action} on ${event.resource}`, auditContext);
+      this.sendToExternalLogger(
+        'audit',
+        `${event.action} on ${event.resource}`,
+        auditContext
+      );
 
       // Add to Sentry as breadcrumb for context
       Sentry.addBreadcrumb({
@@ -199,7 +222,6 @@ export class ErrorMonitoringService {
         level: event.success ? 'info' : 'warning',
         data: auditContext,
       });
-
     } catch (error) {
       console.error('Failed to log audit event:', error);
     }
@@ -220,7 +242,7 @@ export class ErrorMonitoringService {
       };
 
       this.logToConsole('SECURITY', event, securityContext);
-      
+
       // Send to Sentry with high priority
       Sentry.captureMessage(event, {
         level: severity === ErrorSeverity.CRITICAL ? 'fatal' : 'error',
@@ -232,7 +254,6 @@ export class ErrorMonitoringService {
       });
 
       this.sendToExternalLogger('security', event, securityContext);
-
     } catch (error) {
       console.error('Failed to log security event:', error);
     }
@@ -293,7 +314,7 @@ export class ErrorMonitoringService {
     stack?: string
   ): void {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    
+
     if (isDevelopment) {
       // Detailed logging in development
       console.group(`🔍 [${level}] ${message}`);
@@ -323,7 +344,7 @@ export class ErrorMonitoringService {
   ): void {
     try {
       const sentryLevel = this.mapSeverityToSentryLevel(severity);
-      
+
       if (typeof error === 'string') {
         Sentry.captureMessage(error, {
           level: sentryLevel,
@@ -356,20 +377,20 @@ export class ErrorMonitoringService {
   ): void {
     // This is where you would integrate with external logging services
     // like DataDog, LogRocket, New Relic, etc.
-    
+
     if (process.env.NODE_ENV === 'production') {
       // Example integration points:
-      
+
       // DataDog
       if (process.env.DATADOG_API_KEY) {
         // this.sendToDataDog(type, message, context, stack);
       }
-      
+
       // LogRocket
       if (process.env.LOGROCKET_APP_ID) {
         // this.sendToLogRocket(type, message, context, stack);
       }
-      
+
       // Custom webhook
       if (process.env.LOGGING_WEBHOOK_URL) {
         // this.sendToWebhook(type, message, context, stack);
@@ -377,7 +398,9 @@ export class ErrorMonitoringService {
     }
   }
 
-  private mapSeverityToSentryLevel(severity: ErrorSeverity): Sentry.SeverityLevel {
+  private mapSeverityToSentryLevel(
+    severity: ErrorSeverity
+  ): Sentry.SeverityLevel {
     switch (severity) {
       case ErrorSeverity.LOW:
         return 'info';
@@ -440,8 +463,16 @@ export const ErrorLogger = {
     ),
 
   // Performance issues
-  performance: (operation: string, metrics: PerformanceMetrics, context: ErrorContext = {}) =>
-    ErrorMonitoringService.getInstance().logPerformanceIssue(operation, metrics, context),
+  performance: (
+    operation: string,
+    metrics: PerformanceMetrics,
+    context: ErrorContext = {}
+  ) =>
+    ErrorMonitoringService.getInstance().logPerformanceIssue(
+      operation,
+      metrics,
+      context
+    ),
 
   // Business logic errors
   business: (error: Error | string, context: ErrorContext = {}) =>
@@ -455,10 +486,16 @@ export const ErrorLogger = {
 
 // Audit logger
 export const AuditLogger = {
-  log: (event: AuditEvent) => ErrorMonitoringService.getInstance().logAuditEvent(event),
-  
+  log: (event: AuditEvent) =>
+    ErrorMonitoringService.getInstance().logAuditEvent(event),
+
   // Common audit events
-  userLogin: (userId: string, email: string, ipAddress: string, success: boolean) =>
+  userLogin: (
+    userId: string,
+    email: string,
+    ipAddress: string,
+    success: boolean
+  ) =>
     ErrorMonitoringService.getInstance().logAuditEvent({
       action: 'user_login',
       resource: 'user',
@@ -482,7 +519,12 @@ export const AuditLogger = {
       success: true,
     }),
 
-  dataAccess: (userId: string, resource: string, resourceId: string, ipAddress: string) =>
+  dataAccess: (
+    userId: string,
+    resource: string,
+    resourceId: string,
+    ipAddress: string
+  ) =>
     ErrorMonitoringService.getInstance().logAuditEvent({
       action: 'data_access',
       resource,
@@ -516,7 +558,10 @@ export const AuditLogger = {
 export const errorMonitor = ErrorMonitoringService.getInstance();
 
 // Export for middleware integration
-export function createErrorContext(req: NextRequest, additionalContext: Partial<ErrorContext> = {}): ErrorContext {
+export function createErrorContext(
+  req: NextRequest,
+  additionalContext: Partial<ErrorContext> = {}
+): ErrorContext {
   const clientIP = getClientIP(req);
   return {
     requestId: req.headers.get('x-request-id') || undefined,
@@ -535,10 +580,10 @@ function getClientIP(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for');
   const realIP = req.headers.get('x-real-ip');
   const cfConnectingIP = req.headers.get('cf-connecting-ip');
-  
+
   if (cfConnectingIP) return cfConnectingIP;
   if (realIP) return realIP;
   if (forwarded) return forwarded.split(',')[0].trim();
-  
+
   return 'unknown';
-} 
+}

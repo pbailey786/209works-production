@@ -86,14 +86,14 @@ export class ApiError extends Error {
 
 ### Available Error Classes
 
-| Class | Status Code | When to Use | Example |
-|-------|-------------|-------------|---------|
-| `ValidationError` | 400 | Invalid input data | `throw new ValidationError('Email format invalid')` |
-| `AuthenticationError` | 401 | Missing/invalid auth | `throw new AuthenticationError()` |
-| `AuthorizationError` | 403 | Insufficient permissions | `throw new AuthorizationError('Admin required')` |
-| `NotFoundError` | 404 | Resource doesn't exist | `throw new NotFoundError('Job')` |
-| `ConflictError` | 409 | Resource already exists | `throw new ConflictError('Email already registered')` |
-| `RateLimitError` | 429 | Too many requests | Automatically thrown by middleware |
+| Class                 | Status Code | When to Use              | Example                                               |
+| --------------------- | ----------- | ------------------------ | ----------------------------------------------------- |
+| `ValidationError`     | 400         | Invalid input data       | `throw new ValidationError('Email format invalid')`   |
+| `AuthenticationError` | 401         | Missing/invalid auth     | `throw new AuthenticationError()`                     |
+| `AuthorizationError`  | 403         | Insufficient permissions | `throw new AuthorizationError('Admin required')`      |
+| `NotFoundError`       | 404         | Resource doesn't exist   | `throw new NotFoundError('Job')`                      |
+| `ConflictError`       | 409         | Resource already exists  | `throw new ConflictError('Email already registered')` |
+| `RateLimitError`      | 429         | Too many requests        | Automatically thrown by middleware                    |
 
 ### Creating Custom Errors
 
@@ -109,7 +109,9 @@ export class PaymentRequiredError extends ApiError {
 
 // Usage in handler
 if (!user.hasActivePlan) {
-  throw new PaymentRequiredError('Premium subscription required for bulk uploads');
+  throw new PaymentRequiredError(
+    'Premium subscription required for bulk uploads'
+  );
 }
 ```
 
@@ -119,12 +121,12 @@ All errors are automatically converted to this standardized format:
 
 ```typescript
 interface ApiErrorResponse {
-  error: string;           // Error class name
-  message: string;         // Human-readable message
-  code: string;           // Machine-readable error code
-  details?: unknown;      // Additional error details (e.g., validation errors)
-  timestamp: string;      // ISO timestamp
-  requestId?: string;     // Unique request identifier
+  error: string; // Error class name
+  message: string; // Human-readable message
+  code: string; // Machine-readable error code
+  details?: unknown; // Additional error details (e.g., validation errors)
+  timestamp: string; // ISO timestamp
+  requestId?: string; // Unique request identifier
 }
 ```
 
@@ -185,17 +187,17 @@ export const updateJobSchema = baseJobSchema.partial().extend({
 ```typescript
 export const jobTypeSchema = z.enum([
   'full-time',
-  'part-time', 
+  'part-time',
   'contract',
   'temporary',
-  'internship'
+  'internship',
 ]);
 
 export const experienceLevelSchema = z.enum([
   'entry',
   'mid',
   'senior',
-  'executive'
+  'executive',
 ]);
 ```
 
@@ -240,20 +242,26 @@ const companySchema = z.object({
 ```typescript
 // Custom validation helpers
 const emailSchema = z.string().email().max(255);
-const phoneSchema = z.string().regex(/^\+?[\d\s\-\(\)]+$/, 'Invalid phone format');
+const phoneSchema = z
+  .string()
+  .regex(/^\+?[\d\s\-\(\)]+$/, 'Invalid phone format');
 const urlSchema = z.string().url().max(2000);
 const uuidSchema = z.string().uuid();
 
 // Date validation
-const futureDateSchema = z.string().datetime().refine(
-  (date) => new Date(date) > new Date(),
-  'Date must be in the future'
-);
+const futureDateSchema = z
+  .string()
+  .datetime()
+  .refine(date => new Date(date) > new Date(), 'Date must be in the future');
 
 // File validation
 const fileUploadSchema = z.object({
   filename: z.string().min(1).max(255),
-  mimeType: z.enum(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']),
+  mimeType: z.enum([
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ]),
   size: z.number().max(10 * 1024 * 1024), // 10MB max
 });
 ```
@@ -270,12 +278,12 @@ import { withAPIMiddleware, apiConfigs } from '@/lib/middleware/api';
 export const POST = withAPIMiddleware(
   async (req, context) => {
     const { user, params, body, query, performance } = context;
-    
+
     // Your business logic here
     // All validation is already done
     // User is authenticated if required
     // Rate limiting is applied
-    
+
     return createSuccessResponse(result);
   },
   {
@@ -297,25 +305,25 @@ export const POST = withAPIMiddleware(
 import { apiConfigs } from '@/lib/middleware/api';
 
 // For public endpoints (no auth required)
-apiConfigs.public
+apiConfigs.public;
 
 // For authenticated endpoints
-apiConfigs.authenticated
+apiConfigs.authenticated;
 
 // For admin-only endpoints
-apiConfigs.admin
+apiConfigs.admin;
 
 // For employer endpoints
-apiConfigs.employer
+apiConfigs.employer;
 
 // For search endpoints (special rate limiting)
-apiConfigs.search
+apiConfigs.search;
 
 // For upload endpoints
-apiConfigs.upload
+apiConfigs.upload;
 
 // For auth endpoints (heavy rate limiting)
-apiConfigs.auth
+apiConfigs.auth;
 ```
 
 ### Custom Configuration
@@ -345,7 +353,7 @@ export const POST = withValidation(
     // Manual auth check required
     const session = await requireAuth(req);
     if (session instanceof NextResponse) return session;
-    
+
     // Your logic here
   },
   {
@@ -359,88 +367,79 @@ export const POST = withValidation(
 
 ### Success Codes
 
-| Code | Use Case | Example |
-|------|----------|---------|
-| 200 | Successful GET/PUT/DELETE | Retrieved user profile |
-| 201 | Successful POST (created) | Created new job posting |
-| 202 | Accepted for processing | Bulk operation queued |
-| 204 | Successful DELETE (no content) | Deleted job posting |
+| Code | Use Case                       | Example                 |
+| ---- | ------------------------------ | ----------------------- |
+| 200  | Successful GET/PUT/DELETE      | Retrieved user profile  |
+| 201  | Successful POST (created)      | Created new job posting |
+| 202  | Accepted for processing        | Bulk operation queued   |
+| 204  | Successful DELETE (no content) | Deleted job posting     |
 
 ### Client Error Codes
 
-| Code | Use Case | When to Use |
-|------|----------|-------------|
-| 400 | Bad Request | Invalid input data, malformed JSON |
-| 401 | Unauthorized | Missing or invalid authentication |
-| 403 | Forbidden | Valid auth but insufficient permissions |
-| 404 | Not Found | Resource doesn't exist |
-| 405 | Method Not Allowed | Unsupported HTTP method |
-| 409 | Conflict | Resource already exists, constraint violation |
-| 422 | Unprocessable Entity | Valid JSON but business logic error |
-| 429 | Too Many Requests | Rate limit exceeded |
+| Code | Use Case             | When to Use                                   |
+| ---- | -------------------- | --------------------------------------------- |
+| 400  | Bad Request          | Invalid input data, malformed JSON            |
+| 401  | Unauthorized         | Missing or invalid authentication             |
+| 403  | Forbidden            | Valid auth but insufficient permissions       |
+| 404  | Not Found            | Resource doesn't exist                        |
+| 405  | Method Not Allowed   | Unsupported HTTP method                       |
+| 409  | Conflict             | Resource already exists, constraint violation |
+| 422  | Unprocessable Entity | Valid JSON but business logic error           |
+| 429  | Too Many Requests    | Rate limit exceeded                           |
 
 ### Server Error Codes
 
-| Code | Use Case | When to Use |
-|------|----------|-------------|
-| 500 | Internal Server Error | Unexpected server errors |
-| 502 | Bad Gateway | External service unavailable |
-| 503 | Service Unavailable | Maintenance mode |
+| Code | Use Case              | When to Use                  |
+| ---- | --------------------- | ---------------------------- |
+| 500  | Internal Server Error | Unexpected server errors     |
+| 502  | Bad Gateway           | External service unavailable |
+| 503  | Service Unavailable   | Maintenance mode             |
 
 ### Implementation Examples
 
 ```typescript
 // Correct status code usage
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    const { body } = context;
-    
-    // Check if resource already exists (409)
-    const existing = await prisma.user.findUnique({
-      where: { email: body.email }
-    });
-    if (existing) {
-      throw new ConflictError('User with this email already exists');
-    }
-    
-    // Create resource (201)
-    const user = await prisma.user.create({ data: body });
-    return createSuccessResponse(user, 'User created successfully', 201);
-  },
-  config
-);
+export const POST = withAPIMiddleware(async (req, context) => {
+  const { body } = context;
 
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { params } = context;
-    
-    // Resource not found (404)
-    const user = await prisma.user.findUnique({
-      where: { id: params.id }
-    });
-    if (!user) {
-      throw new NotFoundError('User');
-    }
-    
-    // Successful retrieval (200 - default)
-    return createSuccessResponse(user);
-  },
-  config
-);
+  // Check if resource already exists (409)
+  const existing = await prisma.user.findUnique({
+    where: { email: body.email },
+  });
+  if (existing) {
+    throw new ConflictError('User with this email already exists');
+  }
 
-export const DELETE = withAPIMiddleware(
-  async (req, context) => {
-    const { params } = context;
-    
-    await prisma.user.delete({
-      where: { id: params.id }
-    });
-    
-    // Successful deletion with no content (204)
-    return new NextResponse(null, { status: 204 });
-  },
-  config
-);
+  // Create resource (201)
+  const user = await prisma.user.create({ data: body });
+  return createSuccessResponse(user, 'User created successfully', 201);
+}, config);
+
+export const GET = withAPIMiddleware(async (req, context) => {
+  const { params } = context;
+
+  // Resource not found (404)
+  const user = await prisma.user.findUnique({
+    where: { id: params.id },
+  });
+  if (!user) {
+    throw new NotFoundError('User');
+  }
+
+  // Successful retrieval (200 - default)
+  return createSuccessResponse(user);
+}, config);
+
+export const DELETE = withAPIMiddleware(async (req, context) => {
+  const { params } = context;
+
+  await prisma.user.delete({
+    where: { id: params.id },
+  });
+
+  // Successful deletion with no content (204)
+  return new NextResponse(null, { status: 204 });
+}, config);
 ```
 
 ## Common Error Scenarios
@@ -459,17 +458,14 @@ export const POST = withAPIMiddleware(
 );
 
 // Manual validation (if needed)
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    const { body } = context;
-    
-    // Additional business validation
-    if (body.startDate > body.endDate) {
-      throw new ValidationError('Start date must be before end date');
-    }
-  },
-  config
-);
+export const POST = withAPIMiddleware(async (req, context) => {
+  const { body } = context;
+
+  // Additional business validation
+  if (body.startDate > body.endDate) {
+    throw new ValidationError('Start date must be before end date');
+  }
+}, config);
 ```
 
 ### 2. Authentication Errors
@@ -486,16 +482,13 @@ export const GET = withAPIMiddleware(
 );
 
 // Manual auth check (legacy pattern)
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { user } = context;
-    
-    if (!user) {
-      throw new AuthenticationError();
-    }
-  },
-  config
-);
+export const GET = withAPIMiddleware(async (req, context) => {
+  const { user } = context;
+
+  if (!user) {
+    throw new AuthenticationError();
+  }
+}, config);
 ```
 
 ### 3. Authorization Errors
@@ -511,21 +504,18 @@ export const POST = withAPIMiddleware(
 );
 
 // Custom authorization logic
-export const PUT = withAPIMiddleware(
-  async (req, context) => {
-    const { user, params } = context;
-    
-    // Check resource ownership
-    const job = await prisma.job.findUnique({
-      where: { id: params.id }
-    });
-    
-    if (job.employerId !== user.id && user.role !== 'admin') {
-      throw new AuthorizationError('You can only edit your own job postings');
-    }
-  },
-  config
-);
+export const PUT = withAPIMiddleware(async (req, context) => {
+  const { user, params } = context;
+
+  // Check resource ownership
+  const job = await prisma.job.findUnique({
+    where: { id: params.id },
+  });
+
+  if (job.employerId !== user.id && user.role !== 'admin') {
+    throw new AuthorizationError('You can only edit your own job postings');
+  }
+}, config);
 ```
 
 ### 4. Database Errors
@@ -534,46 +524,40 @@ Database errors are automatically handled by the error handling system:
 
 ```typescript
 // Prisma errors are automatically converted
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    try {
-      const user = await prisma.user.create({
-        data: context.body
-      });
-      return createSuccessResponse(user);
-    } catch (error) {
-      // Prisma errors are automatically handled:
-      // P2002 -> ConflictError (409)
-      // P2025 -> NotFoundError (404)
-      // P2003 -> ValidationError (400)
-      throw error; // Let middleware handle it
-    }
-  },
-  config
-);
+export const POST = withAPIMiddleware(async (req, context) => {
+  try {
+    const user = await prisma.user.create({
+      data: context.body,
+    });
+    return createSuccessResponse(user);
+  } catch (error) {
+    // Prisma errors are automatically handled:
+    // P2002 -> ConflictError (409)
+    // P2025 -> NotFoundError (404)
+    // P2003 -> ValidationError (400)
+    throw error; // Let middleware handle it
+  }
+}, config);
 ```
 
 ### 5. External Service Errors
 
 ```typescript
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    try {
-      const result = await externalAPICall();
-      return createSuccessResponse(result);
-    } catch (error) {
-      if (error.code === 'NETWORK_ERROR') {
-        throw new ApiError(
-          'External service temporarily unavailable',
-          502,
-          ErrorCode.EXTERNAL_SERVICE_ERROR
-        );
-      }
-      throw error;
+export const POST = withAPIMiddleware(async (req, context) => {
+  try {
+    const result = await externalAPICall();
+    return createSuccessResponse(result);
+  } catch (error) {
+    if (error.code === 'NETWORK_ERROR') {
+      throw new ApiError(
+        'External service temporarily unavailable',
+        502,
+        ErrorCode.EXTERNAL_SERVICE_ERROR
+      );
     }
-  },
-  config
-);
+    throw error;
+  }
+}, config);
 ```
 
 ## Extending the System
@@ -603,7 +587,11 @@ export class PaymentRequiredError extends ApiError {
 
 export class QuotaExceededError extends ApiError {
   constructor(resource: string, limit: number) {
-    super(`${resource} quota exceeded. Limit: ${limit}`, 429, ErrorCode.QUOTA_EXCEEDED);
+    super(
+      `${resource} quota exceeded. Limit: ${limit}`,
+      429,
+      ErrorCode.QUOTA_EXCEEDED
+    );
   }
 }
 ```
@@ -611,21 +599,18 @@ export class QuotaExceededError extends ApiError {
 3. **Use in handlers**:
 
 ```typescript
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    const { user } = context;
-    
-    if (!user.hasActivePlan) {
-      throw new PaymentRequiredError('Premium plan required for this feature');
-    }
-    
-    const currentUsage = await getUsageCount(user.id);
-    if (currentUsage >= user.planLimits.jobPostings) {
-      throw new QuotaExceededError('job postings', user.planLimits.jobPostings);
-    }
-  },
-  config
-);
+export const POST = withAPIMiddleware(async (req, context) => {
+  const { user } = context;
+
+  if (!user.hasActivePlan) {
+    throw new PaymentRequiredError('Premium plan required for this feature');
+  }
+
+  const currentUsage = await getUsageCount(user.id);
+  if (currentUsage >= user.planLimits.jobPostings) {
+    throw new QuotaExceededError('job postings', user.planLimits.jobPostings);
+  }
+}, config);
 ```
 
 ### Adding New Validation Schemas
@@ -672,7 +657,7 @@ export function withCustomValidation<T>(
 ) {
   return (config: APIMiddlewareConfig) => ({
     ...config,
-    bodySchema: schema.refine(async (data) => {
+    bodySchema: schema.refine(async data => {
       await customValidator(data);
       return true;
     }),
@@ -680,18 +665,18 @@ export function withCustomValidation<T>(
 }
 
 // Usage
-const customConfig = withCustomValidation(
-  createJobSchema,
-  async (data) => {
-    // Custom async validation
-    const isValid = await checkCompanyExists(data.company);
-    if (!isValid) {
-      throw new ValidationError('Company not found in our database');
-    }
+const customConfig = withCustomValidation(createJobSchema, async data => {
+  // Custom async validation
+  const isValid = await checkCompanyExists(data.company);
+  if (!isValid) {
+    throw new ValidationError('Company not found in our database');
   }
-);
+});
 
-export const POST = withAPIMiddleware(handler, customConfig(apiConfigs.authenticated));
+export const POST = withAPIMiddleware(
+  handler,
+  customConfig(apiConfigs.authenticated)
+);
 ```
 
 ## Best Practices
@@ -699,6 +684,7 @@ export const POST = withAPIMiddleware(handler, customConfig(apiConfigs.authentic
 ### 1. Error Messages
 
 **DO:**
+
 ```typescript
 throw new ValidationError('Email address is required');
 throw new AuthorizationError('You must be an employer to post jobs');
@@ -706,6 +692,7 @@ throw new NotFoundError('Job posting not found');
 ```
 
 **DON'T:**
+
 ```typescript
 throw new ValidationError('Invalid input'); // Too vague
 throw new Error('Error'); // Not descriptive
@@ -715,19 +702,23 @@ throw new AuthorizationError('No access'); // Not helpful
 ### 2. Schema Design
 
 **DO:**
+
 ```typescript
 // Clear, descriptive schemas
 export const createJobSchema = z.object({
-  title: z.string()
+  title: z
+    .string()
     .min(1, 'Title is required')
     .max(200, 'Title must be 200 characters or less'),
-  salary: z.number()
+  salary: z
+    .number()
     .min(0, 'Salary cannot be negative')
     .max(10000000, 'Salary exceeds maximum allowed'),
 });
 ```
 
 **DON'T:**
+
 ```typescript
 // Vague schemas without proper constraints
 export const createJobSchema = z.object({
@@ -739,10 +730,13 @@ export const createJobSchema = z.object({
 ### 3. Error Context
 
 **DO:**
+
 ```typescript
 // Provide helpful context
 if (existingApplication) {
-  throw new ConflictError(`You have already applied to this job on ${existingApplication.createdAt.toDateString()}`);
+  throw new ConflictError(
+    `You have already applied to this job on ${existingApplication.createdAt.toDateString()}`
+  );
 }
 
 // Include relevant IDs for debugging
@@ -750,6 +744,7 @@ throw new NotFoundError(`Job with ID ${jobId} not found`);
 ```
 
 **DON'T:**
+
 ```typescript
 // Generic errors without context
 throw new ConflictError('Already exists');
@@ -759,18 +754,22 @@ throw new NotFoundError('Not found');
 ### 4. Async Validation
 
 **DO:**
+
 ```typescript
-export const createJobSchema = z.object({
-  companyId: z.string().uuid(),
-}).refine(async (data) => {
-  const company = await prisma.company.findUnique({
-    where: { id: data.companyId }
-  });
-  return !!company;
-}, 'Company not found');
+export const createJobSchema = z
+  .object({
+    companyId: z.string().uuid(),
+  })
+  .refine(async data => {
+    const company = await prisma.company.findUnique({
+      where: { id: data.companyId },
+    });
+    return !!company;
+  }, 'Company not found');
 ```
 
 **DON'T:**
+
 ```typescript
 // Don't do heavy async validation in schemas
 // Do it in the handler instead
@@ -782,24 +781,22 @@ export const createJobSchema = z.object({
 // test/api/jobs.test.ts
 describe('POST /api/jobs', () => {
   it('should return 400 for invalid job data', async () => {
-    const response = await request(app)
-      .post('/api/jobs')
-      .send({ title: '' }); // Invalid: empty title
-    
+    const response = await request(app).post('/api/jobs').send({ title: '' }); // Invalid: empty title
+
     expect(response.status).toBe(400);
     expect(response.body.code).toBe('VALIDATION_ERROR');
     expect(response.body.details).toContainEqual({
       field: 'title',
-      message: 'Title is required'
+      message: 'Title is required',
     });
   });
-  
+
   it('should return 403 for non-employer users', async () => {
     const response = await request(app)
       .post('/api/jobs')
       .set('Authorization', `Bearer ${jobseekerToken}`)
       .send(validJobData);
-    
+
     expect(response.status).toBe(403);
     expect(response.body.code).toBe('AUTHORIZATION_ERROR');
   });
@@ -814,6 +811,7 @@ describe('POST /api/jobs', () => {
 
 **Cause**: Missing body schema in configuration  
 **Solution**:
+
 ```typescript
 // Add bodySchema to config
 export const POST = withAPIMiddleware(
@@ -826,6 +824,7 @@ export const POST = withAPIMiddleware(
 
 **Cause**: Accessing optional fields without checking  
 **Solution**:
+
 ```typescript
 // Bad
 const location = context.query.location.toLowerCase(); // May be undefined
@@ -838,6 +837,7 @@ const location = context.query?.location?.toLowerCase() || '';
 
 **Cause**: Catching and re-throwing generic errors  
 **Solution**:
+
 ```typescript
 // Bad
 try {
@@ -855,6 +855,7 @@ await prisma.user.create({ data });
 
 **Cause**: Using `.refine()` incorrectly  
 **Solution**:
+
 ```typescript
 // Bad
 .refine((data) => {
@@ -878,13 +879,10 @@ await prisma.user.create({ data });
 Every request gets a unique ID for debugging:
 
 ```typescript
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    console.log(`Processing request ${context.requestId}`);
-    // Use context.requestId in logs
-  },
-  config
-);
+export const POST = withAPIMiddleware(async (req, context) => {
+  console.log(`Processing request ${context.requestId}`);
+  // Use context.requestId in logs
+}, config);
 ```
 
 #### 2. Error Details in Development
@@ -894,7 +892,7 @@ In development, errors include additional debug information:
 ```json
 {
   "error": "DatabaseError",
-  "message": "Unique constraint violation", 
+  "message": "Unique constraint violation",
   "code": "CONFLICT",
   "details": {
     "prismaCode": "P2002",
@@ -907,18 +905,15 @@ In development, errors include additional debug information:
 #### 3. Performance Tracking
 
 ```typescript
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    context.performance.trackDatabaseQuery();
-    const users = await prisma.user.findMany();
-    
-    context.performance.trackCacheHit();
-    const cached = await redis.get('stats');
-    
-    // Performance metrics are logged automatically
-  },
-  config
-);
+export const GET = withAPIMiddleware(async (req, context) => {
+  context.performance.trackDatabaseQuery();
+  const users = await prisma.user.findMany();
+
+  context.performance.trackCacheHit();
+  const cached = await redis.get('stats');
+
+  // Performance metrics are logged automatically
+}, config);
 ```
 
 ### Migration Checklist
@@ -935,4 +930,4 @@ When updating an endpoint to use the new system:
 ---
 
 **Questions or Issues?**  
-Contact the Engineering Team or create an issue in the internal repository. 
+Contact the Engineering Team or create an issue in the internal repository.

@@ -1,6 +1,6 @@
 /**
  * Safe Async Operation Hook
- * 
+ *
  * Prevents memory leaks from async operations by:
  * - Cancelling pending operations on unmount
  * - Preventing state updates after unmount
@@ -53,11 +53,14 @@ export function useSafeAsyncOperation<T>(
   } = options;
 
   // Safe state update that checks if component is still mounted
-  const safeSetState = useCallback((newState: Partial<AsyncOperationState<T>>) => {
-    if (isMountedRef.current) {
-      setState(prevState => ({ ...prevState, ...newState }));
-    }
-  }, []);
+  const safeSetState = useCallback(
+    (newState: Partial<AsyncOperationState<T>>) => {
+      if (isMountedRef.current) {
+        setState(prevState => ({ ...prevState, ...newState }));
+      }
+    },
+    []
+  );
 
   // Execute the async operation with safety checks
   const execute = useCallback(async () => {
@@ -122,7 +125,6 @@ export function useSafeAsyncOperation<T>(
 
       // Call success callback
       onSuccess?.(result);
-
     } catch (error) {
       // Clear timeout on error
       if (timeoutRef.current) {
@@ -140,19 +142,20 @@ export function useSafeAsyncOperation<T>(
         return;
       }
 
-      const errorObj = error instanceof Error ? error : new Error(String(error));
+      const errorObj =
+        error instanceof Error ? error : new Error(String(error));
 
       // Handle retries
       if (retryCountRef.current < retryCount) {
         retryCountRef.current++;
-        
+
         // Wait before retrying
         setTimeout(() => {
           if (isMountedRef.current) {
             execute();
           }
         }, retryDelay);
-        
+
         return;
       }
 
@@ -165,7 +168,16 @@ export function useSafeAsyncOperation<T>(
       // Call error callback
       onError?.(errorObj);
     }
-  }, [asyncFn, timeout, retryCount, retryDelay, onSuccess, onError, onCancel, safeSetState]);
+  }, [
+    asyncFn,
+    timeout,
+    retryCount,
+    retryDelay,
+    onSuccess,
+    onError,
+    onCancel,
+    safeSetState,
+  ]);
 
   // Cancel the current operation
   const cancel = useCallback(() => {
@@ -204,12 +216,12 @@ export function useSafeAsyncOperation<T>(
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
-      
+
       // Cancel any pending operation
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       // Clear timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -234,7 +246,7 @@ export function useSafeFetch<T>(
   hookOptions: AsyncOperationOptions = {}
 ) {
   return useSafeAsyncOperation<T>(
-    async (signal) => {
+    async signal => {
       if (!url) {
         throw new Error('URL is required');
       }
@@ -261,16 +273,12 @@ export function useSafeApiCall<T>(
   deps: any[] = [],
   options: AsyncOperationOptions = {}
 ) {
-  return useSafeAsyncOperation(
-    apiCall,
-    deps,
-    {
-      retryCount: 3,
-      retryDelay: 1000,
-      timeout: 15000,
-      ...options,
-    }
-  );
+  return useSafeAsyncOperation(apiCall, deps, {
+    retryCount: 3,
+    retryDelay: 1000,
+    timeout: 15000,
+    ...options,
+  });
 }
 
-export default useSafeAsyncOperation; 
+export default useSafeAsyncOperation;
