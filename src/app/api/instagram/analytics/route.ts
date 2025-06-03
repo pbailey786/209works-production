@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import InstagramAnalyticsService from '@/lib/services/instagram-analytics';
 import { prisma } from '@/lib/database/prisma';

@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import authOptions from '../../api/auth/authOptions';
 import { prisma } from '../../api/auth/prisma';
 import {

@@ -11,7 +11,7 @@ import {
   type AISecurityContext,
   sanitizeUserData,
 } from '@/lib/middleware/ai-security';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/authOptions';
 
 // Map job type variations to database enum values
