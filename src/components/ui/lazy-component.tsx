@@ -90,18 +90,7 @@ export function LazyOnVisible({
 }
 
 // Specific lazy components for common use cases
-export const LazyJobModal = createLazyComponent(
-  () => import('@/components/EnhancedJobModal'),
-  <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-    <div className="mx-4 w-full max-w-4xl rounded-lg bg-white p-6">
-      <Skeleton className="mb-4 h-8 w-1/3" />
-      <Skeleton className="mb-2 h-4 w-full" />
-      <Skeleton className="mb-2 h-4 w-3/4" />
-      <Skeleton className="mb-4 h-4 w-1/2" />
-      <Skeleton className="h-32 w-full" />
-    </div>
-  </div>
-);
+// LazyJobModal removed for production
 
 export const LazyAdDisplay = createLazyComponent(
   () => import('@/components/ads/AdDisplay'),

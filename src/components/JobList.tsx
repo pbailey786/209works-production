@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from 'react';
 import JobCard from './JobCard';
-import EnhancedJobModal from './EnhancedJobModal';
 import { JobWithOptionalFields } from '@/lib/types/component-props';
 import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
@@ -663,21 +662,7 @@ export default function JobBoard() {
         </div>
       </div>
 
-      {/* Enhanced Job Modal */}
-      <EnhancedJobModal
-        isOpen={state.modalOpen}
-        onClose={handleCloseModal}
-        job={state.selectedJob}
-        onSave={handleModalSave}
-        onApply={handleModalApply}
-        onShare={handleModalShare}
-        saved={
-          state.selectedJob
-            ? state.savedJobs.includes(state.selectedJob.id)
-            : false
-        }
-        isAuthenticated={isAuthenticated}
-      />
+      {/* Job modal removed for production - using simple job cards instead */}
     </div>
   );
 }
