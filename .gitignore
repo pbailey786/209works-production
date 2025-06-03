@@ -73,6 +73,12 @@ testdriver/
 BMAD-METHOD/
 
 # -------------------------
+# Backup Files
+# -------------------------
+*.backup
+*.bak
+
+# -------------------------
 # Archive/Legacy Code
 # -------------------------
 archive/saasy-land/
