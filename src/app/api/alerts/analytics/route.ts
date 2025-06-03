@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
     });
 
     if (!user) {
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     const userEngagement = [
       {
         userId: user.id,
-        email: session.user.email,
+        email: session.user?.email,
         alertsCount: totalAlerts,
         emailsReceived: emailMetrics.totalSent,
         engagementScore: Math.floor(Math.random() * 30) + 70,

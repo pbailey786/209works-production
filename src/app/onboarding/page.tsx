@@ -14,7 +14,7 @@ export default async function OnboardingPage() {
 
   // Get user data
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: session.user?.email },
     select: {
       id: true,
       name: true,

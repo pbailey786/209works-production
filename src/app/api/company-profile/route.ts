@@ -12,17 +12,17 @@ export async function GET() {
     console.log('🏢 Session check:', {
       hasSession: !!session,
       userEmail: session?.user?.email,
-      userId: session?.user?.id,
+      userId: (session?.user as any)?.id,
     });
 
-    if (!session?.user?.id) {
+    if (!(session?.user as any)?.id) {
       console.log('❌ Company profile API - No session or user ID');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has employer role
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: (session!.user as any).id },
       include: {
         company: true,
       },
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session?.user?.id) {
+    if (!(session?.user as any)?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user has employer role
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: (session.user as any).id },
     });
 
     if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         OR: [{ name: { equals: name, mode: 'insensitive' } }, { slug: slug }],
         users: {
           none: {
-            id: session.user.id,
+            id: (session.user as any).id,
           },
         },
       },
@@ -169,14 +169,14 @@ export async function POST(request: NextRequest) {
           contactPhone: contactPhone || null,
           logo: logo || null,
           users: {
-            connect: { id: session.user.id },
+            connect: { id: (session.user as any).id },
           },
         },
       });
 
       // Update user with company ID
       await prisma.user.update({
-        where: { id: session.user.id },
+        where: { id: (session.user as any).id },
         data: { companyId: company.id },
       });
     }

@@ -75,7 +75,7 @@ export async function PATCH(req: NextRequest) {
 
     // In a real app, you'd create audit log entries for each job
     // const auditEntries = jobs.map(job => ({
-    //   adminId: session.user.id,
+    //   adminId: (session.user as any).id,
     //   action: `job_${action}`,
     //   resourceType: 'job',
     //   resourceId: job.id,

@@ -217,7 +217,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   let userId: string | undefined;
   if (isAuthenticated && session?.user?.email) {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: { id: true },
     });
     userId = user?.id;

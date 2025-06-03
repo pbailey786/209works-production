@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       include: { company: true },
     });
 
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       include: { company: true },
     });
 
@@ -191,7 +191,7 @@ export async function PUT(req: NextRequest) {
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       include: { company: true },
     });
 
@@ -280,7 +280,7 @@ export async function DELETE(req: NextRequest) {
 
     // Check if user is an employer and get their company
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       include: { company: true },
     });
 

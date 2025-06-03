@@ -75,7 +75,7 @@ export async function PATCH(
     // In a real app, you'd also create an audit log entry here
     // await prisma.adminAction.create({
     //   data: {
-    //     adminId: session.user.id,
+    //     adminId: (session.user as any).id,
     //     action: `job_${action}`,
     //     resourceType: 'job',
     //     resourceId: jobId,

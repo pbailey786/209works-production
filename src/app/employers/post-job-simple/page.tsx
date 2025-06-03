@@ -67,7 +67,7 @@ export default function SimplePostJobPage() {
     if (session?.user?.email) {
       setForm(prev => ({
         ...prev,
-        contactEmail: session.user.email || '',
+        contactEmail: session.user?.email || '',
       }));
     }
   }, [session]);

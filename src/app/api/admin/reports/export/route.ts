@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate limiting
-    const userId = session.user?.id;
+    const userId = (session.user as any)?.id;
     if (!checkRateLimit(userId)) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Maximum 10 exports per hour.' },

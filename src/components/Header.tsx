@@ -201,15 +201,15 @@ export default function Header() {
                       )}
                       aria-expanded={isUserMenuOpen}
                       aria-haspopup="true"
-                      aria-label={`User menu for ${session.user.name || session.user.email}`}
+                      aria-label={`User menu for ${session.user.name || session.user?.email}`}
                     >
                       <Avatar
                         src={session.user.image || undefined}
-                        alt={session.user.name || session.user.email || 'User'}
+                        alt={session.user.name || session.user?.email || 'User'}
                         size={32}
                       />
                       <span className="hidden max-w-[120px] truncate text-sm font-medium text-gray-700 sm:block">
-                        {session.user.name || session.user.email}
+                        {session.user.name || session.user?.email}
                       </span>
                       <ChevronDown
                         className={cn(
@@ -237,7 +237,7 @@ export default function Header() {
                               {session.user.name || 'User'}
                             </p>
                             <p className="truncate text-xs text-gray-500">
-                              {session.user.email}
+                              {session.user?.email}
                             </p>
                           </div>
 

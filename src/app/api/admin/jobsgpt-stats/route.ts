@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     if (
       !session?.user ||
       (session.user.role !== 'admin' &&
-        session.user.email !== 'admin@209jobs.com')
+        session.user?.email !== 'admin@209jobs.com')
     ) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

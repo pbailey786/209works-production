@@ -304,7 +304,7 @@ class AuthenticationValidator {
     if (!session?.user?.email) return null;
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: {
         id: true,
         email: true,

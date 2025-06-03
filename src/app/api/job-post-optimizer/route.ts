@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session || session.user.role !== 'employer') {
+    if (!session || !session.user || (session.user as any).role !== 'employer') {
       return NextResponse.json(
         {
           error:
@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
     // Save to database
     const jobPostOptimizer = await prisma.jobPostOptimizer.create({
       data: {
-        employerId: session.user.id,
+        employerId: (session.user as any).id,
         jobTitle: validatedData.jobTitle,
         companyName: validatedData.companyName,
         location: validatedData.location,
@@ -231,7 +231,7 @@ ${data.applicationCTA || `Interested in this position? We'd love to hear from yo
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session || session.user.role !== 'employer') {
+    if (!session || !session.user || (session.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -244,7 +244,7 @@ export async function GET(req: NextRequest) {
     const status = searchParams.get('status');
 
     const where: any = {
-      employerId: session.user.id,
+      employerId: (session.user as any).id,
     };
 
     if (status) {

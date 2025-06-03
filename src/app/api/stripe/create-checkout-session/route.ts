@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Get or create Stripe customer
     let customer;
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: { id: true, stripeCustomerId: true, name: true, email: true },
     });
 

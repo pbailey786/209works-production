@@ -86,7 +86,7 @@ export default function EmployerProfileSettingsPage() {
   // Load existing company profile
   useEffect(() => {
     const loadProfile = async () => {
-      if (status === 'authenticated' && session?.user?.id) {
+      if (status === 'authenticated' && (session?.user as any)?.id) {
         try {
           const response = await fetch('/api/company-profile');
           if (response.ok) {
@@ -101,7 +101,7 @@ export default function EmployerProfileSettingsPage() {
                 founded: data.company.founded?.toString() || '',
                 headquarters: data.company.headquarters || '',
                 contactEmail:
-                  data.company.contactEmail || session.user.email || '',
+                  data.company.contactEmail || session.user?.email || '',
                 contactPhone: data.company.contactPhone || '',
                 logo: data.company.logo || '',
               });
@@ -109,7 +109,7 @@ export default function EmployerProfileSettingsPage() {
               // New company profile - pre-fill with user email
               setProfile(prev => ({
                 ...prev,
-                contactEmail: session.user.email || '',
+                contactEmail: session.user?.email || '',
               }));
               setIsFirstTime(true);
             }

@@ -71,12 +71,12 @@ export default function SimpleSettingsPage() {
     if (session?.user) {
       setUserProfile({
         name: session.user.name || '',
-        email: session.user.email || '',
+        email: session.user?.email || '',
         phone: '',
       });
       setCompanyProfile(prev => ({
         ...prev,
-        contactEmail: session.user.email || '',
+        contactEmail: session.user?.email || '',
       }));
     }
   }, [session]);

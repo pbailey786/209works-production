@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session || session.user.role !== 'employer') {
+    if (!session || !session.user || (session.user as any).role !== 'employer') {
       return NextResponse.json(
         {
           error: 'Authentication required. Only employers can view their jobs.',
@@ -18,13 +18,13 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const employerId = searchParams.get('employerId') || session.user.id;
+    const employerId = searchParams.get('employerId') || (session.user as any).id;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const status = searchParams.get('status');
 
     // Ensure the employer can only see their own jobs
-    if (employerId !== session.user.id) {
+    if (employerId !== (session.user as any).id) {
       return NextResponse.json(
         { error: 'You can only view your own jobs.' },
         { status: 403 }

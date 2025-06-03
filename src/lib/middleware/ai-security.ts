@@ -220,7 +220,7 @@ export function withAISecurity(
         }
 
         user = await prisma.user.findUnique({
-          where: { email: session.user.email },
+          where: { email: session.user?.email },
           select: { id: true, email: true, role: true },
         });
 
@@ -253,7 +253,7 @@ export function withAISecurity(
         const session = await getServerSession(authOptions) as Session | null;
         if (session?.user?.email) {
           user = await prisma.user.findUnique({
-            where: { email: session.user.email },
+            where: { email: session.user?.email },
             select: { id: true, email: true, role: true },
           });
           isAuthenticated = !!user;

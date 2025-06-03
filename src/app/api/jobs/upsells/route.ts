@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session || session.user.role !== 'employer') {
+    if (!session || !session.user || (session.user as any).role !== 'employer') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const job = await prisma.job.findFirst({
       where: {
         id: validatedData.jobId,
-        employerId: session.user.id,
+        employerId: (session.user as any).id,
       },
     });
 
@@ -170,7 +170,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session || session.user.role !== 'employer') {
+    if (!session || !session.user || (session.user as any).role !== 'employer') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -188,7 +188,7 @@ export async function GET(request: NextRequest) {
     const job = await prisma.job.findFirst({
       where: {
         id: jobId,
-        employerId: session.user.id,
+        employerId: (session.user as any).id,
       },
       select: {
         id: true,

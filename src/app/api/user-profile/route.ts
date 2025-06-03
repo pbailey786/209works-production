@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     // Get user profile from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: {
         id: true,
         name: true,
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     // For now, just return success without saving to database
     // In a real implementation, you would save to a UserProfile table
     const updatedUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: {
         id: true,
         name: true,

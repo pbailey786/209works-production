@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     if (session?.user?.email) {
       const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
+        where: { email: session.user?.email },
       });
       authenticatedUserId = user?.id || userId;
     }
@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 
     if (session?.user?.email) {
       const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
+        where: { email: session.user?.email },
       });
       userId = user?.id;
     }

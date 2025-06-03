@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Get user by email
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: {
         id: true,
         name: true,
@@ -133,7 +133,7 @@ export async function GET(req: NextRequest) {
 
     // Get user by email
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: { id: true },
     });
 

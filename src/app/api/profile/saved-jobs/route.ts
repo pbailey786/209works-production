@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: { id: true, role: true },
     });
 
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: { id: true, role: true },
     });
 
@@ -243,7 +243,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user?.email },
       select: { id: true, role: true },
     });
 
