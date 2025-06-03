@@ -64,4 +64,17 @@ Icon?
 # -------------------------
 .vercel
 
+# -------------------------
+# Development Tools
+# -------------------------
+.taskmaster/
+.taskmasterconfig
+testdriver/
+BMAD-METHOD/
+
+# -------------------------
+# Archive/Legacy Code
+# -------------------------
+archive/saasy-land/
+
 .prisma/client
