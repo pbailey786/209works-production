@@ -41,12 +41,12 @@ export default function ChatInput({
         onKeyPress={handleKeyPress}
         placeholder={placeholder}
         disabled={isDisabled}
-        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
       />
       <button
         type="submit"
         disabled={!message.trim() || isDisabled}
-        className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-4 py-2 text-white hover:from-blue-700 hover:to-green-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         Send
       </button>

@@ -63,7 +63,7 @@ export default function MessageList({
               <button
                 key={index}
                 onClick={() => onQuickQuestion?.(question)}
-                className="block w-full rounded p-2 text-left text-sm text-purple-600 transition hover:bg-purple-50 hover:text-purple-800"
+                className="block w-full rounded p-2 text-left text-sm text-blue-600 transition hover:bg-blue-50 hover:text-blue-800"
               >
                 {question}
               </button>
@@ -82,14 +82,14 @@ export default function MessageList({
           <div
             className={`max-w-[80%] rounded-lg p-3 ${
               message.role === 'user'
-                ? 'bg-purple-600 text-white'
+                ? 'bg-gradient-to-r from-blue-600 to-green-600 text-white'
                 : 'bg-gray-100 text-gray-800'
             }`}
           >
             <p className="whitespace-pre-wrap text-sm">{message.content}</p>
             <p
               className={`mt-1 text-xs ${
-                message.role === 'user' ? 'text-purple-200' : 'text-gray-500'
+                message.role === 'user' ? 'text-blue-200' : 'text-gray-500'
               }`}
             >
               {formatTime(message.timestamp)}

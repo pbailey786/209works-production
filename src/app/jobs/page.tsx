@@ -438,11 +438,11 @@ function JobsContent() {
         <div className="mx-auto max-w-7xl px-4 py-6">
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-[#2563EB] to-[#2d4a3e]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-green-600">
                 <Search className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="bg-gradient-to-r from-[#2563EB] to-[#2d4a3e] bg-clip-text text-2xl font-extrabold text-transparent sm:text-3xl">
+                <h1 className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-2xl font-extrabold text-transparent sm:text-3xl">
                   JobsGPT for 209
                 </h1>
                 <p className="text-sm text-gray-600">
@@ -472,7 +472,7 @@ function JobsContent() {
           {/* Chat Header - Simplified */}
           {conversation.length === 0 && (
             <div className="px-6 py-12 text-center">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#2563EB] to-[#2d4a3e]">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-green-600">
                 <span className="text-xl font-bold text-white">AI</span>
               </div>
               <h2 className="mb-4 text-3xl font-bold text-gray-900">
@@ -682,7 +682,7 @@ function JobsContent() {
                 {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex items-start gap-4">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#2563EB] to-[#2d4a3e]">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-green-600">
                       <span className="text-sm font-bold text-white">AI</span>
                     </div>
                     <div className="max-w-4xl flex-1">
@@ -714,7 +714,7 @@ function JobsContent() {
                   value={currentMessage}
                   onChange={e => setCurrentMessage(e.target.value)}
                   placeholder="Ask anything about jobs in the 209 area..."
-                  className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 text-lg leading-relaxed focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                  className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 text-lg leading-relaxed focus:border-green-500 focus:ring-2 focus:ring-green-500"
                   rows={1}
                   style={{ minHeight: '52px', maxHeight: '200px' }}
                   onKeyDown={e => {
@@ -734,7 +734,7 @@ function JobsContent() {
                 <button
                   onClick={() => sendMessage(currentMessage)}
                   disabled={isTyping || !currentMessage.trim()}
-                  className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-lg bg-gradient-to-r from-[#2563EB] to-[#2d4a3e] text-white transition-colors hover:from-[#1d4ed8] hover:to-[#1f3a2e] disabled:cursor-not-allowed disabled:bg-gray-300"
+                  className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 text-white transition-colors hover:from-blue-700 hover:to-green-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                 >
                   <svg
                     className="h-4 w-4"

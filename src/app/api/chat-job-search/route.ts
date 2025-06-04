@@ -607,8 +607,17 @@ export const POST = withAISecurity(
       });
     } catch (error) {
       console.error('Chat job search error:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        hasApiKey: !!process.env.OPENAI_API_KEY,
+        apiKeyPrefix: process.env.OPENAI_API_KEY?.substring(0, 10) + '...',
+      });
       return NextResponse.json(
-        { error: 'Invalid request or server error' },
+        {
+          error: 'Sorry, I encountered an error while searching for jobs. Please try again.',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        },
         { status: 500 }
       );
     }
