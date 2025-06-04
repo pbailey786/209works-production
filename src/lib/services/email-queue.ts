@@ -92,34 +92,50 @@ export class EmailQueueService {
   private isInitialized = false;
 
   private constructor() {
+    // Skip Redis initialization during build or when disabled
+    if (
+      process.env.REDIS_DISABLED === 'true' ||
+      process.env.SKIP_REDIS === 'true' ||
+      process.env.NETLIFY === 'true'
+    ) {
+      console.log('Email queue disabled during build/deployment');
+      return;
+    }
+
     // Initialize Redis connection
     const redisUrl =
       process.env.REDIS_URL || process.env.UPSTASH_REDIS_REST_URL;
 
-    if (redisUrl) {
-      this.redis = new IORedis(redisUrl, {
-        maxRetriesPerRequest: 3,
-        enableReadyCheck: false,
-        lazyConnect: true,
-      });
-    } else {
-      // Fallback to local Redis
-      this.redis = new IORedis({
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
-        password: process.env.REDIS_PASSWORD,
-        db: parseInt(process.env.REDIS_DB || '0'),
-        maxRetriesPerRequest: 3,
-        enableReadyCheck: false,
-        lazyConnect: true,
-      });
-    }
+    try {
+      if (redisUrl) {
+        this.redis = new IORedis(redisUrl, {
+          maxRetriesPerRequest: 1,
+          enableReadyCheck: false,
+          lazyConnect: true,
+          retryDelayOnFailover: 100,
+        });
+      } else {
+        // Fallback to local Redis
+        this.redis = new IORedis({
+          host: process.env.REDIS_HOST || 'localhost',
+          port: parseInt(process.env.REDIS_PORT || '6379'),
+          password: process.env.REDIS_PASSWORD,
+          db: parseInt(process.env.REDIS_DB || '0'),
+          maxRetriesPerRequest: 1,
+          enableReadyCheck: false,
+          lazyConnect: true,
+          retryDelayOnFailover: 100,
+        });
+      }
 
-    // Initialize queue
-    this.queue = new Queue(QUEUE_CONFIG.name, {
-      connection: this.redis,
-      defaultJobOptions: QUEUE_CONFIG.defaultJobOptions,
-    });
+      // Initialize queue
+      this.queue = new Queue(QUEUE_CONFIG.name, {
+        connection: this.redis,
+        defaultJobOptions: QUEUE_CONFIG.defaultJobOptions,
+      });
+    } catch (error) {
+      console.log('Failed to initialize email queue, skipping:', error);
+    }
   }
 
   public static getInstance(): EmailQueueService {
@@ -135,6 +151,17 @@ export class EmailQueueService {
   public async initialize(): Promise<void> {
     if (this.isInitialized) {
       console.log('[EMAIL-QUEUE] Already initialized');
+      return;
+    }
+
+    // Skip initialization if Redis is disabled or not available
+    if (
+      process.env.REDIS_DISABLED === 'true' ||
+      process.env.SKIP_REDIS === 'true' ||
+      process.env.NETLIFY === 'true' ||
+      !this.redis
+    ) {
+      console.log('[EMAIL-QUEUE] Skipping initialization - Redis disabled or unavailable');
       return;
     }
 

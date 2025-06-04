@@ -39,8 +39,14 @@ let lastConnectionError: Error | null = null;
 
 // Initialize Redis client with proper race condition handling
 export async function getRedisClient(): Promise<Redis | any> {
-  // Check if Redis is disabled or no URL provided
-  if (process.env.REDIS_DISABLED === 'true' || !process.env.REDIS_URL) {
+  // Check if Redis is disabled, no URL provided, or in build mode
+  if (
+    process.env.REDIS_DISABLED === 'true' ||
+    process.env.SKIP_REDIS === 'true' ||
+    process.env.NETLIFY === 'true' ||
+    !process.env.REDIS_URL ||
+    (process.env.NODE_ENV === 'production' && !process.env.REDIS_URL)
+  ) {
     return getMockRedis();
   }
 
