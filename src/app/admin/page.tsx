@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth/next';
-import authOptions from '../api/auth/authOptions';
-import { prisma } from '../api/auth/prisma';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import {
   Card,
   CardContent,
@@ -39,16 +39,17 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminDashboard() {
-  // Get session for user info
-  const session = await getServerSession(authOptions) as Session | null;
+  try {
+    // Get session for user info
+    const session = await getServerSession(authOptions) as Session | null;
 
-  // Date calculations for analytics
-  const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+    // Date calculations for analytics
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
-  // Fetch real analytics data
+    // Fetch real analytics data
   const [
     totalUsers,
     newUsersThisMonth,
@@ -99,9 +100,9 @@ export default async function AdminDashboard() {
     prisma.jobApplication.count(),
     prisma.jobApplication.count({ where: { appliedAt: { gte: thirtyDaysAgo } } }),
 
-    // Chat metrics
-    prisma.chatSession.count(),
-    prisma.chatSession.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+    // Chat metrics (using ChatAnalytics)
+    prisma.chatAnalytics.count(),
+    prisma.chatAnalytics.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
 
     // Premium users (assuming there's a subscription field)
     prisma.user.count({ where: { role: 'jobseeker' } }), // Placeholder for premium logic
@@ -147,14 +148,14 @@ export default async function AdminDashboard() {
       LIMIT 10
     `,
 
-    // Top job categories
+    // Top job categories (using categories array)
     prisma.$queryRaw`
       SELECT
-        category,
+        UNNEST(categories) as category,
         COUNT(*) as count
       FROM Job
       WHERE createdAt >= ${thirtyDaysAgo}
-      AND category IS NOT NULL
+      AND array_length(categories, 1) > 0
       GROUP BY category
       ORDER BY count DESC
       LIMIT 10
@@ -673,4 +674,22 @@ export default async function AdminDashboard() {
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Error loading admin dashboard:', error);
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Admin Dashboard Error
+          </h1>
+          <p className="text-gray-600 mb-4">
+            There was an error loading the dashboard. Please check the database connection.
+          </p>
+          <p className="text-sm text-gray-500">
+            Error: {error instanceof Error ? error.message : 'Unknown error'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 }
