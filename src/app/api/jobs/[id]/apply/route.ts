@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { prisma } from '../../../auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { withAPIMiddleware, apiConfigs } from '@/lib/middleware/api';
 import { createJobApplicationSchema } from '@/lib/validations/api';
 import { routeParamsSchemas } from '@/lib/middleware/validation';

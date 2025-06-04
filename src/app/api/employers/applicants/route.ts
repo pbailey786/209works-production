@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
+import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch applications to this employer's jobs
-    const applications = await prisma.application.findMany({
+    const applications = await prisma.jobApplication.findMany({
       where: {
         job: {
           employerId: user.id
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
         }
       },
       orderBy: {
-        createdAt: 'desc'
+        appliedAt: 'desc'
       }
     });
 
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
       name: application.user.name || 'Anonymous',
       email: application.user.email,
       jobTitle: application.job.title,
-      appliedDate: application.createdAt.toISOString().split('T')[0],
+      appliedDate: application.appliedAt.toISOString().split('T')[0],
       status: application.status || 'new',
       matchScore: 85, // TODO: Implement match scoring
       location: application.user.location || 'Not specified',

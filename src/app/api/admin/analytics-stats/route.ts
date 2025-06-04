@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import authOptions from '../../auth/authOptions';
-import { prisma } from '../../auth/prisma';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
       dailyStats,
       userEngagement,
     ] = await Promise.all([
-      // Total chat sessions
-      prisma.chatSession.count({
+      // Total chat sessions (using ChatAnalytics as proxy)
+      prisma.chatAnalytics.count({
         where: { createdAt: { gte: startDate } },
       }),
 
@@ -60,18 +60,18 @@ export async function GET(request: NextRequest) {
 
       // Average response time
       prisma.chatAnalytics.aggregate({
-        where: { 
+        where: {
           createdAt: { gte: startDate },
-          responseTime: { not: null },
+          responseTime: { gt: 0 },
         },
         _avg: { responseTime: true },
       }),
 
       // Total jobs found through chat
       prisma.chatAnalytics.aggregate({
-        where: { 
+        where: {
           createdAt: { gte: startDate },
-          jobsFound: { not: null },
+          jobsFound: { gt: 0 },
         },
         _sum: { jobsFound: true },
       }),
@@ -86,9 +86,9 @@ export async function GET(request: NextRequest) {
       // Top questions/search terms
       prisma.chatAnalytics.groupBy({
         by: ['question'],
-        where: { 
+        where: {
           createdAt: { gte: startDate },
-          question: { not: null },
+          question: { not: '' },
         },
         _count: { question: true },
         orderBy: { _count: { question: 'desc' } },

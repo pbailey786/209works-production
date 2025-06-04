@@ -138,7 +138,7 @@ export default function SystemHealthDashboard() {
           },
           {
             name: 'Memory',
-            status: data.healthChecks.memory ? 'online' : 'warning',
+            status: data.healthChecks.memory ? 'online' : 'degraded',
             responseTime: data.application.memory.heapUsed,
             lastCheck: new Date(data.timestamp),
           },

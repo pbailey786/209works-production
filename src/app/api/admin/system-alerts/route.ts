@@ -254,12 +254,11 @@ export async function POST(request: NextRequest) {
       // For now, we'll just log the resolution
       await prisma.auditLog.create({
         data: {
+          userId: session.user.id,
           action: 'ALERT_RESOLVED',
-          targetType: 'ALERT',
-          targetId: alertId,
-          performedBy: session.user.id,
-          details: JSON.stringify({ alertId, resolvedAt: new Date() }),
-          createdAt: new Date(),
+          resource: 'ALERT',
+          resourceId: alertId,
+          details: { alertId, resolvedAt: new Date() },
         },
       });
 
@@ -282,12 +281,18 @@ export async function POST(request: NextRequest) {
       // Log the custom alert creation
       await prisma.auditLog.create({
         data: {
+          userId: session.user.id,
           action: 'ALERT_CREATED',
-          targetType: 'ALERT',
-          targetId: alert.id,
-          performedBy: session.user.id,
-          details: JSON.stringify(alert),
-          createdAt: new Date(),
+          resource: 'ALERT',
+          resourceId: alert.id,
+          details: {
+            alertId: alert.id,
+            type: alert.type,
+            severity: alert.severity,
+            title: alert.title,
+            description: alert.description,
+            createdAt: alert.createdAt,
+          },
         },
       });
 

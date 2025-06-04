@@ -207,13 +207,14 @@ export default function ProfilePage() {
     const formData = new FormData();
     formData.append('profilePicture', file);
     try {
-      const res = await fetch('/api/profile', {
+      formData.append('type', 'profile');
+      const res = await fetch('/api/profile/upload', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-      if (data.success && data.profilePictureUrl) {
-        setProfilePictureUrl(data.profilePictureUrl);
+      if (res.ok && data.url) {
+        setProfilePictureUrl(data.url);
         setProfilePicSuccess('Profile picture updated successfully.');
         setProfilePicPreview(null);
       } else {

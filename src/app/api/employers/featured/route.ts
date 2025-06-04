@@ -55,81 +55,13 @@ export async function GET(request: NextRequest) {
       website: employer.company?.website,
     }));
 
-    // If we have real employers, return them
-    if (transformedEmployers.length > 0) {
-      return NextResponse.json({
-        employers: transformedEmployers,
-        source: 'database',
-      });
-    }
-
-    // Fallback to mock data if no real employers found
-    const mockEmployers = [
-      {
-        id: 'central-valley-health',
-        name: 'Central Valley Health',
-        industry: 'Healthcare',
-        location: 'Stockton, CA',
-        activeJobs: 12,
-        description:
-          'Leading healthcare provider serving the Central Valley with opportunities in nursing, administration, and medical support.',
-        logo: '🏥',
-      },
-      {
-        id: 'manteca-unified',
-        name: 'Manteca Unified School District',
-        industry: 'Education',
-        location: 'Manteca, CA',
-        activeJobs: 8,
-        description:
-          'Growing school district seeking teachers, administrators, and support staff to serve our diverse student community.',
-        logo: '🎓',
-      },
-      {
-        id: 'tracy-logistics',
-        name: 'Tracy Logistics Solutions',
-        industry: 'Transportation & Warehousing',
-        location: 'Tracy, CA',
-        activeJobs: 15,
-        description:
-          'Premier logistics company offering warehouse, transportation, and supply chain careers with competitive benefits.',
-        logo: '🚛',
-      },
-      {
-        id: 'lodi-wine-group',
-        name: 'Lodi Wine Group',
-        industry: 'Agriculture & Food',
-        location: 'Lodi, CA',
-        activeJobs: 6,
-        description:
-          'Family-owned winery and agricultural business with seasonal and full-time opportunities in wine production and farming.',
-        logo: '🍇',
-      },
-      {
-        id: 'modesto-tech',
-        name: 'Modesto Tech Solutions',
-        industry: 'Technology',
-        location: 'Modesto, CA',
-        activeJobs: 9,
-        description:
-          'Innovative tech company providing IT services to local businesses, seeking developers, support staff, and project managers.',
-        logo: '💻',
-      },
-      {
-        id: 'delta-construction',
-        name: 'Delta Construction',
-        industry: 'Construction',
-        location: 'Stockton, CA',
-        activeJobs: 11,
-        description:
-          'Established construction company building homes and commercial properties throughout the Central Valley region.',
-        logo: '🏗️',
-      },
-    ];
-
+    // Return the transformed employers (empty array if none found)
     return NextResponse.json({
-      employers: mockEmployers,
-      source: 'mock',
+      employers: transformedEmployers,
+      source: 'database',
+      message: transformedEmployers.length === 0
+        ? 'No featured employers found. Encourage local businesses to join!'
+        : undefined,
     });
   } catch (error) {
     console.error('Error fetching featured employers:', error);

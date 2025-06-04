@@ -121,7 +121,7 @@ export default function JobDetailClient({
     setError(null);
 
     try {
-      const response = await fetch('/api/profile/saved-jobs', {
+      const response = await fetch('/api/jobs/save', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,7 +129,6 @@ export default function JobDetailClient({
         },
         body: JSON.stringify({
           jobId: job.id,
-          action: saved ? 'unsave' : 'save',
         }),
       });
 

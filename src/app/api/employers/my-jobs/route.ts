@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
+import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
       include: {
         _count: {
           select: {
-            applications: true
+            jobApplications: true
           }
         }
       },
@@ -42,10 +43,10 @@ export async function GET(request: NextRequest) {
       id: job.id,
       title: job.title,
       location: job.location || 'Remote',
-      type: job.type || 'Full-time',
+      type: job.jobType || 'Full-time',
       postedDate: job.createdAt.toISOString().split('T')[0],
-      applications: job._count.applications,
-      views: 0, // TODO: Implement view tracking
+      applications: job._count.jobApplications,
+      views: job.viewCount || 0,
       status: job.status || 'active',
       featured: false, // TODO: Implement featured jobs
       urgent: false, // TODO: Implement urgent jobs

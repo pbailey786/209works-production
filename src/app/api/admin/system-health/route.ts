@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
       // For now, we'll simulate this
       Promise.resolve([]),
 
-      // Chat sessions
-      prisma.chatSession.count({
+      // Chat sessions (using ChatAnalytics as proxy)
+      prisma.chatAnalytics.count({
         where: { createdAt: { gte: oneDayAgo } },
       }),
     ]);

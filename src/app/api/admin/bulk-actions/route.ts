@@ -189,14 +189,16 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Message and subject required' }, { status: 400 });
           }
 
-          // Create notifications for users
-          await prisma.notification.createMany({
+          // Create email logs for admin messages (using EmailLog as notification system)
+          await prisma.emailLog.createMany({
             data: targetIds.map(userId => ({
               userId,
-              title: subject,
-              message,
-              type: 'admin_message',
-              isRead: false,
+              toEmail: '', // Will be filled by email service
+              subject,
+              emailType: 'admin_message',
+              templateName: 'admin_notification',
+              status: 'pending',
+              metadata: { message },
               createdAt: new Date(),
             })),
           });
@@ -212,18 +214,17 @@ export async function POST(request: NextRequest) {
     // Log the bulk action
     await prisma.auditLog.create({
       data: {
+        userId: session.user.id,
         action: `BULK_${action.toUpperCase()}`,
-        targetType: targetType.toUpperCase(),
-        targetId: targetIds.join(','),
-        performedBy: session.user.id,
-        details: JSON.stringify({
+        resource: targetType.toUpperCase(),
+        resourceId: targetIds.join(','),
+        details: {
           action,
           targetType,
           targetCount: targetIds.length,
           reason: reason || 'No reason provided',
           results,
-        }),
-        createdAt: new Date(),
+        },
       },
     });
 

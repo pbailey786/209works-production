@@ -61,13 +61,14 @@ export async function GET(request: NextRequest) {
             title: true,
             company: true,
             location: true,
-            type: true,
+            jobType: true,
             status: true,
-            salary: true,
+            salaryMin: true,
+            salaryMax: true,
             createdAt: true,
             updatedAt: true,
-            views: true,
-            applications: {
+            viewCount: true,
+            jobApplications: {
               select: { id: true },
             },
           },
@@ -76,8 +77,8 @@ export async function GET(request: NextRequest) {
         // Add application count
         data = data.map(job => ({
           ...job,
-          applicationCount: job.applications.length,
-          applications: undefined, // Remove the applications array
+          applicationCount: job.jobApplications.length,
+          jobApplications: undefined, // Remove the applications array
         }));
         filename = `jobs-export-${new Date().toISOString().split('T')[0]}`;
         break;

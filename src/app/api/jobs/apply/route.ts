@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session!.user?.email) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     // Get user
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: session.user.email },
       select: { id: true, name: true, email: true, resumeUrl: true },
     });
 
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session!.user?.email) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
 
     // Get user
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: session.user.email },
       select: { id: true },
     });
 
