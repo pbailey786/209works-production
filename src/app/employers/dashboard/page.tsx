@@ -26,6 +26,7 @@ import {
   Settings,
   Sparkles,
 } from 'lucide-react';
+import BillingModal from '@/components/billing/BillingModal';
 
 interface DashboardStats {
   totalJobs: number;
@@ -86,6 +87,8 @@ function DashboardContent() {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
+  // BILLING REFACTOR: Add billing modal state
+  const [showBillingModal, setShowBillingModal] = useState(false);
 
   // Mock data for demonstration
   useEffect(() => {
@@ -269,6 +272,17 @@ function DashboardContent() {
     return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
   };
 
+  // BILLING REFACTOR: Handle job posting clicks - show billing modal instead of direct navigation
+  const handlePostJobClick = () => {
+    setShowBillingModal(true);
+  };
+
+  const handleBillingSuccess = () => {
+    setShowBillingModal(false);
+    // After successful billing, redirect to job posting
+    router.push('/employers/create-job-post');
+  };
+
   if (status === 'loading' || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -312,12 +326,12 @@ function DashboardContent() {
                   </p>
                 </div>
               </div>
-              <Link
-                href="/employers/post-job-simple"
+              <button
+                onClick={handlePostJobClick}
                 className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
               >
                 Post Your First Job →
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -357,20 +371,20 @@ function DashboardContent() {
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            <Link
-              href="/employers/create-job-post"
+            <button
+              onClick={handlePostJobClick}
               className="flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700"
             >
               <Sparkles className="mr-2 h-5 w-5" />
-              Job Post Optimizer
-            </Link>
-            <Link
-              href="/employers/post-job-simple"
+              Post a Job
+            </button>
+            <button
+              onClick={handlePostJobClick}
               className="flex items-center rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-gray-700"
             >
               <Plus className="mr-2 h-5 w-5" />
               Quick Post
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -487,12 +501,12 @@ function DashboardContent() {
                 <p className="mb-6 text-gray-600">
                   Post your first job and start finding great candidates.
                 </p>
-                <Link
-                  href="/employers/post-job-simple"
+                <button
+                  onClick={handlePostJobClick}
                   className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
                 >
                   Post Your First Job
-                </Link>
+                </button>
               </div>
             )}
           </div>
@@ -506,9 +520,9 @@ function DashboardContent() {
             </div>
 
             <div className="space-y-4 p-6">
-              <Link
-                href="/employers/create-job-post"
-                className="group flex items-center justify-between rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 p-4 transition-all hover:from-blue-100 hover:to-green-100"
+              <button
+                onClick={handlePostJobClick}
+                className="group flex w-full items-center justify-between rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 p-4 transition-all hover:from-blue-100 hover:to-green-100"
               >
                 <div className="flex items-center">
                   <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-green-500">
@@ -516,7 +530,7 @@ function DashboardContent() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
-                      Job Post Optimizer
+                      Post a Job
                     </p>
                     <p className="text-sm text-gray-600">
                       Create compelling job listings with AI
@@ -524,7 +538,7 @@ function DashboardContent() {
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
-              </Link>
+              </button>
 
               <Link
                 href="/employers/applicants"
@@ -616,6 +630,16 @@ function DashboardContent() {
           </div>
         </div>
       </div>
+
+      {/* BILLING REFACTOR: Billing modal triggered when posting jobs */}
+      <BillingModal
+        isOpen={showBillingModal}
+        onClose={() => setShowBillingModal(false)}
+        onSuccess={handleBillingSuccess}
+        trigger="job-posting"
+        title="Choose Your Plan to Post Jobs"
+        description="Select a subscription plan to start posting jobs and finding great candidates in the 209 area."
+      />
     </div>
   );
 }

@@ -151,6 +151,12 @@ export default function CreateJobPostPage() {
         setShowPreview(true);
       } else {
         const errorData = await response.json();
+        // BILLING REFACTOR: Handle subscription required error
+        if (response.status === 402 && errorData.code === 'SUBSCRIPTION_REQUIRED') {
+          // Redirect to billing/upgrade page
+          router.push('/employers/upgrade?reason=job-posting');
+          return;
+        }
         setErrors({ submit: errorData.error || 'Failed to create job post' });
       }
     } catch (error) {

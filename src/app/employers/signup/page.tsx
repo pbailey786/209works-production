@@ -30,7 +30,7 @@ interface SignupForm {
   companySize: string;
   industry: string;
   jobTitle: string;
-  plan: string;
+  // BILLING REFACTOR: Removed plan field - billing now happens when posting first job
   agreeToTerms: boolean;
   subscribeToUpdates: boolean;
 }
@@ -38,8 +38,7 @@ interface SignupForm {
 // Component that uses search params - needs to be wrapped in Suspense
 function SignupContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const selectedPlan = searchParams.get('plan') || 'professional';
+  // BILLING REFACTOR: Removed selectedPlan - billing now happens when posting first job
 
   const [form, setForm] = useState<SignupForm>({
     companyName: '',
@@ -51,7 +50,7 @@ function SignupContent() {
     companySize: '',
     industry: '',
     jobTitle: '',
-    plan: selectedPlan,
+    // BILLING REFACTOR: Removed plan field - billing now happens when posting first job
     agreeToTerms: false,
     subscribeToUpdates: true,
   });
@@ -86,64 +85,12 @@ function SignupContent() {
     'Other',
   ];
 
-  const plans = [
-    {
-      id: 'starter',
-      name: 'Starter',
-      price: '$99',
-      period: '/month',
-      description: 'Perfect for small businesses',
-      features: [
-        '5 active job listings',
-        '30-day listing duration',
-        'Basic company profile',
-        'Email support',
-        'Basic analytics',
-      ],
-      badge: 'Great for Local Business',
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      price: '$299',
-      period: '/month',
-      description: 'For growing businesses',
-      features: [
-        'Unlimited job listings',
-        '45-day listing duration',
-        'Enhanced company profile',
-        'AI-powered matching',
-        'Priority support',
-        'Advanced analytics',
-        'Up to 10 team members',
-      ],
-      badge: 'Most Popular',
-      popular: true,
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 'Custom',
-      period: '',
-      description: 'For large organizations',
-      features: [
-        'Unlimited job listings',
-        '60-day listing duration',
-        'Premium branded profile',
-        'Advanced AI matching',
-        'Dedicated account manager',
-        'Custom analytics',
-        'Unlimited team members',
-        'API access',
-      ],
-      badge: 'Custom Solutions',
-    },
-  ];
+  // BILLING REFACTOR: Removed plans array - billing now happens when posting first job
 
   const steps = [
     { number: 1, title: 'Account Info', description: 'Basic account details' },
     { number: 2, title: 'Company Details', description: 'Company information' },
-    { number: 3, title: 'Choose Plan', description: 'Select your plan' },
+    // BILLING REFACTOR: Removed "Choose Plan" step - billing now happens when posting first job
   ];
 
   const validateStep = (step: number): boolean => {
@@ -167,9 +114,7 @@ function SignupContent() {
       if (!form.companySize) newErrors.companySize = 'Company size is required';
       if (!form.industry) newErrors.industry = 'Industry is required';
       if (!form.jobTitle.trim()) newErrors.jobTitle = 'Job title is required';
-    }
-
-    if (step === 3) {
+      // BILLING REFACTOR: Moved terms agreement check to step 2
       if (!form.agreeToTerms)
         newErrors.agreeToTerms = 'You must agree to the terms of service';
     }
@@ -180,7 +125,12 @@ function SignupContent() {
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, 3));
+      // BILLING REFACTOR: Only 2 steps now, submit on step 2
+      if (currentStep < 2) {
+        setCurrentStep(prev => prev + 1);
+      } else {
+        handleSubmit();
+      }
     }
   };
 
@@ -657,147 +607,72 @@ function SignupContent() {
                         </p>
                       )}
                     </div>
-                  </div>
-                </div>
-              )}
 
-              {/* Step 3: Choose Plan */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="mb-2 text-2xl font-bold text-gray-900">
-                      Choose Your Plan
-                    </h2>
-                    <p className="text-gray-600">
-                      Select the plan that best fits your hiring needs. You can
-                      change this later.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    {plans.map(plan => (
-                      <div
-                        key={plan.id}
-                        className={`relative cursor-pointer rounded-lg border-2 p-6 transition-all ${
-                          form.plan === plan.id
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        } ${plan.popular ? 'ring-2 ring-blue-500' : ''}`}
-                        onClick={() => setForm({ ...form, plan: plan.id })}
-                      >
-                        {plan.popular && (
-                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
-                            <span className="rounded-full bg-blue-500 px-3 py-1 text-sm font-medium text-white">
-                              Most Popular
-                            </span>
-                          </div>
-                        )}
-
-                        <div className="text-center">
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            {plan.name}
-                          </h3>
-                          <div className="mt-2">
-                            <span className="text-3xl font-bold text-gray-900">
-                              {plan.price}
-                            </span>
-                            <span className="text-gray-500">{plan.period}</span>
-                          </div>
-                          <p className="mt-2 text-sm text-gray-600">
-                            {plan.description}
-                          </p>
-                        </div>
-
-                        <ul className="mt-6 space-y-2">
-                          {plan.features.map((feature, index) => (
-                            <li
-                              key={index}
-                              className="flex items-start text-sm"
-                            >
-                              <CheckCircle className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
-
-                        <div className="mt-6">
-                          <div
-                            className={`mx-auto h-4 w-4 rounded-full border-2 ${
-                              form.plan === plan.id
-                                ? 'border-blue-500 bg-blue-500'
-                                : 'border-gray-300'
-                            }`}
+                    {/* Terms and Conditions - moved from Step 3 */}
+                    <div className="space-y-4 border-t border-gray-200 pt-6">
+                      <label className="flex items-start">
+                        <input
+                          type="checkbox"
+                          checked={form.agreeToTerms}
+                          onChange={e =>
+                            setForm({ ...form, agreeToTerms: e.target.checked })
+                          }
+                          className="mr-3 mt-1 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">
+                          I agree to the{' '}
+                          <a
+                            href="/terms"
+                            className="text-blue-600 hover:underline"
+                            target="_blank"
                           >
-                            {form.plan === plan.id && (
-                              <div className="mx-auto mt-0.5 h-2 w-2 rounded-full bg-white"></div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                            Terms of Service
+                          </a>{' '}
+                          and{' '}
+                          <a
+                            href="/privacy"
+                            className="text-blue-600 hover:underline"
+                            target="_blank"
+                          >
+                            Privacy Policy
+                          </a>
+                          *
+                        </span>
+                      </label>
+                      {errors.agreeToTerms && (
+                        <p className="text-sm text-red-600">
+                          {errors.agreeToTerms}
+                        </p>
+                      )}
 
-                  <div className="space-y-4">
-                    <label className="flex items-start">
-                      <input
-                        type="checkbox"
-                        checked={form.agreeToTerms}
-                        onChange={e =>
-                          setForm({ ...form, agreeToTerms: e.target.checked })
-                        }
-                        className="mr-3 mt-1 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="text-sm text-gray-700">
-                        I agree to the{' '}
-                        <a
-                          href="/terms"
-                          className="text-blue-600 hover:underline"
-                          target="_blank"
-                        >
-                          Terms of Service
-                        </a>{' '}
-                        and{' '}
-                        <a
-                          href="/privacy"
-                          className="text-blue-600 hover:underline"
-                          target="_blank"
-                        >
-                          Privacy Policy
-                        </a>
-                        *
-                      </span>
-                    </label>
-                    {errors.agreeToTerms && (
-                      <p className="text-sm text-red-600">
-                        {errors.agreeToTerms}
-                      </p>
-                    )}
-
-                    <label className="flex items-start">
-                      <input
-                        type="checkbox"
-                        checked={form.subscribeToUpdates}
-                        onChange={e =>
-                          setForm({
-                            ...form,
-                            subscribeToUpdates: e.target.checked,
-                          })
-                        }
-                        className="mr-3 mt-1 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="text-sm text-gray-700">
-                        Send me updates about new features and hiring tips
-                      </span>
-                    </label>
-                  </div>
-
-                  {errors.submit && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-                      <p className="text-red-800">{errors.submit}</p>
+                      <label className="flex items-start">
+                        <input
+                          type="checkbox"
+                          checked={form.subscribeToUpdates}
+                          onChange={e =>
+                            setForm({
+                              ...form,
+                              subscribeToUpdates: e.target.checked,
+                            })
+                          }
+                          className="mr-3 mt-1 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">
+                          Send me updates about new features and hiring tips
+                        </span>
+                      </label>
                     </div>
-                  )}
+
+                    {errors.submit && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                        <p className="text-red-800">{errors.submit}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
+
+              {/* BILLING REFACTOR: Removed Step 3 - Plan selection now happens when posting first job */}
 
               {/* Navigation Buttons */}
               <div className="flex justify-between border-t border-gray-200 pt-8">
@@ -810,7 +685,7 @@ function SignupContent() {
                 </button>
 
                 <div className="flex space-x-4">
-                  {currentStep < 3 ? (
+                  {currentStep < 2 ? (
                     <button
                       onClick={handleNext}
                       className="flex items-center rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700"

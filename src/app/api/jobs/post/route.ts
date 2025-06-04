@@ -30,6 +30,25 @@ export const POST = withAPIMiddleware(
         );
       }
 
+      // BILLING REFACTOR: Check if user has active subscription before allowing job posts
+      const subscription = await prisma.subscription.findFirst({
+        where: {
+          userId: context.user.id,
+          status: 'active',
+        },
+      });
+
+      if (!subscription) {
+        return NextResponse.json(
+          {
+            error: 'Active subscription required to post jobs',
+            code: 'SUBSCRIPTION_REQUIRED',
+            redirectUrl: '/employers/upgrade'
+          },
+          { status: 402 } // Payment Required
+        );
+      }
+
       // Track database query for performance monitoring
       context.performance.trackDatabaseQuery();
 

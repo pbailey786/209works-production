@@ -94,6 +94,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // BILLING REFACTOR: Check if user has active subscription before allowing job post optimization
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        userId: (session!.user as any).id,
+        status: 'active',
+      },
+    });
+
+    if (!subscription) {
+      return NextResponse.json(
+        {
+          error: 'Active subscription required to optimize job posts',
+          code: 'SUBSCRIPTION_REQUIRED',
+          redirectUrl: '/employers/upgrade'
+        },
+        { status: 402 } // Payment Required
+      );
+    }
+
     // Parse and validate request body
     const body = await req.json();
     const validatedData = jobPostOptimizerSchema.parse(body);

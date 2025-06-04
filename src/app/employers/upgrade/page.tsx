@@ -1,300 +1,229 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  Crown,
+  Zap,
+  Shield,
+  ArrowRight,
+  CheckCircle,
+  Sparkles,
+  Building2,
+  Users,
+  TrendingUp
+} from 'lucide-react';
+import BillingModal from '@/components/billing/BillingModal';
 
-// TODO: Replace with real API hooks for fetching billing data
-const mockCurrentPlan = {
-  key: 'starter',
-  name: 'Starter',
-  price: 50,
-  usage: '1/1 job posts',
-  team: '1/1 members',
-  renewal: '2024-07-01',
-};
+// Component that uses search params - needs to be wrapped in Suspense
+function UpgradeContent() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [showBillingModal, setShowBillingModal] = useState(false);
 
-const PLAN_KEYS = [
-  { key: 'starter', name: 'Starter' },
-  { key: 'growth', name: 'Growth' },
-  { key: 'scale', name: 'Scale' },
-];
+  const reason = searchParams.get('reason');
 
-const mockPlans = [
-  {
-    key: 'starter',
-    name: 'Starter',
-    price: 50,
-    features: [
-      '1 active job post',
-      'Basic analytics',
-      'Email support',
-      '30-day duration',
-    ],
-  },
-  {
-    key: 'growth',
-    name: 'Growth',
-    price: 99,
-    features: [
-      '3 active job posts',
-      'Advanced analytics',
-      'Resume database',
-      'Priority support',
-      '45-day duration',
-    ],
-  },
-  {
-    key: 'scale',
-    name: 'Scale',
-    price: 200,
-    features: [
-      '10 active job posts',
-      'Team management',
-      'Custom analytics',
-      'Phone support',
-      '60-day duration',
-    ],
-  },
-];
+  useEffect(() => {
+    if (status === 'loading') return;
 
-const mockBillingHistory = [
-  {
-    date: '2024-05-01',
-    amount: '$50.00',
-    status: 'Paid',
-    invoice: '#INV-1001',
-  },
-  {
-    date: '2024-04-01',
-    amount: '$50.00',
-    status: 'Paid',
-    invoice: '#INV-0987',
-  },
-];
-
-// These will be replaced by process.env or fetched from the backend in a real app
-const STRIPE_PRICE_IDS = {
-  starter: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_STARTER_MONTHLY_PRICE_ID || '',
-  },
-  growth: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_GROWTH_MONTHLY_PRICE_ID || '',
-  },
-  scale: {
-    monthly: process.env.NEXT_PUBLIC_STRIPE_SCALE_MONTHLY_PRICE_ID || '',
-  },
-};
-
-export default function EmployerUpgradePage() {
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [billingLoading, setBillingLoading] = useState(false);
-
-  const handleUpgrade = async (planKey: string) => {
-    setLoadingPlan(planKey);
-    const priceId =
-      STRIPE_PRICE_IDS[planKey as keyof typeof STRIPE_PRICE_IDS]?.monthly;
-    if (!priceId) {
-      alert(
-        'Stripe Price ID not set for this plan. Please check your environment variables.'
-      );
-      setLoadingPlan(null);
+    if (!session || !session.user || (session!.user as any).role !== 'employer') {
+      router.push('/employers/signin');
       return;
     }
-    try {
-      const res = await fetch('/api/stripe/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId,
-          tier: planKey,
-          billingInterval: 'monthly',
-        }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error || 'Error creating checkout session');
-      }
-    } catch (err) {
-      alert('Error connecting to payment system');
-    } finally {
-      setLoadingPlan(null);
+
+    // Auto-open billing modal if redirected from job posting
+    if (reason === 'job-posting') {
+      setShowBillingModal(true);
+    }
+  }, [session, status, router, reason]);
+
+  if (status === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!session || !session.user || (session!.user as any).role !== 'employer') {
+    return null;
+  }
+
+  const handleBillingSuccess = () => {
+    setShowBillingModal(false);
+    // Redirect based on the reason they came here
+    if (reason === 'job-posting') {
+      router.push('/employers/create-job-post?upgraded=true');
+    } else {
+      router.push('/employers/dashboard?upgraded=true');
     }
   };
 
-  const handleManageBilling = async () => {
-    setBillingLoading(true);
-    try {
-      const res = await fetch('/api/stripe/create-portal-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          returnUrl: window.location.origin + '/employers/upgrade',
-        }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert(data.error || 'Could not open billing portal');
-      }
-    } catch (err) {
-      alert('Could not open billing portal');
-    } finally {
-      setBillingLoading(false);
+  const getPageContent = () => {
+    switch (reason) {
+      case 'job-posting':
+        return {
+          title: 'Subscription Required to Post Jobs',
+          description: 'To post jobs and find great candidates in the 209 area, you need an active subscription plan.',
+          ctaText: 'Choose Your Plan to Post Jobs',
+        };
+      default:
+        return {
+          title: 'Upgrade Your 209 Works Account',
+          description: 'Unlock powerful hiring tools and find the best local talent in the Central Valley.',
+          ctaText: 'Upgrade Now',
+        };
     }
   };
+
+  const content = getPageContent();
+
+  const features = [
+    {
+      icon: <Sparkles className="h-6 w-6" />,
+      title: 'AI-Powered Job Optimization',
+      description: 'Transform basic job info into compelling listings that attract quality candidates',
+    },
+    {
+      icon: <Users className="h-6 w-6" />,
+      title: 'Local Talent Pool',
+      description: 'Access to job seekers specifically in the 209 area code region',
+    },
+    {
+      icon: <TrendingUp className="h-6 w-6" />,
+      title: 'Advanced Analytics',
+      description: 'Track job performance, views, and application rates',
+    },
+    {
+      icon: <Shield className="h-6 w-6" />,
+      title: 'Priority Support',
+      description: 'Get help when you need it with dedicated customer support',
+    },
+  ];
 
   return (
-    <main className="mx-auto max-w-4xl space-y-10 p-6">
-      {/* Current Plan */}
-      <section
-        aria-labelledby="current-plan-title"
-        className="rounded-lg bg-white p-6 shadow"
-      >
-        <h2
-          id="current-plan-title"
-          className="mb-2 text-xl font-bold text-[#2d4a3e]"
-        >
-          Current Plan
-        </h2>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <div className="text-lg font-semibold text-[#2d4a3e]">
-              {mockCurrentPlan.name} Plan
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <div className="mx-auto max-w-4xl px-4 py-12">
+        {/* Header */}
+        <div className="mb-12 text-center">
+          <div className="mb-6 flex items-center justify-center">
+            <div className="rounded-full bg-gradient-to-r from-blue-600 to-green-600 p-4">
+              <Crown className="h-12 w-12 text-white" />
             </div>
-            <div className="text-gray-600">
-              Renews: {mockCurrentPlan.renewal}
-            </div>
-            <div className="text-gray-600">Usage: {mockCurrentPlan.usage}</div>
-            <div className="text-gray-600">Team: {mockCurrentPlan.team}</div>
           </div>
-          <div className="flex flex-col gap-2 md:items-end">
-            <button
-              className="rounded bg-[#2d4a3e] px-4 py-2 text-white hover:bg-[#1d3a2e] disabled:bg-gray-300"
-              onClick={handleManageBilling}
-              disabled={billingLoading}
-            >
-              {billingLoading ? 'Redirecting...' : 'Manage Billing'}
-            </button>
-            <span className="mt-1 text-xs text-gray-500">
-              Billing management is handled securely by Stripe.
-            </span>
-          </div>
+          <h1 className="mb-4 text-4xl font-bold text-gray-900">
+            {content.title}
+          </h1>
+          <p className="mx-auto max-w-2xl text-xl text-gray-600">
+            {content.description}
+          </p>
         </div>
-      </section>
 
-      {/* Plan Selection */}
-      <section
-        aria-labelledby="plan-selection-title"
-        className="rounded-lg bg-white p-6 shadow"
-      >
-        <h2
-          id="plan-selection-title"
-          className="mb-4 text-xl font-bold text-[#2d4a3e]"
-        >
-          Upgrade or Change Plan
-        </h2>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {mockPlans.map(plan => (
+        {/* Features Grid */}
+        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2">
+          {features.map((feature, index) => (
             <div
-              key={plan.key}
-              className="flex flex-col rounded-lg border border-gray-200 p-4 transition-colors hover:border-[#2d4a3e]"
+              key={index}
+              className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
             >
-              <div className="mb-2 text-lg font-semibold text-[#2d4a3e]">
-                {plan.name}
+              <div className="mb-4 flex items-center">
+                <div className="mr-4 rounded-lg bg-blue-100 p-3 text-blue-600">
+                  {feature.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {feature.title}
+                </h3>
               </div>
-              <div className="mb-2 text-2xl font-bold text-[#2d4a3e]">
-                {typeof plan.price === 'number'
-                  ? `$${plan.price}/mo`
-                  : plan.price}
-              </div>
-              <ul className="mb-4 space-y-1 text-sm text-gray-600">
-                {plan.features.map(f => (
-                  <li key={f}>• {f}</li>
-                ))}
-              </ul>
-              <button
-                className="mt-auto rounded bg-[#2d4a3e] px-4 py-2 text-white hover:bg-[#1d3a2e] disabled:cursor-not-allowed disabled:bg-gray-300"
-                disabled={
-                  plan.key === mockCurrentPlan.key || loadingPlan === plan.key
-                }
-                onClick={() => handleUpgrade(plan.key)}
-              >
-                {plan.key === mockCurrentPlan.key
-                  ? 'Current Plan'
-                  : loadingPlan === plan.key
-                    ? 'Redirecting...'
-                    : 'Upgrade'}
-              </button>
+              <p className="text-gray-600">{feature.description}</p>
             </div>
           ))}
         </div>
-        {Object.values(STRIPE_PRICE_IDS).some(p => !p.monthly) && (
-          <div className="mt-4 text-sm text-[#ff6b35]">
-            Stripe Price IDs are not set for all plans. Please check your
-            environment variables.
+
+        {/* CTA Section */}
+        <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="text-center">
+            <div className="mb-6">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-green-600">
+                <Zap className="h-8 w-8 text-white" />
+              </div>
+              <h2 className="mb-2 text-2xl font-bold text-gray-900">
+                Ready to Get Started?
+              </h2>
+              <p className="text-gray-600">
+                Join hundreds of local employers finding great talent in the 209 area.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
+              <button
+                onClick={() => setShowBillingModal(true)}
+                className="flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700"
+              >
+                <Crown className="mr-2 h-5 w-5" />
+                {content.ctaText}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
+
+              <button
+                onClick={() => router.push('/employers/dashboard')}
+                className="flex items-center rounded-lg border border-gray-300 bg-white px-8 py-4 text-lg font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                Back to Dashboard
+              </button>
+            </div>
+
+            <div className="mt-6 flex items-center justify-center text-sm text-gray-500">
+              <Shield className="mr-2 h-4 w-4" />
+              14-day free trial • Cancel anytime • Secure payment
+            </div>
           </div>
-        )}
-      </section>
-
-      {/* Payment Method & Checkout */}
-      <section
-        aria-labelledby="payment-title"
-        className="rounded-lg bg-white p-6 shadow"
-      >
-        <h2
-          id="payment-title"
-          className="mb-2 text-xl font-bold text-[#2d4a3e]"
-        >
-          Payment Method
-        </h2>
-        <div className="text-gray-500">
-          Payments are securely processed by Stripe. You will be redirected to a
-          secure checkout page.
         </div>
-      </section>
 
-      {/* Billing History */}
-      <section
-        aria-labelledby="billing-history-title"
-        className="rounded-lg bg-white p-6 shadow"
-      >
-        <h2
-          id="billing-history-title"
-          className="mb-2 text-xl font-bold text-[#2d4a3e]"
-        >
-          Billing History
-        </h2>
-        <table className="mt-2 w-full text-left">
-          <thead>
-            <tr className="border-b text-gray-600">
-              <th className="py-2">Date</th>
-              <th className="py-2">Amount</th>
-              <th className="py-2">Status</th>
-              <th className="py-2">Invoice</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockBillingHistory.map(row => (
-              <tr key={row.invoice} className="border-b last:border-0">
-                <td className="py-2">{row.date}</td>
-                <td className="py-2">{row.amount}</td>
-                <td className="py-2 text-green-600">{row.status}</td>
-                <td className="py-2">
-                  <a
-                    href="#"
-                    className="text-[#2d4a3e] underline hover:text-[#1d3a2e]"
-                  >
-                    {row.invoice}
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* TODO: Fetch and display real billing history from backend */}
-      </section>
-    </main>
+        {/* Testimonial */}
+        <div className="mt-12 rounded-xl border border-gray-200 bg-gradient-to-r from-blue-50 to-green-50 p-8">
+          <div className="text-center">
+            <div className="mb-4 flex justify-center">
+              {[...Array(5)].map((_, i) => (
+                <CheckCircle key={i} className="h-5 w-5 text-green-500" />
+              ))}
+            </div>
+            <blockquote className="mb-4 text-lg italic text-gray-700">
+              "209 Works helped us find amazing local talent. The AI job optimizer
+              made our listings so much more professional and we got way more qualified applicants."
+            </blockquote>
+            <cite className="text-sm font-medium text-gray-900">
+              — Sarah M., Local Business Owner
+            </cite>
+          </div>
+        </div>
+      </div>
+
+      {/* BILLING REFACTOR: Billing modal for upgrade flow */}
+      <BillingModal
+        isOpen={showBillingModal}
+        onClose={() => setShowBillingModal(false)}
+        onSuccess={handleBillingSuccess}
+        trigger={reason === 'job-posting' ? 'job-posting' : 'upgrade'}
+        title={reason === 'job-posting' ? 'Choose Your Plan to Post Jobs' : 'Upgrade Your Account'}
+        description={reason === 'job-posting'
+          ? 'Select a subscription plan to start posting jobs and finding great candidates in the 209 area.'
+          : 'Unlock powerful hiring tools and find the best local talent in the Central Valley.'
+        }
+      />
+    </div>
+  );
+}
+
+export default function UpgradePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+      </div>
+    }>
+      <UpgradeContent />
+    </Suspense>
   );
 }
