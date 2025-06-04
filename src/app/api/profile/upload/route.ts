@@ -72,32 +72,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create upload directory if it doesn't exist
-    const uploadDir = path.join(
-      process.cwd(),
-      'public',
-      'uploads',
-      type === 'profile' ? 'profiles' : 'resumes'
-    );
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist, ignore error
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExtension = path.extname(file.name);
-    const fileName = `${currentUser.id}_${timestamp}${fileExtension}`;
-    const filePath = path.join(uploadDir, fileName);
-
-    // Convert file to buffer and save
+    // For Netlify deployment, we'll store file data as base64 in database
+    // In production, you should use cloud storage like AWS S3, Cloudinary, etc.
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
+    const base64Data = buffer.toString('base64');
+    const mimeType = file.type;
 
-    // Generate public URL
-    const publicUrl = `/uploads/${type === 'profile' ? 'profiles' : 'resumes'}/${fileName}`;
+    // Generate a data URL for the file
+    const dataUrl = `data:${mimeType};base64,${base64Data}`;
+
+    // For now, we'll use the data URL as the public URL
+    // This is not ideal for large files but works for demo purposes
+    const publicUrl = dataUrl;
 
     // Update user record
     const updateData =

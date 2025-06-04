@@ -7,10 +7,10 @@ import type { Session } from 'next-auth';
 
 // Validation schema for onboarding data
 const onboardingSchema = z.object({
-  // Basic profile info
-  name: z.string().min(1, 'Name is required').max(100),
+  // Basic profile info - make these optional to handle partial submissions
+  name: z.string().min(1, 'Name is required').max(100).optional(),
   currentJobTitle: z.string().optional(),
-  location: z.string().min(1, 'Location is required').max(200),
+  location: z.string().min(1, 'Location is required').max(200).optional(),
   phoneNumber: z.string().optional(),
   linkedinUrl: z.string().url().optional().or(z.literal('')),
 
@@ -35,35 +35,47 @@ const onboardingSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    console.log('🚀 Onboarding API called');
     const session = await getServerSession(authOptions) as Session | null;
 
-    if (!session!.user?.email) {
+    if (!session?.user?.email) {
+      console.log('❌ No session or email found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    console.log('✅ Session found for:', session.user.email);
+
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-      select: { id: true, role: true },
+      where: { email: session.user.email },
+      select: { id: true, role: true, name: true },
     });
 
     if (!user) {
+      console.log('❌ User not found in database');
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const body = await req.json();
-    const validatedData = onboardingSchema.parse(body);
+    console.log('✅ User found:', { id: user.id, role: user.role, name: user.name });
 
-    // Update user profile with onboarding data
+    const body = await req.json();
+    console.log('📦 Request body:', body);
+
+    const validatedData = onboardingSchema.parse(body);
+    console.log('✅ Data validated successfully');
+
+    // Update user profile with onboarding data - only update fields that are provided
     const updateData: any = {
-      name: validatedData.name,
-      location: validatedData.location,
-      phoneNumber: validatedData.phoneNumber || null,
-      linkedinUrl: validatedData.linkedinUrl || null,
-      currentJobTitle: validatedData.currentJobTitle || null,
       onboardingCompleted: validatedData.onboardingCompleted,
       updatedAt: new Date(),
     };
+
+    // Only update fields that are provided
+    if (validatedData.name) updateData.name = validatedData.name;
+    if (validatedData.location) updateData.location = validatedData.location;
+    if (validatedData.phoneNumber !== undefined) updateData.phoneNumber = validatedData.phoneNumber || null;
+    if (validatedData.linkedinUrl !== undefined) updateData.linkedinUrl = validatedData.linkedinUrl || null;
+    if (validatedData.currentJobTitle !== undefined) updateData.currentJobTitle = validatedData.currentJobTitle || null;
 
     // Add role-specific fields
     if (user.role === 'jobseeker') {
@@ -79,6 +91,8 @@ export async function POST(req: NextRequest) {
       updateData.industry = validatedData.industry || null;
       updateData.companySize = validatedData.companySize || null;
     }
+
+    console.log('📝 Update data:', updateData);
 
     // Update user in database
     const updatedUser = await prisma.user.update({
@@ -99,6 +113,8 @@ export async function POST(req: NextRequest) {
         industry: true,
       },
     });
+
+    console.log('✅ User updated successfully:', updatedUser.id);
 
     // Log onboarding completion for debugging
     console.log(

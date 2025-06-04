@@ -144,16 +144,17 @@ export default function ProfilePage() {
       return;
     }
     const formData = new FormData();
-    formData.append('resume', fileInput.files[0]);
+    formData.append('file', fileInput.files[0]);
+    formData.append('type', 'resume');
     try {
-      const res = await fetch('/api/profile', {
+      const res = await fetch('/api/profile/upload', {
         method: 'POST',
         body: formData,
       });
       const data = await res.json();
-      if (data.success && data.resumeUrl) {
-        setResumeUrl(data.resumeUrl);
-        setResumeSuccess('Resume uploaded successfully.');
+      if (res.ok && data.url) {
+        setResumeUrl(data.url);
+        setResumeSuccess(data.message || 'Resume uploaded successfully.');
       } else {
         setResumeError(data.error || 'Upload failed');
       }
@@ -247,7 +248,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -295,7 +296,7 @@ export default function ProfilePage() {
               className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
             >
               {/* Profile Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-8 text-white">
+              <div className="bg-gradient-to-r from-blue-600 to-green-600 px-6 py-8 text-white">
                 <div className="flex flex-col items-center">
                   <div className="relative mb-4">
                     <img
@@ -317,11 +318,11 @@ export default function ProfilePage() {
                     </button>
                   </div>
                   <h2 className="text-xl font-bold">{name || profile.email}</h2>
-                  <p className="text-sm text-purple-100">
+                  <p className="text-sm text-blue-100">
                     {currentJobTitle || 'Job Seeker'}
                   </p>
                   {location && (
-                    <div className="mt-2 flex items-center text-sm text-purple-100">
+                    <div className="mt-2 flex items-center text-sm text-blue-100">
                       <MapPinIcon className="mr-1 h-4 w-4" />
                       {location}
                     </div>
