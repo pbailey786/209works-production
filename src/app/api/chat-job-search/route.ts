@@ -621,7 +621,9 @@ export const POST = withAISecurity(
       });
 
       // Always return a helpful response instead of an error
-      const fallbackResponse = generateBasicConversationalResponse(userMessage || 'hello', conversationHistory || []);
+      const fallbackUserMessage = context.body?.userMessage || 'hello';
+      const fallbackConversationHistory = context.body?.conversationHistory || [];
+      const fallbackResponse = generateBasicConversationalResponse(fallbackUserMessage, fallbackConversationHistory);
       const fallbackQuestions = ['What job opportunities are available in the 209 area?', 'Tell me about working in the Central Valley', 'What career advice do you have?'];
 
       return NextResponse.json({
@@ -637,7 +639,7 @@ export const POST = withAISecurity(
           timestamp: new Date().toISOString(),
           sortBy: 'relevance',
           hasValidApiKey: !!process.env.OPENAI_API_KEY,
-          conversationLength: conversationHistory?.length || 0,
+          conversationLength: fallbackConversationHistory?.length || 0,
           authenticatedUserId: null,
           userSkills: 0,
           userApplicationHistory: 0,
