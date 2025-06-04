@@ -90,115 +90,64 @@ function DashboardContent() {
   // BILLING REFACTOR: Add billing modal state
   const [showBillingModal, setShowBillingModal] = useState(false);
 
-  // Mock data for demonstration
+  // Fetch real employer data
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setStats({
-        totalJobs: 12,
-        activeJobs: 8,
-        totalApplications: 156,
-        newApplications: 23,
-        profileViews: 1240,
-        responseRate: 85,
-      });
+    const fetchEmployerData = async () => {
+      try {
+        // Fetch real employer stats
+        const statsResponse = await fetch('/api/employers/dashboard-stats');
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStats(statsData);
+        } else {
+          // Set default stats if API fails
+          setStats({
+            totalJobs: 0,
+            activeJobs: 0,
+            totalApplications: 0,
+            newApplications: 0,
+            profileViews: 0,
+            responseRate: 0,
+          });
+        }
 
-      setJobs([
-        {
-          id: '1',
-          title: 'Customer Service Representative',
-          location: 'Stockton, CA',
-          type: 'Full-time',
-          postedDate: '2025-01-10',
-          applications: 34,
-          views: 128,
-          status: 'active',
-          featured: true,
-          urgent: false,
-        },
-        {
-          id: '2',
-          title: 'Warehouse Associate',
-          location: 'Modesto, CA',
-          type: 'Full-time',
-          postedDate: '2025-01-08',
-          applications: 28,
-          views: 95,
-          status: 'active',
-          featured: false,
-          urgent: true,
-        },
-        {
-          id: '3',
-          title: 'Administrative Assistant',
-          location: 'Fresno, CA',
-          type: 'Part-time',
-          postedDate: '2025-01-05',
-          applications: 19,
-          views: 67,
-          status: 'active',
-          featured: false,
-          urgent: false,
-        },
-        {
-          id: '4',
-          title: 'Sales Associate',
-          location: 'Tracy, CA',
-          type: 'Full-time',
-          postedDate: '2024-12-28',
-          applications: 42,
-          views: 156,
-          status: 'expired',
-          featured: false,
-          urgent: false,
-        },
-      ]);
+        // Fetch real jobs data
+        const jobsResponse = await fetch('/api/employers/my-jobs');
+        if (jobsResponse.ok) {
+          const jobsData = await jobsResponse.json();
+          setJobs(jobsData.jobs || []);
+        } else {
+          setJobs([]);
+        }
 
-      setApplicants([
-        {
-          id: '1',
-          name: 'Maria Rodriguez',
-          email: 'maria.r@email.com',
-          jobTitle: 'Customer Service Representative',
-          appliedDate: '2025-01-15',
-          status: 'new',
-          matchScore: 92,
-          location: 'Stockton, CA',
-        },
-        {
-          id: '2',
-          name: 'James Wilson',
-          email: 'j.wilson@email.com',
-          jobTitle: 'Warehouse Associate',
-          appliedDate: '2025-01-15',
-          status: 'new',
-          matchScore: 88,
-          location: 'Modesto, CA',
-        },
-        {
-          id: '3',
-          name: 'Sarah Chen',
-          email: 'sarah.chen@email.com',
-          jobTitle: 'Administrative Assistant',
-          appliedDate: '2025-01-14',
-          status: 'reviewed',
-          matchScore: 85,
-          location: 'Fresno, CA',
-        },
-        {
-          id: '4',
-          name: 'David Martinez',
-          email: 'd.martinez@email.com',
-          jobTitle: 'Customer Service Representative',
-          appliedDate: '2025-01-14',
-          status: 'shortlisted',
-          matchScore: 90,
-          location: 'Stockton, CA',
-        },
-      ]);
+        // Fetch real applicants data
+        const applicantsResponse = await fetch('/api/employers/applicants');
+        if (applicantsResponse.ok) {
+          const applicantsData = await applicantsResponse.json();
+          setApplicants(applicantsData.applicants || []);
+        } else {
+          setApplicants([]);
+        }
 
-      setIsLoading(false);
-    }, 1000);
+      } catch (error) {
+        console.error('Error fetching employer data:', error);
+        // Set empty data on error
+        setStats({
+          totalJobs: 0,
+          activeJobs: 0,
+          totalApplications: 0,
+          newApplications: 0,
+          profileViews: 0,
+          responseRate: 0,
+        });
+        setJobs([]);
+        setApplicants([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmployerData();
   }, []);
 
   // Handle authentication redirect in useEffect

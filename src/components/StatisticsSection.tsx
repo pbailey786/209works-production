@@ -32,34 +32,40 @@ export default function StatisticsSection() {
 
     const fetchStatistics = async () => {
       try {
-        // In a real app, you'd have a dedicated stats endpoint
-        // For now, we'll use the jobs endpoint and mock some data based on response
-        const response = await fetch('/api/jobs?limit=1', { signal });
+        // Fetch real platform statistics
+        const response = await fetch('/api/platform-stats', { signal });
 
         if (signal.aborted) return;
 
         if (response.ok) {
           const data = await response.json();
-          // Mock statistics based on having jobs data
-          // In production, you'd have a proper /api/stats endpoint
           setStats({
-            totalJobs: 250,
-            activeJobs: 180,
-            totalCompanies: 45,
-            totalUsers: 1200,
-            recentJobs: 25,
+            totalJobs: data.totalJobs || 0,
+            activeJobs: data.activeJobs || 0,
+            totalCompanies: data.totalCompanies || 0,
+            totalUsers: data.totalUsers || 0,
+            recentJobs: data.recentJobs || 0,
+          });
+        } else {
+          // Set zero stats if API fails
+          setStats({
+            totalJobs: 0,
+            activeJobs: 0,
+            totalCompanies: 0,
+            totalUsers: 0,
+            recentJobs: 0,
           });
         }
       } catch (error) {
         if (signal.aborted) return;
         console.error('Error fetching statistics:', error);
-        // Set default stats on error
+        // Set zero stats on error
         setStats({
-          totalJobs: 150,
-          activeJobs: 120,
-          totalCompanies: 30,
-          totalUsers: 800,
-          recentJobs: 15,
+          totalJobs: 0,
+          activeJobs: 0,
+          totalCompanies: 0,
+          totalUsers: 0,
+          recentJobs: 0,
         });
       } finally {
         if (!signal.aborted) {

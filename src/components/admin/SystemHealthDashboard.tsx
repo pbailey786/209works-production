@@ -106,28 +106,49 @@ export default function SystemHealthDashboard() {
     setIsRefreshing(true);
 
     try {
-      const response = await fetch('/api/admin/health');
+      const response = await fetch('/api/admin/system-health');
       if (response.ok) {
         const data = await response.json();
         setMetrics({
           status: data.status,
-          uptime: data.uptime,
-          responseTime: data.responseTime,
-          errorRate: data.errorRate,
-          activeUsers: data.activeUsers,
-          databaseConnections: data.databaseConnections,
-          memoryUsage: data.memoryUsage,
-          diskUsage: data.diskUsage,
-          cpuUsage: data.cpuUsage,
-          lastUpdated: new Date(data.lastUpdated),
+          uptime: data.application.uptime.formatted,
+          responseTime: data.performance.apiResponseTime,
+          errorRate: data.performance.errorRate || 0,
+          activeUsers: data.users.activeLastDay,
+          databaseConnections: data.database?.connections || 0,
+          memoryUsage: Math.round((data.application.memory.heapUsed / data.application.memory.heapTotal) * 100),
+          diskUsage: data.system?.diskUsage || 0,
+          cpuUsage: data.system?.cpuUsage || 0,
+          lastUpdated: new Date(data.timestamp),
         });
 
-        setServices(
-          data.services.map((service: any) => ({
-            ...service,
-            lastCheck: new Date(service.lastCheck),
-          }))
-        );
+        // Update services based on health checks
+        setServices([
+          {
+            name: 'Web Server',
+            status: data.healthChecks.responseTime ? 'online' : 'degraded',
+            responseTime: data.performance.apiResponseTime,
+            lastCheck: new Date(data.timestamp),
+          },
+          {
+            name: 'Database',
+            status: data.healthChecks.database ? 'online' : 'offline',
+            responseTime: data.performance.dbResponseTime,
+            lastCheck: new Date(data.timestamp),
+          },
+          {
+            name: 'Memory',
+            status: data.healthChecks.memory ? 'online' : 'warning',
+            responseTime: data.application.memory.heapUsed,
+            lastCheck: new Date(data.timestamp),
+          },
+          {
+            name: 'User Activity',
+            status: data.healthChecks.userActivity ? 'online' : 'degraded',
+            responseTime: data.users.activeLastHour,
+            lastCheck: new Date(data.timestamp),
+          },
+        ]);
       } else {
         console.error('Failed to fetch health metrics');
       }
@@ -409,12 +430,16 @@ export default function SystemHealthDashboard() {
               <p className="text-sm text-gray-600">Active Connections</p>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">45ms</div>
+              <div className="text-2xl font-bold text-green-600">
+                {metrics.responseTime}ms
+              </div>
               <p className="text-sm text-gray-600">Avg Query Time</p>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">2.1GB</div>
-              <p className="text-sm text-gray-600">Database Size</p>
+              <div className="text-2xl font-bold text-purple-600">
+                {(metrics.memoryUsage / 1024).toFixed(1)}MB
+              </div>
+              <p className="text-sm text-gray-600">Memory Usage</p>
             </div>
           </div>
         </CardContent>
