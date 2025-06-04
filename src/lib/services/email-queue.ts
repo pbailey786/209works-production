@@ -85,8 +85,8 @@ interface WeeklyDigestEmailProps {
 
 export class EmailQueueService {
   private static instance: EmailQueueService;
-  private redis: IORedis;
-  private queue: Queue;
+  private redis?: IORedis;
+  private queue?: Queue;
   private worker?: Worker;
   private queueEvents?: QueueEvents;
   private isInitialized = false;
@@ -112,7 +112,7 @@ export class EmailQueueService {
           maxRetriesPerRequest: 1,
           enableReadyCheck: false,
           lazyConnect: true,
-          retryDelayOnFailover: 100,
+          connectTimeout: 5000,
         });
       } else {
         // Fallback to local Redis
@@ -124,15 +124,17 @@ export class EmailQueueService {
           maxRetriesPerRequest: 1,
           enableReadyCheck: false,
           lazyConnect: true,
-          retryDelayOnFailover: 100,
+          connectTimeout: 5000,
         });
       }
 
       // Initialize queue
-      this.queue = new Queue(QUEUE_CONFIG.name, {
-        connection: this.redis,
-        defaultJobOptions: QUEUE_CONFIG.defaultJobOptions,
-      });
+      if (this.redis) {
+        this.queue = new Queue(QUEUE_CONFIG.name, {
+          connection: this.redis,
+          defaultJobOptions: QUEUE_CONFIG.defaultJobOptions,
+        });
+      }
     } catch (error) {
       console.log('Failed to initialize email queue, skipping:', error);
     }
@@ -167,6 +169,9 @@ export class EmailQueueService {
 
     try {
       // Test Redis connection
+      if (!this.redis) {
+        throw new Error('Redis not initialized');
+      }
       await this.redis.ping();
       console.log('[EMAIL-QUEUE] Redis connection established');
 
@@ -210,6 +215,12 @@ export class EmailQueueService {
   ): Promise<Job<EmailJobData>> {
     if (!this.isInitialized) {
       await this.initialize();
+    }
+
+    // Skip if queue is not available
+    if (!this.queue) {
+      console.log('[EMAIL-QUEUE] Queue not available, skipping email job');
+      throw new Error('Email queue not available');
     }
 
     // Security validation before adding to queue
@@ -301,6 +312,12 @@ export class EmailQueueService {
   ): Promise<Job<EmailJobData>[]> {
     if (!this.isInitialized) {
       await this.initialize();
+    }
+
+    // Skip if queue is not available
+    if (!this.queue) {
+      console.log('[EMAIL-QUEUE] Queue not available, skipping bulk email jobs');
+      throw new Error('Email queue not available');
     }
 
     const bulkJobs = jobs.map((job, index) => ({
@@ -549,6 +566,17 @@ export class EmailQueueService {
       await this.initialize();
     }
 
+    if (!this.queue) {
+      return {
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        failed: 0,
+        delayed: 0,
+        paused: 0,
+      };
+    }
+
     const [waiting, active, completed, failed, delayed] = await Promise.all([
       this.queue.getWaiting(),
       this.queue.getActive(),
@@ -574,6 +602,10 @@ export class EmailQueueService {
     if (!this.isInitialized) {
       await this.initialize();
     }
+    if (!this.queue) {
+      console.log('[EMAIL-QUEUE] Queue not available, cannot pause');
+      return;
+    }
     await this.queue.pause();
     console.log('[EMAIL-QUEUE] Queue paused');
   }
@@ -585,6 +617,10 @@ export class EmailQueueService {
     if (!this.isInitialized) {
       await this.initialize();
     }
+    if (!this.queue) {
+      console.log('[EMAIL-QUEUE] Queue not available, cannot resume');
+      return;
+    }
     await this.queue.resume();
     console.log('[EMAIL-QUEUE] Queue resumed');
   }
@@ -595,6 +631,10 @@ export class EmailQueueService {
   public async clearQueue(): Promise<void> {
     if (!this.isInitialized) {
       await this.initialize();
+    }
+    if (!this.queue) {
+      console.log('[EMAIL-QUEUE] Queue not available, cannot clear');
+      return;
     }
     await this.queue.drain();
     console.log('[EMAIL-QUEUE] Queue cleared');
@@ -613,8 +653,12 @@ export class EmailQueueService {
       if (this.queueEvents) {
         await this.queueEvents.close();
       }
-      await this.queue.close();
-      await this.redis.quit();
+      if (this.queue) {
+        await this.queue.close();
+      }
+      if (this.redis) {
+        await this.redis.quit();
+      }
 
       this.isInitialized = false;
       console.log('[EMAIL-QUEUE] Email queue system closed gracefully');

@@ -17,7 +17,7 @@ if (!isRedisDisabled && process.env.REDIS_URL && typeof window === 'undefined') 
     redis = new Redis(process.env.REDIS_URL, {
       lazyConnect: true,
       maxRetriesPerRequest: 1,
-      retryDelayOnFailover: 100,
+      connectTimeout: 5000,
     });
 
     // Add error handling
