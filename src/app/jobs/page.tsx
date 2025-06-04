@@ -332,7 +332,8 @@ function JobsContent() {
 
         const data = await response.json();
 
-        if (response.ok) {
+        // Always try to use the response, even if status is not ok
+        if (data.response) {
           // Add assistant response to conversation
           const assistantMessage = {
             id: `assistant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -352,19 +353,37 @@ function JobsContent() {
           const newFilters = { ...filters, query: message.trim() };
           setFilters(newFilters);
           updateURL(newFilters, 1);
+        } else if (response.ok) {
+          // Fallback for successful responses without data.response
+          const assistantMessage = {
+            id: `assistant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            type: 'assistant' as const,
+            content: data.error || "I'm here to help with your job search in the 209 area! What would you like to know?",
+            timestamp: new Date(),
+            jobs: [],
+            metadata: {},
+          };
+          setConversation(prev => [...prev, assistantMessage]);
         } else {
           throw new Error(data.error || 'Failed to search');
         }
       } catch (error) {
         console.error('Chat search error:', error);
-        const errorMessage = {
-          id: `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        // Provide a helpful fallback response instead of an error
+        const fallbackMessage = {
+          id: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           type: 'assistant' as const,
-          content:
-            'Sorry, I encountered an error while searching for jobs. Please try again.',
+          content: "Hey there! I'm Randy, your local job search buddy for the 209 area. I'm here to help you find work in Stockton, Modesto, Tracy, and surrounding Central Valley cities. What kind of opportunities are you looking for?",
           timestamp: new Date(),
         };
-        setConversation(prev => [...prev, errorMessage]);
+        setConversation(prev => [...prev, fallbackMessage]);
+
+        // Add some helpful follow-up questions
+        setFollowUpQuestions([
+          'What job opportunities are available in the 209 area?',
+          'Tell me about working in the Central Valley',
+          'What career advice do you have?'
+        ]);
       } finally {
         setIsTyping(false);
       }
