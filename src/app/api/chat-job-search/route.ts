@@ -33,8 +33,6 @@ function normalizeJobType(jobType: string | null): string | null {
     freelance: 'contract',
     internship: 'internship',
     intern: 'internship',
-    temporary: 'temporary',
-    temp: 'temporary',
     volunteer: 'volunteer',
     other: 'other',
   };
@@ -90,8 +88,6 @@ function extractBasicFilters(
   if (message.includes('full-time') || message.includes('full time'))
     jobType = normalizeJobType('full-time');
   if (message.includes('contract')) jobType = normalizeJobType('contract');
-  if (message.includes('temporary') || message.includes('temp'))
-    jobType = normalizeJobType('temporary');
 
   // Extract role/industry keywords
   let role = null;

@@ -96,7 +96,6 @@ const JOB_TYPES = [
   { value: 'part_time', label: 'Part Time' },
   { value: 'contract', label: 'Contract' },
   { value: 'internship', label: 'Internship' },
-  { value: 'temporary', label: 'Temporary' },
   { value: 'volunteer', label: 'Volunteer' },
 ];
 

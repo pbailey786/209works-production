@@ -17,7 +17,6 @@ const createJobSchema = z.object({
     'full_time',
     'part_time',
     'contract',
-    'temporary',
     'internship',
   ]),
   experienceLevel: z.enum(['entry', 'mid', 'senior', 'executive']),

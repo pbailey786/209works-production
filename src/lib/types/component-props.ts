@@ -156,7 +156,6 @@ export type JobType =
   | 'full_time'
   | 'part_time'
   | 'contract'
-  | 'temporary'
   | 'internship'
   | 'volunteer'
   | 'other';

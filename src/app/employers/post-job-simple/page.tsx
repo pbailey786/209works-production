@@ -46,7 +46,6 @@ export default function SimplePostJobPage() {
     { value: 'full-time', label: 'Full-time' },
     { value: 'part-time', label: 'Part-time' },
     { value: 'contract', label: 'Contract' },
-    { value: 'temporary', label: 'Temporary' },
   ];
 
   const centralValleyLocations = [

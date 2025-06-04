@@ -37,7 +37,6 @@ const jobTypes = [
   { value: 'full-time', label: 'Full Time' },
   { value: 'part-time', label: 'Part Time' },
   { value: 'contract', label: 'Contract' },
-  { value: 'temporary', label: 'Temporary' },
   { value: 'internship', label: 'Internship' },
 ];
 
@@ -476,12 +475,10 @@ function JobsContent() {
                 <span className="text-xl font-bold text-white">AI</span>
               </div>
               <h2 className="mb-4 text-3xl font-bold text-gray-900">
-                What's on your mind today?
+                JobsGPT for 209
               </h2>
               <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600">
-                Ask me about jobs in the 209 area. I can help you find
-                opportunities in Stockton, Modesto, Tracy, Manteca, and
-                surrounding Central Valley cities.
+                Ask me about jobs in the 209 area. I can help you find local opportunities in Stockton, Modesto, Tracy, and surrounding cities. Try asking about specific roles, companies, or job types!
               </p>
 
               {/* Suggestion Pills */}
@@ -490,7 +487,7 @@ function JobsContent() {
                   'Show me warehouse jobs in Stockton',
                   'Find nursing jobs near Tracy',
                   'What customer service jobs are available?',
-                  'Remote tech jobs in the 209 area',
+                  'All jobs in Modesto',
                 ].map((suggestion, index) => (
                   <button
                     key={index}
@@ -682,7 +679,7 @@ function JobsContent() {
                 {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex items-start gap-4">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-green-600">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#2d4a3e] to-[#1a3329]">
                       <span className="text-sm font-bold text-white">AI</span>
                     </div>
                     <div className="max-w-4xl flex-1">
