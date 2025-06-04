@@ -619,13 +619,32 @@ export const POST = withAISecurity(
         hasApiKey: !!process.env.OPENAI_API_KEY,
         apiKeyPrefix: process.env.OPENAI_API_KEY?.substring(0, 10) + '...',
       });
-      return NextResponse.json(
-        {
-          error: 'Sorry, I encountered an error while searching for jobs. Please try again.',
-          details: error instanceof Error ? error.message : 'Unknown error'
+
+      // Always return a helpful response instead of an error
+      const fallbackResponse = generateBasicConversationalResponse(userMessage || 'hello', conversationHistory || []);
+      const fallbackQuestions = ['What job opportunities are available in the 209 area?', 'Tell me about working in the Central Valley', 'What career advice do you have?'];
+
+      return NextResponse.json({
+        response: fallbackResponse,
+        jobs: [],
+        followUpQuestions: fallbackQuestions,
+        filters: {},
+        metadata: {
+          totalResults: 0,
+          hasUserProfile: false,
+          hasEnhancedProfile: false,
+          sessionId: null,
+          timestamp: new Date().toISOString(),
+          sortBy: 'relevance',
+          hasValidApiKey: !!process.env.OPENAI_API_KEY,
+          conversationLength: conversationHistory?.length || 0,
+          authenticatedUserId: null,
+          userSkills: 0,
+          userApplicationHistory: 0,
+          fallbackUsed: true,
+          errorMessage: error instanceof Error ? error.message : 'Unknown error'
         },
-        { status: 500 }
-      );
+      });
     }
   },
   aiSecurityConfigs.public // Use AI-specific security configuration
@@ -788,10 +807,11 @@ async function generateGeneralConversationalResponse(
   conversationHistory: any[],
   userProfile: any
 ): Promise<string> {
-  const OpenAI = require('openai');
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  try {
+    const OpenAI = require('openai');
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
   // Build conversation context
   const messages = [
@@ -831,15 +851,20 @@ Always be helpful and conversational. If someone asks about jobs but there aren'
     content: userMessage
   });
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    messages: messages,
-    max_tokens: 300,
-    temperature: 0.7,
-  });
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: messages,
+      max_tokens: 300,
+      temperature: 0.7,
+    });
 
-  return completion.choices[0]?.message?.content ||
-    "I'm here to help with your job search and career questions in the 209 area! What would you like to know?";
+    return completion.choices[0]?.message?.content ||
+      "I'm here to help with your job search and career questions in the 209 area! What would you like to know?";
+  } catch (error) {
+    console.error('OpenAI API error:', error);
+    // Fallback to basic response
+    return generateBasicConversationalResponse(userMessage, conversationHistory);
+  }
 }
 
 // Generate basic conversational response without OpenAI

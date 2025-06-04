@@ -437,11 +437,11 @@ function JobsContent() {
         <div className="mx-auto max-w-7xl px-4 py-6">
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-green-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-[#2d4a3e] to-[#1a3329]">
                 <Search className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-2xl font-extrabold text-transparent sm:text-3xl">
+                <h1 className="bg-gradient-to-r from-[#2d4a3e] to-[#1a3329] bg-clip-text text-2xl font-extrabold text-transparent sm:text-3xl">
                   JobsGPT for 209
                 </h1>
                 <p className="text-sm text-gray-600">
