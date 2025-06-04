@@ -508,23 +508,33 @@ export const POST = withAISecurity(
 
       if (hasValidApiKey) {
         try {
-          conversationalResponse = await generateConversationalResponse({
-            userMessage,
-            filters,
-            jobs: jobs.map(job => ({
-              id: job.id,
-              title: job.title,
-              company: job.company,
-              location: job.location,
-              jobType: job.jobType,
-              salaryMin: job.salaryMin,
-              salaryMax: job.salaryMax,
-              description: job.description,
-            })),
-            conversationHistory,
-            userProfile: sanitizedUserProfile,
-            jobMatches: [],
-          });
+          // For general conversation or when no jobs found, use general AI response
+          if (jobs.length === 0 || !isJobSearchQuery(userMessage)) {
+            conversationalResponse = await generateGeneralConversationalResponse(
+              userMessage,
+              conversationHistory,
+              sanitizedUserProfile
+            );
+          } else {
+            // For job search with results, use job-specific response
+            conversationalResponse = await generateConversationalResponse({
+              userMessage,
+              filters,
+              jobs: jobs.map(job => ({
+                id: job.id,
+                title: job.title,
+                company: job.company,
+                location: job.location,
+                jobType: job.jobType,
+                salaryMin: job.salaryMin,
+                salaryMax: job.salaryMax,
+                description: job.description,
+              })),
+              conversationHistory,
+              userProfile: sanitizedUserProfile,
+              jobMatches: [],
+            });
+          }
         } catch (error) {
           console.error('AI response generation failed:', error);
           conversationalResponse = generateBasicResponse(
@@ -635,6 +645,11 @@ function generateBasicResponse(
     message.includes('all jobs in') ||
     (message.includes('jobs') && filters.location);
 
+  // Handle general conversation when not a job search
+  if (!isJobSearchQuery(userMessage)) {
+    return generateBasicConversationalResponse(userMessage, conversationHistory);
+  }
+
   if (isSortingRequest && filters.previousJobs) {
     const sortType =
       filters.sortBy === 'salary_desc'
@@ -649,10 +664,7 @@ function generateBasicResponse(
   }
 
   if (jobs.length === 0) {
-    if (filters.location) {
-      return `I searched for jobs in ${filters.location} but didn't find any matching "${userMessage}". This could be because we're still building our job database for the 209 area. Try searching for broader terms like "warehouse", "customer service", or "healthcare" in ${filters.location}, or check back soon as we add more local opportunities!`;
-    }
-    return `I searched for "${userMessage}" but didn't find any matching jobs. This could be because we're still building our job database for the 209 area. Try searching for broader terms like "warehouse", "customer service", or "healthcare" in cities like Stockton, Modesto, or Tracy, or check back soon as we add more local opportunities!`;
+    return generateNoJobsFoundResponse(userMessage, filters, conversationHistory);
   }
 
   let response = '';
@@ -731,15 +743,23 @@ function generateContextualFollowUpQuestions(
   }
 
   if (jobs.length === 0) {
-    if (filters.location) {
-      const city = filters.location;
-      questions.push(`Show me all warehouse jobs in ${city}`);
-      questions.push(`Find customer service jobs in ${city}`);
-      questions.push(`What about part-time positions in ${city}?`);
+    // More conversational follow-ups when no jobs found
+    if (isJobSearchQuery(userMessage)) {
+      if (filters.location) {
+        const city = filters.location;
+        questions.push(`What industries are strong in ${city}?`);
+        questions.push(`Tell me about the job market in ${city}`);
+        questions.push(`What career advice do you have for the 209 area?`);
+      } else {
+        questions.push('What are the best industries to work in the 209 area?');
+        questions.push('Give me job search tips for Central Valley');
+        questions.push('Tell me about Stockton job opportunities');
+      }
     } else {
-      questions.push('Show me all warehouse jobs in the 209 area');
-      questions.push('Find customer service jobs instead');
-      questions.push('What about part-time positions?');
+      // General conversation follow-ups
+      questions.push('What job opportunities are available in the 209 area?');
+      questions.push('Tell me about working in the Central Valley');
+      questions.push('What career advice do you have?');
     }
   } else if (jobs.length < 5 && !isCitySearch) {
     questions.push('Show me similar jobs in nearby cities');
@@ -747,4 +767,139 @@ function generateContextualFollowUpQuestions(
   }
 
   return questions.slice(0, 3);
+}
+
+// Check if the user message is a job search query
+function isJobSearchQuery(message: string): boolean {
+  const jobSearchKeywords = [
+    'job', 'jobs', 'work', 'position', 'career', 'employment', 'hiring',
+    'warehouse', 'nurse', 'customer service', 'retail', 'healthcare',
+    'logistics', 'driver', 'cashier', 'manager', 'supervisor', 'clerk',
+    'find', 'search', 'looking for', 'show me', 'available'
+  ];
+
+  const lowerMessage = message.toLowerCase();
+  return jobSearchKeywords.some(keyword => lowerMessage.includes(keyword));
+}
+
+// Generate general conversational response using OpenAI
+async function generateGeneralConversationalResponse(
+  userMessage: string,
+  conversationHistory: any[],
+  userProfile: any
+): Promise<string> {
+  const OpenAI = require('openai');
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+
+  // Build conversation context
+  const messages = [
+    {
+      role: 'system',
+      content: `You are Randy Rust Moreno, an experienced work buddy and career advisor for the 209 Works job platform. You help people in the Central Valley (209 area code) with job searches, career advice, and local employment insights.
+
+Key facts about the 209 area:
+- Covers Central Valley cities like Stockton, Modesto, Tracy, Manteca, Lodi, Turlock, Merced
+- Strong in agriculture, logistics, healthcare, manufacturing, and retail
+- Growing tech and service sectors
+- Family-friendly communities with affordable living
+- Major transportation hub with access to Bay Area and Sacramento
+
+Your personality:
+- Friendly, knowledgeable, and supportive
+- Give practical, actionable advice
+- Focus on local opportunities and insights
+- Encourage and motivate job seekers
+- Share relevant tips about the local job market
+
+Always be helpful and conversational. If someone asks about jobs but there aren't any in the database yet, explain that 209 Works is building its local job database and encourage them to check back soon. Offer career advice, interview tips, or information about the local job market instead.`
+    }
+  ];
+
+  // Add conversation history
+  conversationHistory.forEach(msg => {
+    messages.push({
+      role: msg.type === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    });
+  });
+
+  // Add current message
+  messages.push({
+    role: 'user',
+    content: userMessage
+  });
+
+  const completion = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo',
+    messages: messages,
+    max_tokens: 300,
+    temperature: 0.7,
+  });
+
+  return completion.choices[0]?.message?.content ||
+    "I'm here to help with your job search and career questions in the 209 area! What would you like to know?";
+}
+
+// Generate basic conversational response without OpenAI
+function generateBasicConversationalResponse(
+  userMessage: string,
+  conversationHistory: any[]
+): string {
+  const message = userMessage.toLowerCase();
+
+  // Greeting responses
+  if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+    return "Hey there! I'm Randy, your local job search buddy for the 209 area. I'm here to help you find work in Stockton, Modesto, Tracy, and surrounding Central Valley cities. What kind of opportunities are you looking for?";
+  }
+
+  // About 209 area
+  if (message.includes('209') || message.includes('central valley') || message.includes('area')) {
+    return "The 209 area covers the heart of California's Central Valley - cities like Stockton, Modesto, Tracy, Manteca, and Lodi. It's a great place to work with strong industries in agriculture, logistics, healthcare, and manufacturing. The cost of living is more affordable than the Bay Area, and you're still close to major cities. What type of work interests you here?";
+  }
+
+  // Career advice
+  if (message.includes('advice') || message.includes('tips') || message.includes('help')) {
+    return "I'd love to help! Here are some key tips for job searching in the 209 area: 1) Focus on local companies - many prefer hiring locally, 2) Highlight any logistics or agriculture experience, 3) Consider healthcare roles - they're always in demand, 4) Network within your city - the Central Valley has tight-knit communities. What specific area would you like advice on?";
+  }
+
+  // Industries
+  if (message.includes('industry') || message.includes('industries') || message.includes('sectors')) {
+    return "The 209 area has several strong industries: Agriculture (farming, food processing), Logistics & Transportation (warehouses, distribution, trucking), Healthcare (hospitals, clinics, senior care), Manufacturing, Retail, and growing Tech/Service sectors. Which industry interests you most?";
+  }
+
+  // General response
+  return "I'm here to help with your job search and career questions in the 209 area! I can provide advice about local industries, job search tips, or help you explore opportunities in Stockton, Modesto, Tracy, and other Central Valley cities. What would you like to know?";
+}
+
+// Generate response when no jobs are found
+function generateNoJobsFoundResponse(
+  userMessage: string,
+  filters: any,
+  conversationHistory: any[]
+): string {
+  const location = filters.location;
+
+  if (location) {
+    return `I searched for jobs in ${location} but didn't find any matching "${userMessage}" right now. Don't worry though! 209 Works is actively building our local job database.
+
+In the meantime, here's what I recommend:
+• Check back in a few days - we're adding new opportunities regularly
+• Consider broadening your search to nearby cities like Stockton, Modesto, or Tracy
+• Look into major local employers in healthcare, logistics, and agriculture
+• Network with local businesses - many 209 area jobs come through word of mouth
+
+What other types of work would you be interested in exploring?`;
+  }
+
+  return `I searched for "${userMessage}" but didn't find any matching jobs in our database yet. The good news is that 209 Works is just getting started and we're actively building our local job listings!
+
+Here's what I suggest:
+• Try searching for broader terms like "warehouse," "customer service," or "healthcare"
+• Check back soon - we're adding new 209 area opportunities daily
+• Consider exploring different cities: Stockton, Modesto, Tracy, Manteca, Lodi
+• The Central Valley has strong job markets in logistics, agriculture, and healthcare
+
+What type of work environment interests you most? I can share insights about the local job market!`;
 }
