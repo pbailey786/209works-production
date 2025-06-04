@@ -70,7 +70,7 @@ const REGIONAL_CONFIGS: Record<string, RegionalConfig> = {
     tagline: 'Where Central Valley Works',
     description:
       "Discover career opportunities in California's agricultural and logistics hub. From Stockton to Bakersfield, find your next role in the heart of the Golden State.",
-    primaryColor: '#2563EB',
+    primaryColor: '#2d4a3e',
     accentColor: '#F59E0B',
     cities: [
       'Stockton',

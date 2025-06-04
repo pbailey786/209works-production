@@ -495,7 +495,7 @@ function JobsContent() {
                   <button
                     key={index}
                     onClick={() => sendMessage(suggestion)}
-                    className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-left text-gray-700 transition-all duration-200 hover:border-[#2563EB] hover:bg-[#2563EB]/5 hover:text-[#2563EB]"
+                    className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-left text-gray-700 transition-all duration-200 hover:border-[#2d4a3e] hover:bg-[#2d4a3e]/5 hover:text-[#2d4a3e]"
                   >
                     {suggestion}
                   </button>
@@ -531,7 +531,7 @@ function JobsContent() {
                     {/* Assistant Message - Left Side */}
                     {message.type === 'assistant' && (
                       <div className="flex items-start gap-4">
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#2563EB] to-[#2d4a3e]">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#2d4a3e] to-[#1a3329]">
                           <span className="text-sm font-bold text-white">
                             AI
                           </span>
@@ -547,7 +547,7 @@ function JobsContent() {
                               <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
                                 <h4 className="mb-3 flex items-center gap-2 font-semibold text-gray-900">
                                   <svg
-                                    className="h-4 w-4 text-[#2563EB]"
+                                    className="h-4 w-4 text-[#2d4a3e]"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -582,11 +582,11 @@ function JobsContent() {
                                             );
                                           }
                                         }}
-                                        className="group cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-[#2563EB] hover:shadow-md"
+                                        className="group cursor-pointer rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-[#2d4a3e] hover:shadow-md"
                                       >
                                         <div className="flex items-start justify-between">
                                           <div className="flex-1">
-                                            <h5 className="mb-1 font-semibold text-gray-900 transition-colors group-hover:text-[#2563EB]">
+                                            <h5 className="mb-1 font-semibold text-gray-900 transition-colors group-hover:text-[#2d4a3e]">
                                               {job.title}
                                             </h5>
                                             <div className="mb-2 flex items-center gap-2 text-sm text-gray-600">
@@ -643,7 +643,7 @@ function JobsContent() {
                                           </div>
                                           <div className="ml-3 flex-shrink-0">
                                             <svg
-                                              className="h-5 w-5 text-gray-400 transition-colors group-hover:text-[#2563EB]"
+                                              className="h-5 w-5 text-gray-400 transition-colors group-hover:text-[#2d4a3e]"
                                               fill="none"
                                               stroke="currentColor"
                                               viewBox="0 0 24 24"
@@ -914,7 +914,7 @@ function JobsContent() {
                             updateURL(newFilters);
                             performSearch(newFilters);
                           }}
-                          className="mr-3 h-4 w-4 rounded border-gray-300 text-[#2563EB] focus:ring-[#2563EB]"
+                          className="mr-3 h-4 w-4 rounded border-gray-300 text-[#2d4a3e] focus:ring-[#2d4a3e]"
                         />
                         <span className="text-sm font-medium text-gray-700">
                           Remote Work Only

@@ -67,7 +67,7 @@ interface RegionalAnalyticsDashboardProps {
   className?: string;
 }
 
-const COLORS = ['#2563EB', '#F59E0B', '#0EA5E9', '#CA8A04', '#DC2626'];
+const COLORS = ['#2d4a3e', '#F59E0B', '#0EA5E9', '#CA8A04', '#DC2626'];
 
 const REGIONS = [
   { value: 'all', label: 'All Regions' },
@@ -431,7 +431,7 @@ export default function RegionalAnalyticsDashboard({
                   <Line
                     type="monotone"
                     dataKey="views"
-                    stroke="#2563EB"
+                    stroke="#2d4a3e"
                     strokeWidth={2}
                   />
                 </LineChart>
