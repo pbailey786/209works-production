@@ -472,7 +472,7 @@ function JobsContent() {
           {/* Chat Header - Simplified */}
           {conversation.length === 0 && (
             <div className="px-6 py-12 text-center">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-green-600">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#2d4a3e] to-[#1a3329]">
                 <span className="text-xl font-bold text-white">AI</span>
               </div>
               <h2 className="mb-4 text-3xl font-bold text-gray-900">
@@ -714,7 +714,7 @@ function JobsContent() {
                   value={currentMessage}
                   onChange={e => setCurrentMessage(e.target.value)}
                   placeholder="Ask anything about jobs in the 209 area..."
-                  className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 text-lg leading-relaxed focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                  className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 text-lg leading-relaxed focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e]"
                   rows={1}
                   style={{ minHeight: '52px', maxHeight: '200px' }}
                   onKeyDown={e => {
@@ -734,7 +734,7 @@ function JobsContent() {
                 <button
                   onClick={() => sendMessage(currentMessage)}
                   disabled={isTyping || !currentMessage.trim()}
-                  className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 text-white transition-colors hover:from-blue-700 hover:to-green-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+                  className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#1a3329] text-white transition-colors hover:from-[#1a3329] hover:to-[#0f1f17] disabled:cursor-not-allowed disabled:bg-gray-300"
                 >
                   <svg
                     className="h-4 w-4"
@@ -756,7 +756,7 @@ function JobsContent() {
               <div className="mt-3 flex items-center justify-between text-sm text-gray-500">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1">
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                    <div className="h-2 w-2 rounded-full bg-[#2d4a3e]"></div>
                     <span>JobsGPT can help find jobs in the 209 area</span>
                   </div>
                 </div>
@@ -834,7 +834,7 @@ function JobsContent() {
                           updateURL(newFilters);
                           performSearch(newFilters);
                         }}
-                        className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-[#2d4a3e]"
                       >
                         {jobTypes.map(type => (
                           <option key={type.value} value={type.value}>
@@ -861,7 +861,7 @@ function JobsContent() {
                           updateURL(newFilters);
                           performSearch(newFilters);
                         }}
-                        className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-[#2d4a3e]"
                       >
                         {experienceLevels.map(level => (
                           <option key={level.value} value={level.value}>
@@ -888,7 +888,7 @@ function JobsContent() {
                           updateURL(newFilters);
                           performSearch(newFilters);
                         }}
-                        className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-[#2d4a3e]"
                       >
                         {datePostedOptions.map(option => (
                           <option key={option.value} value={option.value}>
@@ -898,29 +898,7 @@ function JobsContent() {
                       </select>
                     </div>
 
-                    {/* Remote Work */}
-                    <div className="flex items-center">
-                      <label className="flex cursor-pointer items-center">
-                        <input
-                          type="checkbox"
-                          checked={filters.remote}
-                          onChange={e => {
-                            const newFilters = {
-                              ...filters,
-                              remote: e.target.checked,
-                            };
-                            setFilters(newFilters);
-                            setHasSearched(true);
-                            updateURL(newFilters);
-                            performSearch(newFilters);
-                          }}
-                          className="mr-3 h-4 w-4 rounded border-gray-300 text-[#2d4a3e] focus:ring-[#2d4a3e]"
-                        />
-                        <span className="text-sm font-medium text-gray-700">
-                          Remote Work Only
-                        </span>
-                      </label>
-                    </div>
+
                   </div>
                 </motion.div>
               )}
@@ -1039,7 +1017,7 @@ function JobsContent() {
         {/* Loading State */}
         {loading && (
           <div className="mt-8 text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>
             <p className="text-gray-600">Searching for jobs...</p>
           </div>
         )}
@@ -1087,7 +1065,7 @@ export default function JobsPage() {
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-gray-50">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>
             <p className="text-gray-600">Loading job search...</p>
           </div>
         </div>

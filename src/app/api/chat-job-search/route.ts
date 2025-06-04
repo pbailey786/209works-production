@@ -654,9 +654,9 @@ function generateBasicResponse(
 
   if (jobs.length === 0) {
     if (filters.location) {
-      return `I searched for jobs in ${filters.location} but didn't find any matching "${userMessage}". Try searching for broader terms like "warehouse", "customer service", or "healthcare" in ${filters.location}.`;
+      return `I searched for jobs in ${filters.location} but didn't find any matching "${userMessage}". This could be because we're still building our job database for the 209 area. Try searching for broader terms like "warehouse", "customer service", or "healthcare" in ${filters.location}, or check back soon as we add more local opportunities!`;
     }
-    return `I searched for "${userMessage}" but didn't find any matching jobs. Try searching for broader terms like "warehouse", "customer service", or "healthcare" in cities like Stockton, Modesto, or Tracy.`;
+    return `I searched for "${userMessage}" but didn't find any matching jobs. This could be because we're still building our job database for the 209 area. Try searching for broader terms like "warehouse", "customer service", or "healthcare" in cities like Stockton, Modesto, or Tracy, or check back soon as we add more local opportunities!`;
   }
 
   let response = '';

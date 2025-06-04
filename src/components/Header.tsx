@@ -335,7 +335,7 @@ export default function Header() {
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600"
+                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e]"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <Icon className="h-5 w-5" />
@@ -353,7 +353,7 @@ export default function Header() {
                         <Link
                           key={item.name}
                           href={item.href}
-                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600"
+                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e]"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <Icon className="h-5 w-5" />
@@ -367,7 +367,7 @@ export default function Header() {
                         handleSignOut();
                       }}
                       disabled={isSigningOut}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-emerald-50 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {isSigningOut ? (
                         <>
