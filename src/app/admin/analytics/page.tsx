@@ -40,23 +40,24 @@ export default async function AnalyticsPage() {
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
   const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
-  // Fetch analytics data
-  const [
-    totalUsers,
-    newUsersThisMonth,
-    newUsersLastMonth,
-    totalJobs,
-    newJobsThisMonth,
-    newJobsLastMonth,
-    totalApplications,
-    applicationsThisMonth,
-    applicationsLastMonth,
-    totalAlerts,
-    activeAlerts,
-    userGrowthData,
-    jobPostingData,
-    applicationData,
-  ] = await Promise.all([
+  // Fetch analytics data with error handling
+  let totalUsers = 0;
+  let newUsersThisMonth = 0;
+  let newUsersLastMonth = 0;
+  let totalJobs = 0;
+  let newJobsThisMonth = 0;
+  let newJobsLastMonth = 0;
+  let totalApplications = 0;
+  let applicationsThisMonth = 0;
+  let applicationsLastMonth = 0;
+  let totalAlerts = 0;
+  let activeAlerts = 0;
+  let userGrowthData: any[] = [];
+  let jobPostingData: any[] = [];
+  let applicationData: any[] = [];
+
+  try {
+    const results = await Promise.all([
     // User metrics
     prisma.user.count(),
     prisma.user.count({
@@ -126,7 +127,27 @@ export default async function AnalyticsPage() {
         id: true,
       },
     }),
-  ]);
+    ]);
+
+    // Assign results to variables
+    totalUsers = results[0];
+    newUsersThisMonth = results[1];
+    newUsersLastMonth = results[2];
+    totalJobs = results[3];
+    newJobsThisMonth = results[4];
+    newJobsLastMonth = results[5];
+    totalApplications = results[6];
+    applicationsThisMonth = results[7];
+    applicationsLastMonth = results[8];
+    totalAlerts = results[9];
+    activeAlerts = results[10];
+    userGrowthData = results[11];
+    jobPostingData = results[12];
+    applicationData = results[13];
+  } catch (error) {
+    console.error('Error fetching analytics data:', error);
+    // Use default values if database queries fail
+  }
 
   // Calculate growth percentages
   const userGrowth =
