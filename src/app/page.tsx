@@ -31,13 +31,16 @@ export default function Home() {
   const handleSearch = (query: string) => {
     setLoading(true);
 
+    // Use the actual query or default to general search
+    const searchQuery = query.trim() || 'jobs in the 209 area';
+
     // Track search event for analytics
     if (typeof window !== 'undefined' && window.trackJobSearch) {
-      window.trackJobSearch(query, '209 Area');
+      window.trackJobSearch(searchQuery, '209 Area');
     }
 
     // Navigate to JobsGPT chat with the query (jobs page has the chat functionality)
-    router.push(`/jobs?q=${encodeURIComponent(query)}`);
+    router.push(`/jobs?q=${encodeURIComponent(searchQuery)}`);
   };
 
   return (
@@ -77,7 +80,9 @@ export default function Home() {
                 <form
                   onSubmit={e => {
                     e.preventDefault();
-                    handleSearch('jobs in 209 area');
+                    const formData = new FormData(e.currentTarget);
+                    const query = formData.get('search') as string;
+                    handleSearch(query?.trim() || '');
                   }}
                   className="relative"
                 >
@@ -87,16 +92,9 @@ export default function Home() {
                         <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                         <input
                           type="text"
+                          name="search"
                           placeholder="What kind of work are you looking for?"
                           className="w-full rounded-lg border-0 py-3 pl-12 pr-4 text-lg placeholder-gray-400 focus:outline-none focus:ring-0"
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleSearch(
-                                e.currentTarget.value || 'jobs in 209 area'
-                              );
-                            }
-                          }}
                         />
                       </div>
                       <button

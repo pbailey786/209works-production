@@ -819,7 +819,7 @@ async function generateGeneralConversationalResponse(
   const messages = [
     {
       role: 'system',
-      content: `You are Randy Rust Moreno, an experienced work buddy and career advisor for the 209 Works job platform. You help people in the Central Valley (209 area code) with job searches, career advice, and local employment insights.
+      content: `You are an experienced career advisor and job search assistant for the 209 Works job platform. You help people in the Central Valley (209 area code) with job searches, career advice, and local employment insights.
 
 Key facts about the 209 area:
 - Covers Central Valley cities like Stockton, Modesto, Tracy, Manteca, Lodi, Turlock, Merced
@@ -878,7 +878,7 @@ function generateBasicConversationalResponse(
 
   // Greeting responses
   if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-    return "Hey there! I'm Randy, your local job search buddy for the 209 area. I'm here to help you find work in Stockton, Modesto, Tracy, and surrounding Central Valley cities. What kind of opportunities are you looking for?";
+    return "Hey there! I'm your local job search assistant for the 209 area. I'm here to help you find work in Stockton, Modesto, Tracy, and surrounding Central Valley cities. What kind of opportunities are you looking for?";
   }
 
   // About 209 area

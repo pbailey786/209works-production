@@ -373,7 +373,7 @@ function JobsContent() {
         const fallbackMessage = {
           id: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           type: 'assistant' as const,
-          content: "Hey there! I'm Randy, your local job search buddy for the 209 area. I'm here to help you find work in Stockton, Modesto, Tracy, and surrounding Central Valley cities. What kind of opportunities are you looking for?",
+          content: "Hey there! I'm your local job search assistant for the 209 area. I'm here to help you find work in Stockton, Modesto, Tracy, and surrounding Central Valley cities. What kind of opportunities are you looking for?",
           timestamp: new Date(),
         };
         setConversation(prev => [...prev, fallbackMessage]);
