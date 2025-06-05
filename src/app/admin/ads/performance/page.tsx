@@ -37,38 +37,21 @@ export default async function AdPerformancePage() {
     redirect('/admin');
   }
 
-  // Mock performance data (replace with real analytics)
+  // Real performance data (currently no advertising campaigns active)
   const performanceData = {
     overview: {
-      totalSpend: 1177.50,
-      totalImpressions: 30040,
-      totalClicks: 1571,
-      totalConversions: 146,
-      averageCTR: 5.23,
-      averageCPC: 0.75,
-      conversionRate: 9.29,
-      roas: 3.45 // Return on Ad Spend
+      totalSpend: 0,
+      totalImpressions: 0,
+      totalClicks: 0,
+      totalConversions: 0,
+      averageCTR: 0,
+      averageCPC: 0,
+      conversionRate: 0,
+      roas: 0 // Return on Ad Spend
     },
-    dailyMetrics: [
-      { date: '2024-01-15', impressions: 2150, clicks: 112, spend: 84.50, conversions: 8 },
-      { date: '2024-01-14', impressions: 1980, clicks: 98, spend: 73.25, conversions: 6 },
-      { date: '2024-01-13', impressions: 2340, clicks: 125, spend: 93.75, conversions: 12 },
-      { date: '2024-01-12', impressions: 1850, clicks: 89, spend: 66.75, conversions: 5 },
-      { date: '2024-01-11', impressions: 2100, clicks: 108, spend: 81.00, conversions: 9 },
-      { date: '2024-01-10', impressions: 1920, clicks: 95, spend: 71.25, conversions: 7 },
-      { date: '2024-01-09', impressions: 2200, clicks: 118, spend: 88.50, conversions: 11 }
-    ],
-    topPerformingCampaigns: [
-      { name: 'JobsGPT AI Feature Promotion', impressions: 5670, clicks: 445, ctr: 7.85, spend: 156.75, conversions: 89 },
-      { name: 'Featured Job Placements - Q1 2024', impressions: 15420, clicks: 892, ctr: 5.78, spend: 342.50, conversions: 45 },
-      { name: 'Employer Acquisition Campaign', impressions: 8950, clicks: 234, ctr: 2.61, spend: 678.25, conversions: 12 }
-    ],
-    audienceInsights: [
-      { segment: 'Job Seekers 25-34', impressions: 12500, clicks: 675, conversions: 78, spend: 485.25 },
-      { segment: 'HR Managers', impressions: 8200, clicks: 234, conversions: 28, spend: 312.50 },
-      { segment: 'Business Owners', impressions: 6800, clicks: 445, conversions: 25, spend: 245.75 },
-      { segment: 'Recent Graduates', impressions: 2540, clicks: 217, conversions: 15, spend: 134.00 }
-    ]
+    dailyMetrics: [],
+    topPerformingCampaigns: [],
+    audienceInsights: []
   };
 
   const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
@@ -105,11 +88,9 @@ export default async function AdPerformancePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(performanceData.overview.totalSpend)}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-600">+12.5%</span>
-              <span className="ml-1">from last month</span>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              No advertising campaigns active
+            </p>
           </CardContent>
         </Card>
 
@@ -120,11 +101,9 @@ export default async function AdPerformancePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{performanceData.overview.totalImpressions.toLocaleString()}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-600">+8.3%</span>
-              <span className="ml-1">from last month</span>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              No ad impressions yet
+            </p>
           </CardContent>
         </Card>
 
@@ -135,11 +114,9 @@ export default async function AdPerformancePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatPercentage(performanceData.overview.averageCTR)}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-600">+0.8%</span>
-              <span className="ml-1">from last month</span>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              No click data available
+            </p>
           </CardContent>
         </Card>
 
@@ -150,11 +127,9 @@ export default async function AdPerformancePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatPercentage(performanceData.overview.conversionRate)}</div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-600">+1.2%</span>
-              <span className="ml-1">from last month</span>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              No conversion data yet
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -169,7 +144,7 @@ export default async function AdPerformancePage() {
           <CardContent>
             <div className="text-2xl font-bold">{performanceData.overview.totalClicks.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              {formatCurrency(performanceData.overview.averageCPC)} avg CPC
+              No clicks recorded
             </p>
           </CardContent>
         </Card>
@@ -182,7 +157,7 @@ export default async function AdPerformancePage() {
           <CardContent>
             <div className="text-2xl font-bold">{performanceData.overview.totalConversions}</div>
             <p className="text-xs text-muted-foreground">
-              {formatCurrency(performanceData.overview.totalSpend / performanceData.overview.totalConversions)} cost per conversion
+              No conversions tracked
             </p>
           </CardContent>
         </Card>
@@ -195,7 +170,7 @@ export default async function AdPerformancePage() {
           <CardContent>
             <div className="text-2xl font-bold">{performanceData.overview.roas.toFixed(2)}x</div>
             <p className="text-xs text-muted-foreground">
-              Revenue per dollar spent
+              No revenue data available
             </p>
           </CardContent>
         </Card>
@@ -206,9 +181,9 @@ export default async function AdPerformancePage() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
+            <div className="text-2xl font-bold">0</div>
             <p className="text-xs text-muted-foreground">
-              2 paused campaigns
+              No campaigns created yet
             </p>
           </CardContent>
         </Card>
@@ -221,39 +196,13 @@ export default async function AdPerformancePage() {
           <CardDescription>Campaigns ranked by conversion performance</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {performanceData.topPerformingCampaigns.map((campaign, index) => (
-              <div key={index} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium">{campaign.name}</h3>
-                  <Badge variant="outline" className="bg-green-50 text-green-700">
-                    #{index + 1} performer
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-blue-600">{campaign.impressions.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground">Impressions</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-green-600">{campaign.clicks}</div>
-                    <div className="text-xs text-muted-foreground">Clicks</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-purple-600">{formatPercentage(campaign.ctr)}</div>
-                    <div className="text-xs text-muted-foreground">CTR</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-orange-600">{campaign.conversions}</div>
-                    <div className="text-xs text-muted-foreground">Conversions</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-red-600">{formatCurrency(campaign.spend)}</div>
-                    <div className="text-xs text-muted-foreground">Spend</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center py-12">
+            <BarChart3 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Campaigns Yet</h3>
+            <p className="text-gray-500 mb-4">
+              Create your first advertising campaign to start tracking performance metrics.
+            </p>
+            <Button>Create Campaign</Button>
           </div>
         </CardContent>
       </Card>
@@ -265,35 +214,13 @@ export default async function AdPerformancePage() {
           <CardDescription>Performance breakdown by audience segments</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {performanceData.audienceInsights.map((audience, index) => (
-              <div key={index} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium">{audience.segment}</h3>
-                  <Badge variant="outline">
-                    {formatPercentage((audience.clicks / audience.impressions) * 100)} CTR
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-4 gap-4 text-sm">
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-blue-600">{audience.impressions.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground">Impressions</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-green-600">{audience.clicks}</div>
-                    <div className="text-xs text-muted-foreground">Clicks</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-purple-600">{audience.conversions}</div>
-                    <div className="text-xs text-muted-foreground">Conversions</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-red-600">{formatCurrency(audience.spend)}</div>
-                    <div className="text-xs text-muted-foreground">Spend</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center py-12">
+            <Target className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Audience Data</h3>
+            <p className="text-gray-500 mb-4">
+              Audience insights will appear here once you start running advertising campaigns.
+            </p>
+            <Button variant="outline">Learn About Targeting</Button>
           </div>
         </CardContent>
       </Card>

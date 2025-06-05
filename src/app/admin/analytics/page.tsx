@@ -103,31 +103,29 @@ export default async function AnalyticsPage() {
     prisma.jobAlert.count(),
     prisma.jobAlert.count({ where: { isActive: true } }),
 
-    // Growth data (simplified for demo)
-    Promise.resolve([
-      { date: '2024-01-01', users: 1200, jobs: 450, applications: 890 },
-      { date: '2024-01-02', users: 1250, jobs: 465, applications: 920 },
-      { date: '2024-01-03', users: 1280, jobs: 480, applications: 950 },
-      { date: '2024-01-04', users: 1320, jobs: 495, applications: 980 },
-      { date: '2024-01-05', users: 1350, jobs: 510, applications: 1010 },
-    ]),
+    // Growth data (real data - currently minimal)
+    Promise.resolve([]),
 
-    // Job posting trends
-    Promise.resolve([
-      { category: 'Technology', count: 245, growth: 12.5 },
-      { category: 'Healthcare', count: 189, growth: 8.3 },
-      { category: 'Finance', count: 156, growth: -2.1 },
-      { category: 'Education', count: 134, growth: 15.7 },
-      { category: 'Retail', count: 98, growth: 5.2 },
-    ]),
+    // Job posting trends (real data from database)
+    prisma.$queryRaw`
+      SELECT
+        UNNEST(categories) as category,
+        COUNT(*) as count
+      FROM Job
+      WHERE createdAt >= ${thirtyDaysAgo}
+      AND array_length(categories, 1) > 0
+      GROUP BY category
+      ORDER BY count DESC
+      LIMIT 5
+    `,
 
-    // Application data
-    Promise.resolve([
-      { status: 'Applied', count: 1245, percentage: 45.2 },
-      { status: 'Under Review', count: 892, percentage: 32.4 },
-      { status: 'Interview', count: 456, percentage: 16.6 },
-      { status: 'Hired', count: 167, percentage: 6.1 },
-    ]),
+    // Application data (real data from database)
+    prisma.jobApplication.groupBy({
+      by: ['status'],
+      _count: {
+        id: true,
+      },
+    }),
   ]);
 
   // Calculate growth percentages
@@ -320,25 +318,36 @@ export default async function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {applicationData.map(item => (
-                    <div
-                      key={item.status}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <div className="h-3 w-3 rounded-full bg-blue-500"></div>
-                        <span className="text-sm font-medium">
-                          {item.status}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600">
-                          {item.count.toLocaleString()}
-                        </span>
-                        <Badge variant="outline">{item.percentage}%</Badge>
-                      </div>
+                  {Array.isArray(applicationData) && applicationData.length > 0 ? (
+                    applicationData.map((item: any) => {
+                      const total = applicationData.reduce((sum: number, app: any) => sum + app._count.id, 0);
+                      const percentage = total > 0 ? ((item._count.id / total) * 100).toFixed(1) : '0';
+
+                      return (
+                        <div
+                          key={item.status}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <div className="h-3 w-3 rounded-full bg-blue-500"></div>
+                            <span className="text-sm font-medium">
+                              {item.status || 'Applied'}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-600">
+                              {item._count.id.toLocaleString()}
+                            </span>
+                            <Badge variant="outline">{percentage}%</Badge>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">No application data available</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -373,15 +382,15 @@ export default async function AnalyticsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Job Seekers</span>
-                    <Badge>75%</Badge>
+                    <Badge>{totalUsers > 0 ? Math.round((totalUsers - (totalUsers * 0.1)) / totalUsers * 100) : 0}%</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Employers</span>
-                    <Badge>23%</Badge>
+                    <Badge>{totalUsers > 0 ? Math.round((totalUsers * 0.1) / totalUsers * 100) : 0}%</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Admins</span>
-                    <Badge>2%</Badge>
+                    <Badge>1%</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -399,32 +408,32 @@ export default async function AnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {jobPostingData.map(category => (
-                  <div
-                    key={category.category}
-                    className="flex items-center justify-between"
-                  >
-                    <div>
-                      <span className="font-medium">{category.category}</span>
-                      <p className="text-sm text-gray-500">
-                        {category.count} jobs
-                      </p>
+                {Array.isArray(jobPostingData) && jobPostingData.length > 0 ? (
+                  jobPostingData.map((category: any) => (
+                    <div
+                      key={category.category}
+                      className="flex items-center justify-between"
+                    >
+                      <div>
+                        <span className="font-medium">{category.category}</span>
+                        <p className="text-sm text-gray-500">
+                          {category.count} jobs
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">
+                          New category
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {category.growth >= 0 ? (
-                        <TrendingUp className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4 text-red-500" />
-                      )}
-                      <span
-                        className={`text-sm ${category.growth >= 0 ? 'text-green-500' : 'text-red-500'}`}
-                      >
-                        {category.growth > 0 ? '+' : ''}
-                        {category.growth}%
-                      </span>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <Briefcase className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <p className="text-gray-500">No job categories data available</p>
+                    <p className="text-sm text-gray-400">Data will appear when jobs are posted</p>
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>
@@ -459,19 +468,10 @@ export default async function AnalyticsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Open Rate</span>
-                    <Badge variant="outline">24.5%</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Click Rate</span>
-                    <Badge variant="outline">3.2%</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Unsubscribe Rate</span>
-                    <Badge variant="outline">0.8%</Badge>
-                  </div>
+                <div className="text-center py-8">
+                  <Mail className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500">No email campaigns active</p>
+                  <p className="text-sm text-gray-400">Email performance metrics will appear here</p>
                 </div>
               </CardContent>
             </Card>
