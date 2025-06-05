@@ -5,28 +5,50 @@ import AdminSidebar from '@/components/admin/AdminSidebar';
 import { canAccessRoute } from '@/lib/rbac/permissions';
 import type { Session } from 'next-auth';
 
+// Force dynamic rendering for admin layout
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions) as Session | null;
+  try {
+    // Check if we're in build mode or if database is not available
+    if (!process.env.DATABASE_URL) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Admin Area
+            </h1>
+            <p className="text-gray-600">
+              Database connection not available. Please configure environment variables.
+            </p>
+          </div>
+        </div>
+      );
+    }
 
-  // Check if user is authenticated
-  if (!session) {
-    redirect('/signin?redirect=/admin');
-  }
+    const session = await getServerSession(authOptions) as Session | null;
 
-  const userRole = session!.user?.role;
+    // Check if user is authenticated
+    if (!session) {
+      redirect('/signin?redirect=/admin');
+    }
 
-  // Check if user has admin or employer role (employers can import jobs)
-  if (
-    userRole !== 'admin' &&
-    userRole !== 'employer' &&
-    !userRole?.includes('admin')
-  ) {
-    redirect('/');
-  }
+    const userRole = session!.user?.role;
+
+    // Check if user has admin or employer role (employers can import jobs)
+    if (
+      userRole !== 'admin' &&
+      userRole !== 'employer' &&
+      !userRole?.includes('admin')
+    ) {
+      redirect('/');
+    }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -67,4 +89,22 @@ export default async function AdminLayout({
       </div>
     </div>
   );
+  } catch (error) {
+    console.error('Error in admin layout:', error);
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Admin Layout Error
+          </h1>
+          <p className="text-gray-600">
+            There was an error loading the admin interface.
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            {error instanceof Error ? error.message : 'Unknown error'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 }

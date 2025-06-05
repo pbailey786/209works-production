@@ -38,10 +38,34 @@ export const metadata: Metadata = {
   description: 'Administrative dashboard for managing the 209 Works platform.',
 };
 
+// Force dynamic rendering for admin dashboard
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+
 export default async function AdminDashboard() {
   try {
     // Get session for user info
     const session = await getServerSession(authOptions) as Session | null;
+
+    // Check if we're in build mode or if database is not available
+    if (!process.env.DATABASE_URL) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-600 mb-4">
+              Database connection not available. Please configure environment variables.
+            </p>
+            <p className="text-sm text-gray-500">
+              This page requires a DATABASE_URL environment variable to be set.
+            </p>
+          </div>
+        </div>
+      );
+    }
 
     // Date calculations for analytics
     const now = new Date();
@@ -676,18 +700,40 @@ export default async function AdminDashboard() {
   );
   } catch (error) {
     console.error('Error loading admin dashboard:', error);
+
+    // Check if it's a database connection error
+    const isDatabaseError = error instanceof Error && (
+      error.message.includes('DATABASE_URL') ||
+      error.message.includes('connect ECONNREFUSED') ||
+      error.message.includes('Environment variable not found')
+    );
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-md mx-auto p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
             Admin Dashboard Error
           </h1>
           <p className="text-gray-600 mb-4">
-            There was an error loading the dashboard. Please check the database connection.
+            {isDatabaseError
+              ? 'Database connection not available. Please configure your environment variables in Netlify.'
+              : 'There was an error loading the dashboard.'
+            }
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 mb-4">
             Error: {error instanceof Error ? error.message : 'Unknown error'}
           </p>
+          {isDatabaseError && (
+            <div className="text-left bg-gray-100 p-4 rounded-lg">
+              <h3 className="font-semibold mb-2">Required Environment Variables:</h3>
+              <ul className="text-sm space-y-1">
+                <li>• DATABASE_URL</li>
+                <li>• NEXTAUTH_SECRET</li>
+                <li>• NEXTAUTH_URL</li>
+                <li>• NEXT_PUBLIC_APP_URL</li>
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     );
