@@ -186,8 +186,6 @@ const nextConfig: NextConfig = {
     strictNextHead: true,
     // Enable optimized CSS loading
     optimizeCss: true,
-    // Disable instrumentation to prevent OpenTelemetry issues
-    instrumentationHook: false,
   },
 
   // Webpack configuration for security
