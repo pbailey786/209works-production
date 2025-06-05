@@ -87,30 +87,42 @@ export default async function UsersPage({
   const sortOrder = params.sortOrder || 'desc';
   const orderBy = { [sortBy]: sortOrder };
 
-  // Fetch users and stats
-  const [users, totalCount, userStats] = await Promise.all([
-    prisma.user.findMany({
-      where: whereConditions,
-      skip,
-      take: pageSize,
-      orderBy,
-      include: {
-        _count: {
-          select: {
-            jobApplications: true,
-            alerts: true,
+  // Fetch users and stats with error handling
+  let users: any[] = [];
+  let totalCount = 0;
+  let userStats: any[] = [];
+
+  try {
+    [users, totalCount, userStats] = await Promise.all([
+      prisma.user.findMany({
+        where: whereConditions,
+        skip,
+        take: pageSize,
+        orderBy,
+        include: {
+          _count: {
+            select: {
+              jobApplications: true,
+              alerts: true,
+            },
           },
         },
-      },
-    }),
-    prisma.user.count({ where: whereConditions }),
-    prisma.user.groupBy({
-      by: ['role'],
-      _count: {
-        id: true,
-      },
-    }),
-  ]);
+      }),
+      prisma.user.count({ where: whereConditions }),
+      prisma.user.groupBy({
+        by: ['role'],
+        _count: {
+          id: true,
+        },
+      }),
+    ]);
+  } catch (error) {
+    console.error('Error fetching user management data:', error);
+    // Use default values if database queries fail
+    users = [];
+    totalCount = 0;
+    userStats = [];
+  }
 
   const totalPages = Math.ceil(totalCount / pageSize);
 

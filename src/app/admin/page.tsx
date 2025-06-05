@@ -73,8 +73,8 @@ export default async function AdminDashboard() {
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
-    // Fetch real analytics data
-  const [
+    // Fetch real analytics data with error handling
+  let [
     totalUsers,
     newUsersThisMonth,
     newUsersLastMonth,
@@ -93,7 +93,29 @@ export default async function AdminDashboard() {
     topJobsByApplications,
     topJobCategories,
     activeEmployersDetailed,
-  ] = await Promise.all([
+  ] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [], [], [], [], []];
+
+  try {
+    [
+      totalUsers,
+      newUsersThisMonth,
+      newUsersLastMonth,
+      totalEmployers,
+      activeEmployers,
+      totalJobs,
+      activeJobs,
+      newJobsThisMonth,
+      totalApplications,
+      applicationsThisMonth,
+      totalChatSessions,
+      chatSessionsThisWeek,
+      premiumUsers,
+      recentActivity,
+      dailyJobPosts,
+      topJobsByApplications,
+      topJobCategories,
+      activeEmployersDetailed,
+    ] = await Promise.all([
     // User metrics
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
@@ -201,7 +223,11 @@ export default async function AdminDashboard() {
       ORDER BY job_count DESC
       LIMIT 10
     `,
-  ]);
+    ]);
+  } catch (error) {
+    console.error('Error fetching admin dashboard data:', error);
+    // Use default values if database queries fail
+  }
 
   // Calculate growth percentages
   const userGrowth = newUsersLastMonth > 0

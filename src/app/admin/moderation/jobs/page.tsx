@@ -66,33 +66,47 @@ export default async function JobModerationPage({
   const sortOrder = params.sortOrder || 'desc';
   const orderBy = { [sortBy]: sortOrder };
 
-  // Fetch jobs for moderation
-  const [jobs, totalCount, pendingCount, flaggedCount] = await Promise.all([
-    prisma.job.findMany({
-      where: whereConditions,
-      skip,
-      take: pageSize,
-      orderBy,
-      include: {
-        _count: {
-          select: {
-            jobApplications: true,
+  // Fetch jobs for moderation with error handling
+  let jobs: any[] = [];
+  let totalCount = 0;
+  let pendingCount = 0;
+  let flaggedCount = 0;
+
+  try {
+    [jobs, totalCount, pendingCount, flaggedCount] = await Promise.all([
+      prisma.job.findMany({
+        where: whereConditions,
+        skip,
+        take: pageSize,
+        orderBy,
+        include: {
+          _count: {
+            select: {
+              jobApplications: true,
+            },
           },
         },
-      },
-    }),
-    prisma.job.count({ where: whereConditions }),
-    // Mock pending count - in real app this would be based on moderation status
-    prisma.job.count({
-      where: {
-        createdAt: {
-          gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      }),
+      prisma.job.count({ where: whereConditions }),
+      // Mock pending count - in real app this would be based on moderation status
+      prisma.job.count({
+        where: {
+          createdAt: {
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          },
         },
-      },
-    }),
-    // Mock flagged count
-    Promise.resolve(3),
-  ]);
+      }),
+      // Mock flagged count
+      Promise.resolve(3),
+    ]);
+  } catch (error) {
+    console.error('Error fetching job moderation data:', error);
+    // Use default values if database queries fail
+    jobs = [];
+    totalCount = 0;
+    pendingCount = 0;
+    flaggedCount = 0;
+  }
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
