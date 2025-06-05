@@ -73,6 +73,7 @@ model User {
   userSessions         UserSession[]
   weeklyDigest         WeeklyDigest?
   chatAnalytics        ChatAnalytics[]
+  impersonationSessions ImpersonationSession[] @relation("ImpersonationTarget")
 
   @@index([deletedAt])
 }
@@ -738,21 +739,26 @@ model UserSession {
 }
 
 model AuditLog {
-  id         String   @id @default(uuid())
-  userId     String?
-  action     String
-  resource   String?
-  resourceId String?
-  details    Json?
-  ipAddress  String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
-  user       User?    @relation(fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  userId       String?
+  action       String
+  resource     String?
+  resourceId   String?
+  details      Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  targetType   String?
+  targetId     String?
+  performedBy  String?
+  user         User?    @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([action])
   @@index([resource])
   @@index([createdAt])
+  @@index([performedBy])
+  @@index([targetType])
 }
 
 model SavedJob {
@@ -839,6 +845,44 @@ model ChatAnalytics {
   @@index([sessionId])
   @@index([createdAt])
   @@index([question])
+}
+
+model AnalyticsReport {
+  id          String   @id @default(uuid())
+  type        String   // daily, weekly, monthly, custom
+  generatedBy String
+  data        Json
+  recipients  String?  // comma-separated email list
+  status      String   @default("generated") // generated, sent, failed
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([generatedBy])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ImpersonationSession {
+  id           String   @id @default(uuid())
+  adminId      String
+  targetUserId String
+  reason       String
+  token        String
+  isActive     Boolean  @default(true)
+  expiresAt    DateTime
+  endedAt      DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  targetUser   User     @relation("ImpersonationTarget", fields: [targetUserId], references: [id])
+
+  @@index([adminId])
+  @@index([targetUserId])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@index([createdAt])
 }
 
 enum UserRole {

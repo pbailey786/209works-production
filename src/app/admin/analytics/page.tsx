@@ -30,6 +30,7 @@ import {
   Download,
   RefreshCw,
 } from 'lucide-react';
+import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
 
 export default async function AnalyticsPage() {
   const session = await getServerSession(authOptions);
@@ -178,10 +179,7 @@ export default async function AnalyticsPage() {
             Refresh
           </Button>
 
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
+          <AnalyticsExportButton type="overview" />
         </div>
       </div>
 

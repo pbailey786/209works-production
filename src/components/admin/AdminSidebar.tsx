@@ -147,6 +147,12 @@ const navigation: NavItem[] = [
         icon: BarChart3,
         permission: Permission.VIEW_EMAIL_ANALYTICS,
       },
+      {
+        name: 'Advanced Analytics',
+        href: '/admin/advanced-analytics',
+        icon: BarChart3,
+        permission: Permission.MANAGE_SYSTEM,
+      },
     ],
   },
   {
