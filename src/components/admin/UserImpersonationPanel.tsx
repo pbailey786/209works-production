@@ -129,7 +129,7 @@ export default function UserImpersonationPanel() {
       }
     } catch (error) {
       console.error('Impersonation failed:', error);
-      alert(`Failed to start impersonation: ${error.message}`);
+      alert(`Failed to start impersonation: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsImpersonating(false);
     }

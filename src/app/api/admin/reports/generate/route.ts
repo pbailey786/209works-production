@@ -4,11 +4,11 @@ import authOptions from '../../../auth/authOptions';
 import { prisma } from '../../../auth/prisma';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as any;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -176,13 +176,18 @@ async function getJobMetrics(dateFilter: any) {
   const [total, newJobs, jobsByCategory, jobsByLocation] = await Promise.all([
     prisma.job.count(),
     prisma.job.count({ where: { createdAt: dateFilter } }),
-    prisma.job.groupBy({
-      by: ['category'],
-      _count: { category: true },
-      where: { createdAt: dateFilter },
-      orderBy: { _count: { category: 'desc' } },
-      take: 10,
-    }),
+    // Note: categories is an array field, so we'll use a raw query instead
+    prisma.$queryRaw`
+      SELECT
+        UNNEST(categories) as category,
+        COUNT(*) as count
+      FROM Job
+      WHERE createdAt >= ${dateFilter.gte} AND createdAt <= ${dateFilter.lte}
+      AND array_length(categories, 1) > 0
+      GROUP BY category
+      ORDER BY count DESC
+      LIMIT 10
+    `,
     prisma.job.groupBy({
       by: ['location'],
       _count: { location: true },
@@ -275,33 +280,37 @@ async function getTopPerformers(dateFilter: any) {
         id: true,
         title: true,
         company: true,
-        _count: { select: { applications: true } },
+        _count: { select: { jobApplications: true } },
       },
-      orderBy: { applications: { _count: 'desc' } },
+      orderBy: { jobApplications: { _count: 'desc' } },
       take: 10,
     }),
     prisma.user.findMany({
-      where: { 
+      where: {
         role: 'employer',
-        jobs: { some: { createdAt: dateFilter } },
+        employerJobs: { some: { createdAt: dateFilter } },
       },
       select: {
         id: true,
         name: true,
         email: true,
-        _count: { select: { jobs: true } },
+        _count: { select: { employerJobs: true } },
       },
-      orderBy: { jobs: { _count: 'desc' } },
+      orderBy: { employerJobs: { _count: 'desc' } },
       take: 10,
     }),
-    prisma.job.groupBy({
-      by: ['category'],
-      _count: { category: true },
-      _sum: { applications: { _count: true } },
-      where: { createdAt: dateFilter },
-      orderBy: { _count: { category: 'desc' } },
-      take: 10,
-    }),
+    // Note: categories is an array field, so we'll use a raw query instead
+    prisma.$queryRaw`
+      SELECT
+        UNNEST(categories) as category,
+        COUNT(*) as count
+      FROM Job
+      WHERE createdAt >= ${dateFilter.gte} AND createdAt <= ${dateFilter.lte}
+      AND array_length(categories, 1) > 0
+      GROUP BY category
+      ORDER BY count DESC
+      LIMIT 10
+    `,
   ]);
 
   return {
@@ -357,6 +366,10 @@ function generateInsights(data: any) {
 }
 
 async function sendReportEmail(report: any, recipients: string[], reportType: string, includeCharts: boolean) {
+  if (!resend) {
+    throw new Error('Resend API key not configured');
+  }
+
   const subject = `209 Works ${report.periodName} Analytics Report - ${new Date().toLocaleDateString()}`;
 
   const htmlContent = generateReportHTML(report, includeCharts);

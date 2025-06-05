@@ -5,7 +5,7 @@ import { prisma } from '../../../auth/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as any;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -175,25 +175,31 @@ async function getJobAnalytics(dateFilter: any) {
         title: true,
         company: true,
         location: true,
-        category: true,
+        categories: true,
         salaryMin: true,
         salaryMax: true,
         status: true,
         createdAt: true,
         _count: {
           select: {
-            applications: true,
+            jobApplications: true,
           },
         },
       },
       orderBy: { createdAt: 'desc' },
     }),
-    prisma.job.groupBy({
-      by: ['category'],
-      _count: { category: true },
-      where: { createdAt: dateFilter },
-      orderBy: { _count: { category: 'desc' } },
-    }),
+    // Note: categories is an array field, so we'll use a raw query instead
+    prisma.$queryRaw`
+      SELECT
+        UNNEST(categories) as category,
+        COUNT(*) as count
+      FROM Job
+      WHERE createdAt >= ${dateFilter.gte} AND createdAt <= ${dateFilter.lte}
+      AND array_length(categories, 1) > 0
+      GROUP BY category
+      ORDER BY count DESC
+      LIMIT 20
+    `,
     prisma.job.groupBy({
       by: ['location'],
       _count: { location: true },
@@ -265,12 +271,11 @@ async function getApplicationAnalytics(dateFilter: any) {
         jobId: true,
         appliedAt: true,
         status: true,
-        source: true,
         job: {
           select: {
             title: true,
             company: true,
-            category: true,
+            categories: true,
           },
         },
         user: {
@@ -294,7 +299,7 @@ async function getApplicationAnalytics(dateFilter: any) {
         DATE(appliedAt) as date,
         COUNT(*) as applications,
         COUNT(DISTINCT userId) as unique_applicants,
-        COUNT(CASE WHEN source = 'ai_chat' THEN 1 END) as ai_assisted_applications
+        0 as ai_assisted_applications
       FROM JobApplication
       WHERE appliedAt >= ${dateFilter.gte} AND appliedAt <= ${dateFilter.lte}
       GROUP BY DATE(appliedAt)
@@ -358,18 +363,18 @@ function convertUsersToCSV(data: any): string {
 }
 
 function convertJobsToCSV(data: any): string {
-  const headers = ['ID', 'Title', 'Company', 'Location', 'Category', 'Salary Min', 'Salary Max', 'Status', 'Created At', 'Applications'];
+  const headers = ['ID', 'Title', 'Company', 'Location', 'Categories', 'Salary Min', 'Salary Max', 'Status', 'Created At', 'Applications'];
   const rows = data.jobs.map((job: any) => [
     job.id,
     job.title,
     job.company,
     job.location,
-    job.category,
+    Array.isArray(job.categories) ? job.categories.join('; ') : '',
     job.salaryMin || '',
     job.salaryMax || '',
     job.status,
     job.createdAt,
-    job._count.applications,
+    job._count.jobApplications,
   ]);
 
   return [headers, ...rows].map(row => row.join(',')).join('\n');
@@ -390,7 +395,7 @@ function convertAIToCSV(data: any): string {
 }
 
 function convertApplicationsToCSV(data: any): string {
-  const headers = ['ID', 'User ID', 'Job ID', 'Job Title', 'Company', 'Applied At', 'Status', 'Source', 'User Name', 'User Email'];
+  const headers = ['ID', 'User ID', 'Job ID', 'Job Title', 'Company', 'Applied At', 'Status', 'User Name', 'User Email'];
   const rows = data.applications.map((app: any) => [
     app.id,
     app.userId,
@@ -399,7 +404,6 @@ function convertApplicationsToCSV(data: any): string {
     app.job.company,
     app.appliedAt,
     app.status,
-    app.source || '',
     app.user.name || '',
     app.user.email,
   ]);

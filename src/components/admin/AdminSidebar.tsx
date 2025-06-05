@@ -151,7 +151,7 @@ const navigation: NavItem[] = [
         name: 'Advanced Analytics',
         href: '/admin/advanced-analytics',
         icon: BarChart3,
-        permission: Permission.MANAGE_SYSTEM,
+        permission: Permission.VIEW_ANALYTICS,
       },
     ],
   },
