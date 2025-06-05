@@ -92,7 +92,7 @@ export default function GlobalError({
                 Need immediate assistance?
               </p>
               <a
-                href="mailto:support@209.works"
+                href="/contact"
                 className="text-sm font-medium text-red-600 underline hover:text-red-800"
               >
                 Contact our support team
