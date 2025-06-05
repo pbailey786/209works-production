@@ -39,7 +39,7 @@ function ResetPasswordContent() {
     <div className="mx-auto max-w-2xl px-4 py-16 text-center">
       <h1 className="mb-4 text-3xl font-bold">Reset Password</h1>
       <p className="text-gray-700">
-        Enter your email to reset your password for 209jobs.
+        Enter your new password for your 209 Works account.
       </p>
       <form onSubmit={handleSubmit}>
         <Input

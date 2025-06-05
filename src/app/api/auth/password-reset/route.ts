@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { prisma } from '../prisma';
-// @ts-ignore: No types for nodemailer unless @types/nodemailer is installed
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -30,46 +29,32 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   const resetUrl = `${baseUrl}/reset-password?token=${passwordResetToken}`;
 
-  // Validate required email environment variables
-  if (
-    !process.env.EMAIL_SERVER_HOST ||
-    !process.env.EMAIL_SERVER_USER ||
-    !process.env.EMAIL_SERVER_PASS
-  ) {
-    console.error(
-      'Email configuration missing. Required: EMAIL_SERVER_HOST, EMAIL_SERVER_USER, EMAIL_SERVER_PASS'
-    );
+  // Validate Resend API key
+  if (!process.env.RESEND_API_KEY) {
+    console.error('RESEND_API_KEY environment variable is required');
     return NextResponse.json(
       { error: 'Email service not configured' },
       { status: 500 }
     );
   }
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_SERVER_HOST,
-    port: parseInt(process.env.EMAIL_SERVER_PORT || '587'),
-    secure: process.env.EMAIL_SERVER_SECURE === 'true', // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_SERVER_USER,
-      pass: process.env.EMAIL_SERVER_PASS,
-    },
-  });
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
-    await transporter.sendMail({
+    await resend.emails.send({
       to: email,
-      from: process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER,
-      subject: 'Reset your password - 209jobs',
+      from: 'noreply@209.works',
+      subject: 'Reset your password - 209 Works',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333;">Password Reset Request</h2>
-          <p>You requested a password reset for your 209jobs account.</p>
+          <p>You requested a password reset for your 209 Works account.</p>
           <p>Click the link below to reset your password:</p>
           <a href="${resetUrl}" style="display: inline-block; background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 16px 0;">Reset Password</a>
           <p><strong>This link will expire in 1 hour.</strong></p>
           <p>If you didn't request this password reset, you can safely ignore this email.</p>
           <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
-          <p style="color: #666; font-size: 12px;">209jobs - Your Career, Our Priority</p>
+          <p style="color: #666; font-size: 12px;">209 Works - Built for the 209. Made for the people who work here.</p>
         </div>
       `,
     });

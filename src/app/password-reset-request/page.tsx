@@ -34,9 +34,12 @@ export default function PasswordResetRequestPage() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: '40px auto' }}>
-      <h2>Password Reset</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+      <h1 className="mb-4 text-3xl font-bold">Password Reset</h1>
+      <p className="mb-8 text-gray-700">
+        Enter your email address and we'll send you a link to reset your password for your 209 Works account.
+      </p>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           type="email"
           placeholder="Enter your email"
@@ -48,7 +51,11 @@ export default function PasswordResetRequestPage() {
           {loading ? 'Sending...' : 'Send Reset Link'}
         </Button>
       </form>
-      {message && <p style={{ marginTop: 16 }}>{message}</p>}
+      {message && (
+        <div className="mt-6 rounded-lg bg-blue-50 p-4">
+          <p className="text-blue-800">{message}</p>
+        </div>
+      )}
     </div>
   );
 }
