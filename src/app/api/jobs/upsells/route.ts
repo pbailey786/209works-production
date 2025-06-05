@@ -245,11 +245,7 @@ export async function GET(request: NextRequest) {
         socialMediaShoutout: true,
         placementBump: true,
         upsellBundle: true,
-        socialMediaPromoted: true,
-        socialMediaPromotedAt: true,
         isPinned: true,
-        pinnedAt: true,
-        pinnedUntil: true,
       },
     });
 

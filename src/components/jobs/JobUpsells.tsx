@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle, Star, TrendingUp, Users, Zap } from 'lucide-react';
-import { toast } from 'sonner';
+import { useUnifiedToast } from '@/components/ui/unified-toast-system';
 
 interface Addon {
   id: string;
@@ -33,6 +33,7 @@ export default function JobUpsells({ jobId, onPurchaseComplete, showJobPostAddon
   }>({ promotion: [], jobPosts: [] });
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
+  const { error: showError } = useUnifiedToast();
 
   useEffect(() => {
     fetchAddons();
@@ -45,11 +46,11 @@ export default function JobUpsells({ jobId, onPurchaseComplete, showJobPostAddon
         const data = await response.json();
         setAddons(data.addons);
       } else {
-        toast.error('Failed to load addons');
+        showError('Failed to load addons');
       }
     } catch (error) {
       console.error('Error fetching addons:', error);
-      toast.error('Failed to load addons');
+      showError('Failed to load addons');
     } finally {
       setLoading(false);
     }
@@ -77,11 +78,11 @@ export default function JobUpsells({ jobId, onPurchaseComplete, showJobPostAddon
         window.location.href = data.checkoutUrl;
       } else {
         const error = await response.json();
-        toast.error(error.error || 'Failed to start purchase');
+        showError(error.error || 'Failed to start purchase');
       }
     } catch (error) {
       console.error('Error starting purchase:', error);
-      toast.error('Failed to start purchase');
+      showError('Failed to start purchase');
     } finally {
       setPurchasing(null);
     }

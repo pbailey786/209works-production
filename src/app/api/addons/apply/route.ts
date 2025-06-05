@@ -81,33 +81,30 @@ export async function POST(request: NextRequest) {
 
     switch (addon.slug) {
       case 'social-media-bump':
-        updateData.socialMediaPromoted = true;
-        updateData.socialMediaPromotedAt = new Date();
+        updateData.socialMediaShoutout = true;
         successMessage = 'Social media promotion activated for this job';
-        
+
         // Queue social media posting
         await queueSocialMediaPost(job);
         break;
-      
+
       case 'featured-placement':
+        updateData.placementBump = true;
         updateData.isPinned = true;
-        updateData.pinnedAt = new Date();
-        updateData.pinnedUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-        successMessage = 'Job featured for 7 days';
+        successMessage = 'Job featured for enhanced visibility';
         break;
-      
+
       case 'social-featured-bundle':
-        updateData.socialMediaPromoted = true;
-        updateData.socialMediaPromotedAt = new Date();
+        updateData.socialMediaShoutout = true;
+        updateData.placementBump = true;
+        updateData.upsellBundle = true;
         updateData.isPinned = true;
-        updateData.pinnedAt = new Date();
-        updateData.pinnedUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
         successMessage = 'Social media promotion and featured placement activated';
-        
+
         // Queue social media posting
         await queueSocialMediaPost(job);
         break;
-      
+
       default:
         return NextResponse.json({ error: 'This addon type cannot be applied to individual jobs' }, { status: 400 });
     }

@@ -352,6 +352,7 @@ async function handleAddonPurchase(session: Stripe.Checkout.Session) {
     // Create UserAddOn record
     await prisma.userAddOn.create({
       data: {
+        id: `ua_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId,
         addOnId: addonId,
         isActive: true,
@@ -360,6 +361,7 @@ async function handleAddonPurchase(session: Stripe.Checkout.Session) {
         expiresAt,
         pricePaid: addon.price,
         billingInterval: addon.billingInterval,
+        updatedAt: new Date(),
         usageData: {
           purchaseSessionId: session.id,
           appliedToJobs: [],
