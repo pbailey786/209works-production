@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
+import { stripe } from '@/lib/stripe';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
 
@@ -11,6 +12,12 @@ const upsellSchema = z.object({
   placementBump: z.boolean().default(false),
   upsellBundle: z.boolean().default(false),
   paymentIntentId: z.string().optional(), // For Stripe payment processing
+});
+
+const addonPurchaseSchema = z.object({
+  addonId: z.string(),
+  jobId: z.string().uuid().optional(),
+  returnUrl: z.string().url().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -176,10 +183,52 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const jobId = searchParams.get('jobId');
+    const action = searchParams.get('action'); // 'addons' or 'status'
 
+    // Get user details
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email! },
+      select: { id: true, currentTier: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // If action is 'addons', return available addons
+    if (action === 'addons') {
+      const addons = await prisma.addOn.findMany({
+        where: {
+          isActive: true,
+          requiredUserRole: {
+            has: 'employer'
+          },
+          compatibleTiers: {
+            has: user.currentTier
+          }
+        },
+        orderBy: {
+          displayOrder: 'asc'
+        }
+      });
+
+      // Group addons by category
+      const groupedAddons = {
+        promotion: addons.filter(addon => addon.category === 'marketing'),
+        jobPosts: addons.filter(addon => addon.category === 'recruitment_tools')
+      };
+
+      return NextResponse.json({
+        success: true,
+        addons: groupedAddons,
+        userTier: user.currentTier
+      });
+    }
+
+    // Default behavior: get job upsell status
     if (!jobId) {
       return NextResponse.json(
-        { error: 'Job ID is required' },
+        { error: 'Job ID is required for status check' },
         { status: 400 }
       );
     }
@@ -188,7 +237,7 @@ export async function GET(request: NextRequest) {
     const job = await prisma.job.findFirst({
       where: {
         id: jobId,
-        employerId: (session!.user as any).id,
+        employerId: user.id,
       },
       select: {
         id: true,
@@ -196,6 +245,11 @@ export async function GET(request: NextRequest) {
         socialMediaShoutout: true,
         placementBump: true,
         upsellBundle: true,
+        socialMediaPromoted: true,
+        socialMediaPromotedAt: true,
+        isPinned: true,
+        pinnedAt: true,
+        pinnedUntil: true,
       },
     });
 
@@ -211,7 +265,7 @@ export async function GET(request: NextRequest) {
       job,
     });
   } catch (error) {
-    console.error('Error fetching upsell status:', error);
+    console.error('Error fetching upsell data:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

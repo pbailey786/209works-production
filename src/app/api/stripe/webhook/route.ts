@@ -69,6 +69,10 @@ export async function POST(request: NextRequest) {
         await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
         break;
 
+      case 'payment_intent.succeeded':
+        await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
+        break;
+
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -87,11 +91,25 @@ async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ) {
   const userId = session.metadata?.userId;
+  const type = session.metadata?.type;
+
+  if (!userId) {
+    console.error('Missing userId in checkout session:', session.id);
+    return;
+  }
+
+  // Handle addon purchases
+  if (type === 'addon_purchase') {
+    await handleAddonPurchase(session);
+    return;
+  }
+
+  // Handle subscription purchases
   const tier = session.metadata?.tier as PricingTier;
   const billingInterval = session.metadata?.billingInterval as BillingInterval;
 
-  if (!userId || !tier || !billingInterval) {
-    console.error('Missing metadata in checkout session:', session.id);
+  if (!tier || !billingInterval) {
+    console.error('Missing subscription metadata in checkout session:', session.id);
     return;
   }
 
@@ -289,6 +307,88 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     } catch (error) {
       console.error('Error handling invoice payment failed:', error);
     }
+  }
+}
+
+async function handleAddonPurchase(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.userId;
+  const addonId = session.metadata?.addonId;
+  const jobId = session.metadata?.jobId;
+
+  if (!userId || !addonId) {
+    console.error('Missing addon purchase metadata:', session.id);
+    return;
+  }
+
+  try {
+    // Get addon details
+    const addon = await prisma.addOn.findUnique({
+      where: { id: addonId }
+    });
+
+    if (!addon) {
+      console.error('Addon not found:', addonId);
+      return;
+    }
+
+    // Get user email
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true }
+    });
+
+    if (!user) {
+      console.error('User not found:', userId);
+      return;
+    }
+
+    // Calculate expiration date for addon
+    let expiresAt: Date | null = null;
+    if (addon.usageLimits && (addon.usageLimits as any).expirationMonths) {
+      expiresAt = new Date();
+      expiresAt.setMonth(expiresAt.getMonth() + (addon.usageLimits as any).expirationMonths);
+    }
+
+    // Create UserAddOn record
+    await prisma.userAddOn.create({
+      data: {
+        userId,
+        addOnId: addonId,
+        isActive: true,
+        purchasedAt: new Date(),
+        activatedAt: new Date(),
+        expiresAt,
+        pricePaid: addon.price,
+        billingInterval: addon.billingInterval,
+        usageData: {
+          purchaseSessionId: session.id,
+          appliedToJobs: [],
+          jobPostsUsed: 0
+        }
+      }
+    });
+
+    // Update user's Stripe customer ID if not set
+    if (session.customer && typeof session.customer === 'string') {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { stripeCustomerId: session.customer }
+      });
+    }
+
+    console.log(`Addon purchase completed: ${addon.name} for user ${userId}`);
+  } catch (error) {
+    console.error('Error handling addon purchase:', error);
+  }
+}
+
+async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  const userId = paymentIntent.metadata?.userId;
+  const type = paymentIntent.metadata?.type;
+
+  if (type === 'addon_purchase' && userId) {
+    console.log(`Payment succeeded for addon purchase by user ${userId}`);
+    // Additional logic if needed for payment confirmation
   }
 }
 
