@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import authOptions from '../../../auth/authOptions';
-import { prisma } from '../../../auth/prisma';
+import authOptions from '../../../../auth/authOptions';
+import { prisma } from '../../../../auth/prisma';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const scheduleId = params.id;
+    const resolvedParams = await params;
+    const scheduleId = resolvedParams.id;
 
     if (!scheduleId) {
       return NextResponse.json({ error: 'Schedule ID is required' }, { status: 400 });

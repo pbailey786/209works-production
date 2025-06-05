@@ -18,7 +18,7 @@ import AutomatedReportsPanel from '@/components/admin/AutomatedReportsPanel';
 import UserImpersonationPanel from '@/components/admin/UserImpersonationPanel';
 
 export default async function AdvancedAnalyticsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as any;
 
   if (!session?.user || session.user.role !== 'admin') {
     redirect('/auth/signin');
