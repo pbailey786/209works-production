@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/database/prisma';
+import authOptions from '../api/auth/authOptions';
+import { prisma } from '../api/auth/prisma';
 import {
   Card,
   CardContent,

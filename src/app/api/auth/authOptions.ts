@@ -191,6 +191,22 @@ const authOptions: NextAuthOptions = {
         },
       };
     },
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      // If user is signing in, check their role and redirect accordingly
+      if (url.startsWith('/')) {
+        // Handle relative URLs
+        const fullUrl = new URL(url, baseUrl);
+        return fullUrl.toString();
+      }
+
+      // For sign-in redirects, we'll handle this in the sign-in page
+      // This callback is mainly for external URLs
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+
+      return baseUrl;
+    },
   },
 };
 
