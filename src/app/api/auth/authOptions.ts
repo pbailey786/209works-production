@@ -52,6 +52,12 @@ const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // Check if database is available
+        if (!process.env.DATABASE_URL) {
+          console.log('❌ FAILED: No DATABASE_URL configured');
+          return null;
+        }
+
         console.log('✅ Credentials validation passed, looking up user...');
 
         try {
@@ -153,7 +159,7 @@ const authOptions: NextAuthOptions = {
       );
 
       // Fetch latest user data to include profile picture
-      if (token.sub && session.user?.email) {
+      if (token.sub && session.user?.email && process.env.DATABASE_URL) {
         try {
           const user = await prisma.user.findUnique({
             where: { id: token.sub },
@@ -178,6 +184,7 @@ const authOptions: NextAuthOptions = {
           }
         } catch (error) {
           console.error('Error fetching user data in session callback:', error);
+          // Continue with basic session data if database fails
         }
       }
 

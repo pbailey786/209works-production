@@ -18,17 +18,21 @@ export default withAuth(
       return NextResponse.next();
     }
 
-    // Protect admin routes
+    // Protect admin routes (but allow access if no database to show error page)
     if (pathname.startsWith('/admin')) {
+      // If no database URL, allow access to show error page
+      if (!process.env.DATABASE_URL) {
+        return NextResponse.next();
+      }
       if (!token || token.role !== 'admin') {
-        return NextResponse.redirect(new URL('/auth/signin', req.url));
+        return NextResponse.redirect(new URL('/signin?redirect=/admin', req.url));
       }
     }
 
     // Protect employer routes
     if (pathname.startsWith('/employer')) {
       if (!token || token.role !== 'employer') {
-        return NextResponse.redirect(new URL('/auth/signin', req.url));
+        return NextResponse.redirect(new URL('/signin?redirect=/employer', req.url));
       }
     }
 
@@ -47,7 +51,9 @@ export default withAuth(
           pathname.startsWith('/favicon') ||
           pathname === '/' ||
           pathname.startsWith('/jobs') ||
-          pathname.startsWith('/chat')
+          pathname.startsWith('/chat') ||
+          pathname.startsWith('/signin') ||
+          pathname.startsWith('/signup')
         ) {
           return true;
         }

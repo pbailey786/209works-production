@@ -18,18 +18,8 @@ export default async function AdminLayout({
   try {
     // Check if we're in build mode or if database is not available
     if (!process.env.DATABASE_URL) {
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Admin Area
-            </h1>
-            <p className="text-gray-600">
-              Database connection not available. Please configure environment variables.
-            </p>
-          </div>
-        </div>
-      );
+      // Return children directly to show the error page from the admin page component
+      return children;
     }
 
     const session = await getServerSession(authOptions) as Session | null;
