@@ -94,7 +94,7 @@ export default async function AdminDashboard() {
   let activeEmployersDetailed: any[] = [];
 
   try {
-    const results = await Promise.all([
+    const results: any[] = await Promise.all([
     // User metrics
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
