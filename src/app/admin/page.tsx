@@ -74,48 +74,27 @@ export default async function AdminDashboard() {
     const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
     // Fetch real analytics data with error handling
-  let [
-    totalUsers,
-    newUsersThisMonth,
-    newUsersLastMonth,
-    totalEmployers,
-    activeEmployers,
-    totalJobs,
-    activeJobs,
-    newJobsThisMonth,
-    totalApplications,
-    applicationsThisMonth,
-    totalChatSessions,
-    chatSessionsThisWeek,
-    premiumUsers,
-    recentActivity,
-    dailyJobPosts,
-    topJobsByApplications,
-    topJobCategories,
-    activeEmployersDetailed,
-  ] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [], [], [], [], []];
+  let totalUsers = 0;
+  let newUsersThisMonth = 0;
+  let newUsersLastMonth = 0;
+  let totalEmployers = 0;
+  let activeEmployers = 0;
+  let totalJobs = 0;
+  let activeJobs = 0;
+  let newJobsThisMonth = 0;
+  let totalApplications = 0;
+  let applicationsThisMonth = 0;
+  let totalChatSessions = 0;
+  let chatSessionsThisWeek = 0;
+  let premiumUsers = 0;
+  let recentActivity: any[] = [];
+  let dailyJobPosts: any[] = [];
+  let topJobsByApplications: any[] = [];
+  let topJobCategories: any[] = [];
+  let activeEmployersDetailed: any[] = [];
 
   try {
-    [
-      totalUsers,
-      newUsersThisMonth,
-      newUsersLastMonth,
-      totalEmployers,
-      activeEmployers,
-      totalJobs,
-      activeJobs,
-      newJobsThisMonth,
-      totalApplications,
-      applicationsThisMonth,
-      totalChatSessions,
-      chatSessionsThisWeek,
-      premiumUsers,
-      recentActivity,
-      dailyJobPosts,
-      topJobsByApplications,
-      topJobCategories,
-      activeEmployersDetailed,
-    ] = await Promise.all([
+    const results = await Promise.all([
     // User metrics
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
@@ -224,6 +203,26 @@ export default async function AdminDashboard() {
       LIMIT 10
     `,
     ]);
+
+    // Assign results to variables
+    totalUsers = results[0];
+    newUsersThisMonth = results[1];
+    newUsersLastMonth = results[2];
+    totalEmployers = results[3];
+    activeEmployers = results[4];
+    totalJobs = results[5];
+    activeJobs = results[6];
+    newJobsThisMonth = results[7];
+    totalApplications = results[8];
+    applicationsThisMonth = results[9];
+    totalChatSessions = results[10];
+    chatSessionsThisWeek = results[11];
+    premiumUsers = results[12];
+    recentActivity = results[13];
+    dailyJobPosts = results[14];
+    topJobsByApplications = results[15];
+    topJobCategories = results[16];
+    activeEmployersDetailed = results[17];
   } catch (error) {
     console.error('Error fetching admin dashboard data:', error);
     // Use default values if database queries fail
