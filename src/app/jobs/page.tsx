@@ -373,7 +373,7 @@ function JobsContent() {
         const fallbackMessage = {
           id: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           type: 'assistant' as const,
-          content: "Hey there! I'm your local job search assistant for the 209 area. I'm here to help you find work in Stockton, Modesto, Tracy, and surrounding Central Valley cities. What kind of opportunities are you looking for?",
+          content: "Hey there! I'm here to help you find work in the 209 area - Stockton, Modesto, Tracy, and all around the Central Valley. Been helping folks find good jobs around here for a while. What kind of work are you looking for?",
           timestamp: new Date(),
         };
         setConversation(prev => [...prev, fallbackMessage]);
@@ -453,21 +453,14 @@ function JobsContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="border-b bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 py-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-[#2d4a3e] to-[#1a3329]">
-                <Search className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h1 className="bg-gradient-to-r from-[#2d4a3e] to-[#1a3329] bg-clip-text text-2xl font-extrabold text-transparent sm:text-3xl">
-                  JobsGPT for 209
-                </h1>
-                <p className="text-sm text-gray-600">
-                  AI-powered job search for the 209 area
-                </p>
-              </div>
-            </div>
+        <div className="mx-auto max-w-7xl px-4 py-12">
+          <div className="text-center">
+            <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl">
+              JobsGPT: Smart Local Job Search
+            </h1>
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600">
+              Powered by AI. Focused on Central California.
+            </p>
 
             {hasSearched && (
               <Button
@@ -494,7 +487,7 @@ function JobsContent() {
                 <span className="text-xl font-bold text-white">AI</span>
               </div>
               <h2 className="mb-4 text-3xl font-bold text-gray-900">
-                JobsGPT for 209
+                JobsGPT: Smart Local Job Search
               </h2>
               <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600">
                 Ask me about jobs in the 209 area. I can help you find local opportunities in Stockton, Modesto, Tracy, and surrounding cities. Try asking about specific roles, companies, or job types!
