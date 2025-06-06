@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Test email sent successfully',
-        messageId: result.messageId,
+        messageId: (result as any).messageId || null,
         testType,
         recipientEmail,
       });
