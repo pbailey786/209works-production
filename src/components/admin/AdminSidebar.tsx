@@ -226,7 +226,7 @@ export default function AdminSidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const pathname = usePathname();
-  const { hasPermission, hasAnyPermission } = usePermissions();
+  const { hasPermission, hasAnyPermission, userRole } = usePermissions();
 
   const toggleExpanded = (href: string) => {
     setExpandedItems(prev =>
@@ -254,6 +254,10 @@ export default function AdminSidebar() {
   }) => {
     // Check permissions for this nav item
     const hasItemPermission = () => {
+      // Allow admin users to see all menu items
+      if (userRole === 'admin') {
+        return true;
+      }
       if (item.permission && !hasPermission(item.permission)) {
         return false;
       }
@@ -265,6 +269,10 @@ export default function AdminSidebar() {
 
     // Filter children based on permissions
     const visibleChildren = item.children?.filter(child => {
+      // Allow admin users to see all child items
+      if (userRole === 'admin') {
+        return true;
+      }
       if (child.permission && !hasPermission(child.permission)) {
         return false;
       }

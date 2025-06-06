@@ -38,7 +38,8 @@ export default async function EmailManagementPage() {
   }
 
   const userRole = session!.user?.role || 'guest';
-  if (!hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES)) {
+  // Temporarily allow admin users to access email management
+  if (userRole !== 'admin' && !hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES)) {
     redirect('/admin');
   }
 
