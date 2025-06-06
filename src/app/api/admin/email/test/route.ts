@@ -4,17 +4,18 @@ import authOptions from '../../../auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { emailService } from '@/lib/email/email-service';
 import { EmailHelpers } from '@/lib/email/email-helpers';
+import type { Session } from 'next-auth';
 import { SecurityLogger } from '@/lib/security/security-monitor';
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const session = await getServerSession(authOptions) as Session | null;
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session.user?.role || 'guest';
+    const userRole = (session.user as any)?.role || 'guest';
     if (!hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     let result;
-    const userId = session.user?.id;
+    const userId = (session.user as any)?.id;
 
     switch (testType) {
       case 'template':
@@ -197,12 +198,12 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const session = await getServerSession(authOptions) as Session | null;
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session.user?.role || 'guest';
+    const userRole = (session.user as any)?.role || 'guest';
     if (!hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }

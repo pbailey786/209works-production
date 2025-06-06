@@ -4,16 +4,17 @@ import authOptions from '../../../auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { emailService } from '@/lib/email/email-service';
 import { emailAgent } from '@/lib/agents/email-agent';
+import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const session = await getServerSession(authOptions) as Session | null;
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session.user?.role || 'guest';
+    const userRole = (session.user as any)?.role || 'guest';
     if (!hasPermission(userRole, Permission.VIEW_EMAIL_ANALYTICS)) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
