@@ -96,15 +96,7 @@ export class EmailAgent {
       );
 
       // Prepare Resend email data
-      const emailPayload: {
-        from: string;
-        to: string[];
-        subject: string;
-        html?: string;
-        text?: string;
-        headers?: Record<string, string>;
-        tags?: Array<{ name: string; value: string }>;
-      } = {
+      const emailPayload = {
         from: fromAddress,
         to: recipients,
         subject: data.subject,
@@ -118,7 +110,7 @@ export class EmailAgent {
           { name: 'agent', value: 'email-agent' },
           ...(data.tags || []),
         ],
-      };
+      } as any;
 
       // Send email via Resend
       const result = await this.resend.emails.send(emailPayload);
