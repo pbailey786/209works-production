@@ -1,5 +1,6 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
 import IORedis from 'ioredis';
+import React from 'react';
 import {
   sendEmail,
   validateEmailAddress,
@@ -13,8 +14,8 @@ import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
 import { emailService } from '@/lib/email/email-service';
 import { EmailHelpers } from '@/lib/email/email-helpers';
 
-// Email job types
-export interface EmailJobData {
+// Email job types for queue system
+export interface QueueEmailJobData {
   id: string;
   type:
     | 'job_alert'
@@ -26,6 +27,9 @@ export interface EmailJobData {
   subject: string;
   template: string;
   data: Record<string, any>;
+  react?: React.ReactElement;
+  html?: string;
+  text?: string;
   userId?: string;
   alertId?: string;
   metadata?: Record<string, any>;
@@ -208,13 +212,13 @@ export class EmailQueueService {
    * Add an email job to the queue with security validation
    */
   public async addEmailJob(
-    jobData: Omit<EmailJobData, 'id'>,
+    jobData: Omit<QueueEmailJobData, 'id'>,
     options?: {
       priority?: number;
       delay?: number;
       attempts?: number;
     }
-  ): Promise<Job<EmailJobData>> {
+  ): Promise<Job<QueueEmailJobData>> {
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -272,7 +276,7 @@ export class EmailQueueService {
       throw error;
     }
 
-    const emailJobData: EmailJobData = {
+    const emailJobData: QueueEmailJobData = {
       ...jobData,
       id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     };
@@ -304,14 +308,14 @@ export class EmailQueueService {
    */
   public async addBulkEmailJobs(
     jobs: Array<{
-      data: Omit<EmailJobData, 'id'>;
+      data: Omit<QueueEmailJobData, 'id'>;
       options?: {
         priority?: number;
         delay?: number;
         attempts?: number;
       };
     }>
-  ): Promise<Job<EmailJobData>[]> {
+  ): Promise<Job<QueueEmailJobData>[]> {
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -327,7 +331,7 @@ export class EmailQueueService {
       data: {
         ...job.data,
         id: `email_bulk_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
-      } as EmailJobData,
+      } as QueueEmailJobData,
       opts: {
         priority: this.getPriorityScore(job.data.priority || 'normal'),
         delay: job.options?.delay || job.data.delay || 0,
@@ -345,7 +349,7 @@ export class EmailQueueService {
   /**
    * Process individual email jobs
    */
-  private async processEmailJob(job: Job<EmailJobData>): Promise<void> {
+  private async processEmailJob(job: Job<QueueEmailJobData>): Promise<void> {
     const { data } = job;
     const startTime = Date.now();
 
@@ -422,7 +426,7 @@ export class EmailQueueService {
    * Generate email content based on template
    */
   private async generateEmailContent(
-    data: EmailJobData
+    data: QueueEmailJobData
   ): Promise<React.ReactElement> {
     switch (data.template) {
       case 'job-alert':
@@ -464,7 +468,7 @@ export class EmailQueueService {
    * Log email results
    */
   private async logEmail(
-    data: EmailJobData,
+    data: QueueEmailJobData,
     result: { error?: Error; data?: any },
     startTime: number
   ): Promise<void> {
@@ -679,7 +683,7 @@ export class EmailQueueService {
     alertId: string,
     userId: string,
     priority: 'low' | 'normal' | 'high' | 'critical' = 'normal'
-  ): Promise<Job<EmailJobData>> {
+  ): Promise<Job<QueueEmailJobData>> {
     const topJob = jobs[0];
 
     const emailData = {
@@ -747,7 +751,7 @@ export class EmailQueueService {
     location: string,
     userId: string,
     priority: 'low' | 'normal' | 'high' | 'critical' = 'normal'
-  ): Promise<Job<EmailJobData>> {
+  ): Promise<Job<QueueEmailJobData>> {
     const emailData = {
       userName,
       jobs,
