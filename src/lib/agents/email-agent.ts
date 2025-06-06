@@ -71,7 +71,7 @@ export class EmailAgent {
       // Render React component if provided
       if (data.react) {
         try {
-          htmlContent = render(data.react);
+          htmlContent = await render(data.react);
           if (!textContent) {
             textContent = this.extractTextFromHtml(htmlContent);
           }

@@ -187,13 +187,13 @@ export class TemplateManager {
     try {
       // Create React element
       const element = React.createElement(template.component, finalProps);
-      
+
       // Render to HTML
-      const html = render(element);
-      
+      const html = await render(element);
+
       // Extract text content (simplified)
       const text = this.extractTextFromHtml(html);
-      
+
       // Generate subject (can be enhanced with template-specific logic)
       const subject = this.generateSubject(templateId, finalProps);
 
