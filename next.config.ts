@@ -206,13 +206,66 @@ const nextConfig: NextConfig = {
     // Fix OpenTelemetry critical dependency warnings
     if (isServer) {
       config.externals.push(
+        // OpenTelemetry instrumentations
         '@opentelemetry/instrumentation-express',
         '@opentelemetry/instrumentation-http',
         '@opentelemetry/instrumentation-fs',
         '@opentelemetry/instrumentation-net',
-        '@opentelemetry/auto-instrumentations-node'
+        '@opentelemetry/auto-instrumentations-node',
+        '@opentelemetry/instrumentation-aws-lambda',
+        '@opentelemetry/instrumentation-aws-sdk',
+        '@opentelemetry/instrumentation-bunyan',
+        '@opentelemetry/instrumentation-cassandra-driver',
+        '@opentelemetry/instrumentation-connect',
+        '@opentelemetry/instrumentation-dns',
+        '@opentelemetry/instrumentation-fastify',
+        '@opentelemetry/instrumentation-generic-pool',
+        '@opentelemetry/instrumentation-graphql',
+        '@opentelemetry/instrumentation-grpc',
+        '@opentelemetry/instrumentation-hapi',
+        '@opentelemetry/instrumentation-ioredis',
+        '@opentelemetry/instrumentation-knex',
+        '@opentelemetry/instrumentation-koa',
+        '@opentelemetry/instrumentation-lru-memoizer',
+        '@opentelemetry/instrumentation-memcached',
+        '@opentelemetry/instrumentation-mongodb',
+        '@opentelemetry/instrumentation-mysql',
+        '@opentelemetry/instrumentation-mysql2',
+        '@opentelemetry/instrumentation-nestjs-core',
+        '@opentelemetry/instrumentation-pg',
+        '@opentelemetry/instrumentation-pino',
+        '@opentelemetry/instrumentation-redis',
+        '@opentelemetry/instrumentation-redis-4',
+        '@opentelemetry/instrumentation-restify',
+        '@opentelemetry/instrumentation-router',
+        '@opentelemetry/instrumentation-socket.io',
+        '@opentelemetry/instrumentation-tedious',
+        '@opentelemetry/instrumentation-winston'
       );
     }
+
+    // Suppress critical dependency warnings (simpler approach)
+    const originalWarn = config.infrastructureLogging?.level;
+    config.infrastructureLogging = {
+      level: 'error',
+    };
+
+    // Ignore critical dependency warnings for OpenTelemetry
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      {
+        module: /node_modules\/@opentelemetry/,
+        message: /Critical dependency/,
+      },
+      {
+        module: /node_modules\/bullmq/,
+        message: /Critical dependency/,
+      },
+      {
+        module: /node_modules\/ioredis/,
+        message: /Critical dependency/,
+      }
+    ];
 
     // Security headers for webpack dev server
     if (process.env.NODE_ENV === 'development') {
