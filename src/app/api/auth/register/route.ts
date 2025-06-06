@@ -3,6 +3,7 @@ import { hash } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { prisma } from '../prisma';
 import { UserRole } from '@prisma/client';
+import { EmailHelpers } from '@/lib/email/email-helpers';
 
 export async function POST(req: NextRequest) {
   console.log('🚀 Registration API called');
@@ -59,6 +60,21 @@ export async function POST(req: NextRequest) {
     // Create user
     const user = await prisma.user.create({ data: userData });
     console.log('✅ User created successfully:', user.id);
+
+    // Send welcome email
+    try {
+      await EmailHelpers.sendWelcomeEmail(user.email, {
+        userName: user.name || user.email.split('@')[0],
+        userType: assignedRole === UserRole.employer ? 'employer' : 'job_seeker',
+      }, {
+        userId: user.id,
+        priority: 'high',
+      });
+      console.log('📧 Welcome email sent successfully');
+    } catch (emailError) {
+      console.error('📧 Failed to send welcome email:', emailError);
+      // Don't fail registration if email fails
+    }
 
     console.log('🎉 Registration completed successfully');
     return NextResponse.json(

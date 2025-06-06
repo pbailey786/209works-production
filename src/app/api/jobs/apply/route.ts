@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
+import { EmailHelpers } from '@/lib/email/email-helpers';
 
 const applySchema = z.object({
   jobId: z.string().uuid(),
@@ -87,6 +88,23 @@ export async function POST(request: NextRequest) {
         appliedAt: new Date(),
       },
     });
+
+    // Send confirmation email to job seeker
+    try {
+      await EmailHelpers.sendApplicationConfirmation(user.email, {
+        userName: user.name || user.email.split('@')[0],
+        jobTitle: job.title,
+        companyName: job.company || 'Company',
+        applicationDate: new Date().toLocaleDateString(),
+        jobUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`,
+      }, {
+        userId: user.id,
+        priority: 'normal',
+      });
+      console.log('📧 Application confirmation email sent to job seeker');
+    } catch (emailError) {
+      console.error('📧 Failed to send application confirmation email:', emailError);
+    }
 
     // Log the application for tracking
     await prisma.auditLog

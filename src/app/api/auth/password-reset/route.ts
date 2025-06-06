@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { prisma } from '../prisma';
-import { Resend } from 'resend';
+import { EmailHelpers } from '@/lib/email/email-helpers';
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -29,42 +29,20 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   const resetUrl = `${baseUrl}/reset-password?token=${passwordResetToken}`;
 
-  // Validate Resend API key
-  if (!process.env.RESEND_API_KEY) {
-    console.error('RESEND_API_KEY environment variable is required');
-    return NextResponse.json(
-      { error: 'Email service not configured' },
-      { status: 500 }
-    );
-  }
-
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
+  // Send password reset email using our email system
   try {
-    await resend.emails.send({
-      to: email,
-      from: 'noreply@209.works',
-      subject: 'Reset your password - 209 Works',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333;">Password Reset Request</h2>
-          <p>You requested a password reset for your 209 Works account.</p>
-          <p>Click the link below to reset your password:</p>
-          <a href="${resetUrl}" style="display: inline-block; background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 16px 0;">Reset Password</a>
-          <p><strong>This link will expire in 1 hour.</strong></p>
-          <p>If you didn't request this password reset, you can safely ignore this email.</p>
-          <hr style="margin: 24px 0; border: none; border-top: 1px solid #eee;">
-          <p style="color: #666; font-size: 12px;">209 Works - Built for the 209. Made for the people who work here.</p>
-        </div>
-      `,
+    await EmailHelpers.sendPasswordReset(user.email, {
+      userName: user.name || user.email.split('@')[0],
+      resetUrl,
+    }, {
+      userId: user.id,
+      priority: 'urgent',
     });
-  } catch (err) {
-    console.error('Password reset email send error:', err);
+    console.log('📧 Password reset email sent successfully');
+  } catch (emailError) {
+    console.error('📧 Failed to send password reset email:', emailError);
     return NextResponse.json(
-      {
-        error: 'Email send failed',
-        details: err instanceof Error ? err.message : String(err),
-      },
+      { error: 'Failed to send password reset email' },
       { status: 500 }
     );
   }

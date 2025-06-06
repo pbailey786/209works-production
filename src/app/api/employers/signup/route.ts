@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import bcrypt from 'bcryptjs';
+import { EmailHelpers } from '@/lib/email/email-helpers';
 
 console.log('🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥');
 console.log('🔥 EMPLOYER SIGNUP API ROUTE LOADED! 🔥');
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
     console.log('🔒 Password hashed successfully');
 
     // Create employer user
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         passwordHash: hashedPassword,
@@ -63,6 +64,21 @@ export async function POST(req: NextRequest) {
       },
     });
     console.log('✅ User created successfully!');
+
+    // Send welcome email
+    try {
+      await EmailHelpers.sendWelcomeEmail(user.email, {
+        userName: user.name || user.email.split('@')[0],
+        userType: 'employer',
+      }, {
+        userId: user.id,
+        priority: 'high',
+      });
+      console.log('📧 Welcome email sent successfully');
+    } catch (emailError) {
+      console.error('📧 Failed to send welcome email:', emailError);
+      // Don't fail registration if email fails
+    }
 
     return NextResponse.json({ message: 'Account created' });
   } catch (error) {
