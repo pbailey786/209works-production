@@ -84,6 +84,7 @@ export default function EmailTestIntegrationPage() {
           ...result,
           id: Date.now(),
           testName: emailTests.find(t => t.id === selectedTest)?.name || selectedTest,
+          timestamp: new Date().toISOString(),
         },
         ...prev,
       ]);
@@ -136,6 +137,7 @@ export default function EmailTestIntegrationPage() {
           ...result,
           id: Date.now() + Math.random(),
           testName: test.name,
+          timestamp: new Date().toISOString(),
         });
 
         // Small delay between tests
@@ -146,6 +148,7 @@ export default function EmailTestIntegrationPage() {
           error: error instanceof Error ? error.message : 'Unknown error',
           testName: test.name,
           id: Date.now() + Math.random(),
+          timestamp: new Date().toISOString(),
         });
       }
     }
@@ -298,7 +301,7 @@ export default function EmailTestIntegrationPage() {
                       <div className="flex items-center justify-between">
                         <h4 className="font-medium">{result.testName}</h4>
                         <span className="text-sm text-gray-500">
-                          {new Date(result.timestamp).toLocaleTimeString()}
+                          {result.timestamp ? new Date(result.timestamp).toLocaleTimeString() : 'Unknown time'}
                         </span>
                       </div>
                       <AlertDescription className="mt-1">
