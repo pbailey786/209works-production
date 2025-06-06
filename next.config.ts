@@ -203,6 +203,17 @@ const nextConfig: NextConfig = {
       };
     }
 
+    // Fix OpenTelemetry critical dependency warnings
+    if (isServer) {
+      config.externals.push(
+        '@opentelemetry/instrumentation-express',
+        '@opentelemetry/instrumentation-http',
+        '@opentelemetry/instrumentation-fs',
+        '@opentelemetry/instrumentation-net',
+        '@opentelemetry/auto-instrumentations-node'
+      );
+    }
+
     // Security headers for webpack dev server
     if (process.env.NODE_ENV === 'development') {
       config.devServer = {
