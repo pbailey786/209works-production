@@ -161,9 +161,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Log the test email action
+    const clientIp = request.headers.get('x-forwarded-for') ||
+                     request.headers.get('x-real-ip') ||
+                     'unknown';
     SecurityLogger.loginSuccess(
       userId || 'admin',
-      request.ip || 'unknown',
+      clientIp,
       `Test email sent: ${testType} to ${recipientEmail}`
     );
 
