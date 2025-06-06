@@ -65,8 +65,8 @@ export class EmailAgent {
       }
 
       // Prepare email content
-      let htmlContent = data.html;
-      let textContent = data.text;
+      let htmlContent: string | undefined = data.html;
+      let textContent: string | undefined = data.text;
 
       // Render React component if provided
       if (data.react) {
@@ -96,7 +96,15 @@ export class EmailAgent {
       );
 
       // Prepare Resend email data
-      const emailPayload = {
+      const emailPayload: {
+        from: string;
+        to: string[];
+        subject: string;
+        html?: string;
+        text?: string;
+        headers?: Record<string, string>;
+        tags?: Array<{ name: string; value: string }>;
+      } = {
         from: fromAddress,
         to: recipients,
         subject: data.subject,
