@@ -129,21 +129,22 @@ export default async function AnalyticsPage() {
     }),
     ]);
 
-    // Assign results to variables
-    totalUsers = results[0];
-    newUsersThisMonth = results[1];
-    newUsersLastMonth = results[2];
-    totalJobs = results[3];
-    newJobsThisMonth = results[4];
-    newJobsLastMonth = results[5];
-    totalApplications = results[6];
-    applicationsThisMonth = results[7];
-    applicationsLastMonth = results[8];
-    totalAlerts = results[9];
-    activeAlerts = results[10];
-    userGrowthData = results[11];
-    jobPostingData = results[12];
-    applicationData = results[13];
+    // Assign results to variables (cast to any[] to fix TypeScript error)
+    const typedResults = results as any[];
+    totalUsers = typedResults[0];
+    newUsersThisMonth = typedResults[1];
+    newUsersLastMonth = typedResults[2];
+    totalJobs = typedResults[3];
+    newJobsThisMonth = typedResults[4];
+    newJobsLastMonth = typedResults[5];
+    totalApplications = typedResults[6];
+    applicationsThisMonth = typedResults[7];
+    applicationsLastMonth = typedResults[8];
+    totalAlerts = typedResults[9];
+    activeAlerts = typedResults[10];
+    userGrowthData = typedResults[11];
+    jobPostingData = typedResults[12];
+    applicationData = typedResults[13];
   } catch (error) {
     console.error('Error fetching analytics data:', error);
     // Use default values if database queries fail
