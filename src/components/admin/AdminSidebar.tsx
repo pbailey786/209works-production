@@ -21,6 +21,9 @@ import {
   ChevronDown,
   ChevronRight,
   CloudDownload,
+  Mail,
+  Send,
+  TestTube,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Permission } from '@/lib/rbac/permissions';
@@ -152,6 +155,38 @@ const navigation: NavItem[] = [
         href: '/admin/advanced-analytics',
         icon: BarChart3,
         permission: Permission.VIEW_ANALYTICS,
+      },
+    ],
+  },
+  {
+    name: 'Email Management',
+    href: '/admin/email',
+    icon: Mail,
+    permission: Permission.MANAGE_EMAIL_TEMPLATES,
+    children: [
+      {
+        name: 'Dashboard',
+        href: '/admin/email',
+        icon: Mail,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES,
+      },
+      {
+        name: 'Templates',
+        href: '/admin/email/templates',
+        icon: FileText,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES,
+      },
+      {
+        name: 'Campaigns',
+        href: '/admin/email/campaigns',
+        icon: Send,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES,
+      },
+      {
+        name: 'Test Email',
+        href: '/admin/email/test',
+        icon: TestTube,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES,
       },
     ],
   },

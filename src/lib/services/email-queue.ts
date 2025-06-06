@@ -10,6 +10,8 @@ import { SecurityLogger } from '@/lib/security/security-monitor';
 import { prisma } from '../../app/api/auth/prisma';
 import JobAlertEmail from '@/components/emails/job-alert-email';
 import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
+import { emailService } from '@/lib/email/email-service';
+import { EmailHelpers } from '@/lib/email/email-helpers';
 
 // Email job types
 export interface EmailJobData {
