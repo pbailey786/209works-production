@@ -48,7 +48,15 @@ export default function EmailTestIntegrationPage() {
   const [selectedTest, setSelectedTest] = useState('');
   const [recipientEmail, setRecipientEmail] = useState(session?.user?.email || '');
   const [isLoading, setIsLoading] = useState(false);
-  const [testResults, setTestResults] = useState<any[]>([]);
+  const [testResults, setTestResults] = useState<Array<{
+    success: boolean;
+    error?: string;
+    message?: string;
+    testName: string;
+    id: number;
+    timestamp?: string;
+    recipientEmail?: string;
+  }>>([]);
 
   const runTest = async () => {
     if (!selectedTest || !recipientEmail) {
@@ -100,7 +108,15 @@ export default function EmailTestIntegrationPage() {
     }
 
     setIsLoading(true);
-    const results = [];
+    const results: Array<{
+      success: boolean;
+      error?: string;
+      message?: string;
+      testName: string;
+      id: number;
+      timestamp?: string;
+      recipientEmail?: string;
+    }> = [];
 
     for (const test of emailTests) {
       try {
