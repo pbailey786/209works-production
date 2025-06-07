@@ -4,6 +4,8 @@ import { render } from '@react-email/render';
 // Import email templates
 import JobAlertEmail from '@/components/emails/job-alert-email';
 import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
+import WelcomeJobSeekerEmail from '@/components/emails/welcome-job-seeker-email';
+import WelcomeEmployerEmail from '@/components/emails/welcome-employer-email';
 import WelcomeEmail from '@/components/emails/welcome-email';
 import PasswordResetEmail from '@/components/emails/password-reset-email';
 
@@ -104,9 +106,49 @@ export class TemplateManager {
 
     // System Templates
     this.registerTemplate({
+      id: 'welcome-job-seeker',
+      name: 'Welcome Job Seeker',
+      description: 'Welcome new job seekers to the platform',
+      category: 'job_seeker',
+      component: WelcomeJobSeekerEmail,
+      defaultProps: {
+        userName: 'Job Seeker',
+        loginUrl: 'https://209.works/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+      },
+      requiredProps: ['userName'],
+      previewProps: {
+        userName: 'Alex Rodriguez',
+        loginUrl: 'https://209.works/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+      },
+    });
+
+    this.registerTemplate({
+      id: 'welcome-employer',
+      name: 'Welcome Employer',
+      description: 'Welcome new employers to the platform',
+      category: 'employer',
+      component: WelcomeEmployerEmail,
+      defaultProps: {
+        companyName: 'Your Company',
+        contactName: 'Hiring Manager',
+        loginUrl: 'https://209.works/employer/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+      },
+      requiredProps: ['companyName', 'contactName'],
+      previewProps: {
+        companyName: 'Central Valley Tech Solutions',
+        contactName: 'Maria Garcia',
+        loginUrl: 'https://209.works/employer/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+      },
+    });
+
+    this.registerTemplate({
       id: 'welcome-email',
-      name: 'Welcome Email',
-      description: 'Welcome new users to the platform',
+      name: 'Welcome Email (Legacy)',
+      description: 'Legacy welcome email template',
       category: 'system',
       component: WelcomeEmail,
       defaultProps: {
@@ -225,6 +267,10 @@ export class TemplateManager {
       case 'weekly-digest':
         const jobCount = props.jobs?.length || 0;
         return `${jobCount} New Jobs This Week in the 209 Area`;
+      case 'welcome-job-seeker':
+        return `Welcome to 209 Works, ${props.userName}!`;
+      case 'welcome-employer':
+        return `Welcome to 209 Works, ${props.companyName}!`;
       case 'welcome-email':
         return 'Welcome to 209 Works!';
       case 'password-reset':

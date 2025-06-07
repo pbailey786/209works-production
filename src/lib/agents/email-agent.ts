@@ -100,16 +100,22 @@ export class EmailAgent {
         ? fromAddress.match(/<([^>]+)>/)?.[1] || fromAddress
         : fromAddress;
 
-      // Prepare Resend email data with clean format (no custom headers to avoid validation issues)
+      // Prepare Resend email data with clean format and anti-spam headers
       const emailPayload: any = {
         from: `209 Works <${cleanFromAddress}>`,
         to: recipients,
         subject: data.subject,
+        reply_to: cleanFromAddress,
+        headers: {
+          'List-Unsubscribe': `<mailto:unsubscribe@209.works?subject=unsubscribe>`,
+          'X-Entity-Ref-ID': `209works-${Date.now()}`,
+        },
         tags: [
           { name: 'priority', value: data.priority },
           { name: 'environment', value: process.env.NODE_ENV || 'development' },
           { name: 'source', value: '209works' },
           { name: 'agent', value: 'email-agent' },
+          { name: 'type', value: data.template || 'transactional' },
           ...(data.tags || []),
         ],
       };
@@ -277,6 +283,57 @@ export class EmailAgent {
       .replace(/&#39;/g, "'")
       .replace(/\s+/g, ' ') // Normalize whitespace
       .trim();
+  }
+
+  /**
+   * Send welcome email to new users
+   */
+  async sendWelcomeEmail(userData: {
+    email: string;
+    name: string;
+    userType: 'job_seeker' | 'employer';
+    companyName?: string;
+  }): Promise<EmailResult> {
+    try {
+      let templateId: string;
+      let templateData: any;
+
+      if (userData.userType === 'employer') {
+        templateId = 'welcome-employer';
+        templateData = {
+          companyName: userData.companyName || userData.name,
+          contactName: userData.name,
+          loginUrl: 'https://209.works/employer/signin',
+          unsubscribeUrl: 'https://209.works/unsubscribe',
+        };
+      } else {
+        templateId = 'welcome-job-seeker';
+        templateData = {
+          userName: userData.name,
+          loginUrl: 'https://209.works/signin',
+          unsubscribeUrl: 'https://209.works/unsubscribe',
+        };
+      }
+
+      const rendered = await this.templateManager.renderTemplate(templateId, templateData);
+
+      return await this.sendEmail({
+        to: [userData.email],
+        subject: rendered.subject,
+        html: rendered.html,
+        text: rendered.text,
+        template: templateId,
+        priority: 'high',
+        tags: [
+          { name: 'user_type', value: userData.userType },
+          { name: 'onboarding', value: 'welcome' },
+          { name: 'template_version', value: 'v2' },
+        ],
+      });
+    } catch (error) {
+      console.error('Failed to send welcome email:', error);
+      throw error;
+    }
   }
 
   /**
