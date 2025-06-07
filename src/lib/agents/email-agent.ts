@@ -122,15 +122,24 @@ export class EmailAgent {
         ],
       };
 
-      // Add content based on what's available
-      // Prioritize React component if available, otherwise use HTML
-      if (data.react) {
-        emailPayload.react = data.react;
-      } else if (htmlContent) {
+      // Add content - ensure HTML is properly formatted
+      // Our templates are already rendered to HTML by the template manager
+      if (htmlContent) {
+        // Ensure HTML content is properly formatted
         emailPayload.html = htmlContent;
+
+        // Debug: Log HTML content info
+        if (this.isDevelopment) {
+          console.log(`[EMAIL-AGENT] HTML content length: ${htmlContent.length}`);
+          console.log(`[EMAIL-AGENT] HTML starts with: ${htmlContent.substring(0, 100)}...`);
+        }
+      } else if (data.react) {
+        // Fallback to React component if no HTML
+        emailPayload.react = data.react;
       }
 
-      if (textContent) {
+      // Add text content for accessibility and fallback
+      if (textContent && textContent.length > 50) {
         emailPayload.text = textContent;
       }
 
