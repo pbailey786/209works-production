@@ -89,20 +89,19 @@ export class EmailAgent {
       // Generate secure headers
       const fromAddress = process.env.RESEND_EMAIL_FROM || 'noreply@209.works';
       const recipients = Array.isArray(data.to) ? data.to : [data.to];
-      const secureHeaders = emailSecurityValidator.generateSecureHeaders(
-        fromAddress,
-        recipients,
-        data.subject
-      );
 
-      // Prepare Resend email data
+      // Ensure from address is in correct format for Resend
+      const cleanFromAddress = fromAddress.includes('<')
+        ? fromAddress.match(/<([^>]+)>/)?.[1] || fromAddress
+        : fromAddress;
+
+      // Prepare Resend email data with clean format (no custom headers to avoid validation issues)
       const emailPayload = {
-        from: fromAddress,
+        from: `209 Works <${cleanFromAddress}>`,
         to: recipients,
         subject: data.subject,
         html: htmlContent,
         text: textContent,
-        headers: secureHeaders,
         tags: [
           { name: 'priority', value: data.priority },
           { name: 'environment', value: process.env.NODE_ENV || 'development' },
@@ -110,7 +109,7 @@ export class EmailAgent {
           { name: 'agent', value: 'email-agent' },
           ...(data.tags || []),
         ],
-      } as any;
+      };
 
       // Send email via Resend
       const result = await this.resend.emails.send(emailPayload);
