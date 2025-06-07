@@ -97,14 +97,27 @@ function getSampleDataForTemplate(templateId: string) {
 
   switch (templateId) {
     case 'welcome':
+    case 'welcome-job-seeker':
       return {
         ...baseData,
+        userName: 'John Doe',
+        loginUrl: 'https://209.works/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
         welcomeMessage: 'Welcome to 209 Works! We\'re excited to help you find your next opportunity in the Central Valley.',
         nextSteps: [
           'Complete your profile',
           'Upload your resume',
           'Start browsing jobs',
         ],
+      };
+
+    case 'welcome-employer':
+      return {
+        ...baseData,
+        companyName: 'Tech Solutions Inc.',
+        contactName: 'Jane Smith',
+        loginUrl: 'https://209.works/employers/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
       };
 
     case 'job-alert':
@@ -163,6 +176,7 @@ function getSampleDataForTemplate(templateId: string) {
     case 'password-reset':
       return {
         ...baseData,
+        userName: 'John Doe',
         resetUrl: 'https://209.works/reset-password?token=sample-token',
         expiryTime: '24 hours',
       };

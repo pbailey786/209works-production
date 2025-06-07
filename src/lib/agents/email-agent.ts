@@ -123,6 +123,7 @@ export class EmailAgent {
       };
 
       // Add content based on what's available
+      // Prioritize React component if available, otherwise use HTML
       if (data.react) {
         emailPayload.react = data.react;
       } else if (htmlContent) {

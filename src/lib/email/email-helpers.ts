@@ -96,7 +96,10 @@ export class EmailHelpers {
     data: WelcomeEmailData,
     options: EmailServiceOptions = {}
   ): Promise<EmailResult> {
-    return emailService.sendTemplatedEmail('welcome-email', to, data, {
+    // Determine the correct template based on user type
+    const templateId = data.userType === 'employer' ? 'welcome-employer' : 'welcome-job-seeker';
+
+    return emailService.sendTemplatedEmail(templateId, to, data, {
       priority: 'high',
       tags: [
         { name: 'type', value: 'welcome' },
@@ -223,9 +226,9 @@ export class EmailHelpers {
     message: string,
     options: EmailServiceOptions = {}
   ): Promise<EmailResult> {
-    return emailService.sendTemplatedEmail('system-notification', to, { title, message }, {
+    return emailService.sendTemplatedEmail('platform-notice', to, { title, message }, {
       priority: 'normal',
-      tags: [{ name: 'type', value: 'system-notification' }],
+      tags: [{ name: 'type', value: 'platform-notice' }],
       ...options,
     });
   }
