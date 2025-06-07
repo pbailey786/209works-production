@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
 
         // Test API connection by getting domains (this doesn't send an email)
         const domains = await resend.domains.list();
-        
+
         return NextResponse.json({
           success: true,
           message: 'Resend API connection successful',
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
           },
           apiTest: {
             connected: true,
-            domainsCount: domains.data?.length || 0,
+            domainsCount: Array.isArray(domains.data) ? domains.data.length : 0,
           }
         });
       } catch (error) {
