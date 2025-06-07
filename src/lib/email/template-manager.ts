@@ -214,7 +214,25 @@ export class TemplateManager {
   async renderTemplate(templateId: string, props: Record<string, any>): Promise<TemplateRenderResult> {
     const template = this.getTemplate(templateId);
     if (!template) {
-      throw new Error(`Template not found: ${templateId}`);
+      // Return a fallback template for preview purposes
+      const fallbackHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #dc2626;">Template Not Found</h1>
+          <p>The email template "${templateId}" could not be found.</p>
+          <p>Available templates:</p>
+          <ul>
+            ${Object.keys(this.templates).map(id => `<li>${id}</li>`).join('')}
+          </ul>
+          <hr style="margin: 20px 0;">
+          <p style="color: #666; font-size: 12px;">This is a preview message from 209 Works Email System</p>
+        </div>
+      `;
+
+      return {
+        html: fallbackHtml,
+        subject: `Template Not Found: ${templateId}`,
+        text: `Template "${templateId}" not found. Available templates: ${Object.keys(this.templates).join(', ')}`
+      };
     }
 
     // Validate required props

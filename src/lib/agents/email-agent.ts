@@ -117,7 +117,7 @@ export class EmailAgent {
           { name: 'environment', value: process.env.NODE_ENV || 'development' },
           { name: 'source', value: '209works' },
           { name: 'agent', value: 'email-agent' },
-          { name: 'type', value: data.template || 'transactional' },
+          { name: 'email_type', value: data.template || 'transactional' },
           ...(data.tags || []),
         ],
       };
