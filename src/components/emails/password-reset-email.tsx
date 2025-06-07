@@ -20,18 +20,22 @@ export default function PasswordResetEmail({
   userName = 'User',
   resetUrl = '#',
 }: PasswordResetEmailProps) {
-  const previewText = 'Reset your 209 Works password';
+  const previewText = '🔒 Reset your 209 Works password - secure link inside';
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="supported-color-schemes" content="light dark" />
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
             <Text style={logo}>209 Works</Text>
-            <Text style={tagline}>Password Reset Request</Text>
+            <Text style={tagline}>🔒 Password Reset Request</Text>
           </Section>
 
           {/* Main Content */}
@@ -46,19 +50,19 @@ export default function PasswordResetEmail({
             {/* Security Alert Box */}
             <Section style={alertBox}>
               <Text style={alertIcon}>🔒</Text>
-              <div>
+              <Section style={alertContent}>
                 <Text style={alertTitle}>Security Notice</Text>
                 <Text style={alertText}>
-                  This password reset link will expire in 1 hour for your security. 
+                  This password reset link will expire in <strong>1 hour</strong> for your security. 
                   If you didn't request this reset, you can safely ignore this email.
                 </Text>
-              </div>
+              </Section>
             </Section>
 
             {/* Reset Button */}
             <Section style={buttonSection}>
               <Button style={resetButton} href={resetUrl}>
-                Reset My Password
+                🔑 Reset My Password
               </Button>
             </Section>
 
@@ -66,27 +70,29 @@ export default function PasswordResetEmail({
             <Text style={alternativeText}>
               If the button above doesn't work, copy and paste this link into your browser:
             </Text>
-            <Text style={linkText}>
-              <Link href={resetUrl} style={linkStyle}>
-                {resetUrl}
-              </Link>
-            </Text>
+            <Section style={linkContainer}>
+              <Text style={linkText}>
+                <Link href={resetUrl} style={linkStyle}>
+                  {resetUrl}
+                </Link>
+              </Text>
+            </Section>
 
             {/* Security Tips */}
             <Section style={tipsSection}>
-              <Text style={tipsTitle}>Password Security Tips:</Text>
-              <div style={tipsList}>
-                <Text style={tipItem}>• Use at least 8 characters</Text>
-                <Text style={tipItem}>• Include uppercase and lowercase letters</Text>
-                <Text style={tipItem}>• Add numbers and special characters</Text>
-                <Text style={tipItem}>• Avoid using personal information</Text>
-                <Text style={tipItem}>• Don't reuse passwords from other accounts</Text>
-              </div>
+              <Text style={tipsTitle}>💡 Password Security Tips</Text>
+              <Section style={tipsList}>
+                <Text style={tipItem}>✅ Use at least 8 characters</Text>
+                <Text style={tipItem}>✅ Include uppercase and lowercase letters</Text>
+                <Text style={tipItem}>✅ Add numbers and special characters</Text>
+                <Text style={tipItem}>✅ Avoid using personal information</Text>
+                <Text style={tipItem}>✅ Don't reuse passwords from other accounts</Text>
+              </Section>
             </Section>
 
             {/* Help Section */}
             <Section style={helpSection}>
-              <Text style={helpTitle}>Need Help?</Text>
+              <Text style={helpTitle}>Need Help? 🤝</Text>
               <Text style={helpText}>
                 If you're having trouble resetting your password or didn't request this reset, 
                 please contact our support team at{' '}
@@ -94,24 +100,26 @@ export default function PasswordResetEmail({
                   support@209.works
                 </Link>{' '}
                 or visit our{' '}
-                <Link href="https://209.works/support" style={helpLink}>
+                <Link href="https://209.works/contact" style={helpLink}>
                   help center
                 </Link>.
               </Text>
             </Section>
 
             <Text style={footer}>
-              Stay secure,
+              Stay secure! 🛡️
               <br />
-              The 209 Works Security Team
+              <strong>The 209 Works Security Team</strong>
             </Text>
           </Section>
 
           {/* Footer */}
           <Hr style={divider} />
           <Section style={footerSection}>
+            <Text style={footerTitle}>209 Works</Text>
+            <Text style={footerSubtitle}>Your trusted Central Valley job platform</Text>
             <Text style={footerText}>
-              This email was sent to you because a password reset was requested for your 209 Works account.
+              This email was sent because a password reset was requested for your 209 Works account.
               <br />
               If you didn't make this request, please ignore this email or contact support.
             </Text>
@@ -127,79 +135,92 @@ export default function PasswordResetEmail({
   );
 }
 
-// Styles
+// Styles with new brand colors and email-safe CSS
 const main = {
-  backgroundColor: '#f6f9fc',
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  backgroundColor: '#f8fafc',
+  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  WebkitFontSmoothing: 'antialiased' as const,
+  MozOsxFontSmoothing: 'grayscale' as const,
+  textRendering: 'optimizeLegibility' as const,
 };
 
 const container = {
   backgroundColor: '#ffffff',
   margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
   maxWidth: '600px',
+  border: '1px solid #e2e8f0',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
 };
 
 const header = {
-  padding: '32px 20px',
+  backgroundColor: '#2d4a3e',
+  backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
+  padding: '40px 24px',
   textAlign: 'center' as const,
-  backgroundColor: '#dc2626',
-  color: '#ffffff',
 };
 
 const logo = {
-  fontSize: '32px',
+  color: '#9fdf9f',
+  fontSize: '28px',
   fontWeight: 'bold',
-  margin: '0',
+  margin: '0 0 8px 0',
+  letterSpacing: '-0.5px',
 };
 
 const tagline = {
-  fontSize: '14px',
-  margin: '8px 0 0 0',
-  opacity: 0.9,
+  color: '#ffffff',
+  fontSize: '18px',
+  margin: '0',
+  fontWeight: '500',
 };
 
 const content = {
-  padding: '20px',
+  padding: '32px 24px',
 };
 
 const greeting = {
-  fontSize: '18px',
+  fontSize: '20px',
   fontWeight: '600',
-  color: '#1f2937',
-  margin: '0 0 16px 0',
+  color: '#1e293b',
+  margin: '0 0 20px 0',
 };
 
 const intro = {
   fontSize: '16px',
-  color: '#374151',
+  color: '#475569',
   lineHeight: '1.6',
-  margin: '0 0 24px 0',
+  margin: '0 0 28px 0',
 };
 
 const alertBox = {
   display: 'flex',
   alignItems: 'flex-start',
   backgroundColor: '#fef2f2',
-  border: '1px solid #fecaca',
+  border: '2px solid #fecaca',
+  borderLeft: '4px solid #ff6b35',
   borderRadius: '8px',
-  padding: '16px',
+  padding: '20px',
   margin: '24px 0',
 };
 
 const alertIcon = {
-  fontSize: '20px',
-  margin: '0 12px 0 0',
+  fontSize: '24px',
+  margin: '0 16px 0 0',
   lineHeight: '1',
+  flexShrink: 0,
+};
+
+const alertContent = {
+  flex: '1',
 };
 
 const alertTitle = {
-  fontSize: '14px',
+  fontSize: '16px',
   fontWeight: '600',
   color: '#dc2626',
-  margin: '0 0 4px 0',
+  margin: '0 0 8px 0',
 };
 
 const alertText = {
@@ -215,47 +236,60 @@ const buttonSection = {
 };
 
 const resetButton = {
-  backgroundColor: '#dc2626',
-  borderRadius: '6px',
+  backgroundColor: '#ff6b35',
+  backgroundImage: 'linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%)',
+  borderRadius: '8px',
   color: '#ffffff',
-  fontSize: '16px',
+  fontSize: '18px',
   fontWeight: 'bold',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
-  padding: '14px 28px',
+  padding: '16px 32px',
+  border: 'none',
+  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)',
 };
 
 const alternativeText = {
   fontSize: '14px',
-  color: '#6b7280',
-  margin: '24px 0 8px 0',
+  color: '#64748b',
+  margin: '32px 0 12px 0',
+  textAlign: 'center' as const,
+};
+
+const linkContainer = {
+  backgroundColor: '#f8fafc',
+  border: '1px solid #e2e8f0',
+  borderRadius: '6px',
+  padding: '12px',
+  margin: '0 0 32px 0',
   textAlign: 'center' as const,
 };
 
 const linkText = {
-  textAlign: 'center' as const,
-  margin: '0 0 24px 0',
+  margin: '0',
 };
 
 const linkStyle = {
-  color: '#dc2626',
-  fontSize: '14px',
+  color: '#ff6b35',
+  fontSize: '12px',
   wordBreak: 'break-all' as const,
+  textDecoration: 'underline',
 };
 
 const tipsSection = {
-  backgroundColor: '#f9fafb',
+  backgroundColor: '#fff7ed',
   borderRadius: '8px',
   padding: '20px',
   margin: '32px 0',
+  border: '2px solid #fed7aa',
 };
 
 const tipsTitle = {
   fontSize: '16px',
   fontWeight: '600',
-  color: '#1f2937',
-  margin: '0 0 12px 0',
+  color: '#ea580c',
+  margin: '0 0 16px 0',
 };
 
 const tipsList = {
@@ -264,61 +298,82 @@ const tipsList = {
 
 const tipItem = {
   fontSize: '14px',
-  color: '#374151',
-  margin: '4px 0',
+  color: '#7c2d12',
+  margin: '8px 0',
   lineHeight: '1.5',
+  display: 'block',
 };
 
 const helpSection = {
+  backgroundColor: '#f0fdf4',
+  borderRadius: '8px',
+  padding: '20px',
   margin: '32px 0',
+  border: '1px solid #bbf7d0',
 };
 
 const helpTitle = {
   fontSize: '16px',
   fontWeight: '600',
-  color: '#1f2937',
+  color: '#2d4a3e',
   margin: '0 0 8px 0',
 };
 
 const helpText = {
   fontSize: '14px',
-  color: '#6b7280',
+  color: '#166534',
   lineHeight: '1.6',
   margin: '0',
 };
 
 const helpLink = {
-  color: '#dc2626',
+  color: '#ff6b35',
   textDecoration: 'underline',
+  fontWeight: '500',
 };
 
 const footer = {
   fontSize: '16px',
-  color: '#6b7280',
+  color: '#64748b',
   margin: '32px 0 0 0',
   textAlign: 'center' as const,
+  lineHeight: '1.6',
 };
 
 const divider = {
-  borderColor: '#e5e7eb',
-  margin: '20px 0',
+  borderColor: '#e2e8f0',
+  margin: '0',
 };
 
 const footerSection = {
-  padding: '0 20px',
+  backgroundColor: '#f8fafc',
+  padding: '24px',
   textAlign: 'center' as const,
+};
+
+const footerTitle = {
+  color: '#2d4a3e',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  margin: '0 0 4px 0',
+};
+
+const footerSubtitle = {
+  color: '#64748b',
+  fontSize: '14px',
+  margin: '0 0 16px 0',
 };
 
 const footerText = {
   fontSize: '12px',
-  color: '#6b7280',
-  margin: '16px 0 8px 0',
+  color: '#64748b',
+  margin: '0 0 16px 0',
   lineHeight: '1.5',
 };
 
 const copyrightText = {
   fontSize: '12px',
-  color: '#9ca3af',
-  margin: '8px 0 0 0',
+  color: '#94a3b8',
+  margin: '0',
   lineHeight: '1.5',
 };

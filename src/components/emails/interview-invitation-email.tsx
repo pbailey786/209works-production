@@ -17,137 +17,208 @@ interface InterviewInvitationEmailProps {
   companyName: string;
   interviewDate: string;
   interviewTime: string;
-  interviewType: 'in-person' | 'phone' | 'video';
+  interviewType: 'in-person' | 'video' | 'phone';
   location?: string;
   meetingLink?: string;
   interviewerName: string;
   interviewerTitle: string;
+  interviewDuration: string;
+  specialInstructions?: string;
   contactEmail: string;
-  contactPhone?: string;
-  instructions?: string;
+  confirmationRequired?: boolean;
+  confirmationDeadline?: string;
 }
 
 export default function InterviewInvitationEmail({
   candidateName = 'Candidate',
   jobTitle = 'Position',
   companyName = 'Company',
-  interviewDate = 'Date TBD',
-  interviewTime = 'Time TBD',
-  interviewType = 'video',
+  interviewDate = 'Monday, January 15, 2024',
+  interviewTime = '2:00 PM PST',
+  interviewType = 'in-person',
   location,
   meetingLink,
   interviewerName = 'Hiring Manager',
-  interviewerTitle = 'Manager',
+  interviewerTitle = 'Department Head',
+  interviewDuration = '45 minutes',
+  specialInstructions,
   contactEmail = 'hr@company.com',
-  contactPhone,
-  instructions,
+  confirmationRequired = true,
+  confirmationDeadline,
 }: InterviewInvitationEmailProps) {
-  const previewText = `Interview invitation for ${jobTitle} at ${companyName}`;
+  const previewText = `🎉 Interview invitation for ${jobTitle} at ${companyName} - ${interviewDate}`;
+
+  const getInterviewTypeIcon = () => {
+    switch (interviewType) {
+      case 'video':
+        return '💻';
+      case 'phone':
+        return '📞';
+      default:
+        return '🏢';
+    }
+  };
+
+  const getInterviewTypeText = () => {
+    switch (interviewType) {
+      case 'video':
+        return 'Video Interview';
+      case 'phone':
+        return 'Phone Interview';
+      default:
+        return 'In-Person Interview';
+    }
+  };
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="supported-color-schemes" content="light dark" />
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
             <Text style={logo}>209 Works</Text>
-            <Text style={tagline}>Connecting Talent with Opportunity</Text>
+            <Text style={tagline}>🎉 Interview Invitation</Text>
           </Section>
 
           {/* Main Content */}
           <Section style={content}>
             <Text style={greeting}>Dear {candidateName},</Text>
             
-            <Text style={congratsText}>
-              <strong>Congratulations!</strong> We're excited to invite you for an interview for the{' '}
-              <strong>{jobTitle}</strong> position at <strong>{companyName}</strong>.
+            <Text style={intro}>
+              Congratulations! We were impressed with your application for the <strong>{jobTitle}</strong> position 
+              at <strong>{companyName}</strong>. We would like to invite you to the next step in our hiring process.
             </Text>
 
-            {/* Interview Details Card */}
+            {/* Interview Hero Card */}
+            <Section style={heroCard}>
+              <Text style={heroIcon}>🌟</Text>
+              <Text style={heroTitle}>You're Invited to Interview!</Text>
+              <Text style={heroSubtitle}>We're excited to learn more about you</Text>
+            </Section>
+
+            {/* Interview Details */}
             <Section style={detailsCard}>
-              <Text style={cardTitle}>📅 Interview Details</Text>
+              <Text style={detailsTitle}>📅 Interview Details</Text>
               
-              <Section style={detailRow}>
-                <Text style={detailLabel}>Date:</Text>
-                <Text style={detailValue}>{interviewDate}</Text>
-              </Section>
-              
-              <Section style={detailRow}>
-                <Text style={detailLabel}>Time:</Text>
-                <Text style={detailValue}>{interviewTime}</Text>
-              </Section>
-              
-              <Section style={detailRow}>
-                <Text style={detailLabel}>Type:</Text>
-                <Text style={detailValue}>
-                  {interviewType === 'in-person' && '🏢 In-Person Interview'}
-                  {interviewType === 'phone' && '📞 Phone Interview'}
-                  {interviewType === 'video' && '🎥 Video Interview'}
-                </Text>
-              </Section>
-
-              {location && interviewType === 'in-person' && (
-                <Section style={detailRow}>
-                  <Text style={detailLabel}>Location:</Text>
-                  <Text style={detailValue}>{location}</Text>
+              <Section style={detailGrid}>
+                <Section style={detailItem}>
+                  <Text style={detailLabel}>📆 Date:</Text>
+                  <Text style={detailValue}>{interviewDate}</Text>
                 </Section>
-              )}
-
-              {meetingLink && interviewType === 'video' && (
-                <Section style={detailRow}>
-                  <Text style={detailLabel}>Meeting Link:</Text>
-                  <Link href={meetingLink} style={linkStyle}>{meetingLink}</Link>
+                
+                <Section style={detailItem}>
+                  <Text style={detailLabel}>⏰ Time:</Text>
+                  <Text style={detailValue}>{interviewTime}</Text>
                 </Section>
-              )}
-
-              <Hr style={divider} />
-
-              <Section style={detailRow}>
-                <Text style={detailLabel}>Interviewer:</Text>
-                <Text style={detailValue}>{interviewerName}, {interviewerTitle}</Text>
+                
+                <Section style={detailItem}>
+                  <Text style={detailLabel}>{getInterviewTypeIcon()} Type:</Text>
+                  <Text style={detailValue}>{getInterviewTypeText()}</Text>
+                </Section>
+                
+                <Section style={detailItem}>
+                  <Text style={detailLabel}>⌛ Duration:</Text>
+                  <Text style={detailValue}>{interviewDuration}</Text>
+                </Section>
+                
+                {location && (
+                  <Section style={detailItem}>
+                    <Text style={detailLabel}>📍 Location:</Text>
+                    <Text style={detailValue}>{location}</Text>
+                  </Section>
+                )}
+                
+                {meetingLink && (
+                  <Section style={detailItem}>
+                    <Text style={detailLabel}>🔗 Meeting Link:</Text>
+                    <Text style={detailValue}>
+                      <Link href={meetingLink} style={linkStyle}>
+                        Join Interview
+                      </Link>
+                    </Text>
+                  </Section>
+                )}
+                
+                <Section style={detailItem}>
+                  <Text style={detailLabel}>👤 Interviewer:</Text>
+                  <Text style={detailValue}>{interviewerName}</Text>
+                  <Text style={detailSubValue}>{interviewerTitle}</Text>
+                </Section>
               </Section>
             </Section>
 
-            {/* Instructions */}
-            {instructions && (
+            {/* Confirmation Section */}
+            {confirmationRequired && (
+              <Section style={confirmationCard}>
+                <Text style={confirmationTitle}>✅ Please Confirm Your Attendance</Text>
+                <Text style={confirmationText}>
+                  Please reply to this email to confirm your attendance by{' '}
+                  {confirmationDeadline || 'as soon as possible'}. If you need to reschedule, 
+                  please let us know at least 24 hours in advance.
+                </Text>
+                
+                <Section style={buttonContainer}>
+                  <Button style={confirmButton} href={`mailto:${contactEmail}?subject=Interview Confirmation - ${jobTitle}&body=I confirm my attendance for the interview on ${interviewDate} at ${interviewTime}.`}>
+                    Confirm Interview
+                  </Button>
+                </Section>
+              </Section>
+            )}
+
+            {/* Preparation Tips */}
+            <Section style={preparationCard}>
+              <Text style={preparationTitle}>📝 Interview Preparation Tips</Text>
+              <Text style={preparationText}>To help you prepare for your interview:</Text>
+              
+              <Section style={tipsList}>
+                <Text style={tipItem}>✅ Review the job description and requirements thoroughly</Text>
+                <Text style={tipItem}>✅ Prepare specific examples of your relevant experience</Text>
+                <Text style={tipItem}>✅ Research {companyName} and our presence in the Central Valley</Text>
+                <Text style={tipItem}>✅ Prepare thoughtful questions about the role and company</Text>
+                <Text style={tipItem}>✅ Test your technology (for video interviews)</Text>
+                <Text style={tipItem}>✅ Plan to arrive 10-15 minutes early</Text>
+              </Section>
+            </Section>
+
+            {/* Special Instructions */}
+            {specialInstructions && (
               <Section style={instructionsCard}>
-                <Text style={cardTitle}>📋 Additional Instructions</Text>
-                <Text style={instructionsText}>{instructions}</Text>
+                <Text style={instructionsTitle}>📋 Special Instructions</Text>
+                <Text style={instructionsText}>{specialInstructions}</Text>
               </Section>
             )}
 
             {/* What to Expect */}
-            <Section style={expectationsCard}>
-              <Text style={cardTitle}>💡 What to Expect</Text>
-              <Text style={expectationItem}>• Discussion about your background and experience</Text>
-              <Text style={expectationItem}>• Overview of the role and company culture</Text>
-              <Text style={expectationItem}>• Opportunity to ask questions about the position</Text>
-              <Text style={expectationItem}>• Next steps in the interview process</Text>
+            <Section style={expectationCard}>
+              <Text style={expectationTitle}>🎯 What to Expect</Text>
+              <Text style={expectationText}>
+                During the interview, we'll discuss your background, experience, and how you can contribute 
+                to our team. This is also a great opportunity for you to ask questions and learn more about 
+                the position and our company culture.
+              </Text>
             </Section>
 
             {/* Contact Information */}
             <Section style={contactCard}>
-              <Text style={cardTitle}>📞 Questions?</Text>
+              <Text style={contactTitle}>Need to Reschedule or Have Questions? 🤝</Text>
               <Text style={contactText}>
-                If you have any questions or need to reschedule, please contact:
+                If you need to reschedule or have any questions about the interview process, 
+                please don't hesitate to contact us.
               </Text>
               <Text style={contactInfo}>
-                <strong>{interviewerName}</strong><br />
-                📧 {contactEmail}
-                {contactPhone && (
-                  <>
-                    <br />
-                    📱 {contactPhone}
-                  </>
-                )}
+                📧 {contactEmail}<br />
+                👤 {interviewerName}, {interviewerTitle}
               </Text>
             </Section>
 
             <Text style={closingText}>
-              We look forward to meeting you and learning more about your background.
-              Thank you for your interest in joining our team!
+              We're looking forward to meeting you and learning more about your qualifications! 😊
             </Text>
 
             <Text style={signature}>
@@ -161,8 +232,10 @@ export default function InterviewInvitationEmail({
           {/* Footer */}
           <Hr style={divider} />
           <Section style={footerSection}>
+            <Text style={footerTitle}>209 Works</Text>
+            <Text style={footerSubtitle}>Connecting Central Valley talent with local opportunities</Text>
             <Text style={footerText}>
-              This interview was scheduled through 209 Works
+              This interview invitation was sent through 209 Works, the Central Valley's premier job platform.
             </Text>
             <Text style={copyrightText}>
               © {new Date().getFullYear()} 209 Works. All rights reserved.
@@ -174,182 +247,351 @@ export default function InterviewInvitationEmail({
   );
 }
 
-// Styles
+// Styles with new brand colors and email-safe CSS
 const main = {
-  backgroundColor: '#f6f9fc',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  backgroundColor: '#f8fafc',
+  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  WebkitFontSmoothing: 'antialiased' as const,
+  MozOsxFontSmoothing: 'grayscale' as const,
+  textRendering: 'optimizeLegibility' as const,
 };
 
 const container = {
   backgroundColor: '#ffffff',
   margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
   maxWidth: '600px',
+  border: '1px solid #e2e8f0',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
 };
 
 const header = {
-  padding: '32px 20px',
+  backgroundColor: '#2d4a3e',
+  backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
+  padding: '32px 24px',
   textAlign: 'center' as const,
-  backgroundColor: '#059669',
-  color: '#ffffff',
 };
 
 const logo = {
-  fontSize: '32px',
+  color: '#9fdf9f',
+  fontSize: '28px',
   fontWeight: 'bold',
-  margin: '0',
+  margin: '0 0 8px 0',
+  letterSpacing: '-0.5px',
 };
 
 const tagline = {
-  fontSize: '14px',
-  margin: '8px 0 0 0',
-  opacity: 0.9,
+  color: '#ffffff',
+  fontSize: '18px',
+  margin: '0',
+  fontWeight: '500',
 };
 
 const content = {
-  padding: '24px',
+  padding: '32px 24px',
 };
 
 const greeting = {
-  fontSize: '16px',
-  color: '#1f2937',
-  margin: '0 0 16px 0',
+  fontSize: '18px',
+  color: '#1e293b',
+  margin: '0 0 20px 0',
+  fontWeight: '500',
 };
 
-const congratsText = {
+const intro = {
   fontSize: '16px',
-  color: '#1f2937',
+  color: '#374151',
   lineHeight: '1.6',
-  margin: '0 0 24px 0',
+  margin: '0 0 32px 0',
+};
+
+const heroCard = {
+  backgroundColor: '#9fdf9f',
+  backgroundImage: 'linear-gradient(135deg, #9fdf9f 0%, #7dd87d 100%)',
+  borderRadius: '16px',
+  padding: '32px 24px',
+  margin: '32px 0',
+  textAlign: 'center' as const,
+};
+
+const heroIcon = {
+  fontSize: '48px',
+  margin: '0 0 16px 0',
+  display: 'block',
+};
+
+const heroTitle = {
+  fontSize: '24px',
+  fontWeight: 'bold',
+  color: '#1e3329',
+  margin: '0 0 8px 0',
+};
+
+const heroSubtitle = {
+  fontSize: '16px',
+  color: '#1e3329',
+  margin: '0',
+  opacity: 0.8,
 };
 
 const detailsCard = {
-  border: '2px solid #059669',
+  backgroundColor: '#f8fafc',
+  border: '2px solid #e2e8f0',
+  borderLeft: '4px solid #ff6b35',
   borderRadius: '12px',
   padding: '24px',
-  margin: '24px 0',
-  backgroundColor: '#f0fdf4',
+  margin: '32px 0',
 };
 
-const instructionsCard = {
-  border: '1px solid #d1d5db',
-  borderRadius: '8px',
-  padding: '20px',
-  margin: '20px 0',
-  backgroundColor: '#f9fafb',
-};
-
-const expectationsCard = {
-  border: '1px solid #ddd6fe',
-  borderRadius: '8px',
-  padding: '20px',
-  margin: '20px 0',
-  backgroundColor: '#faf5ff',
-};
-
-const contactCard = {
-  border: '1px solid #fbbf24',
-  borderRadius: '8px',
-  padding: '20px',
-  margin: '20px 0',
-  backgroundColor: '#fffbeb',
-};
-
-const cardTitle = {
-  fontSize: '16px',
+const detailsTitle = {
+  fontSize: '20px',
   fontWeight: 'bold',
-  color: '#1f2937',
-  margin: '0 0 16px 0',
+  color: '#1e293b',
+  margin: '0 0 20px 0',
 };
 
-const detailRow = {
+const detailGrid = {
+  margin: '0',
+};
+
+const detailItem = {
   margin: '12px 0',
-  display: 'flex',
-  alignItems: 'center',
+  display: 'block',
 };
 
 const detailLabel = {
   fontSize: '14px',
-  color: '#6b7280',
   fontWeight: '600',
-  margin: '0 16px 0 0',
-  minWidth: '80px',
-  display: 'inline-block',
+  color: '#64748b',
+  margin: '0 0 4px 0',
+  display: 'block',
 };
 
 const detailValue = {
-  fontSize: '14px',
-  color: '#1f2937',
+  fontSize: '16px',
   fontWeight: '500',
+  color: '#1e293b',
   margin: '0',
+  display: 'block',
+};
+
+const detailSubValue = {
+  fontSize: '14px',
+  color: '#64748b',
+  margin: '2px 0 0 0',
+  display: 'block',
 };
 
 const linkStyle = {
-  color: '#059669',
+  color: '#ff6b35',
   textDecoration: 'underline',
-  fontSize: '14px',
+  fontWeight: '500',
 };
 
-const instructionsText = {
-  fontSize: '14px',
-  color: '#374151',
-  lineHeight: '1.6',
-  margin: '0',
+const confirmationCard = {
+  backgroundColor: '#fff7ed',
+  border: '2px solid #fed7aa',
+  borderRadius: '12px',
+  padding: '24px',
+  margin: '32px 0',
+  textAlign: 'center' as const,
 };
 
-const expectationItem = {
-  fontSize: '14px',
-  color: '#374151',
-  margin: '8px 0',
-  lineHeight: '1.5',
-};
-
-const contactText = {
-  fontSize: '14px',
-  color: '#374151',
+const confirmationTitle = {
+  fontSize: '18px',
+  fontWeight: 'bold',
+  color: '#ea580c',
   margin: '0 0 12px 0',
 };
 
-const contactInfo = {
-  fontSize: '14px',
-  color: '#1f2937',
-  margin: '0',
+const confirmationText = {
+  fontSize: '15px',
+  color: '#7c2d12',
   lineHeight: '1.5',
+  margin: '0 0 20px 0',
 };
 
-const closingText = {
+const buttonContainer = {
+  textAlign: 'center' as const,
+  margin: '20px 0',
+};
+
+const confirmButton = {
+  backgroundColor: '#ff6b35',
+  backgroundImage: 'linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%)',
+  borderRadius: '8px',
+  color: '#ffffff',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '14px 28px',
+  border: 'none',
+  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)',
+};
+
+const preparationCard = {
+  backgroundColor: '#f0fdf4',
+  border: '2px solid #bbf7d0',
+  borderRadius: '12px',
+  padding: '24px',
+  margin: '32px 0',
+};
+
+const preparationTitle = {
+  fontSize: '18px',
+  fontWeight: 'bold',
+  color: '#166534',
+  margin: '0 0 12px 0',
+};
+
+const preparationText = {
   fontSize: '15px',
-  color: '#1f2937',
-  lineHeight: '1.6',
+  color: '#166534',
+  margin: '0 0 16px 0',
+};
+
+const tipsList = {
+  margin: '0',
+};
+
+const tipItem = {
+  fontSize: '14px',
+  color: '#166534',
+  margin: '8px 0',
+  lineHeight: '1.4',
+  display: 'block',
+};
+
+const instructionsCard = {
+  backgroundColor: '#f1f5f9',
+  border: '2px solid #cbd5e1',
+  borderRadius: '12px',
+  padding: '24px',
+  margin: '32px 0',
+};
+
+const instructionsTitle = {
+  fontSize: '18px',
+  fontWeight: 'bold',
+  color: '#334155',
+  margin: '0 0 12px 0',
+};
+
+const instructionsText = {
+  fontSize: '15px',
+  color: '#475569',
+  lineHeight: '1.5',
+  margin: '0',
+};
+
+const expectationCard = {
+  backgroundColor: '#f8fafc',
+  border: '1px solid #e2e8f0',
+  borderRadius: '8px',
+  padding: '20px',
   margin: '24px 0',
 };
 
-const signature = {
+const expectationTitle = {
+  fontSize: '16px',
+  fontWeight: 'bold',
+  color: '#2d4a3e',
+  margin: '0 0 8px 0',
+};
+
+const expectationText = {
   fontSize: '14px',
+  color: '#64748b',
+  lineHeight: '1.5',
+  margin: '0',
+};
+
+const contactCard = {
+  backgroundColor: '#fff7ed',
+  border: '2px solid #fed7aa',
+  borderRadius: '12px',
+  padding: '24px',
+  margin: '32px 0',
+  textAlign: 'center' as const,
+};
+
+const contactTitle = {
+  fontSize: '18px',
+  fontWeight: 'bold',
+  color: '#ea580c',
+  margin: '0 0 12px 0',
+};
+
+const contactText = {
+  fontSize: '15px',
+  color: '#7c2d12',
+  lineHeight: '1.5',
+  margin: '0 0 16px 0',
+};
+
+const contactInfo = {
+  fontSize: '15px',
+  color: '#7c2d12',
+  fontWeight: '500',
+  lineHeight: '1.6',
+  margin: '0',
+};
+
+const closingText = {
+  fontSize: '16px',
+  color: '#2d4a3e',
+  fontWeight: '600',
+  textAlign: 'center' as const,
+  margin: '32px 0',
+  padding: '16px',
+  backgroundColor: '#f0fdf4',
+  borderRadius: '8px',
+  border: '1px solid #bbf7d0',
+};
+
+const signature = {
+  fontSize: '15px',
   color: '#374151',
   margin: '24px 0 0 0',
   lineHeight: '1.5',
 };
 
 const divider = {
-  borderColor: '#e5e7eb',
-  margin: '24px 0',
+  borderColor: '#e2e8f0',
+  margin: '0',
 };
 
 const footerSection = {
-  padding: '0 24px',
+  backgroundColor: '#f8fafc',
+  padding: '24px',
   textAlign: 'center' as const,
+};
+
+const footerTitle = {
+  color: '#2d4a3e',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  margin: '0 0 4px 0',
+};
+
+const footerSubtitle = {
+  color: '#64748b',
+  fontSize: '12px',
+  margin: '0 0 12px 0',
 };
 
 const footerText = {
   fontSize: '12px',
-  color: '#6b7280',
-  margin: '16px 0 8px 0',
+  color: '#64748b',
+  margin: '0 0 8px 0',
+  lineHeight: '1.4',
 };
 
 const copyrightText = {
   fontSize: '12px',
-  color: '#9ca3af',
-  margin: '8px 0 0 0',
+  color: '#94a3b8',
+  margin: '0',
 }; 

@@ -6,11 +6,11 @@ import JobAlertEmail from '@/components/emails/job-alert-email';
 import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
 import WelcomeJobSeekerEmail from '@/components/emails/welcome-job-seeker-email';
 import WelcomeEmployerEmail from '@/components/emails/welcome-employer-email';
-import WelcomeEmail from '@/components/emails/welcome-email';
 import PasswordResetEmail from '@/components/emails/password-reset-email';
 import InterviewInvitationEmail from '@/components/emails/interview-invitation-email';
 import ApplicationStatusEmail from '@/components/emails/application-status-email';
 import CompanyNewsletterEmail from '@/components/emails/company-newsletter-email';
+import PlatformNoticeEmail from '@/components/emails/platform-notice-email';
 
 export interface EmailTemplate {
   id: string;
@@ -29,51 +29,50 @@ export interface TemplateRenderResult {
   subject: string;
 }
 
-// Create a singleton instance to ensure consistency
-let templateManagerInstance: TemplateManager | null = null;
-
+/**
+ * Email Template Manager for 209 Works
+ * 
+ * Manages all email templates with consistent branding and styling.
+ * All templates use the new brand colors:
+ * - Orange (#ff6b35): Primary buttons, links, accents
+ * - Dark Green (#2d4a3e): Backgrounds, secondary buttons
+ * - Light Green (#9fdf9f): Hero text, highlights
+ */
 export class TemplateManager {
   private templates: Map<string, EmailTemplate> = new Map();
 
   constructor() {
-    if (templateManagerInstance) {
-      return templateManagerInstance;
-    }
     this.registerDefaultTemplates();
-    templateManagerInstance = this;
   }
 
-  /**
-   * Register default email templates
-   */
   private registerDefaultTemplates() {
     // Job Seeker Templates
     this.registerTemplate({
       id: 'job-alert',
       name: 'Job Alert',
-      description: 'Notification email for new job matches',
+      description: 'Personalized job alert notifications for job seekers',
       category: 'job_seeker',
       component: JobAlertEmail,
       defaultProps: {
         userName: 'Job Seeker',
         jobTitle: 'Software Developer',
         companyName: 'Tech Company',
-        location: 'Modesto, CA',
-        jobType: 'Full-time',
-        description: 'We are looking for a talented developer...',
-        jobUrl: '#',
-        unsubscribeUrl: '#',
-      },
-      requiredProps: ['userName', 'jobTitle', 'companyName', 'location', 'jobUrl', 'unsubscribeUrl'],
-      previewProps: {
-        userName: 'John Doe',
-        jobTitle: 'Senior Software Engineer',
-        companyName: 'Innovative Tech Solutions',
         location: 'Stockton, CA',
-        salary: '$80,000 - $120,000',
         jobType: 'Full-time',
-        description: 'Join our dynamic team and work on cutting-edge projects that make a real impact in the 209 area.',
+        description: 'We are looking for a talented developer to join our team...',
         jobUrl: 'https://209.works/jobs/123',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+      },
+      requiredProps: ['userName', 'jobTitle', 'companyName', 'jobUrl'],
+      previewProps: {
+        userName: 'Alex Rodriguez',
+        jobTitle: 'Marketing Manager',
+        companyName: 'Central Valley Growth Partners',
+        location: 'Modesto, CA',
+        salary: '$55,000 - $70,000',
+        jobType: 'Full-time',
+        description: 'Join our dynamic marketing team and help local businesses grow! We\'re looking for a creative marketing professional with 3+ years of experience in digital marketing, content creation, and campaign management.',
+        jobUrl: 'https://209.works/jobs/marketing-manager-cvgp',
         unsubscribeUrl: 'https://209.works/unsubscribe',
       },
     });
@@ -81,44 +80,53 @@ export class TemplateManager {
     this.registerTemplate({
       id: 'weekly-digest',
       name: 'Weekly Job Digest',
-      description: 'Weekly summary of new job opportunities',
+      description: 'Weekly summary of new job opportunities in the Central Valley',
       category: 'job_seeker',
       component: WeeklyDigestEmail,
       defaultProps: {
         userName: 'Job Seeker',
         jobs: [],
-        unsubscribeUrl: '#',
+        totalJobs: 0,
+        location: '209 Area',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+        viewAllJobsUrl: 'https://209.works/jobs',
       },
-      requiredProps: ['userName', 'jobs', 'unsubscribeUrl'],
+      requiredProps: ['userName', 'jobs', 'totalJobs'],
       previewProps: {
-        userName: 'Sarah Johnson',
+        userName: 'Maria Santos',
+        totalJobs: 23,
+        location: 'Central Valley',
         jobs: [
           {
             id: '1',
-            title: 'Marketing Manager',
-            company: 'Local Business Inc',
+            title: 'Registered Nurse',
+            company: 'Mercy General Hospital',
             location: 'Modesto, CA',
-            salary: '$60,000 - $75,000',
-            url: 'https://209.works/jobs/1',
+            type: 'Full-time',
+            salary: '$75,000 - $85,000',
+            url: 'https://209.works/jobs/rn-mercy',
+            postedDate: '2 days ago',
           },
           {
             id: '2',
-            title: 'Registered Nurse',
-            company: 'Central Valley Hospital',
-            location: 'Turlock, CA',
-            salary: '$70,000 - $85,000',
-            url: 'https://209.works/jobs/2',
+            title: 'Operations Manager',
+            company: 'Valley Manufacturing Co',
+            location: 'Stockton, CA',
+            type: 'Full-time',
+            salary: '$65,000 - $80,000',
+            url: 'https://209.works/jobs/ops-manager-vmc',
+            postedDate: '1 day ago',
           },
         ],
         unsubscribeUrl: 'https://209.works/unsubscribe',
+        viewAllJobsUrl: 'https://209.works/jobs',
       },
     });
 
-    // System Templates
     this.registerTemplate({
       id: 'welcome-job-seeker',
       name: 'Welcome Job Seeker',
-      description: 'Welcome new job seekers to the platform',
+      description: 'Welcome new job seekers to the 209 Works platform',
       category: 'job_seeker',
       component: WelcomeJobSeekerEmail,
       defaultProps: {
@@ -135,65 +143,9 @@ export class TemplateManager {
     });
 
     this.registerTemplate({
-      id: 'welcome-employer',
-      name: 'Welcome Employer',
-      description: 'Welcome new employers to the platform',
-      category: 'employer',
-      component: WelcomeEmployerEmail,
-      defaultProps: {
-        companyName: 'Your Company',
-        contactName: 'Hiring Manager',
-        loginUrl: 'https://209.works/employer/signin',
-        unsubscribeUrl: 'https://209.works/unsubscribe',
-      },
-      requiredProps: ['companyName', 'contactName'],
-      previewProps: {
-        companyName: 'Central Valley Tech Solutions',
-        contactName: 'Maria Garcia',
-        loginUrl: 'https://209.works/employer/signin',
-        unsubscribeUrl: 'https://209.works/unsubscribe',
-      },
-    });
-
-    this.registerTemplate({
-      id: 'welcome-email',
-      name: 'Welcome Email (Legacy)',
-      description: 'Legacy welcome email template',
-      category: 'system',
-      component: WelcomeEmail,
-      defaultProps: {
-        userName: 'User',
-        userType: 'job_seeker',
-      },
-      requiredProps: ['userName', 'userType'],
-      previewProps: {
-        userName: 'Alex Rodriguez',
-        userType: 'job_seeker',
-      },
-    });
-
-    this.registerTemplate({
-      id: 'password-reset',
-      name: 'Password Reset',
-      description: 'Password reset instructions',
-      category: 'system',
-      component: PasswordResetEmail,
-      defaultProps: {
-        userName: 'User',
-        resetUrl: '#',
-      },
-      requiredProps: ['userName', 'resetUrl'],
-      previewProps: {
-        userName: 'Maria Garcia',
-        resetUrl: 'https://209.works/reset-password?token=abc123',
-      },
-    });
-
-    // Additional system templates
-    this.registerTemplate({
       id: 'application-confirmation',
       name: 'Application Confirmation',
-      description: 'Confirmation email when user applies for a job',
+      description: 'Confirms successful job application submission',
       category: 'job_seeker',
       component: this.createSystemNotificationTemplate(),
       defaultProps: {
@@ -201,7 +153,7 @@ export class TemplateManager {
         jobTitle: 'Software Developer',
         companyName: 'Tech Company',
         applicationDate: new Date().toLocaleDateString(),
-        jobUrl: '#',
+        jobUrl: 'https://209.works/jobs/123',
       },
       requiredProps: ['userName', 'jobTitle', 'companyName'],
       previewProps: {
@@ -210,6 +162,84 @@ export class TemplateManager {
         companyName: 'Central Valley Marketing',
         applicationDate: new Date().toLocaleDateString(),
         jobUrl: 'https://209.works/jobs/123',
+      },
+    });
+
+    this.registerTemplate({
+      id: 'application-status-accepted',
+      name: 'Application Status – Accepted',
+      description: 'Congratulatory email when candidate is accepted',
+      category: 'employer',
+      component: ApplicationStatusEmail,
+      defaultProps: {
+        candidateName: 'Candidate',
+        jobTitle: 'Position',
+        companyName: 'Company',
+        status: 'accepted',
+        contactEmail: 'hr@company.com',
+        hrName: 'Hiring Team',
+      },
+      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'status', 'contactEmail'],
+      previewProps: {
+        candidateName: 'Alex Rodriguez',
+        jobTitle: 'Marketing Manager',
+        companyName: 'Central Valley Marketing',
+        status: 'accepted',
+        personalizedMessage: 'We are thrilled to offer you the Marketing Manager position! Your innovative approach to digital marketing and understanding of the Central Valley market make you perfect for our team.',
+        nextSteps: 'Our HR team will contact you within 24 hours with your offer letter and next steps. We\'re excited to have you join our growing team!',
+        contactEmail: 'hr@cvmarketing.com',
+        hrName: 'Jennifer Thompson',
+      },
+    });
+
+    this.registerTemplate({
+      id: 'application-status-rejected',
+      name: 'Application Status – Rejected',
+      description: 'Professional rejection email with encouragement',
+      category: 'employer',
+      component: ApplicationStatusEmail,
+      defaultProps: {
+        candidateName: 'Candidate',
+        jobTitle: 'Position',
+        companyName: 'Company',
+        status: 'rejected',
+        contactEmail: 'hr@company.com',
+        hrName: 'Hiring Team',
+        futureOpportunities: true,
+      },
+      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'status', 'contactEmail'],
+      previewProps: {
+        candidateName: 'Michael Chen',
+        jobTitle: 'Software Developer',
+        companyName: 'Tech Innovations Inc',
+        status: 'rejected',
+        personalizedMessage: 'Thank you for your interest in the Software Developer position and for taking the time to interview with our team. While we were impressed with your technical skills and enthusiasm, we have decided to move forward with a candidate whose experience more closely aligns with our immediate project needs.',
+        feedbackMessage: 'Your portfolio demonstrated strong frontend development skills, and we encourage you to continue building experience with backend technologies.',
+        futureOpportunities: true,
+        contactEmail: 'careers@techinnovations.com',
+        hrName: 'David Kim',
+      },
+    });
+
+    // Employer Templates
+    this.registerTemplate({
+      id: 'welcome-employer',
+      name: 'Welcome Employer',
+      description: 'Welcome new employers to the 209 Works platform',
+      category: 'employer',
+      component: WelcomeEmployerEmail,
+      defaultProps: {
+        companyName: 'Your Company',
+        contactName: 'Hiring Manager',
+        loginUrl: 'https://209.works/employers/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+      },
+      requiredProps: ['companyName', 'contactName'],
+      previewProps: {
+        companyName: 'Central Valley Tech Solutions',
+        contactName: 'Maria Garcia',
+        loginUrl: 'https://209.works/employers/signin',
+        unsubscribeUrl: 'https://209.works/unsubscribe',
       },
     });
 
@@ -241,14 +271,14 @@ export class TemplateManager {
     this.registerTemplate({
       id: 'job-posting-confirmation',
       name: 'Job Posting Confirmation',
-      description: 'Confirmation email when employer posts a new job',
+      description: 'Confirms successful job posting publication',
       category: 'employer',
       component: this.createSystemNotificationTemplate(),
       defaultProps: {
         employerName: 'Hiring Manager',
         jobTitle: 'Software Developer',
         jobId: 'JOB-123',
-        jobUrl: '#',
+        jobUrl: 'https://209.works/jobs/123',
         dashboardUrl: 'https://209.works/employers/dashboard',
       },
       requiredProps: ['employerName', 'jobTitle', 'jobId'],
@@ -262,120 +292,98 @@ export class TemplateManager {
     });
 
     this.registerTemplate({
-      id: 'system-notification',
-      name: 'System Notification',
-      description: 'General system notification template',
-      category: 'system',
-      component: this.createSystemNotificationTemplate(),
-      defaultProps: {
-        title: 'System Notification',
-        message: 'This is a system notification from 209 Works.',
-      },
-      requiredProps: ['title', 'message'],
-      previewProps: {
-        title: 'System Maintenance Notice',
-        message: 'We will be performing scheduled maintenance on our servers tonight from 2:00 AM to 4:00 AM PST. During this time, the platform may be temporarily unavailable.',
-      },
-    });
-
-    // Professional Templates
-    this.registerTemplate({
       id: 'interview-invitation',
       name: 'Interview Invitation',
-      description: 'Professional interview invitation email',
+      description: 'Professional interview invitation with all necessary details',
       category: 'employer',
       component: InterviewInvitationEmail,
       defaultProps: {
         candidateName: 'Candidate',
         jobTitle: 'Position',
         companyName: 'Company',
-        interviewDate: 'Date TBD',
-        interviewTime: 'Time TBD',
-        interviewType: 'video',
-        interviewerName: 'Hiring Manager',
-        interviewerTitle: 'Manager',
-        contactEmail: 'hr@company.com',
-      },
-      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'interviewDate', 'interviewTime', 'interviewerName', 'contactEmail'],
-      previewProps: {
-        candidateName: 'Sarah Johnson',
-        jobTitle: 'Senior Software Engineer',
-        companyName: 'Central Valley Tech Solutions',
-        interviewDate: 'Friday, January 26, 2024',
+        interviewDate: 'Monday, January 15, 2024',
         interviewTime: '2:00 PM PST',
-        interviewType: 'video',
-        meetingLink: 'https://zoom.us/j/123456789',
-        interviewerName: 'Maria Garcia',
-        interviewerTitle: 'Engineering Manager',
-        contactEmail: 'maria@cvtech.com',
-        contactPhone: '(209) 555-0123',
-        instructions: 'Please test your camera and microphone before the interview. We\'ll discuss your technical background and experience with React and Node.js.',
-      },
-    });
-
-    this.registerTemplate({
-      id: 'application-status-accepted',
-      name: 'Application Status - Accepted',
-      description: 'Notification when candidate is accepted for a position',
-      category: 'employer',
-      component: ApplicationStatusEmail,
-      defaultProps: {
-        candidateName: 'Candidate',
-        jobTitle: 'Position',
-        companyName: 'Company',
-        status: 'accepted',
+        interviewType: 'in-person',
+        interviewerName: 'Hiring Manager',
+        interviewerTitle: 'Department Head',
+        interviewDuration: '45 minutes',
         contactEmail: 'hr@company.com',
-        hrName: 'Hiring Team',
+        confirmationRequired: true,
       },
-      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'status', 'contactEmail'],
+      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'interviewDate', 'interviewTime'],
       previewProps: {
         candidateName: 'Alex Rodriguez',
         jobTitle: 'Marketing Manager',
-        companyName: 'Central Valley Marketing',
-        status: 'accepted',
-        personalizedMessage: 'We are thrilled to offer you the Marketing Manager position! Your innovative approach to digital marketing and your understanding of the Central Valley market make you the perfect fit for our team.',
-        nextSteps: 'Our HR team will contact you within 24 hours with your offer letter and next steps. We\'re excited to have you join our growing team!',
-        contactEmail: 'hr@cvmarketing.com',
-        hrName: 'Jennifer Thompson',
+        companyName: 'Central Valley Growth Partners',
+        interviewDate: 'Wednesday, January 24, 2024',
+        interviewTime: '2:00 PM PST',
+        interviewType: 'in-person',
+        location: '1234 Main Street, Modesto, CA 95354',
+        interviewerName: 'Jennifer Thompson',
+        interviewerTitle: 'Marketing Director',
+        interviewDuration: '60 minutes',
+        specialInstructions: 'Please bring a portfolio of your recent marketing campaigns and be prepared to discuss your experience with Central Valley market demographics.',
+        contactEmail: 'jennifer@cvgrowth.com',
+        confirmationRequired: true,
+        confirmationDeadline: 'Monday, January 22, 2024',
+      },
+    });
+
+    // System Templates
+    this.registerTemplate({
+      id: 'password-reset',
+      name: 'Password Reset',
+      description: 'Secure password reset instructions with security tips',
+      category: 'system',
+      component: PasswordResetEmail,
+      defaultProps: {
+        userName: 'User',
+        resetUrl: '#',
+      },
+      requiredProps: ['userName', 'resetUrl'],
+      previewProps: {
+        userName: 'Maria Garcia',
+        resetUrl: 'https://209.works/reset-password?token=abc123def456',
       },
     });
 
     this.registerTemplate({
-      id: 'application-status-rejected',
-      name: 'Application Status - Rejected',
-      description: 'Professional rejection email with encouragement',
-      category: 'employer',
-      component: ApplicationStatusEmail,
+      id: 'platform-notice',
+      name: 'Platform Notice',
+      description: 'Important platform notices and system updates (formerly System Notification)',
+      category: 'system',
+      component: PlatformNoticeEmail,
       defaultProps: {
-        candidateName: 'Candidate',
-        jobTitle: 'Position',
-        companyName: 'Company',
-        status: 'rejected',
-        contactEmail: 'hr@company.com',
-        hrName: 'Hiring Team',
-        futureOpportunities: true,
+        recipientName: 'User',
+        noticeType: 'general',
+        title: 'Platform Notice',
+        message: 'This is an important notice from 209 Works.',
+        urgencyLevel: 'medium',
+        actionRequired: false,
+        supportUrl: 'https://209.works/contact',
       },
-      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'status', 'contactEmail'],
+      requiredProps: ['title', 'message'],
       previewProps: {
-        candidateName: 'Michael Chen',
-        jobTitle: 'Software Developer',
-        companyName: 'Tech Innovations Inc',
-        status: 'rejected',
-        personalizedMessage: 'Thank you for your interest in the Software Developer position and for taking the time to interview with our team. While we were impressed with your technical skills and enthusiasm, we have decided to move forward with a candidate whose experience more closely aligns with our immediate project needs.',
-        feedbackMessage: 'Your portfolio demonstrated strong frontend development skills, and we encourage you to continue building experience with backend technologies.',
-        futureOpportunities: true,
-        contactEmail: 'careers@techinnovations.com',
-        hrName: 'David Kim',
+        recipientName: 'Alex Rodriguez',
+        noticeType: 'maintenance',
+        title: 'Scheduled Maintenance Tonight',
+        message: 'We will be performing scheduled maintenance on our servers tonight from 2:00 AM to 4:00 AM PST. During this time, the platform may be temporarily unavailable. We apologize for any inconvenience and appreciate your patience as we work to improve our service.',
+        urgencyLevel: 'medium',
+        actionRequired: false,
+        effectiveDate: 'Tonight, 2:00 AM - 4:00 AM PST',
+        supportUrl: 'https://209.works/contact',
       },
     });
 
+    // Marketing Templates
     this.registerTemplate({
       id: 'company-newsletter',
       name: 'Company Newsletter',
-      description: 'Professional monthly newsletter template',
+      description: 'Monthly newsletter with Central Valley job market insights',
       category: 'marketing',
       component: CompanyNewsletterEmail,
       defaultProps: {
+        recipientName: 'Subscriber',
         newsletterTitle: '209 Works Monthly Newsletter',
         edition: 'January 2024',
         date: new Date().toLocaleDateString(),
@@ -397,44 +405,22 @@ export class TemplateManager {
         date: new Date().toLocaleDateString(),
         featuredStory: {
           title: 'Central Valley Tech Boom: New Opportunities in 2024',
-          content: 'The Central Valley is experiencing unprecedented growth in the technology sector. With major companies establishing offices in Modesto, Stockton, and Fresno, job opportunities for tech professionals have increased by 35% this year. From software development to data analytics, the 209 area is becoming a hub for innovation.',
+          content: 'The Central Valley is experiencing unprecedented growth in the technology sector. With major companies establishing offices in Modesto, Stockton, and Fresno, job opportunities for tech professionals have increased by 35% this year. From software development to data analytics, the 209 area is becoming a hub for innovation and career growth.',
           ctaText: 'Explore Tech Jobs',
           ctaUrl: 'https://209.works/jobs?category=technology',
         },
         newsItems: [
           {
-            id: '1',
-            title: 'New Partnership with UC Merced',
-            excerpt: '209 Works announces partnership with UC Merced to connect students with local internship opportunities.',
-            readMoreUrl: 'https://209.works/news/uc-merced-partnership',
-            category: 'news',
+            title: 'Healthcare Hiring Surge in Central Valley',
+            summary: 'Major hospitals and clinics are expanding, creating 200+ new positions across nursing, administration, and support roles.',
+            url: 'https://209.works/news/healthcare-hiring-surge',
+            date: 'January 15, 2024',
           },
           {
-            id: '2',
-            title: 'Resume Tips for 2024',
-            excerpt: 'Learn how to optimize your resume for applicant tracking systems and stand out to employers.',
-            readMoreUrl: 'https://209.works/blog/resume-tips-2024',
-            category: 'tip',
-          },
-        ],
-        jobSpotlight: {
-          title: 'Senior Data Analyst',
-          company: 'AgTech Solutions',
-          location: 'Modesto, CA',
-          salary: '$75,000 - $95,000',
-          url: 'https://209.works/jobs/senior-data-analyst',
-        },
-        platformStats: {
-          newJobs: 247,
-          newCompanies: 18,
-          newJobSeekers: 432,
-        },
-        upcomingEvents: [
-          {
-            title: 'Central Valley Career Fair',
-            date: 'February 15, 2024',
-            location: 'Modesto Centre Plaza',
-            url: 'https://209.works/events/career-fair-feb-2024',
+            title: 'Manufacturing Renaissance in Stockton',
+            summary: 'New manufacturing facilities are bringing hundreds of well-paying jobs to the Stockton area, with more planned for 2024.',
+            url: 'https://209.works/news/manufacturing-stockton',
+            date: 'January 12, 2024',
           },
         ],
         unsubscribeUrl: 'https://209.works/unsubscribe',
@@ -444,122 +430,123 @@ export class TemplateManager {
   }
 
   /**
-   * Create a generic system notification template component
+   * Create a simple system notification template for basic notifications
    */
   private createSystemNotificationTemplate() {
     return (props: any) => {
-      const {
-        title = 'Notification',
-        message = 'This is a notification from 209 Works.',
-        userName,
-        jobTitle,
-        companyName,
+      const { 
+        userName, 
+        jobTitle, 
+        companyName, 
+        applicationDate, 
+        jobUrl,
         employerName,
         applicantName,
-        applicationDate,
-        jobUrl,
+        applicantEmail,
         dashboardUrl,
-        resetUrl,
-        ...otherProps
+        jobId 
       } = props;
 
-      // Generate content based on available props
-      let content = message;
+      let content = '';
 
-      if (jobTitle && companyName && userName) {
+      if (userName && jobTitle && companyName) {
         // Application confirmation
         content = `
-          <h2>Application Submitted Successfully!</h2>
+          <h2 style="color: #2d4a3e;">✅ Application Confirmed!</h2>
           <p>Hi ${userName},</p>
-          <p>Thank you for applying to the <strong>${jobTitle}</strong> position at <strong>${companyName}</strong>.</p>
-          <p>Your application was submitted on ${applicationDate || new Date().toLocaleDateString()}.</p>
-          <p>The employer will review your application and contact you if you're selected for an interview.</p>
-          ${jobUrl ? `<p><a href="${jobUrl}" style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Job Posting</a></p>` : ''}
+          <p>Thank you for applying to the <strong>${jobTitle}</strong> position at <strong>${companyName}</strong>!</p>
+          <p><strong>Application submitted:</strong> ${applicationDate || new Date().toLocaleDateString()}</p>
+          <p>We've received your application and will review it carefully. You'll hear back from the employer soon.</p>
+          ${jobUrl ? `<p><a href="${jobUrl}" style="background: #ff6b35; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Job Posting</a></p>` : ''}
+          <p style="margin-top: 24px;">Keep applying to increase your chances! Browse more opportunities on 209 Works.</p>
         `;
       } else if (employerName && applicantName && jobTitle) {
         // New applicant notification
         content = `
-          <h2>New Application Received</h2>
+          <h2 style="color: #2d4a3e;">🎉 New Application Received</h2>
           <p>Hi ${employerName},</p>
-          <p>You have received a new application for the <strong>${jobTitle}</strong> position.</p>
+          <p>Great news! You have received a new application for the <strong>${jobTitle}</strong> position.</p>
           <p><strong>Applicant:</strong> ${applicantName}</p>
+          <p><strong>Email:</strong> ${applicantEmail}</p>
           <p><strong>Applied on:</strong> ${applicationDate || new Date().toLocaleDateString()}</p>
-          ${dashboardUrl ? `<p><a href="${dashboardUrl}" style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Application</a></p>` : ''}
+          ${dashboardUrl ? `<p><a href="${dashboardUrl}" style="background: #ff6b35; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Review Application</a></p>` : ''}
+          <p style="margin-top: 24px;">Don't keep great candidates waiting! Review and respond promptly to attract top talent.</p>
         `;
-      } else if (employerName && jobTitle && props.jobId) {
+      } else if (employerName && jobTitle && jobId) {
         // Job posting confirmation
         content = `
-          <h2>Job Posted Successfully!</h2>
+          <h2 style="color: #2d4a3e;">🚀 Job Posted Successfully!</h2>
           <p>Hi ${employerName},</p>
-          <p>Your job posting for <strong>${jobTitle}</strong> has been successfully published.</p>
-          <p><strong>Job ID:</strong> ${props.jobId}</p>
-          ${jobUrl ? `<p><a href="${jobUrl}" style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Job Posting</a></p>` : ''}
-          ${dashboardUrl ? `<p><a href="${dashboardUrl}" style="color: #1e40af;">Manage Your Jobs</a></p>` : ''}
+          <p>Your job posting for <strong>${jobTitle}</strong> has been successfully published on 209 Works!</p>
+          <p><strong>Job ID:</strong> ${jobId}</p>
+          <p>Your posting is now live and visible to thousands of qualified candidates in the Central Valley.</p>
+          ${jobUrl ? `<p><a href="${jobUrl}" style="background: #ff6b35; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Job Posting</a></p>` : ''}
+          ${dashboardUrl ? `<p><a href="${dashboardUrl}" style="color: #ff6b35; text-decoration: underline;">Manage Your Jobs</a></p>` : ''}
+          <p style="margin-top: 24px;">Tip: Jobs with detailed descriptions and competitive benefits get 40% more applications!</p>
         `;
       }
 
-      return React.createElement('div', {
-        style: {
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+      return (
+        <div style={{
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           maxWidth: '600px',
           margin: '0 auto',
-          padding: '40px 20px',
           backgroundColor: '#ffffff',
-        }
-      }, [
-        React.createElement('div', {
-          key: 'header',
-          style: {
+          border: '1px solid #e2e8f0',
+          borderRadius: '12px',
+          overflow: 'hidden',
+        }}>
+          {/* Header */}
+          <div style={{
+            backgroundColor: '#2d4a3e',
+            background: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
+            padding: '32px 24px',
             textAlign: 'center',
-            marginBottom: '40px',
-            borderBottom: '3px solid #10b981',
-            paddingBottom: '20px',
-          }
-        }, [
-          React.createElement('h1', {
-            key: 'logo',
-            style: {
-              color: '#10b981',
-              fontSize: '28px',
-              fontWeight: 'bold',
-              margin: '0',
-            }
-          }, '209 Works'),
-          React.createElement('p', {
-            key: 'tagline',
-            style: {
-              color: '#6b7280',
-              fontSize: '14px',
-              margin: '5px 0 0 0',
-            }
-          }, 'Your Local Job Platform')
-        ]),
-        React.createElement('div', {
-          key: 'content',
-          dangerouslySetInnerHTML: { __html: content }
-        }),
-        React.createElement('div', {
-          key: 'footer',
-          style: {
-            marginTop: '40px',
-            paddingTop: '20px',
-            borderTop: '1px solid #e5e7eb',
+          }}>
+            <div style={{ color: '#9fdf9f', fontSize: '28px', fontWeight: 'bold', margin: '0 0 8px 0' }}>
+              209 Works
+            </div>
+            <div style={{ color: '#ffffff', fontSize: '16px', margin: '0' }}>
+              Your Central Valley Job Platform
+            </div>
+          </div>
+
+          {/* Content */}
+          <div style={{ padding: '32px 24px' }}>
+            <div dangerouslySetInnerHTML={{ __html: content }} />
+            
+            <div style={{
+              marginTop: '32px',
+              padding: '16px',
+              backgroundColor: '#f0fdf4',
+              borderRadius: '8px',
+              border: '1px solid #bbf7d0',
+              textAlign: 'center',
+            }}>
+              <div style={{ color: '#2d4a3e', fontWeight: '600' }}>
+                Questions? We're here to help! 🤝
+              </div>
+              <div style={{ color: '#166534', fontSize: '14px', marginTop: '4px' }}>
+                Contact us at support@209.works
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div style={{
+            backgroundColor: '#f8fafc',
+            padding: '24px',
             textAlign: 'center',
-            color: '#6b7280',
-            fontSize: '14px',
-          }
-        }, [
-          React.createElement('p', { key: 'footer-text' }, 'Built for the 209. Made for the people who work here.'),
-          React.createElement('p', { key: 'contact' }, [
-            'Questions? Contact us at ',
-            React.createElement('a', {
-              key: 'email-link',
-              href: 'mailto:support@209.works',
-              style: { color: '#10b981' }
-            }, 'support@209.works')
-          ])
-        ])
-      ]);
+            borderTop: '1px solid #e2e8f0',
+          }}>
+            <div style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.5' }}>
+              © {new Date().getFullYear()} 209 Works. All rights reserved.
+              <br />
+              Proudly serving the Central Valley with local job opportunities.
+            </div>
+          </div>
+        </div>
+      );
     };
   }
 
@@ -691,8 +678,8 @@ export class TemplateManager {
         return `New Application: ${props.applicantName || 'Candidate'} for ${props.jobTitle || 'Position'}`;
       case 'job-posting-confirmation':
         return `Job Posted Successfully: ${props.jobTitle || 'Your Job'}`;
-      case 'system-notification':
-        return props.title || 'System Notification from 209 Works';
+      case 'platform-notice':
+        return props.title || 'Platform Notice from 209 Works';
       case 'interview-invitation':
         return `Interview Invitation: ${props.jobTitle || 'Position'} at ${props.companyName || 'Company'}`;
       case 'application-status-accepted':
@@ -741,6 +728,3 @@ export class TemplateManager {
     return { isValid: errors.length === 0, errors };
   }
 }
-
-// Export singleton instance
-export const templateManager = new TemplateManager();

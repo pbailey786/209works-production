@@ -34,65 +34,81 @@ export default function JobAlertEmail({
   jobUrl = '#',
   unsubscribeUrl = '#',
 }: JobAlertEmailProps) {
-  const previewText = `New job alert: ${jobTitle} at ${companyName}`;
+  const previewText = `🎯 New 209 Works Job Alert: ${jobTitle} at ${companyName} in ${location}`;
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="light dark" />
+        <meta name="supported-color-schemes" content="light dark" />
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
-            <Text style={logo}>209jobs</Text>
-            <Text style={tagline}>Your Career, Our Priority</Text>
+            <Text style={logo}>209 Works</Text>
+            <Text style={tagline}>🎯 New Job Alert</Text>
           </Section>
 
           {/* Main Content */}
           <Section style={content}>
-            <Text style={greeting}>Hi {userName},</Text>
+            <Text style={greeting}>Hi {userName}! 👋</Text>
             <Text style={intro}>
-              We found a new job that matches your alerts:
+              Great news! We found a new job opportunity in the 209 area that matches your job search criteria:
             </Text>
 
             {/* Job Card */}
             <Section style={jobCard}>
               <Text style={jobTitleStyle}>{jobTitle}</Text>
               <Text style={companyStyle}>{companyName}</Text>
-              <Text style={locationStyle}>📍 {location}</Text>
-              {salary && <Text style={salaryStyle}>💰 {salary}</Text>}
-              <Text style={jobTypeStyle}>🕒 {jobType}</Text>
+              
+              <Section style={jobMetaContainer}>
+                <Text style={locationStyle}>📍 {location}</Text>
+                <Text style={jobTypeStyle}>🕒 {jobType}</Text>
+                {salary && <Text style={salaryStyle}>💰 {salary}</Text>}
+              </Section>
 
-              <Hr style={divider} />
+              <Hr style={cardDivider} />
 
               <Text style={descriptionStyle}>
-                {description.length > 200
-                  ? `${description.substring(0, 200)}...`
+                {description.length > 250
+                  ? `${description.substring(0, 250)}...`
                   : description}
               </Text>
 
-              <Button style={applyButton} href={jobUrl}>
-                View Job Details
-              </Button>
+              <Section style={buttonContainer}>
+                <Button style={applyButton} href={jobUrl}>
+                  View Job Details & Apply →
+                </Button>
+              </Section>
             </Section>
 
+            <Text style={encouragement}>
+              ⚡ Don't wait – great opportunities in the Central Valley go fast!
+            </Text>
+
             <Text style={footer}>
-              Happy job hunting!
+              Happy job hunting! 🌟
               <br />
-              The 209jobs Team
+              <strong>The 209 Works Team</strong>
             </Text>
           </Section>
 
           {/* Footer */}
           <Hr style={divider} />
           <Section style={footerSection}>
+            <Text style={footerTitle}>209 Works</Text>
+            <Text style={footerSubtitle}>Connecting Central Valley talent with local opportunities</Text>
             <Text style={unsubscribeText}>
-              <Link href={unsubscribeUrl} style={unsubscribeLink}>
-                Unsubscribe from job alerts
-              </Link>
+              <Link href="https://209.works/alerts" style={manageLink}>Manage job alerts</Link> • 
+              <Link href={unsubscribeUrl} style={unsubscribeLink}> Unsubscribe</Link>
             </Text>
             <Text style={copyrightText}>
-              © {new Date().getFullYear()} 209jobs. All rights reserved.
+              © {new Date().getFullYear()} 209 Works. All rights reserved.
+              <br />
+              Proudly serving Stockton, Modesto, Fresno & the entire 209 area.
             </Text>
           </Section>
         </Container>
@@ -101,83 +117,98 @@ export default function JobAlertEmail({
   );
 }
 
-// Styles
+// Styles with new brand colors and email-safe CSS
 const main = {
-  backgroundColor: '#f6f9fc',
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  backgroundColor: '#f8fafc',
+  fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  WebkitFontSmoothing: 'antialiased' as const,
+  MozOsxFontSmoothing: 'grayscale' as const,
+  textRendering: 'optimizeLegibility' as const,
 };
 
 const container = {
   backgroundColor: '#ffffff',
   margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
   maxWidth: '600px',
+  border: '1px solid #e2e8f0',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
 };
 
 const header = {
-  padding: '32px 20px',
+  backgroundColor: '#2d4a3e',
+  backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
+  padding: '32px 24px',
   textAlign: 'center' as const,
-  backgroundColor: '#1e40af',
-  color: '#ffffff',
 };
 
 const logo = {
-  fontSize: '32px',
+  color: '#9fdf9f',
+  fontSize: '28px',
   fontWeight: 'bold',
-  margin: '0',
+  margin: '0 0 8px 0',
+  letterSpacing: '-0.5px',
 };
 
 const tagline = {
-  fontSize: '14px',
-  margin: '8px 0 0 0',
-  opacity: 0.8,
+  color: '#ffffff',
+  fontSize: '16px',
+  margin: '0',
+  fontWeight: '500',
 };
 
 const content = {
-  padding: '20px',
+  padding: '32px 24px',
 };
 
 const greeting = {
-  fontSize: '16px',
+  fontSize: '20px',
   fontWeight: '600',
-  color: '#1f2937',
+  color: '#1e293b',
   margin: '0 0 16px 0',
 };
 
 const intro = {
-  fontSize: '14px',
-  color: '#6b7280',
+  fontSize: '16px',
+  color: '#475569',
+  lineHeight: '1.6',
   margin: '0 0 24px 0',
 };
 
 const jobCard = {
-  border: '1px solid #e5e7eb',
-  borderRadius: '8px',
+  backgroundColor: '#f8fafc',
+  border: '2px solid #e2e8f0',
+  borderRadius: '12px',
   padding: '24px',
-  margin: '16px 0',
-  backgroundColor: '#fafafa',
+  margin: '24px 0',
+  borderLeft: '4px solid #ff6b35',
 };
 
 const jobTitleStyle = {
-  fontSize: '20px',
+  fontSize: '22px',
   fontWeight: 'bold',
-  color: '#1f2937',
+  color: '#1e293b',
   margin: '0 0 8px 0',
+  lineHeight: '1.3',
 };
 
 const companyStyle = {
-  fontSize: '16px',
+  fontSize: '18px',
   fontWeight: '600',
-  color: '#1e40af',
-  margin: '0 0 12px 0',
+  color: '#ff6b35',
+  margin: '0 0 16px 0',
+};
+
+const jobMetaContainer = {
+  margin: '0 0 16px 0',
 };
 
 const locationStyle = {
   fontSize: '14px',
-  color: '#6b7280',
+  color: '#64748b',
   margin: '4px 0',
+  display: 'block',
 };
 
 const salaryStyle = {
@@ -185,63 +216,112 @@ const salaryStyle = {
   color: '#059669',
   fontWeight: '600',
   margin: '4px 0',
+  display: 'block',
 };
 
 const jobTypeStyle = {
   fontSize: '14px',
-  color: '#6b7280',
+  color: '#64748b',
   margin: '4px 0',
+  display: 'block',
+};
+
+const cardDivider = {
+  borderColor: '#e2e8f0',
+  margin: '16px 0',
 };
 
 const descriptionStyle = {
-  fontSize: '14px',
+  fontSize: '15px',
   color: '#374151',
-  lineHeight: '1.5',
-  margin: '16px 0 24px 0',
+  lineHeight: '1.6',
+  margin: '0 0 24px 0',
+};
+
+const buttonContainer = {
+  textAlign: 'center' as const,
 };
 
 const applyButton = {
-  backgroundColor: '#1e40af',
-  borderRadius: '6px',
+  backgroundColor: '#ff6b35',
+  backgroundImage: 'linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%)',
+  borderRadius: '8px',
   color: '#ffffff',
   fontSize: '16px',
   fontWeight: 'bold',
   textDecoration: 'none',
   textAlign: 'center' as const,
-  display: 'block',
-  padding: '12px 24px',
-  width: '100%',
+  display: 'inline-block',
+  padding: '14px 28px',
+  border: 'none',
+  boxShadow: '0 2px 4px rgba(255, 107, 53, 0.2)',
+  transition: 'all 0.2s ease',
+};
+
+const encouragement = {
+  fontSize: '16px',
+  color: '#2d4a3e',
+  fontWeight: '600',
+  margin: '24px 0',
+  textAlign: 'center' as const,
+  backgroundColor: '#f0fdf4',
+  padding: '16px',
+  borderRadius: '8px',
+  border: '1px solid #bbf7d0',
 };
 
 const footer = {
-  fontSize: '14px',
-  color: '#6b7280',
-  margin: '24px 0 0 0',
+  fontSize: '16px',
+  color: '#64748b',
+  margin: '32px 0 0 0',
+  textAlign: 'center' as const,
+  lineHeight: '1.6',
 };
 
 const divider = {
-  borderColor: '#e5e7eb',
-  margin: '20px 0',
+  borderColor: '#e2e8f0',
+  margin: '0',
 };
 
 const footerSection = {
-  padding: '0 20px',
+  backgroundColor: '#f8fafc',
+  padding: '24px',
   textAlign: 'center' as const,
 };
 
+const footerTitle = {
+  color: '#2d4a3e',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  margin: '0 0 4px 0',
+};
+
+const footerSubtitle = {
+  color: '#64748b',
+  fontSize: '14px',
+  margin: '0 0 16px 0',
+};
+
 const unsubscribeText = {
-  fontSize: '12px',
-  color: '#6b7280',
-  margin: '16px 0 8px 0',
+  fontSize: '14px',
+  color: '#64748b',
+  margin: '0 0 16px 0',
+};
+
+const manageLink = {
+  color: '#ff6b35',
+  textDecoration: 'underline',
+  fontWeight: '500',
 };
 
 const unsubscribeLink = {
-  color: '#1e40af',
+  color: '#64748b',
   textDecoration: 'underline',
 };
 
 const copyrightText = {
   fontSize: '12px',
-  color: '#9ca3af',
-  margin: '8px 0 0 0',
+  color: '#94a3b8',
+  margin: '0',
+  lineHeight: '1.5',
 };
