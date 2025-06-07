@@ -21,8 +21,10 @@ const ParsedResumeSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('📄 Resume parsing request initiated');
     const session = await getServerSession(authOptions) as Session | null;
     if (!session!.user?.email) {
+      console.log('❌ Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -30,14 +32,24 @@ export async function POST(request: NextRequest) {
     const file = formData.get('resume') as File;
 
     if (!file) {
+      console.log('❌ No file provided in form data');
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
+
+    console.log('📁 File received:', {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    });
 
     // Validate file type and size
     const validation = isValidResumeFile(file);
     if (!validation.valid) {
+      console.log('❌ File validation failed:', validation);
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
+
+    console.log('✅ File validation passed');
 
     // Get user ID for file naming
     const user = await prisma.user.findUnique({
@@ -50,10 +62,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Convert file to text (simplified - in production you'd use a proper PDF/DOC parser)
+    console.log('🔍 Starting text extraction...');
     const fileBuffer = await file.arrayBuffer();
     const fileText = await extractTextFromFile(fileBuffer, file.type);
 
     if (!fileText || fileText.trim().length === 0) {
+      console.log('❌ Text extraction failed: No text extracted');
       return NextResponse.json(
         {
           error:
@@ -63,7 +77,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('✅ Text extraction successful:', {
+      textLength: fileText.length,
+      preview: fileText.substring(0, 100) + '...'
+    });
+
     // Use OpenAI to parse the resume
+    console.log('🤖 Starting OpenAI parsing...');
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
@@ -96,20 +116,32 @@ export async function POST(request: NextRequest) {
 
     const aiResponse = completion.choices[0]?.message?.content;
     if (!aiResponse) {
+      console.log('❌ OpenAI parsing failed: No response content');
       return NextResponse.json(
         { error: 'Failed to parse resume with AI' },
         { status: 500 }
       );
     }
 
+    console.log('✅ OpenAI response received:', {
+      responseLength: aiResponse.length,
+      preview: aiResponse.substring(0, 200)
+    });
+
     // Parse the AI response as JSON
     let parsedData;
     try {
       parsedData = JSON.parse(aiResponse);
     } catch (error) {
-      console.error('Failed to parse AI response as JSON:', aiResponse);
+      console.error('Failed to parse AI response as JSON:', {
+        aiResponse,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
       return NextResponse.json(
-        { error: 'Failed to parse resume data' },
+        { 
+          error: 'Failed to parse resume data - AI response was not valid JSON',
+          debug: process.env.NODE_ENV === 'development' ? { aiResponse } : undefined
+        },
         { status: 500 }
       );
     }

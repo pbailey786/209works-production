@@ -65,9 +65,9 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'Inter', 'sans-serif'],
+        sans: ['Inter', 'var(--font-geist-sans)', 'sans-serif'],
         mono: ['var(--font-geist-mono)', 'monospace'],
-        inter: ['var(--font-inter)', 'Inter', 'sans-serif'],
+        inter: ['Inter', 'var(--font-inter)', 'sans-serif'],
         display: ['Poppins', 'sans-serif'],
       },
       keyframes: {

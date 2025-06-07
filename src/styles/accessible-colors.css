@@ -80,10 +80,10 @@
   --text-disabled: var(--color-gray-400); /* 3.4:1 on white (large text only) */
 
   /* Accessible link colors */
-  --link-default: var(--color-primary-600); /* 6.3:1 on white */
-  --link-hover: var(--color-primary-700); /* 8.6:1 on white */
-  --link-visited: var(--color-primary-800); /* 11.9:1 on white */
-  --link-active: var(--color-primary-900); /* 13.9:1 on white */
+  --link-default: #ff6b35; /* Orange links to match theme */
+  --link-hover: #e55a2b; /* Darker orange on hover */
+  --link-visited: #cc4a22; /* Even darker for visited */
+  --link-active: #b33f1d; /* Darkest for active */
 
   /* Accessible background colors */
   --bg-primary: #ffffff;
@@ -97,17 +97,17 @@
   --border-dark: var(--color-gray-400);
 
   /* Accessible focus colors */
-  --focus-outline: var(--color-primary-600); /* 6.3:1 on white */
-  --focus-ring: var(--color-primary-200); /* Light ring for visibility */
+  --focus-outline: #ff6b35; /* Orange focus outline to match theme */
+  --focus-ring: #ffcdb3; /* Light orange ring for visibility */
 
   /* Accessible button colors */
-  --btn-primary-bg: var(--color-primary-600);
+  --btn-primary-bg: #ff6b35; /* Orange primary buttons */
   --btn-primary-text: #ffffff;
-  --btn-primary-hover: var(--color-primary-700);
+  --btn-primary-hover: #e55a2b;
 
-  --btn-secondary-bg: var(--color-gray-100);
-  --btn-secondary-text: var(--color-gray-700);
-  --btn-secondary-hover: var(--color-gray-200);
+  --btn-secondary-bg: #2d4a3e; /* Green secondary buttons */
+  --btn-secondary-text: #ffffff;
+  --btn-secondary-hover: #1a3329;
 
   --btn-success-bg: var(--color-success-600);
   --btn-success-text: #ffffff;
