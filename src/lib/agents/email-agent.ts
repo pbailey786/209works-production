@@ -3,6 +3,7 @@ import { render } from '@react-email/render';
 import React from 'react';
 import { SecurityLogger } from '@/lib/security/security-monitor';
 import { emailSecurityValidator } from '@/lib/email/security';
+import { templateManager } from '@/lib/email/template-manager';
 
 export interface EmailJobData {
   id: string;
@@ -41,6 +42,7 @@ export interface EmailMetrics {
 export class EmailAgent {
   private resend: Resend | null = null;
   private isDevelopment: boolean;
+  private templateManager = templateManager;
 
   constructor() {
     this.isDevelopment = process.env.NODE_ENV === 'development';
@@ -318,6 +320,7 @@ export class EmailAgent {
       const rendered = await this.templateManager.renderTemplate(templateId, templateData);
 
       return await this.sendEmail({
+        id: `welcome_${userData.userType}_${Date.now()}`,
         to: [userData.email],
         subject: rendered.subject,
         html: rendered.html,
