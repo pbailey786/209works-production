@@ -1,31 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { getServerSession } from 'next-auth/next';
+import authOptions from '../../../../../auth/authOptions';
+import { prisma } from '@/lib/database/prisma';
 import { TemplateManager } from '@/lib/email/template-manager';
+import type { Session } from 'next-auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { templateId: string } }
+  { params }: { params: Promise<{ templateId: string }> }
 ) {
   try {
-    const supabase = createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const session = await getServerSession(authOptions) as any;
 
-    if (authError || !user) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user is admin
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { role: true },
+    });
 
-    if (profile?.role !== 'admin') {
+    if (user?.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const templateId = params.templateId;
+    const resolvedParams = await params;
+    const templateId = resolvedParams.templateId;
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'json';
 
@@ -59,7 +61,10 @@ export async function GET(
     } catch (templateError) {
       console.error('Template rendering error:', templateError);
       return NextResponse.json(
-        { error: 'Failed to render template', details: templateError.message },
+        {
+          error: 'Failed to render template',
+          details: templateError instanceof Error ? templateError.message : 'Unknown error'
+        },
         { status: 400 }
       );
     }

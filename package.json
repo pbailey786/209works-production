@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "OTEL_SDK_DISABLED=true npx prisma generate && OTEL_SDK_DISABLED=true next build",
+    "build": "cross-env OTEL_SDK_DISABLED=true npx prisma generate && cross-env OTEL_SDK_DISABLED=true next build",
     "build:no-lint": "next build --no-lint",
     "build:watch": "nodemon --watch src --ext ts,tsx,js,jsx --exec \"npm run build\"",
     "type-check": "tsc --noEmit",
@@ -147,6 +147,7 @@
     "@types/react-dom": "^19",
     "@types/speakeasy": "^2.0.10",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "nodemon": "^3.1.10",
