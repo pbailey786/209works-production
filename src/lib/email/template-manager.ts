@@ -8,6 +8,9 @@ import WelcomeJobSeekerEmail from '@/components/emails/welcome-job-seeker-email'
 import WelcomeEmployerEmail from '@/components/emails/welcome-employer-email';
 import WelcomeEmail from '@/components/emails/welcome-email';
 import PasswordResetEmail from '@/components/emails/password-reset-email';
+import InterviewInvitationEmail from '@/components/emails/interview-invitation-email';
+import ApplicationStatusEmail from '@/components/emails/application-status-email';
+import CompanyNewsletterEmail from '@/components/emails/company-newsletter-email';
 
 export interface EmailTemplate {
   id: string;
@@ -275,9 +278,169 @@ export class TemplateManager {
       },
     });
 
+    // Professional Templates
+    this.registerTemplate({
+      id: 'interview-invitation',
+      name: 'Interview Invitation',
+      description: 'Professional interview invitation email',
+      category: 'employer',
+      component: InterviewInvitationEmail,
+      defaultProps: {
+        candidateName: 'Candidate',
+        jobTitle: 'Position',
+        companyName: 'Company',
+        interviewDate: 'Date TBD',
+        interviewTime: 'Time TBD',
+        interviewType: 'video',
+        interviewerName: 'Hiring Manager',
+        interviewerTitle: 'Manager',
+        contactEmail: 'hr@company.com',
+      },
+      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'interviewDate', 'interviewTime', 'interviewerName', 'contactEmail'],
+      previewProps: {
+        candidateName: 'Sarah Johnson',
+        jobTitle: 'Senior Software Engineer',
+        companyName: 'Central Valley Tech Solutions',
+        interviewDate: 'Friday, January 26, 2024',
+        interviewTime: '2:00 PM PST',
+        interviewType: 'video',
+        meetingLink: 'https://zoom.us/j/123456789',
+        interviewerName: 'Maria Garcia',
+        interviewerTitle: 'Engineering Manager',
+        contactEmail: 'maria@cvtech.com',
+        contactPhone: '(209) 555-0123',
+        instructions: 'Please test your camera and microphone before the interview. We\'ll discuss your technical background and experience with React and Node.js.',
+      },
+    });
 
+    this.registerTemplate({
+      id: 'application-status-accepted',
+      name: 'Application Status - Accepted',
+      description: 'Notification when candidate is accepted for a position',
+      category: 'employer',
+      component: ApplicationStatusEmail,
+      defaultProps: {
+        candidateName: 'Candidate',
+        jobTitle: 'Position',
+        companyName: 'Company',
+        status: 'accepted',
+        contactEmail: 'hr@company.com',
+        hrName: 'Hiring Team',
+      },
+      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'status', 'contactEmail'],
+      previewProps: {
+        candidateName: 'Alex Rodriguez',
+        jobTitle: 'Marketing Manager',
+        companyName: 'Central Valley Marketing',
+        status: 'accepted',
+        personalizedMessage: 'We are thrilled to offer you the Marketing Manager position! Your innovative approach to digital marketing and your understanding of the Central Valley market make you the perfect fit for our team.',
+        nextSteps: 'Our HR team will contact you within 24 hours with your offer letter and next steps. We\'re excited to have you join our growing team!',
+        contactEmail: 'hr@cvmarketing.com',
+        hrName: 'Jennifer Thompson',
+      },
+    });
 
+    this.registerTemplate({
+      id: 'application-status-rejected',
+      name: 'Application Status - Rejected',
+      description: 'Professional rejection email with encouragement',
+      category: 'employer',
+      component: ApplicationStatusEmail,
+      defaultProps: {
+        candidateName: 'Candidate',
+        jobTitle: 'Position',
+        companyName: 'Company',
+        status: 'rejected',
+        contactEmail: 'hr@company.com',
+        hrName: 'Hiring Team',
+        futureOpportunities: true,
+      },
+      requiredProps: ['candidateName', 'jobTitle', 'companyName', 'status', 'contactEmail'],
+      previewProps: {
+        candidateName: 'Michael Chen',
+        jobTitle: 'Software Developer',
+        companyName: 'Tech Innovations Inc',
+        status: 'rejected',
+        personalizedMessage: 'Thank you for your interest in the Software Developer position and for taking the time to interview with our team. While we were impressed with your technical skills and enthusiasm, we have decided to move forward with a candidate whose experience more closely aligns with our immediate project needs.',
+        feedbackMessage: 'Your portfolio demonstrated strong frontend development skills, and we encourage you to continue building experience with backend technologies.',
+        futureOpportunities: true,
+        contactEmail: 'careers@techinnovations.com',
+        hrName: 'David Kim',
+      },
+    });
 
+    this.registerTemplate({
+      id: 'company-newsletter',
+      name: 'Company Newsletter',
+      description: 'Professional monthly newsletter template',
+      category: 'marketing',
+      component: CompanyNewsletterEmail,
+      defaultProps: {
+        newsletterTitle: '209 Works Monthly Newsletter',
+        edition: 'January 2024',
+        date: new Date().toLocaleDateString(),
+        featuredStory: {
+          title: 'Featured Story',
+          content: 'Newsletter content here...',
+          ctaText: 'Read More',
+          ctaUrl: '#',
+        },
+        newsItems: [],
+        unsubscribeUrl: '#',
+        webViewUrl: '#',
+      },
+      requiredProps: ['newsletterTitle', 'edition', 'featuredStory', 'unsubscribeUrl', 'webViewUrl'],
+      previewProps: {
+        recipientName: 'Sarah Johnson',
+        newsletterTitle: '209 Works Monthly Newsletter',
+        edition: 'January 2024',
+        date: new Date().toLocaleDateString(),
+        featuredStory: {
+          title: 'Central Valley Tech Boom: New Opportunities in 2024',
+          content: 'The Central Valley is experiencing unprecedented growth in the technology sector. With major companies establishing offices in Modesto, Stockton, and Fresno, job opportunities for tech professionals have increased by 35% this year. From software development to data analytics, the 209 area is becoming a hub for innovation.',
+          ctaText: 'Explore Tech Jobs',
+          ctaUrl: 'https://209.works/jobs?category=technology',
+        },
+        newsItems: [
+          {
+            id: '1',
+            title: 'New Partnership with UC Merced',
+            excerpt: '209 Works announces partnership with UC Merced to connect students with local internship opportunities.',
+            readMoreUrl: 'https://209.works/news/uc-merced-partnership',
+            category: 'news',
+          },
+          {
+            id: '2',
+            title: 'Resume Tips for 2024',
+            excerpt: 'Learn how to optimize your resume for applicant tracking systems and stand out to employers.',
+            readMoreUrl: 'https://209.works/blog/resume-tips-2024',
+            category: 'tip',
+          },
+        ],
+        jobSpotlight: {
+          title: 'Senior Data Analyst',
+          company: 'AgTech Solutions',
+          location: 'Modesto, CA',
+          salary: '$75,000 - $95,000',
+          url: 'https://209.works/jobs/senior-data-analyst',
+        },
+        platformStats: {
+          newJobs: 247,
+          newCompanies: 18,
+          newJobSeekers: 432,
+        },
+        upcomingEvents: [
+          {
+            title: 'Central Valley Career Fair',
+            date: 'February 15, 2024',
+            location: 'Modesto Centre Plaza',
+            url: 'https://209.works/events/career-fair-feb-2024',
+          },
+        ],
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+        webViewUrl: 'https://209.works/newsletter/january-2024',
+      },
+    });
   }
 
   /**
@@ -530,6 +693,14 @@ export class TemplateManager {
         return `Job Posted Successfully: ${props.jobTitle || 'Your Job'}`;
       case 'system-notification':
         return props.title || 'System Notification from 209 Works';
+      case 'interview-invitation':
+        return `Interview Invitation: ${props.jobTitle || 'Position'} at ${props.companyName || 'Company'}`;
+      case 'application-status-accepted':
+        return `Congratulations! You've Been Selected for ${props.jobTitle || 'Position'}`;
+      case 'application-status-rejected':
+        return `Thank You for Your Interest in ${props.jobTitle || 'Position'}`;
+      case 'company-newsletter':
+        return `${props.newsletterTitle || '209 Works Newsletter'} - ${props.edition || 'Latest Edition'}`;
       default:
         return `Notification from 209 Works`;
     }
