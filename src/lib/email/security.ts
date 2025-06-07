@@ -1,21 +1,25 @@
 import { z } from 'zod';
 import validator from 'validator';
 
-// Simple HTML sanitization without DOMPurify
+// Safe HTML sanitization for email content
 function sanitizeHtml(html: string): string {
   if (typeof html !== 'string') return '';
 
+  // For email templates, we need to preserve HTML structure
+  // Only remove dangerous scripts and event handlers
   return html
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;')
     .replace(/javascript:/gi, '')
-    .replace(/data:/gi, '')
+    .replace(/data:(?!image\/)/gi, '') // Allow data: images but not other data: URIs
     .replace(/vbscript:/gi, '')
-    .replace(/on\w+\s*=/gi, ''); // Remove event handlers
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers like onclick, onload, etc.
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframe tags
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '') // Remove object tags
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '') // Remove embed tags
+    .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '') // Remove form tags
+    .replace(/<input\b[^>]*>/gi, '') // Remove input tags
+    .replace(/<textarea\b[^<]*(?:(?!<\/textarea>)<[^<]*)*<\/textarea>/gi, '') // Remove textarea tags
+    .replace(/<select\b[^<]*(?:(?!<\/select>)<[^<]*)*<\/select>/gi, ''); // Remove select tags
 }
 
 // Email security configuration

@@ -158,8 +158,8 @@ export async function sendEmail(options: SecureEmailOptions) {
         throw error;
       }
 
-      // Sanitize HTML content if provided
-      if (html) {
+      // Sanitize HTML content if provided (but skip for React components)
+      if (html && !react) {
         const sanitizedHtml = emailSecurityValidator.sanitizeHtmlContent(html);
         if (sanitizedHtml !== html) {
           console.warn('[EMAIL-SECURITY] HTML content was sanitized');
@@ -174,6 +174,9 @@ export async function sendEmail(options: SecureEmailOptions) {
           );
         }
         options.html = sanitizedHtml;
+      } else if (html && react) {
+        // Trust React component generated HTML
+        options.html = html;
       }
     }
 
