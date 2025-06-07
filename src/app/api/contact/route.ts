@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { z } from 'zod';
+import { ContactFormEmail } from '@/lib/email/templates/contact-form-email';
 
 // Lazy-load Resend client to avoid build-time errors
 function getResendClient() {
@@ -28,27 +29,25 @@ export async function POST(request: NextRequest) {
     
     const { name, email, subject, category, message } = validatedData;
     
-    // Create email content
-    const emailContent = `
-      <h2>New Contact Form Submission</h2>
-      <p><strong>From:</strong> ${name} (${email})</p>
-      <p><strong>Category:</strong> ${category}</p>
-      <p><strong>Subject:</strong> ${subject}</p>
-      <hr>
-      <h3>Message:</h3>
-      <p>${message.replace(/\n/g, '<br>')}</p>
-      <hr>
-      <p><em>Submitted at: ${new Date().toLocaleString()}</em></p>
-    `;
-
-    // Send email using Resend
+    // Send email using Resend with React template
     if (process.env.RESEND_API_KEY) {
       const resend = getResendClient();
       await resend.emails.send({
         from: process.env.RESEND_EMAIL_FROM || 'noreply@209.works',
         to: 'admin@209.works',
         subject: `[209 Works Contact] ${category}: ${subject}`,
-        html: emailContent,
+        react: ContactFormEmail({
+          name,
+          email,
+          subject,
+          category,
+          message,
+          submittedAt: new Date().toLocaleString('en-US', {
+            timeZone: 'America/Los_Angeles',
+            dateStyle: 'full',
+            timeStyle: 'short',
+          }),
+        }),
         replyTo: email,
       });
     }
