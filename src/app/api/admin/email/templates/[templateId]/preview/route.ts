@@ -200,6 +200,44 @@ function getSampleDataForTemplate(templateId: string) {
         unsubscribeUrl: 'https://209.works/unsubscribe',
       };
 
+    case 'application-confirmation':
+      return {
+        ...baseData,
+        userName: 'Alex Rodriguez',
+        jobTitle: 'Marketing Manager',
+        companyName: 'Central Valley Marketing',
+        applicationDate: new Date().toLocaleDateString(),
+        jobUrl: 'https://209.works/jobs/123',
+      };
+
+    case 'new-applicant':
+      return {
+        ...baseData,
+        employerName: 'Maria Garcia',
+        jobTitle: 'Marketing Manager',
+        applicantName: 'Alex Rodriguez',
+        applicantEmail: 'alex.rodriguez@example.com',
+        applicationDate: new Date().toLocaleDateString(),
+        dashboardUrl: 'https://209.works/employers/dashboard',
+      };
+
+    case 'job-posting-confirmation':
+      return {
+        ...baseData,
+        employerName: 'Maria Garcia',
+        jobTitle: 'Marketing Manager',
+        jobId: 'JOB-456',
+        jobUrl: 'https://209.works/jobs/456',
+        dashboardUrl: 'https://209.works/employers/dashboard',
+      };
+
+    case 'system-notification':
+      return {
+        ...baseData,
+        title: 'System Maintenance Notice',
+        message: 'We will be performing scheduled maintenance on our servers tonight from 2:00 AM to 4:00 AM PST. During this time, the platform may be temporarily unavailable.',
+      };
+
     case 'email-verification':
       return {
         ...baseData,

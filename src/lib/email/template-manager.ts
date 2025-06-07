@@ -178,6 +178,215 @@ export class TemplateManager {
         resetUrl: 'https://209.works/reset-password?token=abc123',
       },
     });
+
+    // Additional system templates
+    this.registerTemplate({
+      id: 'application-confirmation',
+      name: 'Application Confirmation',
+      description: 'Confirmation email when user applies for a job',
+      category: 'job_seeker',
+      component: this.createSystemNotificationTemplate(),
+      defaultProps: {
+        userName: 'Job Seeker',
+        jobTitle: 'Software Developer',
+        companyName: 'Tech Company',
+        applicationDate: new Date().toLocaleDateString(),
+        jobUrl: '#',
+      },
+      requiredProps: ['userName', 'jobTitle', 'companyName'],
+      previewProps: {
+        userName: 'Alex Rodriguez',
+        jobTitle: 'Marketing Manager',
+        companyName: 'Central Valley Marketing',
+        applicationDate: new Date().toLocaleDateString(),
+        jobUrl: 'https://209.works/jobs/123',
+      },
+    });
+
+    this.registerTemplate({
+      id: 'new-applicant',
+      name: 'New Applicant Alert',
+      description: 'Notification to employers about new job applications',
+      category: 'employer',
+      component: this.createSystemNotificationTemplate(),
+      defaultProps: {
+        employerName: 'Hiring Manager',
+        jobTitle: 'Software Developer',
+        applicantName: 'Job Seeker',
+        applicantEmail: 'jobseeker@example.com',
+        applicationDate: new Date().toLocaleDateString(),
+        dashboardUrl: 'https://209.works/employers/dashboard',
+      },
+      requiredProps: ['employerName', 'jobTitle', 'applicantName'],
+      previewProps: {
+        employerName: 'Maria Garcia',
+        jobTitle: 'Marketing Manager',
+        applicantName: 'Alex Rodriguez',
+        applicantEmail: 'alex.rodriguez@example.com',
+        applicationDate: new Date().toLocaleDateString(),
+        dashboardUrl: 'https://209.works/employers/dashboard',
+      },
+    });
+
+    this.registerTemplate({
+      id: 'job-posting-confirmation',
+      name: 'Job Posting Confirmation',
+      description: 'Confirmation email when employer posts a new job',
+      category: 'employer',
+      component: this.createSystemNotificationTemplate(),
+      defaultProps: {
+        employerName: 'Hiring Manager',
+        jobTitle: 'Software Developer',
+        jobId: 'JOB-123',
+        jobUrl: '#',
+        dashboardUrl: 'https://209.works/employers/dashboard',
+      },
+      requiredProps: ['employerName', 'jobTitle', 'jobId'],
+      previewProps: {
+        employerName: 'Maria Garcia',
+        jobTitle: 'Marketing Manager',
+        jobId: 'JOB-456',
+        jobUrl: 'https://209.works/jobs/456',
+        dashboardUrl: 'https://209.works/employers/dashboard',
+      },
+    });
+
+    this.registerTemplate({
+      id: 'system-notification',
+      name: 'System Notification',
+      description: 'General system notification template',
+      category: 'system',
+      component: this.createSystemNotificationTemplate(),
+      defaultProps: {
+        title: 'System Notification',
+        message: 'This is a system notification from 209 Works.',
+      },
+      requiredProps: ['title', 'message'],
+      previewProps: {
+        title: 'System Maintenance Notice',
+        message: 'We will be performing scheduled maintenance on our servers tonight from 2:00 AM to 4:00 AM PST. During this time, the platform may be temporarily unavailable.',
+      },
+    });
+  }
+
+  /**
+   * Create a generic system notification template component
+   */
+  private createSystemNotificationTemplate() {
+    return (props: any) => {
+      const {
+        title = 'Notification',
+        message = 'This is a notification from 209 Works.',
+        userName,
+        jobTitle,
+        companyName,
+        employerName,
+        applicantName,
+        applicationDate,
+        jobUrl,
+        dashboardUrl,
+        resetUrl,
+        ...otherProps
+      } = props;
+
+      // Generate content based on available props
+      let content = message;
+
+      if (jobTitle && companyName && userName) {
+        // Application confirmation
+        content = `
+          <h2>Application Submitted Successfully!</h2>
+          <p>Hi ${userName},</p>
+          <p>Thank you for applying to the <strong>${jobTitle}</strong> position at <strong>${companyName}</strong>.</p>
+          <p>Your application was submitted on ${applicationDate || new Date().toLocaleDateString()}.</p>
+          <p>The employer will review your application and contact you if you're selected for an interview.</p>
+          ${jobUrl ? `<p><a href="${jobUrl}" style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Job Posting</a></p>` : ''}
+        `;
+      } else if (employerName && applicantName && jobTitle) {
+        // New applicant notification
+        content = `
+          <h2>New Application Received</h2>
+          <p>Hi ${employerName},</p>
+          <p>You have received a new application for the <strong>${jobTitle}</strong> position.</p>
+          <p><strong>Applicant:</strong> ${applicantName}</p>
+          <p><strong>Applied on:</strong> ${applicationDate || new Date().toLocaleDateString()}</p>
+          ${dashboardUrl ? `<p><a href="${dashboardUrl}" style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Application</a></p>` : ''}
+        `;
+      } else if (employerName && jobTitle && props.jobId) {
+        // Job posting confirmation
+        content = `
+          <h2>Job Posted Successfully!</h2>
+          <p>Hi ${employerName},</p>
+          <p>Your job posting for <strong>${jobTitle}</strong> has been successfully published.</p>
+          <p><strong>Job ID:</strong> ${props.jobId}</p>
+          ${jobUrl ? `<p><a href="${jobUrl}" style="background: #1e40af; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">View Job Posting</a></p>` : ''}
+          ${dashboardUrl ? `<p><a href="${dashboardUrl}" style="color: #1e40af;">Manage Your Jobs</a></p>` : ''}
+        `;
+      }
+
+      return React.createElement('div', {
+        style: {
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+          maxWidth: '600px',
+          margin: '0 auto',
+          padding: '40px 20px',
+          backgroundColor: '#ffffff',
+        }
+      }, [
+        React.createElement('div', {
+          key: 'header',
+          style: {
+            textAlign: 'center',
+            marginBottom: '40px',
+            borderBottom: '3px solid #10b981',
+            paddingBottom: '20px',
+          }
+        }, [
+          React.createElement('h1', {
+            key: 'logo',
+            style: {
+              color: '#10b981',
+              fontSize: '28px',
+              fontWeight: 'bold',
+              margin: '0',
+            }
+          }, '209 Works'),
+          React.createElement('p', {
+            key: 'tagline',
+            style: {
+              color: '#6b7280',
+              fontSize: '14px',
+              margin: '5px 0 0 0',
+            }
+          }, 'Your Local Job Platform')
+        ]),
+        React.createElement('div', {
+          key: 'content',
+          dangerouslySetInnerHTML: { __html: content }
+        }),
+        React.createElement('div', {
+          key: 'footer',
+          style: {
+            marginTop: '40px',
+            paddingTop: '20px',
+            borderTop: '1px solid #e5e7eb',
+            textAlign: 'center',
+            color: '#6b7280',
+            fontSize: '14px',
+          }
+        }, [
+          React.createElement('p', { key: 'footer-text' }, 'Built for the 209. Made for the people who work here.'),
+          React.createElement('p', { key: 'contact' }, [
+            'Questions? Contact us at ',
+            React.createElement('a', {
+              key: 'email-link',
+              href: 'mailto:support@209.works',
+              style: { color: '#10b981' }
+            }, 'support@209.works')
+          ])
+        ])
+      ]);
+    };
   }
 
   /**
@@ -190,7 +399,18 @@ export class TemplateManager {
   /**
    * Get all registered templates
    */
-  getAllTemplates(): EmailTemplate[] {
+  getAllTemplates(): Record<string, EmailTemplate> {
+    const result: Record<string, EmailTemplate> = {};
+    for (const [id, template] of this.templates.entries()) {
+      result[id] = template;
+    }
+    return result;
+  }
+
+  /**
+   * Get all templates as array
+   */
+  getAllTemplatesArray(): EmailTemplate[] {
     return Array.from(this.templates.values());
   }
 
@@ -198,7 +418,7 @@ export class TemplateManager {
    * Get templates by category
    */
   getTemplatesByCategory(category: EmailTemplate['category']): EmailTemplate[] {
-    return this.getAllTemplates().filter(template => template.category === category);
+    return this.getAllTemplatesArray().filter(template => template.category === category);
   }
 
   /**
@@ -299,19 +519,33 @@ export class TemplateManager {
   }
 
   /**
-   * Extract plain text from HTML
+   * Extract plain text from HTML (improved)
    */
   private extractTextFromHtml(html: string): string {
-    return html
+    // Remove HTML tags but preserve line breaks and structure
+    let text = html
+      // Convert common block elements to line breaks
+      .replace(/<\/?(div|p|h[1-6]|br|hr)[^>]*>/gi, '\n')
+      // Convert list items to bullet points
+      .replace(/<li[^>]*>/gi, '• ')
+      .replace(/<\/li>/gi, '\n')
+      // Remove all other HTML tags
       .replace(/<[^>]*>/g, '')
+      // Decode HTML entities
       .replace(/&nbsp;/g, ' ')
       .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
-      .replace(/\s+/g, ' ')
+      .replace(/&hellip;/g, '...')
+      // Clean up whitespace
+      .replace(/\n\s*\n/g, '\n\n') // Multiple newlines to double newline
+      .replace(/[ \t]+/g, ' ') // Multiple spaces/tabs to single space
+      .replace(/^\s+|\s+$/gm, '') // Trim each line
       .trim();
+
+    return text;
   }
 
   /**
