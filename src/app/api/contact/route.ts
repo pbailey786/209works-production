@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { z } from 'zod';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-load Resend client to avoid build-time errors
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY environment variable is required');
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 // Validation schema for contact form
 const contactSchema = z.object({
@@ -37,6 +43,7 @@ export async function POST(request: NextRequest) {
 
     // Send email using Resend
     if (process.env.RESEND_API_KEY) {
+      const resend = getResendClient();
       await resend.emails.send({
         from: 'support@209.works',
         to: 'support@209.works', // You can change this to your actual support email

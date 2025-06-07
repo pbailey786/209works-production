@@ -39,16 +39,21 @@ export interface EmailMetrics {
 }
 
 export class EmailAgent {
-  private resend: Resend;
+  private resend: Resend | null = null;
   private isDevelopment: boolean;
 
   constructor() {
-    if (!process.env.RESEND_API_KEY) {
-      throw new Error('RESEND_API_KEY environment variable is required');
-    }
-    
-    this.resend = new Resend(process.env.RESEND_API_KEY);
     this.isDevelopment = process.env.NODE_ENV === 'development';
+  }
+
+  private getResendClient(): Resend {
+    if (!this.resend) {
+      if (!process.env.RESEND_API_KEY) {
+        throw new Error('RESEND_API_KEY environment variable is required');
+      }
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    }
+    return this.resend;
   }
 
   /**
@@ -96,12 +101,10 @@ export class EmailAgent {
         : fromAddress;
 
       // Prepare Resend email data with clean format (no custom headers to avoid validation issues)
-      const emailPayload = {
+      const emailPayload: any = {
         from: `209 Works <${cleanFromAddress}>`,
         to: recipients,
         subject: data.subject,
-        html: htmlContent,
-        text: textContent,
         tags: [
           { name: 'priority', value: data.priority },
           { name: 'environment', value: process.env.NODE_ENV || 'development' },
@@ -111,8 +114,19 @@ export class EmailAgent {
         ],
       };
 
+      // Add content based on what's available
+      if (data.react) {
+        emailPayload.react = data.react;
+      } else if (htmlContent) {
+        emailPayload.html = htmlContent;
+      }
+
+      if (textContent) {
+        emailPayload.text = textContent;
+      }
+
       // Send email via Resend
-      const result = await this.resend.emails.send(emailPayload);
+      const result = await this.getResendClient().emails.send(emailPayload);
 
       // Log successful send
       const processingTime = Date.now() - startTime;

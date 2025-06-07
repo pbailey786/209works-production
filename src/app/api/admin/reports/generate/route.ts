@@ -4,7 +4,13 @@ import authOptions from '../../../auth/authOptions';
 import { prisma } from '../../../auth/prisma';
 import { Resend } from 'resend';
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+// Lazy-load Resend client to avoid build-time errors
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY environment variable is required');
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -366,9 +372,7 @@ function generateInsights(data: any) {
 }
 
 async function sendReportEmail(report: any, recipients: string[], reportType: string, includeCharts: boolean) {
-  if (!resend) {
-    throw new Error('Resend API key not configured');
-  }
+  const resend = getResendClient();
 
   const subject = `209 Works ${report.periodName} Analytics Report - ${new Date().toLocaleDateString()}`;
 
