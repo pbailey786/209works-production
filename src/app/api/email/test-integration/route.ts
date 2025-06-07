@@ -87,27 +87,13 @@ export async function POST(request: NextRequest) {
         case 'job_alert':
           await EmailHelpers.sendJobAlert(recipientEmail, {
             userName: 'Test User',
-            jobs: [
-              {
-                id: '123',
-                title: 'Software Developer',
-                company: 'Test Company',
-                location: 'Modesto, CA',
-                salary: '$80,000 - $100,000',
-                url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/123`,
-                postedDate: new Date().toLocaleDateString(),
-              },
-              {
-                id: '124',
-                title: 'Frontend Developer',
-                company: 'Another Company',
-                location: 'Stockton, CA',
-                salary: '$70,000 - $90,000',
-                url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/124`,
-                postedDate: new Date().toLocaleDateString(),
-              },
-            ],
-            alertName: 'Developer Jobs in 209',
+            jobTitle: 'Software Developer',
+            companyName: 'Test Company',
+            location: 'Modesto, CA',
+            salary: '$80,000 - $100,000',
+            jobType: 'Full-time',
+            description: 'Exciting opportunity to join our development team in the 209 area. We are looking for a talented developer to help build innovative solutions.',
+            jobUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/123`,
             unsubscribeUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/email-alerts/unsubscribe?email=${encodeURIComponent(recipientEmail)}&type=job_alert`,
           }, {
             userId: 'test-user-id',
@@ -119,14 +105,7 @@ export async function POST(request: NextRequest) {
         case 'weekly_digest':
           await EmailHelpers.sendWeeklyDigest(recipientEmail, {
             userName: 'Test User',
-            weekOf: new Date().toLocaleDateString(),
-            stats: {
-              newJobs: 25,
-              totalApplications: 5,
-              profileViews: 12,
-              savedJobs: 8,
-            },
-            featuredJobs: [
+            jobs: [
               {
                 id: '123',
                 title: 'Software Developer',
@@ -134,13 +113,15 @@ export async function POST(request: NextRequest) {
                 location: 'Modesto, CA',
                 salary: '$80,000 - $100,000',
                 url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/123`,
-                postedDate: new Date().toLocaleDateString(),
               },
-            ],
-            tips: [
-              'Update your resume with recent projects',
-              'Follow up on applications from last week',
-              'Check out new companies in the 209 area',
+              {
+                id: '124',
+                title: 'Frontend Developer',
+                company: 'Another Company',
+                location: 'Stockton, CA',
+                salary: '$70,000 - $90,000',
+                url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/124`,
+              },
             ],
             unsubscribeUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/email-alerts/unsubscribe?email=${encodeURIComponent(recipientEmail)}&type=weekly_digest`,
           }, {
