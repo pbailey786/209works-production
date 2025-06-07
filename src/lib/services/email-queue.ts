@@ -433,7 +433,15 @@ export class EmailQueueService {
         return JobAlertEmail(data.data as JobAlertEmailProps);
 
       case 'weekly-digest':
-        return WeeklyDigestEmail(data.data as WeeklyDigestEmailProps);
+        const weeklyDigestData = data.data as any;
+        return WeeklyDigestEmail({
+          userName: weeklyDigestData.userName || 'Job Seeker',
+          jobs: weeklyDigestData.jobs || [],
+          totalJobs: weeklyDigestData.totalJobs || weeklyDigestData.jobs?.length || 0,
+          location: weeklyDigestData.location || '209 Area',
+          unsubscribeUrl: weeklyDigestData.unsubscribeUrl || '#',
+          viewAllJobsUrl: weeklyDigestData.viewAllJobsUrl || 'https://209.works/jobs',
+        });
 
       // Add more templates as needed
       default:
@@ -755,9 +763,10 @@ export class EmailQueueService {
     const emailData = {
       userName,
       jobs,
+      totalJobs: jobs.length,
       location: location || '209 Area',
       unsubscribeUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/email-alerts/unsubscribe?email=${encodeURIComponent(userEmail)}&type=weekly_digest`,
-      manageAlertsUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/profile/alerts`,
+      viewAllJobsUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs`,
     };
 
     const subject =

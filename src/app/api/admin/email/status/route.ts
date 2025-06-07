@@ -47,10 +47,10 @@ export async function GET(request: NextRequest) {
     const templateStats = {
       total: templatesData.length,
       byCategory: {
-        job_seeker: templatesData.filter(t => t.category === 'job_seeker').length,
-        employer: templatesData.filter(t => t.category === 'employer').length,
-        system: templatesData.filter(t => t.category === 'system').length,
-        marketing: templatesData.filter(t => t.category === 'marketing').length,
+        job_seeker: templatesData.filter((t: any) => t.category === 'job_seeker').length,
+        employer: templatesData.filter((t: any) => t.category === 'employer').length,
+        system: templatesData.filter((t: any) => t.category === 'system').length,
+        marketing: templatesData.filter((t: any) => t.category === 'marketing').length,
       },
     };
 

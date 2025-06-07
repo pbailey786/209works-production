@@ -18,6 +18,7 @@ interface NewsletterItem {
   excerpt: string;
   readMoreUrl: string;
   imageUrl?: string;
+  date?: string;
   category: 'feature' | 'news' | 'tip' | 'spotlight';
 }
 
@@ -85,7 +86,7 @@ export default function CompanyNewsletterEmail({
           <Section style={header}>
             <Text style={logo}>209 Works</Text>
             <Text style={tagline}>📰 {newsletterTitle}</Text>
-            <Text style={edition}>{edition} • {date}</Text>
+            <Text style={editionStyle}>{edition} • {date}</Text>
           </Section>
 
           {/* Web View Banner */}
@@ -306,7 +307,7 @@ const tagline = {
   fontWeight: '600',
 };
 
-const edition = {
+const editionStyle = {
   color: '#9fdf9f',
   fontSize: '14px',
   margin: '0',

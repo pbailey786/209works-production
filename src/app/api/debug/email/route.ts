@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       const templates = templateManager.getAllTemplatesArray();
       debugInfo.templates = {
         count: templates.length,
-        available: templates.map(t => ({ id: t.id, name: t.name, category: t.category })),
+        available: templates.map((t: any) => ({ id: t.id, name: t.name, category: t.category })),
       };
 
       // Test template rendering
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
       const availableTemplates = emailService.getAvailableTemplates();
       debugInfo.emailService = {
         templateCount: availableTemplates.length,
-        templates: availableTemplates.map(t => t.id),
+        templates: availableTemplates.map((t: any) => t.id),
       };
     } catch (error) {
       debugInfo.errors.push(`Email service error: ${error instanceof Error ? error.message : 'Unknown'}`);

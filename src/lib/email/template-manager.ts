@@ -486,8 +486,8 @@ export class TemplateManager {
         `;
       }
 
-      return (
-        <div style={{
+      return React.createElement('div', {
+        style: {
           fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
           maxWidth: '600px',
           margin: '0 auto',
@@ -495,58 +495,76 @@ export class TemplateManager {
           border: '1px solid #e2e8f0',
           borderRadius: '12px',
           overflow: 'hidden',
-        }}>
-          {/* Header */}
-          <div style={{
+        }
+      }, [
+        // Header
+        React.createElement('div', {
+          key: 'header',
+          style: {
             backgroundColor: '#2d4a3e',
             background: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
             padding: '32px 24px',
             textAlign: 'center',
-          }}>
-            <div style={{ color: '#9fdf9f', fontSize: '28px', fontWeight: 'bold', margin: '0 0 8px 0' }}>
-              209 Works
-            </div>
-            <div style={{ color: '#ffffff', fontSize: '16px', margin: '0' }}>
-              Your Central Valley Job Platform
-            </div>
-          </div>
+          }
+        }, [
+          React.createElement('div', {
+            key: 'logo',
+            style: { color: '#9fdf9f', fontSize: '28px', fontWeight: 'bold', margin: '0 0 8px 0' }
+          }, '209 Works'),
+          React.createElement('div', {
+            key: 'tagline',
+            style: { color: '#ffffff', fontSize: '16px', margin: '0' }
+          }, 'Your Central Valley Job Platform')
+        ]),
 
-          {/* Content */}
-          <div style={{ padding: '32px 24px' }}>
-            <div dangerouslySetInnerHTML={{ __html: content }} />
-            
-            <div style={{
+        // Content
+        React.createElement('div', {
+          key: 'content',
+          style: { padding: '32px 24px' }
+        }, [
+          React.createElement('div', {
+            key: 'main-content',
+            dangerouslySetInnerHTML: { __html: content }
+          }),
+          React.createElement('div', {
+            key: 'help-section',
+            style: {
               marginTop: '32px',
               padding: '16px',
               backgroundColor: '#f0fdf4',
               borderRadius: '8px',
               border: '1px solid #bbf7d0',
               textAlign: 'center',
-            }}>
-              <div style={{ color: '#2d4a3e', fontWeight: '600' }}>
-                Questions? We're here to help! 🤝
-              </div>
-              <div style={{ color: '#166534', fontSize: '14px', marginTop: '4px' }}>
-                Contact us at support@209.works
-              </div>
-            </div>
-          </div>
+            }
+          }, [
+            React.createElement('div', {
+              key: 'help-title',
+              style: { color: '#2d4a3e', fontWeight: '600' }
+            }, 'Questions? We\'re here to help! 🤝'),
+            React.createElement('div', {
+              key: 'help-contact',
+              style: { color: '#166534', fontSize: '14px', marginTop: '4px' }
+            }, 'Contact us at support@209.works')
+          ])
+        ]),
 
-          {/* Footer */}
-          <div style={{
+        // Footer
+        React.createElement('div', {
+          key: 'footer',
+          style: {
             backgroundColor: '#f8fafc',
             padding: '24px',
             textAlign: 'center',
             borderTop: '1px solid #e2e8f0',
-          }}>
-            <div style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.5' }}>
-              © {new Date().getFullYear()} 209 Works. All rights reserved.
-              <br />
-              Proudly serving the Central Valley with local job opportunities.
-            </div>
-          </div>
-        </div>
-      );
+          }
+        }, React.createElement('div', {
+          style: { fontSize: '12px', color: '#64748b', lineHeight: '1.5' }
+        }, [
+          `© ${new Date().getFullYear()} 209 Works. All rights reserved.`,
+          React.createElement('br'),
+          'Proudly serving the Central Valley with local job opportunities.'
+        ]))
+      ]);
     };
   }
 
@@ -728,3 +746,6 @@ export class TemplateManager {
     return { isValid: errors.length === 0, errors };
   }
 }
+
+// Create and export singleton instance
+export const templateManager = new TemplateManager();

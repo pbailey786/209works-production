@@ -293,7 +293,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: {
         emailTypes,
-        templates: templates.map(t => ({
+        templates: templates.map((t: any) => ({
           id: t.id,
           name: t.name,
           description: t.description,
