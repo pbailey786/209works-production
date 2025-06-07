@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
     if (process.env.RESEND_API_KEY) {
       const resend = getResendClient();
       await resend.emails.send({
-        from: 'support@209.works',
-        to: 'support@209.works', // You can change this to your actual support email
-        subject: `[209 Works Support] ${category}: ${subject}`,
+        from: process.env.RESEND_EMAIL_FROM || 'noreply@209.works',
+        to: 'admin@209.works',
+        subject: `[209 Works Contact] ${category}: ${subject}`,
         html: emailContent,
         replyTo: email,
       });

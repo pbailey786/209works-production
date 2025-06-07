@@ -35,7 +35,7 @@ export default function ContactPage() {
       icon: Mail,
       title: 'Email Support',
       description: 'Get help via email',
-      contact: 'support@209.works',
+      contact: 'admin@209.works',
       response: '24-48 hours',
       color: 'blue',
     },
@@ -333,7 +333,7 @@ export default function ContactPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-[#ff6b35] to-[#e55a2b] px-6 py-3 text-lg font-medium text-white transition-all duration-200 hover:from-[#e55a2b] hover:to-[#d14d1f]"
+                className="w-full text-lg"
               >
                 {isSubmitting ? (
                   <>
