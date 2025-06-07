@@ -105,14 +105,14 @@ export class EmailAgent {
 
       // Prepare Resend email data with clean format and anti-spam headers
       const emailPayload: any = {
-        from: `209 Works <${cleanFromAddress}>`,
+        from: cleanFromAddress, // Use clean email address directly
         to: recipients,
         subject: data.subject,
         reply_to: cleanFromAddress,
         headers: {
           'List-Unsubscribe': `<mailto:unsubscribe@209.works?subject=unsubscribe>`,
           'X-Entity-Ref-ID': `209works-${Date.now()}`,
-          'Content-Type': 'text/html; charset=UTF-8',
+          // Remove manual Content-Type - let Resend handle it
         },
         tags: [
           { name: 'priority', value: data.priority },
@@ -124,10 +124,8 @@ export class EmailAgent {
         ],
       };
 
-      // Add content - ensure HTML is properly formatted
-      // Our templates are already rendered to HTML by the template manager
+      // Add content based on what's available
       if (htmlContent) {
-        // Ensure HTML content is properly formatted
         emailPayload.html = htmlContent;
 
         // Debug: Log HTML content info
@@ -140,8 +138,8 @@ export class EmailAgent {
         emailPayload.react = data.react;
       }
 
-      // Add text content for accessibility and fallback
-      if (textContent && textContent.length > 50) {
+      // Add text content if available
+      if (textContent) {
         emailPayload.text = textContent;
       }
 
