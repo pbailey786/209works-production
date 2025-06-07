@@ -231,7 +231,7 @@ export class EmailService {
    * Get all available templates
    */
   getAvailableTemplates() {
-    return templateManager.getAllTemplates();
+    return templateManager.getAllTemplatesArray();
   }
 
   /**

@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 
     // Test template manager
     try {
-      const templates = templateManager.getAllTemplates();
+      const templates = templateManager.getAllTemplatesArray();
       debugInfo.templates = {
         count: templates.length,
         available: templates.map(t => ({ id: t.id, name: t.name, category: t.category })),

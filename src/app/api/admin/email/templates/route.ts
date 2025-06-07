@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
 import { templateManager } from '@/lib/email/template-manager';
-import { requireAuth } from '@/app/api/auth/requireAuth';
-import { requireRole } from '@/app/api/auth/requireRole';
+import authOptions from '@/app/api/auth/authOptions';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const authResult = await requireAuth(request);
-    if (!authResult.success) {
+    const session = await getServerSession(authOptions) as Session | null;
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const roleResult = await requireRole(authResult.user, 'admin');
-    if (!roleResult.success) {
+    const userRole = (session.user as any)?.role || 'guest';
+    if (!hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
