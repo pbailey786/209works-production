@@ -6,6 +6,27 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
+    // Routes that require email verification
+    const emailVerificationRequired = [
+      '/employer',
+      '/admin',
+      '/profile',
+      '/applications',
+      '/saved-jobs',
+      '/job-alerts',
+      '/apply'
+    ];
+
+    // Check if email verification is required for this route
+    const requiresVerification = emailVerificationRequired.some(route =>
+      pathname.startsWith(route)
+    );
+
+    // If user is authenticated but email not verified and route requires verification
+    if (token && requiresVerification && !token.isEmailVerified) {
+      return NextResponse.redirect(new URL('/verify-email', req.url));
+    }
+
     // If user is authenticated and visiting root, redirect based on role
     if (pathname === '/' && token) {
       if (token.role === 'admin') {
@@ -53,7 +74,12 @@ export default withAuth(
           pathname.startsWith('/jobs') ||
           pathname.startsWith('/chat') ||
           pathname.startsWith('/signin') ||
-          pathname.startsWith('/signup')
+          pathname.startsWith('/signup') ||
+          pathname.startsWith('/verify-email') ||
+          pathname.startsWith('/contact') ||
+          pathname.startsWith('/about') ||
+          pathname.startsWith('/password-reset') ||
+          pathname.startsWith('/reset-password')
         ) {
           return true;
         }

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Lock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Input from '../../components/Input';
+import PasswordInput from '../../components/PasswordInput';
 import Button from '../../components/Button';
 
 // Component that uses search params - needs to be wrapped in Suspense
@@ -123,35 +124,23 @@ function ResetPasswordContent() {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                    New Password
-                  </label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter new password (min. 8 characters)"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                    className="w-full"
-                  />
-                </div>
+                <PasswordInput
+                  id="password"
+                  label="New Password"
+                  placeholder="Enter new password (min. 8 characters)"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                />
 
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm New Password
-                  </label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm new password"
-                    value={confirmPassword}
-                    onChange={e => setConfirmPassword(e.target.value)}
-                    required
-                    className="w-full"
-                  />
-                </div>
+                <PasswordInput
+                  id="confirmPassword"
+                  label="Confirm New Password"
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  required
+                />
 
                 <Button
                   type="submit"

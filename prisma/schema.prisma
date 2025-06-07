@@ -74,8 +74,24 @@ model User {
   weeklyDigest         WeeklyDigest?
   chatAnalytics        ChatAnalytics[]
   impersonationSessions ImpersonationSession[] @relation("ImpersonationTarget")
+  verificationTokens    VerificationToken[]
 
   @@index([deletedAt])
+}
+
+model VerificationToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   @default("email_verification") // email_verification, password_reset
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([token])
+  @@index([userId])
+  @@index([type])
+  @@index([expiresAt])
 }
 
 model Company {

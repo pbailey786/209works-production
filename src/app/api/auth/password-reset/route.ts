@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/database/prisma';
 import { EmailHelpers } from '@/lib/email/email-helpers';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -87,6 +88,7 @@ export async function PATCH(req: NextRequest) {
   const { hash } = await import('bcryptjs');
   const passwordHash = await hash(password, 12); // Increased from 10 to 12 for better security
 
+  // Update password in Prisma database
   await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -95,6 +97,31 @@ export async function PATCH(req: NextRequest) {
       passwordResetExpires: null,
     },
   });
+
+  // Also update password in Supabase if configured
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+
+      const { error: supabaseError } = await supabase.auth.admin.updateUserById(
+        user.id,
+        { password }
+      );
+
+      if (supabaseError) {
+        console.warn('Failed to update password in Supabase:', supabaseError);
+        // Don't fail the request if Supabase update fails
+      } else {
+        console.log('✅ Password updated in both Prisma and Supabase');
+      }
+    }
+  } catch (supabaseError) {
+    console.warn('Supabase password update error:', supabaseError);
+    // Don't fail the request if Supabase update fails
+  }
 
   return NextResponse.json({
     message: 'Password has been reset successfully.',
