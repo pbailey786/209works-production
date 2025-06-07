@@ -26,11 +26,18 @@ export interface TemplateRenderResult {
   subject: string;
 }
 
+// Create a singleton instance to ensure consistency
+let templateManagerInstance: TemplateManager | null = null;
+
 export class TemplateManager {
   private templates: Map<string, EmailTemplate> = new Map();
 
   constructor() {
+    if (templateManagerInstance) {
+      return templateManagerInstance;
+    }
     this.registerDefaultTemplates();
+    templateManagerInstance = this;
   }
 
   /**
@@ -267,6 +274,10 @@ export class TemplateManager {
         message: 'We will be performing scheduled maintenance on our servers tonight from 2:00 AM to 4:00 AM PST. During this time, the platform may be temporarily unavailable.',
       },
     });
+
+
+
+
   }
 
   /**
@@ -499,53 +510,45 @@ export class TemplateManager {
    * Generate subject line based on template and props
    */
   private generateSubject(templateId: string, props: Record<string, any>): string {
+    // Enhanced subject generation with template-specific logic
     switch (templateId) {
       case 'job-alert':
-        return `New Job Alert: ${props.jobTitle} at ${props.companyName}`;
+        return `New Job Alert: ${props.jobTitle || 'Job Opportunity'} at ${props.companyName || 'Company'}`;
       case 'weekly-digest':
-        const jobCount = props.jobs?.length || 0;
-        return `${jobCount} New Jobs This Week in the 209 Area`;
+        return `Your Weekly Job Digest - ${props.jobs?.length || 0} New Jobs in ${props.location || '209 Area'}`;
       case 'welcome-job-seeker':
-        return `Welcome to 209 Works, ${props.userName}!`;
+        return `Welcome to 209 Works, ${props.userName || 'Job Seeker'}!`;
       case 'welcome-employer':
-        return `Welcome to 209 Works, ${props.companyName}!`;
-      case 'welcome-email':
-        return 'Welcome to 209 Works!';
+        return `Welcome to 209 Works, ${props.companyName || 'Company'}!`;
       case 'password-reset':
         return 'Reset Your 209 Works Password';
+      case 'application-confirmation':
+        return `Application Confirmed: ${props.jobTitle || 'Job'} at ${props.companyName || 'Company'}`;
+      case 'new-applicant':
+        return `New Application: ${props.applicantName || 'Candidate'} for ${props.jobTitle || 'Position'}`;
+      case 'job-posting-confirmation':
+        return `Job Posted Successfully: ${props.jobTitle || 'Your Job'}`;
+      case 'system-notification':
+        return props.title || 'System Notification from 209 Works';
       default:
-        return '209 Works Notification';
+        return `Notification from 209 Works`;
     }
   }
 
   /**
-   * Extract plain text from HTML (improved)
+   * Extract plain text from HTML (simplified)
    */
   private extractTextFromHtml(html: string): string {
-    // Remove HTML tags but preserve line breaks and structure
-    let text = html
-      // Convert common block elements to line breaks
-      .replace(/<\/?(div|p|h[1-6]|br|hr)[^>]*>/gi, '\n')
-      // Convert list items to bullet points
-      .replace(/<li[^>]*>/gi, '• ')
-      .replace(/<\/li>/gi, '\n')
-      // Remove all other HTML tags
+    // Remove HTML tags and decode entities
+    return html
       .replace(/<[^>]*>/g, '')
-      // Decode HTML entities
       .replace(/&nbsp;/g, ' ')
       .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
-      .replace(/&hellip;/g, '...')
-      // Clean up whitespace
-      .replace(/\n\s*\n/g, '\n\n') // Multiple newlines to double newline
-      .replace(/[ \t]+/g, ' ') // Multiple spaces/tabs to single space
-      .replace(/^\s+|\s+$/gm, '') // Trim each line
       .trim();
-
-    return text;
   }
 
   /**
@@ -558,13 +561,11 @@ export class TemplateManager {
     }
 
     const errors: string[] = [];
-    
-    // Check required props
-    template.requiredProps.forEach(prop => {
-      if (!(prop in props)) {
-        errors.push(`Missing required prop: ${prop}`);
+    for (const requiredProp of template.requiredProps) {
+      if (!(requiredProp in props)) {
+        errors.push(`Missing required prop: ${requiredProp}`);
       }
-    });
+    }
 
     return { isValid: errors.length === 0, errors };
   }

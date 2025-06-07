@@ -36,101 +36,41 @@ export default function EmailTemplatesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock template data (replace with real API call)
+  // Fetch real template data from the template manager API
   useEffect(() => {
-    const mockTemplates: EmailTemplate[] = [
-      {
-        id: 'job-alert',
-        name: 'Job Alert',
-        description: 'Notification email for new job matches',
-        category: 'job_seeker',
-        status: 'active',
-        lastUsed: '2024-01-16',
-        usageCount: 1250,
-        createdAt: '2024-01-01',
-        updatedAt: '2024-01-15',
-      },
-      {
-        id: 'weekly-digest',
-        name: 'Weekly Job Digest',
-        description: 'Weekly summary of new job opportunities',
-        category: 'job_seeker',
-        status: 'active',
-        lastUsed: '2024-01-15',
-        usageCount: 890,
-        createdAt: '2024-01-01',
-        updatedAt: '2024-01-10',
-      },
-      {
-        id: 'welcome-email',
-        name: 'Welcome Email',
-        description: 'Welcome new users to the platform',
-        category: 'system',
-        status: 'active',
-        lastUsed: '2024-01-16',
-        usageCount: 456,
-        createdAt: '2024-01-01',
-        updatedAt: '2024-01-12',
-      },
-      {
-        id: 'password-reset',
-        name: 'Password Reset',
-        description: 'Password reset instructions',
-        category: 'system',
-        status: 'active',
-        lastUsed: '2024-01-14',
-        usageCount: 234,
-        createdAt: '2024-01-01',
-        updatedAt: '2024-01-08',
-      },
-      {
-        id: 'application-confirmation',
-        name: 'Application Confirmation',
-        description: 'Confirm job application submission',
-        category: 'job_seeker',
-        status: 'draft',
-        usageCount: 0,
-        createdAt: '2024-01-10',
-        updatedAt: '2024-01-10',
-      },
-      {
-        id: 'new-applicant',
-        name: 'New Applicant Alert',
-        description: 'Notify employers of new applications',
-        category: 'employer',
-        status: 'active',
-        lastUsed: '2024-01-16',
-        usageCount: 678,
-        createdAt: '2024-01-01',
-        updatedAt: '2024-01-14',
-      },
-      {
-        id: 'job-posting-confirmation',
-        name: 'Job Posting Confirmation',
-        description: 'Confirm successful job posting',
-        category: 'employer',
-        status: 'active',
-        lastUsed: '2024-01-15',
-        usageCount: 123,
-        createdAt: '2024-01-05',
-        updatedAt: '2024-01-12',
-      },
-      {
-        id: 'monthly-newsletter',
-        name: 'Monthly Newsletter',
-        description: 'Monthly platform updates and highlights',
-        category: 'marketing',
-        status: 'draft',
-        usageCount: 12,
-        createdAt: '2024-01-08',
-        updatedAt: '2024-01-15',
-      },
-    ];
+    const fetchTemplates = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/admin/email/templates');
+        if (!response.ok) {
+          throw new Error('Failed to fetch templates');
+        }
+        const data = await response.json();
+        
+        // Transform the API data to match our UI interface
+        const transformedTemplates: EmailTemplate[] = data.templates.map((template: any) => ({
+          id: template.id,
+          name: template.name,
+          description: template.description,
+          category: template.category,
+          status: 'active', // Default status for existing templates
+          lastUsed: '2024-01-16', // Default for now
+          usageCount: Math.floor(Math.random() * 1000), // Random for now - you can track this in your database
+          createdAt: '2024-01-01', // Default for now
+          updatedAt: '2024-01-15', // Default for now
+        }));
+        
+        setTemplates(transformedTemplates);
+      } catch (error) {
+        console.error('Error fetching templates:', error);
+        // Fallback to empty array on error
+        setTemplates([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    setTimeout(() => {
-      setTemplates(mockTemplates);
-      setIsLoading(false);
-    }, 500);
+    fetchTemplates();
   }, []);
 
   const getCategoryColor = (category: string) => {
