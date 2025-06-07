@@ -167,6 +167,39 @@ function getSampleDataForTemplate(templateId: string) {
         expiryTime: '24 hours',
       };
 
+    case 'weekly-digest':
+      return {
+        ...baseData,
+        userName: 'Sarah Johnson',
+        jobs: [
+          {
+            id: '1',
+            title: 'Marketing Manager',
+            company: 'Local Business Inc',
+            location: 'Modesto, CA',
+            salary: '$60,000 - $75,000',
+            url: 'https://209.works/jobs/1',
+          },
+          {
+            id: '2',
+            title: 'Registered Nurse',
+            company: 'Central Valley Hospital',
+            location: 'Turlock, CA',
+            salary: '$70,000 - $85,000',
+            url: 'https://209.works/jobs/2',
+          },
+          {
+            id: '3',
+            title: 'Elementary Teacher',
+            company: 'Modesto City Schools',
+            location: 'Modesto, CA',
+            salary: '$55,000 - $70,000',
+            url: 'https://209.works/jobs/3',
+          },
+        ],
+        unsubscribeUrl: 'https://209.works/unsubscribe',
+      };
+
     case 'email-verification':
       return {
         ...baseData,

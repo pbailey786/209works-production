@@ -138,34 +138,40 @@ export class EmailSecurityValidator {
     const errors: string[] = [];
 
     try {
+      // Extract email from RFC 5322 format if needed (e.g., "<email@domain.com>")
+      let cleanEmail = email.trim();
+      if (cleanEmail.startsWith('<') && cleanEmail.endsWith('>')) {
+        cleanEmail = cleanEmail.slice(1, -1);
+      }
+
       // Basic format validation
-      if (!validator.isEmail(email)) {
+      if (!validator.isEmail(cleanEmail)) {
         errors.push('Invalid email format');
       }
 
       // Length validation
-      if (email.length > 254) {
+      if (cleanEmail.length > 254) {
         errors.push('Email address too long');
       }
 
       // Domain validation
-      const domain = email.split('@')[1];
-      if (EMAIL_SECURITY_CONFIG.BLOCKED_DOMAINS.includes(domain)) {
+      const domain = cleanEmail.split('@')[1];
+      if (domain && EMAIL_SECURITY_CONFIG.BLOCKED_DOMAINS.includes(domain)) {
         errors.push('Email domain not allowed');
       }
 
       // Check for homograph attacks
-      if (containsHomographs(email)) {
+      if (containsHomographs(cleanEmail)) {
         errors.push('Email contains suspicious characters');
       }
 
       // Check for header injection
-      if (containsHeaderInjection(email)) {
+      if (containsHeaderInjection(cleanEmail)) {
         errors.push('Email contains invalid characters');
       }
 
       // Validate domain exists (basic check)
-      if (!this.isValidDomain(domain)) {
+      if (domain && !this.isValidDomain(domain)) {
         errors.push('Invalid email domain');
       }
     } catch (error) {
