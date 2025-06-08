@@ -6,7 +6,7 @@ import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -38,7 +38,7 @@ export async function POST(
       );
     }
 
-    const jobId = params.id;
+    const { id: jobId } = await params;
 
     // Get the job and verify ownership
     const job = await prisma.job.findUnique({
@@ -134,7 +134,7 @@ export async function POST(
 // GET endpoint to check if a job can be reposted
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -159,7 +159,7 @@ export async function GET(
       );
     }
 
-    const jobId = params.id;
+    const { id: jobId } = await params;
 
     // Get the job and verify ownership
     const job = await prisma.job.findUnique({
