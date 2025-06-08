@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
           source: 'email-verification',
           userId: user.id,
         },
-        priority: 'urgent',
+        priority: 'high',
       });
 
       console.log('📧 Verification email sent successfully to:', user.email);
