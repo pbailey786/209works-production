@@ -28,6 +28,11 @@ export interface EnvConfig {
     hasResendKey: boolean;
     hasEmailFrom: boolean;
   };
+  storage: {
+    hasSupabaseUrl: boolean;
+    hasSupabaseKey: boolean;
+    hasServiceRoleKey: boolean;
+  };
 }
 
 /**
@@ -80,6 +85,22 @@ export function validateEnvironmentVariables(): EnvValidationResult {
     warnings.push('EMAIL_FROM (email features will not work)');
   }
 
+  // Check Supabase configuration
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    warnings.push('NEXT_PUBLIC_SUPABASE_URL (file storage will not work)');
+  }
+
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseKey) {
+    warnings.push('NEXT_PUBLIC_SUPABASE_ANON_KEY (file storage will not work)');
+  }
+
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) {
+    warnings.push('SUPABASE_SERVICE_ROLE_KEY (admin file operations will not work)');
+  }
+
   return {
     isValid: missing.length === 0 && invalid.length === 0,
     missing,
@@ -113,6 +134,11 @@ export function getEnvironmentConfig(): EnvConfig {
       hasResendKey: !!process.env.RESEND_API_KEY,
       hasEmailFrom: !!process.env.EMAIL_FROM,
     },
+    storage: {
+      hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    },
   };
 }
 
@@ -144,6 +170,7 @@ export function logEnvironmentStatus(): void {
   console.log('    Database:', config.database.hasUrl ? '✅' : '❌');
   console.log('    Auth:', config.auth.hasSecret && config.auth.hasUrl ? '✅' : '❌');
   console.log('    Email:', config.email.hasResendKey && config.email.hasEmailFrom ? '✅' : '⚠️');
+  console.log('    Storage:', config.storage.hasSupabaseUrl && config.storage.hasSupabaseKey ? '✅' : '⚠️');
 }
 
 /**

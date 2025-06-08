@@ -5,6 +5,7 @@ import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile } from '@/lib/fileUpload';
+import { extractTextFromFile, validateExtractedText } from '@/lib/textExtraction';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
 import type { Session } from 'next-auth';
 
@@ -87,25 +88,49 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ User found:', user.id);
 
-    // Convert file to text (simplified - in production you'd use a proper PDF/DOC parser)
-    console.log('🔍 Starting text extraction...');
+    // Extract text from file using enhanced text extraction
+    console.log('🔍 Starting enhanced text extraction...');
     const fileBuffer = await file.arrayBuffer();
-    const fileText = await extractTextFromFile(fileBuffer, file.type);
 
-    if (!fileText || fileText.trim().length === 0) {
-      console.log('❌ Text extraction failed: No text extracted');
+    let extractionResult;
+    try {
+      extractionResult = await extractTextFromFile(fileBuffer, file.type, file.name);
+    } catch (extractionError: any) {
+      console.log('❌ Text extraction failed:', extractionError.message);
       return NextResponse.json(
         {
-          error:
-            'Could not extract text from resume. Please try a different file or fill out the form manually.',
+          error: 'Could not extract text from resume.',
+          details: extractionError.message,
+          debug: process.env.NODE_ENV === 'development' ? { error: extractionError.message } : undefined
         },
         { status: 400 }
       );
     }
 
+    // Validate extracted text quality
+    const validation = validateExtractedText(extractionResult);
+    if (!validation.isValid) {
+      console.log('❌ Text validation failed:', validation.issues);
+      return NextResponse.json(
+        {
+          error: 'Extracted text quality is too low.',
+          details: validation.issues.join('. '),
+          debug: process.env.NODE_ENV === 'development' ? {
+            extractionResult,
+            validation
+          } : undefined
+        },
+        { status: 400 }
+      );
+    }
+
+    const fileText = extractionResult.text;
     console.log('✅ Text extraction successful:', {
+      method: extractionResult.method,
       textLength: fileText.length,
-      preview: fileText.substring(0, 100) + '...'
+      confidence: extractionResult.confidence,
+      preview: fileText.substring(0, 100) + '...',
+      warnings: extractionResult.warnings
     });
 
     // Use OpenAI to parse the resume
@@ -211,9 +236,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Skip file saving for now (serverless environment doesn't support file system writes)
-    console.log('🔍 Skipping file save (serverless environment)...');
-    const resumeUrl = null; // Will implement cloud storage later
+    // Save the resume file to Supabase Storage
+    console.log('🔍 Saving resume file to Supabase Storage...');
+    let resumeUrl;
+    try {
+      resumeUrl = await saveResumeFile(file, user.id);
+      console.log('✅ Resume file saved to Supabase:', resumeUrl);
+    } catch (fileError: any) {
+      console.error('❌ File save failed:', fileError.message);
+      // Don't fail the entire request if file save fails - we still have the parsed data
+      console.log('⚠️ Continuing without file save...');
+      resumeUrl = null;
+    }
 
     // Update user with resume URL and any extracted data
     console.log('🔍 Updating user in database...');
@@ -221,7 +255,8 @@ export async function POST(request: NextRequest) {
       await prisma.user.update({
         where: { id: user.id },
         data: {
-          // Skip resumeUrl for now since we're not saving files
+          // Update resume URL if file was saved successfully
+          ...(resumeUrl && { resumeUrl }),
           // Only update fields that were successfully extracted
           ...(validatedData.name && { name: validatedData.name }),
           ...(validatedData.location && { location: validatedData.location }),
@@ -253,9 +288,16 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         ...validatedData,
-        resumeUrl: null, // File saving will be implemented with cloud storage later
+        resumeUrl,
+        extractionInfo: {
+          method: extractionResult.method,
+          confidence: extractionResult.confidence,
+          warnings: extractionResult.warnings
+        }
       },
-      message: 'Resume parsed successfully! (File saving temporarily disabled)',
+      message: resumeUrl
+        ? 'Resume parsed and saved successfully!'
+        : 'Resume parsed successfully! (File not saved due to storage error)',
     });
   } catch (error: any) {
     console.error('❌ Resume parsing error:', {
@@ -276,56 +318,4 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Extract text from different file types
-async function extractTextFromFile(
-  buffer: ArrayBuffer,
-  mimeType: string
-): Promise<string> {
-  try {
-    const uint8Array = new Uint8Array(buffer);
 
-    if (mimeType === 'application/pdf') {
-      // For now, return a message asking user to use DOCX or manual entry
-      // In production, you'd implement proper PDF parsing
-      throw new Error(
-        'PDF parsing is temporarily unavailable. Please upload a DOCX file or fill out the form manually.'
-      );
-    } else if (
-      mimeType ===
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ) {
-      // Parse DOCX files using dynamic import
-      try {
-        const mammoth = (await import('mammoth')).default;
-        const result = await mammoth.extractRawText({
-          buffer: Buffer.from(uint8Array),
-        });
-        return result.value;
-      } catch (error) {
-        throw new Error(
-          'Failed to parse DOCX file. Please try a different file or fill out the form manually.'
-        );
-      }
-    } else if (mimeType === 'application/msword') {
-      // For older DOC files, mammoth has limited support
-      try {
-        const mammoth = (await import('mammoth')).default;
-        const result = await mammoth.extractRawText({
-          buffer: Buffer.from(uint8Array),
-        });
-        return result.value;
-      } catch (error) {
-        throw new Error(
-          'DOC files are not fully supported. Please convert to DOCX format or fill out the form manually.'
-        );
-      }
-    } else {
-      // For plain text files
-      const decoder = new TextDecoder();
-      return decoder.decode(buffer);
-    }
-  } catch (error) {
-    console.error('Text extraction error:', error);
-    throw error; // Re-throw the error with the original message
-  }
-}
