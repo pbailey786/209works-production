@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
 const nextConfig: NextConfig = {
   // Security headers configuration
@@ -190,6 +191,12 @@ const nextConfig: NextConfig = {
 
   // Webpack configuration for security
   webpack: (config, { isServer }) => {
+    // Add path alias resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+    };
+
     // Security-related webpack configurations
     if (!isServer) {
       // Don't resolve 'fs' module on the client to prevent security issues
