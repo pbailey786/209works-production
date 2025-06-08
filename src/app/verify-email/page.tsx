@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -201,5 +201,20 @@ export default function VerifyEmailPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin text-[#2d4a3e] mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

@@ -56,7 +56,7 @@ export async function sendVerificationEmail({
         source: 'email-verification',
         userId,
       },
-      priority: 'urgent',
+      priority: 'critical',
     });
 
     if (!emailResult.success) {
