@@ -90,6 +90,16 @@ export const POST = withAPIMiddleware(
           ? salaryMax
           : null;
 
+    // Set expiration date based on post type
+    const expirationDate = new Date();
+    if (isFreeBasicPost) {
+      // Free posts expire in 7 days
+      expirationDate.setDate(expirationDate.getDate() + 7);
+    } else {
+      // Premium posts expire in 30 days
+      expirationDate.setDate(expirationDate.getDate() + 30);
+    }
+
     // Create job with employer relationship
     const job = await prisma.job.create({
       data: {
@@ -97,6 +107,7 @@ export const POST = withAPIMiddleware(
         jobType: type, // Map type to jobType for Prisma
         employerId, // Link to the authenticated user
         postedAt: body!.postedAt ? new Date(body!.postedAt) : new Date(),
+        expiresAt: expirationDate, // Set expiration based on post type
         source: jobData.source || 'manual', // Ensure source is always provided
         url: jobData.url || '', // Ensure url is always provided
         salaryMin: processedSalaryMin,
@@ -129,6 +140,14 @@ export const POST = withAPIMiddleware(
           { status: 402 }
         );
       }
+    }
+
+    // Update posting patterns for duplicate detection (async, don't wait)
+    try {
+      const { DuplicateDetectionService } = await import('@/lib/services/duplicate-detection');
+      DuplicateDetectionService.updatePostingPattern(job).catch(console.error);
+    } catch (error) {
+      console.warn('Failed to update posting pattern:', error);
     }
 
     // Invalidate job caches since we added a new job

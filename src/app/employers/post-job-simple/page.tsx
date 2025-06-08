@@ -351,7 +351,7 @@ export default function SimplePostJobPage() {
               </button>
 
               <p className="mt-3 text-center text-sm text-gray-500">
-                Your job will be live for 30 days and reach thousands of local
+                Your job will be live for 7 days and reach thousands of local
                 candidates
               </p>
               <p className="mt-1 text-center text-xs text-blue-600">
