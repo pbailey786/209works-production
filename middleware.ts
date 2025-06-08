@@ -76,6 +76,7 @@ export default withAuth(
           pathname.startsWith('/signin') ||
           pathname.startsWith('/signup') ||
           pathname.startsWith('/verify-email') ||
+          pathname.startsWith('/test-verify') ||
           pathname.startsWith('/contact') ||
           pathname.startsWith('/about') ||
           pathname.startsWith('/password-reset') ||
