@@ -163,20 +163,23 @@ export async function POST(req: NextRequest) {
 
     // Check for Prisma errors
     if (error && typeof error === 'object' && 'code' in error) {
-      console.error('❌ Database error:', { code: error.code, message: error.message });
+      const errorMessage = 'message' in error && typeof error.message === 'string' ? error.message : 'Unknown database error';
+      console.error('❌ Database error:', { code: error.code, message: errorMessage });
       return NextResponse.json(
         {
           error: 'Database error occurred. Please try again.',
-          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+          details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
         },
         { status: 500 }
       );
     }
 
+    // Handle general errors
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
       {
         error: 'Failed to complete onboarding. Please try again.',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
       },
       { status: 500 }
     );
