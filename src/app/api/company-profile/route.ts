@@ -11,7 +11,7 @@ export async function GET() {
     const session = await getServerSession(authOptions) as Session | null;
     console.log('🏢 Session check:', {
       hasSession: !!session,
-      userEmail: session!.user?.email,
+      userEmail: session?.user?.email,
       userId: (session?.user as any)?.id,
     });
 
@@ -22,7 +22,7 @@ export async function GET() {
 
     // Check if user has employer role
     const user = await prisma.user.findUnique({
-      where: { id: (session!.user as any).id },
+      where: { id: (session.user as any).id },
       include: {
         company: true,
       },
