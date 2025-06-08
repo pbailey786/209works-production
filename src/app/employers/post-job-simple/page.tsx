@@ -108,6 +108,7 @@ export default function SimplePostJobPage() {
           benefits: '',
           urgent: false,
           featured: false,
+          source: 'free_basic_post', // Mark as free basic post
         }),
       });
 
@@ -344,7 +345,7 @@ export default function SimplePostJobPage() {
                 ) : (
                   <>
                     <Send className="mr-2 h-5 w-5" />
-                    Post Job - $99
+                    Post Job - FREE
                   </>
                 )}
               </button>
@@ -352,6 +353,9 @@ export default function SimplePostJobPage() {
               <p className="mt-3 text-center text-sm text-gray-500">
                 Your job will be live for 30 days and reach thousands of local
                 candidates
+              </p>
+              <p className="mt-1 text-center text-xs text-blue-600">
+                ✨ Want AI-optimized job posts? <a href="/employers/create-job-post" className="underline">Try our Job Post Optimizer</a>
               </p>
             </div>
           </form>

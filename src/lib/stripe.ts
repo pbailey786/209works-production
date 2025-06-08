@@ -74,7 +74,77 @@ export const STRIPE_CONFIG = {
   },
 };
 
-// Price IDs for different plans (these will need to be created in Stripe Dashboard)
+// Job Posting Tiers and Add-ons Configuration (One-time payments)
+export const JOB_POSTING_CONFIG = {
+  tiers: {
+    starter: {
+      name: 'Starter Tier',
+      price: 99,
+      stripePriceId: process.env.STRIPE_PRICE_STARTER,
+      features: {
+        jobPosts: 1,
+        duration: 30, // days
+        aiOptimization: false,
+        analytics: 'basic',
+        support: 'email',
+      },
+    },
+    standard: {
+      name: 'Standard Tier',
+      price: 199,
+      stripePriceId: process.env.STRIPE_PRICE_STANDARD,
+      features: {
+        jobPosts: 3,
+        duration: 30,
+        aiOptimization: true,
+        analytics: 'advanced',
+        support: 'priority',
+      },
+    },
+    pro: {
+      name: 'Pro Tier',
+      price: 350,
+      stripePriceId: process.env.STRIPE_PRICE_PRO,
+      features: {
+        jobPosts: 10,
+        duration: 60,
+        aiOptimization: true,
+        analytics: 'premium',
+        support: 'phone',
+        featuredPosts: 2,
+      },
+    },
+  },
+  addons: {
+    featuredPost: {
+      name: 'Featured Post',
+      price: 49,
+      stripePriceId: process.env.STRIPE_PRICE_FEATURED,
+      description: 'Highlight your job at the top of search results',
+    },
+    socialGraphic: {
+      name: 'Social Post Graphic',
+      price: 49,
+      stripePriceId: process.env.STRIPE_PRICE_GRAPHIC,
+      description: 'Custom social media graphic for your job post',
+    },
+    repostJob: {
+      name: 'Repost Job',
+      price: 29,
+      stripePriceId: process.env.STRIPE_PRICE_REPOST,
+      description: 'Extend your job posting for another 30 days',
+    },
+    featureAndSocialBundle: {
+      name: 'Feature and Social Bundle',
+      price: 85,
+      stripePriceId: process.env.STRIPE_PRICE_BOOST_PACK,
+      description: 'Featured post + social graphic (save $13)',
+      includes: ['featuredPost', 'socialGraphic'],
+    },
+  },
+};
+
+// Legacy subscription price IDs (keeping for backward compatibility)
 export const STRIPE_PRICE_IDS = {
   starter: {
     monthly: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,

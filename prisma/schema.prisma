@@ -75,6 +75,8 @@ model User {
   chatAnalytics        ChatAnalytics[]
   impersonationSessions ImpersonationSession[] @relation("ImpersonationTarget")
   verificationTokens    VerificationToken[]
+  jobPostingPurchases   JobPostingPurchase[]
+  jobPostingCredits     JobPostingCredit[]
 
   @@index([deletedAt])
 }
@@ -194,6 +196,7 @@ model Job {
   shouldIApplyUsage ShouldIApplyUsage[]
   alerts            Alert[]          @relation("AlertToJob")
   optimizedFrom     JobPostOptimizer[] @relation("OptimizedJob")
+  usedCredits       JobPostingCredit[]
 
   @@index([postedAt])
   @@index([location])
@@ -861,6 +864,65 @@ model ChatAnalytics {
   @@index([sessionId])
   @@index([createdAt])
   @@index([question])
+}
+
+model JobPostingPurchase {
+  id                    String   @id @default(uuid())
+  userId                String
+  stripeSessionId       String   @unique
+  stripePaymentIntentId String?
+  tier                  String   // starter, standard, pro
+  tierPrice             Decimal  @db.Decimal(10, 2)
+  addons                Json?    // Array of addon objects with name, price, stripePriceId
+  totalAmount           Decimal  @db.Decimal(10, 2)
+  currency              String   @default("usd")
+  status                String   @default("pending") // pending, completed, failed, refunded
+
+  // Credits granted
+  jobPostCredits        Int      @default(0)
+  featuredPostCredits   Int      @default(0)
+  socialGraphicCredits  Int      @default(0)
+  repostCredits         Int      @default(0)
+
+  // Metadata
+  metadata              Json?
+  purchasedAt           DateTime @default(now())
+  expiresAt             DateTime? // When credits expire
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credits               JobPostingCredit[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([purchasedAt])
+  @@index([expiresAt])
+}
+
+model JobPostingCredit {
+  id          String    @id @default(uuid())
+  userId      String
+  purchaseId  String?   // Reference to the purchase that granted this credit
+  type        String    // job_post, featured_post, social_graphic, repost
+  isUsed      Boolean   @default(false)
+  usedAt      DateTime?
+  usedForJobId String?  // Which job this credit was used for
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchase    JobPostingPurchase? @relation(fields: [purchaseId], references: [id])
+  job         Job?      @relation(fields: [usedForJobId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([isUsed])
+  @@index([expiresAt])
+  @@index([usedAt])
 }
 
 model AnalyticsReport {

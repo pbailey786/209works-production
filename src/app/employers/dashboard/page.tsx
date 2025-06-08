@@ -27,6 +27,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import BillingModal from '@/components/billing/BillingModal';
+import JobPostingCheckout from '@/components/job-posting/JobPostingCheckout';
 
 interface DashboardStats {
   totalJobs: number;
@@ -85,10 +86,17 @@ function DashboardContent() {
 
   const [jobs, setJobs] = useState<JobListing[]>([]);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [credits, setCredits] = useState({
+    jobPost: 0,
+    featuredPost: 0,
+    socialGraphic: 0,
+    repost: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
   // BILLING REFACTOR: Add billing modal state
   const [showBillingModal, setShowBillingModal] = useState(false);
+  const [showJobPostingCheckout, setShowJobPostingCheckout] = useState(false);
 
   // Fetch real employer data
   useEffect(() => {
@@ -127,6 +135,13 @@ function DashboardContent() {
           setApplicants(applicantsData.applicants || []);
         } else {
           setApplicants([]);
+        }
+
+        // Fetch job posting credits
+        const creditsResponse = await fetch('/api/job-posting/credits');
+        if (creditsResponse.ok) {
+          const creditsData = await creditsResponse.json();
+          setCredits(creditsData);
         }
 
       } catch (error) {
@@ -221,15 +236,27 @@ function DashboardContent() {
     return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
   };
 
-  // BILLING REFACTOR: Handle job posting clicks - show billing modal instead of direct navigation
+  // Handle different job posting options
   const handlePostJobClick = () => {
-    setShowBillingModal(true);
+    // Show job posting checkout for premium packages
+    setShowJobPostingCheckout(true);
+  };
+
+  const handleFreePostJobClick = () => {
+    // Direct to free basic job posting
+    router.push('/employers/post-job-simple');
   };
 
   const handleBillingSuccess = () => {
     setShowBillingModal(false);
-    // After successful billing, redirect to job posting
+    // After successful billing, redirect to AI job posting
     router.push('/employers/create-job-post');
+  };
+
+  const handleJobPostingCheckoutSuccess = () => {
+    setShowJobPostingCheckout(false);
+    // Refresh the page to show updated credits
+    window.location.reload();
   };
 
   if (status === 'loading' || isLoading) {
@@ -328,17 +355,17 @@ function DashboardContent() {
               Post a Job
             </button>
             <button
-              onClick={handlePostJobClick}
+              onClick={handleFreePostJobClick}
               className="flex items-center rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-gray-700"
             >
               <Plus className="mr-2 h-5 w-5" />
-              Quick Post
+              Quick Post (Free)
             </button>
           </div>
         </div>
 
         {/* Simple Stats Cards */}
-        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center">
               <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
@@ -377,6 +404,20 @@ function DashboardContent() {
                   {stats.profileViews.toLocaleString()}
                 </p>
                 <p className="text-sm text-gray-600">Profile Views</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center">
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
+                <Sparkles className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-gray-900">
+                  {credits.jobPost}
+                </p>
+                <p className="text-sm text-gray-600">Job Credits</p>
               </div>
             </div>
           </div>
@@ -588,6 +629,13 @@ function DashboardContent() {
         trigger="job-posting"
         title="Choose Your Plan to Post Jobs"
         description="Select a subscription plan to start posting jobs and finding great candidates in the 209 area."
+      />
+
+      {/* Job Posting Checkout Modal */}
+      <JobPostingCheckout
+        isOpen={showJobPostingCheckout}
+        onClose={() => setShowJobPostingCheckout(false)}
+        onSuccess={handleJobPostingCheckoutSuccess}
       />
     </div>
   );

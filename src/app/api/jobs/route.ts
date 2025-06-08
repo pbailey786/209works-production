@@ -51,6 +51,27 @@ export const POST = withAPIMiddleware(
 
     performance.trackDatabaseQuery();
 
+    // Check if this is a free basic job post (no credits required)
+    // vs premium features that require credits
+    const isFreeBasicPost = body?.source === 'free_basic_post';
+
+    // For premium features, check if user has job posting credits
+    if (!isFreeBasicPost) {
+      const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
+
+      const canPost = await JobPostingCreditsService.canPostJob(employerId);
+      if (!canPost) {
+        return NextResponse.json(
+          {
+            error: 'Job posting credits required. Please purchase a job posting package.',
+            code: 'CREDITS_REQUIRED',
+            redirectUrl: '/employers/dashboard'
+          },
+          { status: 402 } // Payment Required
+        );
+      }
+    }
+
     // Extract and transform the data from the form
     const { type, contactEmail, salaryMin, salaryMax, isRemote, ...jobData } =
       body!;
@@ -94,6 +115,21 @@ export const POST = withAPIMiddleware(
         },
       },
     });
+
+    // Use job posting credit if this is not a free basic post
+    if (!isFreeBasicPost) {
+      const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
+      const creditResult = await JobPostingCreditsService.useJobPostCredit(employerId, job.id);
+
+      if (!creditResult.success) {
+        // If credit usage fails, we should delete the job and return error
+        await prisma.job.delete({ where: { id: job.id } });
+        return NextResponse.json(
+          { error: creditResult.error || 'Failed to use job posting credit' },
+          { status: 402 }
+        );
+      }
+    }
 
     // Invalidate job caches since we added a new job
     await JobCacheService.invalidateJobCaches(undefined, employerId);

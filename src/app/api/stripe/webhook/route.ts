@@ -98,6 +98,12 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
+  // Handle job posting purchases
+  if (type === 'job_posting_purchase') {
+    await handleJobPostingPurchase(session);
+    return;
+  }
+
   // Handle addon purchases
   if (type === 'addon_purchase') {
     await handleAddonPurchase(session);
@@ -381,6 +387,91 @@ async function handleAddonPurchase(session: Stripe.Checkout.Session) {
     console.log(`Addon purchase completed: ${addon.name} for user ${userId}`);
   } catch (error) {
     console.error('Error handling addon purchase:', error);
+  }
+}
+
+async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
+  try {
+    const userId = session.metadata?.userId;
+    const tier = session.metadata?.tier;
+    const addonsJson = session.metadata?.addons;
+    const totalAmount = session.metadata?.totalAmount;
+
+    if (!userId || !tier) {
+      console.error('Missing required metadata in job posting purchase:', session.id);
+      return;
+    }
+
+    // Parse addons
+    let addons = [];
+    try {
+      addons = addonsJson ? JSON.parse(addonsJson) : [];
+    } catch (e) {
+      console.error('Failed to parse addons JSON:', addonsJson);
+    }
+
+    // Update purchase record
+    const purchase = await prisma.jobPostingPurchase.update({
+      where: { stripeSessionId: session.id },
+      data: {
+        status: 'completed',
+        stripePaymentIntentId: session.payment_intent as string,
+      },
+    });
+
+    // Create individual credits for the user
+    const creditsToCreate = [];
+
+    // Add job posting credits
+    for (let i = 0; i < purchase.jobPostCredits; i++) {
+      creditsToCreate.push({
+        userId,
+        purchaseId: purchase.id,
+        type: 'job_post',
+        expiresAt: purchase.expiresAt,
+      });
+    }
+
+    // Add featured post credits
+    for (let i = 0; i < purchase.featuredPostCredits; i++) {
+      creditsToCreate.push({
+        userId,
+        purchaseId: purchase.id,
+        type: 'featured_post',
+        expiresAt: purchase.expiresAt,
+      });
+    }
+
+    // Add social graphic credits
+    for (let i = 0; i < purchase.socialGraphicCredits; i++) {
+      creditsToCreate.push({
+        userId,
+        purchaseId: purchase.id,
+        type: 'social_graphic',
+        expiresAt: purchase.expiresAt,
+      });
+    }
+
+    // Add repost credits
+    for (let i = 0; i < purchase.repostCredits; i++) {
+      creditsToCreate.push({
+        userId,
+        purchaseId: purchase.id,
+        type: 'repost',
+        expiresAt: purchase.expiresAt,
+      });
+    }
+
+    // Create all credits
+    if (creditsToCreate.length > 0) {
+      await prisma.jobPostingCredit.createMany({
+        data: creditsToCreate,
+      });
+    }
+
+    console.log(`Job posting purchase completed for user ${userId}: ${tier} tier with ${addons.length} addons`);
+  } catch (error) {
+    console.error('Error handling job posting purchase:', error);
   }
 }
 

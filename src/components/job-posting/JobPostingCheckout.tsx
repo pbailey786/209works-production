@@ -1,0 +1,284 @@
+'use client';
+
+import React, { useState } from 'react';
+import { JOB_POSTING_CONFIG } from '@/lib/stripe';
+import { 
+  Check, 
+  Star, 
+  Zap, 
+  RefreshCw, 
+  Share2,
+  Crown,
+  Loader2,
+  X
+} from 'lucide-react';
+
+interface JobPostingCheckoutProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+type TierKey = 'starter' | 'standard' | 'pro';
+type AddonKey = 'featuredPost' | 'socialGraphic' | 'repostJob' | 'featureAndSocialBundle';
+
+export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPostingCheckoutProps) {
+  const [selectedTier, setSelectedTier] = useState<TierKey>('starter');
+  const [selectedAddons, setSelectedAddons] = useState<AddonKey[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (!isOpen) return null;
+
+  const tierConfig = JOB_POSTING_CONFIG.tiers[selectedTier];
+  const addonConfigs = JOB_POSTING_CONFIG.addons;
+
+  // Calculate total price
+  const tierPrice = tierConfig.price;
+  const addonPrice = selectedAddons.reduce((total, addonKey) => {
+    return total + addonConfigs[addonKey].price;
+  }, 0);
+  const totalPrice = tierPrice + addonPrice;
+
+  const handleAddonToggle = (addonKey: AddonKey) => {
+    setSelectedAddons(prev => {
+      // Handle bundle logic
+      if (addonKey === 'featureAndSocialBundle') {
+        // If selecting bundle, remove individual items
+        return prev.includes(addonKey) 
+          ? prev.filter(a => a !== addonKey)
+          : prev.filter(a => a !== 'featuredPost' && a !== 'socialGraphic').concat(addonKey);
+      } else if (addonKey === 'featuredPost' || addonKey === 'socialGraphic') {
+        // If selecting individual items, remove bundle
+        const newAddons = prev.filter(a => a !== 'featureAndSocialBundle');
+        return newAddons.includes(addonKey)
+          ? newAddons.filter(a => a !== addonKey)
+          : newAddons.concat(addonKey);
+      } else {
+        // Regular toggle for other addons
+        return prev.includes(addonKey)
+          ? prev.filter(a => a !== addonKey)
+          : prev.concat(addonKey);
+      }
+    });
+  };
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/job-posting/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tier: selectedTier,
+          addons: selectedAddons,
+          successUrl: `${window.location.origin}/employers/dashboard?purchase_success=true`,
+          cancelUrl: `${window.location.origin}/employers/dashboard?purchase_cancelled=true`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getTierIcon = (tier: TierKey) => {
+    switch (tier) {
+      case 'starter': return <Zap className="h-5 w-5" />;
+      case 'standard': return <Star className="h-5 w-5" />;
+      case 'pro': return <Crown className="h-5 w-5" />;
+    }
+  };
+
+  const getAddonIcon = (addon: AddonKey) => {
+    switch (addon) {
+      case 'featuredPost': return <Star className="h-4 w-4" />;
+      case 'socialGraphic': return <Share2 className="h-4 w-4" />;
+      case 'repostJob': return <RefreshCw className="h-4 w-4" />;
+      case 'featureAndSocialBundle': return <Crown className="h-4 w-4" />;
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="max-w-4xl w-full mx-4 bg-white rounded-xl shadow-2xl max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Choose Your Job Posting Package</h2>
+            <p className="text-gray-600">Select a tier and optional add-ons to get started</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {/* Tier Selection */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Your Tier</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {Object.entries(JOB_POSTING_CONFIG.tiers).map(([key, tier]) => (
+                <div
+                  key={key}
+                  className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    selectedTier === key
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedTier(key as TierKey)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      {getTierIcon(key as TierKey)}
+                      <span className="ml-2 font-semibold text-gray-900">{tier.name}</span>
+                    </div>
+                    <span className="text-2xl font-bold text-gray-900">${tier.price}</span>
+                  </div>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li className="flex items-center">
+                      <Check className="h-3 w-3 text-green-500 mr-2" />
+                      {tier.features.jobPosts} job post{tier.features.jobPosts > 1 ? 's' : ''}
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-3 w-3 text-green-500 mr-2" />
+                      {tier.features.duration} days duration
+                    </li>
+                    {tier.features.aiOptimization && (
+                      <li className="flex items-center">
+                        <Check className="h-3 w-3 text-green-500 mr-2" />
+                        AI optimization
+                      </li>
+                    )}
+                    {tier.features.featuredPosts && (
+                      <li className="flex items-center">
+                        <Check className="h-3 w-3 text-green-500 mr-2" />
+                        {tier.features.featuredPosts} featured post{tier.features.featuredPosts > 1 ? 's' : ''}
+                      </li>
+                    )}
+                  </ul>
+                  {selectedTier === key && (
+                    <div className="absolute top-2 right-2">
+                      <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Add-ons Selection */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Optional Add-ons</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(addonConfigs).map(([key, addon]) => {
+                const isSelected = selectedAddons.includes(key as AddonKey);
+                const isDisabled = 
+                  (key === 'featuredPost' || key === 'socialGraphic') && 
+                  selectedAddons.includes('featureAndSocialBundle') ||
+                  (key === 'featureAndSocialBundle') && 
+                  (selectedAddons.includes('featuredPost') || selectedAddons.includes('socialGraphic'));
+
+                return (
+                  <div
+                    key={key}
+                    className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      isSelected
+                        ? 'border-green-500 bg-green-50'
+                        : isDisabled
+                        ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => !isDisabled && handleAddonToggle(key as AddonKey)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        {getAddonIcon(key as AddonKey)}
+                        <span className="ml-2 font-semibold text-gray-900">{addon.name}</span>
+                      </div>
+                      <span className="text-lg font-bold text-gray-900">${addon.price}</span>
+                    </div>
+                    <p className="text-sm text-gray-600">{addon.description}</p>
+                    {addon.includes && (
+                      <p className="text-xs text-green-600 mt-1">
+                        Includes: {addon.includes.map(i => addonConfigs[i as AddonKey]?.name).join(', ')}
+                      </p>
+                    )}
+                    {isSelected && (
+                      <div className="absolute top-2 right-2">
+                        <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                          <Check className="h-3 w-3 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Summary and Checkout */}
+          <div className="border-t border-gray-200 pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">Order Summary</h4>
+                <p className="text-sm text-gray-600">
+                  {tierConfig.name} + {selectedAddons.length} add-on{selectedAddons.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-3xl font-bold text-gray-900">${totalPrice}</div>
+                <div className="text-sm text-gray-600">One-time payment</div>
+              </div>
+            </div>
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
+            <button
+              onClick={handleCheckout}
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  Processing...
+                </>
+              ) : (
+                `Proceed to Payment - $${totalPrice}`
+              )}
+            </button>
+
+            <p className="text-xs text-gray-500 text-center mt-3">
+              Secure payment powered by Stripe. Credits expire in 90 days.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
