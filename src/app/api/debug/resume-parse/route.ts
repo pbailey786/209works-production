@@ -78,7 +78,25 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ DEBUG: OpenAI API key is configured');
 
-    // Step 3: Extract text from file
+    // Step 3: Test mammoth import first
+    console.log('🔍 DEBUG: Testing mammoth import...');
+    try {
+      const mammoth = (await import('mammoth')).default;
+      console.log('✅ DEBUG: Mammoth import successful');
+    } catch (mammothError: any) {
+      return NextResponse.json({
+        error: 'Mammoth import failed',
+        debug: {
+          step: 'mammoth_import',
+          details: {
+            error: mammothError.message,
+            stack: mammothError.stack?.substring(0, 500)
+          }
+        }
+      }, { status: 500 });
+    }
+
+    // Step 4: Extract text from file
     let fileText: string;
     try {
       const fileBuffer = await file.arrayBuffer();
@@ -115,7 +133,7 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Step 4: Test OpenAI API call
+    // Step 5: Test OpenAI API call
     try {
       const completion = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
@@ -161,7 +179,7 @@ export async function POST(request: NextRequest) {
 
       console.log('✅ DEBUG: OpenAI response received:', aiResponse);
 
-      // Step 5: Parse JSON response
+      // Step 6: Parse JSON response
       let parsedData;
       try {
         parsedData = JSON.parse(aiResponse);
