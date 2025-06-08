@@ -84,3 +84,5 @@ BMAD-METHOD/
 archive/saasy-land/
 
 .prisma/client
+# Local Netlify folder
+.netlify
