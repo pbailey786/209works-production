@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import authOptions from '@/app/api/auth/authOptions';
 import { DataIntegrityService } from '@/lib/database/data-integrity';
 import type { Session } from 'next-auth';
 

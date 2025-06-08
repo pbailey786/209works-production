@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import authOptions from '@/app/api/auth/authOptions';
 import { isResumeParsingAvailable, getEnvironmentConfig } from '@/lib/env-validation';
 import { isValidResumeFile } from '@/lib/fileUpload';
 import { prisma } from '@/lib/database/prisma';
