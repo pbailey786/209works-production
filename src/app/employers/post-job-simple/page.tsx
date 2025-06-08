@@ -94,31 +94,44 @@ export default function SimplePostJobPage() {
 
     setIsSubmitting(true);
     try {
+      const jobData = {
+        ...form,
+        categories: ['Other'], // Default category
+        isRemote: false,
+        url: '',
+        requirements: '',
+        benefits: '',
+        urgent: false,
+        featured: false,
+        source: 'free_basic_post', // Mark as free basic post
+      };
+
+      console.log('🔍 DEBUG: Submitting job with data:', jobData);
+      console.log('🔍 DEBUG: Session data:', session);
+
       const response = await fetch('/api/jobs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...form,
-          categories: ['Other'], // Default category
-          isRemote: false,
-          url: '',
-          requirements: '',
-          benefits: '',
-          urgent: false,
-          featured: false,
-          source: 'free_basic_post', // Mark as free basic post
-        }),
+        body: JSON.stringify(jobData),
       });
 
+      console.log('🔍 DEBUG: Response status:', response.status);
+      console.log('🔍 DEBUG: Response headers:', Object.fromEntries(response.headers.entries()));
+
+      const responseData = await response.json();
+      console.log('🔍 DEBUG: Response data:', responseData);
+
       if (response.ok) {
+        console.log('✅ Job posted successfully!');
         router.push('/employers/dashboard?posted=true');
       } else {
-        const errorData = await response.json();
-        setErrors({ submit: errorData.error || 'Failed to post job' });
+        console.error('❌ Job posting failed:', responseData);
+        setErrors({ submit: responseData.error || 'Failed to post job' });
       }
     } catch (error) {
+      console.error('❌ Network error:', error);
       setErrors({ submit: 'Failed to post job. Please try again.' });
     } finally {
       setIsSubmitting(false);

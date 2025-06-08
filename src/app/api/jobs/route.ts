@@ -46,6 +46,10 @@ export const GET = withAPIMiddleware(
 // POST /api/jobs - Create a new job (admin or employer only)
 export const POST = withAPIMiddleware(
   async (req, context) => {
+    console.log('🔍 DEBUG: Job POST route called');
+    console.log('🔍 DEBUG: Context user:', context.user);
+    console.log('🔍 DEBUG: Request body:', context.body);
+
     const { user, body, performance } = context;
     const employerId = user!.id;
 
