@@ -20,7 +20,7 @@ export async function POST(
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user.email as string },
       select: { id: true, role: true },
     });
 
@@ -148,7 +148,7 @@ export async function GET(
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user.email as string },
       select: { id: true, role: true },
     });
 
