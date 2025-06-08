@@ -117,9 +117,9 @@ export default function BuyCreditsModal({
                     <div>
                       <div className="font-semibold text-gray-900">{pack.name}</div>
                       <div className="text-sm text-gray-600">{pack.description}</div>
-                      {pack.savings && (
+                      {(pack as any).savings && (
                         <div className="text-xs text-green-600 font-medium">
-                          Save ${pack.savings}!
+                          Save ${(pack as any).savings}!
                         </div>
                       )}
                     </div>
