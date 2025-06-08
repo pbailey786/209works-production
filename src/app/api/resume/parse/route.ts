@@ -5,6 +5,7 @@ import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile } from '@/lib/fileUpload';
+import { isResumeParsingAvailable, logEnvironmentStatus } from '@/lib/env-validation';
 import type { Session } from 'next-auth';
 
 // Schema for parsed resume data
@@ -22,8 +23,24 @@ const ParsedResumeSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     console.log('📄 Resume parsing request initiated');
+
+    // Log environment status for debugging
+    logEnvironmentStatus();
+
+    // Check if resume parsing is available
+    if (!isResumeParsingAvailable()) {
+      console.log('❌ Resume parsing not available - OpenAI API key not configured properly');
+      return NextResponse.json(
+        {
+          error: 'Resume parsing is currently unavailable. AI service is not configured.',
+          details: 'Please contact support or try again later.',
+        },
+        { status: 503 }
+      );
+    }
+
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session!.user?.email) {
+    if (!session?.user?.email) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -84,35 +101,52 @@ export async function POST(request: NextRequest) {
 
     // Use OpenAI to parse the resume
     console.log('🤖 Starting OpenAI parsing...');
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a resume parser. Extract structured information from resumes and return it as JSON.
+
+            Focus on extracting:
+            - name: Full name of the person
+            - location: City and state (prefer California cities like Modesto, Stockton, Fresno, etc.)
+            - currentJobTitle: Most recent job title or desired position
+            - skills: Array of technical and professional skills
+            - experienceLevel: Based on years of experience (entry: 0-2 years, mid: 3-5 years, senior: 6-10 years, executive: 10+ years)
+            - email: Email address if present
+            - phoneNumber: Phone number if present
+            - summary: Brief professional summary or objective
+
+            Return only valid JSON that matches this schema. If information is not found, omit the field or return null.
+            For skills, extract both technical skills (like "JavaScript", "Project Management") and soft skills.
+            For location, if only a city is mentioned, assume it's in California.`,
+          },
+          {
+            role: 'user',
+            content: `Please parse this resume and extract the information as JSON:\n\n${fileText}`,
+          },
+        ],
+        temperature: 0.1,
+        max_tokens: 1000,
+      });
+    } catch (openaiError: any) {
+      console.error('❌ OpenAI API call failed:', {
+        error: openaiError.message,
+        status: openaiError.status,
+        type: openaiError.type,
+      });
+
+      return NextResponse.json(
         {
-          role: 'system',
-          content: `You are a resume parser. Extract structured information from resumes and return it as JSON. 
-          
-          Focus on extracting:
-          - name: Full name of the person
-          - location: City and state (prefer California cities like Modesto, Stockton, Fresno, etc.)
-          - currentJobTitle: Most recent job title or desired position
-          - skills: Array of technical and professional skills
-          - experienceLevel: Based on years of experience (entry: 0-2 years, mid: 3-5 years, senior: 6-10 years, executive: 10+ years)
-          - email: Email address if present
-          - phoneNumber: Phone number if present
-          - summary: Brief professional summary or objective
-          
-          Return only valid JSON that matches this schema. If information is not found, omit the field or return null.
-          For skills, extract both technical skills (like "JavaScript", "Project Management") and soft skills.
-          For location, if only a city is mentioned, assume it's in California.`,
+          error: 'AI service is currently unavailable. Please try again later or fill out the form manually.',
+          details: process.env.NODE_ENV === 'development' ? openaiError.message : undefined,
         },
-        {
-          role: 'user',
-          content: `Please parse this resume and extract the information as JSON:\n\n${fileText}`,
-        },
-      ],
-      temperature: 0.1,
-      max_tokens: 1000,
-    });
+        { status: 503 }
+      );
+    }
 
     const aiResponse = completion.choices[0]?.message?.content;
     if (!aiResponse) {

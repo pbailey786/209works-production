@@ -195,15 +195,24 @@ export default function OnboardingWizard({
       } else {
         const errorData = await response.json();
         console.error('Resume parsing failed:', errorData);
-        alert(
-          errorData.error ||
-            'Failed to parse resume. You can continue filling out the form manually.'
-        );
+
+        // Provide more specific error messages based on the error type
+        let userMessage = 'Failed to parse resume. You can continue filling out the form manually.';
+
+        if (response.status === 503) {
+          userMessage = 'Resume parsing service is temporarily unavailable. Please fill out the form manually or try again later.';
+        } else if (response.status === 401) {
+          userMessage = 'Please sign in to use resume parsing.';
+        } else if (errorData.error) {
+          userMessage = errorData.error;
+        }
+
+        alert(userMessage);
       }
     } catch (error) {
       console.error('Resume parsing error:', error);
       alert(
-        'Failed to parse resume. You can continue filling out the form manually.'
+        'Network error occurred while parsing resume. Please check your connection and try again, or fill out the form manually.'
       );
     } finally {
       setIsParsingResume(false);

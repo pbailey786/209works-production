@@ -7,9 +7,26 @@ import type { Session } from 'next-auth';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔍 DEBUG: Environment variables check:', {
+      hasOpenAI: !!process.env.OPENAI_API_KEY,
+      openAILength: process.env.OPENAI_API_KEY?.length || 0,
+      hasDatabase: !!process.env.DATABASE_URL,
+      hasNextAuth: !!process.env.NEXTAUTH_SECRET,
+      nodeEnv: process.env.NODE_ENV,
+    });
+
     const session = await getServerSession(authOptions) as Session | null;
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({
+        error: 'Unauthorized',
+        debug: {
+          step: 'authentication',
+          details: {
+            hasSession: !!session,
+            hasUserEmail: !!session?.user?.email
+          }
+        }
+      }, { status: 401 });
     }
 
     const formData = await request.formData();
