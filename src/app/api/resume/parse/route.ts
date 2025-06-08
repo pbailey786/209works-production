@@ -5,7 +5,7 @@ import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile } from '@/lib/fileUpload';
-import { isResumeParsingAvailable, logEnvironmentStatus } from '@/lib/env-validation';
+import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
 import type { Session } from 'next-auth';
 
 // Schema for parsed resume data
@@ -28,12 +28,17 @@ export async function POST(request: NextRequest) {
     logEnvironmentStatus();
 
     // Check if resume parsing is available
-    if (!isResumeParsingAvailable()) {
+    const isAvailable = isResumeParsingAvailable();
+    console.log('🔍 Resume parsing availability check:', isAvailable);
+    if (!isAvailable) {
       console.log('❌ Resume parsing not available - OpenAI API key not configured properly');
+      const config = getEnvironmentConfig();
+      console.log('🔍 Environment config:', config);
       return NextResponse.json(
         {
           error: 'Resume parsing is currently unavailable. AI service is not configured.',
           details: 'Please contact support or try again later.',
+          debug: process.env.NODE_ENV === 'development' ? { config } : undefined,
         },
         { status: 503 }
       );
@@ -69,14 +74,18 @@ export async function POST(request: NextRequest) {
     console.log('✅ File validation passed');
 
     // Get user ID for file naming
+    console.log('🔍 Looking up user:', session.user.email);
     const user = await prisma.user.findUnique({
       where: { email: session!.user?.email },
       select: { id: true },
     });
 
     if (!user) {
+      console.log('❌ User not found in database:', session.user.email);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    console.log('✅ User found:', user.id);
 
     // Convert file to text (simplified - in production you'd use a proper PDF/DOC parser)
     console.log('🔍 Starting text extraction...');
@@ -181,30 +190,78 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate the parsed data
-    const validatedData = ParsedResumeSchema.parse(parsedData);
+    console.log('🔍 Validating parsed data with Zod schema...');
+    let validatedData;
+    try {
+      validatedData = ParsedResumeSchema.parse(parsedData);
+      console.log('✅ Zod validation successful:', validatedData);
+    } catch (zodError: any) {
+      console.error('❌ Zod validation failed:', {
+        error: zodError.message,
+        issues: zodError.issues,
+        parsedData
+      });
+      return NextResponse.json(
+        {
+          error: 'Resume data validation failed',
+          details: 'The extracted data does not match the expected format',
+          debug: process.env.NODE_ENV === 'development' ? { zodError: zodError.issues, parsedData } : undefined
+        },
+        { status: 400 }
+      );
+    }
 
     // Save the resume file
-    const resumeUrl = await saveResumeFile(file, user.id);
+    console.log('🔍 Saving resume file...');
+    let resumeUrl;
+    try {
+      resumeUrl = await saveResumeFile(file, user.id);
+      console.log('✅ Resume file saved:', resumeUrl);
+    } catch (fileError: any) {
+      console.error('❌ File save failed:', fileError.message);
+      return NextResponse.json(
+        {
+          error: 'Failed to save resume file',
+          details: 'The resume was parsed but could not be saved',
+          debug: process.env.NODE_ENV === 'development' ? { error: fileError.message } : undefined
+        },
+        { status: 500 }
+      );
+    }
 
     // Update user with resume URL and any extracted data
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        resumeUrl,
-        // Only update fields that were successfully extracted
-        ...(validatedData.name && { name: validatedData.name }),
-        ...(validatedData.location && { location: validatedData.location }),
-        ...(validatedData.currentJobTitle && {
-          currentJobTitle: validatedData.currentJobTitle,
-        }),
-        ...(validatedData.experienceLevel && {
-          experienceLevel: validatedData.experienceLevel,
-        }),
-        ...(validatedData.phoneNumber && {
-          phoneNumber: validatedData.phoneNumber,
-        }),
-      },
-    });
+    console.log('🔍 Updating user in database...');
+    try {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          resumeUrl,
+          // Only update fields that were successfully extracted
+          ...(validatedData.name && { name: validatedData.name }),
+          ...(validatedData.location && { location: validatedData.location }),
+          ...(validatedData.currentJobTitle && {
+            currentJobTitle: validatedData.currentJobTitle,
+          }),
+          ...(validatedData.experienceLevel && {
+            experienceLevel: validatedData.experienceLevel,
+          }),
+          ...(validatedData.phoneNumber && {
+            phoneNumber: validatedData.phoneNumber,
+          }),
+        },
+      });
+      console.log('✅ User updated successfully');
+    } catch (dbError: any) {
+      console.error('❌ Database update failed:', dbError.message);
+      return NextResponse.json(
+        {
+          error: 'Failed to save user data',
+          details: 'The resume was parsed but user data could not be updated',
+          debug: process.env.NODE_ENV === 'development' ? { error: dbError.message } : undefined
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -214,12 +271,19 @@ export async function POST(request: NextRequest) {
       },
       message: 'Resume parsed and saved successfully!',
     });
-  } catch (error) {
-    console.error('Resume parsing error:', error);
+  } catch (error: any) {
+    console.error('❌ Resume parsing error:', {
+      message: error.message,
+      stack: error.stack?.substring(0, 1000),
+      name: error.name
+    });
     return NextResponse.json(
       {
-        error:
-          'Failed to parse resume. Please try again or fill out the form manually.',
+        error: 'Failed to parse resume. Please try again or fill out the form manually.',
+        debug: process.env.NODE_ENV === 'development' ? {
+          error: error.message,
+          stack: error.stack?.substring(0, 500)
+        } : undefined
       },
       { status: 500 }
     );
