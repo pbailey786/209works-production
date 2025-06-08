@@ -115,7 +115,7 @@ export function validateEnvironmentVariables(): EnvValidationResult {
 export function getEnvironmentConfig(): EnvConfig {
   const openaiKey = process.env.OPENAI_API_KEY;
   const databaseUrl = process.env.DATABASE_URL;
-  
+
   return {
     openai: {
       hasKey: !!openaiKey,

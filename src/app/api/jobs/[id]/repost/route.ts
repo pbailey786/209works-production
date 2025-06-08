@@ -60,6 +60,7 @@ export async function POST(
         employerId: true,
         status: true,
         expiresAt: true,
+        source: true,
       },
     });
 
@@ -103,7 +104,7 @@ export async function POST(
     // Update the job with new expiration date and active status
     const newExpirationDate = new Date();
     // Check if this was a free basic post (shorter duration)
-    const isFreePost = existingJob.source === 'free_basic_post';
+    const isFreePost = job.source === 'free_basic_post';
     newExpirationDate.setDate(newExpirationDate.getDate() + (isFreePost ? 7 : 30));
 
     const updatedJob = await prisma.job.update({
