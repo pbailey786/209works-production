@@ -113,7 +113,7 @@ export const POST = withAPIMiddleware(
         postedAt: body!.postedAt ? new Date(body!.postedAt) : new Date(),
         expiresAt: expirationDate, // Set expiration based on post type
         source: jobData.source || 'manual', // Ensure source is always provided
-        url: jobData.url || '', // Ensure url is always provided
+        url: jobData.url || '', // Provide empty string for required field
         salaryMin: processedSalaryMin,
         salaryMax: processedSalaryMax,
         isRemote: isRemote || false, // Handle isRemote field

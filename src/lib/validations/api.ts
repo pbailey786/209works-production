@@ -5,7 +5,10 @@ import { validationPatterns } from './form-utils';
 // Common validation patterns
 export const uuidSchema = z.string().uuid('Invalid UUID format');
 export const emailSchema = validationPatterns.email;
-export const urlSchema = validationPatterns.url.optional();
+export const urlSchema = z.union([
+  validationPatterns.url,
+  z.literal(''), // Allow empty string for optional URLs
+]).optional();
 export const phoneSchema = validationPatterns.phone.optional();
 
 // Job-related schemas

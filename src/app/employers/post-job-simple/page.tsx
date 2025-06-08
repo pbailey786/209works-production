@@ -98,7 +98,7 @@ export default function SimplePostJobPage() {
         ...form,
         categories: ['Other'], // Default category
         isRemote: false,
-        url: '',
+        url: undefined, // Don't send empty URL - let it be optional
         requirements: '',
         benefits: '',
         urgent: false,
