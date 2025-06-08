@@ -48,9 +48,10 @@ export default function OnboardingDebugPage() {
       });
     } catch (error) {
       console.error('💥 Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setResult({
         status: 'error',
-        error: error.message,
+        error: errorMessage,
       });
     } finally {
       setIsLoading(false);
