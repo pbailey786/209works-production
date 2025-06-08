@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import authOptions from '@/app/api/auth/authOptions';
 import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import type { Session } from 'next-auth';
 
 const buyCreditSchema = z.object({
   creditPack: z.enum(['singleCredit', 'fiveCredits']),
@@ -15,7 +16,7 @@ const buyCreditSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
