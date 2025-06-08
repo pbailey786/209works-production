@@ -160,20 +160,21 @@ export default function TestResumePage() {
             {/* File Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Resume (Multiple formats supported)
+                Upload Resume (Currently supported formats)
               </label>
               <input
                 type="file"
-                accept=".docx,.doc,.pdf,.txt,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.webp,.rtf"
+                accept=".docx,.doc,.txt,.rtf"
                 onChange={handleFileChange}
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
               <div className="mt-2 text-xs text-gray-500">
-                <p className="font-medium">Supported formats:</p>
+                <p className="font-medium">Currently supported formats:</p>
                 <ul className="list-disc list-inside space-y-1 mt-1">
-                  <li><strong>Documents:</strong> DOCX, DOC, PDF, TXT, RTF</li>
-                  <li><strong>Images (OCR):</strong> JPG, PNG, GIF, BMP, TIFF, WEBP</li>
-                  <li><strong>Max size:</strong> 10MB</li>
+                  <li><strong>Microsoft Word:</strong> DOCX, DOC (best quality)</li>
+                  <li><strong>Text files:</strong> TXT, RTF</li>
+                  <li><strong>Max size:</strong> 5MB</li>
+                  <li className="text-amber-600"><strong>Coming soon:</strong> PDF and image support</li>
                 </ul>
               </div>
               {file && (

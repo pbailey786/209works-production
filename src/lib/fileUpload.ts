@@ -50,44 +50,33 @@ export function isValidResumeFile(file: File): {
   valid: boolean;
   error?: string;
 } {
-  // Supported file types for resume parsing
+  // Currently supported file types (working without additional packages)
   const allowedTypes = [
     // Microsoft Word documents
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
     'application/msword', // .doc
 
-    // PDF documents
-    'application/pdf', // .pdf
-
     // Plain text files
     'text/plain', // .txt
-
-    // Image files (for OCR)
-    'image/jpeg', // .jpg, .jpeg
-    'image/png', // .png
-    'image/gif', // .gif
-    'image/bmp', // .bmp
-    'image/tiff', // .tiff
-    'image/webp', // .webp
 
     // Rich Text Format
     'application/rtf', // .rtf
     'text/rtf', // .rtf (alternative MIME type)
   ];
 
-  const maxSize = 10 * 1024 * 1024; // 10MB (increased for images)
+  const maxSize = 5 * 1024 * 1024; // 5MB
 
   if (!allowedTypes.includes(file.type)) {
     return {
       valid: false,
-      error: 'Supported formats: DOCX, DOC, PDF, TXT, JPG, PNG, GIF, BMP, TIFF, WEBP, RTF',
+      error: 'Currently supported formats: DOCX, DOC, TXT, RTF. PDF and image support coming soon!',
     };
   }
 
   if (file.size > maxSize) {
     return {
       valid: false,
-      error: 'File too large. Maximum size is 10MB.',
+      error: 'File too large. Maximum size is 5MB.',
     };
   }
 
