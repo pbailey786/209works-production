@@ -79,7 +79,9 @@ export default withAuth(
           pathname.startsWith('/contact') ||
           pathname.startsWith('/about') ||
           pathname.startsWith('/password-reset') ||
-          pathname.startsWith('/reset-password')
+          pathname.startsWith('/reset-password') ||
+          pathname.startsWith('/onboarding') ||
+          pathname.startsWith('/debug')
         ) {
           return true;
         }
@@ -100,6 +102,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 };

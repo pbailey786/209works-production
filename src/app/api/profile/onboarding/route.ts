@@ -22,9 +22,12 @@ const onboardingSchema = z.object({
   expectedSalaryMin: z.number().optional(),
   expectedSalaryMax: z.number().optional(),
 
-  // Employer specific
+  // Employer specific - make these more flexible for validation
   companyName: z.string().optional(),
-  companyWebsite: z.string().url().optional().or(z.literal('')),
+  companyWebsite: z.string().optional().refine(
+    (val) => !val || val === '' || z.string().url().safeParse(val).success,
+    { message: 'Must be a valid URL or empty' }
+  ),
   industry: z.string().optional(),
   companySize: z.string().optional(),
 
@@ -59,10 +62,23 @@ export async function POST(req: NextRequest) {
     console.log('✅ User found:', { id: user.id, role: user.role, name: user.name });
 
     const body = await req.json();
-    console.log('📦 Request body:', body);
+    console.log('📦 Request body:', JSON.stringify(body, null, 2));
 
-    const validatedData = onboardingSchema.parse(body);
-    console.log('✅ Data validated successfully');
+    // Validate the data with detailed error logging
+    const validationResult = onboardingSchema.safeParse(body);
+    if (!validationResult.success) {
+      console.error('❌ Validation failed:', validationResult.error.errors);
+      return NextResponse.json(
+        {
+          error: 'Invalid input data',
+          details: validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+        },
+        { status: 400 }
+      );
+    }
+
+    const validatedData = validationResult.data;
+    console.log('✅ Data validated successfully:', JSON.stringify(validatedData, null, 2));
 
     // Update user profile with onboarding data - only update fields that are provided
     const updateData: any = {
@@ -95,6 +111,8 @@ export async function POST(req: NextRequest) {
     console.log('📝 Update data:', updateData);
 
     // Update user in database
+    console.log('🔄 Attempting to update user with data:', JSON.stringify(updateData, null, 2));
+
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: updateData,
@@ -111,6 +129,8 @@ export async function POST(req: NextRequest) {
         preferredJobTypes: true,
         companyName: true,
         industry: true,
+        companySize: true,
+        companyWebsite: true,
       },
     });
 
@@ -128,9 +148,10 @@ export async function POST(req: NextRequest) {
       user: updatedUser,
     });
   } catch (error) {
-    console.error('Onboarding error:', error);
+    console.error('💥 Onboarding error:', error);
 
     if (error instanceof z.ZodError) {
+      console.error('❌ Zod validation error:', error.errors);
       return NextResponse.json(
         {
           error: 'Invalid input data',
@@ -140,8 +161,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check for Prisma errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      console.error('❌ Database error:', { code: error.code, message: error.message });
+      return NextResponse.json(
+        {
+          error: 'Database error occurred. Please try again.',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to complete onboarding. Please try again.' },
+      {
+        error: 'Failed to complete onboarding. Please try again.',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     );
   }

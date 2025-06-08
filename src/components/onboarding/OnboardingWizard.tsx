@@ -154,15 +154,39 @@ export default function OnboardingWizard({
     // Add validation logic for each step
     switch (stepId) {
       case 'profile':
-        return formData.name && formData.name.trim().length > 0;
+        if (!formData.name || formData.name.trim().length === 0) {
+          alert('Please enter your full name');
+          return false;
+        }
+        return true;
       case 'location':
-        return formData.location && formData.location.trim().length > 0;
+        if (!formData.location || formData.location.trim().length === 0) {
+          alert('Please enter your location');
+          return false;
+        }
+        return true;
       case 'experience':
-        return userRole === 'jobseeker'
-          ? formData.skills && formData.skills.length > 0
-          : formData.industry && formData.industry.trim().length > 0;
+        if (userRole === 'jobseeker') {
+          if (!formData.skills || formData.skills.length === 0) {
+            alert('Please enter at least one skill');
+            return false;
+          }
+        } else {
+          if (!formData.industry || formData.industry.trim().length === 0) {
+            alert('Please select your industry');
+            return false;
+          }
+        }
+        return true;
       case 'company':
-        return formData.companyName && formData.companyName.trim().length > 0;
+        if (!formData.companyName || formData.companyName.trim().length === 0) {
+          alert('Please enter your company name');
+          return false;
+        }
+        return true;
+      case 'details':
+        // Company details step - no required fields currently
+        return true;
       default:
         return true;
     }
@@ -222,18 +246,25 @@ export default function OnboardingWizard({
   const completeOnboarding = async () => {
     setIsLoading(true);
     try {
+      // Prepare the data to send
+      const dataToSend = {
+        ...formData,
+        onboardingCompleted: true,
+        completedSteps: Array.from(completedSteps),
+      };
+
+      console.log('🚀 Sending onboarding data:', dataToSend);
+
       // Save all form data
       const response = await fetch('/api/profile/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          onboardingCompleted: true,
-          completedSteps: Array.from(completedSteps),
-        }),
+        body: JSON.stringify(dataToSend),
       });
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Onboarding completed successfully:', result);
         onComplete();
         // Redirect to appropriate dashboard
         router.push(
@@ -241,11 +272,20 @@ export default function OnboardingWizard({
         );
       } else {
         const errorData = await response.json();
-        console.error('Onboarding completion failed:', errorData);
-        alert('Failed to complete onboarding. Please try again.');
+        console.error('❌ Onboarding completion failed:', errorData);
+
+        // Provide more specific error messages
+        let errorMessage = 'Failed to complete onboarding. Please try again.';
+        if (errorData.details && Array.isArray(errorData.details)) {
+          errorMessage = `Validation errors:\n${errorData.details.join('\n')}`;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+
+        alert(errorMessage);
       }
     } catch (error) {
-      console.error('Error completing onboarding:', error);
+      console.error('💥 Error completing onboarding:', error);
       alert('Network error. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
