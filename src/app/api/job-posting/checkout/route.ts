@@ -7,10 +7,13 @@ import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 const checkoutSchema = z.object({
-  tier: z.enum(['starter', 'standard', 'pro']),
-  addons: z.array(z.enum(['featuredPost', 'socialGraphic', 'repostJob', 'featureAndSocialBundle'])).optional().default([]),
+  tier: z.enum(['starter', 'standard', 'pro']).optional(),
+  addons: z.array(z.enum(['featuredPost', 'socialGraphic', 'featureAndSocialBundle'])).optional().default([]),
+  creditPack: z.enum(['singleCredit', 'fiveCredits']).optional(),
   successUrl: z.string().url().optional(),
   cancelUrl: z.string().url().optional(),
+}).refine(data => data.tier || data.creditPack, {
+  message: "Either tier or creditPack must be specified"
 });
 
 export async function POST(req: NextRequest) {
@@ -48,13 +51,32 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validatedData = checkoutSchema.parse(body);
 
-    // Get tier configuration
-    const tierConfig = JOB_POSTING_CONFIG.tiers[validatedData.tier];
-    if (!tierConfig) {
-      return NextResponse.json(
-        { error: 'Invalid tier selected' },
-        { status: 400 }
-      );
+    // Determine if this is a tier purchase or credit pack purchase
+    let tierConfig = null;
+    let creditPackConfig = null;
+    let basePrice = 0;
+    let jobCredits = 0;
+
+    if (validatedData.tier) {
+      tierConfig = JOB_POSTING_CONFIG.tiers[validatedData.tier];
+      if (!tierConfig) {
+        return NextResponse.json(
+          { error: 'Invalid tier selected' },
+          { status: 400 }
+        );
+      }
+      basePrice = tierConfig.price;
+      jobCredits = tierConfig.features.jobPosts;
+    } else if (validatedData.creditPack) {
+      creditPackConfig = JOB_POSTING_CONFIG.creditPacks[validatedData.creditPack];
+      if (!creditPackConfig) {
+        return NextResponse.json(
+          { error: 'Invalid credit pack selected' },
+          { status: 400 }
+        );
+      }
+      basePrice = creditPackConfig.price;
+      jobCredits = creditPackConfig.credits;
     }
 
     // Create or get Stripe customer
@@ -77,12 +99,20 @@ export async function POST(req: NextRequest) {
     }
 
     // Build line items for checkout
-    const lineItems = [
-      {
+    const lineItems = [];
+
+    // Add tier or credit pack as base item
+    if (tierConfig) {
+      lineItems.push({
         price: tierConfig.stripePriceId,
         quantity: 1,
-      },
-    ];
+      });
+    } else if (creditPackConfig) {
+      lineItems.push({
+        price: creditPackConfig.stripePriceId,
+        quantity: 1,
+      });
+    }
 
     // Add addon line items
     let totalAddonPrice = 0;
@@ -104,7 +134,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const totalAmount = tierConfig.price + totalAddonPrice;
+    const totalAmount = basePrice + totalAddonPrice;
 
     // Create checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -120,10 +150,18 @@ export async function POST(req: NextRequest) {
         `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_cancelled=true`,
       metadata: {
         userId: user.id,
-        tier: validatedData.tier,
-        addons: JSON.stringify(selectedAddons),
+        tier: validatedData.tier?.toUpperCase() || '',
+        creditPack: validatedData.creditPack?.toUpperCase() || '',
+        addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
         type: 'job_posting_purchase',
         totalAmount: totalAmount.toString(),
+        jobCredits: jobCredits.toString(),
+        featuredCredits: selectedAddons.filter(a =>
+          a.key === 'featuredPost' || a.key === 'featureAndSocialBundle'
+        ).length.toString(),
+        socialCredits: selectedAddons.filter(a =>
+          a.key === 'socialGraphic' || a.key === 'featureAndSocialBundle'
+        ).length.toString(),
       },
     });
 
@@ -132,22 +170,25 @@ export async function POST(req: NextRequest) {
       data: {
         userId: user.id,
         stripeSessionId: checkoutSession.id,
-        tier: validatedData.tier,
-        tierPrice: tierConfig.price,
+        tier: validatedData.tier || (validatedData.creditPack ? `credit_pack_${validatedData.creditPack}` : ''),
+        tierPrice: basePrice,
         addons: selectedAddons,
         totalAmount: totalAmount,
         status: 'pending',
-        // Calculate credits based on tier
-        jobPostCredits: tierConfig.features.jobPosts,
-        featuredPostCredits: tierConfig.features.featuredPosts || 0,
-        socialGraphicCredits: selectedAddons.filter(a => 
+        // Calculate credits based on tier or credit pack
+        jobPostCredits: jobCredits,
+        featuredPostCredits: (tierConfig?.features.featuredPosts || 0) + selectedAddons.filter(a =>
+          a.key === 'featuredPost' || a.key === 'featureAndSocialBundle'
+        ).length,
+        socialGraphicCredits: selectedAddons.filter(a =>
           a.key === 'socialGraphic' || a.key === 'featureAndSocialBundle'
         ).length,
-        repostCredits: selectedAddons.filter(a => a.key === 'repostJob').length,
-        // Set expiration (90 days from now)
-        expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        repostCredits: 0, // Removed repost functionality
+        // Set expiration (60 days from now - allows reasonable rollover)
+        expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
         metadata: {
           tierConfig,
+          creditPackConfig,
           selectedAddons,
           sessionMetadata: {
             userAgent: req.headers.get('user-agent'),
@@ -162,8 +203,10 @@ export async function POST(req: NextRequest) {
       sessionId: checkoutSession.id,
       url: checkoutSession.url,
       tier: validatedData.tier,
+      creditPack: validatedData.creditPack,
       addons: selectedAddons,
       totalAmount,
+      jobCredits,
     });
 
   } catch (error) {

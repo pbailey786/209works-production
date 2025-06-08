@@ -28,8 +28,11 @@ export async function GET(req: NextRequest) {
       // Addon price IDs
       STRIPE_PRICE_FEATURED: !!process.env.STRIPE_PRICE_FEATURED,
       STRIPE_PRICE_GRAPHIC: !!process.env.STRIPE_PRICE_GRAPHIC,
-      STRIPE_PRICE_REPOST: !!process.env.STRIPE_PRICE_REPOST,
       STRIPE_PRICE_BOOST_PACK: !!process.env.STRIPE_PRICE_BOOST_PACK,
+
+      // Credit pack price IDs
+      STRIPE_PRICE_CREDIT_1: !!process.env.STRIPE_PRICE_CREDIT_1,
+      STRIPE_PRICE_CREDIT_5: !!process.env.STRIPE_PRICE_CREDIT_5,
     };
 
     // Get the actual price IDs (masked for security)
@@ -40,14 +43,16 @@ export async function GET(req: NextRequest) {
         `${process.env.STRIPE_PRICE_STANDARD.substring(0, 10)}...` : 'NOT SET',
       pro: process.env.STRIPE_PRICE_PRO ? 
         `${process.env.STRIPE_PRICE_PRO.substring(0, 10)}...` : 'NOT SET',
-      featured: process.env.STRIPE_PRICE_FEATURED ? 
+      featured: process.env.STRIPE_PRICE_FEATURED ?
         `${process.env.STRIPE_PRICE_FEATURED.substring(0, 10)}...` : 'NOT SET',
-      graphic: process.env.STRIPE_PRICE_GRAPHIC ? 
+      graphic: process.env.STRIPE_PRICE_GRAPHIC ?
         `${process.env.STRIPE_PRICE_GRAPHIC.substring(0, 10)}...` : 'NOT SET',
-      repost: process.env.STRIPE_PRICE_REPOST ? 
-        `${process.env.STRIPE_PRICE_REPOST.substring(0, 10)}...` : 'NOT SET',
-      boostPack: process.env.STRIPE_PRICE_BOOST_PACK ? 
+      boostPack: process.env.STRIPE_PRICE_BOOST_PACK ?
         `${process.env.STRIPE_PRICE_BOOST_PACK.substring(0, 10)}...` : 'NOT SET',
+      credit1: process.env.STRIPE_PRICE_CREDIT_1 ?
+        `${process.env.STRIPE_PRICE_CREDIT_1.substring(0, 10)}...` : 'NOT SET',
+      credit5: process.env.STRIPE_PRICE_CREDIT_5 ?
+        `${process.env.STRIPE_PRICE_CREDIT_5.substring(0, 10)}...` : 'NOT SET',
     };
 
     // Check configuration validity

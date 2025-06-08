@@ -1,12 +1,11 @@
 import { prisma } from '@/lib/database/prisma';
 
-export type CreditType = 'job_post' | 'featured_post' | 'social_graphic' | 'repost';
+export type CreditType = 'job_post' | 'featured_post' | 'social_graphic';
 
 export interface UserCredits {
   jobPost: number;
   featuredPost: number;
   socialGraphic: number;
-  repost: number;
 }
 
 export class JobPostingCreditsService {
@@ -33,7 +32,6 @@ export class JobPostingCreditsService {
       jobPost: 0,
       featuredPost: 0,
       socialGraphic: 0,
-      repost: 0,
     };
 
     credits.forEach(credit => {
@@ -46,9 +44,6 @@ export class JobPostingCreditsService {
           break;
         case 'social_graphic':
           creditMap.socialGraphic = credit._count.id;
-          break;
-        case 'repost':
-          creditMap.repost = credit._count.id;
           break;
       }
     });
@@ -231,14 +226,8 @@ export class JobPostingCreditsService {
   }
 
   /**
-   * Repost a job (use repost credit)
-   */
-  static async useRepostCredit(userId: string, jobId: string): Promise<{ success: boolean; error?: string }> {
-    return await this.useCredits(userId, jobId, { repost: 1 });
-  }
-
-  /**
    * Get credits that are expiring soon (within 7 days)
+   * Note: Credits expire after 30 days to prevent month-to-month rollover
    */
   static async getExpiringSoonCredits(userId: string) {
     const sevenDaysFromNow = new Date();

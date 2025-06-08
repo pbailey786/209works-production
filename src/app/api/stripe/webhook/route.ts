@@ -99,7 +99,7 @@ async function handleCheckoutSessionCompleted(
   }
 
   // Handle job posting purchases
-  if (type === 'job_posting_purchase') {
+  if (type === 'job_posting_purchase' || type === 'credit_pack_purchase') {
     await handleJobPostingPurchase(session);
     return;
   }
@@ -452,15 +452,7 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
       });
     }
 
-    // Add repost credits
-    for (let i = 0; i < purchase.repostCredits; i++) {
-      creditsToCreate.push({
-        userId,
-        purchaseId: purchase.id,
-        type: 'repost',
-        expiresAt: purchase.expiresAt,
-      });
-    }
+    // Note: Repost functionality removed - credits don't roll over month to month
 
     // Create all credits
     if (creditsToCreate.length > 0) {

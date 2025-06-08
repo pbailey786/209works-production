@@ -17,16 +17,22 @@ interface JobPostingCheckoutProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  userCredits?: {
+    jobPost: number;
+    featuredPost: number;
+    socialGraphic: number;
+  };
 }
 
 type TierKey = 'starter' | 'standard' | 'pro';
-type AddonKey = 'featuredPost' | 'socialGraphic' | 'repostJob' | 'featureAndSocialBundle';
+type AddonKey = 'featuredPost' | 'socialGraphic' | 'featureAndSocialBundle';
 
-export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPostingCheckoutProps) {
+export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCredits }: JobPostingCheckoutProps) {
   const [selectedTier, setSelectedTier] = useState<TierKey>('starter');
   const [selectedAddons, setSelectedAddons] = useState<AddonKey[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showUseCredits, setShowUseCredits] = useState(false);
 
   if (!isOpen) return null;
 
@@ -109,7 +115,6 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPo
     switch (addon) {
       case 'featuredPost': return <Star className="h-4 w-4" />;
       case 'socialGraphic': return <Share2 className="h-4 w-4" />;
-      case 'repostJob': return <RefreshCw className="h-4 w-4" />;
       case 'featureAndSocialBundle': return <Crown className="h-4 w-4" />;
     }
   };
@@ -132,9 +137,49 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPo
         </div>
 
         <div className="p-6">
+          {/* Use Existing Credits Option */}
+          {userCredits && userCredits.jobPost > 0 && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-green-800">You have existing credits!</h3>
+                  <p className="text-sm text-green-600">
+                    {userCredits.jobPost} job post{userCredits.jobPost > 1 ? 's' : ''} • {' '}
+                    {userCredits.featuredPost} featured post{userCredits.featuredPost !== 1 ? 's' : ''} • {' '}
+                    {userCredits.socialGraphic} social graphic{userCredits.socialGraphic !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    onClose();
+                    // Navigate to job posting with existing credits
+                    window.location.href = '/employers/create-job-post';
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Use Existing Credits
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Divider */}
+          {userCredits && userCredits.jobPost > 0 && (
+            <div className="mb-6 flex items-center">
+              <div className="flex-1 border-t border-gray-300"></div>
+              <span className="px-4 text-sm text-gray-500">or purchase more credits</span>
+              <div className="flex-1 border-t border-gray-300"></div>
+            </div>
+          )}
+
           {/* Tier Selection */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Your Tier</h3>
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                <span className="text-blue-600 font-semibold">1</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Choose Your Base Tier</h3>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Object.entries(JOB_POSTING_CONFIG.tiers).map(([key, tier]) => (
                 <div
@@ -156,7 +201,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPo
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li className="flex items-center">
                       <Check className="h-3 w-3 text-green-500 mr-2" />
-                      {tier.features.jobPosts} job post{tier.features.jobPosts > 1 ? 's' : ''}
+                      <strong>{tier.features.jobPosts} job post{tier.features.jobPosts > 1 ? 's' : ''}</strong>
                     </li>
                     <li className="flex items-center">
                       <Check className="h-3 w-3 text-green-500 mr-2" />
@@ -189,7 +234,13 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPo
 
           {/* Add-ons Selection */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Optional Add-ons</h3>
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                <span className="text-purple-600 font-semibold">2</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Add Optional Enhancements</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">Boost your job's visibility and reach with these add-ons:</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(addonConfigs).map(([key, addon]) => {
                 const isSelected = selectedAddons.includes(key as AddonKey);
@@ -239,16 +290,36 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPo
 
           {/* Summary and Checkout */}
           <div className="border-t border-gray-200 pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h4 className="text-lg font-semibold text-gray-900">Order Summary</h4>
-                <p className="text-sm text-gray-600">
-                  {tierConfig.name} + {selectedAddons.length} add-on{selectedAddons.length !== 1 ? 's' : ''}
-                </p>
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <span className="text-green-600 font-semibold">3</span>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold text-gray-900">${totalPrice}</div>
-                <div className="text-sm text-gray-600">One-time payment</div>
+              <h3 className="text-lg font-semibold text-gray-900">Review & Purchase</h3>
+            </div>
+
+            {/* Order Breakdown */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-4">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">{tierConfig.name}</span>
+                  <span className="font-semibold">${tierConfig.price}</span>
+                </div>
+                {selectedAddons.map(addonKey => {
+                  const addon = addonConfigs[addonKey];
+                  return (
+                    <div key={addonKey} className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">+ {addon.name}</span>
+                      <span className="text-gray-600">${addon.price}</span>
+                    </div>
+                  );
+                })}
+                <div className="border-t border-gray-300 pt-2 mt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold text-gray-900">Total</span>
+                    <span className="text-2xl font-bold text-gray-900">${totalPrice}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 text-right">One-time payment • Credits expire in 60 days</p>
+                </div>
               </div>
             </div>
 
@@ -274,7 +345,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess }: JobPo
             </button>
 
             <p className="text-xs text-gray-500 text-center mt-3">
-              Secure payment powered by Stripe. Credits expire in 90 days.
+              Secure payment powered by Stripe. Credits expire in 60 days.
             </p>
           </div>
         </div>

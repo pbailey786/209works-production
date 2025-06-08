@@ -90,7 +90,6 @@ function DashboardContent() {
     jobPost: 0,
     featuredPost: 0,
     socialGraphic: 0,
-    repost: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
@@ -636,6 +635,7 @@ function DashboardContent() {
         isOpen={showJobPostingCheckout}
         onClose={() => setShowJobPostingCheckout(false)}
         onSuccess={handleJobPostingCheckoutSuccess}
+        userCredits={credits}
       />
     </div>
   );

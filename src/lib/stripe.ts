@@ -82,7 +82,7 @@ export const JOB_POSTING_CONFIG = {
       price: 99,
       stripePriceId: process.env.STRIPE_PRICE_STARTER,
       features: {
-        jobPosts: 1,
+        jobPosts: 2,
         duration: 30, // days
         aiOptimization: false,
         analytics: 'basic',
@@ -128,18 +128,30 @@ export const JOB_POSTING_CONFIG = {
       stripePriceId: process.env.STRIPE_PRICE_GRAPHIC,
       description: 'Custom social media graphic for your job post',
     },
-    repostJob: {
-      name: 'Repost Job',
-      price: 29,
-      stripePriceId: process.env.STRIPE_PRICE_REPOST,
-      description: 'Extend your job posting for another 30 days',
-    },
     featureAndSocialBundle: {
       name: 'Feature and Social Bundle',
       price: 85,
       stripePriceId: process.env.STRIPE_PRICE_BOOST_PACK,
       description: 'Featured post + social graphic (save $13)',
       includes: ['featuredPost', 'socialGraphic'],
+    },
+  },
+  // Individual credit purchases for reposting and additional jobs
+  creditPacks: {
+    singleCredit: {
+      name: '1 Job Credit',
+      price: 59,
+      stripePriceId: process.env.STRIPE_PRICE_CREDIT_1,
+      credits: 1,
+      description: 'Perfect for reposting or one additional job',
+    },
+    fiveCredits: {
+      name: '5 Job Credits',
+      price: 249, // $49.80 per credit (16% discount)
+      stripePriceId: process.env.STRIPE_PRICE_CREDIT_5,
+      credits: 5,
+      description: 'Best value for multiple job postings',
+      savings: 46, // $295 - $249
     },
   },
 };
