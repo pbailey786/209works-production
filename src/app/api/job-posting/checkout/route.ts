@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
         status: 'pending',
         // Calculate credits based on tier or credit pack
         jobPostCredits: jobCredits,
-        featuredPostCredits: (tierConfig?.features.featuredPosts || 0) + selectedAddons.filter(a =>
+        featuredPostCredits: ((tierConfig?.features as any)?.featuredPosts || 0) + selectedAddons.filter(a =>
           a.key === 'featuredPost' || a.key === 'featureAndSocialBundle'
         ).length,
         socialGraphicCredits: selectedAddons.filter(a =>
