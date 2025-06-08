@@ -12,7 +12,7 @@ import { prisma } from '@/lib/database/prisma';
 // Validation schemas
 const signUpSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Invalid email address').transform(email => email.toLowerCase()),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   role: z.enum(['jobseeker', 'employer']).default('jobseeker'),
   companyName: z.string().optional(),
@@ -20,7 +20,7 @@ const signUpSchema = z.object({
 });
 
 const signInSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Invalid email address').transform(email => email.toLowerCase()),
   password: z.string().min(1, 'Password is required'),
 });
 

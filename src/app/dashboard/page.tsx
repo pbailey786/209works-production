@@ -162,9 +162,14 @@ export default async function DashboardPage() {
     redirect('/onboarding');
   }
 
-  // Redirect employers to their dashboard
+  // Role-based access control
   if (user.role === 'employer') {
     redirect('/employers/dashboard');
+  }
+
+  // Only allow job seekers and admins to access this dashboard
+  if (user.role !== 'jobseeker' && user.role !== 'admin') {
+    redirect('/');
   }
 
   const dashboardData = await getDashboardData(user.id);

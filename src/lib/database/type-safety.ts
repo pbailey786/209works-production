@@ -50,7 +50,7 @@ export const JobUpdateSchema = JobCreateBaseSchema.partial();
 
 // User model type safety
 export const UserCreateSchema = z.object({
-  email: z.string().email().max(255),
+  email: z.string().email().max(255).transform(email => email.toLowerCase()),
   name: z.string().min(1).max(100).optional(),
   companyWebsite: z.string().url().max(500).optional(),
   passwordHash: z.string().min(1),
@@ -220,9 +220,9 @@ export class TypeSafePrisma {
   async createUser(data: z.infer<typeof UserCreateSchema>) {
     const validatedData = UserCreateSchema.parse(data);
 
-    // Check for duplicate email
+    // Check for duplicate email (case-insensitive)
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: validatedData.email },
+      where: { email: validatedData.email.toLowerCase() },
       select: { id: true },
     });
 

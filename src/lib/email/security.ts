@@ -85,6 +85,7 @@ export const emailAddressSchema = z
   .email('Invalid email format')
   .min(5, 'Email too short')
   .max(254, 'Email too long')
+  .transform(email => email.toLowerCase())
   .refine(email => {
     // Additional validation beyond basic email format
     const domain = email.split('@')[1];

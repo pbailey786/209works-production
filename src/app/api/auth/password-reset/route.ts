@@ -2,14 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/database/prisma';
 import { EmailHelpers } from '@/lib/email/email-helpers';
+import { normalizeEmail } from '@/lib/utils/email-utils';
 
 export async function POST(req: NextRequest) {
-  const { email } = await req.json();
+  const { email: rawEmail } = await req.json();
 
-  if (!email) {
+  if (!rawEmail) {
     return NextResponse.json({ error: 'Email is required.' }, { status: 400 });
   }
 
+  // Normalize email for case-insensitive lookup
+  const email = normalizeEmail(rawEmail);
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     // For security, do not reveal if the email exists

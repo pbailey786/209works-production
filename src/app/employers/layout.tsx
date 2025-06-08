@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
+import RoleGuard from '@/components/auth/RoleGuard';
 
 interface EmployerLayoutProps {
   children: ReactNode;
@@ -113,7 +114,8 @@ export default function EmployerLayout({ children }: EmployerLayoutProps) {
   const breadcrumbs = generateBreadcrumbs();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <RoleGuard allowedRoles={['employer', 'admin']} redirectTo="/employers/signin">
+      <div className="min-h-screen bg-gray-50">
       <div className="flex">
         {/* Sidebar Navigation */}
         <aside className="min-h-screen w-64 border-r border-gray-200 bg-white shadow-sm">
@@ -277,5 +279,6 @@ export default function EmployerLayout({ children }: EmployerLayoutProps) {
         </main>
       </div>
     </div>
+    </RoleGuard>
   );
 }

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/database/prisma';
 import { sendEmail } from '@/lib/email';
 import { EmailVerificationTemplate } from '@/lib/email/templates/email-verification';
 import { randomBytes } from 'crypto';
+import { normalizeEmail } from '@/lib/utils/email-utils';
 
 export async function GET(req: NextRequest) {
   try {
@@ -82,14 +83,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json();
+    const { email: rawEmail } = await req.json();
 
-    if (!email) {
+    if (!rawEmail) {
       return NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
       );
     }
+
+    // Normalize email for case-insensitive lookup
+    const email = normalizeEmail(rawEmail);
 
     // Find user by email
     const user = await prisma.user.findUnique({

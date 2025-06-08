@@ -27,7 +27,11 @@ export async function POST(req: NextRequest) {
     const data = await req.json();
     console.log('📦 Data received:', data);
 
-    const { email, password, fullName } = data;
+    const { email: rawEmail, password, fullName } = data;
+
+    // Normalize email to lowercase
+    const email = rawEmail?.toLowerCase();
+
     // TODO: Validate all required employer fields (companyName, etc.)
     if (!email || !password || !fullName) {
       console.log('❌ Missing required fields');

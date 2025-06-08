@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '../../auth/authOptions';
 import { prisma } from '../../auth/prisma';
 import type { Session } from 'next-auth';
+import { normalizeEmail } from '@/lib/utils/email-utils';
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,10 +30,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
+    // Normalize email for case-insensitive comparison
+    const normalizedEmail = normalizeEmail(email);
+    const normalizedSessionEmail = normalizeEmail(session!.user?.email || '');
+
     // Check if email is already taken by another user
-    if (email !== session!.user?.email) {
+    if (normalizedEmail !== normalizedSessionEmail) {
       const existingUser = await prisma.user.findUnique({
-        where: { email },
+        where: { email: normalizedEmail },
       });
 
       if (existingUser && existingUser.id !== currentUser.id) {
@@ -48,7 +53,7 @@ export async function POST(req: NextRequest) {
       where: { id: currentUser.id },
       data: {
         name: name || null,
-        email,
+        email: normalizedEmail,
         bio: bio || null,
         location: location || null,
         phoneNumber: phone || null, // Use phoneNumber field

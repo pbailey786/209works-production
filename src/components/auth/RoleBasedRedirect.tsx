@@ -19,7 +19,7 @@ export default function RoleBasedRedirect() {
           router.push('/admin');
           break;
         case 'employer':
-          router.push('/employer');
+          router.push('/employers/dashboard');
           break;
         case 'jobseeker':
         default:

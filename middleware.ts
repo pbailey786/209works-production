@@ -27,13 +27,58 @@ export default withAuth(
       return NextResponse.redirect(new URL('/verify-email', req.url));
     }
 
+    // Comprehensive Role-Based Access Control (RBAC)
+    if (token) {
+      const userRole = token.role;
+
+      // Define role-specific protected routes
+      const jobSeekerRoutes = ['/dashboard', '/profile', '/applications', '/saved-jobs', '/job-alerts'];
+      const employerRoutes = ['/employers'];
+      const adminRoutes = ['/admin'];
+
+      // Check if current path matches any protected route patterns
+      const isJobSeekerRoute = jobSeekerRoutes.some(route =>
+        pathname === route || pathname.startsWith(route + '/')
+      );
+      const isEmployerRoute = employerRoutes.some(route =>
+        pathname === route || pathname.startsWith(route + '/')
+      );
+      const isAdminRoute = adminRoutes.some(route =>
+        pathname === route || pathname.startsWith(route + '/')
+      );
+
+      // Role-based access control
+      if (userRole === 'employer') {
+        // Employers trying to access job seeker routes
+        if (isJobSeekerRoute) {
+          return NextResponse.redirect(new URL('/employers/dashboard', req.url));
+        }
+        // Redirect generic /dashboard to employer dashboard
+        if (pathname === '/dashboard') {
+          return NextResponse.redirect(new URL('/employers/dashboard', req.url));
+        }
+      } else if (userRole === 'jobseeker') {
+        // Job seekers trying to access employer routes
+        if (isEmployerRoute) {
+          return NextResponse.redirect(new URL('/dashboard', req.url));
+        }
+      } else if (userRole === 'admin') {
+        // Admins have access to all routes, no restrictions
+      } else {
+        // Unknown role - redirect to home
+        if (isJobSeekerRoute || isEmployerRoute || isAdminRoute) {
+          return NextResponse.redirect(new URL('/', req.url));
+        }
+      }
+    }
+
     // If user is authenticated and visiting root, redirect based on role
     if (pathname === '/' && token) {
       if (token.role === 'admin') {
         return NextResponse.redirect(new URL('/admin', req.url));
       }
       if (token.role === 'employer') {
-        return NextResponse.redirect(new URL('/employer', req.url));
+        return NextResponse.redirect(new URL('/employers/dashboard', req.url));
       }
       // Job seekers stay on home page
       return NextResponse.next();

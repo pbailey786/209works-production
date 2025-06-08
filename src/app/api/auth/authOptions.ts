@@ -11,6 +11,7 @@ import type { User } from '@prisma/client';
 import speakeasy from 'speakeasy';
 // @ts-ignore - NextAuth v4 SessionStrategy type import issues
 import type { SessionStrategy } from 'next-auth';
+import { normalizeEmail } from '@/lib/utils/email-utils';
 
 console.log('🔧 AuthOptions loading...');
 console.log('🔑 Environment check:');
@@ -61,9 +62,11 @@ const authOptions: NextAuthOptions = {
         console.log('✅ Credentials validation passed, looking up user...');
 
         try {
-          console.log('🔍 Querying database for user:', credentials.email);
+          // Normalize email to lowercase for case-insensitive lookup
+          const normalizedEmail = normalizeEmail(credentials.email);
+          console.log('🔍 Querying database for user:', normalizedEmail);
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
+            where: { email: normalizedEmail },
           });
 
           console.log('👤 Database query result:');

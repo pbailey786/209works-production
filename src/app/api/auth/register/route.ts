@@ -12,7 +12,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     console.log('📝 Request body received');
 
-    const { email, password, role } = body;
+    const { email: rawEmail, password, role } = body;
+
+    // Normalize email to lowercase
+    const email = rawEmail?.toLowerCase();
 
     if (!email || !password) {
       return NextResponse.json(

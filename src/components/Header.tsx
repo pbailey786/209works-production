@@ -40,15 +40,39 @@ export default function Header() {
     { name: 'Contact', href: '/contact', icon: FileText },
   ];
 
-  const userNavigation = session?.user
-    ? [
+  // Role-based navigation
+  const getUserNavigation = () => {
+    if (!session?.user) return [];
+
+    const userRole = (session.user as any).role;
+
+    if (userRole === 'employer') {
+      return [
+        { name: 'Dashboard', href: '/employers/dashboard', icon: BarChart3 },
+        { name: 'My Jobs', href: '/employers/my-jobs', icon: FileText },
+        { name: 'Post Job', href: '/employers/create-job-post', icon: Building2 },
+        { name: 'Settings', href: '/employers/settings', icon: Settings },
+      ];
+    } else if (userRole === 'admin') {
+      return [
+        { name: 'Admin Dashboard', href: '/admin', icon: BarChart3 },
+        { name: 'Job Seeker Dashboard', href: '/dashboard', icon: User },
+        { name: 'Profile', href: '/profile', icon: User },
+        { name: 'Settings', href: '/profile/settings', icon: Settings },
+      ];
+    } else {
+      // Job seeker navigation
+      return [
         { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
         { name: 'Profile', href: '/profile', icon: User },
         { name: 'Applications', href: '/profile/applications', icon: FileText },
         { name: 'Saved Jobs', href: '/profile/saved', icon: Heart },
         { name: 'Settings', href: '/profile/settings', icon: Settings },
-      ]
-    : [];
+      ];
+    }
+  };
+
+  const userNavigation = getUserNavigation();
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
