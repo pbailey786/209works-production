@@ -211,23 +211,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save the resume file
-    console.log('🔍 Saving resume file...');
-    let resumeUrl;
-    try {
-      resumeUrl = await saveResumeFile(file, user.id);
-      console.log('✅ Resume file saved:', resumeUrl);
-    } catch (fileError: any) {
-      console.error('❌ File save failed:', fileError.message);
-      return NextResponse.json(
-        {
-          error: 'Failed to save resume file',
-          details: 'The resume was parsed but could not be saved',
-          debug: process.env.NODE_ENV === 'development' ? { error: fileError.message } : undefined
-        },
-        { status: 500 }
-      );
-    }
+    // Skip file saving for now (serverless environment doesn't support file system writes)
+    console.log('🔍 Skipping file save (serverless environment)...');
+    const resumeUrl = null; // Will implement cloud storage later
 
     // Update user with resume URL and any extracted data
     console.log('🔍 Updating user in database...');
@@ -235,7 +221,7 @@ export async function POST(request: NextRequest) {
       await prisma.user.update({
         where: { id: user.id },
         data: {
-          resumeUrl,
+          // Skip resumeUrl for now since we're not saving files
           // Only update fields that were successfully extracted
           ...(validatedData.name && { name: validatedData.name }),
           ...(validatedData.location && { location: validatedData.location }),
@@ -267,9 +253,9 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         ...validatedData,
-        resumeUrl,
+        resumeUrl: null, // File saving will be implemented with cloud storage later
       },
-      message: 'Resume parsed and saved successfully!',
+      message: 'Resume parsed successfully! (File saving temporarily disabled)',
     });
   } catch (error: any) {
     console.error('❌ Resume parsing error:', {
