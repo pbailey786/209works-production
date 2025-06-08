@@ -59,6 +59,46 @@ export default function TestResumePage() {
     }
   };
 
+  const testMinimalDebug = async () => {
+    if (!file) return;
+
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('resume', file);
+
+      console.log('🔍 Sending file to minimal debug endpoint:', {
+        name: file.name,
+        type: file.type,
+        size: file.size
+      });
+
+      const response = await fetch('/api/debug/resume-parse-minimal', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      console.log('📥 Response from minimal debug endpoint:', data);
+
+      if (!response.ok) {
+        setError(`Error ${response.status}: ${data.error || 'Unknown error'}`);
+        setResult(data);
+      } else {
+        setResult(data);
+      }
+    } catch (err: any) {
+      console.error('❌ Network error:', err);
+      setError(`Network error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const testActualResumeParse = async () => {
     if (!file) return;
 
@@ -82,7 +122,7 @@ export default function TestResumePage() {
       });
 
       const data = await response.json();
-      
+
       console.log('📥 Response from actual endpoint:', data);
 
       if (!response.ok) {
@@ -136,7 +176,7 @@ export default function TestResumePage() {
             </div>
 
             {/* Test Buttons */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               <button
                 onClick={testResumeDebug}
                 disabled={!file || loading}
@@ -144,7 +184,15 @@ export default function TestResumePage() {
               >
                 {loading ? 'Testing...' : 'Test Debug Endpoint'}
               </button>
-              
+
+              <button
+                onClick={testMinimalDebug}
+                disabled={!file || loading}
+                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Testing...' : 'Test Minimal Debug'}
+              </button>
+
               <button
                 onClick={testActualResumeParse}
                 disabled={!file || loading}
