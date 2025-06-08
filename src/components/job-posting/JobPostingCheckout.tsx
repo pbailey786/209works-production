@@ -270,9 +270,9 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                       <span className="text-lg font-bold text-gray-900">${addon.price}</span>
                     </div>
                     <p className="text-sm text-gray-600">{addon.description}</p>
-                    {addon.includes && (
+                    {(addon as any).includes && (
                       <p className="text-xs text-green-600 mt-1">
-                        Includes: {addon.includes.map(i => addonConfigs[i as AddonKey]?.name).join(', ')}
+                        Includes: {(addon as any).includes.map((i: string) => addonConfigs[i as AddonKey]?.name).join(', ')}
                       </p>
                     )}
                     {isSelected && (
