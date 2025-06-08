@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
+
+// Type for NextAuth session
+interface AuthSession {
+  user?: {
+    id?: string;
+    email?: string;
+    name?: string;
+    role?: string;
+  };
+}
 
 export async function POST(
   req: NextRequest,
@@ -10,7 +20,7 @@ export async function POST(
 ) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as AuthSession;
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -20,7 +30,7 @@ export async function POST(
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email as string },
+      where: { email: session.user.email },
       select: { id: true, role: true },
     });
 
@@ -138,7 +148,7 @@ export async function GET(
 ) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions);
+    const session = (await getServerSession(authOptions)) as AuthSession;
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -148,7 +158,7 @@ export async function GET(
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email as string },
+      where: { email: session.user.email },
       select: { id: true, role: true },
     });
 
