@@ -108,16 +108,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate extracted text quality
-    const validation = validateExtractedText(extractionResult);
-    if (!validation.isValid) {
-      console.log('❌ Text validation failed:', validation.issues);
+    const textValidation = validateExtractedText(extractionResult);
+    if (!textValidation.isValid) {
+      console.log('❌ Text validation failed:', textValidation.issues);
       return NextResponse.json(
         {
           error: 'Extracted text quality is too low.',
-          details: validation.issues.join('. '),
+          details: textValidation.issues.join('. '),
           debug: process.env.NODE_ENV === 'development' ? {
             extractionResult,
-            validation
+            textValidation
           } : undefined
         },
         { status: 400 }
