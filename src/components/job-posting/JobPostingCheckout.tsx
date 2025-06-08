@@ -213,10 +213,10 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                         AI optimization
                       </li>
                     )}
-                    {tier.features.featuredPosts && (
+                    {(tier.features as any).featuredPosts && (
                       <li className="flex items-center">
                         <Check className="h-3 w-3 text-green-500 mr-2" />
-                        {tier.features.featuredPosts} featured post{tier.features.featuredPosts > 1 ? 's' : ''}
+                        {(tier.features as any).featuredPosts} featured post{(tier.features as any).featuredPosts > 1 ? 's' : ''}
                       </li>
                     )}
                   </ul>
