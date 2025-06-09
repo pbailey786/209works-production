@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import EmployerOnboardingClient from './EmployerOnboardingClient';
 import type { Session } from 'next-auth';
