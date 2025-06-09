@@ -2,19 +2,19 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
-import OnboardingClient from './OnboardingClient';
+import JobSeekerOnboardingClient from './JobSeekerOnboardingClient';
 import type { Session } from 'next-auth';
 
-export default async function OnboardingPage() {
+export default async function JobSeekerOnboardingPage() {
   const session = await getServerSession(authOptions) as Session | null;
 
-  if (!session!.user?.email) {
-    redirect('/signin?callbackUrl=/onboarding');
+  if (!session?.user?.email) {
+    redirect('/signin?callbackUrl=/onboarding/jobseeker');
   }
 
   // Get user data
   const user = await prisma.user.findUnique({
-    where: { email: session!.user?.email },
+    where: { email: session.user.email },
     select: {
       id: true,
       name: true,
@@ -26,9 +26,8 @@ export default async function OnboardingPage() {
       experienceLevel: true,
       skills: true,
       preferredJobTypes: true,
-      companyWebsite: true,
-      companyName: true,
-      industry: true,
+      phoneNumber: true,
+      resumeUrl: true,
       createdAt: true,
     },
   });
@@ -37,17 +36,15 @@ export default async function OnboardingPage() {
     redirect('/signin');
   }
 
+  // Redirect non-job seekers
+  if (user.role !== 'jobseeker') {
+    redirect(user.role === 'employer' ? '/onboarding/employer' : '/dashboard');
+  }
+
   // If onboarding is already completed, redirect to dashboard
   if (user.onboardingCompleted) {
-    redirect(user.role === 'employer' ? '/employers/dashboard' : '/dashboard');
+    redirect('/dashboard');
   }
 
-  // Redirect to role-specific onboarding
-  if (user.role === 'jobseeker') {
-    redirect('/onboarding/jobseeker');
-  } else if (user.role === 'employer') {
-    redirect('/onboarding/employer');
-  }
-
-  return <OnboardingClient user={user} />;
+  return <JobSeekerOnboardingClient user={user} />;
 }
