@@ -535,7 +535,7 @@ export default function ShouldIApplyCalculator({
 
                   <div className="space-y-4">
                     {/* Positive Factors */}
-                    {result.factors.positive.length > 0 && (
+                    {result.factors?.positive && result.factors.positive.length > 0 && (
                       <div>
                         <h5 className="mb-2 text-sm font-medium text-green-700">
                           Strengths
@@ -555,7 +555,7 @@ export default function ShouldIApplyCalculator({
                     )}
 
                     {/* Negative Factors */}
-                    {result.factors.negative.length > 0 && (
+                    {result.factors?.negative && result.factors.negative.length > 0 && (
                       <div>
                         <h5 className="mb-2 text-sm font-medium text-red-700">
                           Areas of Concern
@@ -575,7 +575,7 @@ export default function ShouldIApplyCalculator({
                     )}
 
                     {/* Neutral Factors */}
-                    {result.factors.neutral.length > 0 && (
+                    {result.factors?.neutral && result.factors.neutral.length > 0 && (
                       <div>
                         <h5 className="mb-2 text-sm font-medium text-gray-700">
                           Additional Considerations
@@ -618,39 +618,29 @@ export default function ShouldIApplyCalculator({
                     </div>
                   )}
 
-                {/* Usage Info & Upgrade Suggestions */}
-                {(usageInfo || result.upgradeSuggestions) && (
+                {/* Usage Info */}
+                {usageInfo && (
                   <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-600">
-                        {usageInfo && (
-                          <div className="flex items-center space-x-4">
-                            <span>
-                              Usage today:{' '}
-                              <span className="font-medium">
-                                {usageInfo.usageToday}/
-                                {usageInfo.dailyLimit === -1
-                                  ? '∞'
-                                  : usageInfo.dailyLimit}
-                              </span>
+                        <div className="flex items-center space-x-4">
+                          <span>
+                            Usage today:{' '}
+                            <span className="font-medium">
+                              {usageInfo.usageToday}/
+                              {usageInfo.dailyLimit === -1
+                                ? '∞'
+                                : usageInfo.dailyLimit}
                             </span>
-                            <span className="rounded-full bg-gray-200 px-2 py-1 text-xs capitalize">
-                              {usageInfo.userTier}{' '}
-                              {usageInfo.analysisType === 'premium'
-                                ? '• Premium Analysis'
-                                : '• Basic Analysis'}
-                            </span>
-                          </div>
-                        )}
+                          </span>
+                          <span className="rounded-full bg-gray-200 px-2 py-1 text-xs capitalize">
+                            {usageInfo.userTier}{' '}
+                            {usageInfo.analysisType === 'premium'
+                              ? '• Premium Analysis'
+                              : '• Basic Analysis'}
+                          </span>
+                        </div>
                       </div>
-                      {result.upgradeSuggestions && (
-                        <a
-                          href="/pricing"
-                          className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-xs text-white transition-all duration-200 hover:from-purple-700 hover:to-blue-700"
-                        >
-                          Upgrade for More
-                        </a>
-                      )}
                     </div>
                   </div>
                 )}
