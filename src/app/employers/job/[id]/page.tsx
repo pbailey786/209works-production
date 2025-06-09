@@ -287,7 +287,7 @@ export default function EmployerJobDetailsPage() {
                 <>
                   <h4 className="mb-3 font-semibold">Categories</h4>
                   <div className="mb-6 flex flex-wrap gap-2">
-                    {jobData.categories.map((category, index) => (
+                    {jobData.categories.map((category: string, index: number) => (
                       <span key={index} className="inline-block rounded-full bg-[#2d4a3e]/10 px-3 py-1 text-sm font-medium text-[#2d4a3e]">
                         {category}
                       </span>
