@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch user's chat history, ordered by last activity
-    let chatHistory = [];
+    let chatHistory: any[] = [];
     try {
       chatHistory = await prisma.chatHistory.findMany({
         where: { userId: user.id },

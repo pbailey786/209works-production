@@ -603,6 +603,7 @@ export const POST = withAISecurity(
 
           // Check if conversation already exists (handle case where table doesn't exist yet)
           let existingConversation = null;
+          let chatHistoryTableExists = true;
           try {
             existingConversation = await prisma.chatHistory.findFirst({
               where: {
@@ -613,50 +614,52 @@ export const POST = withAISecurity(
           } catch (tableError) {
             // ChatHistory table doesn't exist yet, skip saving for now
             console.log('ChatHistory table not available yet, skipping chat history save');
-            return; // Exit the chat history saving block
+            chatHistoryTableExists = false;
           }
 
-          if (existingConversation) {
-            // Update existing conversation
-            await prisma.chatHistory.update({
-              where: { id: existingConversation.id },
-              data: {
-                messages: updatedConversationHistory,
-                lastActivity: new Date(),
-              },
-            });
-          } else {
-            // Check if user has reached the limit
-            const userConversationCount = await prisma.chatHistory.count({
-              where: { userId: authenticatedUserId },
-            });
-
-            if (userConversationCount >= MAX_CONVERSATIONS_PER_USER) {
-              // Remove the oldest conversation
-              const oldestConversation = await prisma.chatHistory.findFirst({
+          if (chatHistoryTableExists) {
+            if (existingConversation) {
+              // Update existing conversation
+              await prisma.chatHistory.update({
+                where: { id: existingConversation.id },
+                data: {
+                  messages: updatedConversationHistory,
+                  lastActivity: new Date(),
+                },
+              });
+            } else {
+              // Check if user has reached the limit
+              const userConversationCount = await prisma.chatHistory.count({
                 where: { userId: authenticatedUserId },
-                orderBy: { lastActivity: 'asc' },
               });
 
-              if (oldestConversation) {
-                await prisma.chatHistory.delete({
-                  where: { id: oldestConversation.id },
+              if (userConversationCount >= MAX_CONVERSATIONS_PER_USER) {
+                // Remove the oldest conversation
+                const oldestConversation = await prisma.chatHistory.findFirst({
+                  where: { userId: authenticatedUserId },
+                  orderBy: { lastActivity: 'asc' },
                 });
+
+                if (oldestConversation) {
+                  await prisma.chatHistory.delete({
+                    where: { id: oldestConversation.id },
+                  });
+                }
               }
+
+              // Create new conversation with a title based on first user message
+              const title = userMessage.length > 50 ? userMessage.substring(0, 50) + '...' : userMessage;
+
+              await prisma.chatHistory.create({
+                data: {
+                  userId: authenticatedUserId,
+                  sessionId: sessionId,
+                  messages: updatedConversationHistory,
+                  title: title,
+                  lastActivity: new Date(),
+                },
+              });
             }
-
-            // Create new conversation with a title based on first user message
-            const title = userMessage.length > 50 ? userMessage.substring(0, 50) + '...' : userMessage;
-
-            await prisma.chatHistory.create({
-              data: {
-                userId: authenticatedUserId,
-                sessionId: sessionId,
-                messages: updatedConversationHistory,
-                title: title,
-                lastActivity: new Date(),
-              },
-            });
           }
         } catch (historyError) {
           console.error('Failed to save chat history:', historyError);

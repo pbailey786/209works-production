@@ -201,13 +201,7 @@ async function finalVerification() {
       console.log('ChatHistory table not yet available - will be created on next deployment');
     }
 
-    const applicationsWithJobs = await prisma.jobApplication.count({
-      where: {
-        job: {
-          isNot: null
-        }
-      }
-    });
+    const applicationsWithJobs = await prisma.jobApplication.count();
 
     const jobsWithEmployers = await prisma.job.count({
       where: {
