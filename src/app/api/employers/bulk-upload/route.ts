@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
             categories: jobData.category ? [jobData.category] : [],
             employerId: user.id,
             source: '209works',
-            url: null,
+            url: '',
             postedAt: new Date(),
           },
         });
