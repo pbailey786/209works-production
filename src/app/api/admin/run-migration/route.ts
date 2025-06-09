@@ -33,101 +33,163 @@ export async function POST(request: NextRequest) {
     };
 
     try {
-      // Run the migration SQL directly
-      const migrationSQL = `
-        -- CreateTable SavedJob if not exists
-        CREATE TABLE IF NOT EXISTS "SavedJob" (
-            "id" TEXT NOT NULL,
-            "userId" TEXT NOT NULL,
-            "jobId" TEXT NOT NULL,
-            "savedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            CONSTRAINT "SavedJob_pkey" PRIMARY KEY ("id")
-        );
+      // Create SavedJob table
+      try {
+        await prisma.$executeRaw`
+          CREATE TABLE IF NOT EXISTS "SavedJob" (
+              "id" TEXT NOT NULL,
+              "userId" TEXT NOT NULL,
+              "jobId" TEXT NOT NULL,
+              "savedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              CONSTRAINT "SavedJob_pkey" PRIMARY KEY ("id")
+          );
+        `;
+        results.migrations.push('SavedJob table created successfully');
+      } catch (error) {
+        results.errors.push(`SavedJob table creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
 
-        -- CreateTable ChatHistory if not exists
-        CREATE TABLE IF NOT EXISTS "ChatHistory" (
-            "id" TEXT NOT NULL,
-            "userId" TEXT NOT NULL,
-            "sessionId" TEXT NOT NULL,
-            "title" TEXT,
-            "messages" JSONB NOT NULL,
-            "lastActivity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            CONSTRAINT "ChatHistory_pkey" PRIMARY KEY ("id")
-        );
-      `;
-
-      // Execute the migration
-      await prisma.$executeRawUnsafe(migrationSQL);
-      results.migrations.push('Tables created successfully');
+      // Create ChatHistory table
+      try {
+        await prisma.$executeRaw`
+          CREATE TABLE IF NOT EXISTS "ChatHistory" (
+              "id" TEXT NOT NULL,
+              "userId" TEXT NOT NULL,
+              "sessionId" TEXT NOT NULL,
+              "title" TEXT,
+              "messages" JSONB NOT NULL,
+              "lastActivity" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              CONSTRAINT "ChatHistory_pkey" PRIMARY KEY ("id")
+          );
+        `;
+        results.migrations.push('ChatHistory table created successfully');
+      } catch (error) {
+        results.errors.push(`ChatHistory table creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
 
       // Add indexes and constraints
       try {
         await prisma.$executeRaw`
-          CREATE UNIQUE INDEX IF NOT EXISTS "SavedJob_userId_jobId_key" ON "SavedJob"("userId", "jobId");
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_indexes
+              WHERE indexname = 'SavedJob_userId_jobId_key'
+            ) THEN
+              CREATE UNIQUE INDEX "SavedJob_userId_jobId_key" ON "SavedJob"("userId", "jobId");
+            END IF;
+          END $$;
         `;
         results.migrations.push('SavedJob unique index created');
       } catch (e) {
-        // Index might already exist
-        results.migrations.push('SavedJob unique index already exists or created');
+        results.migrations.push(`SavedJob unique index: ${e instanceof Error ? e.message : 'Already exists'}`);
       }
 
       try {
         await prisma.$executeRaw`
-          CREATE INDEX IF NOT EXISTS "ChatHistory_userId_idx" ON "ChatHistory"("userId");
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_indexes
+              WHERE indexname = 'ChatHistory_userId_idx'
+            ) THEN
+              CREATE INDEX "ChatHistory_userId_idx" ON "ChatHistory"("userId");
+            END IF;
+          END $$;
         `;
         results.migrations.push('ChatHistory userId index created');
       } catch (e) {
-        results.migrations.push('ChatHistory userId index already exists or created');
+        results.migrations.push(`ChatHistory userId index: ${e instanceof Error ? e.message : 'Already exists'}`);
       }
 
       try {
         await prisma.$executeRaw`
-          CREATE INDEX IF NOT EXISTS "ChatHistory_sessionId_idx" ON "ChatHistory"("sessionId");
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_indexes
+              WHERE indexname = 'ChatHistory_sessionId_idx'
+            ) THEN
+              CREATE INDEX "ChatHistory_sessionId_idx" ON "ChatHistory"("sessionId");
+            END IF;
+          END $$;
         `;
         results.migrations.push('ChatHistory sessionId index created');
       } catch (e) {
-        results.migrations.push('ChatHistory sessionId index already exists or created');
+        results.migrations.push(`ChatHistory sessionId index: ${e instanceof Error ? e.message : 'Already exists'}`);
       }
 
       try {
         await prisma.$executeRaw`
-          CREATE INDEX IF NOT EXISTS "ChatHistory_createdAt_idx" ON "ChatHistory"("createdAt");
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM pg_indexes
+              WHERE indexname = 'ChatHistory_createdAt_idx'
+            ) THEN
+              CREATE INDEX "ChatHistory_createdAt_idx" ON "ChatHistory"("createdAt");
+            END IF;
+          END $$;
         `;
         results.migrations.push('ChatHistory createdAt index created');
       } catch (e) {
-        results.migrations.push('ChatHistory createdAt index already exists or created');
+        results.migrations.push(`ChatHistory createdAt index: ${e instanceof Error ? e.message : 'Already exists'}`);
       }
 
-      // Add foreign key constraints (these might fail if they already exist)
+      // Add foreign key constraints
       try {
         await prisma.$executeRaw`
-          ALTER TABLE "SavedJob" ADD CONSTRAINT "SavedJob_userId_fkey" 
-          FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM information_schema.table_constraints
+              WHERE constraint_name = 'SavedJob_userId_fkey'
+            ) THEN
+              ALTER TABLE "SavedJob" ADD CONSTRAINT "SavedJob_userId_fkey"
+              FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+            END IF;
+          END $$;
         `;
         results.migrations.push('SavedJob userId foreign key added');
       } catch (e) {
-        results.migrations.push('SavedJob userId foreign key already exists or created');
+        results.migrations.push(`SavedJob userId foreign key: ${e instanceof Error ? e.message : 'Already exists'}`);
       }
 
       try {
         await prisma.$executeRaw`
-          ALTER TABLE "SavedJob" ADD CONSTRAINT "SavedJob_jobId_fkey" 
-          FOREIGN KEY ("jobId") REFERENCES "Job"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM information_schema.table_constraints
+              WHERE constraint_name = 'SavedJob_jobId_fkey'
+            ) THEN
+              ALTER TABLE "SavedJob" ADD CONSTRAINT "SavedJob_jobId_fkey"
+              FOREIGN KEY ("jobId") REFERENCES "Job"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+            END IF;
+          END $$;
         `;
         results.migrations.push('SavedJob jobId foreign key added');
       } catch (e) {
-        results.migrations.push('SavedJob jobId foreign key already exists or created');
+        results.migrations.push(`SavedJob jobId foreign key: ${e instanceof Error ? e.message : 'Already exists'}`);
       }
 
       try {
         await prisma.$executeRaw`
-          ALTER TABLE "ChatHistory" ADD CONSTRAINT "ChatHistory_userId_fkey" 
-          FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+          DO $$
+          BEGIN
+            IF NOT EXISTS (
+              SELECT 1 FROM information_schema.table_constraints
+              WHERE constraint_name = 'ChatHistory_userId_fkey'
+            ) THEN
+              ALTER TABLE "ChatHistory" ADD CONSTRAINT "ChatHistory_userId_fkey"
+              FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+            END IF;
+          END $$;
         `;
         results.migrations.push('ChatHistory userId foreign key added');
       } catch (e) {
-        results.migrations.push('ChatHistory userId foreign key already exists or created');
+        results.migrations.push(`ChatHistory userId foreign key: ${e instanceof Error ? e.message : 'Already exists'}`);
       }
 
       // Test the tables
