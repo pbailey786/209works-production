@@ -84,11 +84,11 @@ export default function EmployerJobDetailsPage() {
   }
 
   // Format job data for display
-  const formatJobType = (type) => {
+  const formatJobType = (type: string) => {
     return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
-  const formatSalary = (salaryMin, salaryMax) => {
+  const formatSalary = (salaryMin: number | null, salaryMax: number | null) => {
     if (salaryMin && salaryMax) {
       return `$${salaryMin.toLocaleString()} - $${salaryMax.toLocaleString()}`;
     } else if (salaryMin) {
@@ -99,7 +99,7 @@ export default function EmployerJobDetailsPage() {
     return 'Salary not specified';
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -117,7 +117,7 @@ export default function EmployerJobDetailsPage() {
     { id: 3, name: 'Mike Chen', applied: '2 days ago', score: 78, status: 'Shortlisted' },
   ];
 
-  const getTrendIcon = (trend) => {
+  const getTrendIcon = (trend: string) => {
     switch (trend) {
       case 'up':
         return <TrendingUp className="h-4 w-4 text-green-600" />;
@@ -128,7 +128,7 @@ export default function EmployerJobDetailsPage() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'new':
         return 'bg-blue-100 text-blue-800';
