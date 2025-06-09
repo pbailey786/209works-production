@@ -589,6 +589,72 @@ export const POST = withAISecurity(
           console.error('Failed to save chat analytics:', analyticsError);
           // Don't fail the request if analytics fails
         }
+
+        // Save chat history for authenticated users
+        try {
+          const MAX_CONVERSATIONS_PER_USER = 10;
+
+          // Build updated conversation history
+          const updatedConversationHistory = [
+            ...conversationHistory,
+            { role: 'user', content: userMessage, timestamp: new Date() },
+            { role: 'assistant', content: conversationalResponse, timestamp: new Date() }
+          ];
+
+          // Check if conversation already exists
+          const existingConversation = await prisma.chatHistory.findFirst({
+            where: {
+              userId: authenticatedUserId,
+              sessionId: sessionId,
+            },
+          });
+
+          if (existingConversation) {
+            // Update existing conversation
+            await prisma.chatHistory.update({
+              where: { id: existingConversation.id },
+              data: {
+                messages: updatedConversationHistory,
+                lastActivity: new Date(),
+              },
+            });
+          } else {
+            // Check if user has reached the limit
+            const userConversationCount = await prisma.chatHistory.count({
+              where: { userId: authenticatedUserId },
+            });
+
+            if (userConversationCount >= MAX_CONVERSATIONS_PER_USER) {
+              // Remove the oldest conversation
+              const oldestConversation = await prisma.chatHistory.findFirst({
+                where: { userId: authenticatedUserId },
+                orderBy: { lastActivity: 'asc' },
+              });
+
+              if (oldestConversation) {
+                await prisma.chatHistory.delete({
+                  where: { id: oldestConversation.id },
+                });
+              }
+            }
+
+            // Create new conversation with a title based on first user message
+            const title = userMessage.length > 50 ? userMessage.substring(0, 50) + '...' : userMessage;
+
+            await prisma.chatHistory.create({
+              data: {
+                userId: authenticatedUserId,
+                sessionId: sessionId,
+                messages: updatedConversationHistory,
+                title: title,
+                lastActivity: new Date(),
+              },
+            });
+          }
+        } catch (historyError) {
+          console.error('Failed to save chat history:', historyError);
+          // Don't fail the request if history saving fails
+        }
       }
 
       return NextResponse.json({

@@ -73,6 +73,7 @@ model User {
   userSessions         UserSession[]
   weeklyDigest         WeeklyDigest?
   chatAnalytics        ChatAnalytics[]
+  chatHistory          ChatHistory[]
   impersonationSessions ImpersonationSession[] @relation("ImpersonationTarget")
   verificationTokens    VerificationToken[]
   jobPostingPurchases   JobPostingPurchase[]
@@ -885,6 +886,25 @@ model ChatAnalytics {
   @@index([sessionId])
   @@index([createdAt])
   @@index([question])
+}
+
+model ChatHistory {
+  id           String   @id @default(uuid())
+  userId       String
+  sessionId    String
+  title        String?  // Optional title for the conversation
+  messages     Json     // Array of messages in the conversation
+  lastActivity DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([lastActivity])
+  @@index([createdAt])
 }
 
 model JobPostingPurchase {
