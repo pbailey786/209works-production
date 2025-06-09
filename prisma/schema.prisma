@@ -1272,4 +1272,3 @@ model EmployerProfile {
   @@index([industryType])
   @@index([hiringGoal])
 }
-}
