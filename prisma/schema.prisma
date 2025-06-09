@@ -1198,3 +1198,20 @@ model DuplicateJobAlert {
   @@index([detectionMethod])
   @@index([detectedAt])
 }
+
+model SystemBackup {
+  id        String   @id @default(uuid())
+  filename  String   @unique
+  size      Int      @default(0)
+  status    String   @default("pending") // pending, completed, failed
+  type      String   @default("manual")  // manual, automated
+  metadata  Json?    // Store backup details, table counts, etc.
+  createdBy String?  // User ID who created the backup
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+  @@index([createdBy])
+}

@@ -53,6 +53,11 @@ export class CronSchedulerService {
       this.updateJobRankings();
     });
 
+    // Schedule database backup (every day at 2:00 AM)
+    this.scheduleTask('database-backup', '0 2 * * *', () => {
+      this.performDatabaseBackup();
+    });
+
     // Schedule database maintenance (every day at 3:00 AM)
     this.scheduleTask('db-maintenance', '0 3 * * *', () => {
       this.performDatabaseMaintenance();
@@ -303,6 +308,29 @@ export class CronSchedulerService {
     console.log(
       `[CRON] Updated job rankings and marked ${expiredJobsResult.count} jobs as expired`
     );
+  }
+
+  /**
+   * Perform automated database backup
+   */
+  private async performDatabaseBackup(): Promise<void> {
+    try {
+      console.log('[CRON] Starting automated database backup...');
+
+      // Import the backup function dynamically to avoid circular dependencies
+      const { createDatabaseBackup } = await import('@/app/api/admin/backup/route');
+
+      const result = await createDatabaseBackup('automated');
+
+      if (result.success) {
+        console.log(`[CRON] Automated backup completed: ${result.filename} (${(result.size! / 1024 / 1024).toFixed(2)} MB)`);
+        console.log(`[CRON] Backup contains ${result.tables ? Object.values(result.tables).reduce((a, b) => a + b, 0) : 0} total records`);
+      } else {
+        console.error('[CRON] Automated backup failed:', result.error);
+      }
+    } catch (error) {
+      console.error('[CRON] Database backup failed:', error);
+    }
   }
 
   /**
