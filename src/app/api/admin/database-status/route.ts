@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 
     // Check all tables
     const tableNames = [
-      'User', 'Job', 'Application', 'Company', 'JobsGPTQuestion', 
+      'User', 'Job', 'JobApplication', 'Company', 'ChatAnalytics',
       'SavedJob', 'ChatHistory', 'AuditLog'
     ];
 
@@ -48,16 +48,16 @@ export async function GET(request: NextRequest) {
             count = await prisma.job.count();
             exists = true;
             break;
-          case 'Application':
-            count = await prisma.application.count();
+          case 'JobApplication':
+            count = await prisma.jobApplication.count();
             exists = true;
             break;
           case 'Company':
             count = await prisma.company.count();
             exists = true;
             break;
-          case 'JobsGPTQuestion':
-            count = await prisma.jobsGPTQuestion.count();
+          case 'ChatAnalytics':
+            count = await prisma.chatAnalytics.count();
             exists = true;
             break;
           case 'AuditLog':
