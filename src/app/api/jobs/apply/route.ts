@@ -106,6 +106,35 @@ export async function POST(request: NextRequest) {
       console.error('📧 Failed to send application confirmation email:', emailError);
     }
 
+    // Send notification email to employer if job has an employerId
+    if (job.employerId) {
+      try {
+        const employer = await prisma.user.findUnique({
+          where: { id: job.employerId },
+          select: { email: true, name: true },
+        });
+
+        if (employer?.email) {
+          await EmailHelpers.sendNewApplicantNotification(employer.email, {
+            employerName: employer.name || employer.email.split('@')[0],
+            jobTitle: job.title,
+            companyName: job.company || 'Your Company',
+            applicantName: user.name || user.email.split('@')[0],
+            applicantEmail: user.email,
+            applicationDate: new Date().toLocaleDateString(),
+            jobUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/employers/job/${job.id}`,
+            applicantProfileUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/employers/applicants/${application.id}`,
+          }, {
+            userId: job.employerId,
+            priority: 'high',
+          });
+          console.log('📧 New applicant notification email sent to employer');
+        }
+      } catch (emailError) {
+        console.error('📧 Failed to send employer notification email:', emailError);
+      }
+    }
+
     // Log the application for tracking
     await prisma.auditLog
       .create({

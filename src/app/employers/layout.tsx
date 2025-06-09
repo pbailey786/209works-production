@@ -38,17 +38,14 @@ const employerNavigation = [
     ],
   },
   {
-    name: 'CRM & Applicants',
+    name: 'Candidates',
     href: '/employers/applicants',
     icon: '👥',
-    description: 'Complete CRM System',
+    description: 'Manage Applications',
     submenu: [
-      { name: 'All Applicants', href: '/employers/applicants' },
+      { name: 'All Candidates', href: '/employers/applicants' },
       { name: 'Pipeline View', href: '/employers/applicants/pipeline' },
-      { name: 'Document Vault', href: '/employers/crm/documents' },
       { name: 'Contact Database', href: '/employers/crm/contacts' },
-      { name: 'Notes & Tags', href: '/employers/notes' },
-      { name: 'Quick Actions', href: '/employers/crm/quick-actions' },
     ],
   },
   {
@@ -65,11 +62,10 @@ const employerNavigation = [
   },
 ];
 
-const crmQuickActions = [
+const candidateQuickActions = [
+  { name: 'View All Candidates', href: '/employers/applicants', icon: '👥' },
   { name: 'Pipeline View', href: '/employers/applicants/pipeline', icon: '📋' },
-  { name: 'Contact Database', href: '/employers/crm/contacts', icon: '👥' },
-  { name: 'Document Vault', href: '/employers/crm/documents', icon: '📁' },
-  { name: 'Quick Actions', href: '/employers/crm/quick-actions', icon: '⚡' },
+  { name: 'Contact Database', href: '/employers/crm/contacts', icon: '📞' },
 ];
 
 const utilityPages = [
@@ -177,10 +173,10 @@ export default function EmployerLayout({ children }: EmployerLayoutProps) {
             {/* CRM Quick Actions */}
             <div className="mt-8">
               <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
-                CRM Quick Actions
+                Candidate Management
               </h3>
               <div className="mt-2 space-y-1">
-                {crmQuickActions.map(item => (
+                {candidateQuickActions.map(item => (
                   <Link
                     key={item.name}
                     href={item.href}

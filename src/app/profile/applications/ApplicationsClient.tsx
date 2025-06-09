@@ -343,6 +343,45 @@ export default function ApplicationsClient({
                         </span>
                       </div>
 
+                      {/* Application Progress */}
+                      <div className="mb-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1">
+                            <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                            <span className="text-xs text-gray-600">Applied</span>
+                          </div>
+                          <div className="h-px flex-1 bg-gray-200"></div>
+                          <div className="flex items-center space-x-1">
+                            <div className={`h-2 w-2 rounded-full ${
+                              ['reviewing', 'interview', 'offer'].includes(application.status)
+                                ? 'bg-blue-500'
+                                : 'bg-gray-300'
+                            }`}></div>
+                            <span className="text-xs text-gray-600">Review</span>
+                          </div>
+                          <div className="h-px flex-1 bg-gray-200"></div>
+                          <div className="flex items-center space-x-1">
+                            <div className={`h-2 w-2 rounded-full ${
+                              ['interview', 'offer'].includes(application.status)
+                                ? 'bg-purple-500'
+                                : 'bg-gray-300'
+                            }`}></div>
+                            <span className="text-xs text-gray-600">Interview</span>
+                          </div>
+                          <div className="h-px flex-1 bg-gray-200"></div>
+                          <div className="flex items-center space-x-1">
+                            <div className={`h-2 w-2 rounded-full ${
+                              application.status === 'offer'
+                                ? 'bg-green-500'
+                                : application.status === 'rejected'
+                                ? 'bg-red-500'
+                                : 'bg-gray-300'
+                            }`}></div>
+                            <span className="text-xs text-gray-600">Decision</span>
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="flex items-center justify-between text-sm text-gray-500">
                         <span className="flex items-center">
                           <Clock className="mr-1 h-4 w-4" />
@@ -361,12 +400,24 @@ export default function ApplicationsClient({
                           {application.resumeUrl && (
                             <span className="text-green-600">✓ Resume</span>
                           )}
-                          <Link
-                            href={`/jobs/${application.job.id}`}
-                            className="font-medium text-blue-600 hover:text-blue-700"
-                          >
-                            View Job →
-                          </Link>
+                          <div className="flex items-center space-x-2">
+                            <Link
+                              href={`/jobs/${application.job.id}`}
+                              className="rounded bg-blue-600 px-3 py-1 text-xs text-white transition-colors hover:bg-blue-700"
+                            >
+                              View Job
+                            </Link>
+                            {application.job.url && (
+                              <a
+                                href={application.job.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded border border-gray-300 px-3 py-1 text-xs text-gray-700 transition-colors hover:bg-gray-50"
+                              >
+                                External Link
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
 

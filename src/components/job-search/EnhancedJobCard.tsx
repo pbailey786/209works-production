@@ -11,6 +11,7 @@ import {
   Star,
   Eye,
   ChevronRight,
+  CheckCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,9 @@ interface EnhancedJobCardProps {
   isRemote?: boolean;
   experienceLevel?: string;
   saved?: boolean;
+  applied?: boolean;
+  applicationStatus?: 'pending' | 'reviewing' | 'interview' | 'offer' | 'rejected' | 'withdrawn';
+  appliedAt?: string;
   onSave?: () => void;
   onViewDetails?: () => void;
   className?: string;
@@ -49,6 +53,9 @@ export default function EnhancedJobCard({
   isRemote = false,
   experienceLevel,
   saved = false,
+  applied = false,
+  applicationStatus,
+  appliedAt,
   onSave,
   onViewDetails,
   className,
@@ -104,6 +111,16 @@ export default function EnhancedJobCard({
           <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-3 py-1 text-xs font-bold text-white shadow-lg">
             <Star className="h-3 w-3" />
             Featured
+          </div>
+        </div>
+      )}
+
+      {/* Applied Badge */}
+      {applied && (
+        <div className={`absolute ${isFeatured ? '-right-2 top-6' : '-right-2 -top-2'} z-10`}>
+          <div className="flex items-center gap-1 rounded-full bg-gradient-to-r from-green-500 to-green-600 px-3 py-1 text-xs font-bold text-white shadow-lg">
+            <CheckCircle className="h-3 w-3" />
+            Applied
           </div>
         </div>
       )}

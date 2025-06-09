@@ -101,6 +101,9 @@ export interface JobCardProps {
   onClick?: () => void;
   isSelected?: boolean;
   onViewDetails?: () => void;
+  applied?: boolean;
+  applicationStatus?: 'pending' | 'reviewing' | 'interview' | 'offer' | 'rejected' | 'withdrawn';
+  appliedAt?: string;
 }
 
 // Removed duplicate interface - using the enhanced version below

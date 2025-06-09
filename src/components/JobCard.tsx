@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion'; // For animations
-import { BookmarkIcon, StarIcon, EyeIcon } from '@heroicons/react/24/outline'; // For icons
+import { BookmarkIcon, StarIcon, EyeIcon, CheckCircleIcon } from '@heroicons/react/24/outline'; // For icons
 import {
   JobCardProps,
   validateJobCardProps,
@@ -26,6 +26,9 @@ export default function JobCard(props: JobCardProps) {
     onClick,
     isSelected = defaultJobCardProps.isSelected!,
     onViewDetails,
+    applied = false,
+    applicationStatus,
+    appliedAt,
   } = validatedProps;
 
   // Local state for save operation
@@ -94,6 +97,16 @@ export default function JobCard(props: JobCardProps) {
             {...ACCESSIBLE_ICONS.decorative}
           />
           Featured
+        </div>
+      )}
+
+      {applied && (
+        <div className={`absolute ${isFeatured ? 'right-0 top-8' : 'right-0 top-0'} rounded-bl-lg rounded-tr-lg bg-green-500 px-3 py-1 text-xs font-bold text-white`}>
+          <CheckCircleIcon
+            className="mr-1 inline h-4 w-4"
+            {...ACCESSIBLE_ICONS.decorative}
+          />
+          Applied
         </div>
       )}
       <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
