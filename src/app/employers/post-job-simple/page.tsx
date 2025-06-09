@@ -17,6 +17,7 @@ interface SimpleJobForm {
   title: string;
   company: string;
   location: string;
+  customLocation: string;
   type: string;
   description: string;
   salaryMin: string;
@@ -32,6 +33,7 @@ export default function SimplePostJobPage() {
     title: '',
     company: '',
     location: '',
+    customLocation: '',
     type: 'full_time',
     description: '',
     salaryMin: '',
@@ -61,6 +63,16 @@ export default function SimplePostJobPage() {
     'Lodi, CA',
     'Turlock, CA',
     'Merced, CA',
+    'Ceres, CA',
+    'Patterson, CA',
+    'Newman, CA',
+    'Gustine, CA',
+    'Los Banos, CA',
+    'Atwater, CA',
+    'Livingston, CA',
+    'Winton, CA',
+    'Hilmar, CA',
+    'Riverbank, CA',
   ];
 
   // Auto-fill user email
@@ -78,7 +90,14 @@ export default function SimplePostJobPage() {
 
     if (!form.title.trim()) newErrors.title = 'Job title is required';
     if (!form.company.trim()) newErrors.company = 'Company name is required';
-    if (!form.location) newErrors.location = 'Location is required';
+
+    // Validate location - either dropdown selection or custom location
+    if (!form.location) {
+      newErrors.location = 'Location is required';
+    } else if (form.location === 'other' && !form.customLocation.trim()) {
+      newErrors.customLocation = 'Please specify the location';
+    }
+
     if (!form.description.trim() || form.description.length < 50) {
       newErrors.description = 'Description must be at least 50 characters';
     }
@@ -96,8 +115,12 @@ export default function SimplePostJobPage() {
 
     setIsSubmitting(true);
     try {
+      // Use custom location if "other" is selected, otherwise use dropdown value
+      const finalLocation = form.location === 'other' ? form.customLocation : form.location;
+
       const jobData = {
         ...form,
+        location: finalLocation, // Use the final location value
         categories: ['Other'], // Default category
         isRemote: false,
         url: undefined, // Don't send empty URL - let it be optional
@@ -107,6 +130,9 @@ export default function SimplePostJobPage() {
         featured: false,
         source: 'free_basic_post', // Mark as free basic post
       };
+
+      // Remove customLocation from the data sent to API since it's not needed
+      delete jobData.customLocation;
 
       console.log('🔍 DEBUG: Submitting job with data:', jobData);
       console.log('🔍 DEBUG: Session data:', session);
@@ -222,7 +248,7 @@ export default function SimplePostJobPage() {
                 </label>
                 <select
                   value={form.location}
-                  onChange={e => setForm({ ...form, location: e.target.value })}
+                  onChange={e => setForm({ ...form, location: e.target.value, customLocation: '' })}
                   className={`w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
                     errors.location ? 'border-red-300' : 'border-gray-300'
                   }`}
@@ -233,9 +259,31 @@ export default function SimplePostJobPage() {
                       {location}
                     </option>
                   ))}
+                  <option value="other">Other (specify below)</option>
                 </select>
                 {errors.location && (
                   <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+                )}
+
+                {/* Custom location input - only show when "other" is selected */}
+                {form.location === 'other' && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      value={form.customLocation}
+                      onChange={e => setForm({ ...form, customLocation: e.target.value })}
+                      className={`w-full rounded-lg border px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
+                        errors.customLocation ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                      placeholder="Enter city, state (e.g., Sacramento, CA)"
+                    />
+                    {errors.customLocation && (
+                      <p className="mt-1 text-sm text-red-600">{errors.customLocation}</p>
+                    )}
+                    <p className="mt-1 text-xs text-gray-500">
+                      💡 We focus on Central Valley jobs, but welcome nearby areas too!
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

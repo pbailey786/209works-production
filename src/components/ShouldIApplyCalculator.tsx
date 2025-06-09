@@ -84,7 +84,10 @@ export default function ShouldIApplyCalculator({
       // First check if user profile is complete enough
       const profileResponse = await fetch('/api/profile');
       if (!profileResponse.ok) {
-        throw new Error('Failed to fetch profile');
+        console.error('Profile fetch failed:', profileResponse.status, profileResponse.statusText);
+        setError('Unable to access your profile. Please try signing in again.');
+        setIsLoading(false);
+        return;
       }
 
       const profileData = await profileResponse.json();
@@ -270,7 +273,7 @@ export default function ShouldIApplyCalculator({
                   <div className="space-y-3">
                     <a
                       href="/profile/settings"
-                      className="inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-colors hover:bg-purple-700"
+                      className="inline-flex items-center rounded-lg bg-[#2d4a3e] px-6 py-3 font-medium text-white transition-colors hover:bg-[#1d3a2e]"
                     >
                       <UserIcon className="mr-2 h-5 w-5" />
                       Complete Profile

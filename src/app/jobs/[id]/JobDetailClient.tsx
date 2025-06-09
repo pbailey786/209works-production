@@ -275,7 +275,7 @@ export default function JobDetailClient({
             <li>
               <Link
                 href="/"
-                className="rounded hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="rounded hover:text-[#2d4a3e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
               >
                 Home
               </Link>
@@ -286,7 +286,7 @@ export default function JobDetailClient({
             <li>
               <Link
                 href="/jobs"
-                className="rounded hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="rounded hover:text-[#2d4a3e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
               >
                 Jobs
               </Link>
@@ -295,7 +295,7 @@ export default function JobDetailClient({
               <ChevronRightIcon className="h-4 w-4" />
             </li>
             <li aria-current="page">
-              <span className="truncate text-gray-900">{job.title}</span>
+              <span className="truncate font-medium text-[#2d4a3e]">{job.title}</span>
             </li>
           </ol>
         </div>
@@ -369,7 +369,7 @@ export default function JobDetailClient({
                           {job.categories.map((category, index) => (
                             <span
                               key={index}
-                              className="inline-block rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-700"
+                              className="inline-block rounded-full bg-[#2d4a3e]/10 px-3 py-1 text-xs font-medium text-[#2d4a3e]"
                             >
                               {category}
                             </span>
@@ -417,7 +417,7 @@ export default function JobDetailClient({
                     {/* Should I Apply Button - Most prominent */}
                     <button
                       onClick={() => setShouldIApplyOpen(true)}
-                      className="flex items-center justify-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                      className="flex items-center justify-center rounded-lg bg-[#2d4a3e] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1d3a2e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2"
                       aria-label="Get AI analysis on whether you should apply for this job"
                     >
                       <SparklesIcon
@@ -433,7 +433,7 @@ export default function JobDetailClient({
                       className={`flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                         saved
                           ? 'border border-green-200 bg-green-100 text-green-700 focus:ring-green-500'
-                          : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-purple-500'
+                          : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-[#2d4a3e]'
                       } ${saving ? 'cursor-not-allowed opacity-50' : ''}`}
                       aria-pressed={saved}
                       aria-label={
@@ -459,7 +459,7 @@ export default function JobDetailClient({
                     <button
                       onClick={handleShare}
                       disabled={sharing}
-                      className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       aria-label="Share this job posting"
                     >
                       <ShareIcon className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -548,7 +548,7 @@ export default function JobDetailClient({
                   <div className="flex flex-col gap-4 sm:flex-row">
                     <button
                       onClick={() => setApplicationModalOpen(true)}
-                      className="inline-flex flex-1 transform items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-emerald-600 hover:to-blue-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:flex-none"
+                      className="inline-flex flex-1 transform items-center justify-center rounded-xl bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 sm:flex-none"
                     >
                       <PaperAirplaneIcon className="mr-3 h-5 w-5" />
                       Apply Now
@@ -601,7 +601,7 @@ export default function JobDetailClient({
                     <li key={relatedJob.id}>
                       <Link
                         href={`/jobs/${relatedJob.id}`}
-                        className="block rounded-lg p-3 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="block rounded-lg p-3 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
                       >
                         <h4 className="mb-1 text-sm font-medium text-gray-900">
                           {relatedJob.title}
@@ -619,7 +619,7 @@ export default function JobDetailClient({
                 </ul>
                 <Link
                   href="/jobs"
-                  className="mt-4 inline-block rounded text-sm font-medium text-purple-700 hover:text-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="mt-4 inline-block rounded text-sm font-medium text-[#2d4a3e] hover:text-[#1d3a2e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
                 >
                   View all jobs →
                 </Link>
