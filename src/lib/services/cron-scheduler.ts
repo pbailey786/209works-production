@@ -317,8 +317,8 @@ export class CronSchedulerService {
     try {
       console.log('[CRON] Starting automated database backup...');
 
-      // Import the backup function dynamically to avoid circular dependencies
-      const { createDatabaseBackup } = await import('@/app/api/admin/backup/route');
+      // Import the backup function from the utility module
+      const { createDatabaseBackup } = await import('@/lib/backup/database-backup');
 
       const result = await createDatabaseBackup('automated');
 

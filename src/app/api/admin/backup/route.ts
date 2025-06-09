@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getServerSession } from 'next-auth/next';
+import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { createServerSupabaseClient } from '@/lib/supabase';
+import { createDatabaseBackup } from '@/lib/backup/database-backup';
+import type { Session } from 'next-auth';
 
 interface BackupResult {
   success: boolean;
@@ -17,9 +19,9 @@ interface BackupResult {
 // GET - List all backups
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
+    const session = await getServerSession(authOptions) as Session | null;
+
+    if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -54,15 +56,15 @@ export async function GET(req: NextRequest) {
 // POST - Create new backup
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
+    const session = await getServerSession(authOptions) as Session | null;
+
+    if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { type = 'manual' } = await req.json();
     
-    const result = await createDatabaseBackup(type, session.user.id);
+    const result = await createDatabaseBackup(type, (session.user as any).id);
     
     if (result.success) {
       return NextResponse.json(result);
@@ -82,9 +84,9 @@ export async function POST(req: NextRequest) {
 // DELETE - Delete backup
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
+    const session = await getServerSession(authOptions) as Session | null;
+
+    if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -130,126 +132,4 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-// Core backup function
-async function createDatabaseBackup(type: 'manual' | 'automated', userId?: string): Promise<BackupResult> {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const filename = `backup-${timestamp}.json`;
-  
-  try {
-    console.log(`🔄 Starting ${type} database backup...`);
-    
-    // Get all table data
-    const backupData = {
-      metadata: {
-        timestamp: new Date().toISOString(),
-        type,
-        version: '1.0',
-        database: 'postgresql',
-      },
-      tables: {} as Record<string, any[]>
-    };
-
-    // Define tables to backup
-    const tablesToBackup = [
-      'User',
-      'Company', 
-      'Job',
-      'JobApplication',
-      'SavedJob',
-      'ChatHistory',
-      'ChatAnalytics',
-      'AuditLog',
-      'EmailLog'
-    ];
-
-    const tableCounts: Record<string, number> = {};
-
-    // Backup each table
-    for (const tableName of tablesToBackup) {
-      try {
-        const modelName = tableName.toLowerCase() as keyof typeof prisma;
-        if (prisma[modelName] && typeof (prisma[modelName] as any).findMany === 'function') {
-          const data = await (prisma[modelName] as any).findMany();
-          backupData.tables[tableName] = data;
-          tableCounts[tableName] = data.length;
-          console.log(`✅ Backed up ${tableName}: ${data.length} records`);
-        }
-      } catch (error) {
-        console.error(`❌ Error backing up ${tableName}:`, error);
-        tableCounts[tableName] = 0;
-      }
-    }
-
-    // Convert to JSON
-    const backupJson = JSON.stringify(backupData, null, 2);
-    const backupBuffer = Buffer.from(backupJson, 'utf-8');
-    const size = backupBuffer.length;
-
-    // Upload to Supabase storage
-    const supabase = createServerSupabaseClient();
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('backups')
-      .upload(filename, backupBuffer, {
-        contentType: 'application/json',
-        upsert: false
-      });
-
-    if (uploadError) {
-      throw new Error(`Storage upload failed: ${uploadError.message}`);
-    }
-
-    // Save backup record to database
-    const backupRecord = await prisma.systemBackup.create({
-      data: {
-        filename,
-        size,
-        status: 'completed',
-        type,
-        metadata: {
-          tableCounts,
-          totalRecords: Object.values(tableCounts).reduce((a, b) => a + b, 0),
-          uploadPath: uploadData.path,
-        },
-        createdBy: userId || 'system',
-      }
-    });
-
-    console.log(`✅ Backup completed: ${filename} (${(size / 1024 / 1024).toFixed(2)} MB)`);
-
-    return {
-      success: true,
-      backupId: backupRecord.id,
-      filename,
-      size,
-      tables: tableCounts,
-      timestamp: backupRecord.createdAt.toISOString(),
-    };
-
-  } catch (error) {
-    console.error('❌ Backup failed:', error);
-    
-    // Record failed backup
-    try {
-      await prisma.systemBackup.create({
-        data: {
-          filename,
-          size: 0,
-          status: 'failed',
-          type,
-          metadata: { error: error instanceof Error ? error.message : 'Unknown error' },
-          createdBy: userId || 'system',
-        }
-      });
-    } catch (dbError) {
-      console.error('Failed to record backup failure:', dbError);
-    }
-
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
-}
-
-// Export the backup function for use in cron jobs
-export { createDatabaseBackup };
+// Note: createDatabaseBackup function is imported from @/lib/backup/database-backup
