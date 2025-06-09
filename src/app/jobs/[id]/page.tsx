@@ -33,6 +33,7 @@ const getJob = cache(async (id: string): Promise<Job | null> => {
         postedAt: true,
         createdAt: true,
         updatedAt: true,
+        employerId: true,
       },
     });
     return job as Job;
@@ -213,14 +214,18 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
   const isAuthenticated = !!session?.user;
 
-  // Get user ID if authenticated
+  // Get user ID and role if authenticated
   let userId: string | undefined;
+  let userRole: string | undefined;
+  let isJobOwner = false;
   if (isAuthenticated && session?.user?.email) {
     const user = await prisma.user.findUnique({
       where: { email: session.user?.email },
-      select: { id: true },
+      select: { id: true, role: true },
     });
     userId = user?.id;
+    userRole = user?.role;
+    isJobOwner = user?.role === 'employer' && user?.id === job.employerId;
   }
 
   // Parallelize related jobs and saved status check
@@ -305,6 +310,8 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         isAuthenticated={isAuthenticated}
         isSaved={isSaved}
         userId={userId}
+        userRole={userRole}
+        isJobOwner={isJobOwner}
       />
     </>
   );

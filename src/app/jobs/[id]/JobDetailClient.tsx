@@ -37,6 +37,8 @@ interface JobDetailClientProps {
   isAuthenticated: boolean;
   isSaved: boolean;
   userId?: string;
+  userRole?: string;
+  isJobOwner?: boolean;
 }
 
 // Memoized helper function to format job type
@@ -69,6 +71,8 @@ export default function JobDetailClient({
   isAuthenticated,
   isSaved,
   userId,
+  userRole,
+  isJobOwner,
 }: JobDetailClientProps) {
   const [saved, setSaved] = useState(isSaved);
   const [saving, setSaving] = useState(false);
@@ -240,7 +244,7 @@ export default function JobDetailClient({
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#9fdf9f]/5 via-white to-[#ff6b35]/5">
       {/* Error Notification */}
       {error && (
         <motion.div
@@ -301,6 +305,53 @@ export default function JobDetailClient({
         </div>
       </nav>
 
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#2d4a3e] via-[#1d3a2e] to-[#2d4a3e] text-white">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#9fdf9f]/20">
+              <BriefcaseIcon className="h-8 w-8 text-[#9fdf9f]" />
+            </div>
+            <h1 className="mb-4 text-4xl font-bold md:text-5xl">
+              {job.title}
+            </h1>
+            <div className="mb-6 flex items-center justify-center text-xl text-[#9fdf9f]/90">
+              <BuildingOfficeIcon className="mr-2 h-6 w-6" />
+              <span>{job.company}</span>
+            </div>
+
+            {/* Key Job Info */}
+            <div className="mx-auto max-w-4xl">
+              <div className="grid grid-cols-1 gap-4 text-[#9fdf9f]/80 md:grid-cols-3">
+                <div className="flex items-center justify-center">
+                  <MapPinIcon className="mr-2 h-5 w-5" />
+                  <span>{job.location}</span>
+                </div>
+                <div className="flex items-center justify-center">
+                  <BriefcaseIcon className="mr-2 h-5 w-5" />
+                  <span>{formattedJobType}</span>
+                </div>
+                <div className="flex items-center justify-center">
+                  <CurrencyDollarIcon className="mr-2 h-5 w-5" />
+                  <span>{salaryDisplay}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Posted Date */}
+            <div className="mt-6 flex items-center justify-center text-sm text-[#9fdf9f]/70">
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              <span>Posted {formattedDate}</span>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content */}
@@ -308,150 +359,49 @@ export default function JobDetailClient({
             <motion.article
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+              className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
             >
-              {/* Job Header */}
-              <header className="border-b border-gray-200 p-6 sm:p-8">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex-1">
-                    <h1 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl">
-                      {job.title}
-                    </h1>
-                    <div className="mb-4 flex items-center text-lg text-gray-700">
-                      <BuildingOfficeIcon
-                        className="mr-2 h-5 w-5"
-                        aria-hidden="true"
-                      />
-                      <span>{job.company}</span>
-                    </div>
-
-                    {/* Job Meta Info */}
-                    <dl className="grid grid-cols-1 gap-4 text-sm text-gray-600 sm:grid-cols-2">
-                      <div className="flex items-center">
-                        <MapPinIcon
-                          className="mr-2 h-4 w-4 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        <dt className="sr-only">Location:</dt>
-                        <dd>{job.location}</dd>
-                      </div>
-                      <div className="flex items-center">
-                        <BriefcaseIcon
-                          className="mr-2 h-4 w-4 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        <dt className="sr-only">Job Type:</dt>
-                        <dd>{formattedJobType}</dd>
-                      </div>
-                      <div className="flex items-center">
-                        <CurrencyDollarIcon
-                          className="mr-2 h-4 w-4 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        <dt className="sr-only">Salary:</dt>
-                        <dd>{salaryDisplay}</dd>
-                      </div>
-                      <div className="flex items-center">
-                        <CalendarIcon
-                          className="mr-2 h-4 w-4 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        <dt className="sr-only">Posted:</dt>
-                        <dd>Posted {formattedDate}</dd>
-                      </div>
-                    </dl>
-
-                    {/* Categories */}
-                    {job.categories.length > 0 && (
-                      <div className="mt-4">
-                        <h3 className="sr-only">Job Categories</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {job.categories.map((category, index) => (
-                            <span
-                              key={index}
-                              className="inline-block rounded-full bg-[#2d4a3e]/10 px-3 py-1 text-xs font-medium text-[#2d4a3e]"
-                            >
-                              {category}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+              {/* Quick Actions Bar */}
+              <div className="border-b border-gray-200 bg-gray-50 p-6">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap gap-3">
+                    {/* Edit Button for Job Owner */}
+                    {isJobOwner && (
+                      <Link
+                        href={`/employers/job/${job.id}/edit`}
+                        className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                      >
+                        <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit Job
+                      </Link>
                     )}
 
-                    {/* Upsell Badges */}
-                    {(job.socialMediaShoutout ||
-                      job.placementBump ||
-                      job.upsellBundle) && (
-                      <div className="mt-4">
-                        <h3 className="sr-only">Promotion Features</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {(job.socialMediaShoutout || job.upsellBundle) && (
-                            <span className="inline-flex items-center rounded-full border border-pink-200 bg-gradient-to-r from-pink-100 to-purple-100 px-3 py-1 text-xs font-medium text-pink-700">
-                              <MegaphoneIcon className="mr-1 h-3 w-3" />
-                              Social Media Promoted
-                            </span>
-                          )}
-                          {(job.placementBump || job.upsellBundle) && (
-                            <span className="inline-flex items-center rounded-full border border-blue-200 bg-gradient-to-r from-blue-100 to-green-100 px-3 py-1 text-xs font-medium text-blue-700">
-                              <ArrowTrendingUpIcon className="mr-1 h-3 w-3" />
-                              Priority Placement
-                            </span>
-                          )}
-                          {job.upsellBundle && (
-                            <span className="inline-flex items-center rounded-full border border-orange-200 bg-gradient-to-r from-yellow-100 to-orange-100 px-3 py-1 text-xs font-medium text-orange-700">
-                              <SparklesIcon className="mr-1 h-3 w-3" />
-                              Premium Promotion
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                    {/* Should I Apply Button - Most prominent for job seekers */}
+                    {!isJobOwner && (
+                      <button
+                        onClick={() => setShouldIApplyOpen(true)}
+                        className="inline-flex items-center rounded-lg bg-[#2d4a3e] px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#1d3a2e] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2"
+                      >
+                        <SparklesIcon className="mr-2 h-4 w-4" />
+                        Should I Apply?
+                      </button>
                     )}
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div
-                    className="flex flex-col gap-3 sm:ml-6 sm:flex-row"
-                    role="group"
-                    aria-label="Job actions"
-                  >
-                    {/* Should I Apply Button - Most prominent */}
-                    <button
-                      onClick={() => setShouldIApplyOpen(true)}
-                      className="flex items-center justify-center rounded-lg bg-[#2d4a3e] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1d3a2e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2"
-                      aria-label="Get AI analysis on whether you should apply for this job"
-                    >
-                      <SparklesIcon
-                        className="mr-2 h-4 w-4"
-                        aria-hidden="true"
-                      />
-                      Should I Apply?
-                    </button>
 
                     <button
                       onClick={handleSaveJob}
                       disabled={saving}
-                      className={`flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      className={`inline-flex items-center rounded-lg px-4 py-3 text-sm font-medium shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                         saved
-                          ? 'border border-green-200 bg-green-100 text-green-700 focus:ring-green-500'
-                          : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-[#2d4a3e]'
+                          ? 'border border-green-200 bg-green-100 text-green-700 hover:bg-green-200 focus:ring-green-500'
+                          : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:shadow-lg focus:ring-[#2d4a3e]'
                       } ${saving ? 'cursor-not-allowed opacity-50' : ''}`}
-                      aria-pressed={saved}
-                      aria-label={
-                        saved
-                          ? 'Remove job from saved jobs'
-                          : 'Save job for later'
-                      }
                     >
                       {saved ? (
-                        <BookmarkSolidIcon
-                          className="mr-2 h-4 w-4"
-                          aria-hidden="true"
-                        />
+                        <BookmarkSolidIcon className="mr-2 h-4 w-4" />
                       ) : (
-                        <BookmarkIcon
-                          className="mr-2 h-4 w-4"
-                          aria-hidden="true"
-                        />
+                        <BookmarkIcon className="mr-2 h-4 w-4" />
                       )}
                       {saving ? 'Saving...' : saved ? 'Saved' : 'Save Job'}
                     </button>
@@ -459,172 +409,302 @@ export default function JobDetailClient({
                     <button
                       onClick={handleShare}
                       disabled={sharing}
-                      className="flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      aria-label="Share this job posting"
+                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-md transition-all hover:bg-gray-50 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      <ShareIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                      <ShareIcon className="mr-2 h-4 w-4" />
                       {sharing ? 'Sharing...' : 'Share'}
                     </button>
+                  </div>
 
+                  <div className="flex items-center gap-3">
                     {/* Social Share Buttons */}
-                    <div className="flex items-center gap-2">
-                      {/* Twitter/X Share */}
-                      <a
-                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this ${job.title} position at ${job.company} in ${job.location}`)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&hashtags=209jobs,hiring,${job.location.replace(/\s+/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                        aria-label="Share on X (Twitter)"
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
-                      </a>
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this ${job.title} position at ${job.company} in ${job.location}`)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&hashtags=209jobs,hiring,${job.location.replace(/\s+/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white transition-colors hover:bg-gray-800"
+                    >
+                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </a>
 
-                      {/* LinkedIn Share */}
-                      <a
-                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        aria-label="Share on LinkedIn"
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                      </a>
-                    </div>
+                    <a
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition-colors hover:bg-blue-700"
+                    >
+                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                      </svg>
+                    </a>
 
                     <button
                       onClick={() => setReportModalOpen(true)}
-                      className="flex items-center justify-center rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                      aria-label="Report this job posting"
+                      className="flex items-center justify-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
                     >
-                      <ExclamationTriangleIcon
-                        className="mr-2 h-4 w-4"
-                        aria-hidden="true"
-                      />
+                      <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
                       Report
                     </button>
                   </div>
                 </div>
-              </header>
+              </div>
+
+              {/* Job Details Section */}
+              <div className="p-8">
+                {/* Categories */}
+                {job.categories.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="mb-3 text-sm font-semibold text-gray-900 uppercase tracking-wide">Categories</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {job.categories.map((category, index) => (
+                        <span
+                          key={index}
+                          className="inline-block rounded-full bg-[#2d4a3e]/10 px-4 py-2 text-sm font-medium text-[#2d4a3e]"
+                        >
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upsell Badges */}
+                {(job.socialMediaShoutout ||
+                  job.placementBump ||
+                  job.upsellBundle) && (
+                  <div className="mb-6">
+                    <h3 className="mb-3 text-sm font-semibold text-gray-900 uppercase tracking-wide">Promotion Features</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {(job.socialMediaShoutout || job.upsellBundle) && (
+                        <span className="inline-flex items-center rounded-full border border-pink-200 bg-gradient-to-r from-pink-100 to-purple-100 px-4 py-2 text-sm font-medium text-pink-700">
+                          <MegaphoneIcon className="mr-2 h-4 w-4" />
+                          Social Media Promoted
+                        </span>
+                      )}
+                      {(job.placementBump || job.upsellBundle) && (
+                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-gradient-to-r from-blue-100 to-green-100 px-4 py-2 text-sm font-medium text-blue-700">
+                          <ArrowTrendingUpIcon className="mr-2 h-4 w-4" />
+                          Priority Placement
+                        </span>
+                      )}
+                      {job.upsellBundle && (
+                        <span className="inline-flex items-center rounded-full border border-orange-200 bg-gradient-to-r from-yellow-100 to-orange-100 px-4 py-2 text-sm font-medium text-orange-700">
+                          <SparklesIcon className="mr-2 h-4 w-4" />
+                          Premium Promotion
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
 
               {/* Job Description */}
-              <section className="p-6 sm:p-8">
-                <h2 className="mb-4 text-xl font-bold text-gray-900">
-                  Job Description
-                </h2>
-                <div
-                  className="max-w-none leading-relaxed text-gray-700"
-                  dangerouslySetInnerHTML={{
-                    __html: formatJobDescription(job.description),
-                  }}
-                />
-              </section>
-
-              {/* Apply Section */}
-              <section className="border-t border-gray-200 bg-gray-50 p-6 sm:p-8">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h3 className="mb-1 text-lg font-semibold text-gray-900">
-                      Ready to apply?
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Submit your application through 209Jobs
-                      {job.url && job.source && (
-                        <span> or apply directly on {job.source}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-4 sm:flex-row">
-                    <button
-                      onClick={() => setApplicationModalOpen(true)}
-                      className="inline-flex flex-1 transform items-center justify-center rounded-xl bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 sm:flex-none"
-                    >
-                      <PaperAirplaneIcon className="mr-3 h-5 w-5" />
-                      Apply Now
-                    </button>
-                    {job.url && (
-                      <a
-                        href={job.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex flex-1 transform items-center justify-center rounded-xl border-2 border-gray-200 bg-white px-6 py-4 font-semibold text-gray-700 shadow-md transition-all duration-200 hover:scale-105 hover:border-gray-300 hover:bg-gray-50 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 sm:flex-none"
-                      >
-                        <svg
-                          className="mr-2 h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                        Apply on Company Site
-                        <span className="sr-only"> (opens in new tab)</span>
-                      </a>
-                    )}
-                  </div>
+              <div className="border-t border-gray-200">
+                <div className="p-8">
+                  <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                    Job Description
+                  </h2>
+                  <div
+                    className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
+                    dangerouslySetInnerHTML={{
+                      __html: formatJobDescription(job.description),
+                    }}
+                  />
                 </div>
-              </section>
+              </div>
+
+              {/* Apply Section or Job Management for Owners */}
+              <div className="border-t border-gray-200 bg-gradient-to-r from-[#2d4a3e]/5 to-[#1d3a2e]/5">
+                <div className="p-8">
+                  {isJobOwner ? (
+                    /* Job Management Section for Employers */
+                    <div className="text-center">
+                      <h3 className="mb-4 text-2xl font-bold text-gray-900">
+                        Manage Your Job Posting
+                      </h3>
+                      <p className="mb-8 text-lg text-gray-600">
+                        Track applications, edit details, and manage your job posting
+                      </p>
+
+                      <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+                        <Link
+                          href={`/employers/job/${job.id}`}
+                          className="inline-flex transform items-center justify-center rounded-2xl bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-10 py-5 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
+                        >
+                          <svg className="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                          View Dashboard
+                        </Link>
+
+                        <Link
+                          href={`/employers/job/${job.id}/edit`}
+                          className="inline-flex transform items-center justify-center rounded-2xl border-2 border-[#2d4a3e] bg-white px-8 py-5 text-lg font-bold text-[#2d4a3e] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#2d4a3e] hover:text-white hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
+                        >
+                          <svg className="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                          Edit Job
+                        </Link>
+                      </div>
+
+                      <p className="mt-6 text-sm text-gray-500">
+                        💼 Manage applications, track performance, and optimize your job posting
+                      </p>
+                    </div>
+                  ) : (
+                    /* Apply Section for Job Seekers */
+                    <div className="text-center">
+                      <h3 className="mb-4 text-2xl font-bold text-gray-900">
+                        Ready to Take the Next Step?
+                      </h3>
+                      <p className="mb-8 text-lg text-gray-600">
+                        Submit your application through 209 Works and get noticed by {job.company}
+                        {job.url && job.source && (
+                          <span className="block mt-2 text-sm">or apply directly on their company website</span>
+                        )}
+                      </p>
+
+                      <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+                        <button
+                          onClick={() => setApplicationModalOpen(true)}
+                          className="inline-flex transform items-center justify-center rounded-2xl bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-10 py-5 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
+                        >
+                          <PaperAirplaneIcon className="mr-3 h-6 w-6" />
+                          Apply Now on 209 Works
+                        </button>
+
+                        {job.url && (
+                          <a
+                            href={job.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex transform items-center justify-center rounded-2xl border-2 border-[#2d4a3e] bg-white px-8 py-5 text-lg font-bold text-[#2d4a3e] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#2d4a3e] hover:text-white hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
+                          >
+                            <svg
+                              className="mr-3 h-5 w-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
+                            </svg>
+                            Apply on Company Site
+                            <span className="sr-only"> (opens in new tab)</span>
+                          </a>
+                        )}
+                      </div>
+
+                      <p className="mt-6 text-sm text-gray-500">
+                        💡 Tip: Applying through 209 Works helps you track your application status and get personalized job recommendations
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </motion.article>
           </div>
 
           {/* Sidebar */}
           <aside className="lg:col-span-1">
-            {/* Related Jobs */}
-            {relatedJobs.length > 0 && (
-              <motion.section
+            <div className="sticky top-8 space-y-6">
+              {/* Job Summary Card */}
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+                transition={{ delay: 0.1 }}
+                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg"
               >
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                  Related Jobs
-                </h3>
-                <ul className="space-y-4">
-                  {relatedJobs.map(relatedJob => (
-                    <li key={relatedJob.id}>
-                      <Link
-                        href={`/jobs/${relatedJob.id}`}
-                        className="block rounded-lg p-3 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
-                      >
-                        <h4 className="mb-1 text-sm font-medium text-gray-900">
-                          {relatedJob.title}
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          {relatedJob.company}
-                        </p>
-                        <p className="mt-1 text-xs text-gray-500">
-                          {relatedJob.location} •{' '}
-                          {formatJobType(relatedJob.jobType)}
-                        </p>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/jobs"
-                  className="mt-4 inline-block rounded text-sm font-medium text-[#2d4a3e] hover:text-[#1d3a2e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
+                <h3 className="mb-4 text-lg font-bold text-gray-900">Job Summary</h3>
+                <dl className="space-y-4">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Location</dt>
+                    <dd className="mt-1 flex items-center text-sm text-gray-900">
+                      <MapPinIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                      {job.location}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Job Type</dt>
+                    <dd className="mt-1 flex items-center text-sm text-gray-900">
+                      <BriefcaseIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                      {formattedJobType}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Salary</dt>
+                    <dd className="mt-1 flex items-center text-sm text-gray-900">
+                      <CurrencyDollarIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                      {salaryDisplay}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500">Posted</dt>
+                    <dd className="mt-1 flex items-center text-sm text-gray-900">
+                      <CalendarIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                      {formattedDate}
+                    </dd>
+                  </div>
+                </dl>
+              </motion.div>
+
+              {/* Related Jobs */}
+              {relatedJobs.length > 0 && (
+                <motion.section
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg"
                 >
-                  View all jobs →
-                </Link>
-              </motion.section>
-            )}
+                  <h3 className="mb-4 text-lg font-bold text-gray-900">
+                    Similar Jobs
+                  </h3>
+                  <ul className="space-y-4">
+                    {relatedJobs.map(relatedJob => (
+                      <li key={relatedJob.id}>
+                        <Link
+                          href={`/jobs/${relatedJob.id}`}
+                          className="block rounded-xl border border-gray-100 p-4 transition-all hover:border-[#2d4a3e]/20 hover:bg-[#2d4a3e]/5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
+                        >
+                          <h4 className="mb-2 font-semibold text-gray-900">
+                            {relatedJob.title}
+                          </h4>
+                          <p className="mb-2 text-sm text-gray-600">
+                            {relatedJob.company}
+                          </p>
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <span>{relatedJob.location}</span>
+                            <span>{formatJobType(relatedJob.jobType)}</span>
+                          </div>
+                          {(relatedJob.salaryMin || relatedJob.salaryMax) && (
+                            <p className="mt-2 text-sm font-medium text-[#2d4a3e]">
+                              {relatedJob.salaryMin && relatedJob.salaryMax
+                                ? `$${relatedJob.salaryMin.toLocaleString()} - $${relatedJob.salaryMax.toLocaleString()}`
+                                : relatedJob.salaryMin
+                                ? `From $${relatedJob.salaryMin.toLocaleString()}`
+                                : `Up to $${relatedJob.salaryMax?.toLocaleString()}`}
+                            </p>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href="/jobs"
+                    className="mt-6 inline-flex items-center rounded-lg bg-[#2d4a3e] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1d3a2e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2"
+                  >
+                    View All Jobs
+                    <ChevronRightIcon className="ml-2 h-4 w-4" />
+                  </Link>
+                </motion.section>
+              )}
+            </div>
           </aside>
         </div>
       </div>

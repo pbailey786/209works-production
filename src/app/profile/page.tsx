@@ -238,9 +238,9 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#9fdf9f]/10 via-white to-[#ff6b35]/10">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>
           <p className="text-gray-600">Loading your profile...</p>
         </div>
       </div>
@@ -248,7 +248,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#9fdf9f]/10 via-white to-[#ff6b35]/10">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -296,7 +296,7 @@ export default function ProfilePage() {
               className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
             >
               {/* Profile Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-green-600 px-6 py-8 text-white">
+              <div className="bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-6 py-8 text-white">
                 <div className="flex flex-col items-center">
                   <div className="relative mb-4">
                     <img
@@ -439,7 +439,7 @@ export default function ProfilePage() {
             >
               <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
                 <div className="flex items-center">
-                  <UserCircleIcon className="mr-3 h-6 w-6 text-purple-600" />
+                  <UserCircleIcon className="mr-3 h-6 w-6 text-[#2d4a3e]" />
                   <h2 className="text-xl font-bold text-gray-900">
                     Personal Information
                   </h2>
@@ -990,10 +990,10 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Profile Completion Widget */}
-                  <div className="rounded-xl border border-purple-200 bg-purple-50 p-6">
+                  <div className="rounded-xl border border-[#9fdf9f]/30 bg-[#9fdf9f]/10 p-6">
                     <div className="mb-4 flex items-center justify-between">
                       <div className="flex items-center">
-                        <UserCircleIcon className="mr-3 h-8 w-8 text-purple-600" />
+                        <UserCircleIcon className="mr-3 h-8 w-8 text-[#2d4a3e]" />
                         <div>
                           <h3 className="font-semibold text-gray-900">
                             Profile Strength
@@ -1003,7 +1003,7 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-purple-600">
+                      <div className="text-2xl font-bold text-[#2d4a3e]">
                         {Math.round(
                           (((name ? 1 : 0) +
                             (location ? 1 : 0) +
@@ -1019,7 +1019,7 @@ export default function ProfilePage() {
                     <div className="space-y-3">
                       <div className="h-2 w-full rounded-full bg-gray-200">
                         <div
-                          className="h-2 rounded-full bg-purple-600 transition-all duration-300"
+                          className="h-2 rounded-full bg-[#2d4a3e] transition-all duration-300"
                           style={{
                             width: `${Math.round(
                               (((name ? 1 : 0) +
