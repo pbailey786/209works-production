@@ -26,32 +26,32 @@ interface ShouldIApplyCalculatorProps {
 }
 
 interface CalculatorResult {
-  recommendation: 'yes' | 'maybe' | 'no';
-  confidence: number;
-  explanation: string;
-  skillMatch: {
+  success: boolean;
+  recommendation: 'strong' | 'good' | 'fair' | 'poor';
+  shouldApply: boolean;
+  message: string;
+  score: number;
+  maxScore: number;
+  reasons: string[];
+  analysis: {
+    matchPercentage: number;
+    strengthAreas: string[];
+    tips: string[];
+  };
+  // Legacy fields for backward compatibility
+  confidence?: number;
+  explanation?: string;
+  skillMatch?: {
     matching: string[];
     missing: string[];
     score: number;
   };
-  factors: {
+  factors?: {
     positive: string[];
     negative: string[];
     neutral: string[];
   };
   applicationTips?: string[];
-  usageInfo?: {
-    usageToday: number;
-    dailyLimit: number;
-    userTier: string;
-    analysisType: string;
-  };
-  upgradeSuggestions?: {
-    shouldSuggestUpgrade: boolean;
-    reason: string;
-    suggestedTier: string;
-    benefits: string[];
-  };
 }
 
 export default function ShouldIApplyCalculator({
@@ -81,27 +81,7 @@ export default function ShouldIApplyCalculator({
     setResult(null);
 
     try {
-      // First check if user profile is complete enough
-      const profileResponse = await fetch('/api/profile');
-      if (!profileResponse.ok) {
-        console.error('Profile fetch failed:', profileResponse.status, profileResponse.statusText);
-        setError('Unable to access your profile. Please try signing in again.');
-        setIsLoading(false);
-        return;
-      }
-
-      const profileData = await profileResponse.json();
-      const user = profileData.user;
-
-      // Check if profile has minimum required information
-      const hasBasicInfo = user.name && user.skills && user.skills.length > 0;
-      if (!hasBasicInfo) {
-        setProfileIncomplete(true);
-        setIsLoading(false);
-        return;
-      }
-
-      // Call the Should I Apply API
+      // Call the Should I Apply API directly
       const response = await fetch('/api/should-i-apply', {
         method: 'POST',
         headers: {
@@ -109,12 +89,19 @@ export default function ShouldIApplyCalculator({
         },
         body: JSON.stringify({
           jobId,
-          userId,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        // Handle profile required error
+        if (response.status === 400 && errorData.redirectTo) {
+          setProfileIncomplete(true);
+          setError(errorData.message);
+          setIsLoading(false);
+          return;
+        }
 
         // Handle usage limit exceeded
         if (response.status === 429 && errorData.upgradeRequired) {
@@ -130,7 +117,6 @@ export default function ShouldIApplyCalculator({
 
       const calculatorResult = await response.json();
       setResult(calculatorResult);
-      setUsageInfo(calculatorResult.usageInfo);
     } catch (err) {
       console.error('Calculator error:', err);
       setError(
@@ -143,11 +129,13 @@ export default function ShouldIApplyCalculator({
 
   const getRecommendationIcon = (recommendation: string) => {
     switch (recommendation) {
-      case 'yes':
+      case 'strong':
         return <CheckCircleIcon className="h-8 w-8 text-green-500" />;
-      case 'maybe':
+      case 'good':
+        return <CheckCircleIcon className="h-8 w-8 text-blue-500" />;
+      case 'fair':
         return <QuestionMarkCircleIcon className="h-8 w-8 text-yellow-500" />;
-      case 'no':
+      case 'poor':
         return <ExclamationCircleIcon className="h-8 w-8 text-red-500" />;
       default:
         return <QuestionMarkCircleIcon className="h-8 w-8 text-gray-500" />;
@@ -156,11 +144,13 @@ export default function ShouldIApplyCalculator({
 
   const getRecommendationColor = (recommendation: string) => {
     switch (recommendation) {
-      case 'yes':
+      case 'strong':
         return 'text-green-700 bg-green-50 border-green-200';
-      case 'maybe':
+      case 'good':
+        return 'text-blue-700 bg-blue-50 border-blue-200';
+      case 'fair':
         return 'text-yellow-700 bg-yellow-50 border-yellow-200';
-      case 'no':
+      case 'poor':
         return 'text-red-700 bg-red-50 border-red-200';
       default:
         return 'text-gray-700 bg-gray-50 border-gray-200';
@@ -169,12 +159,14 @@ export default function ShouldIApplyCalculator({
 
   const getRecommendationText = (recommendation: string) => {
     switch (recommendation) {
-      case 'yes':
-        return 'You should apply!';
-      case 'maybe':
-        return 'Consider applying';
-      case 'no':
-        return 'Not recommended';
+      case 'strong':
+        return 'Strong Match - Apply Now!';
+      case 'good':
+        return 'Good Match - Consider Applying';
+      case 'fair':
+        return 'Fair Match - Worth Considering';
+      case 'poor':
+        return 'Poor Match - Not Recommended';
       default:
         return 'Unknown';
     }
@@ -272,7 +264,7 @@ export default function ShouldIApplyCalculator({
                   </p>
                   <div className="space-y-3">
                     <a
-                      href="/profile/settings"
+                      href="/onboarding/jobseeker"
                       className="inline-flex items-center rounded-lg bg-[#2d4a3e] px-6 py-3 font-medium text-white transition-colors hover:bg-[#1d3a2e]"
                     >
                       <UserIcon className="mr-2 h-5 w-5" />
@@ -410,15 +402,15 @@ export default function ShouldIApplyCalculator({
                         {getRecommendationText(result.recommendation)}
                       </h3>
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">Confidence:</span>
+                        <span className="text-sm font-medium">Match Score:</span>
                         <div className="h-2 max-w-32 flex-1 rounded-full bg-white bg-opacity-50">
                           <div
                             className="h-2 rounded-full bg-current"
-                            style={{ width: `${result.confidence}%` }}
+                            style={{ width: `${result.analysis.matchPercentage}%` }}
                           />
                         </div>
                         <span className="text-sm font-medium">
-                          {result.confidence}%
+                          {result.score}/{result.maxScore} ({result.analysis.matchPercentage}%)
                         </span>
                       </div>
                     </div>
@@ -429,75 +421,110 @@ export default function ShouldIApplyCalculator({
                 <div className="rounded-xl bg-gray-50 p-6">
                   <h4 className="mb-3 flex items-center font-semibold text-gray-900">
                     <SparklesIcon className="mr-2 h-5 w-5 text-purple-600" />
-                    AI Analysis
+                    Match Analysis
                   </h4>
-                  <p className="leading-relaxed text-gray-700">
-                    {result.explanation}
+                  <p className="leading-relaxed text-gray-700 mb-4">
+                    {result.message}
                   </p>
+
+                  {/* Match Reasons */}
+                  {result.reasons.length > 0 && (
+                    <div>
+                      <h5 className="font-medium text-gray-900 mb-2">Why you're a match:</h5>
+                      <ul className="space-y-1">
+                        {result.reasons.map((reason, index) => (
+                          <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
+                            <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                            <span>{reason}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
-                {/* Skill Match */}
-                <div className="rounded-xl border border-gray-200 bg-white p-6">
-                  <h4 className="mb-4 flex items-center font-semibold text-gray-900">
-                    <AcademicCapIcon className="mr-2 h-5 w-5 text-blue-600" />
-                    Skill Match Analysis
-                  </h4>
-
-                  <div className="mb-4">
-                    <div className="mb-2 flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">
-                        Overall Match
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {result.skillMatch.score}%
-                      </span>
-                    </div>
-                    <div className="h-2 w-full rounded-full bg-gray-200">
-                      <div
-                        className="h-2 rounded-full bg-blue-600 transition-all duration-300"
-                        style={{ width: `${result.skillMatch.score}%` }}
-                      />
-                    </div>
+                {/* Application Tips */}
+                {result.analysis.tips.length > 0 && (
+                  <div className="rounded-xl border border-gray-200 bg-white p-6">
+                    <h4 className="mb-4 flex items-center font-semibold text-gray-900">
+                      <AcademicCapIcon className="mr-2 h-5 w-5 text-blue-600" />
+                      Application Tips
+                    </h4>
+                    <ul className="space-y-2">
+                      {result.analysis.tips.map((tip, index) => (
+                        <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
+                          <SparklesIcon className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                )}
 
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {/* Matching Skills */}
-                    <div>
-                      <h5 className="mb-2 flex items-center text-sm font-medium text-green-700">
-                        <CheckCircleSolidIcon className="mr-1 h-4 w-4" />
-                        Matching Skills ({result.skillMatch.matching.length})
-                      </h5>
-                      <div className="space-y-1">
-                        {result.skillMatch.matching.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="mb-1 mr-1 inline-block rounded-full bg-green-100 px-2 py-1 text-xs text-green-800"
-                          >
-                            {skill}
-                          </span>
-                        ))}
+                {/* Legacy Skill Match - for backward compatibility */}
+                {result.skillMatch && (
+                  <div className="rounded-xl border border-gray-200 bg-white p-6">
+                    <h4 className="mb-4 flex items-center font-semibold text-gray-900">
+                      <AcademicCapIcon className="mr-2 h-5 w-5 text-blue-600" />
+                      Skill Match Analysis
+                    </h4>
+
+                    <div className="mb-4">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">
+                          Overall Match
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900">
+                          {result.skillMatch.score}%
+                        </span>
+                      </div>
+                      <div className="h-2 w-full rounded-full bg-gray-200">
+                        <div
+                          className="h-2 rounded-full bg-blue-600 transition-all duration-300"
+                          style={{ width: `${result.skillMatch.score}%` }}
+                        />
                       </div>
                     </div>
 
-                    {/* Missing Skills */}
-                    <div>
-                      <h5 className="mb-2 flex items-center text-sm font-medium text-red-700">
-                        <ExclamationCircleIcon className="mr-1 h-4 w-4" />
-                        Skills to Develop ({result.skillMatch.missing.length})
-                      </h5>
-                      <div className="space-y-1">
-                        {result.skillMatch.missing.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="mb-1 mr-1 inline-block rounded-full bg-red-100 px-2 py-1 text-xs text-red-800"
-                          >
-                            {skill}
-                          </span>
-                        ))}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {/* Matching Skills */}
+                      <div>
+                        <h5 className="mb-2 flex items-center text-sm font-medium text-green-700">
+                          <CheckCircleSolidIcon className="mr-1 h-4 w-4" />
+                          Matching Skills ({result.skillMatch.matching.length})
+                        </h5>
+                        <div className="space-y-1">
+                          {result.skillMatch.matching.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="mb-1 mr-1 inline-block rounded-full bg-green-100 px-2 py-1 text-xs text-green-800"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Missing Skills */}
+                      <div>
+                        <h5 className="mb-2 flex items-center text-sm font-medium text-red-700">
+                          <ExclamationCircleIcon className="mr-1 h-4 w-4" />
+                          Skills to Develop ({result.skillMatch.missing.length})
+                        </h5>
+                        <div className="space-y-1">
+                          {result.skillMatch.missing.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="mb-1 mr-1 inline-block rounded-full bg-red-100 px-2 py-1 text-xs text-red-800"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Factors */}
                 <div className="rounded-xl border border-gray-200 bg-white p-6">
