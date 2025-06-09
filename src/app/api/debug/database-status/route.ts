@@ -23,9 +23,9 @@ export async function GET(request: NextRequest) {
 
     const status = {
       connection: false,
-      tables: {},
-      counts: {},
-      issues: [],
+      tables: {} as Record<string, string>,
+      counts: {} as Record<string, number>,
+      issues: [] as string[],
       timestamp: new Date().toISOString()
     };
 
@@ -71,15 +71,19 @@ export async function GET(request: NextRequest) {
 
       // Check for orphaned applications by checking if referenced jobs exist
       try {
-        const applicationsWithMissingJobs = await prisma.jobApplication.findMany({
-          where: {
-            job: null
-          },
+        const allApplications = await prisma.jobApplication.findMany({
+          select: { id: true, jobId: true }
+        });
+
+        const existingJobIds = await prisma.job.findMany({
           select: { id: true }
         });
 
-        if (applicationsWithMissingJobs.length > 0) {
-          status.issues.push(`Found ${applicationsWithMissingJobs.length} orphaned job applications`);
+        const existingJobIdSet = new Set(existingJobIds.map(job => job.id));
+        const orphanedApps = allApplications.filter(app => !existingJobIdSet.has(app.jobId));
+
+        if (orphanedApps.length > 0) {
+          status.issues.push(`Found ${orphanedApps.length} orphaned job applications`);
         }
       } catch (error) {
         // Ignore if we can't check orphaned applications

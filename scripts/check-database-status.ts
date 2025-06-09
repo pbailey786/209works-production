@@ -83,15 +83,19 @@ async function checkDatabaseStatus() {
       console.log('❌ Could not check for test jobs');
     }
 
-    // Check for orphaned applications
+    // Check for orphaned applications by checking if jobId references exist
     try {
-      const orphanedApps = await prisma.jobApplication.findMany({
-        where: {
-          job: null
-        },
-        select: { id: true, userId: true, jobId: true }
+      const allApplications = await prisma.jobApplication.findMany({
+        select: { id: true, jobId: true }
       });
-      
+
+      const existingJobIds = await prisma.job.findMany({
+        select: { id: true }
+      });
+
+      const existingJobIdSet = new Set(existingJobIds.map(job => job.id));
+      const orphanedApps = allApplications.filter(app => !existingJobIdSet.has(app.jobId));
+
       if (orphanedApps.length > 0) {
         console.log(`⚠️  Found ${orphanedApps.length} orphaned job applications`);
       } else {
