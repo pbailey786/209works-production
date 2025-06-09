@@ -48,7 +48,7 @@ export default function EmployerJobDetailsPage() {
         const data = await response.json();
         setJobData(data.job);
       } catch (err) {
-        setError(err.message);
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
