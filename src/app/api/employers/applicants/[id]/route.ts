@@ -14,7 +14,7 @@ const addNoteSchema = z.object({
 // GET /api/employers/applicants/[id] - Get detailed applicant information
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
@@ -33,7 +33,8 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const applicationId = params.id;
+    const resolvedParams = await params;
+    const applicationId = resolvedParams.id;
 
     // Get application with full details
     const application = await prisma.jobApplication.findUnique({
@@ -123,7 +124,7 @@ export async function GET(
 // POST /api/employers/applicants/[id] - Add note or tag to applicant
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
@@ -142,7 +143,8 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const applicationId = params.id;
+    const resolvedParams = await params;
+    const applicationId = resolvedParams.id;
     const body = await request.json();
     const validatedData = addNoteSchema.parse(body);
 
