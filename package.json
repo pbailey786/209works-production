@@ -44,7 +44,10 @@
     "queue:pause": "curl -X POST -H \"Authorization: Bearer ${ADMIN_SECRET:-${CRON_SECRET}}\" \"http://localhost:3000/api/email-queue?action=pause\"",
     "queue:resume": "curl -X POST -H \"Authorization: Bearer ${ADMIN_SECRET:-${CRON_SECRET}}\" \"http://localhost:3000/api/email-queue?action=resume\"",
     "queue:clear": "curl -X POST -H \"Authorization: Bearer ${ADMIN_SECRET:-${CRON_SECRET}}\" \"http://localhost:3000/api/email-queue?action=clear\"",
-    "queue:test": "ts-node -r tsconfig-paths/register -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/test-email-queue.ts"
+    "queue:test": "ts-node -r tsconfig-paths/register -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/test-email-queue.ts",
+    "deploy:chat-history": "node scripts/deploy-chat-history.js",
+    "debug:applications": "node scripts/debug-job-applications.js",
+    "cleanup:test-data": "node scripts/cleanup-test-data.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
