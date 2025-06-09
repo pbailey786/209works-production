@@ -1,0 +1,115 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/database/prisma';
+import type { Session } from 'next-auth';
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions) as Session | null;
+
+    // Only allow admin access
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+    }
+
+    const status = {
+      connection: false,
+      tables: {},
+      counts: {},
+      issues: [],
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      // Test basic connection
+      await prisma.$connect();
+      status.connection = true;
+
+      // Check each table
+      const tables = ['chatHistory', 'savedJob', 'jobApplication', 'job', 'user'];
+      
+      for (const table of tables) {
+        try {
+          const count = await (prisma as any)[table].count();
+          status.tables[table] = 'exists';
+          status.counts[table] = count;
+        } catch (error) {
+          status.tables[table] = 'missing or inaccessible';
+          status.issues.push(`${table} table: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+
+      // Check for test data
+      try {
+        const testJobs = await prisma.job.findMany({
+          where: {
+            OR: [
+              { title: { contains: 'test', mode: 'insensitive' } },
+              { title: { contains: 'sample', mode: 'insensitive' } },
+              { title: { contains: 'demo', mode: 'insensitive' } },
+              { company: { contains: 'test', mode: 'insensitive' } },
+            ]
+          },
+          select: { id: true, title: true, company: true }
+        });
+        
+        if (testJobs.length > 0) {
+          status.issues.push(`Found ${testJobs.length} potential test jobs that should be cleaned up`);
+        }
+      } catch (error) {
+        // Ignore if we can't check test data
+      }
+
+      // Check for orphaned applications by checking if referenced jobs exist
+      try {
+        const applicationsWithMissingJobs = await prisma.jobApplication.findMany({
+          where: {
+            job: null
+          },
+          select: { id: true }
+        });
+
+        if (applicationsWithMissingJobs.length > 0) {
+          status.issues.push(`Found ${applicationsWithMissingJobs.length} orphaned job applications`);
+        }
+      } catch (error) {
+        // Ignore if we can't check orphaned applications
+      }
+
+    } catch (error) {
+      status.issues.push(`Database connection error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    return NextResponse.json({
+      success: true,
+      status,
+      summary: {
+        healthy: status.connection && status.issues.length === 0,
+        tablesChecked: Object.keys(status.tables).length,
+        issuesFound: status.issues.length
+      }
+    });
+
+  } catch (error) {
+    console.error('Database status check error:', error);
+    return NextResponse.json(
+      { 
+        success: false,
+        error: 'Failed to check database status',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+}
