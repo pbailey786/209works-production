@@ -34,9 +34,9 @@ export default function EmployerJobDetailsPage() {
   const params = useParams();
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('overview');
-  const [jobData, setJobData] = useState(null);
+  const [jobData, setJobData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchJobData = async () => {
