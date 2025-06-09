@@ -1,8 +1,9 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import {
   Eye,
   Users,
@@ -31,32 +32,116 @@ import {
 
 export default function EmployerJobDetailsPage() {
   const params = useParams();
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('overview');
+  const [jobData, setJobData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock job data - in real app this would come from API
-  const jobData = {
-    id: params.id,
-    title: 'Senior Software Engineer',
-    company: 'TechCorp Solutions',
-    location: 'Stockton, CA',
-    type: 'Full-time',
-    salary: '$85,000 - $120,000',
-    posted: '2024-01-15',
-    expires: '2024-02-15',
-    status: 'active',
-    views: 1247,
-    applications: 23,
-    shortlisted: 8,
-    interviewed: 3,
-    hired: 0,
-    description:
-      'We are seeking a Senior Software Engineer to join our growing development team...',
-    requirements: [
-      '5+ years of software development experience',
-      'Proficiency in React, Node.js, and TypeScript',
-      'Experience with cloud platforms (AWS/Azure)',
-      'Strong problem-solving skills',
-    ],
+  useEffect(() => {
+    const fetchJobData = async () => {
+      try {
+        const response = await fetch(`/api/jobs/${params.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch job data');
+        }
+        const data = await response.json();
+        setJobData(data.job);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchJobData();
+    }
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>
+          <p className="text-gray-600">Loading job details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !jobData) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600">Error: {error || 'Job not found'}</p>
+          <Link href="/employers/my-jobs" className="mt-4 text-blue-600 hover:underline">
+            ← Back to My Jobs
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Format job data for display
+  const formatJobType = (type) => {
+    return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+
+  const formatSalary = (salaryMin, salaryMax) => {
+    if (salaryMin && salaryMax) {
+      return `$${salaryMin.toLocaleString()} - $${salaryMax.toLocaleString()}`;
+    } else if (salaryMin) {
+      return `From $${salaryMin.toLocaleString()}`;
+    } else if (salaryMax) {
+      return `Up to $${salaryMax.toLocaleString()}`;
+    }
+    return 'Salary not specified';
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  // Mock data for stats and applicants (until we have real data)
+  const applicantStats = [
+    { label: 'Total Views', value: '1,247', trend: 'up', change: '+12%' },
+    { label: 'Applications', value: '23', trend: 'up', change: '+8%' },
+    { label: 'Shortlisted', value: '8', trend: 'neutral', change: '0%' },
+    { label: 'Hired', value: '0', trend: 'neutral', change: '0%' },
+  ];
+
+  const recentApplicants = [
+    { id: 1, name: 'John Smith', applied: '2 hours ago', score: 85, status: 'New' },
+    { id: 2, name: 'Sarah Johnson', applied: '1 day ago', score: 92, status: 'Reviewed' },
+    { id: 3, name: 'Mike Chen', applied: '2 days ago', score: 78, status: 'Shortlisted' },
+  ];
+
+  const getTrendIcon = (trend) => {
+    switch (trend) {
+      case 'up':
+        return <TrendingUp className="h-4 w-4 text-green-600" />;
+      case 'down':
+        return <TrendingDown className="h-4 w-4 text-red-600" />;
+      default:
+        return <div className="h-4 w-4" />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'new':
+        return 'bg-blue-100 text-blue-800';
+      case 'reviewed':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'shortlisted':
+        return 'bg-green-100 text-green-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
     benefits: [
       'Health, dental, and vision insurance',
       '401(k) with company matching',
@@ -157,14 +242,8 @@ export default function EmployerJobDetailsPage() {
               ← Back to My Jobs
             </Link>
             <div className="flex items-center space-x-2">
-              <span
-                className={`rounded-full px-2 py-1 text-xs font-medium ${
-                  jobData.status === 'active'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {jobData.status === 'active' ? 'Active' : 'Inactive'}
+              <span className="rounded-full px-2 py-1 text-xs font-medium bg-green-100 text-green-800">
+                Active
               </span>
               <span className="text-sm text-gray-500">
                 Job ID: {jobData.id}
@@ -173,11 +252,19 @@ export default function EmployerJobDetailsPage() {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
+            <button
+              disabled
+              className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 text-gray-400 cursor-not-allowed"
+              title="Share feature coming soon"
+            >
               <Share2 className="h-4 w-4" />
               <span>Share</span>
             </button>
-            <button className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50">
+            <button
+              disabled
+              className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 text-gray-400 cursor-not-allowed"
+              title="Duplicate feature coming soon"
+            >
               <Copy className="h-4 w-4" />
               <span>Duplicate</span>
             </button>
@@ -202,16 +289,16 @@ export default function EmployerJobDetailsPage() {
             </div>
             <div className="flex items-center space-x-1">
               <Clock className="h-4 w-4" />
-              <span>{jobData.type}</span>
+              <span>{formatJobType(jobData.jobType)}</span>
             </div>
             <div className="flex items-center space-x-1">
               <DollarSign className="h-4 w-4" />
-              <span>{jobData.salary}</span>
+              <span>{formatSalary(jobData.salaryMin, jobData.salaryMax)}</span>
             </div>
             <div className="flex items-center space-x-1">
               <Calendar className="h-4 w-4" />
               <span>
-                Posted {new Date(jobData.posted).toLocaleDateString()}
+                Posted {formatDate(jobData.postedAt)}
               </span>
             </div>
           </div>
@@ -280,25 +367,30 @@ export default function EmployerJobDetailsPage() {
           <div className="space-y-6 lg:col-span-2">
             <div className="rounded-lg border bg-white p-6">
               <h3 className="mb-4 text-lg font-semibold">Job Description</h3>
-              <p className="mb-6 text-gray-700">{jobData.description}</p>
+              <div className="mb-6 text-gray-700 whitespace-pre-wrap">{jobData.description}</div>
 
-              <h4 className="mb-3 font-semibold">Requirements</h4>
-              <ul className="mb-6 list-inside list-disc space-y-1">
-                {jobData.requirements.map((req, index) => (
-                  <li key={index} className="text-gray-700">
-                    {req}
-                  </li>
-                ))}
-              </ul>
+              {jobData.categories && jobData.categories.length > 0 && (
+                <>
+                  <h4 className="mb-3 font-semibold">Categories</h4>
+                  <div className="mb-6 flex flex-wrap gap-2">
+                    {jobData.categories.map((category, index) => (
+                      <span key={index} className="inline-block rounded-full bg-[#2d4a3e]/10 px-3 py-1 text-sm font-medium text-[#2d4a3e]">
+                        {category}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
 
-              <h4 className="mb-3 font-semibold">Benefits</h4>
-              <ul className="list-inside list-disc space-y-1">
-                {jobData.benefits.map((benefit, index) => (
-                  <li key={index} className="text-gray-700">
-                    {benefit}
-                  </li>
-                ))}
-              </ul>
+              <h4 className="mb-3 font-semibold">Job Details</h4>
+              <div className="space-y-2 text-gray-700">
+                <p><strong>Company:</strong> {jobData.company}</p>
+                <p><strong>Location:</strong> {jobData.location}</p>
+                <p><strong>Job Type:</strong> {formatJobType(jobData.jobType)}</p>
+                <p><strong>Salary:</strong> {formatSalary(jobData.salaryMin, jobData.salaryMax)}</p>
+                <p><strong>Posted:</strong> {formatDate(jobData.postedAt)}</p>
+                {jobData.source && <p><strong>Source:</strong> {jobData.source}</p>}
+              </div>
             </div>
 
             <div className="rounded-lg border bg-white p-6">
@@ -404,14 +496,14 @@ export default function EmployerJobDetailsPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Expires</span>
+                  <span className="text-gray-600">Created</span>
                   <span className="text-gray-900">
-                    {new Date(jobData.expires).toLocaleDateString()}
+                    {formatDate(jobData.createdAt)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Days Remaining</span>
-                  <span className="text-gray-900">12 days</span>
+                  <span className="text-gray-600">Last Updated</span>
+                  <span className="text-gray-900">{formatDate(jobData.updatedAt)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Auto-renewal</span>

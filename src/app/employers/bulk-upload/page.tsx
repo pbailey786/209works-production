@@ -206,7 +206,7 @@ export default function EmployerBulkUploadPage() {
         jobPost: prev.jobPost - totalCreditsNeeded,
       }));
 
-      alert(`Successfully published ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
+      alert(`Successfully published ${result.createdJobs} out of ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
 
       // Reset the form
       setProcessedJobs([]);
@@ -452,8 +452,12 @@ export default function EmployerBulkUploadPage() {
                 >
                   Publish All ({processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0)} credits)
                 </button>
-                <button className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:border-[#2d4a3e]">
-                  Save as Draft
+                <button
+                  disabled
+                  className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-400 cursor-not-allowed"
+                  title="Save as Draft feature coming soon"
+                >
+                  Save as Draft (Coming Soon)
                 </button>
               </div>
             </div>
@@ -485,10 +489,18 @@ export default function EmployerBulkUploadPage() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button className="text-sm font-medium text-[#2d4a3e] hover:text-[#1d3a2e]">
+                      <button
+                        disabled
+                        className="text-sm font-medium text-gray-400 cursor-not-allowed"
+                        title="Edit feature coming soon"
+                      >
                         Edit
                       </button>
-                      <button className="text-sm font-medium text-[#ff6b35] hover:text-[#e55a2b]">
+                      <button
+                        disabled
+                        className="text-sm font-medium text-gray-400 cursor-not-allowed"
+                        title="Preview feature coming soon"
+                      >
                         Preview
                       </button>
                     </div>

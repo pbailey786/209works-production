@@ -128,22 +128,56 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Create bulk upload record (commented out until table is created)
-    const bulkUpload = null;
-    // const bulkUpload = await prisma.bulkUpload.create({
-    //   data: {
-    //     employerId: user.id,
-    //     fileName: `bulk_upload_${Date.now()}.json`,
-    //     totalJobs: validatedData.jobs.length,
-    //     successfulJobs: processedJobs.filter(job => job.status === 'success').length,
-    //     creditsUsed: totalCreditsNeeded,
-    //     status: 'processing',
-    //     settings: validatedData.optimizationSettings || {},
-    //   },
-    // }).catch(() => {
-    //   // If bulkUpload table doesn't exist, we'll skip this for now
-    //   return null;
-    // });
+    // Actually create the jobs in the database
+    const createdJobs = [];
+    const successfulJobs = processedJobs.filter(job => job.status === 'success');
+
+    for (const jobData of successfulJobs) {
+      try {
+        // Parse salary if provided
+        let salaryMin = null;
+        let salaryMax = null;
+        if (jobData.salary) {
+          const salaryMatch = jobData.salary.match(/\$?([\d,]+)\s*-\s*\$?([\d,]+)/);
+          if (salaryMatch) {
+            salaryMin = parseInt(salaryMatch[1].replace(/,/g, ''));
+            salaryMax = parseInt(salaryMatch[2].replace(/,/g, ''));
+          } else {
+            const singleSalaryMatch = jobData.salary.match(/\$?([\d,]+)/);
+            if (singleSalaryMatch) {
+              salaryMin = parseInt(singleSalaryMatch[1].replace(/,/g, ''));
+            }
+          }
+        }
+
+        const createdJob = await prisma.job.create({
+          data: {
+            title: jobData.title,
+            company: jobData.company,
+            description: jobData.description,
+            location: jobData.location,
+            jobType: jobData.jobType || 'full_time',
+            salaryMin,
+            salaryMax,
+            categories: jobData.category ? [jobData.category] : [],
+            employerId: user.id,
+            source: '209works',
+            url: null,
+            postedAt: new Date(),
+          },
+        });
+
+        createdJobs.push(createdJob);
+      } catch (error) {
+        console.error('Error creating job:', error);
+        // Update the job status to error
+        const jobIndex = processedJobs.findIndex(j => j.title === jobData.title);
+        if (jobIndex !== -1) {
+          processedJobs[jobIndex].status = 'error';
+          processedJobs[jobIndex].validationErrors.push('Failed to create job in database');
+        }
+      }
+    }
 
     // Log the bulk upload attempt
     await prisma.auditLog
@@ -172,10 +206,11 @@ export async function POST(request: NextRequest) {
       success: true,
       bulkUploadId: null, // Temporarily disabled
       totalJobs: validatedData.jobs.length,
+      createdJobs: createdJobs.length,
       processedJobs,
       creditsNeeded: totalCreditsNeeded,
       creditsRemaining: userCredits.jobPost - totalCreditsNeeded,
-      message: 'Bulk upload processed successfully',
+      message: `Successfully created ${createdJobs.length} jobs`,
     });
   } catch (error) {
     console.error('Error processing bulk upload:', error);

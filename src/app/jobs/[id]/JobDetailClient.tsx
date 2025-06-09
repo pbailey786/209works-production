@@ -498,6 +498,7 @@ export default function JobDetailClient({
                     </div>
                   </div>
                 )}
+              </div>
 
               {/* Job Description */}
               <div className="border-t border-gray-200">
