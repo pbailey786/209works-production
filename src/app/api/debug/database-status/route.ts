@@ -6,16 +6,36 @@ import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // First, let's check if we can even get a session
+    let session: Session | null = null;
+    try {
+      session = await getServerSession(authOptions) as Session | null;
+    } catch (sessionError) {
+      return NextResponse.json({
+        success: false,
+        error: 'Session error',
+        message: sessionError instanceof Error ? sessionError.message : 'Unknown session error'
+      }, { status: 500 });
+    }
 
     // Only allow admin access
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized - No session or email' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
+    // Try to find the user
+    let user;
+    try {
+      user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+      });
+    } catch (userError) {
+      return NextResponse.json({
+        success: false,
+        error: 'Database error when finding user',
+        message: userError instanceof Error ? userError.message : 'Unknown user lookup error'
+      }, { status: 500 });
+    }
 
     if (!user || user.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
@@ -31,7 +51,9 @@ export async function GET(request: NextRequest) {
 
     try {
       // Test basic connection
+      console.log('Attempting to connect to database...');
       await prisma.$connect();
+      console.log('Database connection successful');
       status.connection = true;
 
       // Check each table
