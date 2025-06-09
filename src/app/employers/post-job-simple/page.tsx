@@ -32,7 +32,7 @@ export default function SimplePostJobPage() {
     title: '',
     company: '',
     location: '',
-    type: 'full-time',
+    type: 'full_time',
     description: '',
     salaryMin: '',
     salaryMax: '',
@@ -43,9 +43,11 @@ export default function SimplePostJobPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const jobTypes = [
-    { value: 'full-time', label: 'Full-time' },
-    { value: 'part-time', label: 'Part-time' },
+    { value: 'full_time', label: 'Full-time' },
+    { value: 'part_time', label: 'Part-time' },
     { value: 'contract', label: 'Contract' },
+    { value: 'internship', label: 'Internship' },
+    { value: 'temporary', label: 'Temporary' },
   ];
 
   const centralValleyLocations = [
