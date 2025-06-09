@@ -191,6 +191,12 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    name: 'Database Management',
+    href: '/admin/database',
+    icon: Database,
+    permission: Permission.MANAGE_SYSTEM_SETTINGS,
+  },
+  {
     name: 'System Health',
     href: '/admin/health',
     icon: Activity,
