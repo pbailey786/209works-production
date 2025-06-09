@@ -62,7 +62,7 @@ export async function GET(
             skills: true,
             location: true,
             linkedinUrl: true,
-            portfolioUrl: true,
+
             phoneNumber: true,
             createdAt: true,
           },

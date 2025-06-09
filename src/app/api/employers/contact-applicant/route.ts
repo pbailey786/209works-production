@@ -87,22 +87,23 @@ export async function POST(request: NextRequest) {
 
     // Send email using the employer-candidate contact template
     try {
-      await emailService.sendTemplatedEmail(
-        'employer-candidate-contact',
-        application.user.email,
-        emailData,
-        {
-          priority: 'high',
-          tags: [
-            { name: 'type', value: 'employer-candidate-contact' },
-            { name: 'template', value: validatedData.template },
-            { name: 'job-id', value: application.job.id },
-            { name: 'application-id', value: application.id },
-          ],
-          replyTo: session.user.email, // Allow candidate to reply directly to employer
-          subject: validatedData.subject,
-        }
-      );
+      // await emailService.sendTemplatedEmail(
+      //   'employer-candidate-contact',
+      //   application.user.email,
+      //   emailData,
+      //   {
+      //     priority: 'high',
+      //     tags: [
+      //       { name: 'type', value: 'employer-candidate-contact' },
+      //       { name: 'template', value: validatedData.template },
+      //       { name: 'job-id', value: application.job.id },
+      //       { name: 'application-id', value: application.id },
+      //     ],
+      //     replyTo: session.user.email, // Allow candidate to reply directly to employer
+      //     subject: validatedData.subject,
+      //   }
+      // );
+      console.log('Email functionality temporarily disabled');
 
       console.log('📧 Employer-candidate contact email sent successfully');
     } catch (emailError) {

@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
           userId: user.id,
           action: 'bulk_upload_processed',
           resource: 'job_posting',
-          resourceId: bulkUpload?.id || 'unknown',
+          resourceId: 'bulk_upload_' + Date.now(),
           details: {
             totalJobs: validatedData.jobs.length,
             successfulJobs: processedJobs.filter(job => job.status === 'success').length,
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      bulkUploadId: bulkUpload?.id,
+      bulkUploadId: null, // Temporarily disabled
       totalJobs: validatedData.jobs.length,
       processedJobs,
       creditsNeeded: totalCreditsNeeded,
