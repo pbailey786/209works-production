@@ -79,6 +79,8 @@ model User {
   jobPostingPurchases   JobPostingPurchase[]
   jobPostingCredits     JobPostingCredit[]
   jobPostingPatterns    JobPostingPattern[]    @relation("EmployerPatterns")
+  jobSeekerProfile      JobSeekerProfile?
+  employerProfile       EmployerProfile?
 
   @@index([deletedAt])
 }
@@ -1197,4 +1199,58 @@ model DuplicateJobAlert {
   @@index([reviewStatus])
   @@index([detectionMethod])
   @@index([detectedAt])
+}
+
+// Job Seeker Profile for enhanced onboarding and matching
+model JobSeekerProfile {
+  id                        String   @id @default(uuid())
+  userId                    String   @unique
+  zipCode                   String?
+  distanceWillingToTravel   Int?     // in miles
+  availabilityDays          String[] // ["monday", "tuesday", etc.]
+  availabilityShifts        String[] // ["morning", "afternoon", "evening", "overnight"]
+  jobTypes                  String[] // types of jobs interested in
+  skills                    String[] // skills and certifications
+  careerGoal                String?  // "need_job_asap", "build_career", "exploring_fields"
+  optInEmailAlerts          Boolean  @default(false)
+  optInSmsAlerts            Boolean  @default(false)
+  allowEmployerMessages     Boolean  @default(false)
+  resumeData                Json?    // parsed resume data as JSON
+  whatAreYouGoodAt          String?  // freeform text field
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  user                      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([zipCode])
+  @@index([careerGoal])
+  @@index([optInEmailAlerts])
+}
+
+// Employer Profile for enhanced onboarding and hiring preferences
+model EmployerProfile {
+  id                        String   @id @default(uuid())
+  userId                    String   @unique
+  companyName               String
+  industryType              String?
+  logoUrl                   String?
+  location                  String?
+  hiresTeens                Boolean  @default(false)
+  hiresSeniors              Boolean  @default(false)
+  providesTraining          Boolean  @default(false)
+  requiresBackgroundCheck   Boolean  @default(false)
+  jobRolesCommon            String[] // common roles they hire for
+  postingPrefersAi          Boolean  @default(false)
+  contactMethod             String?  // "email", "phone", "dashboard_only"
+  hiringGoal                String?  // "urgently_hiring", "seasonal", "always_hiring"
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  user                      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([companyName])
+  @@index([industryType])
+  @@index([hiringGoal])
 }
