@@ -47,12 +47,13 @@ export interface ApplicationConfirmationData {
 export interface NewApplicantData {
   employerName: string;
   jobTitle: string;
-  companyName: string;
+  companyName?: string;
   applicantName: string;
   applicantEmail: string;
   applicationDate: string;
-  jobUrl: string;
-  applicantProfileUrl: string;
+  jobUrl?: string;
+  applicantProfileUrl?: string;
+  dashboardUrl?: string;
 }
 
 /**

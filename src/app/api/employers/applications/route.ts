@@ -83,7 +83,6 @@ export async function GET(request: NextRequest) {
               resumeUrl: true,
               bio: true,
               skills: true,
-              experience: true,
               location: true,
             },
           },

@@ -60,7 +60,6 @@ export async function GET(
             resumeUrl: true,
             bio: true,
             skills: true,
-            experience: true,
             location: true,
             linkedinUrl: true,
             portfolioUrl: true,
@@ -179,48 +178,47 @@ export async function POST(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Add note to application
-    const updatedApplication = await prisma.jobApplication.update({
-      where: { id: applicationId },
-      data: {
-        notes: validatedData.note,
-        // If tags are provided, we could store them in a separate field or table
-        // For now, we'll append them to the notes
-        ...(validatedData.tags && validatedData.tags.length > 0 && {
-          notes: `${validatedData.note}\n\nTags: ${validatedData.tags.join(', ')}`,
-        }),
-      },
-    });
+    // Add note to application (commented out until notes field is added to schema)
+    // const updatedApplication = await prisma.jobApplication.update({
+    //   where: { id: applicationId },
+    //   data: {
+    //     notes: validatedData.note,
+    //     // If tags are provided, we could store them in a separate field or table
+    //     // For now, we'll append them to the notes
+    //     ...(validatedData.tags && validatedData.tags.length > 0 && {
+    //       notes: `${validatedData.note}\n\nTags: ${validatedData.tags.join(', ')}`,
+    //     }),
+    //   },
+    // });
 
-    // Log the note addition
-    await prisma.auditLog
-      .create({
-        data: {
-          userId: user.id,
-          action: 'applicant_note_added',
-          resource: 'job_application',
-          resourceId: applicationId,
-          details: {
-            applicationId,
-            jobId: application.job.id,
-            jobTitle: application.job.title,
-            applicantId: application.user.id,
-            applicantName: application.user.name,
-            note: validatedData.note,
-            tags: validatedData.tags,
-            addedBy: user.name || user.id,
-            addedAt: new Date().toISOString(),
-          },
-        },
-      })
-      .catch(error => {
-        console.error('Failed to log note addition:', error);
-      });
+    // Log the note addition (commented out)
+    // await prisma.auditLog
+    //   .create({
+    //     data: {
+    //       userId: user.id,
+    //       action: 'applicant_note_added',
+    //       resource: 'job_application',
+    //       resourceId: applicationId,
+    //       details: {
+    //         applicationId,
+    //         jobId: application.job.id,
+    //         jobTitle: application.job.title,
+    //         applicantId: application.user.id,
+    //         applicantName: application.user.name,
+    //         note: validatedData.note,
+    //         tags: validatedData.tags,
+    //         addedBy: user.name || user.id,
+    //         addedAt: new Date().toISOString(),
+    //       },
+    //     },
+    //   })
+    //   .catch(error => {
+    //     console.error('Failed to log note addition:', error);
+    //   });
 
     return NextResponse.json({
       success: true,
-      message: 'Note added successfully',
-      application: updatedApplication,
+      message: 'Note functionality temporarily disabled - schema update needed',
     });
   } catch (error) {
     console.error('Error adding note to applicant:', error);

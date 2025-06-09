@@ -143,7 +143,7 @@ export default function EmployerBulkUploadPage() {
       setTimeout(() => {
         const processedJobs = jobs.map(job => ({
           ...job,
-          status: job.description.length > 10 ? 'success' : job.description.length > 0 ? 'warning' : 'error',
+          status: (job.description.length > 10 ? 'success' : job.description.length > 0 ? 'warning' : 'error') as 'success' | 'warning' | 'error',
           warning: job.description.length <= 10 && job.description.length > 0 ? 'Short description - consider expanding' : undefined,
           error: job.description.length === 0 ? 'Missing required field: job description' : undefined,
           creditsRequired: job.description.length > 0 ? 1 : 0,

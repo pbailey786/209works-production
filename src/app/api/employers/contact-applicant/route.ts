@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
-import { emailService } from '@/lib/email';
+// import { emailService } from '@/lib/email'; // Temporarily disabled
 
 // Schema for contacting applicant
 const contactApplicantSchema = z.object({

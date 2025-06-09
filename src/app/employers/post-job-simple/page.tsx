@@ -132,9 +132,9 @@ export default function SimplePostJobPage() {
       };
 
       // Remove customLocation from the data sent to API since it's not needed
-      delete jobData.customLocation;
+      const { customLocation, ...finalJobData } = jobData;
 
-      console.log('🔍 DEBUG: Submitting job with data:', jobData);
+      console.log('🔍 DEBUG: Submitting job with data:', finalJobData);
       console.log('🔍 DEBUG: Session data:', session);
 
       const response = await fetch('/api/jobs', {
@@ -142,7 +142,7 @@ export default function SimplePostJobPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(jobData),
+        body: JSON.stringify(finalJobData),
       });
 
       console.log('🔍 DEBUG: Response status:', response.status);

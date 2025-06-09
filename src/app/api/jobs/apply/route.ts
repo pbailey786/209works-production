@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
         company: true,
         url: true,
         status: true,
+        employerId: true,
       },
     });
 
