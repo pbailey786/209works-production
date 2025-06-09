@@ -1,5 +1,5 @@
 [build]
-  command = "npm ci --include=dev && npx prisma generate && npm run build:no-lint"
+  command = "node scripts/safe-build.js"
   publish = ".next"
 
 [[plugins]]

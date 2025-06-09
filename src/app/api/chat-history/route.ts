@@ -25,11 +25,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch user's chat history, ordered by last activity
-    const chatHistory = await prisma.chatHistory.findMany({
-      where: { userId: user.id },
-      orderBy: { lastActivity: 'desc' },
-      take: MAX_CONVERSATIONS_PER_USER,
-    });
+    let chatHistory = [];
+    try {
+      chatHistory = await prisma.chatHistory.findMany({
+        where: { userId: user.id },
+        orderBy: { lastActivity: 'desc' },
+        take: MAX_CONVERSATIONS_PER_USER,
+      });
+    } catch (error) {
+      // If ChatHistory table doesn't exist yet, return empty array
+      console.log('ChatHistory table not available yet:', error);
+      chatHistory = [];
+    }
 
     return NextResponse.json({
       conversations: chatHistory,
@@ -74,12 +81,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if conversation already exists
-    const existingConversation = await prisma.chatHistory.findFirst({
-      where: {
-        userId: user.id,
-        sessionId: sessionId,
-      },
-    });
+    let existingConversation = null;
+    try {
+      existingConversation = await prisma.chatHistory.findFirst({
+        where: {
+          userId: user.id,
+          sessionId: sessionId,
+        },
+      });
+    } catch (error) {
+      // If ChatHistory table doesn't exist yet, treat as no existing conversation
+      console.log('ChatHistory table not available yet for POST:', error);
+      existingConversation = null;
+    }
 
     if (existingConversation) {
       // Update existing conversation

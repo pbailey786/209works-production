@@ -601,13 +601,20 @@ export const POST = withAISecurity(
             { role: 'assistant', content: conversationalResponse, timestamp: new Date() }
           ];
 
-          // Check if conversation already exists
-          const existingConversation = await prisma.chatHistory.findFirst({
-            where: {
-              userId: authenticatedUserId,
-              sessionId: sessionId,
-            },
-          });
+          // Check if conversation already exists (handle case where table doesn't exist yet)
+          let existingConversation = null;
+          try {
+            existingConversation = await prisma.chatHistory.findFirst({
+              where: {
+                userId: authenticatedUserId,
+                sessionId: sessionId,
+              },
+            });
+          } catch (tableError) {
+            // ChatHistory table doesn't exist yet, skip saving for now
+            console.log('ChatHistory table not available yet, skipping chat history save');
+            return; // Exit the chat history saving block
+          }
 
           if (existingConversation) {
             // Update existing conversation
