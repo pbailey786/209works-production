@@ -476,7 +476,7 @@ export default function SimpleSettingsPage() {
                         Basic Plan - Pay per job post
                       </p>
                       <button
-                        onClick={() => router.push('/employers/pricing-simple')}
+                        onClick={() => router.push('/employers/pricing')}
                         className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
                       >
                         Upgrade to Pro

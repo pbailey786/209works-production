@@ -628,16 +628,16 @@ export default function EmployerBulkUploadPage() {
               <div className="flex items-center">
                 <CreditCard className="h-5 w-5 text-orange-600 mr-3" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-orange-800">No Credits Available</h3>
+                  <h3 className="text-sm font-medium text-orange-800">Subscription Required</h3>
                   <p className="text-sm text-orange-700 mt-1">
-                    You need job posting credits to upload jobs.
+                    Bulk upload is available with paid plans.
                     <button
                       onClick={() => setShowUpgradeModal(true)}
                       className="underline font-medium ml-1 hover:text-orange-800"
                     >
-                      View plans
+                      Choose your plan
                     </button>
-                    to get started with bulk uploads.
+                    to start uploading multiple jobs at once.
                   </p>
                 </div>
               </div>
@@ -1438,11 +1438,11 @@ export default function EmployerBulkUploadPage() {
                   </div>
 
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    No Credits Available
+                    Subscription Required
                   </h3>
 
                   <p className="text-sm text-gray-600 mb-6">
-                    You need job posting credits to upload and publish jobs. Choose a plan to get started with bulk uploads.
+                    Bulk upload is a premium feature. Choose a plan to start uploading multiple jobs efficiently.
                   </p>
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -1471,7 +1471,7 @@ export default function EmployerBulkUploadPage() {
                   </div>
 
                   <p className="text-xs text-gray-500 mt-4">
-                    Plans start at $50/month with 2 job credits included
+                    Plans start at $99/month • Starter, Standard, and Pro tiers available
                   </p>
                 </div>
               </div>

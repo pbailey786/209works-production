@@ -5,34 +5,35 @@ import { Award } from 'lucide-react';
 import Link from 'next/link';
 import PricingSection from '@/components/pricing/PricingSection';
 
-// Employer pricing plans
+// Employer pricing plans - Updated to match current Stripe pricing
 const employerPlans = [
   {
     id: 'starter',
-    name: 'Starter',
-    monthlyPrice: 50,
-    yearlyPrice: 50 * 12 * 0.85, // 15% discount
+    name: 'Starter Tier',
+    monthlyPrice: 99,
+    yearlyPrice: 99 * 12 * 0.85, // 15% discount
     yearlyDiscount: 15,
     description: 'Perfect for small businesses hiring occasionally',
     features: [
-      '1 Active Job Post',
+      '2 Job Credits per month',
       'Basic Analytics Dashboard',
       'Applicant Management',
       '209 Area Targeting',
       'Email Support',
       '30-day Job Duration',
+      'Bulk Upload Access',
     ],
     chamberDiscount: 25,
   },
   {
-    id: 'professional',
-    name: 'Professional',
-    monthlyPrice: 99,
-    yearlyPrice: 99 * 12 * 0.85, // 15% discount
+    id: 'standard',
+    name: 'Standard Tier',
+    monthlyPrice: 199,
+    yearlyPrice: 199 * 12 * 0.85, // 15% discount
     yearlyDiscount: 15,
     description: 'Ideal for growing companies with multiple positions',
     features: [
-      '3 Active Job Posts',
+      '3 Job Credits per month',
       'Advanced Analytics & Reports',
       'Premium Job Placement',
       'Resume Database Access',
@@ -40,41 +41,71 @@ const employerPlans = [
       'Priority Support',
       'Company Profile Page',
       '60-day Job Duration',
+      'Bulk Upload Access',
+      'AI Job Optimization',
     ],
     popular: true,
     badge: 'Most Popular',
     chamberDiscount: 25,
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    monthlyPrice: 200,
-    yearlyPrice: 200 * 12 * 0.8, // 20% discount
+    id: 'pro',
+    name: 'Pro Tier',
+    monthlyPrice: 350,
+    yearlyPrice: 350 * 12 * 0.8, // 20% discount
     yearlyDiscount: 20,
     description: 'For companies with high-volume hiring needs',
     features: [
-      '10 Active Job Posts',
-      'Everything in Professional',
+      '10 Job Credits per month',
+      'Everything in Standard',
       'Team Management Tools',
       'Custom Analytics Dashboard',
       'Bulk Job Management',
       'Priority Phone Support',
       'Advanced Reporting',
       '90-day Job Duration',
+      'Premium AI Features',
+      'Dedicated Account Manager',
     ],
     chamberDiscount: 25,
   },
 ];
 
 export default function EmployerPricingPage() {
+  const handlePlanSelect = async (planId: string, billingInterval: string) => {
+    try {
+      // Create Stripe checkout session
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tier: planId,
+          billingInterval: billingInterval,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Something went wrong. Please try again.');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50">
       {/* Hero Section */}
       <section className="px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
             Find the Perfect Plan for Your{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-orange-600 to-green-600 bg-clip-text text-transparent">
               Hiring Needs
             </span>
           </h1>
@@ -105,11 +136,7 @@ export default function EmployerPricingPage() {
         title="Employer Plans"
         subtitle="Choose the plan that fits your hiring needs"
         showChamberToggle={true}
-        onPlanSelect={(planId, billingInterval) => {
-          console.log('Selected plan:', planId, 'billing:', billingInterval);
-          // Redirect to signup with selected plan
-          window.location.href = `/employers/signup?plan=${planId}&billing=${billingInterval}`;
-        }}
+        onPlanSelect={handlePlanSelect}
       />
 
       {/* FAQ Section */}
@@ -141,11 +168,10 @@ export default function EmployerPricingPage() {
             </div>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                What's included in the free trial?
+                How do job credits work?
               </h3>
               <p className="text-gray-600">
-                All paid plans include a 14-day free trial with full access to
-                all features. No credit card required to start.
+                Each job posting uses one credit. Credits are included monthly with your plan and don't roll over. You can purchase additional credits as needed.
               </p>
             </div>
             <div>
@@ -163,7 +189,7 @@ export default function EmployerPricingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-green-600 px-4 py-16 text-white">
+      <section className="bg-gradient-to-r from-orange-600 to-green-600 px-4 py-16 text-white">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-4 text-3xl font-bold">Ready to Start Hiring?</h2>
           <p className="mb-8 text-xl opacity-90">
@@ -171,15 +197,15 @@ export default function EmployerPricingPage() {
             Works
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
-              href="/employers/signup?plan=professional"
-              className="inline-flex items-center justify-center rounded-lg bg-white px-8 py-3 text-lg font-medium text-blue-600 shadow-lg transition-colors hover:bg-gray-100"
+            <button
+              onClick={() => handlePlanSelect('standard', 'monthly')}
+              className="inline-flex items-center justify-center rounded-lg bg-white px-8 py-3 text-lg font-medium text-orange-600 shadow-lg transition-colors hover:bg-gray-100"
             >
-              Start Free Trial
-            </Link>
+              Get Started Today
+            </button>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-lg border-2 border-white px-8 py-3 text-lg font-medium text-white transition-colors hover:bg-white hover:text-blue-600"
+              className="inline-flex items-center justify-center rounded-lg border-2 border-white px-8 py-3 text-lg font-medium text-white transition-colors hover:bg-white hover:text-orange-600"
             >
               Contact Support
             </Link>

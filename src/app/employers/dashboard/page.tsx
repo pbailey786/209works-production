@@ -622,7 +622,7 @@ function DashboardContent() {
             </div>
             <div className="flex space-x-3">
               <Link
-                href="/employers/pricing-simple"
+                href="/employers/pricing"
                 className="rounded-lg border border-gray-200 bg-white px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
               >
                 View Pricing
