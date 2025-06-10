@@ -3,9 +3,12 @@ exports.handler = async (event, context) => {
     // Test basic functionality
     const result = {
       step: 'starting',
+      timestamp: new Date().toISOString(),
       environment: {
         hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
         stripeKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : 'missing',
+        stripeKeyLength: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 0,
+        stripeKeyEnd: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.slice(-10) : 'missing',
         hasStarterPrice: !!process.env.STRIPE_PRICE_STARTER,
         starterPrice: process.env.STRIPE_PRICE_STARTER,
       }
