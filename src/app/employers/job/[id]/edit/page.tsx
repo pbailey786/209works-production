@@ -43,16 +43,44 @@ export default async function EditJobPage({ params }: PageProps) {
   }
 
   // Fetch the job and verify ownership
-  const job = await prisma.job.findFirst({
+  const jobData = await prisma.job.findFirst({
     where: {
       id: id,
       employerId: user.id,
     },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      company: true,
+      location: true,
+      jobType: true, // This maps to 'type' in the interface
+      salaryMin: true,
+      salaryMax: true,
+      categories: true,
+      status: true,
+      postedAt: true,
+    },
   });
 
-  if (!job) {
+  if (!jobData) {
     notFound();
   }
+
+  // Transform the data to match the expected interface
+  const job = {
+    id: jobData.id,
+    title: jobData.title,
+    description: jobData.description,
+    company: jobData.company,
+    location: jobData.location,
+    type: jobData.jobType, // Map jobType to type
+    salaryMin: jobData.salaryMin,
+    salaryMax: jobData.salaryMax,
+    categories: jobData.categories,
+    status: jobData.status,
+    postedAt: jobData.postedAt.toISOString(),
+  };
 
   return <EditJobForm job={job} />;
 }
