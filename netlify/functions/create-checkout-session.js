@@ -144,8 +144,9 @@ exports.handler = async (event, context) => {
     const defaultSuccessUrl = `${baseUrl}/employers/dashboard?success=true&plan=${normalizedPlan}`;
     const defaultCancelUrl = `${baseUrl}/employers/pricing?cancelled=true`;
 
-    // Create Stripe Checkout session
+    // Create Stripe Checkout session for embedded checkout
     const session = await stripe.checkout.sessions.create({
+      ui_mode: 'embedded', // This is the key for embedded checkout
       mode: 'subscription',
       payment_method_types: ['card'],
       billing_address_collection: 'required',
@@ -156,8 +157,7 @@ exports.handler = async (event, context) => {
           quantity: 1,
         },
       ],
-      success_url: success_url || defaultSuccessUrl,
-      cancel_url: cancel_url || defaultCancelUrl,
+      return_url: success_url || defaultSuccessUrl + '&session_id={CHECKOUT_SESSION_ID}',
       allow_promotion_codes: true,
       automatic_tax: {
         enabled: true,
@@ -174,7 +174,7 @@ exports.handler = async (event, context) => {
       },
     });
 
-    // Return the session URL
+    // Return the client secret for embedded checkout
     return {
       statusCode: 200,
       headers: {
@@ -182,9 +182,10 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify({
-        url: session.url,
+        clientSecret: session.client_secret,
         sessionId: session.id,
         plan: normalizedPlan,
+        returnUrl: success_url || defaultSuccessUrl,
       }),
     };
 

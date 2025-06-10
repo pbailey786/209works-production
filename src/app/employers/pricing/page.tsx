@@ -65,27 +65,10 @@ const employerPlans = [
 export default function EmployerPricingPage() {
   const handlePlanSelect = async (planId: string, billingInterval: string) => {
     try {
-      // Create Stripe checkout session using Netlify function (mock version for testing)
-      const response = await fetch('/.netlify/functions/create-checkout-session-mock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          plan: planId,
-          success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${planId}`,
-          cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
+      // Redirect to embedded checkout page
+      window.location.href = `/employers/checkout?plan=${planId}`;
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error('Error navigating to checkout:', error);
       alert('Something went wrong. Please try again.');
     }
   };

@@ -1,154 +1,161 @@
-import PlaceholderPage from '@/components/PlaceholderPage';
+'use client';
+
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import EmbeddedCheckout from '@/components/checkout/EmbeddedCheckout';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+
+function CheckoutContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [planDetails, setPlanDetails] = useState<any>(null);
+
+  const plan = searchParams.get('plan');
+
+  useEffect(() => {
+    if (!plan) {
+      setError('No plan selected');
+      setLoading(false);
+      return;
+    }
+
+    const createCheckoutSession = async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch('/.netlify/functions/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            plan: plan,
+            success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${plan}`,
+            cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to create checkout session');
+        }
+
+        setClientSecret(data.clientSecret);
+        setPlanDetails({
+          plan: data.plan,
+          returnUrl: data.returnUrl,
+        });
+
+      } catch (err: any) {
+        console.error('Checkout session error:', err);
+        setError(err.message || 'Failed to initialize checkout');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    createCheckoutSession();
+  }, [plan]);
+
+  const handleBack = () => {
+    router.push('/employers/pricing');
+  };
+
+  const handleComplete = (session: any) => {
+    console.log('Checkout completed:', session);
+    // Redirect to success page
+    router.push(`/employers/dashboard?success=true&plan=${plan}&session_id=${session.id}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600" />
+          <h2 className="mt-4 text-xl font-semibold text-gray-900">Setting up your checkout...</h2>
+          <p className="mt-2 text-gray-600">Please wait while we prepare your payment</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center max-w-md">
+          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-red-100 flex items-center justify-center">
+            <span className="text-red-600 text-2xl">⚠️</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Checkout Error</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Button onClick={handleBack} className="w-full">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Pricing
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2d4a3e] shadow-lg">
+              <span className="text-sm font-bold text-[#9fdf9f]">209</span>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#2d4a3e]">209 Works</h1>
+              <p className="text-sm text-gray-500">Secure Checkout</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Plan Summary */}
+        {plan && (
+          <div className="mb-8 rounded-lg bg-white p-6 shadow-sm border">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {plan.charAt(0).toUpperCase() + plan.slice(1)} Plan
+            </h3>
+            <p className="text-gray-600">
+              You're subscribing to the {plan} plan for your 209 Works employer account.
+            </p>
+          </div>
+        )}
+
+        {/* Embedded Checkout */}
+        {clientSecret && (
+          <div className="rounded-lg bg-white shadow-sm">
+            <EmbeddedCheckout
+              clientSecret={clientSecret}
+              onBack={handleBack}
+              onComplete={handleComplete}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function EmployerCheckoutPage() {
   return (
-    <PlaceholderPage
-      title="Secure Checkout"
-      description="Complete your subscription upgrade or credit purchase through our secure payment system powered by Stripe. Review your order and payment details before finalizing your transaction."
-      icon="🛒"
-      sections={[
-        {
-          title: 'Order Summary',
-          description: 'Review your selected plan and billing details',
-          wireframeType: 'cards',
-          items: [
-            'Professional Plan Upgrade - $299/month',
-            'Additional Team Members (3x) - $75/month',
-            'Premium AI Features Add-on - $99/month',
-            'Job Posting Credits (100x) - $200',
-            'Subtotal: $673/month + $200 one-time',
-            'Tax (8.25%): $80.37/month + $16.50',
-            'Total: $753.37/month + $216.50 one-time',
-          ],
-        },
-        {
-          title: 'Stripe Payment Integration',
-          description: 'Secure payment processing through Stripe',
-          wireframeType: 'form',
-          items: [
-            '[Stripe Elements Card Input]',
-            'Cardholder Name',
-            'Billing Address',
-            'Country/Region',
-            'Postal Code',
-            'Save Card for Future Payments',
-            '3D Secure Authentication',
-            'PCI Compliance Badge',
-          ],
-        },
-        {
-          title: 'Subscription Details',
-          description: 'Billing cycle and subscription terms',
-          wireframeType: 'list',
-          items: [
-            'Billing Frequency: Monthly (can change to annual)',
-            'Next Billing Date: January 15, 2024',
-            'Auto-Renewal: Enabled (can be disabled anytime)',
-            'Proration: Applied for mid-cycle upgrade',
-            'Plan Change Effective: Immediately',
-            'Cancellation Policy: Cancel anytime, no penalties',
-            'Refund Policy: Pro-rated refunds available',
-            'Payment Retry: 3 attempts if payment fails',
-          ],
-        },
-        {
-          title: 'Payment Security',
-          description: 'Security measures and compliance information',
-          wireframeType: 'cards',
-          items: [
-            'PCI DSS Level 1 Compliant',
-            '256-bit SSL Encryption',
-            '3D Secure 2.0 Authentication',
-            'Fraud Detection by Stripe Radar',
-            'Data Tokenization',
-            'Zero Storage of Card Details',
-          ],
-        },
-        {
-          title: 'Webhooks & Integration',
-          description: 'Automated processing and confirmations',
-          wireframeType: 'list',
-          items: [
-            'Real-time Payment Confirmation',
-            'Automatic Account Upgrade',
-            'Invoice Generation',
-            'Email Receipt Delivery',
-            'Slack/Teams Notification (if enabled)',
-            'API Access Provisioning',
-            'Usage Limit Updates',
-            'Team Member Access Grants',
-          ],
-        },
-        {
-          title: 'Post-Payment Actions',
-          description: 'What happens after successful payment',
-          wireframeType: 'table',
-          items: [
-            'Account Upgrade: Immediate',
-            'Feature Access: Within 5 minutes',
-            'Invoice Email: Within 30 minutes',
-            'Subscription Confirmation: Immediate',
-            'Support Ticket Priority: Upgraded',
-            'API Rate Limits: Increased',
-            'Team Invitations: Available',
-            'Credit Balance: Updated',
-          ],
-        },
-      ]}
-      quickActions={[
-        {
-          title: 'Complete Payment',
-          label: 'Complete Payment',
-          description: 'Process payment through Stripe',
-          icon: '💳',
-        },
-        {
-          title: 'Back to Plan Selection',
-          label: 'Back to Plan Selection',
-          description: 'Modify your selected plan or add-ons',
-          icon: '⬅️',
-        },
-        {
-          title: 'Apply Promo Code',
-          label: 'Apply Promo Code',
-          description: 'Enter discount or promotional code',
-          icon: '🎫',
-        },
-        {
-          title: 'Change Billing Cycle',
-          label: 'Change Billing Cycle',
-          description: 'Switch between monthly and annual billing',
-          icon: '🔄',
-        },
-        {
-          title: 'Payment Security Info',
-          label: 'Payment Security Info',
-          description: 'Learn about our security measures',
-          icon: '🔒',
-          disabled: true,
-        },
-        {
-          title: 'Contact Billing Support',
-          label: 'Contact Billing Support',
-          description: 'Get help with payment issues',
-          icon: '💬',
-          disabled: true,
-        },
-        {
-          title: 'Tax Exemption',
-          label: 'Tax Exemption',
-          description: 'Apply tax exemption certificate',
-          icon: '📄',
-          disabled: true,
-        },
-        {
-          title: 'Custom Enterprise Pricing',
-          label: 'Custom Enterprise Pricing',
-          description: 'Request custom pricing for large teams',
-          icon: '🏢',
-          disabled: true,
-        },
-      ]}
-    />
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600" />
+          <p className="mt-4 text-gray-600">Loading checkout...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
