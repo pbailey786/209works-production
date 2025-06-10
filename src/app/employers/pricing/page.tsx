@@ -65,15 +65,16 @@ const employerPlans = [
 export default function EmployerPricingPage() {
   const handlePlanSelect = async (planId: string, billingInterval: string) => {
     try {
-      // Create Stripe checkout session
-      const response = await fetch('/api/stripe/create-checkout-session', {
+      // Create Stripe checkout session using Netlify function
+      const response = await fetch('/.netlify/functions/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tier: planId,
-          billingInterval: billingInterval,
+          plan: planId,
+          success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${planId}`,
+          cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
         }),
       });
 
