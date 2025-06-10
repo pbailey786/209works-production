@@ -4,7 +4,8 @@ try {
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error('STRIPE_SECRET_KEY environment variable is not set');
   }
-  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  const Stripe = require('stripe');
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 } catch (error) {
   console.error('Failed to initialize Stripe:', error);
 }

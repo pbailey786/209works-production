@@ -1,5 +1,6 @@
 [build]
   command = "node scripts/safe-build.js"
+  functions = "netlify/functions"
   publish = ".next"
 
 [[plugins]]
@@ -13,3 +14,6 @@
   NEXT_TELEMETRY_DISABLED = "1"
   SKIP_ENV_VALIDATION = "true"
   NODE_ENV = "production"
+
+[functions]
+  node_bundler = "esbuild"
