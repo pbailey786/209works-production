@@ -426,7 +426,7 @@ export default async function DashboardPage() {
           </Link>
 
           <Link
-            href="/profile/saved"
+            href="/profile/applications?tab=saved"
             className="flex items-center rounded-lg border border-gray-200 bg-white p-4 shadow transition-shadow hover:border-purple-300 hover:shadow-md"
           >
             <div className="flex-shrink-0">

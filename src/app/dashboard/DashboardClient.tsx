@@ -237,7 +237,7 @@ export default function DashboardClient({
                   ))}
                   <div className="pt-4 text-center">
                     <Link
-                      href="/profile/saved"
+                      href="/profile/applications?tab=saved"
                       className="text-sm font-medium text-[#2d4a3e] hover:text-[#1d3a2e]"
                     >
                       View all saved jobs →
