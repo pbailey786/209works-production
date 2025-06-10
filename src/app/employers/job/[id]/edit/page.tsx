@@ -75,8 +75,8 @@ export default async function EditJobPage({ params }: PageProps) {
     company: jobData.company,
     location: jobData.location,
     type: jobData.jobType, // Map jobType to type
-    salaryMin: jobData.salaryMin,
-    salaryMax: jobData.salaryMax,
+    salaryMin: jobData.salaryMin ?? undefined, // Convert null to undefined
+    salaryMax: jobData.salaryMax ?? undefined, // Convert null to undefined
     categories: jobData.categories,
     status: jobData.status,
     postedAt: jobData.postedAt.toISOString(),
