@@ -57,31 +57,66 @@ export default function EmployerBulkUploadPage() {
   const [showOptimization, setShowOptimization] = useState(false);
   const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
   const [showHistory, setShowHistory] = useState(false);
-  const [uploadHistory, setUploadHistory] = useState<UploadHistory[]>([
-    {
-      id: '1',
-      fileName: 'tech_jobs_batch_1.csv',
-      uploadDate: '2024-01-15',
-      totalJobs: 25,
-      successfulJobs: 23,
-      creditsUsed: 23,
-      status: 'completed',
-    },
-    {
-      id: '2',
-      fileName: 'sales_positions.xlsx',
-      uploadDate: '2024-01-10',
-      totalJobs: 15,
-      successfulJobs: 15,
-      creditsUsed: 15,
-      status: 'completed',
-    },
-  ]);
+  const [uploadHistory, setUploadHistory] = useState<UploadHistory[]>([]);
   const [userCredits, setUserCredits] = useState({
     jobPost: 12,
     featuredPost: 3,
     socialGraphic: 5,
   });
+
+  // New state for error handling and modals
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [editingJob, setEditingJob] = useState<ProcessedJob | null>(null);
+  const [previewJob, setPreviewJob] = useState<ProcessedJob | null>(null);
+  const [optimizationSettings, setOptimizationSettings] = useState({
+    autoEnhance: true,
+    addKeywords: true,
+    generateGraphics: false,
+    createFeatured: false,
+    optimizationLevel: 'standard' as 'standard' | 'enhanced' | 'premium',
+    targetAudience: 'general',
+  });
+
+  // Fetch upload history and user credits on component mount
+  useEffect(() => {
+    fetchUploadHistory();
+    fetchUserCredits();
+  }, []);
+
+  const fetchUploadHistory = async () => {
+    try {
+      const response = await fetch('/api/employers/bulk-upload');
+      if (response.ok) {
+        const data = await response.json();
+        setUploadHistory(data.history || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch upload history:', error);
+    }
+  };
+
+  const fetchUserCredits = async () => {
+    try {
+      const response = await fetch('/api/employers/credits');
+      if (response.ok) {
+        const data = await response.json();
+        setUserCredits(data.credits || { jobPost: 0, featuredPost: 0, socialGraphic: 0 });
+      }
+    } catch (error) {
+      console.error('Failed to fetch user credits:', error);
+    }
+  };
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => setErrorMessage(null), 5000);
+  };
+
+  const showSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setTimeout(() => setSuccessMessage(null), 5000);
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -114,48 +149,49 @@ export default function EmployerBulkUploadPage() {
     setUploadStatus('uploading');
 
     try {
-      // Parse CSV/Excel file (simplified for demo)
-      const text = await file.text();
-      const lines = text.split('\n').filter(line => line.trim());
+      // Validate file type and size
+      const allowedTypes = ['.csv', '.xlsx', '.json'];
+      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
 
-      if (lines.length < 2) {
-        throw new Error('File must contain at least a header row and one job');
+      if (!allowedTypes.includes(fileExtension)) {
+        throw new Error('Invalid file type. Please upload a CSV, Excel, or JSON file.');
       }
 
-      // Mock parsing - in real implementation, use a proper CSV parser
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      const jobs = lines.slice(1).map((line, index) => {
-        const values = line.split(',').map(v => v.trim());
-        return {
-          id: index + 1,
-          title: values[headers.indexOf('title')] || `Job ${index + 1}`,
-          company: values[headers.indexOf('company')] || 'Company Name',
-          location: values[headers.indexOf('location')] || 'Location',
-          jobType: values[headers.indexOf('jobtype')] || 'Full-time',
-          salary: values[headers.indexOf('salary')] || '',
-          description: values[headers.indexOf('description')] || '',
-        };
-      });
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        throw new Error('File size too large. Please upload a file smaller than 10MB.');
+      }
 
       setUploadStatus('processing');
 
-      // Simulate API call to process jobs
-      setTimeout(() => {
-        const processedJobs = jobs.map(job => ({
-          ...job,
-          status: (job.description.length > 10 ? 'success' : job.description.length > 0 ? 'warning' : 'error') as 'success' | 'warning' | 'error',
-          warning: job.description.length <= 10 && job.description.length > 0 ? 'Short description - consider expanding' : undefined,
-          error: job.description.length === 0 ? 'Missing required field: job description' : undefined,
-          creditsRequired: job.description.length > 0 ? 1 : 0,
-          optimized: job.description.length > 50,
-        }));
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('optimizationSettings', JSON.stringify(optimizationSettings));
 
-        setProcessedJobs(processedJobs);
+      // Send file to API for processing
+      const response = await fetch('/api/employers/bulk-upload/process', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to process file');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        setProcessedJobs(result.processedJobs || []);
         setUploadStatus('complete');
-      }, 2000);
+        showSuccess(`Successfully processed ${result.processedJobs?.length || 0} jobs from your file.`);
+      } else {
+        throw new Error(result.error || 'Failed to process jobs');
+      }
     } catch (error) {
       console.error('File processing error:', error);
       setUploadStatus('error');
+      showError(error instanceof Error ? error.message : 'Failed to process file');
     }
   };
 
@@ -166,11 +202,13 @@ export default function EmployerBulkUploadPage() {
     const totalCreditsNeeded = successfulJobs.reduce((sum, job) => sum + job.creditsRequired, 0);
 
     if (totalCreditsNeeded > userCredits.jobPost) {
-      alert(`Insufficient credits. You need ${totalCreditsNeeded} credits but only have ${userCredits.jobPost}.`);
+      showError(`Insufficient credits. You need ${totalCreditsNeeded} credits but only have ${userCredits.jobPost}.`);
       return;
     }
 
     try {
+      setUploadStatus('processing');
+
       const response = await fetch('/api/employers/bulk-upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -182,20 +220,15 @@ export default function EmployerBulkUploadPage() {
             jobType: job.jobType?.toLowerCase().replace(' ', '_'),
             description: job.description,
             salary: job.salary,
-            optimizationLevel: showOptimization ? 'enhanced' : 'standard',
+            optimizationLevel: optimizationSettings.optimizationLevel,
           })),
-          optimizationSettings: {
-            autoEnhance: true,
-            addKeywords: true,
-            generateGraphics: false,
-            createFeatured: false,
-            optimizationLevel: 'standard',
-          },
+          optimizationSettings,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to publish jobs');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to publish jobs');
       }
 
       const result = await response.json();
@@ -206,15 +239,81 @@ export default function EmployerBulkUploadPage() {
         jobPost: prev.jobPost - totalCreditsNeeded,
       }));
 
-      alert(`Successfully published ${result.createdJobs} out of ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
+      showSuccess(`Successfully published ${result.createdJobs} out of ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
 
       // Reset the form
       setProcessedJobs([]);
       setUploadedFile(null);
       setUploadStatus('idle');
+
+      // Refresh upload history
+      fetchUploadHistory();
     } catch (error) {
       console.error('Bulk publish error:', error);
-      alert('Failed to publish jobs. Please try again.');
+      showError(error instanceof Error ? error.message : 'Failed to publish jobs. Please try again.');
+      setUploadStatus('complete'); // Return to complete state so user can try again
+    }
+  };
+
+  const handleEditJob = (job: ProcessedJob) => {
+    setEditingJob(job);
+  };
+
+  const handlePreviewJob = (job: ProcessedJob) => {
+    setPreviewJob(job);
+  };
+
+  const handleSaveEdit = (updatedJob: ProcessedJob) => {
+    setProcessedJobs(prev =>
+      prev.map(job => job.id === updatedJob.id ? updatedJob : job)
+    );
+    setEditingJob(null);
+    showSuccess('Job updated successfully!');
+  };
+
+  const handleOptimizeJob = async (job: ProcessedJob) => {
+    try {
+      const response = await fetch('/api/job-post-optimizer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobTitle: job.title,
+          companyName: job.company,
+          location: job.location,
+          pay: job.salary,
+          schedule: job.jobType,
+          companyDescription: '',
+          idealFit: job.description,
+          culture: '',
+          growthPath: '',
+          perks: '',
+          applicationCTA: '',
+          mediaUrls: [],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize job');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.optimizedContent) {
+        const optimizedJob = {
+          ...job,
+          description: result.optimizedContent.description || job.description,
+          optimized: true,
+        };
+
+        setProcessedJobs(prev =>
+          prev.map(j => j.id === job.id ? optimizedJob : j)
+        );
+
+        showSuccess('Job optimized successfully!');
+      }
+    } catch (error) {
+      console.error('Optimization error:', error);
+      showError('Failed to optimize job. Please try again.');
     }
   };
 
@@ -237,6 +336,44 @@ export default function EmployerBulkUploadPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Error Popup */}
+      {errorMessage && (
+        <div className="fixed top-4 right-4 z-50 max-w-md rounded-lg bg-red-50 border border-red-200 p-4 shadow-lg">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-red-800">Error</h3>
+              <p className="text-sm text-red-700 mt-1">{errorMessage}</p>
+            </div>
+            <button
+              onClick={() => setErrorMessage(null)}
+              className="ml-2 text-red-400 hover:text-red-600"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Popup */}
+      {successMessage && (
+        <div className="fixed top-4 right-4 z-50 max-w-md rounded-lg bg-green-50 border border-green-200 p-4 shadow-lg">
+          <div className="flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-green-800">Success</h3>
+              <p className="text-sm text-green-700 mt-1">{successMessage}</p>
+            </div>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="ml-2 text-green-400 hover:text-green-600"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -399,6 +536,28 @@ export default function EmployerBulkUploadPage() {
                 </p>
               </div>
             )}
+
+            {uploadStatus === 'error' && (
+              <div className="text-center">
+                <AlertCircle className="mx-auto mb-4 h-16 w-16 text-red-500" />
+                <h3 className="mb-2 text-xl font-semibold text-gray-900">
+                  Upload Failed
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  There was an error processing your file. Please check the format and try again.
+                </p>
+                <button
+                  onClick={() => {
+                    setUploadStatus('idle');
+                    setUploadedFile(null);
+                    setProcessedJobs([]);
+                  }}
+                  className="rounded-lg bg-[#ff6b35] px-6 py-3 font-medium text-white transition-colors hover:bg-[#e55a2b]"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
           </div>
 
           {uploadedFile && (
@@ -476,6 +635,9 @@ export default function EmployerBulkUploadPage() {
                       {job.status === 'warning' && (
                         <AlertCircle className="mr-3 h-5 w-5 text-[#ff6b35]" />
                       )}
+                      {job.status === 'error' && (
+                        <AlertCircle className="mr-3 h-5 w-5 text-red-500" />
+                      )}
                       <div>
                         <h3 className="font-semibold text-gray-900">
                           {job.title}
@@ -486,23 +648,37 @@ export default function EmployerBulkUploadPage() {
                             ⚠️ {job.warning}
                           </p>
                         )}
+                        {job.error && (
+                          <p className="mt-1 text-sm text-red-600">
+                            ❌ {job.error}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button
-                        disabled
-                        className="text-sm font-medium text-gray-400 cursor-not-allowed"
-                        title="Edit feature coming soon"
+                        onClick={() => handleEditJob(job)}
+                        className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
                       >
+                        <Edit className="mr-1 h-3 w-3" />
                         Edit
                       </button>
                       <button
-                        disabled
-                        className="text-sm font-medium text-gray-400 cursor-not-allowed"
-                        title="Preview feature coming soon"
+                        onClick={() => handlePreviewJob(job)}
+                        className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-700 transition-colors"
                       >
+                        <Eye className="mr-1 h-3 w-3" />
                         Preview
                       </button>
+                      {!job.optimized && (
+                        <button
+                          onClick={() => handleOptimizeJob(job)}
+                          className="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-700 transition-colors"
+                        >
+                          <Sparkles className="mr-1 h-3 w-3" />
+                          Optimize
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -560,19 +736,39 @@ export default function EmployerBulkUploadPage() {
                 <h3 className="text-lg font-semibold text-gray-900">Optimization Options</h3>
                 <div className="space-y-3">
                   <label className="flex items-center">
-                    <input type="checkbox" className="mr-3 rounded" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="mr-3 rounded"
+                      checked={optimizationSettings.autoEnhance}
+                      onChange={(e) => setOptimizationSettings({...optimizationSettings, autoEnhance: e.target.checked})}
+                    />
                     <span className="text-sm text-gray-700">Auto-enhance job descriptions</span>
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" className="mr-3 rounded" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="mr-3 rounded"
+                      checked={optimizationSettings.addKeywords}
+                      onChange={(e) => setOptimizationSettings({...optimizationSettings, addKeywords: e.target.checked})}
+                    />
                     <span className="text-sm text-gray-700">Add relevant keywords for SEO</span>
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" className="mr-3 rounded" />
+                    <input
+                      type="checkbox"
+                      className="mr-3 rounded"
+                      checked={optimizationSettings.generateGraphics}
+                      onChange={(e) => setOptimizationSettings({...optimizationSettings, generateGraphics: e.target.checked})}
+                    />
                     <span className="text-sm text-gray-700">Generate social media graphics (+1 credit each)</span>
                   </label>
                   <label className="flex items-center">
-                    <input type="checkbox" className="mr-3 rounded" />
+                    <input
+                      type="checkbox"
+                      className="mr-3 rounded"
+                      checked={optimizationSettings.createFeatured}
+                      onChange={(e) => setOptimizationSettings({...optimizationSettings, createFeatured: e.target.checked})}
+                    />
                     <span className="text-sm text-gray-700">Create featured listings (+2 credits each)</span>
                   </label>
                 </div>
@@ -584,29 +780,43 @@ export default function EmployerBulkUploadPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Optimization Level
                     </label>
-                    <select className="w-full rounded-lg border border-gray-300 px-3 py-2">
-                      <option>Standard (included)</option>
-                      <option>Enhanced (+0.5 credits each)</option>
-                      <option>Premium (+1 credit each)</option>
+                    <select
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                      value={optimizationSettings.optimizationLevel}
+                      onChange={(e) => setOptimizationSettings({...optimizationSettings, optimizationLevel: e.target.value as 'standard' | 'enhanced' | 'premium'})}
+                    >
+                      <option value="standard">Standard (included)</option>
+                      <option value="enhanced">Enhanced (+0.5 credits each)</option>
+                      <option value="premium">Premium (+1 credit each)</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Target Audience
                     </label>
-                    <select className="w-full rounded-lg border border-gray-300 px-3 py-2">
-                      <option>General 209 Area</option>
-                      <option>Tech Professionals</option>
-                      <option>Healthcare Workers</option>
-                      <option>Retail & Service</option>
-                      <option>Manufacturing</option>
+                    <select
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                      value={optimizationSettings.targetAudience}
+                      onChange={(e) => setOptimizationSettings({...optimizationSettings, targetAudience: e.target.value})}
+                    >
+                      <option value="general">General 209 Area</option>
+                      <option value="tech">Tech Professionals</option>
+                      <option value="healthcare">Healthcare Workers</option>
+                      <option value="retail">Retail & Service</option>
+                      <option value="manufacturing">Manufacturing</option>
                     </select>
                   </div>
                 </div>
               </div>
             </div>
             <div className="mt-6 flex justify-end">
-              <button className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700">
+              <button
+                onClick={() => {
+                  showSuccess('Optimization settings saved successfully!');
+                  setShowOptimization(false);
+                }}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+              >
                 Save Settings
               </button>
             </div>
@@ -648,6 +858,201 @@ export default function EmployerBulkUploadPage() {
             </p>
           </div>
         </div>
+
+        {/* Edit Job Modal */}
+        {editingJob && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-2xl w-full mx-4 bg-white rounded-lg shadow-xl max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Edit Job</h2>
+                  <button
+                    onClick={() => setEditingJob(null)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Title
+                    </label>
+                    <input
+                      type="text"
+                      value={editingJob.title}
+                      onChange={(e) => setEditingJob({...editingJob, title: e.target.value})}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Company
+                    </label>
+                    <input
+                      type="text"
+                      value={editingJob.company || ''}
+                      onChange={(e) => setEditingJob({...editingJob, company: e.target.value})}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={editingJob.location}
+                      onChange={(e) => setEditingJob({...editingJob, location: e.target.value})}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Type
+                    </label>
+                    <select
+                      value={editingJob.jobType || ''}
+                      onChange={(e) => setEditingJob({...editingJob, jobType: e.target.value})}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                    >
+                      <option value="Full-time">Full-time</option>
+                      <option value="Part-time">Part-time</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Temporary">Temporary</option>
+                      <option value="Internship">Internship</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Salary
+                    </label>
+                    <input
+                      type="text"
+                      value={editingJob.salary || ''}
+                      onChange={(e) => setEditingJob({...editingJob, salary: e.target.value})}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                      placeholder="e.g., $50,000 - $70,000"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
+                    <textarea
+                      value={editingJob.description || ''}
+                      onChange={(e) => setEditingJob({...editingJob, description: e.target.value})}
+                      rows={6}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    onClick={() => setEditingJob(null)}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleSaveEdit(editingJob)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Preview Job Modal */}
+        {previewJob && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-4xl w-full mx-4 bg-white rounded-lg shadow-xl max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Job Preview</h2>
+                  <button
+                    onClick={() => setPreviewJob(null)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <div className="mb-4">
+                    <h1 className="text-2xl font-bold text-gray-900">{previewJob.title}</h1>
+                    <div className="flex items-center gap-4 mt-2 text-gray-600">
+                      <span className="flex items-center">
+                        <Building className="mr-1 h-4 w-4" />
+                        {previewJob.company}
+                      </span>
+                      <span className="flex items-center">
+                        <MapPin className="mr-1 h-4 w-4" />
+                        {previewJob.location}
+                      </span>
+                      {previewJob.salary && (
+                        <span className="flex items-center">
+                          <DollarSign className="mr-1 h-4 w-4" />
+                          {previewJob.salary}
+                        </span>
+                      )}
+                      <span className="flex items-center">
+                        <Clock className="mr-1 h-4 w-4" />
+                        {previewJob.jobType}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="prose max-w-none">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Job Description</h3>
+                    <div className="text-gray-700 whitespace-pre-wrap">
+                      {previewJob.description || 'No description provided.'}
+                    </div>
+                  </div>
+
+                  {previewJob.optimized && (
+                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center">
+                        <Sparkles className="h-4 w-4 text-green-600 mr-2" />
+                        <span className="text-sm font-medium text-green-800">
+                          This job has been AI-optimized
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    onClick={() => setPreviewJob(null)}
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingJob(previewJob);
+                      setPreviewJob(null);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Edit Job
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
