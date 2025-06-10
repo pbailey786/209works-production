@@ -65,8 +65,8 @@ const employerPlans = [
 export default function EmployerPricingPage() {
   const handlePlanSelect = async (planId: string, billingInterval: string) => {
     try {
-      // Create Stripe checkout session using Netlify function
-      const response = await fetch('/.netlify/functions/create-checkout-session', {
+      // Create Stripe checkout session using Netlify function (mock version for testing)
+      const response = await fetch('/.netlify/functions/create-checkout-session-mock', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
