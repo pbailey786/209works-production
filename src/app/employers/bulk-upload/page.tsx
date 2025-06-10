@@ -88,6 +88,7 @@ export default function EmployerBulkUploadPage() {
   const [genieResponse, setGenieResponse] = useState<string | null>(null);
   const [askingGenie, setAskingGenie] = useState(false);
   const [showGenieFirst, setShowGenieFirst] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Fetch upload history and user credits on component mount
   useEffect(() => {
@@ -276,6 +277,12 @@ export default function EmployerBulkUploadPage() {
   };
 
   const handleFile = async (file: File) => {
+    // Check if user has any credits before processing
+    if (userCredits.jobPost === 0) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
     setUploadedFile(file);
     setUploadStatus('uploading');
 
@@ -333,6 +340,10 @@ export default function EmployerBulkUploadPage() {
     const totalCreditsNeeded = successfulJobs.reduce((sum, job) => sum + job.creditsRequired, 0);
 
     if (totalCreditsNeeded > userCredits.jobPost) {
+      if (userCredits.jobPost === 0) {
+        setShowUpgradeModal(true);
+        return;
+      }
       showError(`Insufficient credits. You need ${totalCreditsNeeded} credits but only have ${userCredits.jobPost}.`);
       return;
     }
@@ -446,6 +457,11 @@ export default function EmployerBulkUploadPage() {
       console.error('Optimization error:', error);
       showError('Failed to optimize job. Please try again.');
     }
+  };
+
+  const handleUpgrade = () => {
+    // Redirect to pricing/subscription page
+    window.location.href = '/employers/pricing';
   };
 
   const downloadTemplate = () => {
@@ -607,25 +623,51 @@ export default function EmployerBulkUploadPage() {
             Upload Your Jobs
           </h2>
 
+          {userCredits.jobPost === 0 && (
+            <div className="mb-6 rounded-lg bg-orange-50 border border-orange-200 p-4">
+              <div className="flex items-center">
+                <CreditCard className="h-5 w-5 text-orange-600 mr-3" />
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-orange-800">No Credits Available</h3>
+                  <p className="text-sm text-orange-700 mt-1">
+                    You need job posting credits to upload jobs.
+                    <button
+                      onClick={() => setShowUpgradeModal(true)}
+                      className="underline font-medium ml-1 hover:text-orange-800"
+                    >
+                      View plans
+                    </button>
+                    to get started with bulk uploads.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div
             className={`rounded-xl border-2 border-dashed p-12 text-center transition-colors ${
-              dragActive
+              userCredits.jobPost === 0
+                ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+                : dragActive
                 ? 'border-[#2d4a3e] bg-[#9fdf9f]/10'
                 : 'border-gray-300 hover:border-[#2d4a3e]'
             }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
+            onDragEnter={userCredits.jobPost > 0 ? handleDrag : undefined}
+            onDragLeave={userCredits.jobPost > 0 ? handleDrag : undefined}
+            onDragOver={userCredits.jobPost > 0 ? handleDrag : undefined}
+            onDrop={userCredits.jobPost > 0 ? handleDrop : undefined}
           >
             {uploadStatus === 'idle' && (
               <>
-                <Upload className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+                <Upload className={`mx-auto mb-4 h-16 w-16 ${userCredits.jobPost === 0 ? 'text-gray-300' : 'text-gray-400'}`} />
                 <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                  Drag and drop your file here
+                  {userCredits.jobPost === 0 ? 'Credits Required for Upload' : 'Drag and drop your file here'}
                 </h3>
                 <p className="mb-6 text-gray-600">
-                  Support for CSV, Excel (.xlsx), and JSON files up to 10MB
+                  {userCredits.jobPost === 0
+                    ? 'Purchase a plan to start uploading jobs in bulk'
+                    : 'Support for CSV, Excel (.xlsx), and JSON files up to 10MB'
+                  }
                 </p>
                 <input
                   type="file"
@@ -633,12 +675,18 @@ export default function EmployerBulkUploadPage() {
                   onChange={handleFileInput}
                   className="hidden"
                   id="file-upload"
+                  disabled={userCredits.jobPost === 0}
                 />
                 <label
-                  htmlFor="file-upload"
-                  className="cursor-pointer rounded-lg bg-[#ff6b35] px-6 py-3 font-medium text-white transition-colors hover:bg-[#e55a2b]"
+                  htmlFor={userCredits.jobPost === 0 ? undefined : "file-upload"}
+                  className={`rounded-lg px-6 py-3 font-medium text-white transition-colors ${
+                    userCredits.jobPost === 0
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'cursor-pointer bg-[#ff6b35] hover:bg-[#e55a2b]'
+                  }`}
+                  onClick={userCredits.jobPost === 0 ? () => setShowUpgradeModal(true) : undefined}
                 >
-                  Choose File
+                  {userCredits.jobPost === 0 ? 'Get Credits' : 'Choose File'}
                 </label>
               </>
             )}
@@ -1374,6 +1422,58 @@ export default function EmployerBulkUploadPage() {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Upgrade Modal */}
+        {showUpgradeModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-md w-full mx-4 bg-white rounded-lg shadow-xl">
+              <div className="p-6">
+                <div className="text-center">
+                  <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                    <CreditCard className="h-6 w-6 text-orange-600" />
+                  </div>
+
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    No Credits Available
+                  </h3>
+
+                  <p className="text-sm text-gray-600 mb-6">
+                    You need job posting credits to upload and publish jobs. Choose a plan to get started with bulk uploads.
+                  </p>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h4 className="font-medium text-blue-900 mb-2">Bulk Upload Benefits:</h4>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                      <li>• Upload multiple jobs at once</li>
+                      <li>• AI-powered job optimization</li>
+                      <li>• Automatic formatting and enhancement</li>
+                      <li>• Save time with batch processing</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => setShowUpgradeModal(false)}
+                      className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleUpgrade}
+                      className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-medium"
+                    >
+                      View Plans
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-gray-500 mt-4">
+                    Plans start at $50/month with 2 job credits included
+                  </p>
+                </div>
               </div>
             </div>
           </div>
