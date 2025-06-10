@@ -55,4 +55,5 @@ export default async function EditJobPage({ params }: PageProps) {
   }
 
   return <EditJobForm job={job} />;
+}
 
