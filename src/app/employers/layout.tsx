@@ -34,7 +34,6 @@ const employerNavigation = [
     submenu: [
       { name: 'My Jobs', href: '/employers/my-jobs' },
       { name: 'Post New Job', href: '/employers/create-job-post' },
-      { name: 'Job Analytics', href: '/employers/reports' },
     ],
   },
   {

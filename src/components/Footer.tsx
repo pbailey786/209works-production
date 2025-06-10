@@ -43,7 +43,6 @@ const Footer = () => {
         { name: 'Employer Dashboard', href: '/employers/dashboard' },
         { name: 'Pricing Plans', href: '/employers/pricing' },
         { name: 'Bulk Upload', href: '/employers/bulk-upload' },
-        { name: 'Analytics', href: '/employers/reports' },
         { name: 'Contact Support', href: '/contact' },
       ],
     },

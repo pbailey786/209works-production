@@ -18,8 +18,8 @@ export default function EmployerLandingPage() {
     },
     {
       icon: '📊',
-      title: 'Analytics Dashboard',
-      description: 'Track application rates, views, and hiring performance',
+      title: 'Dashboard Overview',
+      description: 'Manage your jobs and track hiring progress',
       href: '/employers/dashboard',
     },
     {
