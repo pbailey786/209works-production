@@ -16,12 +16,9 @@ export async function GET(request: NextRequest) {
     // Get user and verify they're an employer
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { 
-        id: true, 
+      select: {
+        id: true,
         role: true,
-        jobPostCredits: true,
-        featuredPostCredits: true,
-        socialGraphicCredits: true,
       },
     });
 
@@ -29,11 +26,48 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Return credits (with defaults if not set)
+    // Get available credits by counting unused credits
+    const [jobPostCredits, featuredPostCredits, socialGraphicCredits] = await Promise.all([
+      prisma.jobPostingCredit.count({
+        where: {
+          userId: user.id,
+          type: 'job_post',
+          isUsed: false,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+          ]
+        }
+      }),
+      prisma.jobPostingCredit.count({
+        where: {
+          userId: user.id,
+          type: 'featured_post',
+          isUsed: false,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+          ]
+        }
+      }),
+      prisma.jobPostingCredit.count({
+        where: {
+          userId: user.id,
+          type: 'social_graphic',
+          isUsed: false,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+          ]
+        }
+      })
+    ]);
+
+    // Return credits
     const credits = {
-      jobPost: user.jobPostCredits || 0,
-      featuredPost: user.featuredPostCredits || 0,
-      socialGraphic: user.socialGraphicCredits || 0,
+      jobPost: jobPostCredits,
+      featuredPost: featuredPostCredits,
+      socialGraphic: socialGraphicCredits,
     };
 
     return NextResponse.json({
@@ -50,7 +84,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/employers/credits - Update user's credit balance (for admin use)
+// POST /api/employers/credits - Add credits to user's account (for admin use or purchases)
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
@@ -70,60 +104,94 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { jobPost, featuredPost, socialGraphic, operation = 'set' } = body;
+    const { jobPost, featuredPost, socialGraphic, operation = 'add', expiresAt } = body;
 
-    // Update credits based on operation
-    const updateData: any = {};
-    
+    // Create credit records based on operation
+    const creditsToCreate = [];
+
     if (operation === 'add') {
-      // Add credits
-      if (jobPost !== undefined) {
-        updateData.jobPostCredits = { increment: jobPost };
+      // Add job post credits
+      if (jobPost && jobPost > 0) {
+        for (let i = 0; i < jobPost; i++) {
+          creditsToCreate.push({
+            userId: user.id,
+            type: 'job_post',
+            expiresAt: expiresAt ? new Date(expiresAt) : null,
+          });
+        }
       }
-      if (featuredPost !== undefined) {
-        updateData.featuredPostCredits = { increment: featuredPost };
+
+      // Add featured post credits
+      if (featuredPost && featuredPost > 0) {
+        for (let i = 0; i < featuredPost; i++) {
+          creditsToCreate.push({
+            userId: user.id,
+            type: 'featured_post',
+            expiresAt: expiresAt ? new Date(expiresAt) : null,
+          });
+        }
       }
-      if (socialGraphic !== undefined) {
-        updateData.socialGraphicCredits = { increment: socialGraphic };
+
+      // Add social graphic credits
+      if (socialGraphic && socialGraphic > 0) {
+        for (let i = 0; i < socialGraphic; i++) {
+          creditsToCreate.push({
+            userId: user.id,
+            type: 'social_graphic',
+            expiresAt: expiresAt ? new Date(expiresAt) : null,
+          });
+        }
       }
-    } else if (operation === 'subtract') {
-      // Subtract credits
-      if (jobPost !== undefined) {
-        updateData.jobPostCredits = { decrement: jobPost };
-      }
-      if (featuredPost !== undefined) {
-        updateData.featuredPostCredits = { decrement: featuredPost };
-      }
-      if (socialGraphic !== undefined) {
-        updateData.socialGraphicCredits = { decrement: socialGraphic };
-      }
-    } else {
-      // Set credits (default)
-      if (jobPost !== undefined) {
-        updateData.jobPostCredits = jobPost;
-      }
-      if (featuredPost !== undefined) {
-        updateData.featuredPostCredits = featuredPost;
-      }
-      if (socialGraphic !== undefined) {
-        updateData.socialGraphicCredits = socialGraphic;
+
+      // Create all credits
+      if (creditsToCreate.length > 0) {
+        await prisma.jobPostingCredit.createMany({
+          data: creditsToCreate,
+        });
       }
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: updateData,
-      select: {
-        jobPostCredits: true,
-        featuredPostCredits: true,
-        socialGraphicCredits: true,
-      },
-    });
+    // Get updated credit counts
+    const [jobPostCredits, featuredPostCredits, socialGraphicCredits] = await Promise.all([
+      prisma.jobPostingCredit.count({
+        where: {
+          userId: user.id,
+          type: 'job_post',
+          isUsed: false,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+          ]
+        }
+      }),
+      prisma.jobPostingCredit.count({
+        where: {
+          userId: user.id,
+          type: 'featured_post',
+          isUsed: false,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+          ]
+        }
+      }),
+      prisma.jobPostingCredit.count({
+        where: {
+          userId: user.id,
+          type: 'social_graphic',
+          isUsed: false,
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+          ]
+        }
+      })
+    ]);
 
     const credits = {
-      jobPost: updatedUser.jobPostCredits || 0,
-      featuredPost: updatedUser.featuredPostCredits || 0,
-      socialGraphic: updatedUser.socialGraphicCredits || 0,
+      jobPost: jobPostCredits,
+      featuredPost: featuredPostCredits,
+      socialGraphic: socialGraphicCredits,
     };
 
     return NextResponse.json({

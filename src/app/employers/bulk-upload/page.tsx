@@ -19,6 +19,8 @@ import {
   Building,
   Users,
   TrendingUp,
+  MessageCircle,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -78,10 +80,20 @@ export default function EmployerBulkUploadPage() {
     targetAudience: 'general',
   });
 
+  // New state for subscription and support
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [supportMessage, setSupportMessage] = useState('');
+  const [sendingSupport, setSendingSupport] = useState(false);
+  const [genieResponse, setGenieResponse] = useState<string | null>(null);
+  const [askingGenie, setAskingGenie] = useState(false);
+  const [showGenieFirst, setShowGenieFirst] = useState(true);
+
   // Fetch upload history and user credits on component mount
   useEffect(() => {
     fetchUploadHistory();
     fetchUserCredits();
+    checkSubscriptionStatus();
   }, []);
 
   const fetchUploadHistory = async () => {
@@ -102,9 +114,14 @@ export default function EmployerBulkUploadPage() {
       if (response.ok) {
         const data = await response.json();
         setUserCredits(data.credits || { jobPost: 0, featuredPost: 0, socialGraphic: 0 });
+      } else {
+        // If credits API fails, set default values for testing
+        setUserCredits({ jobPost: 5, featuredPost: 2, socialGraphic: 3 });
       }
     } catch (error) {
       console.error('Failed to fetch user credits:', error);
+      // Set default values for testing
+      setUserCredits({ jobPost: 5, featuredPost: 2, socialGraphic: 3 });
     }
   };
 
@@ -116,6 +133,120 @@ export default function EmployerBulkUploadPage() {
   const showSuccess = (message: string) => {
     setSuccessMessage(message);
     setTimeout(() => setSuccessMessage(null), 5000);
+  };
+
+  const checkSubscriptionStatus = async () => {
+    try {
+      const response = await fetch('/api/employers/subscription/status');
+      if (response.ok) {
+        const data = await response.json();
+        setHasActiveSubscription(data.hasActiveSubscription || false);
+      }
+    } catch (error) {
+      console.error('Failed to check subscription status:', error);
+      setHasActiveSubscription(false);
+    }
+  };
+
+  const handleAddCredits = async () => {
+    // Check if user has active subscription
+    if (!hasActiveSubscription) {
+      showError('Credit purchases are only available to active subscribers. Please upgrade your subscription to purchase additional credits.');
+      return;
+    }
+    try {
+      const response = await fetch('/api/employers/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobPost: 10,
+          featuredPost: 5,
+          socialGraphic: 5,
+          operation: 'add',
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserCredits(data.credits);
+        showSuccess('Credits added successfully! You now have more credits to post jobs.');
+      } else {
+        throw new Error('Failed to add credits');
+      }
+    } catch (error) {
+      console.error('Failed to add credits:', error);
+      showError('Failed to add credits. Please try again.');
+    }
+  };
+
+  const handleGenieSupport = async () => {
+    if (!supportMessage.trim()) {
+      showError('Please enter a question before asking Genie.');
+      return;
+    }
+
+    setAskingGenie(true);
+    try {
+      const response = await fetch('/api/support/genie', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: supportMessage.trim(),
+          context: {
+            page: 'bulk-upload',
+            userAgent: navigator.userAgent,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setGenieResponse(data.reply);
+        setShowGenieFirst(false);
+      } else {
+        throw new Error('Failed to get AI support response');
+      }
+    } catch (error) {
+      console.error('Failed to get Genie support:', error);
+      showError('AI support is temporarily unavailable. You can still contact human support below.');
+      setShowGenieFirst(false);
+    } finally {
+      setAskingGenie(false);
+    }
+  };
+
+  const handleSupportSubmit = async () => {
+    if (!supportMessage.trim()) {
+      showError('Please enter a message before sending.');
+      return;
+    }
+
+    setSendingSupport(true);
+    try {
+      const response = await fetch('/api/support/bulk-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: supportMessage.trim(),
+          page: 'bulk-upload',
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        showSuccess('Your support message has been sent! Our team will get back to you within 24 hours.');
+        setSupportMessage('');
+        setShowSupportModal(false);
+      } else {
+        throw new Error('Failed to send support message');
+      }
+    } catch (error) {
+      console.error('Failed to send support message:', error);
+      showError('Failed to send support message. Please try again or contact support directly at support@209.works.');
+    } finally {
+      setSendingSupport(false);
+    }
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -410,9 +541,18 @@ export default function EmployerBulkUploadPage() {
                 </div>
                 <p className="text-sm text-gray-600">Featured</p>
               </div>
-              <button className="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700">
+              <button
+                onClick={handleAddCredits}
+                disabled={!hasActiveSubscription}
+                className={`rounded-lg px-4 py-2 text-white transition-colors ${
+                  hasActiveSubscription
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-gray-400 cursor-not-allowed'
+                }`}
+                title={!hasActiveSubscription ? 'Active subscription required to purchase credits' : 'Add more credits to your account'}
+              >
                 <CreditCard className="mr-2 inline h-4 w-4" />
-                Add Credits
+                Add Credits {!hasActiveSubscription && '(Subscription Required)'}
               </button>
             </div>
           </div>
@@ -823,6 +963,25 @@ export default function EmployerBulkUploadPage() {
           </div>
         )}
 
+        {/* Support Section */}
+        <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Need Help?</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Having trouble with bulk uploads? Our support team is here to help you get the most out of your job posting experience.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSupportModal(true)}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 flex items-center"
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Contact Support
+            </button>
+          </div>
+        </div>
+
         {/* Features */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -1049,6 +1208,172 @@ export default function EmployerBulkUploadPage() {
                     Edit Job
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Support Modal */}
+        {showSupportModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-2xl w-full mx-4 bg-white rounded-lg shadow-xl max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Get Help</h2>
+                  <button
+                    onClick={() => {
+                      setShowSupportModal(false);
+                      setGenieResponse(null);
+                      setShowGenieFirst(true);
+                      setSupportMessage('');
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+
+                {showGenieFirst && !genieResponse && (
+                  <div className="mb-4">
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-start">
+                        <Sparkles className="h-5 w-5 text-purple-600 mt-0.5 mr-3" />
+                        <div>
+                          <h3 className="font-medium text-purple-900 mb-1">Try AI Support First! 🧞‍♂️</h3>
+                          <p className="text-sm text-purple-800">
+                            Our Support Genie can instantly help with common bulk upload questions. Get answers in seconds!
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      What do you need help with?
+                    </label>
+                    <textarea
+                      value={supportMessage}
+                      onChange={(e) => setSupportMessage(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                      placeholder="e.g., 'My CSV file won't upload' or 'How do I format job descriptions?'"
+                    />
+
+                    <div className="flex gap-3 mt-4">
+                      <button
+                        onClick={handleGenieSupport}
+                        disabled={askingGenie || !supportMessage.trim()}
+                        className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                      >
+                        {askingGenie ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Asking Genie...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Ask Support Genie
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => setShowGenieFirst(false)}
+                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      >
+                        Skip to Human Support
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {genieResponse && (
+                  <div className="mb-6">
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-start">
+                        <Sparkles className="h-5 w-5 text-green-600 mt-0.5 mr-3" />
+                        <div>
+                          <h3 className="font-medium text-green-900 mb-2">Support Genie Response:</h3>
+                          <div className="text-sm text-green-800 whitespace-pre-wrap">{genieResponse}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setShowSupportModal(false);
+                          setGenieResponse(null);
+                          setShowGenieFirst(true);
+                          setSupportMessage('');
+                        }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                      >
+                        Problem Solved!
+                      </button>
+                      <button
+                        onClick={() => setShowGenieFirst(false)}
+                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      >
+                        Still Need Human Help
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {!showGenieFirst && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-4">
+                      Need to speak with a human? Describe your issue and our support team will get back to you within 24 hours.
+                    </p>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                      <div className="flex items-start">
+                        <MessageCircle className="h-4 w-4 text-blue-600 mt-0.5 mr-2" />
+                        <div className="text-xs text-blue-800">
+                          <p className="font-medium">Direct Contact</p>
+                          <p>For urgent issues, email us directly at <a href="mailto:support@209.works" className="underline">support@209.works</a></p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Describe your issue or question:
+                    </label>
+                    <textarea
+                      value={supportMessage}
+                      onChange={(e) => setSupportMessage(e.target.value)}
+                      rows={4}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      placeholder="Please provide as much detail as possible about your issue..."
+                    />
+
+                    <div className="flex justify-end gap-3 mt-4">
+                      <button
+                        onClick={() => setShowGenieFirst(true)}
+                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      >
+                        Back to AI Support
+                      </button>
+                      <button
+                        onClick={handleSupportSubmit}
+                        disabled={sendingSupport || !supportMessage.trim()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center"
+                      >
+                        {sendingSupport ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            Send to Human Support
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

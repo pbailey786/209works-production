@@ -117,13 +117,24 @@ export async function POST(request: NextRequest) {
       processedJobs.push(processedJob);
     }
 
-    // Check if user has enough credits (mock for now)
-    const userCredits = { jobPost: 10, featuredPost: 3 }; // TODO: Get from user profile
-    if (totalCreditsNeeded > userCredits.jobPost) {
+    // Check if user has enough credits
+    const availableCredits = await prisma.jobPostingCredit.count({
+      where: {
+        userId: user.id,
+        type: 'job_post',
+        isUsed: false,
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } }
+        ]
+      }
+    });
+
+    if (totalCreditsNeeded > availableCredits) {
       return NextResponse.json({
         error: 'Insufficient credits',
         creditsNeeded: totalCreditsNeeded,
-        creditsAvailable: userCredits.jobPost,
+        creditsAvailable: availableCredits,
         processedJobs,
       }, { status: 400 });
     }
@@ -132,7 +143,38 @@ export async function POST(request: NextRequest) {
     const createdJobs = [];
     const successfulJobs = processedJobs.filter(job => job.status === 'success');
 
-    for (const jobData of successfulJobs) {
+    // Get available credits to use
+    const creditsToUse = await prisma.jobPostingCredit.findMany({
+      where: {
+        userId: user.id,
+        type: 'job_post',
+        isUsed: false,
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } }
+        ]
+      },
+      take: successfulJobs.length,
+      orderBy: [
+        { expiresAt: 'asc' }, // Use expiring credits first
+        { createdAt: 'asc' }
+      ]
+    });
+
+    for (let i = 0; i < successfulJobs.length; i++) {
+      const jobData = successfulJobs[i];
+      const creditToUse = creditsToUse[i];
+
+      if (!creditToUse) {
+        // This shouldn't happen since we checked credits above, but just in case
+        const jobIndex = processedJobs.findIndex(j => j.title === jobData.title);
+        if (jobIndex !== -1) {
+          processedJobs[jobIndex].status = 'error';
+          processedJobs[jobIndex].validationErrors.push('No credits available');
+        }
+        continue;
+      }
+
       try {
         // Parse salary if provided
         let salaryMin = null;
@@ -164,6 +206,16 @@ export async function POST(request: NextRequest) {
             source: '209works',
             url: '',
             postedAt: new Date(),
+          },
+        });
+
+        // Mark the credit as used
+        await prisma.jobPostingCredit.update({
+          where: { id: creditToUse.id },
+          data: {
+            isUsed: true,
+            usedAt: new Date(),
+            usedForJobId: createdJob.id,
           },
         });
 
@@ -202,6 +254,19 @@ export async function POST(request: NextRequest) {
         console.error('Failed to log bulk upload:', error);
       });
 
+    // Get remaining credits after usage
+    const remainingCredits = await prisma.jobPostingCredit.count({
+      where: {
+        userId: user.id,
+        type: 'job_post',
+        isUsed: false,
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } }
+        ]
+      }
+    });
+
     return NextResponse.json({
       success: true,
       bulkUploadId: null, // Temporarily disabled
@@ -209,7 +274,7 @@ export async function POST(request: NextRequest) {
       createdJobs: createdJobs.length,
       processedJobs,
       creditsNeeded: totalCreditsNeeded,
-      creditsRemaining: userCredits.jobPost - totalCreditsNeeded,
+      creditsRemaining: remainingCredits,
       message: `Successfully created ${createdJobs.length} jobs`,
     });
   } catch (error) {
