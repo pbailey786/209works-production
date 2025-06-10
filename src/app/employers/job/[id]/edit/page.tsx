@@ -30,7 +30,11 @@ interface Job {
   postedAt: string;
 }
 
-export default function EditJobPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: { id: string };
+}
+
+export default function EditJobPage({ params }: PageProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [job, setJob] = useState<Job | null>(null);
