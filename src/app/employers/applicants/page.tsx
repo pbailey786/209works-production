@@ -400,14 +400,14 @@ export default function ApplicantsPage() {
                             className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                           >
                             <Mail className="mr-1 inline h-3 w-3" />
-                            Contact
+                            Email
                           </button>
 
                           <Link
-                            href={`/employers/applicants/${application.id}`}
+                            href={`/employers/candidates/${application.id}`}
                             className="rounded bg-blue-600 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-700"
                           >
-                            View Details
+                            View Snapshot
                           </Link>
                         </div>
                       </div>

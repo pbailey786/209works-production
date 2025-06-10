@@ -565,12 +565,18 @@ export default function EmployerJobDetailsPage() {
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                           <div className="flex items-center space-x-2">
-                            <button className="text-blue-600 hover:text-blue-900">
+                            <Link
+                              href={`/employers/candidates/${applicant.id}`}
+                              className="text-blue-600 hover:text-blue-900"
+                            >
                               View
-                            </button>
-                            <button className="text-green-600 hover:text-green-900">
-                              Message
-                            </button>
+                            </Link>
+                            <a
+                              href={`mailto:${applicant.email}?subject=Re: ${jobData.title} Application`}
+                              className="text-green-600 hover:text-green-900"
+                            >
+                              Email
+                            </a>
                           </div>
                         </td>
                       </tr>
