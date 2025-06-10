@@ -59,6 +59,34 @@ export const POST = withAPIMiddleware(
     // vs premium features that require credits
     const isFreeBasicPost = body?.source === 'free_basic_post';
 
+    // For free basic posts, check if user already has an active free post
+    if (isFreeBasicPost) {
+      const existingFreePost = await prisma.job.findFirst({
+        where: {
+          employerId,
+          source: 'free_basic_post',
+          status: 'active',
+          OR: [
+            { expiresAt: null },
+            { expiresAt: { gt: new Date() } }
+          ]
+        }
+      });
+
+      if (existingFreePost) {
+        return NextResponse.json(
+          {
+            error: 'You can only have 1 free job post active at a time. Please wait for your current post to expire or upgrade to post multiple jobs.',
+            code: 'FREE_POST_LIMIT',
+            redirectUrl: '/employers/dashboard',
+            existingJobId: existingFreePost.id,
+            existingJobTitle: existingFreePost.title
+          },
+          { status: 409 } // Conflict
+        );
+      }
+    }
+
     // For premium features, check if user has job posting credits
     if (!isFreeBasicPost) {
       const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');

@@ -156,7 +156,19 @@ export default function SimplePostJobPage() {
         router.push('/employers/dashboard?posted=true');
       } else {
         console.error('❌ Job posting failed:', responseData);
-        setErrors({ submit: responseData.error || 'Failed to post job' });
+
+        // Handle specific error cases
+        if (responseData.code === 'FREE_POST_LIMIT') {
+          setErrors({
+            submit: `${responseData.error} Your current job "${responseData.existingJobTitle}" is still active.`
+          });
+        } else if (responseData.code === 'CREDITS_REQUIRED') {
+          // Redirect to upgrade page for credit-based posting
+          router.push('/employers/upgrade?reason=job-posting');
+          return;
+        } else {
+          setErrors({ submit: responseData.error || 'Failed to post job' });
+        }
       }
     } catch (error) {
       console.error('❌ Network error:', error);
@@ -413,13 +425,14 @@ export default function SimplePostJobPage() {
                 )}
               </button>
 
-              <p className="mt-3 text-center text-sm text-gray-500">
-                Your job will be live for 7 days and reach thousands of local
-                candidates
-              </p>
-              <p className="mt-1 text-center text-xs text-blue-600">
-                ✨ Want AI-optimized job posts? <a href="/employers/create-job-post" className="underline">Try our Job Post Optimizer</a>
-              </p>
+              <div className="mt-4 rounded-lg bg-blue-50 p-3">
+                <p className="text-center text-sm text-blue-800">
+                  📋 <strong>Free Plan:</strong> 1 active job post at a time, live for 7 days
+                </p>
+                <p className="mt-1 text-center text-xs text-blue-600">
+                  ✨ Want multiple jobs or AI optimization? <a href="/employers/create-job-post" className="underline">Upgrade your plan</a>
+                </p>
+              </div>
             </div>
           </form>
         </div>
