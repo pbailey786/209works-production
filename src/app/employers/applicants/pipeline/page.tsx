@@ -13,6 +13,8 @@ import {
   MoreHorizontal,
   Settings,
   BarChart3,
+  Download,
+  FileArchive,
 } from 'lucide-react';
 
 interface Application {
@@ -54,6 +56,7 @@ export default function PipelineViewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pipelineStages, setPipelineStages] = useState<PipelineStage[]>([]);
+  const [downloadingStage, setDownloadingStage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchApplications();
@@ -106,6 +109,45 @@ export default function PipelineViewPage() {
       setError(err instanceof Error ? err.message : 'Failed to update application');
     }
   };
+
+  const handleBulkDownload = async (status: string, stageTitle: string) => {
+    if (!applications.length) return;
+
+    setDownloadingStage(status);
+    try {
+      // Get the first job ID from applications (assuming all are from same job for now)
+      const jobId = applications[0]?.job?.id;
+      if (!jobId) {
+        throw new Error('No job found for applications');
+      }
+
+      const response = await fetch('/api/employers/resumes/bulk-download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId, status: status === 'all' ? undefined : status }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to download resumes');
+      }
+
+      // Create download link
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${stageTitle}_Resumes.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to download resumes');
+    } finally {
+      setDownloadingStage(null);
+    }
+  };
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
@@ -146,6 +188,20 @@ export default function PipelineViewPage() {
           </h1>
         </div>
         <div className="flex items-center space-x-3">
+          {totalApplications > 0 && (
+            <button
+              onClick={() => handleBulkDownload('all', 'All_Candidates')}
+              disabled={downloadingStage === 'all'}
+              className="flex items-center space-x-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+            >
+              {downloadingStage === 'all' ? (
+                <div className="h-4 w-4 animate-spin rounded-full border border-white border-t-transparent"></div>
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              <span>Download All Resumes</span>
+            </button>
+          )}
           <Link
             href="/employers/applicants"
             className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
@@ -193,9 +249,26 @@ export default function PipelineViewPage() {
             <div className={`rounded-t-lg border-b p-4 ${stage.color}`}>
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-gray-900">{stage.title}</h3>
-                <span className={`rounded-full px-2 py-1 text-xs font-medium ${stage.headerColor}`}>
-                  {stage.applications.length}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className={`rounded-full px-2 py-1 text-xs font-medium ${stage.headerColor}`}>
+                    {stage.applications.length}
+                  </span>
+                  {stage.applications.length > 0 && (
+                    <button
+                      onClick={() => handleBulkDownload(stage.id, stage.title)}
+                      disabled={downloadingStage === stage.id}
+                      className="flex items-center space-x-1 rounded bg-blue-600 px-2 py-1 text-xs text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                      title={`Download all resumes for ${stage.title}`}
+                    >
+                      {downloadingStage === stage.id ? (
+                        <div className="h-3 w-3 animate-spin rounded-full border border-white border-t-transparent"></div>
+                      ) : (
+                        <FileArchive className="h-3 w-3" />
+                      )}
+                      <span className="hidden sm:inline">ZIP</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 

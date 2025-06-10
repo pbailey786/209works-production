@@ -299,12 +299,11 @@ export default function CandidateSnapshotPage() {
                 <h2 className="text-xl font-semibold text-gray-900">Resume</h2>
                 <a
                   href={candidate.resumeUrl || candidate.user.resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  download
                   className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download
+                  Download Resume
                 </a>
               </div>
 

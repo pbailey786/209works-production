@@ -300,7 +300,6 @@ export default function EmployerJobDetailsPage() {
             { id: 'overview', label: 'Overview', icon: Eye },
             { id: 'applicants', label: 'Applicants', icon: Users },
             { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-            { id: 'settings', label: 'Settings', icon: Edit },
           ].map(tab => (
             <button
               key={tab.id}
@@ -450,30 +449,84 @@ export default function EmployerJobDetailsPage() {
               </div>
             </div>
 
-            {/* Job Status */}
+            {/* Job Settings */}
             <div className="rounded-lg border bg-white p-6">
-              <h3 className="mb-4 text-lg font-semibold">Job Status</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Status</span>
-                  <span className="flex items-center space-x-1">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-green-600">Active</span>
-                  </span>
+              <h3 className="mb-4 text-lg font-semibold">Job Settings</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Job Status
+                  </label>
+                  <select className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
+                    <option>Active</option>
+                    <option>Paused</option>
+                    <option>Archived</option>
+                  </select>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Created</span>
-                  <span className="text-gray-900">
-                    {formatDate(jobData.createdAt)}
-                  </span>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Auto-renewal
+                  </label>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      defaultChecked
+                    />
+                    <label className="ml-2 block text-sm text-gray-900">
+                      Automatically renew this job posting
+                    </label>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Last Updated</span>
-                  <span className="text-gray-900">{formatDate(jobData.updatedAt)}</span>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Application Notifications
+                  </label>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        defaultChecked
+                      />
+                      <label className="ml-2 block text-sm text-gray-900">
+                        Email me when someone applies
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label className="ml-2 block text-sm text-gray-900">
+                        Daily application summary
+                      </label>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Auto-renewal</span>
-                  <span className="text-green-600">Enabled</span>
+
+                <div className="border-t pt-4">
+                  <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                    Save Settings
+                  </button>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="mb-3 text-sm font-medium text-gray-700">Job Information</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Created</span>
+                      <span className="text-gray-900">
+                        {formatDate(jobData.createdAt)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Last Updated</span>
+                      <span className="text-gray-900">{formatDate(jobData.updatedAt)}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -652,72 +705,7 @@ export default function EmployerJobDetailsPage() {
         </div>
       )}
 
-      {activeTab === 'settings' && (
-        <div className="rounded-lg border bg-white p-6">
-          <h3 className="mb-6 text-lg font-semibold">Job Settings</h3>
-          <div className="space-y-6">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Job Status
-              </label>
-              <select className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500">
-                <option>Active</option>
-                <option>Paused</option>
-                <option>Archived</option>
-              </select>
-            </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Auto-renewal
-              </label>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  defaultChecked
-                />
-                <label className="ml-2 block text-sm text-gray-900">
-                  Automatically renew this job posting
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Application Notifications
-              </label>
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    defaultChecked
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Email me when someone applies
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label className="ml-2 block text-sm text-gray-900">
-                    Daily application summary
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
-                Save Settings
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
