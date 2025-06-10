@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get applications with resume URLs
-    const applications = await prisma.application.findMany({
+    const applications = await prisma.jobApplication.findMany({
       where: whereClause,
       include: {
         user: {
