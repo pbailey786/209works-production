@@ -93,25 +93,45 @@ export async function GET(
       },
     };
 
-    const mockParsedResume = application.user.skills ? {
-      skills: application.user.skills,
+    const mockParsedResume = {
+      skills: application.user.skills || [
+        'JavaScript', 'React', 'Node.js', 'TypeScript', 'Python', 'SQL',
+        'Git', 'AWS', 'Docker', 'REST APIs', 'MongoDB', 'Express.js'
+      ],
       experience: [
         {
-          title: 'Software Developer',
-          company: 'Tech Company Inc.',
-          duration: '2021 - Present',
-          description: 'Developed web applications using modern frameworks and technologies.',
+          title: 'Senior Software Developer',
+          company: 'Tech Innovations LLC',
+          duration: '2022 - Present',
+          description: 'Lead development of scalable web applications serving 100K+ users. Implemented microservices architecture, reduced load times by 40%, and mentored junior developers. Technologies: React, Node.js, AWS, Docker.',
+        },
+        {
+          title: 'Full Stack Developer',
+          company: 'Digital Solutions Corp',
+          duration: '2020 - 2022',
+          description: 'Built and maintained e-commerce platforms with integrated payment systems. Collaborated with cross-functional teams to deliver features on time. Improved database performance by 30% through query optimization.',
+        },
+        {
+          title: 'Junior Web Developer',
+          company: 'StartupXYZ',
+          duration: '2019 - 2020',
+          description: 'Developed responsive web interfaces and RESTful APIs. Participated in agile development process and code reviews. Gained experience with modern JavaScript frameworks and cloud deployment.',
         },
       ],
       education: [
         {
-          degree: 'Bachelor of Computer Science',
-          institution: 'University of California',
-          year: '2021',
+          degree: 'Bachelor of Science in Computer Science',
+          institution: 'University of California, Davis',
+          year: '2019',
+        },
+        {
+          degree: 'Associate of Arts in Mathematics',
+          institution: 'Sacramento City College',
+          year: '2017',
         },
       ],
-      summary: application.user.bio || 'Experienced professional with strong technical skills.',
-    } : undefined;
+      summary: application.user.bio || 'Passionate full-stack developer with 5+ years of experience building scalable web applications. Expertise in modern JavaScript frameworks, cloud technologies, and agile development practices. Strong problem-solving skills and commitment to writing clean, maintainable code.',
+    };
 
     // Mock screening answers - in real implementation, these would come from job application form
     const mockScreeningAnswers = [

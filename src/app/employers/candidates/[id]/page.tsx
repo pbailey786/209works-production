@@ -309,77 +309,120 @@ export default function CandidateSnapshotPage() {
               </div>
 
               {/* Resume Preview */}
-              <div className="mb-6 rounded-lg border bg-gray-50 p-4">
-                <div className="flex items-center justify-center">
-                  <iframe
-                    src={`${candidate.resumeUrl || candidate.user.resumeUrl}#toolbar=0`}
-                    className="h-96 w-full rounded border"
-                    title="Resume Preview"
-                  />
-                </div>
+              <div className="mb-6 rounded-lg border bg-white p-6">
+                {candidate.parsedResume ? (
+                  <div className="resume-preview space-y-6">
+                    {/* Resume Header */}
+                    <div className="border-b border-gray-200 pb-4">
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        {candidate.user.name || 'Anonymous Candidate'}
+                      </h3>
+                      {candidate.user.email && (
+                        <p className="text-gray-600">{candidate.user.email}</p>
+                      )}
+                      {candidate.user.phoneNumber && (
+                        <p className="text-gray-600">{candidate.user.phoneNumber}</p>
+                      )}
+                      {candidate.user.location && (
+                        <p className="text-gray-600">{candidate.user.location}</p>
+                      )}
+                      {candidate.user.linkedinUrl && (
+                        <a
+                          href={candidate.user.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-500"
+                        >
+                          LinkedIn Profile
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Professional Summary */}
+                    {candidate.parsedResume.summary && (
+                      <div>
+                        <h4 className="mb-2 text-lg font-semibold text-gray-900">
+                          Professional Summary
+                        </h4>
+                        <p className="text-gray-700 leading-relaxed">
+                          {candidate.parsedResume.summary}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Skills */}
+                    {candidate.parsedResume.skills && candidate.parsedResume.skills.length > 0 && (
+                      <div>
+                        <h4 className="mb-3 text-lg font-semibold text-gray-900">
+                          Skills
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {candidate.parsedResume.skills.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Experience */}
+                    {candidate.parsedResume.experience && candidate.parsedResume.experience.length > 0 && (
+                      <div>
+                        <h4 className="mb-3 text-lg font-semibold text-gray-900">
+                          Professional Experience
+                        </h4>
+                        <div className="space-y-4">
+                          {candidate.parsedResume.experience.map((exp, index) => (
+                            <div key={index} className="border-l-2 border-blue-200 pl-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <h5 className="font-semibold text-gray-900">{exp.title}</h5>
+                                <span className="text-sm text-gray-500">{exp.duration}</span>
+                              </div>
+                              <p className="text-gray-700 font-medium">{exp.company}</p>
+                              <p className="mt-1 text-gray-600 leading-relaxed">{exp.description}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Education */}
+                    {candidate.parsedResume.education && candidate.parsedResume.education.length > 0 && (
+                      <div>
+                        <h4 className="mb-3 text-lg font-semibold text-gray-900">
+                          Education
+                        </h4>
+                        <div className="space-y-3">
+                          {candidate.parsedResume.education.map((edu, index) => (
+                            <div key={index} className="border-l-2 border-green-200 pl-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <h5 className="font-semibold text-gray-900">{edu.degree}</h5>
+                                <span className="text-sm text-gray-500">{edu.year}</span>
+                              </div>
+                              <p className="text-gray-700">{edu.institution}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Fallback to PDF viewer if no parsed resume */
+                  <div className="flex items-center justify-center">
+                    <iframe
+                      src={`${candidate.resumeUrl || candidate.user.resumeUrl}#toolbar=0`}
+                      className="h-96 w-full rounded border"
+                      title="Resume Preview"
+                    />
+                  </div>
+                )}
               </div>
 
-              {/* Parsed Resume Content */}
-              {candidate.parsedResume && (
-                <div className="space-y-6">
-                  {/* Skills */}
-                  {candidate.parsedResume.skills && candidate.parsedResume.skills.length > 0 && (
-                    <div>
-                      <h3 className="mb-3 flex items-center text-lg font-medium text-gray-900">
-                        <Target className="mr-2 h-5 w-5 text-blue-500" />
-                        Skills
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {candidate.parsedResume.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Experience */}
-                  {candidate.parsedResume.experience && candidate.parsedResume.experience.length > 0 && (
-                    <div>
-                      <h3 className="mb-3 flex items-center text-lg font-medium text-gray-900">
-                        <Briefcase className="mr-2 h-5 w-5 text-green-500" />
-                        Experience
-                      </h3>
-                      <div className="space-y-4">
-                        {candidate.parsedResume.experience.map((exp, index) => (
-                          <div key={index} className="border-l-2 border-gray-200 pl-4">
-                            <h4 className="font-medium text-gray-900">{exp.title}</h4>
-                            <p className="text-sm text-gray-600">{exp.company} • {exp.duration}</p>
-                            <p className="mt-1 text-sm text-gray-700">{exp.description}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Education */}
-                  {candidate.parsedResume.education && candidate.parsedResume.education.length > 0 && (
-                    <div>
-                      <h3 className="mb-3 flex items-center text-lg font-medium text-gray-900">
-                        <GraduationCap className="mr-2 h-5 w-5 text-purple-500" />
-                        Education
-                      </h3>
-                      <div className="space-y-3">
-                        {candidate.parsedResume.education.map((edu, index) => (
-                          <div key={index}>
-                            <h4 className="font-medium text-gray-900">{edu.degree}</h4>
-                            <p className="text-sm text-gray-600">{edu.institution} • {edu.year}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           )}
 
