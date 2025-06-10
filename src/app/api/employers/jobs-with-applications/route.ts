@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         status: 'active',
       },
       include: {
-        applications: {
+        jobApplications: {
           include: {
             user: {
               select: {
@@ -50,9 +50,9 @@ export async function GET(request: NextRequest) {
       title: job.title,
       company: job.company,
       location: job.location,
-      applications: job.applications.map(app => ({
+      applications: job.jobApplications.map(app => ({
         id: app.id,
-        status: app.status,
+        status: app.status || 'applied',
         appliedAt: app.appliedAt,
         job: {
           id: job.id,
