@@ -27,7 +27,13 @@ function CheckoutContent() {
       try {
         setLoading(true);
 
-        const response = await fetch('/.netlify/functions/create-checkout-session', {
+        // Use mock function if Stripe keys are not configured
+        const hasStripeKeys = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+        const endpoint = hasStripeKeys
+          ? '/.netlify/functions/create-checkout-session'
+          : '/.netlify/functions/create-checkout-session-mock';
+
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -45,11 +51,22 @@ function CheckoutContent() {
           throw new Error(data.error || 'Failed to create checkout session');
         }
 
-        setClientSecret(data.clientSecret);
-        setPlanDetails({
-          plan: data.plan,
-          returnUrl: data.returnUrl,
-        });
+        // Handle mock response (redirect directly)
+        if (data.mock && data.url) {
+          window.location.href = data.url;
+          return;
+        }
+
+        // Handle real Stripe response
+        if (data.clientSecret) {
+          setClientSecret(data.clientSecret);
+          setPlanDetails({
+            plan: data.plan,
+            returnUrl: data.returnUrl,
+          });
+        } else {
+          throw new Error('Invalid checkout session response');
+        }
 
       } catch (err: any) {
         console.error('Checkout session error:', err);
