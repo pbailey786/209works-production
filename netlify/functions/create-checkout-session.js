@@ -1,4 +1,13 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe with error handling
+let stripe;
+try {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+  }
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+} catch (error) {
+  console.error('Failed to initialize Stripe:', error);
+}
 
 // Valid plan names that map to environment variables
 const VALID_PLANS = ['starter', 'standard', 'pro'];
@@ -34,6 +43,21 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // Check if Stripe is properly initialized
+    if (!stripe) {
+      console.error('Stripe not initialized');
+      return {
+        statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({
+          error: 'Payment system not configured properly'
+        }),
+      };
+    }
+
     // Debug: Check environment variables
     const envCheck = {
       hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
