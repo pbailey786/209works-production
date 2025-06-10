@@ -48,17 +48,26 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
-    const status = url.searchParams.get('status');
+    const tab = url.searchParams.get('tab') || 'applied';
     const offset = (page - 1) * limit;
 
-    // Build where clause
+    // Build where clause based on tab
     const whereClause: any = {
       userId: user.id,
-      status: { not: 'saved' }, // Exclude saved jobs
     };
 
-    if (status && status !== 'all') {
-      whereClause.status = status;
+    switch (tab) {
+      case 'applied':
+        whereClause.status = { notIn: ['saved', 'archived'] };
+        break;
+      case 'saved':
+        whereClause.status = 'saved';
+        break;
+      case 'archived':
+        whereClause.status = 'archived';
+        break;
+      default:
+        whereClause.status = { notIn: ['saved', 'archived'] };
     }
 
     // Get applications with job details
@@ -81,6 +90,7 @@ export async function GET(req: NextRequest) {
               isRemote: true,
               categories: true,
               url: true,
+              status: true, // Include job status
             },
           },
         },
@@ -93,27 +103,33 @@ export async function GET(req: NextRequest) {
       }),
     ]);
 
-    // Get status counts for summary
-    const statusCounts = await prisma.jobApplication.groupBy({
-      by: ['status'],
-      where: {
-        userId: user.id,
-        status: { not: 'saved' },
-      },
-      _count: {
-        status: true,
-      },
-    });
+    // Get tab counts for the simplified interface
+    const [appliedCount, savedCount, archivedCount] = await Promise.all([
+      prisma.jobApplication.count({
+        where: {
+          userId: user.id,
+          status: { notIn: ['saved', 'archived'] },
+        },
+      }),
+      prisma.jobApplication.count({
+        where: {
+          userId: user.id,
+          status: 'saved',
+        },
+      }),
+      prisma.jobApplication.count({
+        where: {
+          userId: user.id,
+          status: 'archived',
+        },
+      }),
+    ]);
 
-    const statusSummary = statusCounts.reduce(
-      (acc, item) => {
-        if (item.status) {
-          acc[item.status] = item._count.status;
-        }
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+    const tabCounts = {
+      applied: appliedCount,
+      saved: savedCount,
+      archived: archivedCount,
+    };
 
     // Format the response
     const formattedApplications = applications.map(app => ({
@@ -137,13 +153,14 @@ export async function GET(req: NextRequest) {
         isRemote: app.job.isRemote,
         categories: app.job.categories,
         url: app.job.url,
+        status: app.job.status, // Include job status for "closed" indicator
       },
     }));
 
     return NextResponse.json({
       success: true,
       applications: formattedApplications,
-      statusSummary,
+      tabCounts,
       pagination: {
         page,
         limit,

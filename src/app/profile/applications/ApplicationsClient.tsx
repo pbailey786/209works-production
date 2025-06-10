@@ -8,23 +8,16 @@ import {
   MapPin,
   DollarSign,
   Clock,
+  ExternalLink,
+  Building2,
+  Bookmark,
+  Archive,
   CheckCircle,
-  XCircle,
-  AlertCircle,
-  Eye,
-  Calendar,
-  Gift,
 } from 'lucide-react';
 
 interface Application {
   id: string;
-  status:
-    | 'pending'
-    | 'reviewing'
-    | 'interview'
-    | 'offer'
-    | 'rejected'
-    | 'withdrawn';
+  status: string;
   appliedAt: string;
   coverLetter?: string;
   resumeUrl?: string;
@@ -44,6 +37,7 @@ interface Application {
     isRemote: boolean;
     categories: string[];
     url: string;
+    status?: string; // Job status (active, expired, closed)
   };
 }
 
@@ -51,44 +45,12 @@ interface ApplicationsClientProps {
   userId: string;
 }
 
-const statusConfig = {
-  pending: {
-    icon: Clock,
-    color: 'text-yellow-600',
-    bg: 'bg-yellow-100',
-    label: 'Pending',
-  },
-  reviewing: {
-    icon: Eye,
-    color: 'text-blue-600',
-    bg: 'bg-blue-100',
-    label: 'Under Review',
-  },
-  interview: {
-    icon: Calendar,
-    color: 'text-purple-600',
-    bg: 'bg-purple-100',
-    label: 'Interview',
-  },
-  offer: {
-    icon: Gift,
-    color: 'text-green-600',
-    bg: 'bg-green-100',
-    label: 'Offer',
-  },
-  rejected: {
-    icon: XCircle,
-    color: 'text-red-600',
-    bg: 'bg-red-100',
-    label: 'Rejected',
-  },
-  withdrawn: {
-    icon: AlertCircle,
-    color: 'text-gray-600',
-    bg: 'bg-gray-100',
-    label: 'Withdrawn',
-  },
-};
+// Simplified tabs for job seekers
+const tabs = [
+  { id: 'applied', label: 'Applied', icon: CheckCircle },
+  { id: 'saved', label: 'Saved', icon: Bookmark },
+  { id: 'archived', label: 'Archived', icon: Archive },
+];
 
 export default function ApplicationsClient({
   userId,
@@ -96,27 +58,26 @@ export default function ApplicationsClient({
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [statusSummary, setStatusSummary] = useState<Record<string, number>>(
-    {}
-  );
+  const [activeTab, setActiveTab] = useState<string>('applied');
+  const [tabCounts, setTabCounts] = useState<Record<string, number>>({
+    applied: 0,
+    saved: 0,
+    archived: 0,
+  });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchApplications = async (
     pageNum: number = 1,
-    status: string = 'all'
+    tab: string = 'applied'
   ) => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
         page: pageNum.toString(),
         limit: '10',
+        tab: tab,
       });
-
-      if (status !== 'all') {
-        params.append('status', status);
-      }
 
       const response = await fetch(`/api/profile/applications?${params}`);
 
@@ -126,7 +87,7 @@ export default function ApplicationsClient({
 
       const data = await response.json();
       setApplications(data.applications || []);
-      setStatusSummary(data.statusSummary || {});
+      setTabCounts(data.tabCounts || { applied: 0, saved: 0, archived: 0 });
       setTotalPages(data.pagination?.totalPages || 1);
       setPage(pageNum);
     } catch (err) {
@@ -138,27 +99,23 @@ export default function ApplicationsClient({
     }
   };
 
-  const updateApplicationStatus = async (
-    applicationId: string,
-    newStatus: string,
-    notes?: string
-  ) => {
+  const archiveApplication = async (applicationId: string) => {
     try {
-      const response = await fetch('/api/profile/applications', {
+      const response = await fetch('/api/profile/applications/archive', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ applicationId, status: newStatus, notes }),
+        body: JSON.stringify({ applicationId }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update application status');
+        throw new Error('Failed to archive application');
       }
 
       // Refresh applications
-      await fetchApplications(page, statusFilter);
+      await fetchApplications(page, activeTab);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : 'Failed to update application'
+        err instanceof Error ? err.message : 'Failed to archive application'
       );
     }
   };
@@ -171,9 +128,20 @@ export default function ApplicationsClient({
     return `Up to $${max?.toLocaleString()}`;
   };
 
+  const getJobStatusBadge = (job: Application['job']) => {
+    if (job.status === 'expired' || (job.expiresAt && new Date(job.expiresAt) < new Date())) {
+      return (
+        <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600">
+          Job closed or expired on Indeed
+        </span>
+      );
+    }
+    return null;
+  };
+
   useEffect(() => {
-    fetchApplications(1, statusFilter);
-  }, [statusFilter]);
+    fetchApplications(1, activeTab);
+  }, [activeTab]);
 
   if (loading) {
     return (
@@ -193,61 +161,41 @@ export default function ApplicationsClient({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="flex items-center text-3xl font-bold text-gray-900">
-            <FileText className="mr-3 h-8 w-8 text-blue-500" />
-            Your Applications
-          </h1>
-          <p className="mt-1 text-gray-600">
-            Track your job applications and their status
-          </p>
-        </div>
-        <Link
-          href="/jobs"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-        >
-          Apply to More Jobs
-        </Link>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">My jobs</h1>
       </div>
 
-      {/* Status Summary */}
-      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-6">
-        <button
-          onClick={() => setStatusFilter('all')}
-          className={`rounded-lg border-2 p-4 transition-colors ${
-            statusFilter === 'all'
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
-        >
-          <div className="text-2xl font-bold text-gray-900">
-            {Object.values(statusSummary).reduce(
-              (sum, count) => sum + count,
-              0
-            )}
-          </div>
-          <div className="text-sm text-gray-600">Total</div>
-        </button>
-
-        {Object.entries(statusConfig).map(([status, config]) => (
-          <button
-            key={status}
-            onClick={() => setStatusFilter(status)}
-            className={`rounded-lg border-2 p-4 transition-colors ${
-              statusFilter === status
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="text-2xl font-bold text-gray-900">
-              {statusSummary[status] || 0}
-            </div>
-            <div className="text-sm text-gray-600">{config.label}</div>
-          </button>
-        ))}
+      {/* Tabs */}
+      <div className="mb-8">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                  <span className={`rounded-full px-2 py-1 text-xs ${
+                    isActive ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {tabCounts[tab.id] || 0}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       </div>
 
       {error && (
@@ -260,174 +208,122 @@ export default function ApplicationsClient({
         <div className="py-12 text-center">
           <FileText className="mx-auto mb-4 h-16 w-16 text-gray-300" />
           <h2 className="mb-2 text-xl font-semibold text-gray-900">
-            {statusFilter === 'all'
-              ? 'No applications yet'
-              : `No ${statusConfig[statusFilter as keyof typeof statusConfig]?.label?.toLowerCase() || statusFilter} applications`}
+            {activeTab === 'applied' && 'No applications yet'}
+            {activeTab === 'saved' && 'No saved jobs'}
+            {activeTab === 'archived' && 'No archived applications'}
           </h2>
           <p className="mb-6 text-gray-600">
-            {statusFilter === 'all'
-              ? 'Start applying to jobs to track your applications here.'
-              : 'Try changing the filter to see other applications.'}
+            {activeTab === 'applied' && 'Start applying to jobs to track your applications here.'}
+            {activeTab === 'saved' && 'Save jobs you\'re interested in to view them later.'}
+            {activeTab === 'archived' && 'Archived applications will appear here.'}
           </p>
-          <Link
-            href="/jobs"
-            className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
-          >
-            Browse Jobs
-          </Link>
+          {activeTab !== 'archived' && (
+            <Link
+              href="/jobs"
+              className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
+            >
+              Browse Jobs
+            </Link>
+          )}
         </div>
       ) : (
         <>
           {/* Applications List */}
           <div className="space-y-4">
             {applications.map(application => {
-              const statusInfo = statusConfig[application.status];
-              if (!statusInfo) {
-                console.warn(`Unknown status: ${application.status}`);
-                return null;
-              }
-              const StatusIcon = statusInfo.icon;
-
               return (
                 <div
                   key={application.id}
-                  className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+                  className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="mb-4 flex items-start justify-between">
+                  <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="mb-2 flex items-center justify-between">
+                      {/* Job Status Badge */}
+                      {getJobStatusBadge(application.job) && (
+                        <div className="mb-3">
+                          {getJobStatusBadge(application.job)}
+                        </div>
+                      )}
+
+                      {/* Job Title and Company */}
+                      <div className="mb-3">
                         <Link
                           href={`/jobs/${application.job.id}`}
-                          className="block"
+                          className="block group"
                         >
-                          <h3 className="text-xl font-semibold text-gray-900 transition-colors hover:text-blue-600">
+                          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                             {application.job.title}
                           </h3>
-                          <p className="mt-1 text-lg text-gray-700">
-                            {application.job.company}
-                          </p>
+                          <div className="flex items-center mt-1 text-gray-600">
+                            <Building2 className="h-4 w-4 mr-1" />
+                            <span>{application.job.company}</span>
+                          </div>
                         </Link>
-                        <div
-                          className={`flex items-center rounded-full px-3 py-1 ${statusInfo.bg}`}
-                        >
-                          <StatusIcon
-                            className={`mr-2 h-4 w-4 ${statusInfo.color}`}
-                          />
-                          <span
-                            className={`text-sm font-medium ${statusInfo.color}`}
-                          >
-                            {statusInfo.label}
-                          </span>
-                        </div>
                       </div>
 
-                      <div className="mb-3 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                      {/* Job Details */}
+                      <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-gray-600">
                         <span className="flex items-center">
                           <MapPin className="mr-1 h-4 w-4" />
                           {application.job.location}
                           {application.job.isRemote && (
                             <span className="ml-1 text-green-600">
-                              (Remote)
+                              • Remote
                             </span>
                           )}
                         </span>
-                        <span className="flex items-center">
-                          <DollarSign className="mr-1 h-4 w-4" />
-                          {formatSalary(
-                            application.job.salaryMin,
-                            application.job.salaryMax
-                          )}
-                        </span>
-                        <span className="rounded bg-gray-100 px-2 py-1 capitalize">
+                        {(application.job.salaryMin || application.job.salaryMax) && (
+                          <span className="flex items-center">
+                            <DollarSign className="mr-1 h-4 w-4" />
+                            {formatSalary(
+                              application.job.salaryMin,
+                              application.job.salaryMax
+                            )}
+                          </span>
+                        )}
+                        <span className="rounded bg-gray-100 px-2 py-1 capitalize text-xs">
                           {application.job.jobType.replace('_', ' ')}
                         </span>
                       </div>
 
-                      {/* Application Progress */}
-                      <div className="mb-4">
-                        <div className="flex items-center space-x-2">
-                          <div className="flex items-center space-x-1">
-                            <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                            <span className="text-xs text-gray-600">Applied</span>
-                          </div>
-                          <div className="h-px flex-1 bg-gray-200"></div>
-                          <div className="flex items-center space-x-1">
-                            <div className={`h-2 w-2 rounded-full ${
-                              ['reviewing', 'interview', 'offer'].includes(application.status)
-                                ? 'bg-blue-500'
-                                : 'bg-gray-300'
-                            }`}></div>
-                            <span className="text-xs text-gray-600">Review</span>
-                          </div>
-                          <div className="h-px flex-1 bg-gray-200"></div>
-                          <div className="flex items-center space-x-1">
-                            <div className={`h-2 w-2 rounded-full ${
-                              ['interview', 'offer'].includes(application.status)
-                                ? 'bg-purple-500'
-                                : 'bg-gray-300'
-                            }`}></div>
-                            <span className="text-xs text-gray-600">Interview</span>
-                          </div>
-                          <div className="h-px flex-1 bg-gray-200"></div>
-                          <div className="flex items-center space-x-1">
-                            <div className={`h-2 w-2 rounded-full ${
-                              application.status === 'offer'
-                                ? 'bg-green-500'
-                                : application.status === 'rejected'
-                                ? 'bg-red-500'
-                                : 'bg-gray-300'
-                            }`}></div>
-                            <span className="text-xs text-gray-600">Decision</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-sm text-gray-500">
-                        <span className="flex items-center">
+                      {/* Bottom Row: Applied Date and Actions */}
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center text-sm text-gray-500">
                           <Clock className="mr-1 h-4 w-4" />
-                          Applied{' '}
-                          {formatDistanceToNow(
-                            new Date(application.appliedAt),
-                            { addSuffix: true }
-                          )}
+                          Applied on {new Date(application.appliedAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })}
                         </span>
-                        <div className="flex items-center space-x-4">
-                          {application.coverLetter && (
-                            <span className="text-green-600">
-                              ✓ Cover Letter
-                            </span>
-                          )}
-                          {application.resumeUrl && (
-                            <span className="text-green-600">✓ Resume</span>
-                          )}
-                          <div className="flex items-center space-x-2">
-                            <Link
-                              href={`/jobs/${application.job.id}`}
-                              className="rounded bg-blue-600 px-3 py-1 text-xs text-white transition-colors hover:bg-blue-700"
+
+                        <div className="flex items-center space-x-3">
+                          {/* Update Status Button (for employers to see) */}
+                          {activeTab === 'applied' && (
+                            <button
+                              onClick={() => archiveApplication(application.id)}
+                              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
                             >
-                              View Job
-                            </Link>
-                            {application.job.url && (
-                              <a
-                                href={application.job.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded border border-gray-300 px-3 py-1 text-xs text-gray-700 transition-colors hover:bg-gray-50"
-                              >
-                                External Link
-                              </a>
-                            )}
-                          </div>
+                              Archive
+                            </button>
+                          )}
+
+                          {/* View Job Button */}
+                          <Link
+                            href={`/jobs/${application.job.id}`}
+                            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                          >
+                            View job
+                            <ExternalLink className="ml-1 h-3 w-3" />
+                          </Link>
                         </div>
                       </div>
+                    </div>
 
-                      {application.notes && (
-                        <div className="mt-3 rounded-lg bg-gray-50 p-3">
-                          <p className="text-sm text-gray-700">
-                            <strong>Notes:</strong> {application.notes}
-                          </p>
-                        </div>
-                      )}
+                    {/* Right side: Status indicator */}
+                    <div className="ml-4">
+                      <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
+                        Applied
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -440,7 +336,7 @@ export default function ApplicationsClient({
             <div className="mt-8 flex justify-center">
               <div className="flex space-x-2">
                 <button
-                  onClick={() => fetchApplications(page - 1, statusFilter)}
+                  onClick={() => fetchApplications(page - 1, activeTab)}
                   disabled={page <= 1}
                   className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -450,7 +346,7 @@ export default function ApplicationsClient({
                   Page {page} of {totalPages}
                 </span>
                 <button
-                  onClick={() => fetchApplications(page + 1, statusFilter)}
+                  onClick={() => fetchApplications(page + 1, activeTab)}
                   disabled={page >= totalPages}
                   className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
