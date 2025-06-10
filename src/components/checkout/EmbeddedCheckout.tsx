@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { loadStripe, StripeEmbeddedCheckout } from '@stripe/stripe-js';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
@@ -14,40 +14,56 @@ interface EmbeddedCheckoutProps {
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-export default function EmbeddedCheckout({ 
-  clientSecret, 
-  onBack, 
-  onComplete 
+export default function EmbeddedCheckout({
+  clientSecret,
+  onBack,
+  onComplete
 }: EmbeddedCheckoutProps) {
-  const [stripe, setStripe] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const checkoutRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const initializeStripe = async () => {
+    const initializeEmbeddedCheckout = async () => {
       try {
-        const stripeInstance = await stripePromise;
-        if (!stripeInstance) {
+        const stripe = await stripePromise;
+        if (!stripe) {
           throw new Error('Failed to load Stripe');
         }
-        setStripe(stripeInstance);
+
+        if (!checkoutRef.current) {
+          throw new Error('Checkout container not found');
+        }
+
+        // Create embedded checkout
+        const embeddedCheckout = await stripe.initEmbeddedCheckout({
+          clientSecret,
+        });
+
+        // Mount the embedded checkout
+        embeddedCheckout.mount(checkoutRef.current);
+
         setLoading(false);
-      } catch (err) {
-        console.error('Error loading Stripe:', err);
-        setError('Failed to load payment system');
+
+        // Handle completion
+        embeddedCheckout.on('complete', (event: any) => {
+          console.log('Checkout completed:', event);
+          if (onComplete) {
+            onComplete(event);
+          }
+        });
+
+      } catch (err: any) {
+        console.error('Error initializing embedded checkout:', err);
+        setError(err.message || 'Failed to load payment system');
         setLoading(false);
       }
     };
 
-    initializeStripe();
-  }, []);
-
-  const handleComplete = useCallback((event: any) => {
-    console.log('Checkout completed:', event);
-    if (onComplete) {
-      onComplete(event);
+    if (clientSecret) {
+      initializeEmbeddedCheckout();
     }
-  }, [onComplete]);
+  }, [clientSecret, onComplete]);
 
   if (loading) {
     return (
@@ -80,7 +96,7 @@ export default function EmbeddedCheckout({
     );
   }
 
-  if (!stripe || !clientSecret) {
+  if (!clientSecret) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
@@ -112,13 +128,31 @@ export default function EmbeddedCheckout({
         )}
       </div>
 
-      {/* Embedded Checkout */}
-      <div className="rounded-lg border border-gray-200 bg-white p-1">
-        <StripeEmbeddedCheckout
-          stripe={stripe}
-          clientSecret={clientSecret}
-          onComplete={handleComplete}
-        />
+      {/* Embedded Checkout Container */}
+      <div className="rounded-lg border border-gray-200 bg-white p-4">
+        {loading && (
+          <div className="flex min-h-[400px] items-center justify-center">
+            <div className="text-center">
+              <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-600" />
+              <p className="mt-2 text-gray-600">Loading payment form...</p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="flex min-h-[400px] items-center justify-center">
+            <div className="text-center">
+              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+                <span className="text-red-600 text-xl">⚠️</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Payment Error</h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* This div will contain the embedded checkout */}
+        <div ref={checkoutRef} className={loading || error ? 'hidden' : ''} />
       </div>
 
       {/* Security notice */}
