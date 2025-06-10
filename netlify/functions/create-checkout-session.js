@@ -14,8 +14,8 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
-      body: JSON.stringify({ 
-        error: 'Method not allowed. Use POST.' 
+      body: JSON.stringify({
+        error: 'Method not allowed. Use POST.'
       }),
     };
   }
@@ -34,6 +34,16 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // Debug: Check environment variables
+    const envCheck = {
+      hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+      hasStarterPrice: !!process.env.STRIPE_PRICE_STARTER,
+      hasStandardPrice: !!process.env.STRIPE_PRICE_STANDARD,
+      hasProPrice: !!process.env.STRIPE_PRICE_PRO,
+      stripeKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : 'missing',
+    };
+
+    console.log('Environment check:', envCheck);
     // Parse request body
     let requestBody;
     try {
@@ -155,7 +165,12 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('Stripe Checkout Session Error:', error);
-    
+    console.error('Error details:', {
+      message: error.message,
+      type: error.type,
+      stack: error.stack,
+    });
+
     // Handle specific Stripe errors
     if (error.type === 'StripeCardError') {
       return {
@@ -164,8 +179,8 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: 'Card error: ' + error.message 
+        body: JSON.stringify({
+          error: 'Card error: ' + error.message
         }),
       };
     }
@@ -177,21 +192,22 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: 'Invalid request: ' + error.message 
+        body: JSON.stringify({
+          error: 'Invalid request: ' + error.message
         }),
       };
     }
 
-    // Generic error response
+    // Generic error response with more details in development
     return {
       statusCode: 500,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
       },
-      body: JSON.stringify({ 
-        error: 'Internal server error. Please try again.' 
+      body: JSON.stringify({
+        error: 'Internal server error. Please try again.',
+        debug: process.env.NODE_ENV === 'development' ? error.message : undefined
       }),
     };
   }
