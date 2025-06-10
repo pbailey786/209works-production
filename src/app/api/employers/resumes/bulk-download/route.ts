@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import authOptions from '@/app/api/auth/authOptions';
+import { prisma } from '@/lib/database/prisma';
 import JSZip from 'jszip';
 
 export async function POST(req: NextRequest) {
