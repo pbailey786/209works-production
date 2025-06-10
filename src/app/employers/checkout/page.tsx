@@ -66,11 +66,8 @@ function CheckoutContent() {
     router.push('/employers/pricing');
   };
 
-  const handleComplete = (session: any) => {
-    console.log('Checkout completed:', session);
-    // Redirect to success page
-    router.push(`/employers/dashboard?success=true&plan=${plan}&session_id=${session.id}`);
-  };
+  // Note: Embedded checkout completion is handled via return_url in the Netlify function
+  // The checkout will automatically redirect when payment is complete
 
   if (loading) {
     return (
@@ -136,7 +133,6 @@ function CheckoutContent() {
             <EmbeddedCheckout
               clientSecret={clientSecret}
               onBack={handleBack}
-              onComplete={handleComplete}
             />
           </div>
         )}

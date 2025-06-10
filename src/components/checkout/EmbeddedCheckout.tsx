@@ -8,7 +8,6 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 interface EmbeddedCheckoutProps {
   clientSecret: string;
   onBack?: () => void;
-  onComplete?: (session: any) => void;
 }
 
 // Initialize Stripe with your publishable key
@@ -16,8 +15,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 export default function EmbeddedCheckout({
   clientSecret,
-  onBack,
-  onComplete
+  onBack
 }: EmbeddedCheckoutProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,13 +43,8 @@ export default function EmbeddedCheckout({
 
         setLoading(false);
 
-        // Handle completion
-        embeddedCheckout.on('complete', (event: any) => {
-          console.log('Checkout completed:', event);
-          if (onComplete) {
-            onComplete(event);
-          }
-        });
+        // Note: Embedded checkout completion is handled via return_url
+        // The checkout will automatically redirect to the return_url when complete
 
       } catch (err: any) {
         console.error('Error initializing embedded checkout:', err);
@@ -63,7 +56,7 @@ export default function EmbeddedCheckout({
     if (clientSecret) {
       initializeEmbeddedCheckout();
     }
-  }, [clientSecret, onComplete]);
+  }, [clientSecret]);
 
   if (loading) {
     return (
