@@ -35,18 +35,38 @@ export default function EmployerJobDetailsPage() {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState('overview');
   const [jobData, setJobData] = useState<any>(null);
+  const [jobStats, setJobStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchJobData = async () => {
       try {
-        const response = await fetch(`/api/jobs/${params.id}`);
-        if (!response.ok) {
+        // Fetch job details
+        const jobResponse = await fetch(`/api/jobs/${params.id}`);
+        if (!jobResponse.ok) {
           throw new Error('Failed to fetch job data');
         }
-        const data = await response.json();
-        setJobData(data.job);
+        const jobData = await jobResponse.json();
+        setJobData(jobData.job);
+
+        // Fetch job statistics
+        const statsResponse = await fetch(`/api/jobs/${params.id}/stats`);
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setJobStats(statsData);
+        } else {
+          // Set default stats if API fails
+          setJobStats({
+            stats: {
+              totalViews: 0,
+              totalApplications: 0,
+              shortlisted: 0,
+              hired: 0,
+            },
+            recentApplicants: [],
+          });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -83,6 +103,16 @@ export default function EmployerJobDetailsPage() {
     );
   }
 
+  // Use real stats if available, otherwise fallback to defaults
+  const stats = jobStats?.stats || {
+    totalViews: 0,
+    totalApplications: 0,
+    shortlisted: 0,
+    hired: 0,
+  };
+
+  const recentApplicants = jobStats?.recentApplicants || [];
+
   // Format job data for display
   const formatJobType = (type: string) => {
     return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -103,18 +133,32 @@ export default function EmployerJobDetailsPage() {
     return new Date(dateString).toLocaleDateString();
   };
 
-  // Mock data for stats and applicants (until we have real data)
+  // Real data for stats and applicants
   const applicantStats = [
-    { label: 'Total Views', value: '1,247', trend: 'up', change: '+12%' },
-    { label: 'Applications', value: '23', trend: 'up', change: '+8%' },
-    { label: 'Shortlisted', value: '8', trend: 'neutral', change: '0%' },
-    { label: 'Hired', value: '0', trend: 'neutral', change: '0%' },
-  ];
-
-  const recentApplicants = [
-    { id: 1, name: 'John Smith', applied: '2 hours ago', score: 85, status: 'New' },
-    { id: 2, name: 'Sarah Johnson', applied: '1 day ago', score: 92, status: 'Reviewed' },
-    { id: 3, name: 'Mike Chen', applied: '2 days ago', score: 78, status: 'Shortlisted' },
+    {
+      label: 'Total Views',
+      value: stats.totalViews.toLocaleString(),
+      trend: 'neutral',
+      change: '0%' // TODO: Implement view tracking and trends
+    },
+    {
+      label: 'Applications',
+      value: stats.totalApplications.toLocaleString(),
+      trend: jobStats?.stats?.trends?.applications?.trend || 'neutral',
+      change: jobStats?.stats?.trends?.applications?.change || '0%'
+    },
+    {
+      label: 'Shortlisted',
+      value: stats.shortlisted.toLocaleString(),
+      trend: 'neutral',
+      change: '0%' // TODO: Implement shortlisted trends
+    },
+    {
+      label: 'Hired',
+      value: stats.hired.toLocaleString(),
+      trend: 'neutral',
+      change: '0%' // TODO: Implement hired trends
+    },
   ];
 
   const getTrendIcon = (trend: string) => {
@@ -367,34 +411,42 @@ export default function EmployerJobDetailsPage() {
                 </Link>
               </div>
               <div className="space-y-3">
-                {recentApplicants.map(applicant => (
-                  <div
-                    key={applicant.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {applicant.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {applicant.applied}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <div className="mb-1 flex items-center space-x-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
-                        <span className="text-sm font-medium">
-                          {applicant.score}
+                {recentApplicants.length > 0 ? (
+                  recentApplicants.map((applicant: any) => (
+                    <div
+                      key={applicant.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {applicant.name}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {applicant.applied}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="mb-1 flex items-center space-x-2">
+                          <Star className="h-4 w-4 text-yellow-400" />
+                          <span className="text-sm font-medium">
+                            {applicant.score}
+                          </span>
+                        </div>
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs ${getStatusColor(applicant.status)}`}
+                        >
+                          {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
                         </span>
                       </div>
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs ${getStatusColor(applicant.status)}`}
-                      >
-                        {applicant.status}
-                      </span>
                     </div>
+                  ))
+                ) : (
+                  <div className="py-8 text-center text-gray-500">
+                    <Users className="mx-auto mb-2 h-8 w-8 text-gray-300" />
+                    <p>No applications yet</p>
+                    <p className="text-sm">Applications will appear here when candidates apply</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -473,55 +525,67 @@ export default function EmployerJobDetailsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {recentApplicants.map(applicant => (
-                    <tr key={applicant.id}>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="flex items-center">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-                            <span className="text-sm font-medium text-gray-600">
-                              {applicant.name
-                                .split(' ')
-                                .map(n => n[0])
-                                .join('')}
-                            </span>
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
-                              {applicant.name}
+                  {recentApplicants.length > 0 ? (
+                    recentApplicants.map((applicant: any) => (
+                      <tr key={applicant.id}>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="flex items-center">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
+                              <span className="text-sm font-medium text-gray-600">
+                                {applicant.name
+                                  .split(' ')
+                                  .map((n: string) => n[0])
+                                  .join('')}
+                              </span>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {applicant.name}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <div className="flex items-center">
-                          <Star className="mr-1 h-4 w-4 text-yellow-400" />
-                          <span className="text-sm text-gray-900">
-                            {applicant.score}/100
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="flex items-center">
+                            <Star className="mr-1 h-4 w-4 text-yellow-400" />
+                            <span className="text-sm text-gray-900">
+                              {applicant.score}/100
+                            </span>
+                          </div>
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                          {applicant.applied}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <span
+                            className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(applicant.status)}`}
+                          >
+                            {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
                           </span>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                        {applicant.applied}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <span
-                          className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(applicant.status)}`}
-                        >
-                          {applicant.status}
-                        </span>
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          <button className="text-blue-600 hover:text-blue-900">
-                            View
-                          </button>
-                          <button className="text-green-600 hover:text-green-900">
-                            Message
-                          </button>
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                          <div className="flex items-center space-x-2">
+                            <button className="text-blue-600 hover:text-blue-900">
+                              View
+                            </button>
+                            <button className="text-green-600 hover:text-green-900">
+                              Message
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center">
+                        <div className="text-gray-500">
+                          <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                          <h3 className="mb-2 text-lg font-medium">No applications yet</h3>
+                          <p className="text-sm">Applications will appear here when candidates apply to this job</p>
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

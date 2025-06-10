@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { JobType } from '@prisma/client';
-import { requireRole } from '../../auth/requireRole';
+import { getServerSession } from 'next-auth/next';
+import authOptions from '@/app/api/auth/authOptions';
+import type { Session } from 'next-auth';
 
 function isValidJobType(type: any): type is JobType {
   return Object.values(JobType).includes(type);
@@ -24,9 +26,24 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireRole(req, ['admin', 'employer']);
-  if (session instanceof NextResponse) return session;
-  const body = await req.json();
+  try {
+    const session = await getServerSession(authOptions) as Session | null;
+
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user and verify they're an admin or employer
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, role: true },
+    });
+
+    if (!user || !['admin', 'employer'].includes(user.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const body = await req.json();
   const updateData: any = {};
   const allowedFields = [
     'title',
@@ -59,16 +76,23 @@ export async function PUT(
   if (updateData.postedAt) {
     updateData.postedAt = new Date(updateData.postedAt);
   }
-  try {
-    const job = await prisma.job.update({
-      where: { id: (await params).id },
-      data: updateData,
-    });
-    return NextResponse.json({ job });
-  } catch (err) {
+    try {
+      const job = await prisma.job.update({
+        where: { id: (await params).id },
+        data: updateData,
+      });
+      return NextResponse.json({ job });
+    } catch (err) {
+      return NextResponse.json(
+        { error: 'Job not found or update failed.' },
+        { status: 404 }
+      );
+    }
+  } catch (error) {
+    console.error('Error updating job:', error);
     return NextResponse.json(
-      { error: 'Job not found or update failed.' },
-      { status: 404 }
+      { error: 'Internal server error' },
+      { status: 500 }
     );
   }
 }
@@ -78,46 +102,58 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await requireRole(req, ['admin', 'employer']);
-  if (session instanceof NextResponse) return session;
-
-  // Get user from database
-  const user = await prisma.user.findUnique({
-    where: { email: session.user?.email! },
-  });
-
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  }
-
   try {
-    const { DataIntegrityService } = await import(
-      '@/lib/database/data-integrity'
-    );
-    const deletionResult = await DataIntegrityService.softDeleteJob(
-      (await params).id,
-      user.id,
-      'API deletion request'
-    );
+    const session = await getServerSession(authOptions) as Session | null;
 
-    if (!deletionResult.success) {
-      return NextResponse.json(
-        {
-          error: deletionResult.errors?.[0] || 'Failed to delete job safely',
-        },
-        { status: 400 }
-      );
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Job deleted successfully',
-      auditRecordCreated: deletionResult.auditRecordCreated,
+    // Get user and verify they're an admin or employer
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, role: true },
     });
-  } catch (err) {
+
+    if (!user || !['admin', 'employer'].includes(user.role)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    try {
+      const { DataIntegrityService } = await import(
+        '@/lib/database/data-integrity'
+      );
+      const deletionResult = await DataIntegrityService.softDeleteJob(
+        (await params).id,
+        user.id,
+        'API deletion request'
+      );
+
+      if (!deletionResult.success) {
+        return NextResponse.json(
+          {
+            error: deletionResult.errors?.[0] || 'Failed to delete job safely',
+          },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Job deleted successfully',
+        auditRecordCreated: deletionResult.auditRecordCreated,
+      });
+    } catch (err) {
+      return NextResponse.json(
+        { error: 'Job not found or delete failed.' },
+        { status: 404 }
+      );
+    }
+  } catch (error) {
+    console.error('Error deleting job:', error);
     return NextResponse.json(
-      { error: 'Job not found or delete failed.' },
-      { status: 404 }
+      { error: 'Internal server error' },
+      { status: 500 }
     );
   }
 }
