@@ -34,6 +34,7 @@ const employerNavigation = [
     submenu: [
       { name: 'My Jobs', href: '/employers/my-jobs' },
       { name: 'Post New Job', href: '/employers/create-job-post' },
+      { name: 'Bulk Upload', href: '/employers/bulk-upload' },
     ],
   },
   {
@@ -68,9 +69,9 @@ const candidateQuickActions = [
 ];
 
 const utilityPages = [
-  { name: 'Upgrade', href: '/employers/upgrade', icon: '⭐' },
-  { name: 'Bulk Upload', href: '/employers/bulk-upload', icon: '📤' },
+  { name: 'Upgrade Plan', href: '/employers/pricing', icon: '⭐' },
   { name: 'Referral Program', href: '/employers/referral', icon: '🎁' },
+  { name: 'Support Center', href: '/employers/contact', icon: '💬' },
 ];
 
 const supportPages = [

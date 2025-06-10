@@ -5,14 +5,12 @@ import { Award } from 'lucide-react';
 import Link from 'next/link';
 import PricingSection from '@/components/pricing/PricingSection';
 
-// Employer pricing plans - Updated to match current Stripe pricing
+// Employer pricing plans - Monthly pricing only
 const employerPlans = [
   {
     id: 'starter',
     name: 'Starter Tier',
     monthlyPrice: 99,
-    yearlyPrice: 99 * 12 * 0.85, // 15% discount
-    yearlyDiscount: 15,
     description: 'Perfect for small businesses hiring occasionally',
     features: [
       '2 Job Credits per month',
@@ -23,14 +21,11 @@ const employerPlans = [
       '30-day Job Duration',
       'Bulk Upload Access',
     ],
-    chamberDiscount: 25,
   },
   {
     id: 'standard',
     name: 'Standard Tier',
     monthlyPrice: 199,
-    yearlyPrice: 199 * 12 * 0.85, // 15% discount
-    yearlyDiscount: 15,
     description: 'Ideal for growing companies with multiple positions',
     features: [
       '5 Job Credits per month',
@@ -46,14 +41,11 @@ const employerPlans = [
     ],
     popular: true,
     badge: 'Most Popular',
-    chamberDiscount: 25,
   },
   {
     id: 'pro',
     name: 'Pro Tier',
     monthlyPrice: 350,
-    yearlyPrice: 350 * 12 * 0.8, // 20% discount
-    yearlyDiscount: 20,
     description: 'For companies with high-volume hiring needs',
     features: [
       '10 Job Credits per month',
@@ -67,7 +59,6 @@ const employerPlans = [
       'Premium AI Features',
       'Dedicated Account Manager',
     ],
-    chamberDiscount: 25,
   },
 ];
 
@@ -130,14 +121,66 @@ export default function EmployerPricingPage() {
         </div>
       </section>
 
-      {/* Interactive Pricing Section */}
-      <PricingSection
-        plans={employerPlans}
-        title="Employer Plans"
-        subtitle="Choose the plan that fits your hiring needs"
-        showChamberToggle={true}
-        onPlanSelect={handlePlanSelect}
-      />
+      {/* Pricing Cards - Monthly Only */}
+      <section className="px-4 py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Employer Plans</h2>
+            <p className="text-xl text-gray-600">Choose the plan that fits your hiring needs</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {employerPlans.map((plan) => (
+              <div
+                key={plan.id}
+                className={`relative rounded-xl border-2 p-8 ${
+                  plan.popular
+                    ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-green-50 shadow-xl'
+                    : 'border-gray-200 bg-white hover:border-orange-300 hover:shadow-lg'
+                } transition-all`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
+                    <span className="bg-gradient-to-r from-orange-600 to-green-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                      {plan.badge}
+                    </span>
+                  </div>
+                )}
+
+                <div className="text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                  <p className="text-gray-600 mb-6">{plan.description}</p>
+
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold text-gray-900">${plan.monthlyPrice}</span>
+                    <span className="text-gray-600">/month</span>
+                  </div>
+
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center text-sm text-gray-600">
+                        <span className="text-green-500 mr-2">✓</span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => handlePlanSelect(plan.id, 'monthly')}
+                    className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
+                      plan.popular
+                        ? 'bg-gradient-to-r from-orange-600 to-green-600 text-white hover:from-orange-700 hover:to-green-700'
+                        : 'bg-gray-900 text-white hover:bg-gray-800'
+                    }`}
+                  >
+                    Get Started
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* FAQ Section */}
       <section className="bg-gray-50 px-4 py-16">
