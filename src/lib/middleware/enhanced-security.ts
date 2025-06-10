@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../../app/api/auth/authOptions';
-import { prisma } from '../../app/api/auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
 import { SecurityLogger } from '../security/security-monitor';
 import type { Session } from 'next-auth';
@@ -301,10 +301,10 @@ class AuthenticationValidator {
     req: NextRequest
   ): Promise<SecureAuthContext['user']> {
     const session = await getServerSession(authOptions) as Session | null;
-    if (!session!.user?.email) return null;
+    if (!session?.user?.email) return null;
 
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: session.user.email },
       select: {
         id: true,
         email: true,
@@ -347,7 +347,7 @@ class AuthenticationValidator {
       requiresMFA:
         user.role === 'admin' && SecurityConfig.REQUIRE_2FA_FOR_ADMIN,
       mfaVerified:
-        !user.twoFactorEnabled || (session!.user as any).mfaVerified === true,
+        !user.twoFactorEnabled || (session.user as any).mfaVerified === true,
       ipAddress,
       userAgent,
     };
