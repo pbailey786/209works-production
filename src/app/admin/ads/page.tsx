@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { redirect } from 'next/navigation';
 import authOptions from '../../api/auth/authOptions';
-import { prisma } from '../../api/auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import AdManagementTable from '@/components/admin/AdManagementTable';
 import AdManagementFilters from '@/components/admin/AdManagementFilters';

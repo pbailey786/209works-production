@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { CompanyKnowledgeService } from '@/lib/knowledge/company-knowledge';
-import { prisma } from '@/app/api/auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
 // GET /api/employers/knowledge - Get company knowledge entries

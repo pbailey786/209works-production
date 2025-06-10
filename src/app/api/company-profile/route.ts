@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
-import { prisma } from '../auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
 // GET /api/company-profile - Get company profile for authenticated user
