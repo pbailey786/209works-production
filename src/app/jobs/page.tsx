@@ -133,6 +133,27 @@ function JobsContent() {
     return () => clearInterval(interval);
   }, []);
 
+  // Function to save search to history
+  const saveSearchHistory = useCallback(async (query: string, filters: any) => {
+    if (!query.trim()) return;
+
+    try {
+      await fetch('/api/search-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: query.trim(),
+          filters: filters,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to save search history:', error);
+      // Don't fail the search if history saving fails
+    }
+  }, []);
+
   // Hybrid LLM + fallback search function
   const performSearch = useCallback(
     async (searchFilters: SearchFilters, page: number = 1) => {
@@ -140,6 +161,20 @@ function JobsContent() {
       setError('');
       setAiResponse('');
       setFollowUpQuestions([]);
+
+      // Save search to history (only for new searches, not pagination)
+      if (page === 1 && searchFilters.query) {
+        await saveSearchHistory(searchFilters.query, {
+          location: searchFilters.location,
+          jobType: searchFilters.jobType,
+          experienceLevel: searchFilters.experienceLevel,
+          salaryMin: searchFilters.salaryMin,
+          salaryMax: searchFilters.salaryMax,
+          remote: searchFilters.remote,
+          datePosted: searchFilters.datePosted,
+          sortBy: searchFilters.sortBy,
+        });
+      }
 
       try {
         // First, try the LLM job search endpoint for natural language processing
@@ -269,7 +304,7 @@ function JobsContent() {
         setLoading(false);
       }
     },
-    []
+    [saveSearchHistory]
   );
 
   // Update URL when filters change
@@ -301,6 +336,12 @@ function JobsContent() {
   const sendMessage = useCallback(
     async (message: string) => {
       if (!message.trim()) return;
+
+      // Save search to history
+      await saveSearchHistory(message.trim(), {
+        searchType: 'chat',
+        timestamp: new Date().toISOString(),
+      });
 
       const userMessage = {
         id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -388,7 +429,7 @@ function JobsContent() {
         setIsTyping(false);
       }
     },
-    [conversation, filters, updateURL]
+    [conversation, filters, updateURL, saveSearchHistory]
   );
 
   // Handle follow-up question clicks
