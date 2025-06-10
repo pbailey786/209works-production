@@ -51,14 +51,17 @@ function CheckoutContent() {
           throw new Error(data.error || 'Failed to create checkout session');
         }
 
-        // Handle mock response (redirect directly)
-        if (data.mock && data.url) {
-          window.location.href = data.url;
-          return;
+        // Handle mock response (show mock checkout form)
+        if (data.mock) {
+          setClientSecret('mock_client_secret');
+          setPlanDetails({
+            plan: data.plan,
+            returnUrl: data.url,
+            mock: true,
+          });
         }
-
         // Handle real Stripe response
-        if (data.clientSecret) {
+        else if (data.clientSecret) {
           setClientSecret(data.clientSecret);
           setPlanDetails({
             plan: data.plan,
@@ -150,6 +153,8 @@ function CheckoutContent() {
             <EmbeddedCheckout
               clientSecret={clientSecret}
               onBack={handleBack}
+              mock={planDetails?.mock}
+              returnUrl={planDetails?.returnUrl}
             />
           </div>
         )}

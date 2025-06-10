@@ -8,6 +8,8 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 interface EmbeddedCheckoutProps {
   clientSecret: string;
   onBack?: () => void;
+  mock?: boolean;
+  returnUrl?: string;
 }
 
 // Initialize Stripe with your publishable key
@@ -16,7 +18,9 @@ const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 export default function EmbeddedCheckout({
   clientSecret,
-  onBack
+  onBack,
+  mock = false,
+  returnUrl
 }: EmbeddedCheckoutProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +29,12 @@ export default function EmbeddedCheckout({
   useEffect(() => {
     const initializeEmbeddedCheckout = async () => {
       try {
+        // Handle mock mode
+        if (mock) {
+          setLoading(false);
+          return;
+        }
+
         // Check if publishable key is available
         if (!publishableKey) {
           throw new Error('Stripe publishable key not configured. Please add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to environment variables.');
@@ -62,7 +72,7 @@ export default function EmbeddedCheckout({
     if (clientSecret) {
       initializeEmbeddedCheckout();
     }
-  }, [clientSecret]);
+  }, [clientSecret, mock]);
 
   if (loading) {
     return (
@@ -150,8 +160,81 @@ export default function EmbeddedCheckout({
           </div>
         )}
 
-        {/* This div will contain the embedded checkout */}
-        <div ref={checkoutRef} className={loading || error ? 'hidden' : ''} />
+        {/* Mock checkout form */}
+        {mock && !loading && !error && (
+          <div className="space-y-6">
+            <div className="rounded-lg bg-blue-50 p-4 border border-blue-200">
+              <div className="flex items-center space-x-2">
+                <span className="text-blue-600 text-sm">ℹ️</span>
+                <p className="text-blue-800 text-sm font-medium">Demo Mode</p>
+              </div>
+              <p className="text-blue-700 text-sm mt-1">
+                This is a demo checkout. Stripe integration will be enabled once environment variables are configured.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Card Number
+                </label>
+                <input
+                  type="text"
+                  placeholder="4242 4242 4242 4242"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Expiry Date
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    CVC
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="123"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Cardholder Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled
+                />
+              </div>
+
+              <Button
+                onClick={() => returnUrl && (window.location.href = returnUrl)}
+                className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
+              >
+                Complete Demo Purchase
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Real Stripe checkout container */}
+        <div ref={checkoutRef} className={loading || error || mock ? 'hidden' : ''} />
       </div>
 
       {/* Security notice */}
