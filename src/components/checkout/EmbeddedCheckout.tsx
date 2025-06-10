@@ -11,7 +11,8 @@ interface EmbeddedCheckoutProps {
 }
 
 // Initialize Stripe with your publishable key
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 export default function EmbeddedCheckout({
   clientSecret,
@@ -24,9 +25,14 @@ export default function EmbeddedCheckout({
   useEffect(() => {
     const initializeEmbeddedCheckout = async () => {
       try {
+        // Check if publishable key is available
+        if (!publishableKey) {
+          throw new Error('Stripe publishable key not configured. Please add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to environment variables.');
+        }
+
         const stripe = await stripePromise;
         if (!stripe) {
-          throw new Error('Failed to load Stripe');
+          throw new Error('Failed to load Stripe. Please check your publishable key.');
         }
 
         if (!checkoutRef.current) {
