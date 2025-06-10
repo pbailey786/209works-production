@@ -14,15 +14,15 @@ async function getDashboardData(userId: string) {
       alertsCount,
       activeAlertsCount,
       searchHistoryCount,
+      applicationsCount,
       recentSearches,
       recentSavedJobs,
       recentAlerts,
     ] = await Promise.all([
       // Count saved jobs
-      prisma.jobApplication.count({
+      prisma.savedJob.count({
         where: {
           userId,
-          status: 'saved',
         },
       }),
 
@@ -44,6 +44,14 @@ async function getDashboardData(userId: string) {
         where: { userId },
       }),
 
+      // Count applications submitted
+      prisma.jobApplication.count({
+        where: {
+          userId,
+          status: { not: 'saved' }, // Exclude saved jobs, only count actual applications
+        },
+      }),
+
       // Get recent searches (last 5)
       prisma.searchHistory.findMany({
         where: { userId },
@@ -58,10 +66,9 @@ async function getDashboardData(userId: string) {
       }),
 
       // Get recent saved jobs
-      prisma.jobApplication.findMany({
+      prisma.savedJob.findMany({
         where: {
           userId,
-          status: 'saved',
         },
         include: {
           job: {
@@ -77,7 +84,7 @@ async function getDashboardData(userId: string) {
             },
           },
         },
-        orderBy: { appliedAt: 'desc' },
+        orderBy: { savedAt: 'desc' },
         take: 3,
       }),
 
@@ -104,14 +111,15 @@ async function getDashboardData(userId: string) {
         totalAlerts: alertsCount,
         activeAlerts: activeAlertsCount,
         searchHistory: searchHistoryCount,
+        applicationsSubmitted: applicationsCount,
       },
       recentSearches,
-      recentSavedJobs: recentSavedJobs.map(app => ({
-        ...app.job,
-        type: app.job.jobType,
-        salaryMin: app.job.salaryMin ?? undefined,
-        salaryMax: app.job.salaryMax ?? undefined,
-        savedAt: app.appliedAt,
+      recentSavedJobs: recentSavedJobs.map(savedJob => ({
+        ...savedJob.job,
+        type: savedJob.job.jobType,
+        salaryMin: savedJob.job.salaryMin ?? undefined,
+        salaryMax: savedJob.job.salaryMax ?? undefined,
+        savedAt: savedJob.savedAt,
       })),
       recentAlerts: recentAlerts.map(alert => ({
         ...alert,
@@ -128,6 +136,7 @@ async function getDashboardData(userId: string) {
         totalAlerts: 0,
         activeAlerts: 0,
         searchHistory: 0,
+        applicationsSubmitted: 0,
       },
       recentSearches: [],
       recentSavedJobs: [],
@@ -296,19 +305,19 @@ export default async function DashboardPage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
                 </div>
               </div>
               <div className="ml-4 min-w-0 flex-1 sm:ml-5">
                 <p className="truncate text-sm font-medium text-gray-500">
-                  Profile Views
+                  Applications Submitted
                 </p>
                 <p className="text-xl font-semibold text-gray-900 sm:text-2xl">
-                  24
+                  {dashboardData.stats.applicationsSubmitted}
                 </p>
-                <p className="text-xs text-gray-400">this month</p>
+                <p className="text-xs text-gray-400">total applications</p>
               </div>
             </div>
           </div>

@@ -30,14 +30,14 @@ export async function GET(req: NextRequest) {
       alertsCount,
       activeAlertsCount,
       searchHistoryCount,
+      applicationsCount,
       recentSearches,
       recentActivity,
     ] = await Promise.all([
       // Count saved jobs
-      prisma.jobApplication.count({
+      prisma.savedJob.count({
         where: {
           userId,
-          status: 'saved',
         },
       }),
 
@@ -59,6 +59,14 @@ export async function GET(req: NextRequest) {
         where: { userId },
       }),
 
+      // Count applications submitted
+      prisma.jobApplication.count({
+        where: {
+          userId,
+          status: { not: 'saved' }, // Exclude saved jobs, only count actual applications
+        },
+      }),
+
       // Get recent searches (last 5)
       prisma.searchHistory.findMany({
         where: { userId },
@@ -73,10 +81,9 @@ export async function GET(req: NextRequest) {
       }),
 
       // Get recent activity (saved jobs and alerts)
-      prisma.jobApplication.findMany({
+      prisma.savedJob.findMany({
         where: {
           userId,
-          status: 'saved',
         },
         include: {
           job: {
@@ -87,7 +94,7 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        orderBy: { appliedAt: 'desc' },
+        orderBy: { savedAt: 'desc' },
         take: 5,
       }),
     ]);
@@ -98,14 +105,15 @@ export async function GET(req: NextRequest) {
         totalAlerts: alertsCount,
         activeAlerts: activeAlertsCount,
         searchHistory: searchHistoryCount,
+        applicationsSubmitted: applicationsCount,
       },
       recentSearches,
-      recentActivity: recentActivity.map(app => ({
+      recentActivity: recentActivity.map(savedJob => ({
         type: 'saved_job',
-        id: app.id,
-        title: `Saved ${app.job.title} at ${app.job.company}`,
-        timestamp: app.appliedAt,
-        jobId: app.job.id,
+        id: savedJob.id,
+        title: `Saved ${savedJob.job.title} at ${savedJob.job.company}`,
+        timestamp: savedJob.savedAt,
+        jobId: savedJob.job.id,
       })),
     });
   } catch (error) {
