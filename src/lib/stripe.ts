@@ -94,7 +94,7 @@ export const JOB_POSTING_CONFIG = {
       price: 199,
       stripePriceId: process.env.STRIPE_PRICE_STANDARD,
       features: {
-        jobPosts: 3,
+        jobPosts: 5,
         duration: 30,
         aiOptimization: true,
         analytics: 'advanced',

@@ -33,7 +33,7 @@ const employerPlans = [
     yearlyDiscount: 15,
     description: 'Ideal for growing companies with multiple positions',
     features: [
-      '3 Job Credits per month',
+      '5 Job Credits per month',
       'Advanced Analytics & Reports',
       'Premium Job Placement',
       'Resume Database Access',
