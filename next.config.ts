@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value:
-              'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()',
+              'camera=(), microphone=(), geolocation=(), payment=(self "https://js.stripe.com" "https://checkout.stripe.com"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()',
           },
         ],
       },
