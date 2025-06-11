@@ -79,7 +79,7 @@ export const JOB_POSTING_CONFIG = {
   tiers: {
     starter: {
       name: 'Starter Tier',
-      price: 99,
+      price: 89,
       stripePriceId: process.env.STRIPE_PRICE_STARTER,
       features: {
         jobPosts: 2,
