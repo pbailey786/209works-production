@@ -29,6 +29,10 @@ export default function EmbeddedCheckout({
   useEffect(() => {
     const initializeEmbeddedCheckout = async () => {
       try {
+        // Debug environment variable
+        console.log('Stripe publishable key available:', !!publishableKey);
+        console.log('Mock mode:', mock);
+
         // Handle mock mode
         if (mock) {
           setLoading(false);
@@ -37,7 +41,7 @@ export default function EmbeddedCheckout({
 
         // Check if publishable key is available
         if (!publishableKey) {
-          throw new Error('Stripe publishable key not configured. Please add NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to environment variables.');
+          throw new Error(`Stripe publishable key not configured. Found: ${publishableKey || 'undefined'}`);
         }
 
         const stripe = await stripePromise;

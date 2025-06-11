@@ -27,11 +27,8 @@ function CheckoutContent() {
       try {
         setLoading(true);
 
-        // Use mock function if Stripe keys are not configured
-        const hasStripeKeys = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-        const endpoint = hasStripeKeys
-          ? '/.netlify/functions/create-checkout-session'
-          : '/.netlify/functions/create-checkout-session-mock';
+        // Always try the real Stripe function first since you have the keys configured
+        const endpoint = '/.netlify/functions/create-checkout-session';
 
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -51,17 +48,8 @@ function CheckoutContent() {
           throw new Error(data.error || 'Failed to create checkout session');
         }
 
-        // Handle mock response (show mock checkout form)
-        if (data.mock) {
-          setClientSecret('mock_client_secret');
-          setPlanDetails({
-            plan: data.plan,
-            returnUrl: data.url,
-            mock: true,
-          });
-        }
-        // Handle real Stripe response
-        else if (data.clientSecret) {
+        // Handle Stripe response
+        if (data.clientSecret) {
           setClientSecret(data.clientSecret);
           setPlanDetails({
             plan: data.plan,
