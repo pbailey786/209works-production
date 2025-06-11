@@ -47,8 +47,26 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  console.log('🛒 Job posting checkout API called - START');
+
+  // Test imports first
   try {
-    console.log('🛒 Job posting checkout API called');
+    console.log('🔧 Testing imports...');
+    console.log('🔧 authOptions:', typeof authOptions);
+    console.log('🔧 stripe:', typeof stripe);
+    console.log('🔧 JOB_POSTING_CONFIG:', typeof JOB_POSTING_CONFIG);
+    console.log('🔧 prisma:', typeof prisma);
+    console.log('🔧 z:', typeof z);
+  } catch (importError) {
+    console.error('❌ Import error:', importError);
+    return NextResponse.json(
+      { error: 'Import error', details: importError instanceof Error ? importError.message : 'Unknown' },
+      { status: 500 }
+    );
+  }
+
+  try {
+    console.log('🛒 Job posting checkout API called - INSIDE TRY');
     console.log('🔧 Environment check - STRIPE_PRICE_STARTER:', !!process.env.STRIPE_PRICE_STARTER);
     console.log('🔧 JOB_POSTING_CONFIG loaded:', !!JOB_POSTING_CONFIG);
 
@@ -279,11 +297,15 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error creating job posting checkout session:', error);
-    
+    console.error('❌ Error creating job posting checkout session:', error);
+    console.error('❌ Error name:', error instanceof Error ? error.name : 'Unknown');
+    console.error('❌ Error message:', error instanceof Error ? error.message : 'Unknown');
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'Unknown');
+
     if (error instanceof z.ZodError) {
+      console.error('❌ Zod validation error:', error.errors);
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid request data',
           details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
         },
@@ -292,7 +314,11 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      {
+        error: 'Failed to create checkout session',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }
