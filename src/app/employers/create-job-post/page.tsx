@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
@@ -82,6 +82,31 @@ export default function CreateJobPostPage() {
     upsellBundle: false,
     upsellTotal: 0,
   });
+
+  // Auto-fill company data from onboarding
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      try {
+        const response = await fetch('/api/employers/onboarding');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.onboardingCompleted && data.data) {
+            setForm(prev => ({
+              ...prev,
+              companyName: data.data.companyName || prev.companyName,
+              location: data.data.businessLocation || prev.location,
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching company data:', error);
+      }
+    };
+
+    if (status === 'authenticated') {
+      fetchCompanyData();
+    }
+  }, [status]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);

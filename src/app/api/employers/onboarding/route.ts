@@ -7,19 +7,26 @@ import type { Session } from 'next-auth';
 
 // Validation schema for onboarding data
 const onboardingSchema = z.object({
-  // Step 1: Company Profile & Branding
-  companyLogo: z.string().optional(),
+  // Step 1: Company Info & Contact Person
   companyName: z.string().min(1, 'Company name is required').max(200),
-  companyWebsite: z.string().url('Please enter a valid website URL').max(500),
-  companyDescription: z.string().min(1, 'Company description is required').max(1000),
-  industry: z.string().min(1, 'Industry selection is required').max(100),
+  businessLocation: z.string().min(1, 'Business location is required').max(100),
+  industry: z.string().min(1, 'Please tell us what your company does').max(200),
+  contactName: z.string().min(1, 'Contact name is required').max(100),
+  contactEmail: z.string().email('Please enter a valid email').max(200),
+  contactPhone: z.string().max(20).optional(),
+  companyLogo: z.string().optional(),
 
-  // Step 2: Hiring Preferences
-  hiringPlans: z.string().min(1, 'Hiring plans selection is required').max(100),
-  typicallyRequiresDegree: z.boolean(),
-  offersRemoteWork: z.boolean(),
-  preferredExperienceLevel: z.string().min(1, 'Experience level preference is required').max(100),
-});
+  // Step 2: Hiring Goals
+  urgentlyHiring: z.boolean(),
+  seasonalHiring: z.boolean(),
+  alwaysHiring: z.boolean(),
+}).refine(
+  (data) => data.urgentlyHiring || data.seasonalHiring || data.alwaysHiring,
+  {
+    message: 'Please select at least one hiring goal',
+    path: ['hiringGoals'],
+  }
+);
 
 // POST /api/employers/onboarding - Complete employer onboarding
 export async function POST(req: NextRequest) {
@@ -37,22 +44,27 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validatedData = onboardingSchema.parse(body);
 
+    // Create hiring goals array for backend analysis
+    const hiringGoals = [];
+    if (validatedData.urgentlyHiring) hiringGoals.push('urgent');
+    if (validatedData.seasonalHiring) hiringGoals.push('seasonal');
+    if (validatedData.alwaysHiring) hiringGoals.push('always');
+
     // Update user with onboarding data
     const updatedUser = await prisma.user.update({
       where: { id: (session!.user as any).id },
       data: {
-        // Company Profile & Branding
-        companyLogo: validatedData.companyLogo,
+        // Company Info & Contact Person
         companyName: validatedData.companyName,
-        companyWebsite: validatedData.companyWebsite,
-        companyDescription: validatedData.companyDescription,
+        businessLocation: validatedData.businessLocation,
         industry: validatedData.industry,
+        contactName: validatedData.contactName,
+        contactEmail: validatedData.contactEmail,
+        contactPhone: validatedData.contactPhone,
+        companyLogo: validatedData.companyLogo,
 
-        // Hiring Preferences
-        hiringPlans: validatedData.hiringPlans,
-        typicallyRequiresDegree: validatedData.typicallyRequiresDegree,
-        offersRemoteWork: validatedData.offersRemoteWork,
-        preferredExperienceLevel: validatedData.preferredExperienceLevel,
+        // Hiring Goals (store as JSON array)
+        hiringGoals: hiringGoals,
 
         // Mark onboarding as completed
         employerOnboardingCompleted: true,
@@ -107,15 +119,14 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         companyName: true,
-        companyWebsite: true,
-        companyDescription: true,
+        businessLocation: true,
         industry: true,
-        hiringPlans: true,
-        typicallyRequiresDegree: true,
-        offersRemoteWork: true,
-        preferredExperienceLevel: true,
-        employerOnboardingCompleted: true,
+        contactName: true,
+        contactEmail: true,
+        contactPhone: true,
         companyLogo: true,
+        hiringGoals: true,
+        employerOnboardingCompleted: true,
       },
     });
 
@@ -126,19 +137,23 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    // Parse hiring goals from JSON array
+    const hiringGoalsArray = Array.isArray(user.hiringGoals) ? user.hiringGoals : [];
+
     return NextResponse.json({
       success: true,
       onboardingCompleted: user.employerOnboardingCompleted,
       data: {
-        companyLogo: user.companyLogo,
         companyName: user.companyName || '',
-        companyWebsite: user.companyWebsite || '',
-        companyDescription: user.companyDescription || '',
+        businessLocation: user.businessLocation || '',
         industry: user.industry || '',
-        hiringPlans: user.hiringPlans || '',
-        typicallyRequiresDegree: user.typicallyRequiresDegree || false,
-        offersRemoteWork: user.offersRemoteWork || false,
-        preferredExperienceLevel: user.preferredExperienceLevel || '',
+        contactName: user.contactName || '',
+        contactEmail: user.contactEmail || '',
+        contactPhone: user.contactPhone || '',
+        companyLogo: user.companyLogo,
+        urgentlyHiring: hiringGoalsArray.includes('urgent'),
+        seasonalHiring: hiringGoalsArray.includes('seasonal'),
+        alwaysHiring: hiringGoalsArray.includes('always'),
       },
     });
   } catch (error) {
