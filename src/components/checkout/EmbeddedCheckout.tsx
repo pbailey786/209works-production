@@ -50,8 +50,9 @@ export default function EmbeddedCheckout({
           console.error('Client secret prefix:', clientSecret.substring(0, 20));
         }
 
-        // Handle mock mode
-        if (mock) {
+        // Handle mock mode early
+        if (mock || clientSecret === 'mock_client_secret') {
+          console.log('Mock mode detected, skipping Stripe initialization');
           setLoading(false);
           return;
         }
@@ -66,13 +67,6 @@ export default function EmbeddedCheckout({
           throw new Error('Client secret not provided');
         }
 
-        // Check if this is mock mode
-        if (clientSecret === 'mock_client_secret') {
-          console.log('Mock mode detected, skipping Stripe initialization');
-          setLoading(false);
-          return;
-        }
-
         const stripe = await stripePromise;
         if (!stripe) {
           throw new Error('Failed to load Stripe. Please check your publishable key.');
@@ -80,20 +74,20 @@ export default function EmbeddedCheckout({
 
         // Wait for the container to be available
         let retries = 0;
-        const maxRetries = 20; // Increased retries
+        const maxRetries = 30; // Increased retries
         let container: HTMLDivElement | null = null;
 
-        // First, make sure the container is visible
-        const containerElement = document.getElementById('stripe-checkout-container') as HTMLDivElement;
-        if (containerElement) {
-          containerElement.classList.remove('hidden');
-          containerElement.style.display = 'block';
-        }
-
+        // Wait for the ref to be available
         while (!container && retries < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 150)); // Longer wait
-          container = checkoutRef.current || (document.getElementById('stripe-checkout-container') as HTMLDivElement);
+          await new Promise(resolve => setTimeout(resolve, 100));
+          container = checkoutRef.current;
           console.log(`Retry ${retries + 1}: Container found:`, !!container);
+          console.log(`Retry ${retries + 1}: Container details:`, {
+            refCurrent: !!checkoutRef.current,
+            refCurrentId: checkoutRef.current?.id,
+            refCurrentClass: checkoutRef.current?.className,
+            refCurrentStyle: checkoutRef.current?.style.display,
+          });
           retries++;
         }
 
@@ -101,7 +95,8 @@ export default function EmbeddedCheckout({
           console.error('Container search failed. Available elements:', {
             refCurrent: !!checkoutRef.current,
             getElementById: !!document.getElementById('stripe-checkout-container'),
-            allDivs: document.querySelectorAll('div[id*="stripe"]').length
+            allDivs: document.querySelectorAll('div[id*="stripe"]').length,
+            allCheckoutDivs: document.querySelectorAll('div[ref*="checkout"]').length,
           });
           throw new Error('Checkout container not found after waiting');
         }
@@ -271,17 +266,14 @@ export default function EmbeddedCheckout({
         </div>
       )}
 
-      {/* Real Stripe checkout container - Always render, show when needed */}
-      <div
-        ref={checkoutRef}
-        className={`rounded-lg border border-gray-200 bg-white p-4 min-h-[400px] ${
-          (mock || clientSecret === 'mock_client_secret') ? 'hidden' : ''
-        }`}
-        id="stripe-checkout-container"
-        style={{
-          display: (mock || clientSecret === 'mock_client_secret') ? 'none' : 'block'
-        }}
-      />
+      {/* Real Stripe checkout container - Only show when not in mock mode */}
+      {!mock && clientSecret !== 'mock_client_secret' && (
+        <div
+          ref={checkoutRef}
+          className="rounded-lg border border-gray-200 bg-white p-4 min-h-[400px]"
+          id="stripe-checkout-container"
+        />
+      )}
 
       {/* Security notice */}
       <div className="mt-4 text-center text-sm text-gray-500">
