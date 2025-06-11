@@ -76,7 +76,7 @@ function CheckoutContent() {
           message: err.message,
           stack: err.stack,
           plan: plan,
-          endpoint: endpoint
+          url: '/.netlify/functions/create-checkout-session'
         });
         setError(err.message || 'Failed to initialize checkout');
       } finally {
