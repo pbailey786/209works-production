@@ -5,12 +5,12 @@ import { Award } from 'lucide-react';
 import Link from 'next/link';
 import PricingSection from '@/components/pricing/PricingSection';
 
-// Employer pricing plans - Monthly pricing only
+// Employer pricing plans - Monthly subscription model
 const employerPlans = [
   {
     id: 'starter',
     name: 'Starter Tier',
-    monthlyPrice: 99,
+    monthlyPrice: 89, // Reduced from $99 to improve value perception
     description: 'Perfect for small businesses hiring occasionally',
     features: [
       '2 Job Credits per month',
@@ -21,6 +21,7 @@ const employerPlans = [
       '30-day Job Duration',
       'Bulk Upload Access',
     ],
+    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
   },
   {
     id: 'standard',
@@ -35,12 +36,14 @@ const employerPlans = [
       'Applicant Messaging',
       'Priority Support',
       'Company Profile Page',
-      '60-day Job Duration',
+      '30-day Job Duration',
       'Bulk Upload Access',
-      'AI Job Optimization',
+      'AI Job Optimization*',
     ],
     popular: true,
     badge: 'Most Popular',
+    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
+    aiTooltip: 'Our AI suggests improvements to your job titles, descriptions, and categories to improve visibility.',
   },
   {
     id: 'pro',
@@ -55,10 +58,14 @@ const employerPlans = [
       'Bulk Job Management',
       'Priority Phone Support',
       'Advanced Reporting',
-      '90-day Job Duration',
-      'Premium AI Features',
+      '30-day Job Duration',
+      'Premium AI Features*',
       'Dedicated Account Manager',
     ],
+    badge: 'Most Value',
+    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
+    aiTooltip: 'Advanced AI features including bulk optimization, smart categorization, and performance insights.',
+    highlight: true, // Add visual emphasis
   },
 ];
 
@@ -118,14 +125,20 @@ export default function EmployerPricingPage() {
               <div
                 key={plan.id}
                 className={`relative rounded-xl border-2 p-8 ${
-                  plan.popular
+                  plan.highlight
+                    ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-green-50 shadow-xl ring-2 ring-orange-200'
+                    : plan.popular
                     ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-green-50 shadow-xl'
                     : 'border-gray-200 bg-white hover:border-orange-300 hover:shadow-lg'
                 } transition-all`}
               >
-                {plan.popular && (
+                {(plan.popular || plan.highlight) && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
-                    <span className="bg-gradient-to-r from-orange-600 to-green-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                    <span className={`${
+                      plan.highlight
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-600'
+                        : 'bg-gradient-to-r from-orange-600 to-green-600'
+                    } text-white px-4 py-1 rounded-full text-sm font-medium`}>
                       {plan.badge}
                     </span>
                   </div>
@@ -135,18 +148,34 @@ export default function EmployerPricingPage() {
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                   <p className="text-gray-600 mb-6">{plan.description}</p>
 
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <span className="text-4xl font-bold text-gray-900">${plan.monthlyPrice}</span>
-                    <span className="text-gray-600">/month</span>
+                    <span className="text-gray-600">/mo</span>
                   </div>
 
+                  {/* Billing note */}
+                  <p className="text-xs text-gray-500 mb-6">{plan.billingNote}</p>
+
                   <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center text-sm text-gray-600">
-                        <span className="text-green-500 mr-2">✓</span>
-                        {feature}
-                      </li>
-                    ))}
+                    {plan.features.map((feature, index) => {
+                      const hasAiTooltip = feature.includes('AI') && feature.includes('*');
+                      const displayFeature = feature.replace('*', '');
+
+                      return (
+                        <li key={index} className="flex items-center text-sm text-gray-600">
+                          <span className="text-green-500 mr-2">✓</span>
+                          <span className="flex-1">{displayFeature}</span>
+                          {hasAiTooltip && (
+                            <div className="group relative ml-1">
+                              <span className="cursor-help text-orange-500">ⓘ</span>
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
+                                {plan.aiTooltip}
+                              </div>
+                            </div>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
 
                   <button
@@ -198,17 +227,15 @@ export default function EmployerPricingPage() {
                 How do job credits work?
               </h3>
               <p className="text-gray-600">
-                Each job posting uses one credit. Credits are included monthly with your plan and don't roll over. You can purchase additional credits as needed.
+                Each job posting uses one credit. Unused job credits expire after 30 days. You can repost expired jobs anytime with a new credit.
               </p>
             </div>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                How does annual billing work?
+                How does monthly billing work?
               </h3>
               <p className="text-gray-600">
-                Annual billing offers significant savings - up to 20% off
-                compared to monthly billing. You'll be charged once per year
-                instead of monthly.
+                You will be billed monthly for your selected plan. Cancel anytime - no long-term contracts required. Your subscription automatically renews each month.
               </p>
             </div>
           </div>
