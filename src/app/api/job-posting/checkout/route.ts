@@ -17,9 +17,40 @@ const checkoutSchema = z.object({
   message: "Either tier or creditPack must be specified"
 });
 
+// Simple GET endpoint to test configuration
+export async function GET() {
+  try {
+    return NextResponse.json({
+      status: 'API route working',
+      timestamp: new Date().toISOString(),
+      configLoaded: !!JOB_POSTING_CONFIG,
+      envVarsSet: {
+        STRIPE_PRICE_STARTER: !!process.env.STRIPE_PRICE_STARTER,
+        STRIPE_PRICE_STANDARD: !!process.env.STRIPE_PRICE_STANDARD,
+        STRIPE_PRICE_PRO: !!process.env.STRIPE_PRICE_PRO,
+      },
+      tierConfig: {
+        starter: {
+          name: JOB_POSTING_CONFIG.tiers.starter.name,
+          price: JOB_POSTING_CONFIG.tiers.starter.price,
+          hasPriceId: !!JOB_POSTING_CONFIG.tiers.starter.stripePriceId,
+        }
+      }
+    });
+  } catch (error) {
+    console.error('GET /api/job-posting/checkout error:', error);
+    return NextResponse.json(
+      { error: 'Configuration test failed', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     console.log('🛒 Job posting checkout API called');
+    console.log('🔧 Environment check - STRIPE_PRICE_STARTER:', !!process.env.STRIPE_PRICE_STARTER);
+    console.log('🔧 JOB_POSTING_CONFIG loaded:', !!JOB_POSTING_CONFIG);
 
     // Check authentication
     const session = (await getServerSession(authOptions)) as Session | null;
