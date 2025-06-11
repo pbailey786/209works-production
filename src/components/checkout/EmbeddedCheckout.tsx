@@ -31,7 +31,9 @@ export default function EmbeddedCheckout({
       try {
         // Debug environment variable
         console.log('Stripe publishable key available:', !!publishableKey);
+        console.log('Client secret available:', !!clientSecret);
         console.log('Mock mode:', mock);
+        console.log('Checkout ref current:', !!checkoutRef.current);
 
         // Handle mock mode
         if (mock) {
@@ -44,13 +46,27 @@ export default function EmbeddedCheckout({
           throw new Error(`Stripe publishable key not configured. Found: ${publishableKey || 'undefined'}`);
         }
 
+        // Check if client secret is available
+        if (!clientSecret) {
+          throw new Error('Client secret not provided');
+        }
+
         const stripe = await stripePromise;
         if (!stripe) {
           throw new Error('Failed to load Stripe. Please check your publishable key.');
         }
 
+        // Wait for the container to be available
+        let retries = 0;
+        const maxRetries = 10;
+
+        while (!checkoutRef.current && retries < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+          retries++;
+        }
+
         if (!checkoutRef.current) {
-          throw new Error('Checkout container not found');
+          throw new Error('Checkout container not found after waiting');
         }
 
         // Create embedded checkout
@@ -238,7 +254,11 @@ export default function EmbeddedCheckout({
         )}
 
         {/* Real Stripe checkout container */}
-        <div ref={checkoutRef} className={loading || error || mock ? 'hidden' : ''} />
+        <div
+          ref={checkoutRef}
+          className={loading || error || mock ? 'hidden' : 'min-h-[400px]'}
+          id="stripe-checkout-container"
+        />
       </div>
 
       {/* Security notice */}
