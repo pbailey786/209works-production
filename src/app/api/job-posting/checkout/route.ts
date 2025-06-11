@@ -19,9 +19,14 @@ const checkoutSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    console.log('🛒 Job posting checkout API called');
+
     // Check authentication
     const session = (await getServerSession(authOptions)) as Session | null;
+    console.log('🔐 Session check:', !!session, session?.user?.email);
+
     if (!session?.user?.email) {
+      console.log('❌ No session or email found');
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -29,12 +34,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user from database
+    console.log('🔍 Looking up user:', session.user.email);
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { id: true, email: true, name: true, stripeCustomerId: true, role: true },
     });
+    console.log('👤 User found:', !!user, user?.role);
 
     if (!user) {
+      console.log('❌ User not found in database');
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -42,6 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (user.role !== 'employer') {
+      console.log('❌ User is not an employer:', user.role);
       return NextResponse.json(
         { error: 'Only employers can purchase job posting packages' },
         { status: 403 }
@@ -50,7 +59,9 @@ export async function POST(req: NextRequest) {
 
     // Parse and validate request body
     const body = await req.json();
+    console.log('📦 Request body:', body);
     const validatedData = checkoutSchema.parse(body);
+    console.log('✅ Validated data:', validatedData);
 
     // Determine if this is a tier purchase or credit pack purchase
     let tierConfig = null;
@@ -60,22 +71,48 @@ export async function POST(req: NextRequest) {
 
     if (validatedData.tier) {
       tierConfig = JOB_POSTING_CONFIG.tiers[validatedData.tier];
+      console.log('🎯 Tier config:', tierConfig);
+      console.log('💰 Stripe Price ID:', tierConfig?.stripePriceId);
+
       if (!tierConfig) {
+        console.log('❌ Invalid tier config');
         return NextResponse.json(
           { error: 'Invalid tier selected' },
           { status: 400 }
         );
       }
+
+      if (!tierConfig.stripePriceId) {
+        console.log('❌ Missing Stripe Price ID for tier:', validatedData.tier);
+        return NextResponse.json(
+          { error: `Stripe price not configured for tier: ${validatedData.tier}` },
+          { status: 500 }
+        );
+      }
+
       basePrice = tierConfig.price;
       jobCredits = tierConfig.features.jobPosts;
     } else if (validatedData.creditPack) {
       creditPackConfig = JOB_POSTING_CONFIG.creditPacks[validatedData.creditPack];
+      console.log('📦 Credit pack config:', creditPackConfig);
+      console.log('💰 Stripe Price ID:', creditPackConfig?.stripePriceId);
+
       if (!creditPackConfig) {
+        console.log('❌ Invalid credit pack config');
         return NextResponse.json(
           { error: 'Invalid credit pack selected' },
           { status: 400 }
         );
       }
+
+      if (!creditPackConfig.stripePriceId) {
+        console.log('❌ Missing Stripe Price ID for credit pack:', validatedData.creditPack);
+        return NextResponse.json(
+          { error: `Stripe price not configured for credit pack: ${validatedData.creditPack}` },
+          { status: 500 }
+        );
+      }
+
       basePrice = creditPackConfig.price;
       jobCredits = creditPackConfig.credits;
     }

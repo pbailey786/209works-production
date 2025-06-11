@@ -32,9 +32,23 @@ export default function EmbeddedCheckout({
         // Debug environment variable
         console.log('Stripe publishable key available:', !!publishableKey);
         console.log('Stripe publishable key value:', publishableKey ? publishableKey.substring(0, 10) + '...' : 'undefined');
+        console.log('Stripe publishable key type:', typeof publishableKey);
         console.log('Client secret available:', !!clientSecret);
+        console.log('Client secret prefix:', clientSecret ? clientSecret.substring(0, 10) + '...' : 'undefined');
         console.log('Mock mode:', mock);
         console.log('Checkout ref current:', !!checkoutRef.current);
+
+        // Check if publishable key looks correct
+        if (publishableKey && !publishableKey.startsWith('pk_')) {
+          console.error('❌ INVALID PUBLISHABLE KEY: Key does not start with pk_');
+          console.error('Key value:', publishableKey);
+        }
+
+        // Check if client secret looks correct
+        if (clientSecret && clientSecret.startsWith('sk_')) {
+          console.error('❌ INVALID CLIENT SECRET: Client secret appears to be a secret key!');
+          console.error('Client secret prefix:', clientSecret.substring(0, 20));
+        }
 
         // Handle mock mode
         if (mock) {
