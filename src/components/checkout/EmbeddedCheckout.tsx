@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
 interface EmbeddedCheckoutProps {
-  clientSecret: string;
+  sessionId?: string;
+  clientSecret?: string; // Keep for backward compatibility
   onBack?: () => void;
   mock?: boolean;
   returnUrl?: string;
