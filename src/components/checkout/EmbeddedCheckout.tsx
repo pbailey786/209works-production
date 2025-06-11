@@ -59,15 +59,19 @@ export default function EmbeddedCheckout({
         // Wait for the container to be available
         let retries = 0;
         const maxRetries = 10;
+        let container = checkoutRef.current;
 
-        while (!checkoutRef.current && retries < maxRetries) {
+        while (!container && retries < maxRetries) {
           await new Promise(resolve => setTimeout(resolve, 100));
+          container = checkoutRef.current || document.getElementById('stripe-checkout-container');
           retries++;
         }
 
-        if (!checkoutRef.current) {
+        if (!container) {
           throw new Error('Checkout container not found after waiting');
         }
+
+        console.log('Found checkout container:', !!container);
 
         // Create embedded checkout
         const embeddedCheckout = await stripe.initEmbeddedCheckout({
@@ -75,7 +79,7 @@ export default function EmbeddedCheckout({
         });
 
         // Mount the embedded checkout
-        embeddedCheckout.mount(checkoutRef.current);
+        embeddedCheckout.mount(container);
 
         setLoading(false);
 
@@ -157,31 +161,9 @@ export default function EmbeddedCheckout({
         )}
       </div>
 
-      {/* Embedded Checkout Container */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
-        {loading && (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <div className="text-center">
-              <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-600" />
-              <p className="mt-2 text-gray-600">Loading payment form...</p>
-            </div>
-          </div>
-        )}
-
-        {error && (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <div className="text-center">
-              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
-                <span className="text-red-600 text-xl">⚠️</span>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Payment Error</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Mock checkout form */}
-        {mock && !loading && !error && (
+      {/* Mock checkout form */}
+      {mock && !loading && !error && (
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
           <div className="space-y-6">
             <div className="rounded-lg bg-blue-50 p-4 border border-blue-200">
               <div className="flex items-center space-x-2">
@@ -251,15 +233,17 @@ export default function EmbeddedCheckout({
               </Button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Real Stripe checkout container */}
-        <div
-          ref={checkoutRef}
-          className={loading || error || mock ? 'hidden' : 'min-h-[400px]'}
-          id="stripe-checkout-container"
-        />
-      </div>
+      {/* Real Stripe checkout container - Always render but conditionally show */}
+      <div
+        ref={checkoutRef}
+        className={`rounded-lg border border-gray-200 bg-white p-4 min-h-[400px] ${
+          loading || error || mock ? 'hidden' : ''
+        }`}
+        id="stripe-checkout-container"
+      />
 
       {/* Security notice */}
       <div className="mt-4 text-center text-sm text-gray-500">
