@@ -168,6 +168,19 @@ export async function POST(req: NextRequest) {
 
     // Create or get Stripe customer
     let customerId = user.stripeCustomerId;
+
+    // If user has a stored customer ID, verify it exists in Stripe
+    if (customerId) {
+      try {
+        await stripe.customers.retrieve(customerId);
+        console.log(`✅ Existing Stripe customer found: ${customerId}`);
+      } catch (error) {
+        console.log(`❌ Stored customer ID ${customerId} not found in Stripe, creating new customer`);
+        customerId = null; // Reset to create a new customer
+      }
+    }
+
+    // Create new customer if none exists or stored one is invalid
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email,
@@ -177,6 +190,7 @@ export async function POST(req: NextRequest) {
         },
       });
       customerId = customer.id;
+      console.log(`✅ Created new Stripe customer: ${customerId}`);
 
       // Update user with Stripe customer ID
       await prisma.user.update({
