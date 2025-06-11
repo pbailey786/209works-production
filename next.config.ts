@@ -173,12 +173,6 @@ const nextConfig: NextConfig = {
   // Enable compression in production
   compress: true,
 
-  // Performance optimizations
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-icons'],
-  },
-
   // Server external packages (moved from experimental)
   serverExternalPackages: ['sharp'],
 
@@ -187,12 +181,13 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // Security-related experimental features
+  // Performance and security optimizations
   experimental: {
-    // Enable strict mode for better security
-    strictNextHead: true,
-    // Enable optimized CSS loading
+    // Performance optimizations
     optimizeCss: true,
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-icons'],
+    // Security features
+    strictNextHead: true,
   },
 
   // Webpack configuration for security
