@@ -31,6 +31,7 @@ export default function EmbeddedCheckout({
       try {
         // Debug environment variable
         console.log('Stripe publishable key available:', !!publishableKey);
+        console.log('Stripe publishable key value:', publishableKey ? publishableKey.substring(0, 10) + '...' : 'undefined');
         console.log('Client secret available:', !!clientSecret);
         console.log('Mock mode:', mock);
         console.log('Checkout ref current:', !!checkoutRef.current);
