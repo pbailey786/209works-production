@@ -65,16 +65,29 @@ export default function EmbeddedCheckout({
 
         // Wait for the container to be available
         let retries = 0;
-        const maxRetries = 10;
-        let container: HTMLDivElement | null = checkoutRef.current;
+        const maxRetries = 20; // Increased retries
+        let container: HTMLDivElement | null = null;
+
+        // First, make sure the container is visible
+        const containerElement = document.getElementById('stripe-checkout-container') as HTMLDivElement;
+        if (containerElement) {
+          containerElement.classList.remove('hidden');
+          containerElement.style.display = 'block';
+        }
 
         while (!container && retries < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 150)); // Longer wait
           container = checkoutRef.current || (document.getElementById('stripe-checkout-container') as HTMLDivElement);
+          console.log(`Retry ${retries + 1}: Container found:`, !!container);
           retries++;
         }
 
         if (!container) {
+          console.error('Container search failed. Available elements:', {
+            refCurrent: !!checkoutRef.current,
+            getElementById: !!document.getElementById('stripe-checkout-container'),
+            allDivs: document.querySelectorAll('div[id*="stripe"]').length
+          });
           throw new Error('Checkout container not found after waiting');
         }
 
@@ -243,13 +256,16 @@ export default function EmbeddedCheckout({
         </div>
       )}
 
-      {/* Real Stripe checkout container - Always render but conditionally show */}
+      {/* Real Stripe checkout container - Always render, show when needed */}
       <div
         ref={checkoutRef}
         className={`rounded-lg border border-gray-200 bg-white p-4 min-h-[400px] ${
-          loading || error || mock || clientSecret === 'mock_client_secret' ? 'hidden' : ''
+          (mock || clientSecret === 'mock_client_secret') ? 'hidden' : ''
         }`}
         id="stripe-checkout-container"
+        style={{
+          display: (mock || clientSecret === 'mock_client_secret') ? 'none' : 'block'
+        }}
       />
 
       {/* Security notice */}
