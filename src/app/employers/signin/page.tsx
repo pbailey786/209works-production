@@ -101,7 +101,7 @@ export default function EmployerSigninPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gray-50">
       <div className="flex min-h-screen">
         {/* Left Side - Sign In Form */}
         <div className="flex flex-1 items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -109,11 +109,11 @@ export default function EmployerSigninPage() {
             {/* Header */}
             <div className="text-center">
               <div className="mb-4 flex items-center justify-center">
-                <div className="rounded-full bg-gradient-to-r from-blue-600 to-green-600 p-3 text-white shadow-lg">
+                <div className="rounded-full bg-[#2d4a3e] p-3 text-white shadow-lg">
                   <Shield className="h-8 w-8" />
                 </div>
               </div>
-              <h1 className="mb-2 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-3xl font-bold text-transparent">
+              <h1 className="mb-2 text-3xl font-bold text-[#2d4a3e]">
                 Welcome to 209 Works
               </h1>
               <h2 className="text-xl font-semibold text-gray-900">
@@ -135,7 +135,7 @@ export default function EmployerSigninPage() {
                   onClick={() =>
                     (window.location.href = '/employers/dashboard')
                   }
-                  className="w-full rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+                  className="w-full rounded-lg bg-[#2d4a3e] px-4 py-2 text-sm font-medium text-white hover:bg-[#1d3a2e]"
                 >
                   Go to Dashboard Manually
                 </button>
@@ -272,7 +272,7 @@ export default function EmployerSigninPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="group relative flex w-full justify-center rounded-lg border border-transparent bg-gradient-to-r from-blue-600 to-green-600 px-4 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="group relative flex w-full justify-center rounded-lg border border-transparent bg-[#2d4a3e] px-4 py-3 text-sm font-medium text-white shadow-lg transition-all hover:bg-[#1d3a2e] focus:outline-none focus:ring-2 focus:ring-[#ff6b35] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   {isLoading ? (
@@ -345,7 +345,7 @@ export default function EmployerSigninPage() {
                 Don't have an account?{' '}
                 <Link
                   href="/employers/signup"
-                  className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text font-medium text-transparent hover:from-blue-700 hover:to-green-700"
+                  className="font-medium text-[#ff6b35] hover:text-[#e55a2b]"
                 >
                   Sign up for free
                 </Link>
@@ -358,19 +358,19 @@ export default function EmployerSigninPage() {
         </div>
 
         {/* Right Side - Features & Benefits */}
-        <div className="hidden bg-gradient-to-br from-blue-600 to-green-600 lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-8">
+        <div className="hidden bg-gradient-to-br from-[#2d4a3e] via-[#1d3a2e] to-[#2d4a3e] lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-8">
           <div className="mx-auto max-w-md text-white">
             <h3 className="mb-2 text-2xl font-bold">Why Choose 209 Works?</h3>
-            <p className="mb-6 text-sm text-blue-100">
+            <p className="mb-6 text-sm text-[#9fdf9f]/80">
               Built for the 209. Made for the people who work here.
             </p>
 
             <div className="space-y-6">
               <div className="flex items-start space-x-3">
-                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-green-200" />
+                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-[#9fdf9f]" />
                 <div>
                   <h4 className="font-semibold">JobsGPT AI Matching</h4>
-                  <p className="text-sm text-blue-100">
+                  <p className="text-sm text-[#9fdf9f]/80">
                     Our AI chatbot connects you with qualified local candidates
                     and promotes your jobs to the right people.
                   </p>
@@ -378,10 +378,10 @@ export default function EmployerSigninPage() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-green-200" />
+                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-[#9fdf9f]" />
                 <div>
                   <h4 className="font-semibold">Hyper-Local Focus</h4>
-                  <p className="text-sm text-blue-100">
+                  <p className="text-sm text-[#9fdf9f]/80">
                     Target talent specifically in the 209 area code - Stockton,
                     Modesto, Tracy, Manteca, and surrounding communities.
                   </p>
@@ -389,10 +389,10 @@ export default function EmployerSigninPage() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-green-200" />
+                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-[#9fdf9f]" />
                 <div>
                   <h4 className="font-semibold">Social Media Promotion</h4>
-                  <p className="text-sm text-blue-100">
+                  <p className="text-sm text-[#9fdf9f]/80">
                     Boost your job visibility with Instagram and X promotion to
                     reach local job seekers where they are.
                   </p>
@@ -400,10 +400,10 @@ export default function EmployerSigninPage() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-green-200" />
+                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-[#9fdf9f]" />
                 <div>
                   <h4 className="font-semibold">Simple Pricing</h4>
-                  <p className="text-sm text-blue-100">
+                  <p className="text-sm text-[#9fdf9f]/80">
                     Transparent pricing starting at $50/month. No hidden fees,
                     no complicated contracts.
                   </p>
@@ -411,10 +411,10 @@ export default function EmployerSigninPage() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-green-200" />
+                <CheckCircle className="mt-1 h-6 w-6 flex-shrink-0 text-[#9fdf9f]" />
                 <div>
                   <h4 className="font-semibold">Local Support</h4>
-                  <p className="text-sm text-blue-100">
+                  <p className="text-sm text-[#9fdf9f]/80">
                     Get help from a team that understands the 209 area and local
                     business needs.
                   </p>
@@ -422,9 +422,9 @@ export default function EmployerSigninPage() {
               </div>
             </div>
 
-            <div className="mt-8 rounded-lg bg-gradient-to-r from-blue-700 to-green-700 p-4">
-              <h4 className="mb-2 font-semibold">Chamber Member Benefits</h4>
-              <p className="text-sm text-blue-100">
+            <div className="mt-8 rounded-lg bg-[#ff6b35]/20 border border-[#ff6b35]/30 p-4">
+              <h4 className="mb-2 font-semibold text-[#ff6b35]">Chamber Member Benefits</h4>
+              <p className="text-sm text-[#9fdf9f]/80">
                 Chamber of Commerce members get 25% off their first year plus
                 priority support and exclusive features.
               </p>

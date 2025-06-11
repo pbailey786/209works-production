@@ -39,6 +39,15 @@ model User {
   companyName          String?
   industry             String?
   companySize          String?
+
+  // Employer onboarding fields
+  companyLogo          String?     // Company logo URL
+  companyDescription   String?     // Brief company description
+  hiringPlans          String?     // How many people planning to hire in next 3 months
+  typicallyRequiresDegree Boolean? // Do you typically require a 4-year degree?
+  offersRemoteWork     Boolean?    // Do you offer remote or hybrid positions?
+  preferredExperienceLevel String? // Entry/Mid/Senior preference
+  employerOnboardingCompleted Boolean @default(false) // Track employer onboarding completion
   isOpenToRemote       Boolean                    @default(false)
   expectedSalaryMin    Int?
   expectedSalaryMax    Int?
@@ -200,6 +209,12 @@ model Job {
   socialMediaShoutout Boolean      @default(false)
   placementBump       Boolean      @default(false)
   upsellBundle        Boolean      @default(false)
+
+  // New job post enhancements
+  degreeRequired      Boolean?     // Is a 4-year college degree required?
+  salaryRangeMin      Int?         // Salary range minimum (separate from salaryMin for display)
+  salaryRangeMax      Int?         // Salary range maximum (separate from salaryMax for display)
+  internalTags        String[]     @default([]) // Admin-only tags: "blue collar", "tech", "nonprofit", etc.
 
   // Relations
   instagramPosts  InstagramPost[]

@@ -160,7 +160,7 @@ function SignupContent() {
         });
 
         if (result?.ok) {
-          router.push('/employers/dashboard?welcome=true');
+          router.push('/employers/onboarding');
         } else {
           router.push('/employers/signin?registered=true');
         }

@@ -43,6 +43,12 @@ interface JobPostForm {
   // Media
   mediaUrls: string[];
 
+  // New job post enhancements
+  degreeRequired: boolean;
+  salaryRangeMin: string;
+  salaryRangeMax: string;
+  internalTags: string[];
+
   // Upsells
   socialMediaShoutout: boolean;
   placementBump: boolean;
@@ -67,6 +73,10 @@ export default function CreateJobPostPage() {
     perks: '',
     applicationCTA: '',
     mediaUrls: [],
+    degreeRequired: false,
+    salaryRangeMin: '',
+    salaryRangeMax: '',
+    internalTags: [],
     socialMediaShoutout: false,
     placementBump: false,
     upsellBundle: false,
@@ -79,6 +89,7 @@ export default function CreateJobPostPage() {
   const [generatedListing, setGeneratedListing] = useState<string>('');
   const [optimizerJobId, setOptimizerJobId] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isAutofilling, setIsAutofilling] = useState(false);
 
   // Check authentication
   if (status === 'loading') {
@@ -117,6 +128,51 @@ export default function CreateJobPostPage() {
     }));
   };
 
+  const handleAutofill = async () => {
+    if (!form.jobTitle.trim()) {
+      setErrors({ jobTitle: 'Please enter a job title first' });
+      return;
+    }
+
+    setIsAutofilling(true);
+    try {
+      const response = await fetch('/api/job-post-optimizer/autofill', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jobTitle: form.jobTitle,
+          companyName: form.companyName,
+          location: form.location,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const template = data.templateContent;
+
+        setForm(prev => ({
+          ...prev,
+          schedule: template.schedule || prev.schedule,
+          companyDescription: template.companyDescription || prev.companyDescription,
+          idealFit: template.idealFit || prev.idealFit,
+          culture: template.culture || prev.culture,
+          growthPath: template.growthPath || prev.growthPath,
+          perks: template.perks || prev.perks,
+          applicationCTA: template.applicationCTA || prev.applicationCTA,
+        }));
+      } else {
+        const errorData = await response.json();
+        setErrors({ autofill: errorData.error || 'Failed to generate template' });
+      }
+    } catch (error) {
+      setErrors({ autofill: 'Failed to generate template. Please try again.' });
+    } finally {
+      setIsAutofilling(false);
+    }
+  };
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -124,6 +180,8 @@ export default function CreateJobPostPage() {
     if (!form.companyName.trim())
       newErrors.companyName = 'Company name is required';
     if (!form.location.trim()) newErrors.location = 'Location is required';
+
+    // Note: degreeRequired is a boolean, so we don't need to validate it as it defaults to false
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -141,7 +199,11 @@ export default function CreateJobPostPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          salaryRangeMin: form.salaryRangeMin ? parseInt(form.salaryRangeMin) : undefined,
+          salaryRangeMax: form.salaryRangeMax ? parseInt(form.salaryRangeMax) : undefined,
+        }),
       });
 
       if (response.ok) {
@@ -258,26 +320,54 @@ export default function CreateJobPostPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
+                <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
                     Job Title *
                   </label>
-                  <input
-                    type="text"
-                    value={form.jobTitle}
-                    onChange={e =>
-                      handleInputChange('jobTitle', e.target.value)
-                    }
-                    placeholder="e.g., Customer Service Representative"
-                    className={`w-full rounded-lg border px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
-                      errors.jobTitle ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={form.jobTitle}
+                      onChange={e =>
+                        handleInputChange('jobTitle', e.target.value)
+                      }
+                      placeholder="e.g., Customer Service Representative"
+                      className={`flex-1 rounded-lg border px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
+                        errors.jobTitle ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAutofill}
+                      disabled={isAutofilling || !form.jobTitle.trim()}
+                      className="rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#9fdf9f] px-6 py-3 text-white font-medium hover:from-[#1d3a2e] hover:to-[#8fcf8f] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                      {isAutofilling ? (
+                        <>
+                          <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white mr-2 inline-block"></div>
+                          Filling...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-2 inline-block" />
+                          Auto-Fill
+                        </>
+                      )}
+                    </button>
+                  </div>
                   {errors.jobTitle && (
                     <p className="mt-1 text-sm text-red-600">
                       {errors.jobTitle}
                     </p>
                   )}
+                  {errors.autofill && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.autofill}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500">
+                    Enter a job title and click "Auto-Fill" to generate template content for all sections below
+                  </p>
                 </div>
 
                 <div>
@@ -365,6 +455,63 @@ export default function CreateJobPostPage() {
                       className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+                </div>
+
+                {/* Degree Requirement */}
+                <div className="md:col-span-2">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="degreeRequired"
+                      checked={form.degreeRequired}
+                      onChange={e => setForm(prev => ({ ...prev, degreeRequired: e.target.checked }))}
+                      className="h-4 w-4 text-[#2d4a3e] focus:ring-[#2d4a3e] border-gray-300 rounded"
+                    />
+                    <label htmlFor="degreeRequired" className="text-sm font-medium text-gray-700">
+                      Is a 4-year college degree required for this job? *
+                    </label>
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    This information helps candidates understand requirements and supports regional education insights
+                  </p>
+                </div>
+
+                {/* Salary Range */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Salary Range Min
+                    <span className="ml-1 text-xs text-gray-500">(optional, encouraged)</span>
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <input
+                      type="number"
+                      value={form.salaryRangeMin}
+                      onChange={e => setForm(prev => ({ ...prev, salaryRangeMin: e.target.value }))}
+                      placeholder="35000"
+                      className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    Salary Range Max
+                    <span className="ml-1 text-xs text-gray-500">(optional, encouraged)</span>
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <input
+                      type="number"
+                      value={form.salaryRangeMax}
+                      onChange={e => setForm(prev => ({ ...prev, salaryRangeMax: e.target.value }))}
+                      placeholder="55000"
+                      className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-[#ff6b35]">
+                    💡 Including a salary range can boost applicant interest by up to 30%
+                  </p>
                 </div>
               </div>
             </div>

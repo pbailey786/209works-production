@@ -116,13 +116,13 @@ export default function EmployerBulkUploadPage() {
         const data = await response.json();
         setUserCredits(data.credits || { jobPost: 0, featuredPost: 0, socialGraphic: 0 });
       } else {
-        // If credits API fails, set default values for testing
-        setUserCredits({ jobPost: 5, featuredPost: 2, socialGraphic: 3 });
+        // If credits API fails, set zero credits
+        setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0 });
       }
     } catch (error) {
       console.error('Failed to fetch user credits:', error);
-      // Set default values for testing
-      setUserCredits({ jobPost: 5, featuredPost: 2, socialGraphic: 3 });
+      // Set zero credits if API fails
+      setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0 });
     }
   };
 
@@ -415,6 +415,12 @@ export default function EmployerBulkUploadPage() {
 
   const handleOptimizeJob = async (job: ProcessedJob) => {
     try {
+      // Check if user has credits before optimizing
+      if (userCredits.jobPost === 0) {
+        showError('No job posting credits available. Please purchase credits to optimize jobs.');
+        return;
+      }
+
       const response = await fetch('/api/job-post-optimizer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -435,15 +441,20 @@ export default function EmployerBulkUploadPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to optimize job');
+        const errorData = await response.json();
+        if (response.status === 402) {
+          showError(errorData.error || 'Job posting credits required to optimize jobs.');
+          return;
+        }
+        throw new Error(errorData.error || 'Failed to optimize job');
       }
 
       const result = await response.json();
 
-      if (result.success && result.optimizedContent) {
+      if (result.success && result.aiGeneratedOutput) {
         const optimizedJob = {
           ...job,
-          description: result.optimizedContent.description || job.description,
+          description: result.aiGeneratedOutput,
           optimized: true,
         };
 
@@ -451,11 +462,17 @@ export default function EmployerBulkUploadPage() {
           prev.map(j => j.id === job.id ? optimizedJob : j)
         );
 
-        showSuccess('Job optimized successfully!');
+        // Update user credits since optimization used one
+        setUserCredits(prev => ({
+          ...prev,
+          jobPost: prev.jobPost - 1,
+        }));
+
+        showSuccess('Job optimized successfully! 1 credit used.');
       }
     } catch (error) {
       console.error('Optimization error:', error);
-      showError('Failed to optimize job. Please try again.');
+      showError(error instanceof Error ? error.message : 'Failed to optimize job. Please try again.');
     }
   };
 

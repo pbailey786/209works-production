@@ -20,6 +20,13 @@ const jobPostOptimizerSchema = z.object({
   perks: z.string().max(1000).optional(),
   applicationCTA: z.string().max(500).optional(),
   mediaUrls: z.array(z.string().url()).optional().default([]),
+
+  // New job post enhancements
+  degreeRequired: z.boolean().optional(),
+  salaryRangeMin: z.number().optional(),
+  salaryRangeMax: z.number().optional(),
+  internalTags: z.array(z.string()).optional().default([]),
+
   // Upsells
   socialMediaShoutout: z.boolean().optional().default(false),
   placementBump: z.boolean().optional().default(false),
@@ -94,20 +101,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // BILLING REFACTOR: Check if user has active subscription before allowing job post optimization
-    const subscription = await prisma.subscription.findFirst({
-      where: {
-        userId: (session!.user as any).id,
-        status: 'active',
-      },
-    });
+    // Check if user has job posting credits for optimization
+    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
 
-    if (!subscription) {
+    const canPost = await JobPostingCreditsService.canPostJob((session!.user as any).id);
+    if (!canPost) {
       return NextResponse.json(
         {
-          error: 'Active subscription required to optimize job posts',
-          code: 'SUBSCRIPTION_REQUIRED',
-          redirectUrl: '/employers/upgrade'
+          error: 'Job posting credits required to optimize job posts',
+          code: 'CREDITS_REQUIRED',
+          redirectUrl: '/employers/dashboard'
         },
         { status: 402 } // Payment Required
       );
@@ -189,6 +192,18 @@ export async function POST(req: NextRequest) {
           : null,
       },
     });
+
+    // Use a job posting credit for the optimization
+    const creditResult = await JobPostingCreditsService.useJobPostCredit((session!.user as any).id, jobPostOptimizer.id);
+
+    if (!creditResult.success) {
+      // If credit usage fails, delete the optimizer record and return error
+      await prisma.jobPostOptimizer.delete({ where: { id: jobPostOptimizer.id } });
+      return NextResponse.json(
+        { error: creditResult.error || 'Failed to use job posting credit' },
+        { status: 402 }
+      );
+    }
 
     return NextResponse.json({
       success: true,

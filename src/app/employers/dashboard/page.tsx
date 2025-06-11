@@ -75,6 +75,7 @@ function DashboardContent() {
   const searchParams = useSearchParams();
   const isWelcome = searchParams.get('welcome') === 'true';
   const isPosted = searchParams.get('posted') === 'true';
+  const isPurchaseSuccess = searchParams.get('purchase_success') === 'true' || searchParams.get('credit_purchase_success') === 'true';
 
   // Debug session
   console.log('🏢 Dashboard - Session status:', status);
@@ -180,26 +181,44 @@ function DashboardContent() {
     }
   }, [status, router, session]);
 
+  // Handle purchase success - refresh credits
+  useEffect(() => {
+    if (isPurchaseSuccess && status === 'authenticated') {
+      // Refresh credits after a short delay to ensure webhook has processed
+      const refreshCredits = async () => {
+        try {
+          const creditsResponse = await fetch('/api/job-posting/credits');
+          if (creditsResponse.ok) {
+            const creditsData = await creditsResponse.json();
+            setCredits(creditsData);
+          }
+        } catch (error) {
+          console.error('Error refreshing credits:', error);
+        }
+      };
+
+      // Refresh immediately and then after 2 seconds to catch any delayed webhook processing
+      refreshCredits();
+      const timeoutId = setTimeout(refreshCredits, 2000);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isPurchaseSuccess, status]);
+
   const checkOnboardingStatus = async () => {
     try {
-      const response = await fetch('/api/profile/onboarding');
+      const response = await fetch('/api/employers/onboarding');
       if (response.ok) {
         const data = await response.json();
 
-        // If user hasn't completed onboarding, redirect to onboarding
-        if (!data.user?.onboardingCompleted) {
-          router.push('/onboarding');
-          return;
-        }
-
-        // If user is not an employer, redirect to job seeker dashboard
-        if (data.user?.role !== 'employer') {
-          router.push('/dashboard');
+        // If user hasn't completed employer onboarding, redirect to onboarding
+        if (!data.onboardingCompleted) {
+          router.push('/employers/onboarding');
           return;
         }
       }
     } catch (error) {
-      console.error('Error checking onboarding status:', error);
+      console.error('Error checking employer onboarding status:', error);
     }
   };
 
@@ -290,15 +309,15 @@ function DashboardContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Welcome Banner */}
       {isWelcome && (
-        <div className="border-b border-blue-200 bg-gradient-to-r from-blue-50 to-green-50">
+        <div className="border-b border-[#2d4a3e]/20 bg-gradient-to-r from-[#2d4a3e]/10 to-[#9fdf9f]/20">
           <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="mr-4 rounded-full bg-green-100 p-3">
-                  <CheckCircle className="h-8 w-8 text-green-600" />
+                <div className="mr-4 rounded-full bg-[#9fdf9f]/30 p-3">
+                  <CheckCircle className="h-8 w-8 text-[#2d4a3e]" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <h3 className="text-xl font-bold text-[#2d4a3e]">
                     🎉 Welcome to 209.works!
                   </h3>
                   <p className="mt-1 text-gray-600">
@@ -309,7 +328,7 @@ function DashboardContent() {
               </div>
               <button
                 onClick={handlePostJobClick}
-                className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
+                className="rounded-lg bg-[#2d4a3e] px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-[#1d3a2e]"
               >
                 Post Your First Job →
               </button>
@@ -320,14 +339,14 @@ function DashboardContent() {
 
       {/* Success Banner */}
       {isPosted && (
-        <div className="border-b border-green-200 bg-gradient-to-r from-green-50 to-blue-50">
+        <div className="border-b border-[#9fdf9f]/30 bg-gradient-to-r from-[#9fdf9f]/20 to-[#2d4a3e]/10">
           <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex items-center">
-              <div className="mr-3 rounded-full bg-green-100 p-2">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="mr-3 rounded-full bg-[#9fdf9f]/30 p-2">
+                <CheckCircle className="h-6 w-6 text-[#2d4a3e]" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-[#2d4a3e]">
                   Job Posted Successfully! 🚀
                 </h3>
                 <p className="text-gray-600">
@@ -339,12 +358,41 @@ function DashboardContent() {
         </div>
       )}
 
+      {/* Purchase Success Banner */}
+      {isPurchaseSuccess && (
+        <div className="border-b border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
+          <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="mr-3 rounded-full bg-green-100 p-2">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Credits Purchased Successfully! 💳
+                  </h3>
+                  <p className="text-gray-600">
+                    Your job credits have been added to your account. You can now post jobs!
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center rounded-lg bg-green-100 px-3 py-2">
+                <Sparkles className="mr-2 h-5 w-5 text-green-600" />
+                <span className="text-sm font-medium text-green-700">
+                  {credits.jobPost} Credits Available
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Simplified Main Content */}
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-[#2d4a3e]">
               Hey {session?.user?.name?.split(' ')[0] || 'there'}! 👋
             </h1>
             <p className="mt-1 text-gray-600">
@@ -354,21 +402,21 @@ function DashboardContent() {
           <div className="flex items-center space-x-3">
             <button
               onClick={handlePostJobClick}
-              className="flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700"
+              className="flex items-center rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-[#1d3a2e] hover:to-[#e55a2b]"
             >
               <Sparkles className="mr-2 h-5 w-5" />
               Post a Job
             </button>
             <button
               onClick={() => router.push('/employers/bulk-upload')}
-              className="flex items-center rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-purple-700 hover:to-indigo-700"
+              className="flex items-center rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#9fdf9f] px-6 py-3 font-semibold text-white shadow-lg transition-all hover:from-[#1d3a2e] hover:to-[#8fcf8f]"
             >
               <Upload className="mr-2 h-5 w-5" />
               Bulk Upload
             </button>
             <button
               onClick={handleFreePostJobClick}
-              className="flex items-center rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-gray-700"
+              className="flex items-center rounded-lg bg-[#ff6b35] px-6 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-[#e55a2b]"
             >
               <Plus className="mr-2 h-5 w-5" />
               Quick Post (Free)
@@ -380,8 +428,8 @@ function DashboardContent() {
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-                <Briefcase className="h-6 w-6 text-blue-600" />
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#2d4a3e]/10">
+                <Briefcase className="h-6 w-6 text-[#2d4a3e]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">
@@ -394,8 +442,8 @@ function DashboardContent() {
 
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-                <Users className="h-6 w-6 text-green-600" />
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#9fdf9f]/30">
+                <Users className="h-6 w-6 text-[#2d4a3e]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">
@@ -408,8 +456,8 @@ function DashboardContent() {
 
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
-                <Eye className="h-6 w-6 text-purple-600" />
+              <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#ff6b35]/10">
+                <Eye className="h-6 w-6 text-[#ff6b35]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">
@@ -420,25 +468,37 @@ function DashboardContent() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className={`rounded-xl border p-6 shadow-sm ${
+            credits.jobPost > 0
+              ? 'border-[#9fdf9f]/50 bg-gradient-to-r from-[#9fdf9f]/20 to-[#2d4a3e]/10'
+              : 'border-gray-200 bg-white'
+          }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
-                  <Sparkles className="h-6 w-6 text-orange-600" />
+                <div className={`mr-4 flex h-12 w-12 items-center justify-center rounded-lg ${
+                  credits.jobPost > 0 ? 'bg-[#9fdf9f]/30' : 'bg-[#ff6b35]/10'
+                }`}>
+                  <Sparkles className={`h-6 w-6 ${
+                    credits.jobPost > 0 ? 'text-[#2d4a3e]' : 'text-[#ff6b35]'
+                  }`} />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-gray-900">
                     {credits.jobPost}
                   </p>
-                  <p className="text-sm text-gray-600">Job Credits</p>
+                  <p className={`text-sm ${
+                    credits.jobPost > 0 ? 'text-[#2d4a3e]' : 'text-gray-600'
+                  }`}>
+                    Job Credits {credits.jobPost > 0 ? '✨' : ''}
+                  </p>
                 </div>
               </div>
               <button
                 onClick={() => router.push('/employers/credits/checkout?package=professional&quantity=1')}
-                className="flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
+                className="flex items-center rounded-lg bg-[#2d4a3e] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1d3a2e]"
               >
                 <CreditCard className="mr-1 h-4 w-4" />
-                Add Credits
+                {credits.jobPost > 0 ? 'Add More' : 'Add Credits'}
               </button>
             </div>
           </div>
@@ -464,12 +524,12 @@ function DashboardContent() {
           <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-6 py-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-[#2d4a3e]">
                   Your Jobs
                 </h2>
                 <Link
                   href="/employers/my-jobs"
-                  className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                  className="text-sm font-medium text-[#ff6b35] hover:text-[#e55a2b]"
                 >
                   View All →
                 </Link>
@@ -506,7 +566,7 @@ function DashboardContent() {
                     </div>
                     <Link
                       href={`/employers/job/${job.id}`}
-                      className="rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-100"
+                      className="rounded-lg bg-[#2d4a3e]/10 px-4 py-2 text-sm font-medium text-[#2d4a3e] transition-colors hover:bg-[#2d4a3e]/20"
                     >
                       View →
                     </Link>
@@ -517,10 +577,10 @@ function DashboardContent() {
 
             {jobs.length === 0 && (
               <div className="p-12 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                  <Briefcase className="h-8 w-8 text-blue-600" />
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#2d4a3e]/10">
+                  <Briefcase className="h-8 w-8 text-[#2d4a3e]" />
                 </div>
-                <h3 className="mb-2 text-lg font-medium text-gray-900">
+                <h3 className="mb-2 text-lg font-medium text-[#2d4a3e]">
                   Ready to hire?
                 </h3>
                 <p className="mb-6 text-gray-600">
@@ -528,7 +588,7 @@ function DashboardContent() {
                 </p>
                 <button
                   onClick={handlePostJobClick}
-                  className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
+                  className="rounded-lg bg-[#2d4a3e] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#1d3a2e]"
                 >
                   Post Your First Job
                 </button>
@@ -554,7 +614,7 @@ function DashboardContent() {
           >
           <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-6 py-4">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-[#2d4a3e]">
                 Quick Actions
               </h2>
             </div>
@@ -562,14 +622,14 @@ function DashboardContent() {
             <div className="space-y-4 p-6">
               <button
                 onClick={handlePostJobClick}
-                className="group flex w-full items-center justify-between rounded-lg border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 p-4 transition-all hover:from-blue-100 hover:to-green-100"
+                className="group flex w-full items-center justify-between rounded-lg border-2 border-[#2d4a3e]/20 bg-gradient-to-r from-[#2d4a3e]/10 to-[#9fdf9f]/20 p-4 transition-all hover:from-[#2d4a3e]/20 hover:to-[#9fdf9f]/30"
               >
                 <div className="flex items-center">
-                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-green-500">
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35]">
                     <Sparkles className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-[#2d4a3e]">
                       Post a Job
                     </p>
                     <p className="text-sm text-gray-600">
@@ -577,16 +637,16 @@ function DashboardContent() {
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#2d4a3e]" />
               </button>
 
               <Link
                 href="/employers/applicants"
-                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-[#9fdf9f]/10"
               >
                 <div className="flex items-center">
-                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
-                    <Users className="h-5 w-5 text-green-600" />
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#9fdf9f]/30">
+                    <Users className="h-5 w-5 text-[#2d4a3e]" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
@@ -597,16 +657,16 @@ function DashboardContent() {
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#2d4a3e]" />
               </Link>
 
               <Link
                 href="/employers/my-jobs"
-                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-[#2d4a3e]/5"
               >
                 <div className="flex items-center">
-                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-                    <Briefcase className="h-5 w-5 text-blue-600" />
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#2d4a3e]/10">
+                    <Briefcase className="h-5 w-5 text-[#2d4a3e]" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Manage Jobs</p>
@@ -615,16 +675,16 @@ function DashboardContent() {
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#2d4a3e]" />
               </Link>
 
               <Link
                 href="/employers/settings-simple"
-                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
+                className="group flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-[#ff6b35]/5"
               >
                 <div className="flex items-center">
-                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
-                    <Settings className="h-5 w-5 text-purple-600" />
+                  <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#ff6b35]/10">
+                    <Settings className="h-5 w-5 text-[#ff6b35]" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
@@ -635,7 +695,7 @@ function DashboardContent() {
                     </p>
                   </div>
                 </div>
-                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600" />
+                <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#ff6b35]" />
               </Link>
             </div>
           </div>
@@ -643,10 +703,10 @@ function DashboardContent() {
         </div>
 
         {/* Simple Help Section */}
-        <div className="mt-8 rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+        <div className="mt-8 rounded-xl border border-[#2d4a3e]/20 bg-gradient-to-r from-[#2d4a3e]/10 to-[#ff6b35]/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              <h3 className="mb-2 text-lg font-semibold text-[#2d4a3e]">
                 Need help getting started?
               </h3>
               <p className="text-gray-600">
@@ -663,7 +723,7 @@ function DashboardContent() {
               </Link>
               <Link
                 href="/employers/contact"
-                className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+                className="rounded-lg bg-[#2d4a3e] px-4 py-2 font-medium text-white transition-colors hover:bg-[#1d3a2e]"
               >
                 Contact Support
               </Link>

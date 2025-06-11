@@ -119,46 +119,47 @@ export default function CreditsCheckoutPage() {
   const totalFeaturedCredits = selectedPackage.featuredCredits * quantity;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex items-center">
-        <Link
-          href="/employers/dashboard"
-          className="mr-4 flex items-center text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Purchase Credits</h1>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto max-w-4xl px-4 py-8">
+        {/* Header */}
+        <div className="mb-8 flex items-center">
+          <Link
+            href="/employers/dashboard"
+            className="mr-4 flex items-center text-gray-600 hover:text-[#2d4a3e]"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Dashboard
+          </Link>
+          <h1 className="text-3xl font-bold text-[#2d4a3e]">Purchase Credits</h1>
+        </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Order Summary */}
         <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h2 className="mb-6 text-xl font-semibold text-gray-900">Order Summary</h2>
-          
-          <div className="mb-6 rounded-lg border border-gray-200 p-4">
+          <h2 className="mb-6 text-xl font-semibold text-[#2d4a3e]">Order Summary</h2>
+
+          <div className="mb-6 rounded-lg border border-[#2d4a3e]/20 bg-[#2d4a3e]/5 p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">{selectedPackage.name}</h3>
+              <h3 className="text-lg font-semibold text-[#2d4a3e]">{selectedPackage.name}</h3>
               {selectedPackage.popular && (
-                <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+                <span className="rounded-full bg-[#ff6b35] px-2 py-1 text-xs font-medium text-white">
                   Most Popular
                 </span>
               )}
             </div>
             <p className="text-sm text-gray-600 mb-4">{selectedPackage.description}</p>
-            
+
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center">
-                  <Sparkles className="mr-2 h-4 w-4 text-orange-500" />
+                  <Sparkles className="mr-2 h-4 w-4 text-[#ff6b35]" />
                   Job Credits
                 </span>
                 <span className="font-medium">{selectedPackage.jobCredits}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="flex items-center">
-                  <TrendingUp className="mr-2 h-4 w-4 text-purple-500" />
+                  <TrendingUp className="mr-2 h-4 w-4 text-[#9fdf9f]" />
                   Featured Credits
                 </span>
                 <span className="font-medium">{selectedPackage.featuredCredits}</span>
@@ -168,13 +169,13 @@ export default function CreditsCheckoutPage() {
 
           {/* Quantity Selector */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-[#2d4a3e] mb-2">
               Quantity
             </label>
             <select
               value={quantity}
               onChange={(e) => setQuantity(parseInt(e.target.value))}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-[#ff6b35] focus:outline-none focus:ring-1 focus:ring-[#ff6b35]"
             >
               {[1, 2, 3, 4, 5].map(num => (
                 <option key={num} value={num}>{num}</option>
@@ -193,7 +194,7 @@ export default function CreditsCheckoutPage() {
                 <span>Featured Credits ({totalFeaturedCredits})</span>
                 <span>Included</span>
               </div>
-              <div className="flex justify-between border-t border-gray-200 pt-2 text-lg font-semibold">
+              <div className="flex justify-between border-t border-gray-200 pt-2 text-lg font-semibold text-[#2d4a3e]">
                 <span>Total</span>
                 <span>${(totalPrice / 100).toFixed(2)}</span>
               </div>
@@ -203,12 +204,12 @@ export default function CreditsCheckoutPage() {
 
         {/* Payment Section */}
         <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h2 className="mb-6 text-xl font-semibold text-gray-900">Payment Details</h2>
-          
+          <h2 className="mb-6 text-xl font-semibold text-[#2d4a3e]">Payment Details</h2>
+
           {/* Stripe Integration Placeholder */}
-          <div className="mb-6 rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-            <CreditCard className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">Stripe Integration</h3>
+          <div className="mb-6 rounded-lg border-2 border-dashed border-[#2d4a3e]/30 bg-[#2d4a3e]/5 p-8 text-center">
+            <CreditCard className="mx-auto mb-4 h-12 w-12 text-[#2d4a3e]" />
+            <h3 className="mb-2 text-lg font-semibold text-[#2d4a3e]">Stripe Integration</h3>
             <p className="text-sm text-gray-600 mb-4">
               Secure payment processing will be integrated here using Stripe Checkout.
             </p>
@@ -222,15 +223,15 @@ export default function CreditsCheckoutPage() {
           {/* Security Features */}
           <div className="mb-6 space-y-3">
             <div className="flex items-center text-sm text-gray-600">
-              <Shield className="mr-2 h-4 w-4 text-green-500" />
+              <Shield className="mr-2 h-4 w-4 text-[#9fdf9f]" />
               <span>Secure 256-bit SSL encryption</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
-              <Clock className="mr-2 h-4 w-4 text-blue-500" />
+              <Clock className="mr-2 h-4 w-4 text-[#ff6b35]" />
               <span>Credits added instantly after payment</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
-              <Check className="mr-2 h-4 w-4 text-green-500" />
+              <Check className="mr-2 h-4 w-4 text-[#9fdf9f]" />
               <span>30-day money-back guarantee</span>
             </div>
           </div>
@@ -239,7 +240,7 @@ export default function CreditsCheckoutPage() {
           <button
             onClick={handlePurchase}
             disabled={loading}
-            className="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg bg-[#2d4a3e] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#1d3a2e] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -259,16 +260,17 @@ export default function CreditsCheckoutPage() {
       </div>
 
       {/* Development Note */}
-      <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4">
-        <h3 className="mb-2 text-sm font-semibold text-blue-900">
+      <div className="mt-8 rounded-lg border border-[#ff6b35]/30 bg-[#ff6b35]/10 p-4">
+        <h3 className="mb-2 text-sm font-semibold text-[#ff6b35]">
           🚧 Development Note
         </h3>
-        <p className="text-sm text-blue-800">
+        <p className="text-sm text-[#2d4a3e]">
           This is the Stripe integration preparation. The actual Stripe Checkout will be integrated here,
           allowing secure credit card processing. For now, clicking "Complete Purchase" will simulate
           a successful transaction and redirect to the dashboard.
         </p>
       </div>
+    </div>
     </div>
   );
 }
