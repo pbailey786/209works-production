@@ -59,11 +59,11 @@ export default function EmbeddedCheckout({
         // Wait for the container to be available
         let retries = 0;
         const maxRetries = 10;
-        let container = checkoutRef.current;
+        let container: HTMLDivElement | null = checkoutRef.current;
 
         while (!container && retries < maxRetries) {
           await new Promise(resolve => setTimeout(resolve, 100));
-          container = checkoutRef.current || document.getElementById('stripe-checkout-container');
+          container = checkoutRef.current || (document.getElementById('stripe-checkout-container') as HTMLDivElement);
           retries++;
         }
 
