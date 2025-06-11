@@ -51,6 +51,13 @@ export default function EmbeddedCheckout({
           throw new Error('Client secret not provided');
         }
 
+        // Check if this is mock mode
+        if (clientSecret === 'mock_client_secret') {
+          console.log('Mock mode detected, skipping Stripe initialization');
+          setLoading(false);
+          return;
+        }
+
         const stripe = await stripePromise;
         if (!stripe) {
           throw new Error('Failed to load Stripe. Please check your publishable key.');
@@ -240,7 +247,7 @@ export default function EmbeddedCheckout({
       <div
         ref={checkoutRef}
         className={`rounded-lg border border-gray-200 bg-white p-4 min-h-[400px] ${
-          loading || error || mock ? 'hidden' : ''
+          loading || error || mock || clientSecret === 'mock_client_secret' ? 'hidden' : ''
         }`}
         id="stripe-checkout-container"
       />

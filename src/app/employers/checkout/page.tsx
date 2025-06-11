@@ -45,6 +45,7 @@ function CheckoutContent() {
         const data = await response.json();
 
         if (!response.ok) {
+          console.error('Checkout session error response:', data);
           throw new Error(data.error || 'Failed to create checkout session');
         }
 
@@ -54,13 +55,29 @@ function CheckoutContent() {
           setPlanDetails({
             plan: data.plan,
             returnUrl: data.returnUrl,
+            mock: data.mock || false,
           });
+        } else if (data.mock) {
+          // Handle mock mode when price IDs are not configured
+          setClientSecret('mock_client_secret');
+          setPlanDetails({
+            plan: data.plan,
+            returnUrl: data.returnUrl,
+            mock: true,
+          });
+          console.log('Using mock checkout mode:', data.message);
         } else {
           throw new Error('Invalid checkout session response');
         }
 
       } catch (err: any) {
         console.error('Checkout session error:', err);
+        console.error('Full error details:', {
+          message: err.message,
+          stack: err.stack,
+          plan: plan,
+          endpoint: endpoint
+        });
         setError(err.message || 'Failed to initialize checkout');
       } finally {
         setLoading(false);
