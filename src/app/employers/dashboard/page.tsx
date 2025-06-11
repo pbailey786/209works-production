@@ -28,8 +28,12 @@ import {
   Upload,
   CreditCard,
 } from 'lucide-react';
-import BillingModal from '@/components/billing/BillingModal';
-import JobPostingCheckout from '@/components/job-posting/JobPostingCheckout';
+import { LazyOnVisible } from '@/components/ui/lazy-component';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load heavy components
+const BillingModal = React.lazy(() => import('@/components/billing/BillingModal'));
+const JobPostingCheckout = React.lazy(() => import('@/components/job-posting/JobPostingCheckout'));
 
 interface DashboardStats {
   totalJobs: number;
@@ -442,7 +446,21 @@ function DashboardContent() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Your Jobs */}
+          {/* Your Jobs - Lazy loaded */}
+          <LazyOnVisible
+            fallback={
+              <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-200 px-6 py-4">
+                  <Skeleton className="h-6 w-32" />
+                </div>
+                <div className="p-6 space-y-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            }
+          >
           <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-6 py-4">
               <div className="flex items-center justify-between">
@@ -517,8 +535,23 @@ function DashboardContent() {
               </div>
             )}
           </div>
+          </LazyOnVisible>
 
-          {/* Quick Actions */}
+          {/* Quick Actions - Lazy loaded */}
+          <LazyOnVisible
+            fallback={
+              <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+                <div className="border-b border-gray-200 px-6 py-4">
+                  <Skeleton className="h-6 w-32" />
+                </div>
+                <div className="p-6 space-y-4">
+                  <Skeleton className="h-16 w-full rounded-lg" />
+                  <Skeleton className="h-16 w-full rounded-lg" />
+                  <Skeleton className="h-16 w-full rounded-lg" />
+                </div>
+              </div>
+            }
+          >
           <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="border-b border-gray-200 px-6 py-4">
               <h2 className="text-xl font-semibold text-gray-900">
@@ -606,6 +639,7 @@ function DashboardContent() {
               </Link>
             </div>
           </div>
+          </LazyOnVisible>
         </div>
 
         {/* Simple Help Section */}
@@ -639,22 +673,30 @@ function DashboardContent() {
       </div>
 
       {/* BILLING REFACTOR: Billing modal triggered when posting jobs */}
-      <BillingModal
-        isOpen={showBillingModal}
-        onClose={() => setShowBillingModal(false)}
-        onSuccess={handleBillingSuccess}
-        trigger="job-posting"
-        title="Choose Your Plan to Post Jobs"
-        description="Select a subscription plan to start posting jobs and finding great candidates in the 209 area."
-      />
+      {showBillingModal && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"><Skeleton className="h-96 w-96 rounded-lg" /></div>}>
+          <BillingModal
+            isOpen={showBillingModal}
+            onClose={() => setShowBillingModal(false)}
+            onSuccess={handleBillingSuccess}
+            trigger="job-posting"
+            title="Choose Your Plan to Post Jobs"
+            description="Select a subscription plan to start posting jobs and finding great candidates in the 209 area."
+          />
+        </Suspense>
+      )}
 
       {/* Job Posting Checkout Modal */}
-      <JobPostingCheckout
-        isOpen={showJobPostingCheckout}
-        onClose={() => setShowJobPostingCheckout(false)}
-        onSuccess={handleJobPostingCheckoutSuccess}
-        userCredits={credits}
-      />
+      {showJobPostingCheckout && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"><Skeleton className="h-96 w-96 rounded-lg" /></div>}>
+          <JobPostingCheckout
+            isOpen={showJobPostingCheckout}
+            onClose={() => setShowJobPostingCheckout(false)}
+            onSuccess={handleJobPostingCheckoutSuccess}
+            userCredits={credits}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

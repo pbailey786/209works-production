@@ -237,13 +237,24 @@ export async function POST(req: NextRequest) {
 
     const totalAmount = basePrice + totalAddonPrice;
 
+    // Determine checkout mode based on what's being purchased
+    // Tiers (Starter/Standard/Pro) = monthly subscriptions
+    // Credit packs & addons = one-time payments
+    const isSubscription = !!validatedData.tier;
+    const checkoutMode = isSubscription ? 'subscription' : 'payment';
+
+    console.log('🔄 Checkout mode:', checkoutMode);
+    console.log('📦 Purchase type:', isSubscription ? 'Monthly Subscription Tier' : 'One-time Credit/Addon Purchase');
+    console.log('💰 Total amount calculated:', totalAmount);
+    console.log('📋 Line items:', lineItems);
+
     // Create checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       billing_address_collection: 'required',
       line_items: lineItems,
-      mode: 'payment', // One-time payment, not subscription
+      mode: checkoutMode, // Dynamic mode: 'subscription' for tiers, 'payment' for credits/addons
       allow_promotion_codes: true,
       success_url: validatedData.successUrl || 
         `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,

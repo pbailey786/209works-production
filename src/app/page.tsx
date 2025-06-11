@@ -20,9 +20,13 @@ import {
   Zap,
 } from 'lucide-react';
 
+import { LazyOnVisible } from '../components/ui/lazy-component';
+import { Skeleton } from '../components/ui/skeleton';
 import SEOHead from '../components/SEOHead';
-import Analytics from '../components/Analytics';
-import Footer from '../components/Footer';
+
+// Lazy load heavy components
+const Analytics = React.lazy(() => import('../components/Analytics'));
+const Footer = React.lazy(() => import('../components/Footer'));
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -46,7 +50,9 @@ export default function Home() {
   return (
     <>
       <SEOHead />
-      <Analytics />
+      <React.Suspense fallback={null}>
+        <Analytics />
+      </React.Suspense>
 
       {/* Hero Section - Dark Green Background like Wise */}
       <section className="relative overflow-hidden bg-[#2d4a3e] px-4 py-20">
@@ -147,6 +153,24 @@ export default function Home() {
       </section>
 
       {/* Feature Cards Section - Like Wise's 4 cards */}
+      <LazyOnVisible
+        fallback={
+          <section className="bg-gray-50 py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="text-center">
+                    <Skeleton className="mx-auto mb-6 h-16 w-16 rounded-full" />
+                    <Skeleton className="mb-4 h-6 w-32 mx-auto" />
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4 mx-auto" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        }
+      >
       <section className="bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -232,8 +256,26 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </LazyOnVisible>
 
       {/* Bottom Section with Visual - Like Wise's puzzle piece section */}
+      <LazyOnVisible
+        fallback={
+          <section className="bg-white py-20">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="grid items-center gap-16 lg:grid-cols-2">
+                <Skeleton className="h-96 w-full rounded-2xl" />
+                <div className="space-y-6">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-12 w-48" />
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+      >
       <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-16 lg:grid-cols-2">
@@ -317,9 +359,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </LazyOnVisible>
 
       {/* Footer */}
-      <Footer />
+      <React.Suspense fallback={<Skeleton className="h-64 w-full" />}>
+        <Footer />
+      </React.Suspense>
     </>
   );
 }

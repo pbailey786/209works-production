@@ -173,6 +173,12 @@ const nextConfig: NextConfig = {
   // Enable compression in production
   compress: true,
 
+  // Performance optimizations
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-icons'],
+  },
+
   // Server external packages (moved from experimental)
   serverExternalPackages: ['sharp'],
 
