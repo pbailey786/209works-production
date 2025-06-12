@@ -138,41 +138,21 @@ export async function POST(request: NextRequest) {
       const { parseResumeWithAI } = await import('@/lib/ai');
       const parsedData = await parseResumeWithAI(fileText.substring(0, 3000)); // Limit to first 3000 chars for debug
 
+      if (!parsedData) {
+        return NextResponse.json({
+          error: 'No response from AI',
+          debug: {
+            step: 'ai_call',
+            details: {
+              message: 'AI parsing returned null'
+            }
+          }
+        }, { status: 500 });
+      }
+
       const aiResponse = JSON.stringify(parsedData);
-      
-      if (!aiResponse) {
-        return NextResponse.json({
-          error: 'No response from OpenAI',
-          debug: { 
-            step: 'openai_call', 
-            details: { 
-              choices: completion.choices?.length || 0,
-              usage: completion.usage 
-            }
-          }
-        }, { status: 500 });
-      }
-
-      console.log('✅ DEBUG: OpenAI response received:', aiResponse);
-
-      // Step 6: Parse JSON response
-      let parsedData;
-      try {
-        parsedData = JSON.parse(aiResponse);
-      } catch (jsonError: any) {
-        return NextResponse.json({
-          error: 'Failed to parse AI response as JSON',
-          debug: { 
-            step: 'json_parsing', 
-            details: { 
-              rawResponse: aiResponse,
-              error: jsonError.message 
-            }
-          }
-        }, { status: 500 });
-      }
-
-      console.log('✅ DEBUG: JSON parsing successful:', parsedData);
+      console.log('✅ DEBUG: AI response received:', aiResponse);
+      console.log('✅ DEBUG: Parsed data:', parsedData);
 
       return NextResponse.json({
         success: true,
@@ -198,15 +178,13 @@ export async function POST(request: NextRequest) {
         message: 'Resume parsing debug completed successfully!'
       });
 
-    } catch (openaiError: any) {
+    } catch (aiError: any) {
       return NextResponse.json({
-        error: 'OpenAI API call failed',
-        debug: { 
-          step: 'openai_call', 
-          details: { 
-            error: openaiError.message,
-            status: openaiError.status,
-            type: openaiError.type
+        error: 'AI API call failed',
+        debug: {
+          step: 'ai_call',
+          details: {
+            error: aiError.message
           }
         }
       }, { status: 500 });
