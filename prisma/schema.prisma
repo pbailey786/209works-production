@@ -43,10 +43,15 @@ model User {
   // Employer onboarding fields
   companyLogo          String?     // Company logo URL
   companyDescription   String?     // Brief company description
-  hiringPlans          String?     // How many people planning to hire in next 3 months
-  typicallyRequiresDegree Boolean? // Do you typically require a 4-year degree?
-  offersRemoteWork     Boolean?    // Do you offer remote or hybrid positions?
-  preferredExperienceLevel String? // Entry/Mid/Senior preference
+  businessLocation     String?     // Business location (city)
+  contactName          String?     // Contact person name
+  contactEmail         String?     // Contact person email
+  contactPhone         String?     // Contact person phone (optional)
+  hiringGoals          String[]    @default([]) // Array of hiring goals: urgent, seasonal, always
+  hiringPlans          String?     // How many people planning to hire in next 3 months (legacy)
+  typicallyRequiresDegree Boolean? // Do you typically require a 4-year degree? (legacy)
+  offersRemoteWork     Boolean?    // Do you offer remote or hybrid positions? (legacy)
+  preferredExperienceLevel String? // Entry/Mid/Senior preference (legacy)
   employerOnboardingCompleted Boolean @default(false) // Track employer onboarding completion
   isOpenToRemote       Boolean                    @default(false)
   expectedSalaryMin    Int?

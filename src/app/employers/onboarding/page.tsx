@@ -161,219 +161,308 @@ export default function EmployerOnboardingPage() {
   };
 
   const renderStep1 = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#2d4a3e]">
-          <Building2 className="h-8 w-8 text-white" />
+    <div className="max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#2d4a3e] to-[#9fdf9f] rounded-2xl mb-6 shadow-lg">
+          <Building2 className="h-10 w-10 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900">Tell us about your company</h2>
-        <p className="text-gray-600 mt-2 italic">"Tell me, who are you? (who who, who who)"</p>
-        <p className="text-gray-600 mt-1">Let's get to know the business behind the job.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-3">
+          Let's get to know your business
+        </h1>
+        <p className="text-lg text-gray-600">
+          Just the basics — we'll make your job posts shine ✨
+        </p>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+      {/* Form Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Company Name */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-800 mb-3">
             Company Name *
           </label>
           <input
             type="text"
             value={data.companyName}
             onChange={e => handleInputChange('companyName', e.target.value)}
-            placeholder="e.g., Acme Corporation"
-            className={`w-full rounded-lg border px-4 py-3 focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e] ${
-              errors.companyName ? 'border-red-300' : 'border-gray-300'
+            placeholder="Your awesome company"
+            className={`w-full h-14 rounded-xl border-2 px-4 text-lg transition-all duration-200 ${
+              errors.companyName
+                ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100'
+                : 'border-gray-200 focus:border-[#2d4a3e] focus:ring-4 focus:ring-[#2d4a3e]/10'
             }`}
           />
           {errors.companyName && (
-            <p className="mt-1 text-sm text-red-600">{errors.companyName}</p>
+            <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="mr-1">⚠️</span>
+              {errors.companyName}
+            </p>
           )}
         </div>
 
+        {/* Business Location */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Business Location *
+          <label className="block text-sm font-semibold text-gray-800 mb-3">
+            Where are you located? *
           </label>
           <div className="relative">
-            <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
               value={data.businessLocation}
               onChange={e => handleInputChange('businessLocation', e.target.value)}
-              placeholder="e.g., Stockton, Modesto, Tracy"
-              className={`w-full rounded-lg border py-3 pl-10 pr-4 focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e] ${
-                errors.businessLocation ? 'border-red-300' : 'border-gray-300'
+              placeholder="Stockton, Modesto, Tracy..."
+              className={`w-full h-14 rounded-xl border-2 pl-12 pr-4 text-lg transition-all duration-200 ${
+                errors.businessLocation
+                  ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100'
+                  : 'border-gray-200 focus:border-[#2d4a3e] focus:ring-4 focus:ring-[#2d4a3e]/10'
               }`}
             />
           </div>
           {errors.businessLocation && (
-            <p className="mt-1 text-sm text-red-600">{errors.businessLocation}</p>
+            <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="mr-1">⚠️</span>
+              {errors.businessLocation}
+            </p>
           )}
-          <p className="mt-1 text-xs text-gray-500">City only — we know you're in California!</p>
+          <p className="mt-2 text-xs text-gray-500">Just the city — we know you're in the 209! 🌴</p>
         </div>
 
+        {/* Industry */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Industry / What Do You Do? *
+          <label className="block text-sm font-semibold text-gray-800 mb-3">
+            What do you do? *
           </label>
           <input
             type="text"
             value={data.industry}
             onChange={e => handleInputChange('industry', e.target.value)}
-            placeholder="e.g., Restaurant, Construction, Healthcare, Retail"
-            className={`w-full rounded-lg border px-4 py-3 focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e] ${
-              errors.industry ? 'border-red-300' : 'border-gray-300'
+            placeholder="Restaurant, Tech, Healthcare..."
+            className={`w-full h-14 rounded-xl border-2 px-4 text-lg transition-all duration-200 ${
+              errors.industry
+                ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100'
+                : 'border-gray-200 focus:border-[#2d4a3e] focus:ring-4 focus:ring-[#2d4a3e]/10'
             }`}
           />
           {errors.industry && (
-            <p className="mt-1 text-sm text-red-600">{errors.industry}</p>
+            <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="mr-1">⚠️</span>
+              {errors.industry}
+            </p>
           )}
-          <p className="mt-1 text-xs text-gray-500">Keep it simple — we'll help categorize it later.</p>
+          <p className="mt-2 text-xs text-gray-500">Keep it simple — our AI will help categorize! 🤖</p>
         </div>
 
+        {/* Contact Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Contact Name *
+          <label className="block text-sm font-semibold text-gray-800 mb-3">
+            Who's hiring? *
           </label>
           <input
             type="text"
             value={data.contactName}
             onChange={e => handleInputChange('contactName', e.target.value)}
-            placeholder="Person managing hiring"
-            className={`w-full rounded-lg border px-4 py-3 focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e] ${
-              errors.contactName ? 'border-red-300' : 'border-gray-300'
+            placeholder="Your name"
+            className={`w-full h-14 rounded-xl border-2 px-4 text-lg transition-all duration-200 ${
+              errors.contactName
+                ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100'
+                : 'border-gray-200 focus:border-[#2d4a3e] focus:ring-4 focus:ring-[#2d4a3e]/10'
             }`}
           />
           {errors.contactName && (
-            <p className="mt-1 text-sm text-red-600">{errors.contactName}</p>
+            <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="mr-1">⚠️</span>
+              {errors.contactName}
+            </p>
           )}
         </div>
 
+        {/* Contact Email */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Contact Email *
+          <label className="block text-sm font-semibold text-gray-800 mb-3">
+            Best email to reach you? *
           </label>
           <input
             type="email"
             value={data.contactEmail}
             onChange={e => handleInputChange('contactEmail', e.target.value)}
-            placeholder="hiring@yourcompany.com"
-            className={`w-full rounded-lg border px-4 py-3 focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e] ${
-              errors.contactEmail ? 'border-red-300' : 'border-gray-300'
+            placeholder="you@company.com"
+            className={`w-full h-14 rounded-xl border-2 px-4 text-lg transition-all duration-200 ${
+              errors.contactEmail
+                ? 'border-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100'
+                : 'border-gray-200 focus:border-[#2d4a3e] focus:ring-4 focus:ring-[#2d4a3e]/10'
             }`}
           />
           {errors.contactEmail && (
-            <p className="mt-1 text-sm text-red-600">{errors.contactEmail}</p>
+            <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="mr-1">⚠️</span>
+              {errors.contactEmail}
+            </p>
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Contact Phone
-            <span className="text-xs text-gray-500 ml-1">(optional)</span>
+        {/* Contact Phone */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-800 mb-3">
+            Phone number
+            <span className="text-sm font-normal text-gray-500">(optional)</span>
           </label>
           <input
             type="tel"
             value={data.contactPhone}
             onChange={e => handleInputChange('contactPhone', e.target.value)}
             placeholder="(209) 555-0123"
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e]"
+            className="w-full h-14 rounded-xl border-2 border-gray-200 px-4 text-lg transition-all duration-200 focus:border-[#2d4a3e] focus:ring-4 focus:ring-[#2d4a3e]/10"
           />
         </div>
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Company Logo
-          </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#2d4a3e] transition-colors">
-            <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-            <p className="text-sm text-gray-600 mb-1">
-              Upload a square logo for your company profile
-            </p>
-            <p className="text-xs text-gray-500">
-              We use your logo to personalize job ads and create cool AI-generated visuals.
-            </p>
-            <button
-              type="button"
-              className="mt-2 text-sm text-[#2d4a3e] hover:text-[#1d3a2e] font-medium"
-            >
-              Upload Logo (Coming Soon)
-            </button>
+      {/* Logo Upload Section */}
+      <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm mb-4">
+            <Upload className="h-6 w-6 text-gray-400" />
           </div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Company Logo</h3>
+          <p className="text-gray-600 mb-4">
+            Upload your logo to make your job posts look professional and trustworthy
+          </p>
+          <button
+            type="button"
+            className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Upload Logo (Coming Soon)
+          </button>
+          <p className="text-xs text-gray-500 mt-2">
+            We'll use your logo for job ads and cool AI-generated social graphics! 🎨
+          </p>
         </div>
       </div>
     </div>
   );
 
   const renderStep2 = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#ff6b35]">
-          <TrendingUp className="h-8 w-8 text-white" />
+    <div className="max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-12">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#ff6b35] to-[#ff8c42] rounded-2xl mb-6 shadow-lg">
+          <TrendingUp className="h-10 w-10 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900">What are your hiring goals?</h2>
-        <p className="text-gray-600 mt-2">Select all that apply — we'll tailor tools and tips to your pace.</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-3">
+          What's your hiring vibe?
+        </h1>
+        <p className="text-lg text-gray-600">
+          Pick all that fit — we'll customize everything to match your pace 🚀
+        </p>
       </div>
 
+      {/* Hiring Goals Cards */}
       <div className="space-y-4">
-        <div className="space-y-3">
-          <div className="flex items-start space-x-3">
-            <input
-              type="checkbox"
-              id="urgentlyHiring"
-              checked={data.urgentlyHiring}
-              onChange={e => setData(prev => ({ ...prev, urgentlyHiring: e.target.checked }))}
-              className="mt-1 h-5 w-5 text-[#2d4a3e] focus:ring-[#2d4a3e] border-gray-300 rounded"
-            />
-            <div>
-              <label htmlFor="urgentlyHiring" className="text-lg font-medium text-gray-900 cursor-pointer">
-                Urgently hiring
-              </label>
-              <p className="text-sm text-gray-600">Need to fill positions quickly</p>
+        {/* Urgently Hiring */}
+        <div
+          className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+            data.urgentlyHiring
+              ? 'border-[#ff6b35] bg-gradient-to-r from-[#ff6b35]/5 to-[#ff8c42]/5 shadow-lg'
+              : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+          }`}
+          onClick={() => setData(prev => ({ ...prev, urgentlyHiring: !prev.urgentlyHiring }))}
+        >
+          <div className="flex items-start space-x-4">
+            <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+              data.urgentlyHiring ? 'border-[#ff6b35] bg-[#ff6b35]' : 'border-gray-300'
+            }`}>
+              {data.urgentlyHiring && <span className="text-white text-sm">✓</span>}
             </div>
-          </div>
-
-          <div className="flex items-start space-x-3">
-            <input
-              type="checkbox"
-              id="seasonalHiring"
-              checked={data.seasonalHiring}
-              onChange={e => setData(prev => ({ ...prev, seasonalHiring: e.target.checked }))}
-              className="mt-1 h-5 w-5 text-[#2d4a3e] focus:ring-[#2d4a3e] border-gray-300 rounded"
-            />
-            <div>
-              <label htmlFor="seasonalHiring" className="text-lg font-medium text-gray-900 cursor-pointer">
-                Seasonal hiring
-              </label>
-              <p className="text-sm text-gray-600">Hiring for specific seasons or periods</p>
-            </div>
-          </div>
-
-          <div className="flex items-start space-x-3">
-            <input
-              type="checkbox"
-              id="alwaysHiring"
-              checked={data.alwaysHiring}
-              onChange={e => setData(prev => ({ ...prev, alwaysHiring: e.target.checked }))}
-              className="mt-1 h-5 w-5 text-[#2d4a3e] focus:ring-[#2d4a3e] border-gray-300 rounded"
-            />
-            <div>
-              <label htmlFor="alwaysHiring" className="text-lg font-medium text-gray-900 cursor-pointer">
-                Always hiring
-              </label>
-              <p className="text-sm text-gray-600">Continuously looking for good candidates</p>
+            <div className="flex-1">
+              <div className="flex items-center space-x-3 mb-2">
+                <span className="text-2xl">🔥</span>
+                <h3 className="text-xl font-bold text-gray-900">Urgently hiring</h3>
+              </div>
+              <p className="text-gray-600">
+                Need to fill positions ASAP — we'll prioritize speed and visibility
+              </p>
             </div>
           </div>
         </div>
 
-        {errors.hiringGoals && (
-          <p className="text-sm text-red-600">{errors.hiringGoals}</p>
-        )}
+        {/* Seasonal Hiring */}
+        <div
+          className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+            data.seasonalHiring
+              ? 'border-[#ff6b35] bg-gradient-to-r from-[#ff6b35]/5 to-[#ff8c42]/5 shadow-lg'
+              : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+          }`}
+          onClick={() => setData(prev => ({ ...prev, seasonalHiring: !prev.seasonalHiring }))}
+        >
+          <div className="flex items-start space-x-4">
+            <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+              data.seasonalHiring ? 'border-[#ff6b35] bg-[#ff6b35]' : 'border-gray-300'
+            }`}>
+              {data.seasonalHiring && <span className="text-white text-sm">✓</span>}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center space-x-3 mb-2">
+                <span className="text-2xl">🌟</span>
+                <h3 className="text-xl font-bold text-gray-900">Seasonal hiring</h3>
+              </div>
+              <p className="text-gray-600">
+                Hiring for holidays, summer, or specific busy periods
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <div className="mt-6 p-4 bg-[#2d4a3e]/5 rounded-lg">
-          <p className="text-sm text-gray-700">
-            💡 <strong>Pro tip:</strong> Many companies are in multiple modes — select all that apply to get the best recommendations!
+        {/* Always Hiring */}
+        <div
+          className={`relative p-6 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+            data.alwaysHiring
+              ? 'border-[#ff6b35] bg-gradient-to-r from-[#ff6b35]/5 to-[#ff8c42]/5 shadow-lg'
+              : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+          }`}
+          onClick={() => setData(prev => ({ ...prev, alwaysHiring: !prev.alwaysHiring }))}
+        >
+          <div className="flex items-start space-x-4">
+            <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+              data.alwaysHiring ? 'border-[#ff6b35] bg-[#ff6b35]' : 'border-gray-300'
+            }`}>
+              {data.alwaysHiring && <span className="text-white text-sm">✓</span>}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center space-x-3 mb-2">
+                <span className="text-2xl">♾️</span>
+                <h3 className="text-xl font-bold text-gray-900">Always hiring</h3>
+              </div>
+              <p className="text-gray-600">
+                Building a talent pipeline — always looking for great people
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Error Message */}
+      {errors.hiringGoals && (
+        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <p className="text-red-600 flex items-center">
+            <span className="mr-2">⚠️</span>
+            {errors.hiringGoals}
           </p>
+        </div>
+      )}
+
+      {/* Pro Tip */}
+      <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
+        <div className="flex items-start space-x-3">
+          <span className="text-2xl">💡</span>
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-1">Pro tip</h4>
+            <p className="text-gray-700">
+              Most successful companies are in multiple modes! Select all that apply —
+              we'll give you tools and tips for each situation.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -382,62 +471,66 @@ export default function EmployerOnboardingPage() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#2d4a3e]/5 via-white to-[#9fdf9f]/5">
-      <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="container mx-auto px-4 py-12">
         {/* Progress Bar */}
-        <div className="mb-8">
+        <div className="max-w-2xl mx-auto mb-12">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium text-gray-600">Step {currentStep} of 2</span>
-            <span className="text-sm text-gray-500">{Math.round((currentStep / 2) * 100)}% Complete</span>
+            <span className="text-sm font-semibold text-gray-700">
+              Step {currentStep} of 2
+            </span>
+            <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              {Math.round((currentStep / 2) * 100)}% Complete
+            </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
             <div
-              className="bg-gradient-to-r from-[#2d4a3e] to-[#9fdf9f] h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-[#2d4a3e] via-[#ff6b35] to-[#9fdf9f] h-3 rounded-full transition-all duration-500 shadow-sm"
               style={{ width: `${(currentStep / 2) * 100}%` }}
             ></div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8 md:p-12">
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
 
           {/* Navigation */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+          <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-100">
             <button
               onClick={handleBack}
               disabled={currentStep === 1}
-              className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-6 py-3 text-gray-600 hover:text-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 rounded-xl hover:bg-gray-50"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              <span className="font-medium">Back</span>
             </button>
 
             {currentStep === 1 ? (
               <button
                 onClick={handleNext}
-                className="flex items-center bg-[#2d4a3e] text-white px-6 py-2 rounded-lg hover:bg-[#1d3a2e] transition-colors"
+                className="flex items-center bg-gradient-to-r from-[#2d4a3e] to-[#9fdf9f] text-white font-semibold px-8 py-4 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200"
               >
-                Next
-                <ArrowRight className="h-4 w-4 ml-2" />
+                <span>Next Step</span>
+                <ArrowRight className="h-5 w-5 ml-2" />
               </button>
             ) : (
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex items-center bg-gradient-to-r from-[#2d4a3e] to-[#9fdf9f] text-white font-medium px-6 py-3 rounded-lg hover:from-[#1d3a2e] hover:to-[#8fcf8f] transition-all disabled:opacity-50"
+                className="flex items-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-semibold px-8 py-4 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:transform-none"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white mr-2"></div>
-                    Setting up...
+                    <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white mr-3"></div>
+                    <span>Setting up...</span>
                   </>
                 ) : (
                   <>
-                    <Briefcase className="h-4 w-4 mr-2" />
-                    Post Your First Job
-                    <ArrowRight className="h-4 w-4 ml-2" />
+                    <Briefcase className="h-5 w-5 mr-3" />
+                    <span>Let's Post a Job!</span>
+                    <ArrowRight className="h-5 w-5 ml-2" />
                   </>
                 )}
               </button>
@@ -445,7 +538,12 @@ export default function EmployerOnboardingPage() {
           </div>
 
           {errors.submit && (
-            <p className="mt-3 text-sm text-red-600 text-center">{errors.submit}</p>
+            <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <p className="text-red-600 text-center flex items-center justify-center">
+                <span className="mr-2">⚠️</span>
+                {errors.submit}
+              </p>
+            </div>
           )}
         </div>
       </div>
