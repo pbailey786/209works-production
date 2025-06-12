@@ -40,7 +40,7 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'social-media',
     name: 'Social Media Shoutout',
-    price: 29,
+    price: 49,
     description:
       'Promote your job across our Instagram and X (Twitter) channels',
     features: [
@@ -56,7 +56,7 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'placement-bump',
     name: 'On-Site Placement Bump',
-    price: 29,
+    price: 49,
     description: 'JobsGPT actively promotes your position to chat users',
     features: [
       'AI chatbot recommends your job to relevant users',
@@ -72,9 +72,9 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'bundle',
     name: 'Complete Promotion Bundle',
-    price: 50,
-    originalPrice: 58,
-    description: 'Get both services and save $8!',
+    price: 85,
+    originalPrice: 98,
+    description: 'Get both services and save $13!',
     features: [
       'Everything from Social Media Shoutout',
       'Everything from On-Site Placement Bump',
@@ -84,7 +84,7 @@ const upsellOptions: UpsellOption[] = [
       'Best value for maximum exposure',
     ],
     icon: <Package className="h-6 w-6" />,
-    badge: 'SAVE $8',
+    badge: 'SAVE $13',
   },
 ];
 
@@ -105,10 +105,10 @@ export default function JobUpsellSelector({
     const bundle = selectedOptions.has('bundle');
 
     if (bundle) {
-      calculatedTotal = 50;
+      calculatedTotal = 85;
     } else {
-      if (socialMedia) calculatedTotal += 29;
-      if (placementBump) calculatedTotal += 29;
+      if (socialMedia) calculatedTotal += 49;
+      if (placementBump) calculatedTotal += 49;
     }
 
     setTotal(calculatedTotal);
@@ -171,7 +171,7 @@ export default function JobUpsellSelector({
               whileTap={{ scale: isDisabled ? 1 : 0.98 }}
               className={`relative cursor-pointer rounded-xl border-2 p-6 transition-all ${
                 isSelected
-                  ? 'border-blue-500 bg-blue-50 shadow-lg'
+                  ? 'border-[#ff6b35] bg-gradient-to-r from-[#ff6b35]/5 to-[#ff8c42]/5 shadow-lg'
                   : isDisabled
                     ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50'
                     : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
@@ -181,7 +181,7 @@ export default function JobUpsellSelector({
               {/* Popular Badge */}
               {option.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
-                  <span className="flex items-center rounded-full bg-orange-500 px-3 py-1 text-xs font-bold text-white">
+                  <span className="flex items-center rounded-full bg-[#ff6b35] px-3 py-1 text-xs font-bold text-white">
                     <Star className="mr-1 h-3 w-3" />
                     POPULAR
                   </span>
@@ -191,7 +191,7 @@ export default function JobUpsellSelector({
               {/* Save Badge */}
               {option.badge && (
                 <div className="absolute -top-3 right-4">
-                  <span className="rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
+                  <span className="rounded-full bg-[#2d4a3e] px-3 py-1 text-xs font-bold text-white">
                     {option.badge}
                   </span>
                 </div>
@@ -202,7 +202,7 @@ export default function JobUpsellSelector({
                 <div
                   className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
                     isSelected
-                      ? 'border-blue-500 bg-blue-500'
+                      ? 'border-[#ff6b35] bg-[#ff6b35]'
                       : 'border-gray-300'
                   }`}
                 >
@@ -214,7 +214,7 @@ export default function JobUpsellSelector({
               <div
                 className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${
                   isSelected
-                    ? 'bg-blue-100 text-blue-600'
+                    ? 'bg-[#ff6b35]/10 text-[#ff6b35]'
                     : 'bg-gray-100 text-gray-600'
                 }`}
               >
@@ -268,11 +268,11 @@ export default function JobUpsellSelector({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 p-6"
+          className="rounded-xl border border-[#ff6b35]/20 bg-gradient-to-r from-[#ff6b35]/5 to-[#2d4a3e]/5 p-6"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Sparkles className="mr-3 h-6 w-6 text-blue-600" />
+              <Sparkles className="mr-3 h-6 w-6 text-[#ff6b35]" />
               <div>
                 <h4 className="text-lg font-semibold text-gray-900">
                   Promotion Add-ons Selected

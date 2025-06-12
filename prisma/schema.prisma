@@ -220,6 +220,7 @@ model Job {
   salaryRangeMin      Int?         // Salary range minimum (separate from salaryMin for display)
   salaryRangeMax      Int?         // Salary range maximum (separate from salaryMax for display)
   internalTags        String[]     @default([]) // Admin-only tags: "blue collar", "tech", "nonprofit", etc.
+  supplementalQuestions String[]   @default([]) // Custom questions for applicants (up to 10)
 
   // Relations
   instagramPosts  InstagramPost[]
@@ -860,6 +861,9 @@ model JobPostOptimizer {
 
   // Media
   mediaUrls           String[]  @default([])
+
+  // Supplemental Questions
+  supplementalQuestions String[] @default([]) // Custom questions for applicants (up to 10)
 
   // AI Processing
   rawInput            Json?     // Store original form data

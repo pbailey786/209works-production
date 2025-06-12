@@ -41,6 +41,7 @@ export default function EmployerOnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   const [data, setData] = useState<OnboardingData>({
     companyName: '',
@@ -147,8 +148,8 @@ export default function EmployerOnboardingPage() {
       });
 
       if (response.ok) {
-        // Redirect to job posting page
-        router.push('/employers/create-job-post?onboarding=complete');
+        // Show success modal instead of redirecting
+        setShowSuccessModal(true);
       } else {
         const errorData = await response.json();
         setErrors({ submit: errorData.error || 'Failed to complete onboarding' });
@@ -468,7 +469,48 @@ export default function EmployerOnboardingPage() {
     </div>
   );
 
+  const renderSuccessModal = () => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform animate-in zoom-in-95 duration-300">
+        {/* Success Icon */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mb-4 shadow-lg">
+            <span className="text-3xl">🎉</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Welcome to 209 Works!
+          </h2>
+          <p className="text-gray-600">
+            Your company profile is all set up. Ready to find amazing talent?
+          </p>
+        </div>
 
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          <button
+            onClick={() => router.push('/employers/create-job-post?onboarding=complete')}
+            className="w-full flex items-center justify-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-semibold px-6 py-4 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+          >
+            <Briefcase className="h-5 w-5 mr-3" />
+            <span>Post Your First Job</span>
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </button>
+
+          <button
+            onClick={() => router.push('/employers/dashboard')}
+            className="w-full flex items-center justify-center bg-gray-100 text-gray-700 font-medium px-6 py-4 rounded-xl hover:bg-gray-200 transition-all duration-200"
+          >
+            <span>Go to Dashboard</span>
+          </button>
+        </div>
+
+        {/* Small print */}
+        <p className="text-xs text-gray-500 text-center mt-4">
+          You can always post jobs later from your dashboard
+        </p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -547,6 +589,9 @@ export default function EmployerOnboardingPage() {
           )}
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && renderSuccessModal()}
     </div>
   );
 }

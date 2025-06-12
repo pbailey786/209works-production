@@ -26,6 +26,7 @@ const jobPostOptimizerSchema = z.object({
   salaryRangeMin: z.number().optional(),
   salaryRangeMax: z.number().optional(),
   internalTags: z.array(z.string()).optional().default([]),
+  supplementalQuestions: z.array(z.string().max(500)).max(10).optional().default([]),
 
   // Upsells
   socialMediaShoutout: z.boolean().optional().default(false),
@@ -179,6 +180,7 @@ export async function POST(req: NextRequest) {
         perks: validatedData.perks,
         applicationCTA: validatedData.applicationCTA,
         mediaUrls: validatedData.mediaUrls,
+        supplementalQuestions: validatedData.supplementalQuestions || [],
         rawInput: validatedData,
         aiGeneratedOutput,
         optimizationPrompt: hasValidApiKey ? optimizationPrompt : null,

@@ -49,6 +49,9 @@ interface JobPostForm {
   salaryRangeMax: string;
   internalTags: string[];
 
+  // Supplemental Questions
+  supplementalQuestions: string[];
+
   // Upsells
   socialMediaShoutout: boolean;
   placementBump: boolean;
@@ -77,6 +80,7 @@ export default function CreateJobPostPage() {
     salaryRangeMin: '',
     salaryRangeMax: '',
     internalTags: [],
+    supplementalQuestions: [],
     socialMediaShoutout: false,
     placementBump: false,
     upsellBundle: false,
@@ -108,6 +112,28 @@ export default function CreateJobPostPage() {
     }
   }, [status]);
 
+  // Fetch credits info
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const response = await fetch('/api/job-posting-credits');
+        if (response.ok) {
+          const data = await response.json();
+          setCreditsInfo({
+            available: data.availableCredits || 0,
+            total: data.totalCredits || 0
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching credits:', error);
+      }
+    };
+
+    if (status === 'authenticated') {
+      fetchCredits();
+    }
+  }, [status]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -115,6 +141,7 @@ export default function CreateJobPostPage() {
   const [optimizerJobId, setOptimizerJobId] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isAutofilling, setIsAutofilling] = useState(false);
+  const [creditsInfo, setCreditsInfo] = useState<{available: number, total: number} | null>(null);
 
   // Check authentication
   if (status === 'loading') {
@@ -320,7 +347,7 @@ export default function CreateJobPostPage() {
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="mb-4 flex items-center justify-center">
-            <div className="rounded-full bg-gradient-to-r from-blue-600 to-green-600 p-3">
+            <div className="rounded-full bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] p-3">
               <Sparkles className="h-8 w-8 text-white" />
             </div>
           </div>
@@ -335,10 +362,65 @@ export default function CreateJobPostPage() {
 
         {!showPreview ? (
           <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Credits Warning */}
+            {creditsInfo && creditsInfo.available === 0 && (
+              <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-6">
+                <div className="flex items-center">
+                  <div className="mr-4 rounded-full bg-amber-100 p-2">
+                    <DollarSign className="h-6 w-6 text-amber-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-amber-900">
+                      Job Posting Credits Required
+                    </h3>
+                    <p className="text-amber-700 mb-3">
+                      You need job posting credits to optimize and publish job posts.
+                      Get started with our affordable packages!
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/employers/dashboard')}
+                      className="inline-flex items-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-medium px-4 py-2 rounded-lg hover:shadow-lg transition-all"
+                    >
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Buy Credits
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Credits Info */}
+            {creditsInfo && creditsInfo.available > 0 && (
+              <div className="rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="mr-3 rounded-full bg-green-100 p-2">
+                      <Check className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-green-900">
+                        Ready to Post
+                      </h4>
+                      <p className="text-sm text-green-700">
+                        You have {creditsInfo.available} job posting credit{creditsInfo.available !== 1 ? 's' : ''} available
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/employers/dashboard')}
+                    className="text-sm text-green-700 hover:text-green-800 font-medium"
+                  >
+                    Manage Credits →
+                  </button>
+                </div>
+              </div>
+            )}
             {/* Basic Info Section */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="mb-6 flex items-center">
-                <Briefcase className="mr-3 h-6 w-6 text-blue-600" />
+                <Briefcase className="mr-3 h-6 w-6 text-[#2d4a3e]" />
                 <h2 className="text-2xl font-semibold text-gray-900">
                   Basic Info
                 </h2>
@@ -357,7 +439,7 @@ export default function CreateJobPostPage() {
                         handleInputChange('jobTitle', e.target.value)
                       }
                       placeholder="e.g., Customer Service Representative"
-                      className={`flex-1 rounded-lg border px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 ${
+                      className={`flex-1 rounded-lg border px-4 py-3 focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e]/20 ${
                         errors.jobTitle ? 'border-red-300' : 'border-gray-300'
                       }`}
                     />
@@ -673,6 +755,92 @@ export default function CreateJobPostPage() {
               </div>
             </div>
 
+            {/* Supplemental Questions Section */}
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-6 flex items-center">
+                <HelpCircle className="mr-3 h-6 w-6 text-indigo-600" />
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Supplemental Questions
+                </h2>
+                <div className="ml-auto">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <span className="mr-1">📝</span>
+                    Ask up to 10 custom questions
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <p className="text-gray-600 mb-4">
+                  Add custom questions that applicants will answer when they apply.
+                  This helps you screen candidates and get the information you need upfront.
+                </p>
+
+                <div className="space-y-3">
+                  {form.supplementalQuestions.map((question, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <span className="flex-shrink-0 w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-sm font-medium">
+                        {index + 1}
+                      </span>
+                      <input
+                        type="text"
+                        value={question}
+                        onChange={e => {
+                          const newQuestions = [...form.supplementalQuestions];
+                          newQuestions[index] = e.target.value;
+                          setForm(prev => ({ ...prev, supplementalQuestions: newQuestions }));
+                        }}
+                        placeholder="e.g., What interests you most about this position?"
+                        className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newQuestions = form.supplementalQuestions.filter((_, i) => i !== index);
+                          setForm(prev => ({ ...prev, supplementalQuestions: newQuestions }));
+                        }}
+                        className="flex-shrink-0 w-8 h-8 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full flex items-center justify-center transition-colors"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+
+                  {form.supplementalQuestions.length < 10 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (form.supplementalQuestions.length < 10) {
+                          setForm(prev => ({
+                            ...prev,
+                            supplementalQuestions: [...prev.supplementalQuestions, '']
+                          }));
+                        }
+                      }}
+                      className="flex items-center space-x-2 text-indigo-600 hover:text-indigo-700 font-medium"
+                    >
+                      <span className="w-8 h-8 border-2 border-dashed border-indigo-300 rounded-full flex items-center justify-center">
+                        +
+                      </span>
+                      <span>Add Question ({form.supplementalQuestions.length}/10)</span>
+                    </button>
+                  )}
+                </div>
+
+                {form.supplementalQuestions.length > 0 && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <span className="text-blue-600">💡</span>
+                      <div className="text-sm text-blue-700">
+                        <p className="font-medium mb-1">Pro tip:</p>
+                        <p>Good questions help you find the right fit faster. Ask about experience, availability, motivations, or specific skills relevant to your role.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Upsell Section */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <JobUpsellSelector
@@ -697,7 +865,7 @@ export default function CreateJobPostPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-8 py-3 text-lg font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700 disabled:opacity-50"
+                  className="flex items-center rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-8 py-3 text-lg font-medium text-white shadow-lg transition-all hover:from-[#1d3a2e] hover:to-[#ff5722] disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
