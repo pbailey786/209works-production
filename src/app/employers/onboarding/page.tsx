@@ -491,8 +491,8 @@ export default function EmployerOnboardingPage() {
             onClick={() => router.push('/employers/create-job-post?onboarding=complete')}
             className="w-full flex items-center justify-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-semibold px-6 py-4 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200"
           >
-            <Briefcase className="h-5 w-5 mr-3" />
-            <span>Post Your First Job</span>
+            <Sparkles className="h-5 w-5 mr-3" />
+            <span>Try Job Post Optimizer</span>
             <ArrowRight className="h-5 w-5 ml-2" />
           </button>
 
@@ -502,6 +502,25 @@ export default function EmployerOnboardingPage() {
           >
             <span>Go to Dashboard</span>
           </button>
+        </div>
+
+        {/* Job Post Optimizer Info */}
+        <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+          <div className="flex items-start space-x-3">
+            <span className="text-2xl">🚀</span>
+            <div className="text-sm">
+              <h4 className="font-semibold text-blue-900 mb-1">Job Post Optimizer</h4>
+              <p className="text-blue-700 mb-2">
+                Transform your basic job info into compelling, high-converting listings that attract the right candidates.
+              </p>
+              <ul className="text-xs text-blue-600 space-y-1">
+                <li>• AI-powered job descriptions</li>
+                <li>• Professional formatting & structure</li>
+                <li>• Optimized for local 209 area talent</li>
+                <li>• Boost visibility with promotion add-ons</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         {/* Small print */}
