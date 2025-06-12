@@ -89,7 +89,6 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: STRIPE_CONFIG.allow_promotion_codes,
       automatic_tax: STRIPE_CONFIG.automatic_tax,
       subscription_data: {
-        trial_period_days: STRIPE_CONFIG.subscription_data.trial_period_days,
         metadata: {
           userId: user.id,
           tier,

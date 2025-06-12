@@ -34,7 +34,6 @@ export default function BillingModal({
 }: BillingModalProps) {
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState('professional');
-  const [billingInterval, setBillingInterval] = useState<'monthly' | 'yearly'>('monthly');
   const [isLoading, setIsLoading] = useState(false);
 
   // BILLING REFACTOR: This is where billing options are now shown when posting jobs
@@ -42,7 +41,7 @@ export default function BillingModal({
     {
       id: 'starter',
       name: 'Starter',
-      price: { monthly: 99, yearly: 990 },
+      price: 99,
       description: 'Perfect for small businesses',
       features: [
         '5 active job listings',
@@ -56,7 +55,7 @@ export default function BillingModal({
     {
       id: 'professional',
       name: 'Professional',
-      price: { monthly: 299, yearly: 2990 },
+      price: 299,
       description: 'For growing businesses',
       features: [
         'Unlimited job listings',
@@ -129,9 +128,9 @@ export default function BillingModal({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId: `${planId}_${billingInterval}`, // This would map to actual Stripe price IDs
+          priceId: `${planId}_monthly`, // This would map to actual Stripe price IDs
           tier: planId,
-          billingInterval,
+          billingInterval: 'monthly',
           successUrl: `${window.location.origin}/employers/dashboard?success=true&plan=${planId}`,
           cancelUrl: `${window.location.origin}/employers/dashboard`,
         }),
@@ -180,40 +179,13 @@ export default function BillingModal({
             </button>
           </div>
 
-          {/* Billing Toggle */}
-          <div className="border-b border-gray-200 p-6">
-            <div className="flex items-center justify-center">
-              <div className="flex rounded-lg bg-gray-100 p-1">
-                <button
-                  onClick={() => setBillingInterval('monthly')}
-                  className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    billingInterval === 'monthly'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Monthly
-                </button>
-                <button
-                  onClick={() => setBillingInterval('yearly')}
-                  className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                    billingInterval === 'yearly'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Yearly
-                  <span className="ml-1 text-xs text-green-600">(Save 17%)</span>
-                </button>
-              </div>
-            </div>
-          </div>
+
 
           {/* Plans */}
           <div className="p-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {plans.map(plan => {
-                const price = plan.price[billingInterval];
+                const price = plan.price;
                 const isSelected = selectedPlan === plan.id;
                 
                 return (
@@ -244,7 +216,7 @@ export default function BillingModal({
                         </span>
                         {typeof price === 'number' && (
                           <span className="text-gray-500">
-                            /{billingInterval === 'monthly' ? 'month' : 'year'}
+                            /month
                           </span>
                         )}
                       </div>
@@ -295,7 +267,7 @@ export default function BillingModal({
           <div className="border-t border-gray-200 bg-gray-50 p-6 text-center">
             <p className="text-sm text-gray-600">
               <Shield className="mr-1 inline h-4 w-4" />
-              14-day free trial • Cancel anytime • Secure payment by Stripe
+              Cancel anytime • Secure payment by Stripe
             </p>
           </div>
         </motion.div>

@@ -22,6 +22,7 @@ import {
   Check,
 } from 'lucide-react';
 import JobUpsellSelector from '@/components/job-posting/JobUpsellSelector';
+import JobPostingPackageModal from '@/components/job-posting/JobPostingPackageModal';
 
 interface JobPostForm {
   // Basic Info
@@ -135,6 +136,35 @@ export default function CreateJobPostPage() {
     }
   }, [status]);
 
+  // Check for successful purchase and refresh credits
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('purchase_success') === 'true') {
+      // Refresh credits after successful purchase
+      const fetchCredits = async () => {
+        try {
+          const response = await fetch('/api/job-posting-credits');
+          if (response.ok) {
+            const data = await response.json();
+            setCreditsInfo({
+              available: data.availableCredits || 0,
+              total: data.totalCredits || 0
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching credits:', error);
+        }
+      };
+
+      if (status === 'authenticated') {
+        fetchCredits();
+      }
+
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [status]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -143,6 +173,7 @@ export default function CreateJobPostPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isAutofilling, setIsAutofilling] = useState(false);
   const [creditsInfo, setCreditsInfo] = useState<{available: number, total: number} | null>(null);
+  const [showPackageModal, setShowPackageModal] = useState(false);
 
   // Check authentication
   if (status === 'loading') {
@@ -266,6 +297,11 @@ export default function CreateJobPostPage() {
         setShowPreview(true);
       } else {
         const errorData = await response.json();
+        // Handle credits required error
+        if (response.status === 402 && errorData.code === 'CREDITS_REQUIRED') {
+          setShowPackageModal(true);
+          return;
+        }
         // BILLING REFACTOR: Handle subscription required error
         if (response.status === 402 && errorData.code === 'SUBSCRIPTION_REQUIRED') {
           // Redirect to billing/upgrade page
@@ -378,18 +414,29 @@ export default function CreateJobPostPage() {
                       You need job posting credits to optimize and publish job posts.
                       Get started with our affordable packages!
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => router.push('/employers/dashboard')}
-                      className="inline-flex items-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-medium px-4 py-2 rounded-lg hover:shadow-lg transition-all"
-                    >
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Buy Credits
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowPackageModal(true)}
+                        className="inline-flex items-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-medium px-4 py-2 rounded-lg hover:shadow-lg transition-all"
+                      >
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        Buy Credits
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => router.push('/employers/dashboard')}
+                        className="inline-flex items-center bg-gray-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-gray-600 transition-all"
+                      >
+                        Dashboard
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
+
+
 
             {/* Credits Info */}
             {creditsInfo && creditsInfo.available > 0 && (
@@ -850,6 +897,91 @@ export default function CreateJobPostPage() {
               />
             </div>
 
+            {/* Credit Categories */}
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Choose Your Credit Package
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Select the package that best fits your hiring needs
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {/* Starter Package */}
+                <div className="relative border-2 border-gray-200 rounded-lg p-4 hover:border-[#2d4a3e] transition-colors cursor-pointer">
+                  <div className="text-center">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-1">Starter</h4>
+                    <div className="text-2xl font-bold text-[#2d4a3e] mb-2">$89</div>
+                    <div className="text-sm text-gray-600 mb-3">2 Job Posts</div>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• 30-day duration</li>
+                      <li>• Basic analytics</li>
+                      <li>• Email support</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Standard Package */}
+                <div className="relative border-2 border-[#ff6b35] rounded-lg p-4 bg-gradient-to-br from-orange-50 to-red-50">
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-[#ff6b35] text-white px-3 py-1 rounded-full text-xs font-medium">
+                      MOST POPULAR
+                    </span>
+                  </div>
+                  <div className="text-center">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-1">Standard</h4>
+                    <div className="text-2xl font-bold text-[#ff6b35] mb-2">$199</div>
+                    <div className="text-sm text-gray-600 mb-3">5 Job Posts</div>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• 30-day duration</li>
+                      <li>• AI optimization included</li>
+                      <li>• Advanced analytics</li>
+                      <li>• Priority support</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Pro Package */}
+                <div className="relative border-2 border-gray-200 rounded-lg p-4 hover:border-[#2d4a3e] transition-colors cursor-pointer">
+                  <div className="absolute -top-3 right-3">
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      SAVE $13
+                    </span>
+                  </div>
+                  <div className="text-center">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-1">Pro</h4>
+                    <div className="text-2xl font-bold text-[#2d4a3e] mb-2">$350</div>
+                    <div className="text-sm text-gray-600 mb-3">10 Job Posts</div>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• 60-day duration</li>
+                      <li>• AI optimization included</li>
+                      <li>• Premium analytics</li>
+                      <li>• Phone support</li>
+                      <li>• 2 featured posts</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <h4 className="text-sm font-medium text-amber-800">Job posting credits required to optimize job posts</h4>
+                    <p className="text-sm text-amber-700 mt-1">
+                      You'll need available job credits to proceed with optimization. Credits expire in 30 days.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Submit Button */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
@@ -986,6 +1118,12 @@ export default function CreateJobPostPage() {
           </div>
         )}
       </div>
+
+      {/* Job Posting Package Modal */}
+      <JobPostingPackageModal
+        isOpen={showPackageModal}
+        onClose={() => setShowPackageModal(false)}
+      />
     </div>
   );
 }

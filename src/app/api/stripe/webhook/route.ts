@@ -208,7 +208,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       where: { userId },
       update: {
         stripeSubscriptionId: subscription.id,
-        status: subscription.status === 'trialing' ? 'trial' : 'active',
+        status: 'active',
         startDate: new Date((subscription as any).current_period_start * 1000),
         endDate: new Date((subscription as any).current_period_end * 1000),
       },
@@ -482,9 +482,8 @@ function mapStripeStatusToSubscriptionStatus(
 ): SubscriptionStatus {
   switch (stripeStatus) {
     case 'active':
+    case 'trialing': // Map trialing to active since we don't have trials
       return 'active';
-    case 'trialing':
-      return 'trial';
     case 'past_due':
       return 'past_due';
     case 'canceled':

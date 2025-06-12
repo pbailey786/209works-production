@@ -56,6 +56,11 @@ export default function EmployerOnboardingPage() {
     alwaysHiring: false,
   });
 
+  // Logo upload state
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+
   // Check authentication and redirect if already completed onboarding
   useEffect(() => {
     if (status === 'loading') return;
@@ -133,6 +138,50 @@ export default function EmployerOnboardingPage() {
 
   const handleBack = () => {
     setCurrentStep(prev => prev - 1);
+  };
+
+  const handleLogoUpload = async (file: File) => {
+    setIsUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/employers/logo', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setLogoPreview(result.logoUrl);
+        // Update the data state to include the logo URL
+        setData(prev => ({ ...prev, companyLogo: result.logoUrl }));
+      } else {
+        const errorData = await response.json();
+        setErrors({ logo: errorData.error || 'Failed to upload logo' });
+      }
+    } catch (error) {
+      setErrors({ logo: 'Failed to upload logo. Please try again.' });
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload immediately
+      handleLogoUpload(file);
+    }
   };
 
   const handleSubmit = async () => {
@@ -323,22 +372,80 @@ export default function EmployerOnboardingPage() {
       {/* Logo Upload Section */}
       <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm mb-4">
-            <Upload className="h-6 w-6 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Company Logo</h3>
-          <p className="text-gray-600 mb-4">
-            Upload your logo to make your job posts look professional and trustworthy
-          </p>
-          <button
-            type="button"
-            className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Logo (Coming Soon)
-          </button>
+          {logoPreview ? (
+            <div className="mb-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-xl shadow-sm mb-4 overflow-hidden">
+                <img
+                  src={logoPreview}
+                  alt="Company logo preview"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <p className="text-green-600 font-medium mb-2">✅ Logo uploaded successfully!</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setLogoPreview(null);
+                  setLogoFile(null);
+                  setData(prev => ({ ...prev, companyLogo: undefined }));
+                }}
+                className="text-sm text-gray-500 hover:text-gray-700 underline"
+              >
+                Remove logo
+              </button>
+            </div>
+          ) : (
+            <div className="mb-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm mb-4">
+                {isUploadingLogo ? (
+                  <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>
+                ) : (
+                  <Upload className="h-6 w-6 text-gray-400" />
+                )}
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Company Logo</h3>
+              <p className="text-gray-600 mb-4">
+                Upload your logo to make your job posts look professional and trustworthy
+              </p>
+            </div>
+          )}
+
+          {!logoPreview && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="logo-upload"
+                disabled={isUploadingLogo}
+              />
+              <label
+                htmlFor="logo-upload"
+                className={`inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  isUploadingLogo
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {isUploadingLogo ? 'Uploading...' : 'Upload Logo'}
+              </label>
+            </>
+          )}
+
+          {errors.logo && (
+            <p className="mt-2 text-sm text-red-600 flex items-center justify-center">
+              <span className="mr-1">⚠️</span>
+              {errors.logo}
+            </p>
+          )}
+
           <p className="text-xs text-gray-500 mt-2">
             We'll use your logo for job ads and cool AI-generated social graphics! 🎨
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Supports JPEG, PNG, GIF, WebP • Max 2MB
           </p>
         </div>
       </div>

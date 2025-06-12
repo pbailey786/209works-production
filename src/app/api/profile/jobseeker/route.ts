@@ -19,7 +19,7 @@ const jobSeekerProfileSchema = z.object({
   // Availability
   availabilityDays: z.array(z.string()).optional().default([]),
   availabilityShifts: z.array(z.string()).optional().default([]),
-  distanceWillingToTravel: z.number().min(0).max(500).optional().default(25),
+  distanceWillingToTravel: z.number().min(0).max(50).optional().default(25),
   
   // Job preferences
   jobTypes: z.array(z.string()).optional().default([]),

@@ -69,9 +69,6 @@ export const STRIPE_CONFIG = {
     enabled: true,
   },
   allow_promotion_codes: true,
-  subscription_data: {
-    trial_period_days: 14, // 14-day free trial
-  },
 };
 
 // Job Posting Tiers and Add-ons Configuration (One-time payments)

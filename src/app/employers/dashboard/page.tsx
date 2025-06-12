@@ -517,7 +517,7 @@ function DashboardContent() {
                   className="flex items-center rounded-lg bg-[#ff6b35] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#e55a2b]"
                 >
                   <CreditCard className="mr-1 h-4 w-4" />
-                  Get Subscription
+                  Subscribe
                 </button>
               )}
             </div>

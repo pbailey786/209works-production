@@ -121,7 +121,7 @@ export default function AvailabilityStep({ formData, setFormData, onNext, onPrev
         <input
           type="range"
           min="5"
-          max="100"
+          max="50"
           value={formData.distanceWillingToTravel || 25}
           onChange={(e) => setFormData((prev: any) => ({
             ...prev,

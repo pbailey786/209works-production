@@ -6,9 +6,19 @@ import { prisma } from '../api/auth/prisma';
 import DashboardClient from './DashboardClient';
 import type { Session } from 'next-auth';
 
-// Server-side data fetching
+// Server-side data fetching with error handling for missing tables
 async function getDashboardData(userId: string) {
   try {
+    // Helper function to safely execute queries
+    const safeQuery = async <T>(queryFn: () => Promise<T>, fallback: T): Promise<T> => {
+      try {
+        return await queryFn();
+      } catch (error) {
+        console.warn('Database query failed, using fallback:', error);
+        return fallback;
+      }
+    };
+
     const [
       savedJobsCount,
       alertsCount,
@@ -20,40 +30,38 @@ async function getDashboardData(userId: string) {
       recentAlerts,
     ] = await Promise.all([
       // Count saved jobs
-      prisma.savedJob.count({
-        where: {
-          userId,
-        },
-      }),
+      safeQuery(() => prisma.savedJob.count({
+        where: { userId },
+      }), 0),
 
       // Count total alerts
-      prisma.alert.count({
+      safeQuery(() => prisma.alert.count({
         where: { userId },
-      }),
+      }), 0),
 
       // Count active alerts
-      prisma.alert.count({
+      safeQuery(() => prisma.alert.count({
         where: {
           userId,
           isActive: true,
         },
-      }),
+      }), 0),
 
       // Count search history
-      prisma.searchHistory.count({
+      safeQuery(() => prisma.searchHistory.count({
         where: { userId },
-      }),
+      }), 0),
 
       // Count applications submitted
-      prisma.jobApplication.count({
+      safeQuery(() => prisma.jobApplication.count({
         where: {
           userId,
           status: { not: 'saved' }, // Exclude saved jobs, only count actual applications
         },
-      }),
+      }), 0),
 
       // Get recent searches (last 5)
-      prisma.searchHistory.findMany({
+      safeQuery(() => prisma.searchHistory.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
         take: 5,
@@ -63,13 +71,11 @@ async function getDashboardData(userId: string) {
           filters: true,
           createdAt: true,
         },
-      }),
+      }), []),
 
       // Get recent saved jobs
-      prisma.savedJob.findMany({
-        where: {
-          userId,
-        },
+      safeQuery(() => prisma.savedJob.findMany({
+        where: { userId },
         include: {
           job: {
             select: {
@@ -86,10 +92,10 @@ async function getDashboardData(userId: string) {
         },
         orderBy: { savedAt: 'desc' },
         take: 3,
-      }),
+      }), []),
 
       // Get recent alerts
-      prisma.alert.findMany({
+      safeQuery(() => prisma.alert.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
         take: 3,
@@ -102,7 +108,7 @@ async function getDashboardData(userId: string) {
           createdAt: true,
           lastTriggered: true,
         },
-      }),
+      }), []),
     ]);
 
     return {
