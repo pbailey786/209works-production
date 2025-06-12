@@ -15,6 +15,14 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/authOptions';
 import { generateJobSearchResponse } from '@/lib/ai';
 
+// Type definitions for conversation messages
+interface ConversationMessage {
+  role?: string;
+  type?: string;
+  content: string;
+  timestamp?: Date;
+}
+
 // Map job type variations to database enum values
 function normalizeJobType(jobType: string | null): string | null {
   if (!jobType) return null;
@@ -583,7 +591,7 @@ export const POST = withAISecurity(
 
           // Build updated conversation history - ensure proper format
           const updatedConversationHistory = [
-            ...conversationHistory.map(msg => ({
+            ...conversationHistory.map((msg: ConversationMessage) => ({
               role: msg.role || msg.type || 'user',
               content: msg.content,
               timestamp: msg.timestamp || new Date()
