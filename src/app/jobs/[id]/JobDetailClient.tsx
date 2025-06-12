@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Job } from '@prisma/client';
 import {
@@ -83,6 +83,22 @@ export default function JobDetailClient({
   const [error, setError] = useState<string | null>(null);
   const [shouldIApplyOpen, setShouldIApplyOpen] = useState(false);
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
+  const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
+
+  // Check if user has used "Should I Apply" feature before
+  useEffect(() => {
+    const hasUsedFeature = localStorage.getItem('shouldIApply_used');
+    setIsFirstTimeUser(!hasUsedFeature);
+  }, []);
+
+  // Mark feature as used when modal opens
+  const handleShouldIApplyOpen = () => {
+    setShouldIApplyOpen(true);
+    if (isFirstTimeUser) {
+      localStorage.setItem('shouldIApply_used', 'true');
+      setIsFirstTimeUser(false);
+    }
+  };
 
   // Memoized salary display
   const salaryDisplay = useMemo(() => {
@@ -379,15 +395,37 @@ export default function JobDetailClient({
                       </Link>
                     )}
 
-                    {/* Should I Apply Button - Most prominent for job seekers */}
+                    {/* Enhanced Should I Apply Button - Most prominent for job seekers */}
                     {!isJobOwner && (
-                      <button
-                        onClick={() => setShouldIApplyOpen(true)}
-                        className="inline-flex items-center rounded-lg bg-[#2d4a3e] px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#1d3a2e] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2"
-                      >
-                        <SparklesIcon className="mr-2 h-4 w-4" />
-                        Should I Apply?
-                      </button>
+                      <div className="relative group">
+                        <button
+                          onClick={handleShouldIApplyOpen}
+                          className="inline-flex items-center rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 relative"
+                        >
+                          <SparklesIcon className="mr-2 h-4 w-4" />
+                          Should I Apply?
+                          {/* AI Badge with first-time indicator */}
+                          <span className={`absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white ${
+                            isFirstTimeUser ? 'bg-red-500 animate-pulse' : 'bg-purple-500'
+                          }`}>
+                            {isFirstTimeUser ? 'NEW' : 'AI'}
+                          </span>
+                        </button>
+
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 mb-2 hidden w-64 -translate-x-1/2 transform rounded-lg bg-gray-900 px-3 py-2 text-sm text-white shadow-lg group-hover:block">
+                          <div className="text-center">
+                            <div className="font-medium">Get AI-powered match analysis</div>
+                            <div className="text-xs text-gray-300 mt-1">
+                              Personalized insights for the 209 area
+                            </div>
+                          </div>
+                          {/* Arrow */}
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 transform">
+                            <div className="border-4 border-transparent border-t-gray-900"></div>
+                          </div>
+                        </div>
+                      </div>
                     )}
 
                     <button

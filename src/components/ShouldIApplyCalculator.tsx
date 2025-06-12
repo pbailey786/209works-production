@@ -37,6 +37,16 @@ interface CalculatorResult {
     matchPercentage: number;
     strengthAreas: string[];
     tips: string[];
+    skillGaps?: string[];
+  };
+  // Enhanced AI analysis fields
+  aiAnalysis?: {
+    matchScore: number;
+    summary: string;
+    strengths: string[];
+    skillGaps: string[];
+    advice: string[];
+    localInsights?: string[];
   };
   // Legacy fields for backward compatibility
   confidence?: number;
@@ -239,10 +249,13 @@ export default function ShouldIApplyCalculator({
                   </div>
                   <button
                     onClick={handleCalculate}
-                    className="inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-colors hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                    className="inline-flex items-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:from-purple-700 hover:to-blue-700 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                   >
-                    <SparklesIcon className="mr-2 h-5 w-5" />
-                    Analyze Job Fit
+                    <SparklesIcon className="mr-3 h-6 w-6" />
+                    Get AI Analysis
+                    <span className="ml-2 rounded-full bg-white bg-opacity-20 px-2 py-1 text-xs font-bold">
+                      NEW
+                    </span>
                   </button>
                 </div>
               )}
@@ -406,36 +419,67 @@ export default function ShouldIApplyCalculator({
                         <div className="h-2 max-w-32 flex-1 rounded-full bg-white bg-opacity-50">
                           <div
                             className="h-2 rounded-full bg-current"
-                            style={{ width: `${result.analysis.matchPercentage}%` }}
+                            style={{ width: `${result.aiAnalysis?.matchScore || result.analysis.matchPercentage}%` }}
                           />
                         </div>
                         <span className="text-sm font-medium">
-                          {result.score}/{result.maxScore} ({result.analysis.matchPercentage}%)
+                          {result.aiAnalysis?.matchScore || result.analysis.matchPercentage}%
+                          {!result.aiAnalysis && ` (${result.score}/${result.maxScore})`}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Explanation */}
+                {/* Enhanced AI Analysis */}
                 <div className="rounded-xl bg-gray-50 p-6">
                   <h4 className="mb-3 flex items-center font-semibold text-gray-900">
                     <SparklesIcon className="mr-2 h-5 w-5 text-purple-600" />
-                    Match Analysis
+                    AI Match Analysis
                   </h4>
                   <p className="leading-relaxed text-gray-700 mb-4">
-                    {result.message}
+                    {result.aiAnalysis?.summary || result.message}
                   </p>
 
-                  {/* Match Reasons */}
-                  {result.reasons.length > 0 && (
-                    <div>
-                      <h5 className="font-medium text-gray-900 mb-2">Why you're a match:</h5>
+                  {/* Strengths */}
+                  {(result.aiAnalysis?.strengths || result.reasons).length > 0 && (
+                    <div className="mb-4">
+                      <h5 className="font-medium text-gray-900 mb-2">Your Strengths:</h5>
                       <ul className="space-y-1">
-                        {result.reasons.map((reason, index) => (
+                        {(result.aiAnalysis?.strengths || result.reasons).map((strength, index) => (
                           <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
                             <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                            <span>{reason}</span>
+                            <span>{strength}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Skill Gaps */}
+                  {result.aiAnalysis?.skillGaps && result.aiAnalysis.skillGaps.length > 0 && (
+                    <div className="mb-4">
+                      <h5 className="font-medium text-gray-900 mb-2">Areas for Growth:</h5>
+                      <ul className="space-y-1">
+                        {result.aiAnalysis.skillGaps.map((gap, index) => (
+                          <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
+                            <ExclamationCircleIcon className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                            <span>{gap}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Local Insights */}
+                  {result.aiAnalysis?.localInsights && result.aiAnalysis.localInsights.length > 0 && (
+                    <div>
+                      <h5 className="font-medium text-gray-900 mb-2">209 Area Insights:</h5>
+                      <ul className="space-y-1">
+                        {result.aiAnalysis.localInsights.map((insight, index) => (
+                          <li key={index} className="flex items-start space-x-2 text-sm text-blue-700">
+                            <SparklesIcon className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                            <span>{insight}</span>
                           </li>
                         ))}
                       </ul>
@@ -443,15 +487,15 @@ export default function ShouldIApplyCalculator({
                   )}
                 </div>
 
-                {/* Application Tips */}
-                {result.analysis.tips.length > 0 && (
+                {/* Enhanced Application Tips */}
+                {(result.aiAnalysis?.advice || result.analysis.tips).length > 0 && (
                   <div className="rounded-xl border border-gray-200 bg-white p-6">
                     <h4 className="mb-4 flex items-center font-semibold text-gray-900">
                       <AcademicCapIcon className="mr-2 h-5 w-5 text-blue-600" />
-                      Application Tips
+                      Personalized Application Advice
                     </h4>
                     <ul className="space-y-2">
-                      {result.analysis.tips.map((tip, index) => (
+                      {(result.aiAnalysis?.advice || result.analysis.tips).map((tip, index) => (
                         <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
                           <SparklesIcon className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
                           <span>{tip}</span>
