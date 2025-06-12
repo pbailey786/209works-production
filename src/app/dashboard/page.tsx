@@ -6,11 +6,57 @@ import { prisma } from '../api/auth/prisma';
 import DashboardClient from './DashboardClient';
 import type { Session } from 'next-auth';
 
+// Type definitions for dashboard data
+interface DashboardStats {
+  savedJobs: number;
+  totalAlerts: number;
+  activeAlerts: number;
+  searchHistory: number;
+  applicationsSubmitted: number;
+}
+
+interface RecentSearch {
+  id: string;
+  query: string;
+  filters: string | null;
+  createdAt: Date;
+}
+
+interface RecentSavedJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  jobType: string;
+  salaryMin: number | undefined;
+  salaryMax: number | undefined;
+  postedAt: Date;
+  type: string;
+  savedAt: Date;
+}
+
+interface RecentAlert {
+  id: string;
+  type: string;
+  jobTitle: string;
+  location: string;
+  isActive: boolean;
+  createdAt: Date;
+  lastTriggered: Date | undefined;
+}
+
+interface DashboardData {
+  stats: DashboardStats;
+  recentSearches: RecentSearch[];
+  recentSavedJobs: RecentSavedJob[];
+  recentAlerts: RecentAlert[];
+}
+
 // Server-side data fetching with error handling for missing tables
-async function getDashboardData(userId: string) {
+async function getDashboardData(userId: string): Promise<DashboardData> {
   try {
     // Helper function to safely execute queries
-    const safeQuery = async <T>(queryFn: () => Promise<T>, fallback: T): Promise<T> => {
+    const safeQuery = async <T,>(queryFn: () => Promise<T>, fallback: T): Promise<T> => {
       try {
         return await queryFn();
       } catch (error) {
@@ -129,6 +175,7 @@ async function getDashboardData(userId: string) {
       })),
       recentAlerts: recentAlerts.map(alert => ({
         ...alert,
+        type: alert.type || 'General',
         jobTitle: alert.jobTitle || 'Untitled Alert',
         location: alert.location || 'Not specified',
         lastTriggered: alert.lastTriggered ?? undefined,
@@ -154,13 +201,13 @@ async function getDashboardData(userId: string) {
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions) as Session | null;
 
-  if (!session!.user?.email) {
+  if (!session?.user?.email) {
     redirect('/signin');
   }
 
-  // Get user by email since (session!.user as any).id doesn't exist by default
+  // Get user by email since session.user.id doesn't exist by default
   const user = await prisma.user.findUnique({
-    where: { email: session!.user?.email! },
+    where: { email: session.user.email },
     select: {
       id: true,
       role: true,
@@ -195,7 +242,7 @@ export default async function DashboardPage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">
-            Welcome back, {session!.user?.name || session!.user?.email}
+            Welcome back, {session.user?.name || session.user?.email}
           </h1>
           <p className="mt-2 text-sm text-gray-600 sm:text-base">
             Here's an overview of your job search activity.

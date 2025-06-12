@@ -212,7 +212,7 @@ export default function BillingModal({
                       </h3>
                       <div className="mt-2">
                         <span className="text-3xl font-bold text-gray-900">
-                          {typeof price === 'number' ? `$${price}` : price}
+                          {typeof price === 'number' ? `$${price}` : price.monthly}
                         </span>
                         {typeof price === 'number' && (
                           <span className="text-gray-500">
