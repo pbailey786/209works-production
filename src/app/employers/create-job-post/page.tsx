@@ -19,6 +19,7 @@ import {
   Sparkles,
   ArrowRight,
   HelpCircle,
+  Check,
 } from 'lucide-react';
 import JobUpsellSelector from '@/components/job-posting/JobUpsellSelector';
 
