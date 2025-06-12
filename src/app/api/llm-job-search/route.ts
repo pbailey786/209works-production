@@ -211,12 +211,18 @@ export const POST = withAISecurity(
       // Sanitize user profile data before processing
       const sanitizedUserProfile = sanitizeUserData(userProfile);
 
-      // Check if OpenAI API key is available
-      const hasValidApiKey =
+      // Check if AI API keys are available
+      const hasValidOpenAIKey =
         process.env.OPENAI_API_KEY &&
         process.env.OPENAI_API_KEY !== 'your-openai-key' &&
         process.env.OPENAI_API_KEY !==
           'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
+
+      const hasValidAnthropicKey =
+        process.env.ANTHROPIC_API_KEY &&
+        process.env.ANTHROPIC_API_KEY !== 'your-anthropic-key';
+
+      const hasValidApiKey = hasValidOpenAIKey || hasValidAnthropicKey;
 
       let filters;
       if (hasValidApiKey) {

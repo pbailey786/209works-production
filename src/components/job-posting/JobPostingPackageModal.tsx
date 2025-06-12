@@ -53,7 +53,7 @@ const packageTiers: PackageTier[] = [
   {
     id: 'pro',
     name: 'Pro Tier',
-    price: 350,
+    price: 349,
     jobPosts: 10,
     duration: 60,
     features: ['60 days duration', 'AI optimization', '2 featured posts'],

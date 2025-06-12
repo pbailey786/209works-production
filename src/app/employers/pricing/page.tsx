@@ -50,7 +50,7 @@ const employerPlans = [
   {
     id: 'pro',
     name: 'Pro Tier',
-    monthlyPrice: 350,
+    monthlyPrice: 349,
     description: 'For companies with high-volume hiring needs',
     features: [
       '10 Job Credits per month',

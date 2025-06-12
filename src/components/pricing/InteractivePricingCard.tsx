@@ -78,7 +78,7 @@ export default function InteractivePricingCard({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          priceId: `${plan.id}_${billingInterval}`, // This would map to actual Stripe price IDs
+          priceId: plan.id, // Send the plan ID, let the API resolve the actual Stripe price ID
           tier: plan.id,
           billingInterval,
           chamberMember: isChamberMember,

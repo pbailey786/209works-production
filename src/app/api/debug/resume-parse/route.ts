@@ -133,36 +133,12 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // Step 5: Test OpenAI API call
+    // Step 5: Test AI API call (with OpenAI + Anthropic fallback)
     try {
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a resume parser. Extract structured information from resumes and return it as JSON. 
-            
-            Focus on extracting:
-            - name: Full name of the person
-            - location: City and state
-            - currentJobTitle: Most recent job title
-            - skills: Array of skills (max 10)
-            - experienceLevel: entry, mid, senior, or executive
-            - email: Email address if present
-            - phoneNumber: Phone number if present
-            
-            Return only valid JSON. If information is not found, omit the field.`,
-          },
-          {
-            role: 'user',
-            content: `Please parse this resume and extract the information as JSON:\n\n${fileText.substring(0, 3000)}`, // Limit to first 3000 chars for debug
-          },
-        ],
-        temperature: 0.1,
-        max_tokens: 500,
-      });
+      const { parseResumeWithAI } = await import('@/lib/ai');
+      const parsedData = await parseResumeWithAI(fileText.substring(0, 3000)); // Limit to first 3000 chars for debug
 
-      const aiResponse = completion.choices[0]?.message?.content;
+      const aiResponse = JSON.stringify(parsedData);
       
       if (!aiResponse) {
         return NextResponse.json({

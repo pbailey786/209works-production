@@ -27,18 +27,29 @@ function CheckoutContent() {
       try {
         setLoading(true);
 
-        // Always try the real Stripe function first since you have the keys configured
-        const endpoint = '/.netlify/functions/create-checkout-session';
+        // Use Netlify function in production, Next.js API route in development
+        const isProduction = window.location.hostname === '209.works' || window.location.hostname.includes('netlify');
+        const endpoint = isProduction
+          ? '/.netlify/functions/create-checkout-session'
+          : '/api/stripe/create-checkout-session';
 
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
+          body: JSON.stringify(isProduction ? {
+            // Netlify function format
             plan: plan,
             success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${plan}`,
             cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
+          } : {
+            // Next.js API format
+            priceId: `${plan}_monthly`,
+            tier: plan,
+            billingInterval: 'monthly',
+            successUrl: `${window.location.origin}/employers/dashboard?success=true&plan=${plan}`,
+            cancelUrl: `${window.location.origin}/employers/pricing?cancelled=true`,
           }),
         });
 
@@ -53,15 +64,19 @@ function CheckoutContent() {
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
           setPlanDetails({
-            plan: data.plan,
-            returnUrl: data.returnUrl,
+            plan: data.plan || plan,
+            returnUrl: data.returnUrl || data.url,
             mock: data.mock || false,
           });
+        } else if (data.url) {
+          // Handle Next.js API redirect response
+          window.location.href = data.url;
+          return;
         } else if (data.mock) {
           // Handle mock mode when price IDs are not configured
           setClientSecret('mock_client_secret');
           setPlanDetails({
-            plan: data.plan,
+            plan: data.plan || plan,
             returnUrl: data.returnUrl,
             mock: true,
           });
@@ -162,7 +177,7 @@ function CheckoutContent() {
                   <h4 className="text-sm font-medium text-blue-800">Monthly Subscription</h4>
                   <div className="mt-1 text-sm text-blue-700">
                     <p className="font-semibold">
-                      You will be billed ${plan === 'starter' ? '89' : plan === 'standard' ? '199' : '350'} every month. Cancel anytime.
+                      You will be billed ${plan === 'starter' ? '89' : plan === 'standard' ? '199' : '349'} every month. Cancel anytime.
                     </p>
                     <p className="mt-1">
                       Unused job credits expire after 30 days. You can repost expired jobs anytime with a new credit.

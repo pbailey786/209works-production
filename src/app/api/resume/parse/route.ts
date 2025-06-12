@@ -133,84 +133,34 @@ export async function POST(request: NextRequest) {
       warnings: extractionResult.warnings
     });
 
-    // Use OpenAI to parse the resume
-    console.log('🤖 Starting OpenAI parsing...');
-    let completion;
+    // Use AI to parse the resume (with OpenAI + Anthropic fallback)
+    console.log('🤖 Starting AI parsing...');
+    let parsedData;
     try {
-      completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a resume parser. Extract structured information from resumes and return it as JSON.
+      const { parseResumeWithAI } = await import('@/lib/ai');
+      parsedData = await parseResumeWithAI(fileText);
 
-            Focus on extracting:
-            - name: Full name of the person
-            - location: City and state (prefer California cities like Modesto, Stockton, Fresno, etc.)
-            - currentJobTitle: Most recent job title or desired position
-            - skills: Array of technical and professional skills
-            - experienceLevel: Based on years of experience (entry: 0-2 years, mid: 3-5 years, senior: 6-10 years, executive: 10+ years)
-            - email: Email address if present
-            - phoneNumber: Phone number if present
-            - summary: Brief professional summary or objective
+      if (!parsedData) {
+        throw new Error('AI parsing returned null');
+      }
 
-            Return only valid JSON that matches this schema. If information is not found, omit the field or return null.
-            For skills, extract both technical skills (like "JavaScript", "Project Management") and soft skills.
-            For location, if only a city is mentioned, assume it's in California.`,
-          },
-          {
-            role: 'user',
-            content: `Please parse this resume and extract the information as JSON:\n\n${fileText}`,
-          },
-        ],
-        temperature: 0.1,
-        max_tokens: 1000,
+      console.log('✅ AI parsing successful:', {
+        hasName: !!parsedData.name,
+        hasLocation: !!parsedData.location,
+        hasSkills: !!parsedData.skills,
+        skillsCount: parsedData.skills?.length || 0
       });
-    } catch (openaiError: any) {
-      console.error('❌ OpenAI API call failed:', {
-        error: openaiError.message,
-        status: openaiError.status,
-        type: openaiError.type,
+    } catch (aiError: any) {
+      console.error('❌ AI parsing failed:', {
+        error: aiError.message,
       });
 
       return NextResponse.json(
         {
           error: 'AI service is currently unavailable. Please try again later or fill out the form manually.',
-          details: process.env.NODE_ENV === 'development' ? openaiError.message : undefined,
+          details: process.env.NODE_ENV === 'development' ? aiError.message : undefined,
         },
         { status: 503 }
-      );
-    }
-
-    const aiResponse = completion.choices[0]?.message?.content;
-    if (!aiResponse) {
-      console.log('❌ OpenAI parsing failed: No response content');
-      return NextResponse.json(
-        { error: 'Failed to parse resume with AI' },
-        { status: 500 }
-      );
-    }
-
-    console.log('✅ OpenAI response received:', {
-      responseLength: aiResponse.length,
-      preview: aiResponse.substring(0, 200)
-    });
-
-    // Parse the AI response as JSON
-    let parsedData;
-    try {
-      parsedData = JSON.parse(aiResponse);
-    } catch (error) {
-      console.error('Failed to parse AI response as JSON:', {
-        aiResponse,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-      return NextResponse.json(
-        { 
-          error: 'Failed to parse resume data - AI response was not valid JSON',
-          debug: process.env.NODE_ENV === 'development' ? { aiResponse } : undefined
-        },
-        { status: 500 }
       );
     }
 

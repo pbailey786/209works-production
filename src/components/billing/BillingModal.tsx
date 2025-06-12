@@ -33,7 +33,7 @@ export default function BillingModal({
   description,
 }: BillingModalProps) {
   const router = useRouter();
-  const [selectedPlan, setSelectedPlan] = useState('professional');
+  const [selectedPlan, setSelectedPlan] = useState('standard');
   const [isLoading, setIsLoading] = useState(false);
 
   // BILLING REFACTOR: This is where billing options are now shown when posting jobs
@@ -41,50 +41,46 @@ export default function BillingModal({
     {
       id: 'starter',
       name: 'Starter',
-      price: 99,
+      price: 89,
       description: 'Perfect for small businesses',
       features: [
-        '5 active job listings',
+        '2 job posts',
         '30-day listing duration',
-        'Basic company profile',
-        'Email support',
+        'AI optimization',
         'Basic analytics',
+        'Email support',
       ],
       badge: 'Great for Local Business',
     },
     {
-      id: 'professional',
-      name: 'Professional',
-      price: 299,
+      id: 'standard',
+      name: 'Standard',
+      price: 199,
       description: 'For growing businesses',
       features: [
-        'Unlimited job listings',
-        '45-day listing duration',
-        'Enhanced company profile',
-        'AI-powered matching',
-        'Priority support',
+        '5 job posts',
+        '30-day listing duration',
+        'AI optimization',
         'Advanced analytics',
-        'Up to 10 team members',
+        'Priority support',
       ],
       badge: 'Most Popular',
       popular: true,
     },
     {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: { monthly: 'Custom', yearly: 'Custom' },
-      description: 'For large organizations',
+      id: 'pro',
+      name: 'Pro',
+      price: 349,
+      description: 'For high-volume hiring',
       features: [
-        'Unlimited job listings',
+        '10 job posts',
         '60-day listing duration',
-        'Premium branded profile',
-        'Advanced AI matching',
-        'Dedicated account manager',
-        'Custom analytics',
-        'Unlimited team members',
-        'API access',
+        'AI optimization',
+        'Premium analytics',
+        'Phone support',
+        '2 featured posts',
       ],
-      badge: 'Custom Solutions',
+      badge: 'Best Value',
     },
   ];
 
@@ -114,12 +110,6 @@ export default function BillingModal({
   };
 
   const handlePlanSelect = async (planId: string) => {
-    if (planId === 'enterprise') {
-      // Handle enterprise contact
-      window.location.href = 'mailto:support@209.works?subject=Enterprise Plan Inquiry';
-      return;
-    }
-
     setIsLoading(true);
     try {
       const response = await fetch('/api/stripe/create-checkout-session', {
@@ -212,13 +202,11 @@ export default function BillingModal({
                       </h3>
                       <div className="mt-2">
                         <span className="text-3xl font-bold text-gray-900">
-                          {typeof price === 'number' ? `$${price}` : price.monthly}
+                          ${price}
                         </span>
-                        {typeof price === 'number' && (
-                          <span className="text-gray-500">
-                            /month
-                          </span>
-                        )}
+                        <span className="text-gray-500">
+                          /month
+                        </span>
                       </div>
                       <p className="mt-2 text-sm text-gray-600">
                         {plan.description}
@@ -251,8 +239,6 @@ export default function BillingModal({
                           <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-current"></div>
                           Processing...
                         </div>
-                      ) : plan.id === 'enterprise' ? (
-                        'Contact Sales'
                       ) : (
                         'Select Plan'
                       )}

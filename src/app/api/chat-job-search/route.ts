@@ -13,6 +13,7 @@ import {
 } from '@/lib/middleware/ai-security';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../auth/authOptions';
+import { generateJobSearchResponse } from '@/lib/ai';
 
 // Map job type variations to database enum values
 function normalizeJobType(jobType: string | null): string | null {
@@ -404,12 +405,18 @@ export const POST = withAISecurity(
       // Sanitize user profile data before processing
       const sanitizedUserProfile = sanitizeUserData(enhancedUserProfile);
 
-      // Check if OpenAI API key is available
-      const hasValidApiKey =
+      // Check if AI API keys are available
+      const hasValidOpenAIKey =
         process.env.OPENAI_API_KEY &&
         process.env.OPENAI_API_KEY !== 'your-openai-key' &&
         process.env.OPENAI_API_KEY !==
           'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
+
+      const hasValidAnthropicKey =
+        process.env.ANTHROPIC_API_KEY &&
+        process.env.ANTHROPIC_API_KEY !== 'your-anthropic-key';
+
+      const hasValidApiKey = hasValidOpenAIKey || hasValidAnthropicKey;
 
       let filters;
       if (hasValidApiKey) {
@@ -508,33 +515,13 @@ export const POST = withAISecurity(
 
       if (hasValidApiKey) {
         try {
-          // For general conversation or when no jobs found, use general AI response
-          if (jobs.length === 0 || !isJobSearchQuery(userMessage)) {
-            conversationalResponse = await generateGeneralConversationalResponse(
-              userMessage,
-              conversationHistory,
-              sanitizedUserProfile
-            );
-          } else {
-            // For job search with results, use job-specific response
-            conversationalResponse = await generateConversationalResponse({
-              userMessage,
-              filters,
-              jobs: jobs.map(job => ({
-                id: job.id,
-                title: job.title,
-                company: job.company,
-                location: job.location,
-                jobType: job.jobType,
-                salaryMin: job.salaryMin,
-                salaryMax: job.salaryMax,
-                description: job.description,
-              })),
-              conversationHistory,
-              userProfile: sanitizedUserProfile,
-              jobMatches: [],
-            });
-          }
+          // Use the new AI utility with OpenAI + Anthropic fallback
+          conversationalResponse = await generateJobSearchResponse(
+            userMessage,
+            conversationHistory,
+            jobs,
+            filters
+          );
         } catch (error) {
           console.error('AI response generation failed:', error);
           conversationalResponse = generateBasicResponse(
@@ -594,9 +581,13 @@ export const POST = withAISecurity(
         try {
           const MAX_CONVERSATIONS_PER_USER = 10;
 
-          // Build updated conversation history
+          // Build updated conversation history - ensure proper format
           const updatedConversationHistory = [
-            ...conversationHistory,
+            ...conversationHistory.map(msg => ({
+              role: msg.role || msg.type || 'user',
+              content: msg.content,
+              timestamp: msg.timestamp || new Date()
+            })),
             { role: 'user', content: userMessage, timestamp: new Date() },
             { role: 'assistant', content: conversationalResponse, timestamp: new Date() }
           ];
@@ -728,7 +719,7 @@ export const POST = withAISecurity(
   aiSecurityConfigs.public // Use AI-specific security configuration
 );
 
-// Generate basic response when OpenAI is not available
+// Generate basic response when OpenAI is not available - More conversational
 function generateBasicResponse(
   userMessage: string,
   filters: any,
@@ -750,14 +741,14 @@ function generateBasicResponse(
   if (isSortingRequest && filters.previousJobs) {
     const sortType =
       filters.sortBy === 'salary_desc'
-        ? 'highest to lowest paid'
+        ? 'highest paid first'
         : filters.sortBy === 'salary_asc'
-          ? 'lowest to highest paid'
+          ? 'lowest paid first'
           : filters.sortBy === 'date_desc'
             ? 'newest first'
             : 'oldest first';
 
-    return `I've re-sorted the previous ${filters.previousJobs.length} jobs by ${sortType}. ${jobs.length > 0 ? `Here are the results ranked as requested.` : 'No jobs found with the specified criteria.'}`;
+    return `Got it! Sorted by ${sortType} 👍`;
   }
 
   if (jobs.length === 0) {
@@ -767,33 +758,26 @@ function generateBasicResponse(
   let response = '';
 
   if (isCitySearch && !isFollowUp && filters.location) {
-    // More engaging response for city-based searches
-    response = `Great! I found ${jobs.length} job opportunity${jobs.length !== 1 ? 'ies' : ''} in ${filters.location}. `;
-
-    // Add some variety to the response
+    // More casual city search response
     if (jobs.length > 10) {
-      response += `There's a good variety of positions available! `;
+      response = `Nice! Found ${jobs.length} jobs in ${filters.location} 🎯 Lots of options!`;
     } else if (jobs.length > 5) {
-      response += `Here are some great options for you. `;
+      response = `Found ${jobs.length} jobs in ${filters.location}! Some good options here.`;
     } else {
-      response += `Here are the current openings. `;
+      response = `Found ${jobs.length} jobs in ${filters.location}. Here's what's available!`;
     }
-
-    response += `What type of work interests you most?`;
   } else {
-    // Standard response for other searches
-    response = `I found ${jobs.length} job${jobs.length !== 1 ? 's' : ''} matching "${userMessage}".`;
+    // Shorter, friendlier responses
+    if (jobs.length > 10) {
+      response = `Found ${jobs.length} jobs! 🔥`;
+    } else if (jobs.length > 5) {
+      response = `Found ${jobs.length} jobs matching that.`;
+    } else {
+      response = `Found ${jobs.length} jobs for you!`;
+    }
 
     if (filters.location) {
-      response += ` These positions are in the ${filters.location} area.`;
-    }
-
-    if (filters.job_type) {
-      response += ` All results are ${filters.job_type.replace('_', '-')} positions.`;
-    }
-
-    if (isFollowUp) {
-      response += ` I've updated the search based on your follow-up question.`;
+      response += ` All in ${filters.location}.`;
     }
   }
 
@@ -879,105 +863,62 @@ function isJobSearchQuery(message: string): boolean {
   return jobSearchKeywords.some(keyword => lowerMessage.includes(keyword));
 }
 
-// Generate general conversational response using OpenAI
+// Generate general conversational response using the new AI utility
 async function generateGeneralConversationalResponse(
   userMessage: string,
   conversationHistory: any[],
   userProfile: any
 ): Promise<string> {
   try {
-    const OpenAI = require('openai');
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-
-  // Build conversation context
-  const messages = [
-    {
-      role: 'system',
-      content: `You are an experienced work buddy and career advisor for the 209 Works job platform. You help people in the Central Valley (209 area code) with job searches, career advice, and local employment insights.
-
-Key facts about the 209 area:
-- Covers Central Valley cities like Stockton, Modesto, Tracy, Manteca, Lodi, Turlock, Merced
-- Strong in agriculture, logistics, healthcare, manufacturing, and retail
-- Growing tech and service sectors
-- Family-friendly communities with affordable living
-- Major transportation hub with access to Bay Area and Sacramento
-
-Your personality:
-- Friendly, knowledgeable, and supportive like an experienced work buddy
-- Give practical, actionable advice from someone who knows the local scene
-- Focus on local opportunities and insights
-- Encourage and motivate job seekers
-- Share relevant tips about the local job market
-- Talk like someone who's worked in the 209 area and knows what it's like
-
-Always be helpful and conversational. Don't introduce yourself by name - just be naturally helpful. If someone asks about jobs but there aren't any in the database yet, explain that 209 Works is building its local job database and encourage them to check back soon. Offer career advice, interview tips, or information about the local job market instead.`
-    }
-  ];
-
-  // Add conversation history
-  conversationHistory.forEach(msg => {
-    messages.push({
-      role: msg.type === 'user' ? 'user' : 'assistant',
-      content: msg.content
-    });
-  });
-
-  // Add current message
-  messages.push({
-    role: 'user',
-    content: userMessage
-  });
-
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: messages,
-      max_tokens: 300,
-      temperature: 0.7,
-    });
-
-    return completion.choices[0]?.message?.content ||
-      "I'm here to help with your job search and career questions in the 209 area! What would you like to know?";
+    return await generateJobSearchResponse(
+      userMessage,
+      conversationHistory,
+      [], // No job results for general conversation
+      {} // No filters for general conversation
+    );
   } catch (error) {
-    console.error('OpenAI API error:', error);
-    // Fallback to basic response
+    console.error('AI response generation failed:', error);
     return generateBasicConversationalResponse(userMessage, conversationHistory);
   }
 }
 
-// Generate basic conversational response without OpenAI
+// Generate basic conversational response without OpenAI - More text-message style
 function generateBasicConversationalResponse(
   userMessage: string,
   conversationHistory: any[]
 ): string {
   const message = userMessage.toLowerCase();
 
-  // Greeting responses
+  // Greeting responses - shorter and friendlier
   if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-    return "Hey there! I'm here to help you find work in the 209 area - Stockton, Modesto, Tracy, and all around the Central Valley. Been helping folks find good jobs around here for a while. What kind of work are you looking for?";
+    return "Hey! 👋 I'm here to help you find work in the 209. What kind of job are you looking for?";
   }
 
-  // About 209 area
+  // About 209 area - more casual
   if (message.includes('209') || message.includes('central valley') || message.includes('area')) {
-    return "The 209 area covers the heart of California's Central Valley - cities like Stockton, Modesto, Tracy, Manteca, and Lodi. It's a great place to work with strong industries in agriculture, logistics, healthcare, and manufacturing. The cost of living is more affordable than the Bay Area, and you're still close to major cities. What type of work interests you here?";
+    return "The 209 is awesome for work! Stockton, Modesto, Tracy - lots of opportunities in warehouses, healthcare, and local businesses. Way more affordable than the Bay Area too. What type of work interests you?";
   }
 
-  // Career advice
+  // Career advice - friendly and brief
   if (message.includes('advice') || message.includes('tips') || message.includes('help')) {
-    return "I'd love to help! Here are some key tips for job searching in the 209 area: 1) Focus on local companies - many prefer hiring locally, 2) Highlight any logistics or agriculture experience, 3) Consider healthcare roles - they're always in demand, 4) Network within your city - the Central Valley has tight-knit communities. What specific area would you like advice on?";
+    return "Sure thing! Quick tips: 1) Local companies love hiring locally 2) Healthcare is always hiring 3) Warehouses pay well here 4) Network in your city - people know people. What specific help do you need?";
   }
 
-  // Industries
+  // Industries - conversational
   if (message.includes('industry') || message.includes('industries') || message.includes('sectors')) {
-    return "The 209 area has several strong industries: Agriculture (farming, food processing), Logistics & Transportation (warehouses, distribution, trucking), Healthcare (hospitals, clinics, senior care), Manufacturing, Retail, and growing Tech/Service sectors. Which industry interests you most?";
+    return "Big industries here: warehouses/logistics, healthcare, agriculture, manufacturing, retail. Growing tech scene too. Which one sounds interesting?";
   }
 
-  // General response
-  return "I'm here to help with your job search and career questions in the 209 area! I can provide advice about local industries, job search tips, or help you explore opportunities in Stockton, Modesto, Tracy, and other Central Valley cities. What would you like to know?";
+  // Broken/error response
+  if (message.includes('broken') || message.includes('error') || message.includes('not working')) {
+    return "Oh no! 😅 Looks like something's not working right. I'm still here to help though! What job stuff can I help you with?";
+  }
+
+  // General response - much shorter
+  return "I'm here to help with jobs in the 209! What would you like to know?";
 }
 
-// Generate response when no jobs are found
+// Generate response when no jobs are found - Much shorter and friendlier
 function generateNoJobsFoundResponse(
   userMessage: string,
   filters: any,
@@ -986,24 +927,8 @@ function generateNoJobsFoundResponse(
   const location = filters.location;
 
   if (location) {
-    return `I searched for jobs in ${location} but didn't find any matching "${userMessage}" right now. Don't worry though! 209 Works is actively building our local job database.
-
-In the meantime, here's what I recommend:
-• Check back in a few days - we're adding new opportunities regularly
-• Consider broadening your search to nearby cities like Stockton, Modesto, or Tracy
-• Look into major local employers in healthcare, logistics, and agriculture
-• Network with local businesses - many 209 area jobs come through word of mouth
-
-What other types of work would you be interested in exploring?`;
+    return `Hmm, no matches for "${userMessage}" in ${location} right now 🤔 We're still building up our job database. Try searching for "warehouse jobs" or "healthcare" - those are big here! Or check nearby cities like Stockton or Modesto?`;
   }
 
-  return `I searched for "${userMessage}" but didn't find any matching jobs in our database yet. The good news is that 209 Works is just getting started and we're actively building our local job listings!
-
-Here's what I suggest:
-• Try searching for broader terms like "warehouse," "customer service," or "healthcare"
-• Check back soon - we're adding new 209 area opportunities daily
-• Consider exploring different cities: Stockton, Modesto, Tracy, Manteca, Lodi
-• The Central Valley has strong job markets in logistics, agriculture, and healthcare
-
-What type of work environment interests you most? I can share insights about the local job market!`;
+  return `No matches for "${userMessage}" yet 😅 We're still adding jobs to the database. Try "warehouse jobs" or "customer service" - those are popular in the 209! What type of work are you most interested in?`;
 }

@@ -84,11 +84,13 @@ export default function JobSeekerPricingPage() {
         showChamberToggle={false}
         onPlanSelect={(planId, billingInterval) => {
           console.log('Selected plan:', planId, 'billing:', billingInterval);
-          // Handle plan selection - redirect to signup or checkout
+          // Handle plan selection - redirect to signup for all plans
+          // Note: Premium features will be implemented in a future update
           if (planId === 'free') {
             window.location.href = '/signup/jobseeker?plan=free';
           } else {
-            window.location.href = `/signup/jobseeker?plan=${planId}&billing=${billingInterval}`;
+            // For now, redirect premium users to free signup with a note
+            window.location.href = `/signup/jobseeker?plan=free&note=premium_coming_soon`;
           }
         }}
       />

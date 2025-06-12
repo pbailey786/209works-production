@@ -1,4 +1,4 @@
-import { openai } from '@/lib/openai';
+import { extractJobFiltersWithAI } from '@/lib/ai';
 
 export interface JobSearchFilters {
   age: number | null;
@@ -91,24 +91,10 @@ Example output:
 }`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: prompt },
-      ],
-      temperature: 0.2,
-      max_tokens: 400,
-    });
+    // Use the new AI utility with fallback support
+    const filters = await extractJobFiltersWithAI(userMessage, conversationHistory);
 
-    const content = response.choices?.[0]?.message?.content;
-    if (!content) return null;
-
-    // Attempt to extract JSON from the response
-    const match = content.match(/\{[\s\S]*\}/);
-    if (!match) return null;
-
-    const filters = JSON.parse(match[0]);
+    if (!filters) return null;
 
     // Validate and clean the filters
     return validateAndCleanFilters(filters);

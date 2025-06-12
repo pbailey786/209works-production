@@ -1,4 +1,4 @@
-import { getChatCompletion } from '@/lib/openai';
+import { getChatCompletionWithFallback } from '@/lib/ai';
 
 interface ConversationalResponseParams {
   userMessage: string;
@@ -186,13 +186,13 @@ ${matchesContext}
 
 Based on this context and the conversation history, provide a helpful, conversational response that feels natural and continues the conversation effectively.`;
 
-    const response = await getChatCompletion(
-      [{ role: 'system', content: enhancedSystemPrompt }, ...chatMessages],
+    const response = await getChatCompletionWithFallback(
+      chatMessages,
       {
+        systemPrompt: enhancedSystemPrompt,
         model: 'gpt-4',
         temperature: 0.8,
         maxTokens: 300,
-        rateLimitId: 'conversational-response-chat',
         timeout: 20000,
       }
     );
@@ -228,16 +228,13 @@ Generate a conversational response that:
 Keep it engaging, insightful, and conversational - not just a search result summary.`;
 
     try {
-      const response = await getChatCompletion(
-        [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
+      const response = await getChatCompletionWithFallback(
+        [{ role: 'user', content: userPrompt }],
         {
+          systemPrompt: systemPrompt,
           model: 'gpt-4',
           temperature: 0.8,
           maxTokens: 300,
-          rateLimitId: 'conversational-response',
           timeout: 20000,
         }
       );
@@ -324,16 +321,13 @@ Consider conversation context - if they're refining a previous search, maintain 
 Return as JSON only.`;
 
   try {
-    const response = await getChatCompletion(
-      [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Extract filters from: "${userMessage}"` },
-      ],
+    const response = await getChatCompletionWithFallback(
+      [{ role: 'user', content: `Extract filters from: "${userMessage}"` }],
       {
+        systemPrompt: systemPrompt,
         model: 'gpt-4',
         temperature: 0.1,
         maxTokens: 400,
-        rateLimitId: 'filter-extraction-context',
         timeout: 15000,
       }
     );

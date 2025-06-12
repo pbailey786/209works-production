@@ -31,14 +31,18 @@ export async function POST(request: NextRequest) {
       cancelUrl?: string;
     } = body;
 
-    // Validate the price ID matches the tier and billing interval
-    const expectedPriceId =
+    // Resolve the plan ID to the actual Stripe price ID
+    const actualPriceId =
       STRIPE_PRICE_IDS[tier as keyof typeof STRIPE_PRICE_IDS]?.[
         billingInterval === BillingInterval.yearly ? 'yearly' : 'monthly'
       ];
-    if (priceId !== expectedPriceId) {
+
+    if (!actualPriceId) {
       return NextResponse.json(
-        { error: 'Invalid price ID for selected plan' },
+        {
+          error: `Invalid plan: ${tier} with billing interval: ${billingInterval}`,
+          availablePlans: Object.keys(STRIPE_PRICE_IDS)
+        },
         { status: 400 }
       );
     }
@@ -81,7 +85,7 @@ export async function POST(request: NextRequest) {
       billing_address_collection: STRIPE_CONFIG.billing_address_collection,
       line_items: [
         {
-          price: priceId,
+          price: actualPriceId,
           quantity: 1,
         },
       ],

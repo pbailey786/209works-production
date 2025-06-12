@@ -100,7 +100,7 @@ export const JOB_POSTING_CONFIG = {
     },
     pro: {
       name: 'Pro Tier',
-      price: 350,
+      price: 349,
       stripePriceId: process.env.STRIPE_PRICE_PRO,
       features: {
         jobPosts: 10,
@@ -153,12 +153,21 @@ export const JOB_POSTING_CONFIG = {
   },
 };
 
-// Legacy subscription price IDs (keeping for backward compatibility)
+// Subscription price IDs for job posting plans
 export const STRIPE_PRICE_IDS = {
   starter: {
     monthly: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
     yearly: process.env.STRIPE_STARTER_YEARLY_PRICE_ID,
   },
+  standard: {
+    monthly: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
+    yearly: process.env.STRIPE_STANDARD_YEARLY_PRICE_ID,
+  },
+  pro: {
+    monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+    yearly: process.env.STRIPE_PRO_YEARLY_PRICE_ID,
+  },
+  // Legacy mappings for backward compatibility
   professional: {
     monthly: process.env.STRIPE_PROFESSIONAL_MONTHLY_PRICE_ID,
     yearly: process.env.STRIPE_PROFESSIONAL_YEARLY_PRICE_ID,
