@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     // Get user from database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { id: true, email: true, name: true, stripeCustomerId: true, role: true },
+      select: { id: true, email: true, name: true, stripeCustomerId: true, role: true, currentTier: true },
     });
 
     if (!user) {
@@ -40,6 +40,40 @@ export async function POST(req: NextRequest) {
     if (user.role !== 'employer') {
       return NextResponse.json(
         { error: 'Only employers can purchase job posting credits' },
+        { status: 403 }
+      );
+    }
+
+    // Check if user has an active subscription
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        userId: user.id,
+        status: 'active',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    // Determine if user has active subscription
+    let hasActiveSubscription = false;
+    if (subscription) {
+      const now = new Date();
+      hasActiveSubscription = subscription.status === 'active' &&
+        (!subscription.endDate || subscription.endDate > now);
+    } else {
+      // Check if user is on a paid tier (even without subscription record)
+      const paidTiers = ['starter', 'professional', 'premium', 'enterprise'];
+      hasActiveSubscription = paidTiers.includes(user.currentTier || '');
+    }
+
+    if (!hasActiveSubscription) {
+      return NextResponse.json(
+        {
+          error: 'Active subscription required to purchase additional credits',
+          code: 'SUBSCRIPTION_REQUIRED',
+          redirectUrl: '/employers/pricing?message=subscription_required_for_credits'
+        },
         { status: 403 }
       );
     }

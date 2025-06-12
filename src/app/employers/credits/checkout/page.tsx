@@ -65,29 +65,70 @@ export default function CreditsCheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<CreditPackage | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
 
   useEffect(() => {
     const packageId = searchParams.get('package');
     const quantityParam = searchParams.get('quantity');
-    
+
     if (packageId && CREDIT_PACKAGES[packageId]) {
       setSelectedPackage(CREDIT_PACKAGES[packageId]);
     }
-    
+
     if (quantityParam) {
       setQuantity(parseInt(quantityParam) || 1);
     }
+
+    // Check subscription status
+    checkSubscriptionStatus();
   }, [searchParams]);
+
+  const checkSubscriptionStatus = async () => {
+    setSubscriptionLoading(true);
+    try {
+      const response = await fetch('/api/employers/subscription/status');
+      if (response.ok) {
+        const data = await response.json();
+        const hasSubscription = data.hasActiveSubscription || false;
+        setHasActiveSubscription(hasSubscription);
+
+        // Redirect if no active subscription
+        if (!hasSubscription) {
+          router.push('/employers/pricing?message=subscription_required_for_credits');
+          return;
+        }
+      } else {
+        setHasActiveSubscription(false);
+        router.push('/employers/pricing?message=subscription_required_for_credits');
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+      setHasActiveSubscription(false);
+      router.push('/employers/pricing?message=subscription_required_for_credits');
+      return;
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
 
   const handlePurchase = async () => {
     if (!selectedPackage) return;
+
+    // Check if user has active subscription
+    if (!hasActiveSubscription) {
+      alert('You need an active subscription to purchase additional credits. Please upgrade your subscription first.');
+      router.push('/employers/pricing');
+      return;
+    }
 
     setLoading(true);
     try {
       // This is where Stripe integration will go
       // For now, we'll simulate the process
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Redirect to success page
       router.push('/employers/dashboard?purchase=success');
     } catch (error) {
@@ -97,6 +138,30 @@ export default function CreditsCheckoutPage() {
       setLoading(false);
     }
   };
+
+  // Show loading while checking subscription
+  if (subscriptionLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>
+          <p className="text-gray-600">Checking subscription status...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect if no subscription (this should not render due to redirect in checkSubscriptionStatus)
+  if (hasActiveSubscription === false) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="mb-4 text-2xl font-bold text-gray-900">Subscription Required</h1>
+          <p className="mb-6 text-gray-600">Redirecting to pricing page...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!selectedPackage) {
     return (
@@ -236,10 +301,32 @@ export default function CreditsCheckoutPage() {
             </div>
           </div>
 
+          {/* Subscription Warning */}
+          {!subscriptionLoading && !hasActiveSubscription && (
+            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+              <div className="flex items-center">
+                <div className="mr-3 rounded-full bg-red-100 p-1">
+                  <svg className="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-red-800">Subscription Required</h3>
+                  <p className="text-sm text-red-700 mt-1">
+                    You need an active subscription to purchase additional credits.
+                    <Link href="/employers/pricing" className="underline hover:text-red-800 ml-1">
+                      Upgrade your subscription first →
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Purchase Button */}
           <button
             onClick={handlePurchase}
-            disabled={loading}
+            disabled={loading || !hasActiveSubscription}
             className="w-full rounded-lg bg-[#2d4a3e] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#1d3a2e] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
@@ -247,6 +334,8 @@ export default function CreditsCheckoutPage() {
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                 Processing...
               </span>
+            ) : !hasActiveSubscription ? (
+              'Subscription Required'
             ) : (
               `Complete Purchase - $${(totalPrice / 100).toFixed(2)}`
             )}

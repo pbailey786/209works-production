@@ -1,9 +1,11 @@
 'use client';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Award } from 'lucide-react';
+import { Award, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import PricingSection from '@/components/pricing/PricingSection';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 // Employer pricing plans - Monthly subscription model
 const employerPlans = [
@@ -70,6 +72,18 @@ const employerPlans = [
 ];
 
 export default function EmployerPricingPage() {
+  const searchParams = useSearchParams();
+  const [showMessage, setShowMessage] = useState(false);
+
+  useEffect(() => {
+    const message = searchParams.get('message');
+    if (message === 'subscription_required_for_credits') {
+      setShowMessage(true);
+      // Auto-hide message after 10 seconds
+      setTimeout(() => setShowMessage(false), 10000);
+    }
+  }, [searchParams]);
+
   const handlePlanSelect = async (planId: string, billingInterval: string) => {
     try {
       // Redirect to embedded checkout page
@@ -82,6 +96,30 @@ export default function EmployerPricingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50">
+      {/* Subscription Required Message */}
+      {showMessage && (
+        <div className="bg-orange-100 border-l-4 border-orange-500 p-4">
+          <div className="mx-auto max-w-6xl flex items-center">
+            <AlertTriangle className="h-6 w-6 text-orange-500 mr-3" />
+            <div>
+              <h3 className="text-lg font-medium text-orange-800">
+                Subscription Required for Additional Credits
+              </h3>
+              <p className="text-orange-700">
+                To purchase additional job credits, you need an active monthly subscription.
+                Choose a plan below to get started and unlock the ability to buy extra credits when needed.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowMessage(false)}
+              className="ml-auto text-orange-500 hover:text-orange-700"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="px-4 py-16">
         <div className="mx-auto max-w-4xl text-center">

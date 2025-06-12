@@ -34,6 +34,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 // Lazy load heavy components
 const BillingModal = React.lazy(() => import('@/components/billing/BillingModal'));
 const JobPostingCheckout = React.lazy(() => import('@/components/job-posting/JobPostingCheckout'));
+const AddCreditsModal = React.lazy(() => import('@/components/credits/AddCreditsModal'));
 
 interface DashboardStats {
   totalJobs: number;
@@ -103,6 +104,8 @@ function DashboardContent() {
   // BILLING REFACTOR: Add billing modal state
   const [showBillingModal, setShowBillingModal] = useState(false);
   const [showJobPostingCheckout, setShowJobPostingCheckout] = useState(false);
+  const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
 
   // Fetch real employer data
   useEffect(() => {
@@ -148,6 +151,13 @@ function DashboardContent() {
         if (creditsResponse.ok) {
           const creditsData = await creditsResponse.json();
           setCredits(creditsData);
+        }
+
+        // Fetch subscription status
+        const subscriptionResponse = await fetch('/api/employers/subscription/status');
+        if (subscriptionResponse.ok) {
+          const subscriptionData = await subscriptionResponse.json();
+          setHasActiveSubscription(subscriptionData.hasActiveSubscription || false);
         }
 
       } catch (error) {
@@ -493,13 +503,23 @@ function DashboardContent() {
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => router.push('/employers/credits/checkout?package=professional&quantity=1')}
-                className="flex items-center rounded-lg bg-[#2d4a3e] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1d3a2e]"
-              >
-                <CreditCard className="mr-1 h-4 w-4" />
-                {credits.jobPost > 0 ? 'Add More' : 'Add Credits'}
-              </button>
+              {hasActiveSubscription ? (
+                <button
+                  onClick={() => setShowAddCreditsModal(true)}
+                  className="flex items-center rounded-lg bg-[#2d4a3e] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1d3a2e]"
+                >
+                  <CreditCard className="mr-1 h-4 w-4" />
+                  {credits.jobPost > 0 ? 'Add More' : 'Add Credits'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowBillingModal(true)}
+                  className="flex items-center rounded-lg bg-[#ff6b35] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#e55a2b]"
+                >
+                  <CreditCard className="mr-1 h-4 w-4" />
+                  Get Subscription
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -754,6 +774,21 @@ function DashboardContent() {
             onClose={() => setShowJobPostingCheckout(false)}
             onSuccess={handleJobPostingCheckoutSuccess}
             userCredits={credits}
+          />
+        </Suspense>
+      )}
+
+      {/* Add Credits Modal */}
+      {showAddCreditsModal && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"><Skeleton className="h-96 w-96 rounded-lg" /></div>}>
+          <AddCreditsModal
+            isOpen={showAddCreditsModal}
+            onClose={() => setShowAddCreditsModal(false)}
+            onSuccess={() => {
+              setShowAddCreditsModal(false);
+              // Refresh credits data
+              window.location.reload();
+            }}
           />
         </Suspense>
       )}
