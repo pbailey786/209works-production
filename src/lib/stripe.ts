@@ -76,11 +76,11 @@ export const JOB_POSTING_CONFIG = {
   tiers: {
     starter: {
       name: 'Starter Tier',
-      price: 50,
+      price: 89,
       stripePriceId: process.env.STRIPE_PRICE_STARTER,
       features: {
-        jobPosts: 2,
-        duration: 30, // days
+        jobPosts: 3,
+        duration: 60, // days
         aiOptimization: false,
         analytics: 'basic',
         support: 'email',
@@ -88,11 +88,11 @@ export const JOB_POSTING_CONFIG = {
     },
     standard: {
       name: 'Standard Tier',
-      price: 99,
-      stripePriceId: process.env.STRIPE_PRICE_STANDARD,
+      price: 179,
+      stripePriceId: process.env.STRIPE_PRICE_STANDARD || 'price_dynamic_standard',
       features: {
-        jobPosts: 5,
-        duration: 30,
+        jobPosts: 6,
+        duration: 60,
         aiOptimization: true,
         analytics: 'advanced',
         support: 'priority',
@@ -100,11 +100,11 @@ export const JOB_POSTING_CONFIG = {
     },
     pro: {
       name: 'Pro Tier',
-      price: 200,
-      stripePriceId: process.env.STRIPE_PRICE_PRO,
+      price: 349,
+      stripePriceId: process.env.STRIPE_PRICE_PRO || 'price_dynamic_pro',
       features: {
-        jobPosts: 10,
-        duration: 30, // days - standardized to 30 days
+        jobPosts: 12,
+        duration: 60, // days - standardized to 60 days
         aiOptimization: true,
         analytics: 'premium',
         support: 'phone',
@@ -116,19 +116,19 @@ export const JOB_POSTING_CONFIG = {
     featuredPost: {
       name: 'Featured Post',
       price: 49,
-      stripePriceId: process.env.STRIPE_PRICE_FEATURED,
+      stripePriceId: process.env.STRIPE_PRICE_FEATURED || 'price_dynamic_featured',
       description: 'Highlight your job at the top of search results',
     },
     socialGraphic: {
       name: 'Social Post Graphic',
       price: 49,
-      stripePriceId: process.env.STRIPE_PRICE_GRAPHIC,
+      stripePriceId: process.env.STRIPE_PRICE_GRAPHIC || 'price_dynamic_graphic',
       description: 'Custom social media graphic for your job post',
     },
     featureAndSocialBundle: {
       name: 'Feature and Social Bundle',
       price: 85,
-      stripePriceId: process.env.STRIPE_PRICE_BOOST_PACK,
+      stripePriceId: process.env.STRIPE_PRICE_BOOST_PACK || 'price_dynamic_boost_pack',
       description: 'Featured post + social graphic (save $13)',
       includes: ['featuredPost', 'socialGraphic'],
     },
@@ -138,14 +138,14 @@ export const JOB_POSTING_CONFIG = {
     singleCredit: {
       name: '1 Job Posting Credit',
       price: 59,
-      stripePriceId: process.env.STRIPE_PRICE_CREDIT_1,
+      stripePriceId: process.env.STRIPE_PRICE_CREDIT_1 || 'price_dynamic_credit_1',
       credits: 1,
       description: 'Perfect for reposting or one additional job',
     },
     fiveCredits: {
       name: '5 Job Posting Credits',
       price: 249, // $49.80 per credit (16% discount)
-      stripePriceId: process.env.STRIPE_PRICE_CREDIT_5,
+      stripePriceId: process.env.STRIPE_PRICE_CREDIT_5 || 'price_dynamic_credit_5',
       credits: 5,
       description: 'Best value for multiple job postings',
       savings: 46, // $295 - $249

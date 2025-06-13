@@ -247,34 +247,158 @@ export async function POST(req: NextRequest) {
     console.log('💰 Total amount calculated:', totalAmount);
     console.log('📋 Line items:', lineItems);
 
-    // Create checkout session
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      payment_method_types: ['card'],
-      billing_address_collection: 'required',
-      line_items: lineItems,
-      mode: checkoutMode, // Always 'payment' for one-time job posting purchases
-      allow_promotion_codes: true,
-      success_url: validatedData.successUrl || 
-        `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: validatedData.cancelUrl || 
-        `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_cancelled=true`,
-      metadata: {
-        userId: user.id,
-        tier: validatedData.tier?.toUpperCase() || '',
-        creditPack: validatedData.creditPack?.toUpperCase() || '',
-        addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
-        type: 'job_posting_purchase',
-        totalAmount: totalAmount.toString(),
-        jobCredits: jobCredits.toString(),
-        featuredCredits: selectedAddons.filter(a =>
-          a.key === 'featuredPost' || a.key === 'featureAndSocialBundle'
-        ).length.toString(),
-        socialCredits: selectedAddons.filter(a =>
-          a.key === 'socialGraphic' || a.key === 'featureAndSocialBundle'
-        ).length.toString(),
-      },
-    });
+    // Create checkout session with error handling for price type mismatch
+    let checkoutSession;
+    try {
+      checkoutSession = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        billing_address_collection: 'required',
+        line_items: lineItems,
+        mode: checkoutMode, // Always 'payment' for one-time job posting purchases
+        allow_promotion_codes: true,
+        success_url: validatedData.successUrl ||
+          `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: validatedData.cancelUrl ||
+          `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_cancelled=true`,
+        metadata: {
+          userId: user.id,
+          tier: validatedData.tier?.toUpperCase() || '',
+          creditPack: validatedData.creditPack?.toUpperCase() || '',
+          addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
+          type: 'job_posting_purchase',
+          totalAmount: totalAmount.toString(),
+          jobCredits: jobCredits.toString(),
+          featuredCredits: selectedAddons.filter(a =>
+            a.key === 'featuredPost' || a.key === 'featureAndSocialBundle'
+          ).length.toString(),
+          socialCredits: selectedAddons.filter(a =>
+            a.key === 'socialGraphic' || a.key === 'featureAndSocialBundle'
+          ).length.toString(),
+        },
+      });
+    } catch (stripeError: any) {
+      console.error('❌ Stripe checkout error:', stripeError);
+
+      // Check if the error is due to using recurring price in payment mode
+      if (stripeError.message?.includes('recurring price') || stripeError.message?.includes('subscription mode')) {
+        console.log('🔄 Detected recurring price error, creating dynamic one-time prices...');
+
+        // Create dynamic one-time prices for the items
+        const dynamicLineItems = [];
+
+        for (const item of lineItems) {
+          const originalPriceId = item.price;
+
+          // Get the price details to create a one-time equivalent
+          let priceAmount = 0;
+          let productName = '';
+
+          // Check if this is a dynamic price ID (fallback)
+          if (originalPriceId?.startsWith('price_dynamic_')) {
+            if (tierConfig && tierConfig.stripePriceId === originalPriceId) {
+              priceAmount = tierConfig.price * 100; // Convert to cents
+              productName = tierConfig.name;
+            } else if (creditPackConfig && creditPackConfig.stripePriceId === originalPriceId) {
+              priceAmount = creditPackConfig.price * 100;
+              productName = creditPackConfig.name;
+            } else {
+              // Find in addons
+              const addon = Object.values(JOB_POSTING_CONFIG.addons).find(a => a.stripePriceId === originalPriceId);
+              if (addon) {
+                priceAmount = addon.price * 100;
+                productName = addon.name;
+              }
+            }
+          } else {
+            // Try to get price from Stripe and convert to one-time
+            try {
+              const stripePrice = await stripe.prices.retrieve(originalPriceId);
+              priceAmount = stripePrice.unit_amount || 0;
+
+              if (stripePrice.product && typeof stripePrice.product === 'string') {
+                const product = await stripe.products.retrieve(stripePrice.product);
+                productName = product.name;
+              } else if (typeof stripePrice.product === 'object' && stripePrice.product?.name) {
+                productName = stripePrice.product.name;
+              }
+            } catch (priceError) {
+              console.error('❌ Error retrieving price from Stripe:', priceError);
+              // Fallback to config values
+              if (tierConfig && tierConfig.stripePriceId === originalPriceId) {
+                priceAmount = tierConfig.price * 100;
+                productName = tierConfig.name;
+              } else if (creditPackConfig && creditPackConfig.stripePriceId === originalPriceId) {
+                priceAmount = creditPackConfig.price * 100;
+                productName = creditPackConfig.name;
+              } else {
+                const addon = Object.values(JOB_POSTING_CONFIG.addons).find(a => a.stripePriceId === originalPriceId);
+                if (addon) {
+                  priceAmount = addon.price * 100;
+                  productName = addon.name;
+                }
+              }
+            }
+          }
+
+          if (priceAmount > 0 && productName) {
+            // Create a dynamic one-time price
+            const dynamicPrice = await stripe.prices.create({
+              unit_amount: priceAmount,
+              currency: 'usd',
+              product_data: {
+                name: productName,
+                description: `One-time payment for ${productName}`,
+              },
+            });
+
+            dynamicLineItems.push({
+              price: dynamicPrice.id,
+              quantity: item.quantity,
+            });
+
+            console.log(`✅ Created dynamic price for ${productName}: $${priceAmount / 100}`);
+          } else {
+            console.error(`❌ Could not determine price for item: ${originalPriceId}`);
+          }
+        }
+
+        // Retry checkout with dynamic prices
+        checkoutSession = await stripe.checkout.sessions.create({
+          customer: customerId,
+          payment_method_types: ['card'],
+          billing_address_collection: 'required',
+          line_items: dynamicLineItems,
+          mode: checkoutMode,
+          allow_promotion_codes: true,
+          success_url: validatedData.successUrl ||
+            `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: validatedData.cancelUrl ||
+            `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_cancelled=true`,
+          metadata: {
+            userId: user.id,
+            tier: validatedData.tier?.toUpperCase() || '',
+            creditPack: validatedData.creditPack?.toUpperCase() || '',
+            addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
+            type: 'job_posting_purchase',
+            totalAmount: totalAmount.toString(),
+            jobCredits: jobCredits.toString(),
+            featuredCredits: selectedAddons.filter(a =>
+              a.key === 'featuredPost' || a.key === 'featureAndSocialBundle'
+            ).length.toString(),
+            socialCredits: selectedAddons.filter(a =>
+              a.key === 'socialGraphic' || a.key === 'featureAndSocialBundle'
+            ).length.toString(),
+            dynamicPrices: 'true',
+          },
+        });
+
+        console.log('✅ Successfully created checkout with dynamic one-time prices');
+      } else {
+        // Re-throw other Stripe errors
+        throw stripeError;
+      }
+    }
 
     // Create pending purchase record
     await prisma.jobPostingPurchase.create({

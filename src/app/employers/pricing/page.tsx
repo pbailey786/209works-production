@@ -9,62 +9,68 @@ const employerPlans = [
   {
     id: 'starter',
     name: 'Starter Tier',
-    price: 50,
-    description: 'Perfect for small businesses hiring occasionally',
+    price: 89,
+    description: 'Great for testing the waters or filling a role fast.',
     features: [
-      '2 Job Posting Credits',
+      '3 Job Posting Credits',
       'Basic Analytics Dashboard',
       'Applicant Management',
-      '209 Area Targeting',
+      'Local 209 Area Targeting',
       'Email Support',
-      '30-day Credit Duration',
       'Bulk Upload Access',
     ],
-    billingNote: '💳 One-time payment • Credits expire in 30 days',
+    billingNote: '💳 One-time payment • Credits valid for 60 days',
+    proTip: 'Great for testing the waters or filling a role fast.',
   },
   {
     id: 'standard',
     name: 'Standard Tier',
-    price: 99,
-    description: 'Ideal for growing companies with multiple positions',
+    price: 179,
+    description: 'More credits, better visibility, and powerful tools to help you hire faster.',
     features: [
-      '5 Job Posting Credits',
+      '6 Job Posting Credits',
       'Advanced Analytics & Reports',
-      'Premium Job Placement',
-      'Resume Database Access',
-      'Applicant Messaging',
+      'Premium Job Placement (Featured Boost)',
       'Priority Support',
       'Company Profile Page',
-      '30-day Credit Duration',
       'Bulk Upload Access',
       'AI Job Optimization*',
     ],
     popular: true,
     badge: 'Most Popular',
-    billingNote: '💳 One-time payment • Job credits expire in 30 days',
+    billingNote: '💳 One-time payment • Credits valid for 60 days',
     aiTooltip: 'Our AI suggests improvements to your job titles, descriptions, and categories to improve visibility.',
+    whyPopular: 'More credits, better visibility, and powerful tools to help you hire faster.',
   },
   {
     id: 'pro',
     name: 'Pro Tier',
-    price: 200,
-    description: 'For companies with high-volume hiring needs',
+    price: 349,
+    description: 'For serious hiring teams: Built for scale, speed, and deeper insights.',
     features: [
-      '10 Job Posting Credits',
+      '12 Job Posting Credits',
       'Everything in Standard',
-      'Team Management Tools',
-      'Custom Analytics Dashboard',
-      'Bulk Job Management',
-      'Priority Phone Support',
       'Advanced Reporting',
-      '30-day Credit Duration',
       'Premium AI Features*',
-      'Dedicated Account Manager',
     ],
     badge: 'Most Value',
-    billingNote: '💳 One-time payment • Job credits expire in 30 days',
+    billingNote: '💳 One-time payment • Credits valid for 60 days',
     aiTooltip: 'Advanced AI features including bulk optimization, smart categorization, and performance insights.',
     highlight: true, // Add visual emphasis
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise Tier',
+    price: null,
+    description: 'Let\'s talk: Get a tailored solution that scales with your team.',
+    features: [
+      'Flexible Credit Bundles — tailored to your hiring volume',
+      'Dedicated Account Manager',
+      'Custom Billing Options',
+    ],
+    badge: 'Contact Us',
+    billingNote: 'Contact Us for Pricing',
+    isEnterprise: true,
   },
 ];
 
@@ -142,7 +148,7 @@ export default function EmployerPricingPage() {
             <p className="text-xl text-gray-600">Choose the credit package that fits your hiring needs</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {employerPlans.map((plan) => (
               <div
                 key={plan.id}
@@ -151,15 +157,21 @@ export default function EmployerPricingPage() {
                     ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-green-50 shadow-xl ring-2 ring-orange-200'
                     : plan.popular
                     ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-green-50 shadow-xl'
+                    : plan.isEnterprise
+                    ? 'border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-gray-400 hover:shadow-lg'
                     : 'border-gray-200 bg-white hover:border-orange-300 hover:shadow-lg'
                 } transition-all`}
               >
-                {(plan.popular || plan.highlight) && (
+                {(plan.popular || plan.highlight || plan.badge) && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
                     <span className={`${
                       plan.highlight
                         ? 'bg-gradient-to-r from-yellow-500 to-orange-600'
-                        : 'bg-gradient-to-r from-orange-600 to-green-600'
+                        : plan.popular
+                        ? 'bg-gradient-to-r from-orange-600 to-green-600'
+                        : plan.isEnterprise
+                        ? 'bg-gradient-to-r from-gray-600 to-gray-800'
+                        : 'bg-gradient-to-r from-blue-600 to-blue-800'
                     } text-white px-4 py-1 rounded-full text-sm font-medium`}>
                       {plan.badge}
                     </span>
@@ -171,12 +183,27 @@ export default function EmployerPricingPage() {
                   <p className="text-gray-600 mb-6">{plan.description}</p>
 
                   <div className="mb-4">
-                    <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
-                    <span className="text-gray-600"> one-time</span>
+                    {plan.price ? (
+                      <>
+                        <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+                        <span className="text-gray-600"> one-time</span>
+                      </>
+                    ) : (
+                      <span className="text-2xl font-bold text-gray-900">Contact Us for Pricing</span>
+                    )}
                   </div>
 
                   {/* Billing note */}
                   <p className="text-xs text-gray-500 mb-6">{plan.billingNote}</p>
+
+                  {/* Pro tip or why popular */}
+                  {(plan.proTip || plan.whyPopular) && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+                      <p className="text-xs text-blue-700">
+                        <strong>Pro Tip:</strong> {plan.proTip || plan.whyPopular}
+                      </p>
+                    </div>
+                  )}
 
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((feature, index) => {
@@ -200,16 +227,25 @@ export default function EmployerPricingPage() {
                     })}
                   </ul>
 
-                  <button
-                    onClick={() => handlePlanSelect(plan.id, 'monthly')}
-                    className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
-                      plan.popular
-                        ? 'bg-gradient-to-r from-orange-600 to-green-600 text-white hover:from-orange-700 hover:to-green-700'
-                        : 'bg-gray-900 text-white hover:bg-gray-800'
-                    }`}
-                  >
-                    Get Started
-                  </button>
+                  {plan.isEnterprise ? (
+                    <Link
+                      href="/contact"
+                      className="w-full py-3 px-6 rounded-lg font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 inline-block text-center"
+                    >
+                      Contact Sales
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => handlePlanSelect(plan.id, 'monthly')}
+                      className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
+                        plan.popular
+                          ? 'bg-gradient-to-r from-orange-600 to-green-600 text-white hover:from-orange-700 hover:to-green-700'
+                          : 'bg-gray-900 text-white hover:bg-gray-800'
+                      }`}
+                    >
+                      Get Started
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -239,7 +275,7 @@ export default function EmployerPricingPage() {
                 Can I purchase additional credits?
               </h3>
               <p className="text-gray-600">
-                Yes! You can purchase additional credit packages anytime. Each package gives you the specified number of job posting credits that expire after 30 days.
+                Yes! You can purchase additional credit packages anytime. Each package gives you the specified number of job posting credits that are valid for 60 days.
               </p>
             </div>
             <div>
@@ -247,7 +283,7 @@ export default function EmployerPricingPage() {
                 How do job credits work?
               </h3>
               <p className="text-gray-600">
-                Each job posting uses one credit. Unused credits expire after 30 days. You can repost expired jobs anytime with a new credit.
+                Each action costs 1 credit — whether you're posting a job, featuring it for top placement, or promoting it on social media. Unused credits are valid for 60 days and can roll over for up to 60 days total.
               </p>
             </div>
             <div>
