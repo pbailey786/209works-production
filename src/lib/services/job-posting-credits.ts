@@ -69,7 +69,7 @@ export class JobPostingCreditsService {
     try {
       // Normalize input - if it's a number, treat it as universal credits needed
       const creditsNeeded = typeof creditsToUse === 'number' ? creditsToUse :
-        Object.values(creditsToUse).reduce((sum, count) => sum + (count || 0), 0);
+        Object.values(creditsToUse).reduce((sum: number, count) => sum + (count || 0), 0);
 
       if (creditsNeeded <= 0) {
         return { success: true };
