@@ -96,6 +96,8 @@ function DashboardContent() {
   const [jobs, setJobs] = useState<JobListing[]>([]);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [credits, setCredits] = useState({
+    universal: 0,
+    total: 0,
     jobPost: 0,
     featuredPost: 0,
     socialGraphic: 0,
