@@ -117,20 +117,10 @@ export const SUBSCRIPTION_TIERS_CONFIG = {
     },
     description: 'For high-volume hiring',
   },
-    pro: {
-      name: 'Pro Tier',
-      price: 349,
-      stripePriceId: process.env.STRIPE_PRICE_PRO || 'price_dynamic_pro',
-      features: {
-        jobPosts: 12,
-        duration: 60, // days - standardized to 60 days
-        aiOptimization: true,
-        analytics: 'premium',
-        support: 'phone',
-        featuredPosts: 2,
-      },
-    },
-  },
+};
+
+// Legacy job posting configuration (for backward compatibility)
+export const JOB_POSTING_CONFIG = {
   addons: {
     featuredPost: {
       name: 'Featured Post',
