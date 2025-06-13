@@ -1,11 +1,14 @@
 import { prisma } from '@/lib/database/prisma';
 
-export type CreditType = 'job_post' | 'featured_post' | 'social_graphic';
+export type CreditType = 'universal'; // Simplified to single credit type
 
 export interface UserCredits {
-  jobPost: number;
-  featuredPost: number;
-  socialGraphic: number;
+  universal: number; // Single unified credit pool
+  total: number; // Total available credits
+  // Legacy fields for backward compatibility (will be removed)
+  jobPost?: number;
+  featuredPost?: number;
+  socialGraphic?: number;
 }
 
 export class JobPostingCreditsService {
@@ -13,8 +16,8 @@ export class JobPostingCreditsService {
    * Get available credits for a user
    */
   static async getUserCredits(userId: string): Promise<UserCredits> {
-    const credits = await prisma.jobPostingCredit.groupBy({
-      by: ['type'],
+    // Get all available credits (both new universal and legacy types)
+    const allCredits = await prisma.jobPostingCredit.findMany({
       where: {
         userId,
         isUsed: false,
@@ -22,122 +25,95 @@ export class JobPostingCreditsService {
           { expiresAt: null },
           { expiresAt: { gt: new Date() } }
         ]
-      },
-      _count: {
-        id: true
       }
     });
 
-    const creditMap: UserCredits = {
-      jobPost: 0,
-      featuredPost: 0,
-      socialGraphic: 0,
+    // Count universal credits
+    const universalCredits = allCredits.filter(c => c.type === 'universal').length;
+
+    // Count legacy credits (for backward compatibility)
+    const jobPostCredits = allCredits.filter(c => c.type === 'job_post').length;
+    const featuredPostCredits = allCredits.filter(c => c.type === 'featured_post').length;
+    const socialGraphicCredits = allCredits.filter(c => c.type === 'social_graphic').length;
+
+    // Total credits = universal + all legacy credits (since they can all be used for any purpose now)
+    const totalCredits = universalCredits + jobPostCredits + featuredPostCredits + socialGraphicCredits;
+
+    return {
+      universal: universalCredits,
+      total: totalCredits,
+      // Legacy fields for backward compatibility
+      jobPost: jobPostCredits,
+      featuredPost: featuredPostCredits,
+      socialGraphic: socialGraphicCredits,
     };
-
-    credits.forEach(credit => {
-      switch (credit.type) {
-        case 'job_post':
-          creditMap.jobPost = credit._count.id;
-          break;
-        case 'featured_post':
-          creditMap.featuredPost = credit._count.id;
-          break;
-        case 'social_graphic':
-          creditMap.socialGraphic = credit._count.id;
-          break;
-      }
-    });
-
-    return creditMap;
   }
 
   /**
-   * Check if user has enough credits of a specific type
+   * Check if user has enough credits (unified system)
    */
-  static async hasCredits(userId: string, type: CreditType, count: number = 1): Promise<boolean> {
-    const availableCredits = await prisma.jobPostingCredit.count({
-      where: {
-        userId,
-        type,
-        isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      }
-    });
-
-    return availableCredits >= count;
+  static async hasCredits(userId: string, type: CreditType | string, count: number = 1): Promise<boolean> {
+    // In the unified system, any credit can be used for any purpose
+    const userCredits = await this.getUserCredits(userId);
+    return userCredits.total >= count;
   }
 
   /**
-   * Use credits for a job posting
+   * Use credits (unified system - any credit can be used for any purpose)
    */
   static async useCredits(
-    userId: string, 
-    jobId: string, 
-    creditsToUse: Partial<Record<CreditType, number>>
+    userId: string,
+    jobId: string,
+    creditsToUse: Partial<Record<string, number>> | number
   ): Promise<{ success: boolean; error?: string }> {
     try {
+      // Normalize input - if it's a number, treat it as universal credits needed
+      const creditsNeeded = typeof creditsToUse === 'number' ? creditsToUse :
+        Object.values(creditsToUse).reduce((sum, count) => sum + (count || 0), 0);
+
+      if (creditsNeeded <= 0) {
+        return { success: true };
+      }
+
       // Start a transaction
       return await prisma.$transaction(async (tx) => {
-        // Check if user has enough credits
-        for (const [type, count] of Object.entries(creditsToUse)) {
-          if (count && count > 0) {
-            const availableCredits = await tx.jobPostingCredit.count({
-              where: {
-                userId,
-                type: type as CreditType,
-                isUsed: false,
-                OR: [
-                  { expiresAt: null },
-                  { expiresAt: { gt: new Date() } }
-                ]
-              }
-            });
+        // Get all available credits (any type can be used)
+        const availableCredits = await tx.jobPostingCredit.findMany({
+          where: {
+            userId,
+            isUsed: false,
+            OR: [
+              { expiresAt: null },
+              { expiresAt: { gt: new Date() } }
+            ]
+          },
+          orderBy: [
+            { expiresAt: 'asc' }, // Use expiring credits first
+            { createdAt: 'asc' }  // Then oldest credits
+          ]
+        });
 
-            if (availableCredits < count) {
-              return {
-                success: false,
-                error: `Insufficient ${type.replace('_', ' ')} credits. Available: ${availableCredits}, Required: ${count}`
-              };
-            }
-          }
+        if (availableCredits.length < creditsNeeded) {
+          return {
+            success: false,
+            error: `Insufficient credits. Available: ${availableCredits.length}, Required: ${creditsNeeded}`
+          };
         }
 
-        // Use the credits (mark oldest first)
-        for (const [type, count] of Object.entries(creditsToUse)) {
-          if (count && count > 0) {
-            const creditsToMark = await tx.jobPostingCredit.findMany({
-              where: {
-                userId,
-                type: type as CreditType,
-                isUsed: false,
-                OR: [
-                  { expiresAt: null },
-                  { expiresAt: { gt: new Date() } }
-                ]
-              },
-              orderBy: [
-                { expiresAt: 'asc' }, // Use expiring credits first
-                { createdAt: 'asc' }  // Then oldest credits
-              ],
-              take: count
-            });
+        // Use the required number of credits (oldest first)
+        const creditsToMark = availableCredits.slice(0, creditsNeeded);
 
-            // Mark credits as used
-            await tx.jobPostingCredit.updateMany({
-              where: {
-                id: { in: creditsToMark.map(c => c.id) }
-              },
-              data: {
-                isUsed: true,
-                usedAt: new Date(),
-                usedForJobId: jobId
-              }
-            });
+        // Mark credits as used
+        await tx.jobPostingCredit.updateMany({
+          where: {
+            id: { in: creditsToMark.map(c => c.id) }
+          },
+          data: {
+            isUsed: true,
+            usedAt: new Date(),
+            usedForJobId: jobId
           }
-        }
+        });
 
         return { success: true };
       });
@@ -198,31 +174,38 @@ export class JobPostingCreditsService {
   }
 
   /**
-   * Check if user can post a job (has job_post credits)
+   * Check if user can post a job (has any credits)
    */
   static async canPostJob(userId: string): Promise<boolean> {
-    return await this.hasCredits(userId, 'job_post', 1);
+    return await this.hasCredits(userId, 'universal', 1);
   }
 
   /**
-   * Use a job posting credit
+   * Use a credit for any purpose (unified system)
    */
   static async useJobPostCredit(userId: string, jobId: string): Promise<{ success: boolean; error?: string }> {
-    return await this.useCredits(userId, jobId, { job_post: 1 });
+    return await this.useCredits(userId, jobId, 1);
   }
 
   /**
-   * Add featured post to a job (use featured_post credit)
+   * Use a credit for featured post (unified system)
    */
   static async useFeaturedPostCredit(userId: string, jobId: string): Promise<{ success: boolean; error?: string }> {
-    return await this.useCredits(userId, jobId, { featured_post: 1 });
+    return await this.useCredits(userId, jobId, 1);
   }
 
   /**
-   * Add social graphic to a job (use social_graphic credit)
+   * Use a credit for social graphic (unified system)
    */
   static async useSocialGraphicCredit(userId: string, jobId: string): Promise<{ success: boolean; error?: string }> {
-    return await this.useCredits(userId, jobId, { social_graphic: 1 });
+    return await this.useCredits(userId, jobId, 1);
+  }
+
+  /**
+   * Use multiple credits for any combination of features
+   */
+  static async useMultipleCredits(userId: string, jobId: string, count: number): Promise<{ success: boolean; error?: string }> {
+    return await this.useCredits(userId, jobId, count);
   }
 
   /**

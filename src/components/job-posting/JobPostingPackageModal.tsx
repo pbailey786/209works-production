@@ -32,7 +32,7 @@ const packageTiers: PackageTier[] = [
   {
     id: 'starter',
     name: 'Starter Tier',
-    price: 50,
+    price: 0, // Price hidden from UI
     jobPosts: 2,
     duration: 30,
     features: ['30 days duration'],
@@ -42,7 +42,7 @@ const packageTiers: PackageTier[] = [
   {
     id: 'standard',
     name: 'Standard Tier',
-    price: 99,
+    price: 0, // Price hidden from UI
     jobPosts: 5,
     duration: 30,
     features: ['30 days duration', 'AI optimization'],
@@ -53,7 +53,7 @@ const packageTiers: PackageTier[] = [
   {
     id: 'pro',
     name: 'Pro Tier',
-    price: 200,
+    price: 0, // Price hidden from UI
     jobPosts: 10,
     duration: 30,
     features: ['30 days duration', 'AI optimization', '2 featured posts'],
@@ -67,14 +67,14 @@ const addOns: AddOn[] = [
     id: 'featured',
     name: 'Featured Post',
     description: 'Highlight your job at the top of search results',
-    price: 49,
+    price: 0, // Price hidden from UI
     icon: <Star className="h-4 w-4" />
   },
   {
     id: 'social',
     name: 'Social Post Graphic',
     description: 'Custom social media graphic for your job post',
-    price: 49,
+    price: 0, // Price hidden from UI
     icon: <TrendingUp className="h-4 w-4" />
   }
 ];
@@ -197,7 +197,6 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
                       {tier.icon}
                       <span className="ml-2 font-semibold text-gray-900">{tier.name}</span>
                     </div>
-                    <div className="text-3xl font-bold text-gray-900 mb-2">${tier.price}</div>
                     <div className="text-sm text-gray-600 mb-3">{tier.jobPosts} job posts</div>
                     <ul className="text-sm text-gray-600 space-y-1 text-left">
                       {tier.features.map((feature, index) => (
@@ -242,7 +241,6 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
                         <p className="text-sm text-gray-600">{addon.description}</p>
                       </div>
                     </div>
-                    <div className="text-lg font-bold text-gray-900">${addon.price}</div>
                   </div>
                 </div>
               ))}
@@ -253,10 +251,9 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-medium text-green-800">Feature and Social Bundle</h4>
-                  <p className="text-sm text-green-600">Featured post + social graphic (save $13)</p>
+                  <p className="text-sm text-green-600">Featured post + social graphic (best value)</p>
                   <p className="text-xs text-green-600 mt-1">Includes: Featured Post, Social Post Graphic</p>
                 </div>
-                <div className="text-lg font-bold text-green-800">$85</div>
               </div>
             </div>
           </div>
@@ -273,26 +270,26 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-700">{selectedPackage?.name}</span>
-                <span className="font-medium">${selectedPackage?.price}</span>
+                <span className="font-medium">✓ Selected</span>
               </div>
               {selectedAddOnItems.map((addon) => (
                 <div key={addon.id} className="flex justify-between items-center mb-2">
                   <span className="text-gray-700">{addon.name}</span>
-                  <span className="font-medium">${addon.price}</span>
+                  <span className="font-medium">✓ Selected</span>
                 </div>
               ))}
-              {bundleDiscount > 0 && (
+              {selectedAddOns.length === 2 && (
                 <div className="flex justify-between items-center mb-2 text-green-600">
-                  <span>Bundle Discount</span>
-                  <span>-${bundleDiscount}</span>
+                  <span>Bundle Selected</span>
+                  <span>✓ Best Value</span>
                 </div>
               )}
               <div className="border-t border-gray-300 pt-2 mt-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">Total</span>
-                  <span className="text-2xl font-bold text-gray-900">${total}</span>
+                  <span className="text-lg font-bold text-gray-900">Package Ready</span>
+                  <span className="text-lg font-bold text-green-600">✓ Configured</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">One-time payment • Credits expire in 30 days</p>
+                <p className="text-sm text-gray-500 mt-1">Proceed to complete your selection • Credits expire in 30 days</p>
               </div>
             </div>
 
@@ -307,7 +304,7 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
                   Processing...
                 </>
               ) : (
-                `Proceed to Payment - $${total}`
+                'Continue with Selected Package'
               )}
             </button>
             <p className="text-center text-sm text-gray-500 mt-2">

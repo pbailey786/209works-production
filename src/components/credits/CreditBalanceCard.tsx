@@ -6,26 +6,25 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  CreditCard, 
-  Sparkles, 
-  TrendingUp, 
-  Clock, 
+import {
+  CreditCard,
+  Sparkles,
+  TrendingUp,
+  Clock,
   Plus,
   History,
-  Calendar,
-  CheckCircle,
-  XCircle,
   AlertTriangle
 } from 'lucide-react';
 
 interface CreditInfo {
-  jobPost: number;
-  featuredPost: number;
-  socialGraphic: number;
+  universal?: number;
   total: number;
   expiringCount: number;
   expiringDate?: string;
+  // Legacy fields for backward compatibility
+  jobPost?: number;
+  featuredPost?: number;
+  socialGraphic?: number;
 }
 
 interface CreditTransaction {
@@ -96,12 +95,14 @@ export default function CreditBalanceCard({
 
   const getCreditTypeLabel = (type: string) => {
     switch (type) {
+      case 'universal':
+        return 'Universal Credit';
       case 'job_post':
-        return 'Job Post';
+        return 'Job Post (Legacy)';
       case 'featured_post':
-        return 'Featured';
+        return 'Featured (Legacy)';
       case 'social_graphic':
-        return 'Social';
+        return 'Social (Legacy)';
       default:
         return type;
     }
@@ -178,21 +179,36 @@ export default function CreditBalanceCard({
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
-            {/* Credit Breakdown */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{credits.jobPost}</div>
-                <div className="text-sm text-gray-600">Job Posts</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{credits.featuredPost}</div>
-                <div className="text-sm text-gray-600">Featured</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{credits.socialGraphic}</div>
-                <div className="text-sm text-gray-600">Social</div>
-              </div>
+            {/* Unified Credit Display */}
+            <div className="text-center p-6 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
+              <div className="text-4xl font-bold text-[#2d4a3e] mb-2">{credits.total}</div>
+              <div className="text-lg font-medium text-gray-700 mb-1">Universal Credits</div>
+              <div className="text-sm text-gray-600">Use for any feature: job posts, featured listings, social graphics, and more</div>
             </div>
+
+            {/* Legacy Credit Breakdown (if any exist) */}
+            {(credits.jobPost || credits.featuredPost || credits.socialGraphic) && (
+              <div className="border-t pt-4">
+                <div className="text-sm font-medium text-gray-700 mb-3">Legacy Credits (being migrated)</div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-blue-600">{credits.jobPost || 0}</div>
+                    <div className="text-xs text-gray-600">Job Posts</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-purple-600">{credits.featuredPost || 0}</div>
+                    <div className="text-xs text-gray-600">Featured</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-green-600">{credits.socialGraphic || 0}</div>
+                    <div className="text-xs text-gray-600">Social</div>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 mt-2 text-center">
+                  These legacy credits can be used for any feature
+                </div>
+              </div>
+            )}
 
             {/* Expiration Warning */}
             {credits.expiringCount > 0 && credits.expiringDate && (

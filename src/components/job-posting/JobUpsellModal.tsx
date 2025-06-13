@@ -53,7 +53,7 @@ export default function JobUpsellModal({
     {
       id: 'social-media',
       name: 'Social Media Shoutout',
-      price: 29,
+      price: 0, // Price hidden from UI
       description:
         'Promote your job across our Instagram and X (Twitter) channels',
       features: [
@@ -69,7 +69,7 @@ export default function JobUpsellModal({
     {
       id: 'placement-bump',
       name: 'On-Site Placement Bump',
-      price: 29,
+      price: 0, // Price hidden from UI
       description: 'JobsGPT actively promotes your position to chat users',
       features: [
         'AI chatbot recommends your job to relevant users',
@@ -84,9 +84,9 @@ export default function JobUpsellModal({
     {
       id: 'bundle',
       name: 'Complete Promotion Bundle',
-      price: 50,
-      originalPrice: 58,
-      description: 'Get both services and save $8!',
+      price: 0, // Price hidden from UI
+      originalPrice: 0, // Price hidden from UI
+      description: 'Get both services - best value!',
       features: [
         'Everything from Social Media Shoutout',
         'Everything from On-Site Placement Bump',
@@ -94,7 +94,7 @@ export default function JobUpsellModal({
         'Extended promotion duration',
       ],
       icon: <Package className="h-6 w-6" />,
-      badge: 'SAVE $8',
+      badge: 'BEST VALUE',
       disabled: currentUpsells.upsellBundle,
     },
   ];
@@ -289,21 +289,11 @@ export default function JobUpsellModal({
                           {option.icon}
                         </div>
 
-                        {/* Title and Price */}
+                        {/* Title */}
                         <div className="mb-3">
                           <h4 className="mb-1 text-lg font-semibold text-gray-900">
                             {option.name}
                           </h4>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-2xl font-bold text-gray-900">
-                              ${option.price}
-                            </span>
-                            {option.originalPrice && (
-                              <span className="text-lg text-gray-500 line-through">
-                                ${option.originalPrice}
-                              </span>
-                            )}
-                          </div>
                         </div>
 
                         {/* Description */}
@@ -328,16 +318,16 @@ export default function JobUpsellModal({
                   })}
                 </div>
 
-                {/* Total and Purchase */}
+                {/* Purchase */}
                 {selectedOptions.size > 0 && (
                   <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-green-50 p-6">
                     <div className="mb-4 flex items-center justify-between">
                       <div>
-                        <h4 className="text-lg font-semibold text-gray-900">
-                          Total: ${calculateTotal()}
+                        <h4 className="text-lg font-semibold text-green-600">
+                          Promotion Selected ✓
                         </h4>
                         <p className="text-sm text-gray-600">
-                          One-time payment for enhanced visibility
+                          Enhanced visibility package ready
                         </p>
                       </div>
                       <button
@@ -352,8 +342,8 @@ export default function JobUpsellModal({
                           </>
                         ) : (
                           <>
-                            <CreditCard className="mr-2 h-5 w-5" />
-                            Purchase Now
+                            <Sparkles className="mr-2 h-5 w-5" />
+                            Add Promotion
                           </>
                         )}
                       </button>

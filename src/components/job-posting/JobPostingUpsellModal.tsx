@@ -53,7 +53,7 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'social-media',
     name: 'Social Media Shoutout',
-    price: 49,
+    price: 0, // Price hidden from UI
     description: 'Promote your job across our Instagram and X (Twitter) channels',
     features: [
       'Custom branded graphics for your job post',
@@ -68,7 +68,7 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'placement-bump',
     name: 'On-Site Placement Bump',
-    price: 49,
+    price: 0, // Price hidden from UI
     description: 'JobsGPT actively promotes your job to chat users',
     features: [
       'AI prioritizes your job in chat recommendations',
@@ -84,9 +84,9 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'complete-bundle',
     name: 'Complete Promotion Bundle',
-    price: 85,
-    originalPrice: 98,
-    description: 'Both services together - save $13!',
+    price: 0, // Price hidden from UI
+    originalPrice: 0, // Price hidden from UI
+    description: 'Both services together - best value!',
     features: [
       'Everything from Social Media Shoutout',
       'Everything from On-Site Placement Bump',
@@ -241,16 +241,6 @@ export default function JobPostingUpsellModal({
                     </div>
                   </div>
                   <CardTitle className="text-lg">{option.name}</CardTitle>
-                  <div className="flex items-center justify-center space-x-2">
-                    <span className="text-2xl font-bold text-green-600">
-                      ${option.price}
-                    </span>
-                    {option.originalPrice && (
-                      <span className="text-sm text-gray-500 line-through">
-                        ${option.originalPrice}
-                      </span>
-                    )}
-                  </div>
                   <CardDescription className="text-sm">
                     {option.description}
                   </CardDescription>
@@ -287,16 +277,18 @@ export default function JobPostingUpsellModal({
           <div className="border-t pt-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-lg font-semibold">
-                  Total: <span className="text-green-600">${calculateTotal()}</span>
-                </p>
+                {selectedOptions.size > 0 && (
+                  <p className="text-lg font-semibold text-green-600">
+                    Promotion Selected ✓
+                  </p>
+                )}
                 {selectedOptions.size > 0 && (
                   <p className="text-sm text-gray-600">
-                    One-time payment • 30-day promotion period
+                    30-day promotion period
                   </p>
                 )}
               </div>
-              
+
               <div className="flex space-x-3">
                 <Button
                   variant="outline"
@@ -312,8 +304,8 @@ export default function JobPostingUpsellModal({
                 >
                   {selectedOptions.size > 0 ? (
                     <>
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Add Promotion (${calculateTotal()})
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Add Selected Promotion
                     </>
                   ) : (
                     <>
