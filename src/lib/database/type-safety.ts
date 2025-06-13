@@ -30,6 +30,13 @@ const JobCreateBaseSchema = z.object({
   source: z.string().min(1).max(100),
   url: z.string().url().max(500),
   postedAt: z.date(),
+
+  // Multi-area-code network fields
+  areaCodes: z.array(z.string().max(10)).min(1).max(5).default(['209']),
+  city: z.string().max(100).optional(),
+  targetCities: z.array(z.string().max(100)).max(10).default([]),
+  lat: z.number().min(-90).max(90).optional(),
+  lng: z.number().min(-180).max(180).optional(),
 });
 
 // Apply refine to create the full schema

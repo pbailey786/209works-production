@@ -51,6 +51,13 @@ export interface JobWithOptionalFields extends BaseJob {
   applicationDeadline?: string;
   applicantsCount?: number;
   viewsCount?: number;
+
+  // Multi-area-code network fields
+  areaCodes?: string[];
+  city?: string;
+  targetCities?: string[];
+  lat?: number;
+  lng?: number;
 }
 
 export interface CompanyInfo {

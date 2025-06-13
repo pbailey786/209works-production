@@ -245,12 +245,12 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   }
 }
 
-// Helper function to allocate credits based on subscription tier
+// Helper function to allocate credits based on subscription tier (unified system)
 async function allocateSubscriptionCredits(userId: string, tier: string) {
   const creditAllocation = {
-    starter: { jobPosts: 3, featuredPosts: 0 },
-    standard: { jobPosts: 5, featuredPosts: 0 },
-    pro: { jobPosts: 10, featuredPosts: 2 },
+    starter: { credits: 3 },
+    standard: { credits: 5 },
+    pro: { credits: 12 }, // 10 + 2 featured = 12 total unified credits
   };
 
   const allocation = creditAllocation[tier as keyof typeof creditAllocation] || creditAllocation.starter;
@@ -259,20 +259,11 @@ async function allocateSubscriptionCredits(userId: string, tier: string) {
 
   const creditsToCreate = [];
 
-  // Add job posting credits
-  for (let i = 0; i < allocation.jobPosts; i++) {
+  // Add universal credits (can be used for any feature)
+  for (let i = 0; i < allocation.credits; i++) {
     creditsToCreate.push({
       userId,
-      type: 'job_post',
-      expiresAt,
-    });
-  }
-
-  // Add featured post credits
-  for (let i = 0; i < allocation.featuredPosts; i++) {
-    creditsToCreate.push({
-      userId,
-      type: 'featured_post',
+      type: 'universal', // Unified credit type
       expiresAt,
     });
   }
@@ -281,7 +272,7 @@ async function allocateSubscriptionCredits(userId: string, tier: string) {
     await prisma.jobPostingCredit.createMany({
       data: creditsToCreate,
     });
-    console.log(`Allocated ${creditsToCreate.length} credits to user ${userId} for tier ${tier}`);
+    console.log(`Allocated ${creditsToCreate.length} universal credits to user ${userId} for tier ${tier}`);
   }
 }
 

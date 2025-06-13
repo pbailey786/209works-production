@@ -14,6 +14,13 @@ export interface JobData {
   isRemote?: boolean;
   status?: string;
   source?: string;
+
+  // Multi-area-code network fields
+  areaCodes?: string[];
+  city?: string;
+  targetCities?: string[];
+  lat?: number;
+  lng?: number;
 }
 
 export interface CompanyInfo {
@@ -35,6 +42,27 @@ export interface EnhancedJobData extends JobData {
   experienceLevel?: string;
   applicationDeadline?: string;
   responsibilities?: string[];
+}
+
+// Area code specific types
+export interface AreaCodeConfig {
+  areaCode: string;
+  region: string;
+  displayName: string;
+  cities: string[];
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  radius?: number;
+}
+
+export interface JobWithAreaCode extends JobData {
+  areaCodes: string[];
+  city: string | null;
+  targetCities: string[];
+  lat: number | null;
+  lng: number | null;
 }
 
 // Simple function to create enhanced job data from basic job data

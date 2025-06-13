@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
       }
 
       basePrice = tierConfig.monthlyPrice;
-      jobCredits = tierConfig.features.jobPosts;
+      jobCredits = tierConfig.features.credits || tierConfig.features.jobPosts; // Support both new and legacy field names
     } else if (validatedData.creditPack && typeof validatedData.creditPack === 'string') {
       creditPackConfig = JOB_POSTING_CONFIG.creditPacks[validatedData.creditPack as keyof typeof JOB_POSTING_CONFIG.creditPacks];
       console.log('📦 Credit pack config:', creditPackConfig);
@@ -411,14 +411,10 @@ export async function POST(req: NextRequest) {
         addons: selectedAddons,
         totalAmount: totalAmount,
         status: 'pending',
-        // Calculate credits based on tier or credit pack
-        jobPostCredits: jobCredits,
-        featuredPostCredits: ((tierConfig?.features as any)?.featuredPosts || 0) + selectedAddons.filter(a =>
-          a.key === 'featuredPost' || a.key === 'featureAndSocialBundle'
-        ).length,
-        socialGraphicCredits: selectedAddons.filter(a =>
-          a.key === 'socialGraphic' || a.key === 'featureAndSocialBundle'
-        ).length,
+        // Calculate credits based on tier or credit pack (unified system)
+        jobPostCredits: jobCredits, // This will be migrated to universal credits
+        featuredPostCredits: 0, // Legacy field - featured posts now use universal credits
+        socialGraphicCredits: 0, // Legacy field - social graphics now use universal credits
         repostCredits: 0, // Removed repost functionality
         // Set expiration (30 days from now - standardized duration)
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),

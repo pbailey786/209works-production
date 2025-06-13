@@ -204,6 +204,13 @@ model Job {
   region          String?
   skills          String[]         @default([])
 
+  // Multi-area-code network fields
+  areaCodes       String[]         @default(["209"]) @map("area_codes")
+  city            String?
+  targetCities    String[]         @default([]) @map("target_cities")
+  lat             Float?
+  lng             Float?
+
   // Duplicate detection fields
   titleHash         String?
   descriptionHash   String?
@@ -259,6 +266,13 @@ model Job {
   @@index([descriptionHash])
   @@index([flaggedAsDuplicate])
   @@index([duplicateOfJobId])
+
+  // Multi-area-code network indexes
+  @@index([areaCodes])
+  @@index([city])
+  @@index([areaCodes, jobType])
+  @@index([areaCodes, postedAt])
+  @@index([lat, lng])
 }
 
 model Alert {
