@@ -22,7 +22,9 @@ export interface QueueEmailJobData {
     | 'weekly_digest'
     | 'password_reset'
     | 'verification'
-    | 'generic';
+    | 'generic'
+    | 'credit_confirmation'
+    | 'upsell_confirmation';
   to: string;
   subject: string;
   template: string;
@@ -788,7 +790,42 @@ export class EmailQueueService {
       },
     });
   }
+
+  /**
+   * Helper method to add a credit confirmation email
+   */
+  public async addCreditConfirmationEmail(
+    userEmail: string,
+    emailData: {
+      userName: string;
+      creditAmount: number;
+      planType: string;
+      dashboardUrl: string;
+      expirationDate?: string | null;
+    },
+    userId: string,
+    priority: 'low' | 'normal' | 'high' | 'critical' = 'high'
+  ): Promise<Job<QueueEmailJobData>> {
+    const subject = `🎉 Your ${emailData.creditAmount} 209Works credits are ready!`;
+
+    return this.addEmailJob({
+      type: 'credit_confirmation',
+      to: userEmail,
+      subject,
+      template: 'credit-confirmation',
+      data: emailData,
+      userId,
+      priority,
+      metadata: {
+        creditAmount: emailData.creditAmount,
+        planType: emailData.planType,
+      },
+    });
+  }
 }
 
 // Export singleton instance
 export const emailQueue = EmailQueueService.getInstance();
+
+// Export alias for backward compatibility
+export const EmailQueue = EmailQueueService;

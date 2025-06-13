@@ -57,7 +57,7 @@ export const PRICING_CONFIG = {
     yearlyDiscount: 15,
     features: {
       jobListings: 3,
-      listingDuration: 60, // days
+      listingDuration: 30, // days - standardized to 30 days
       aiMatching: true,
       prioritySupport: true,
       analytics: 'advanced',
@@ -72,7 +72,7 @@ export const PRICING_CONFIG = {
     yearlyDiscount: 20,
     features: {
       jobListings: 10,
-      listingDuration: 90, // days
+      listingDuration: 30, // days - standardized to 30 days
       aiMatching: true,
       prioritySupport: true,
       analytics: 'enterprise',

@@ -24,6 +24,7 @@ import {
   Mail,
   Send,
   TestTube,
+  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Permission } from '@/lib/rbac/permissions';
@@ -90,6 +91,12 @@ const navigation: NavItem[] = [
         name: 'Jobseekers',
         href: '/admin/users/jobseekers',
         icon: Users,
+        permission: Permission.VIEW_USERS,
+      },
+      {
+        name: 'Credit Management',
+        href: '/admin/credits',
+        icon: CreditCard,
         permission: Permission.VIEW_USERS,
       },
     ],

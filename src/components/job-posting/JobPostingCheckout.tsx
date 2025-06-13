@@ -318,7 +318,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                     <span className="text-lg font-semibold text-gray-900">Total</span>
                     <span className="text-2xl font-bold text-gray-900">${totalPrice}</span>
                   </div>
-                  <p className="text-xs text-gray-500 text-right">One-time payment • Credits expire in 60 days</p>
+                  <p className="text-xs text-gray-500 text-right">One-time payment • Credits expire in 30 days</p>
                 </div>
               </div>
             </div>
@@ -345,7 +345,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
             </button>
 
             <p className="text-xs text-gray-500 text-center mt-3">
-              Secure payment powered by Stripe. Credits expire in 60 days.
+              Secure payment powered by Stripe. Credits expire in 30 days.
             </p>
           </div>
         </div>

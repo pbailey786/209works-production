@@ -23,6 +23,9 @@ import {
 } from 'lucide-react';
 import JobUpsellSelector from '@/components/job-posting/JobUpsellSelector';
 import JobPostingPackageModal from '@/components/job-posting/JobPostingPackageModal';
+import CreditPackageModal from '@/components/job-posting/CreditPackageModal';
+import PromotionUpsellPopup from '@/components/job-posting/PromotionUpsellPopup';
+import JobPostingUpsellModal from '@/components/job-posting/JobPostingUpsellModal';
 
 interface JobPostForm {
   // Basic Info
@@ -174,6 +177,15 @@ export default function CreateJobPostPage() {
   const [isAutofilling, setIsAutofilling] = useState(false);
   const [creditsInfo, setCreditsInfo] = useState<{available: number, total: number} | null>(null);
   const [showPackageModal, setShowPackageModal] = useState(false);
+  const [showCreditPackageModal, setShowCreditPackageModal] = useState(false);
+  const [showPromotionUpsell, setShowPromotionUpsell] = useState(false);
+  const [showJobPostingUpsell, setShowJobPostingUpsell] = useState(false);
+  const [selectedUpsells, setSelectedUpsells] = useState({
+    socialMediaShoutout: false,
+    placementBump: false,
+    upsellBundle: false,
+    total: 0,
+  });
 
   // Check authentication
   if (status === 'loading') {
@@ -295,11 +307,12 @@ export default function CreateJobPostPage() {
         setGeneratedListing(data.aiGeneratedOutput);
         setOptimizerJobId(data.id);
         setShowPreview(true);
+        // Remove the old promotion upsell - now shown before publishing
       } else {
         const errorData = await response.json();
         // Handle credits required error
         if (response.status === 402 && errorData.code === 'CREDITS_REQUIRED') {
-          setShowPackageModal(true);
+          setShowCreditPackageModal(true);
           return;
         }
         // BILLING REFACTOR: Handle subscription required error
@@ -317,27 +330,79 @@ export default function CreateJobPostPage() {
     }
   };
 
-  const handlePublish = async () => {
+  const handlePublish = () => {
+    // Show upsell modal before publishing
+    setShowJobPostingUpsell(true);
+  };
+
+  const handleUpsellSelection = (upsells: {
+    socialMediaShoutout: boolean;
+    placementBump: boolean;
+    upsellBundle: boolean;
+    total: number;
+  }) => {
+    setSelectedUpsells(upsells);
+    setShowJobPostingUpsell(false);
+    // Proceed with publishing
+    publishJobWithUpsells(upsells);
+  };
+
+  const publishJobWithUpsells = async (upsells: {
+    socialMediaShoutout: boolean;
+    placementBump: boolean;
+    upsellBundle: boolean;
+    total: number;
+  }) => {
     if (!optimizerJobId) return;
 
     setIsPublishing(true);
     try {
-      const response = await fetch(
+      // First publish the job
+      const publishResponse = await fetch(
         `/api/job-post-optimizer/${optimizerJobId}/publish`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            upsells: upsells.total > 0 ? upsells : undefined,
+          }),
         }
       );
 
-      if (response.ok) {
-        const data = await response.json();
+      if (publishResponse.ok) {
+        const publishData = await publishResponse.json();
+
+        // If upsells were selected, process payment
+        if (upsells.total > 0) {
+          const checkoutResponse = await fetch('/api/job-posting/upsell-checkout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              jobId: publishData.jobId,
+              upsells,
+              successUrl: `${window.location.origin}/employers/my-jobs?published=${publishData.jobId}&upsell_success=true`,
+              cancelUrl: `${window.location.origin}/employers/my-jobs?published=${publishData.jobId}&upsell_cancelled=true`,
+            }),
+          });
+
+          if (checkoutResponse.ok) {
+            const checkoutData = await checkoutResponse.json();
+            // Redirect to Stripe Checkout
+            window.location.href = checkoutData.url;
+            return;
+          } else {
+            console.error('Failed to create upsell checkout, proceeding without upsells');
+          }
+        }
+
         // Redirect to the published job or employer dashboard
-        router.push(`/employers/my-jobs?published=${data.jobId}`);
+        router.push(`/employers/my-jobs?published=${publishData.jobId}`);
       } else {
-        const errorData = await response.json();
+        const errorData = await publishResponse.json();
         setErrors({ publish: errorData.error || 'Failed to publish job post' });
       }
     } catch (error) {
@@ -417,7 +482,7 @@ export default function CreateJobPostPage() {
                     <div className="flex gap-3">
                       <button
                         type="button"
-                        onClick={() => setShowPackageModal(true)}
+                        onClick={() => setShowCreditPackageModal(true)}
                         className="inline-flex items-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-medium px-4 py-2 rounded-lg hover:shadow-lg transition-all"
                       >
                         <DollarSign className="h-4 w-4 mr-2" />
@@ -1123,6 +1188,45 @@ export default function CreateJobPostPage() {
       <JobPostingPackageModal
         isOpen={showPackageModal}
         onClose={() => setShowPackageModal(false)}
+      />
+
+      {/* Credit Package Modal */}
+      <CreditPackageModal
+        isOpen={showCreditPackageModal}
+        onClose={() => setShowCreditPackageModal(false)}
+        onSuccess={() => {
+          setShowCreditPackageModal(false);
+          // Refresh credits after successful purchase
+          const fetchCredits = async () => {
+            try {
+              const response = await fetch('/api/job-posting-credits');
+              if (response.ok) {
+                const data = await response.json();
+                setCreditsInfo({
+                  available: data.availableCredits || 0,
+                  total: data.totalCredits || 0
+                });
+              }
+            } catch (error) {
+              console.error('Error fetching credits:', error);
+            }
+          };
+          fetchCredits();
+        }}
+      />
+
+      {/* Job Posting Upsell Modal - Strategic placement BEFORE publishing */}
+      <JobPostingUpsellModal
+        isOpen={showJobPostingUpsell}
+        onClose={() => setShowJobPostingUpsell(false)}
+        onContinue={handleUpsellSelection}
+        jobTitle={form.jobTitle}
+        company={form.companyName}
+        userCredits={creditsInfo ? {
+          jobPost: creditsInfo.available,
+          featuredPost: 0,
+          socialGraphic: 0,
+        } : undefined}
       />
     </div>
   );

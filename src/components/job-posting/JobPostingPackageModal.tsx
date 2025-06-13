@@ -32,7 +32,7 @@ const packageTiers: PackageTier[] = [
   {
     id: 'starter',
     name: 'Starter Tier',
-    price: 89,
+    price: 50,
     jobPosts: 2,
     duration: 30,
     features: ['30 days duration'],
@@ -42,7 +42,7 @@ const packageTiers: PackageTier[] = [
   {
     id: 'standard',
     name: 'Standard Tier',
-    price: 199,
+    price: 99,
     jobPosts: 5,
     duration: 30,
     features: ['30 days duration', 'AI optimization'],
@@ -53,10 +53,10 @@ const packageTiers: PackageTier[] = [
   {
     id: 'pro',
     name: 'Pro Tier',
-    price: 349,
+    price: 200,
     jobPosts: 10,
-    duration: 60,
-    features: ['60 days duration', 'AI optimization', '2 featured posts'],
+    duration: 30,
+    features: ['30 days duration', 'AI optimization', '2 featured posts'],
     icon: <Crown className="h-5 w-5 text-purple-500" />,
     color: 'border-purple-500 bg-purple-50'
   }
@@ -292,7 +292,7 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
                   <span className="text-lg font-bold text-gray-900">Total</span>
                   <span className="text-2xl font-bold text-gray-900">${total}</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">One-time payment • Credits expire in 60 days</p>
+                <p className="text-sm text-gray-500 mt-1">One-time payment • Credits expire in 30 days</p>
               </div>
             </div>
 
@@ -311,7 +311,7 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
               )}
             </button>
             <p className="text-center text-sm text-gray-500 mt-2">
-              Secure payment powered by Stripe. Credits expire in 60 days.
+              Secure payment powered by Stripe. Credits expire in 30 days.
             </p>
           </div>
         </div>

@@ -206,54 +206,33 @@ export default function EmbeddedCheckout({
               </p>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Card Number
-                </label>
-                <input
-                  type="text"
-                  placeholder="4242 4242 4242 4242"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Expiry Date
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    disabled
-                  />
+            <div className="space-y-6">
+              <div className="rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 p-6 text-center">
+                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    CVC
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="123"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    disabled
-                  />
+                <h4 className="text-lg font-semibold text-blue-900 mb-2">Secure Payment Processing</h4>
+                <p className="text-sm text-blue-700 mb-4">
+                  All payments are processed securely through Stripe Checkout. We never handle or store your payment information directly.
+                </p>
+                <div className="text-xs text-blue-600 space-y-1">
+                  <p>✓ PCI DSS Level 1 Compliant</p>
+                  <p>✓ 256-bit SSL Encryption</p>
+                  <p>✓ Advanced Fraud Protection</p>
+                  <p>✓ 3D Secure Authentication</p>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cardholder Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="John Doe"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled
-                />
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h5 className="font-medium text-gray-900 mb-2">How Payment Works:</h5>
+                <ol className="text-sm text-gray-600 space-y-1">
+                  <li>1. Click "Complete Purchase" below</li>
+                  <li>2. You'll be redirected to Stripe's secure checkout page</li>
+                  <li>3. Enter your payment details on Stripe's secure form</li>
+                  <li>4. Complete your purchase and return to 209 Works</li>
+                </ol>
               </div>
 
               <Button

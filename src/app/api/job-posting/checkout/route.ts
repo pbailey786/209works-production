@@ -238,13 +238,12 @@ export async function POST(req: NextRequest) {
     const totalAmount = basePrice + totalAddonPrice;
 
     // Determine checkout mode based on what's being purchased
-    // Tiers (Starter/Standard/Pro) = monthly subscriptions
-    // Credit packs & addons = one-time payments
-    const isSubscription = !!validatedData.tier;
-    const checkoutMode = isSubscription ? 'subscription' : 'payment';
+    // All job posting purchases are one-time payments (not subscriptions)
+    // This includes tiers, credit packs, and addons
+    const checkoutMode = 'payment';
 
     console.log('🔄 Checkout mode:', checkoutMode);
-    console.log('📦 Purchase type:', isSubscription ? 'Monthly Subscription Tier' : 'One-time Credit/Addon Purchase');
+    console.log('📦 Purchase type:', 'One-time Payment (Tier/Credits/Addons)');
     console.log('💰 Total amount calculated:', totalAmount);
     console.log('📋 Line items:', lineItems);
 
@@ -254,7 +253,7 @@ export async function POST(req: NextRequest) {
       payment_method_types: ['card'],
       billing_address_collection: 'required',
       line_items: lineItems,
-      mode: checkoutMode, // Dynamic mode: 'subscription' for tiers, 'payment' for credits/addons
+      mode: checkoutMode, // Always 'payment' for one-time job posting purchases
       allow_promotion_codes: true,
       success_url: validatedData.successUrl || 
         `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
@@ -296,8 +295,8 @@ export async function POST(req: NextRequest) {
           a.key === 'socialGraphic' || a.key === 'featureAndSocialBundle'
         ).length,
         repostCredits: 0, // Removed repost functionality
-        // Set expiration (60 days from now - allows reasonable rollover)
-        expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+        // Set expiration (30 days from now - standardized duration)
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         metadata: {
           tierConfig,
           creditPackConfig,

@@ -11,6 +11,7 @@ import InterviewInvitationEmail from '@/components/emails/interview-invitation-e
 import ApplicationStatusEmail from '@/components/emails/application-status-email';
 import CompanyNewsletterEmail from '@/components/emails/company-newsletter-email';
 import PlatformNoticeEmail from '@/components/emails/platform-notice-email';
+import CreditConfirmationEmail from '@/components/emails/credit-confirmation-email';
 
 export interface EmailTemplate {
   id: string;
@@ -288,6 +289,29 @@ export class TemplateManager {
         jobId: 'JOB-456',
         jobUrl: 'https://209.works/jobs/456',
         dashboardUrl: 'https://209.works/employers/dashboard',
+      },
+    });
+
+    this.registerTemplate({
+      id: 'credit-confirmation',
+      name: 'Credit Confirmation',
+      description: 'Confirms successful credit purchase and assignment',
+      category: 'employer',
+      component: CreditConfirmationEmail,
+      defaultProps: {
+        userName: 'Valued Customer',
+        creditAmount: 0,
+        planType: 'CREDIT PACK',
+        dashboardUrl: 'https://209.works/employers/dashboard',
+        expirationDate: null,
+      },
+      requiredProps: ['userName', 'creditAmount', 'planType', 'dashboardUrl'],
+      previewProps: {
+        userName: 'Maria Garcia',
+        creditAmount: 5,
+        planType: 'STANDARD PLAN',
+        dashboardUrl: 'https://209.works/employers/dashboard',
+        expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
       },
     });
 

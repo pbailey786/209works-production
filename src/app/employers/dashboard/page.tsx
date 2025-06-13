@@ -35,6 +35,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const BillingModal = React.lazy(() => import('@/components/billing/BillingModal'));
 const JobPostingCheckout = React.lazy(() => import('@/components/job-posting/JobPostingCheckout'));
 const AddCreditsModal = React.lazy(() => import('@/components/credits/AddCreditsModal'));
+const CreditBalanceCard = React.lazy(() => import('@/components/credits/CreditBalanceCard'));
 
 interface DashboardStats {
   totalJobs: number;
@@ -478,50 +479,36 @@ function DashboardContent() {
             </div>
           </div>
 
-          <div className={`rounded-xl border p-6 shadow-sm ${
-            credits.jobPost > 0
-              ? 'border-[#9fdf9f]/50 bg-gradient-to-r from-[#9fdf9f]/20 to-[#2d4a3e]/10'
-              : 'border-gray-200 bg-white'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className={`mr-4 flex h-12 w-12 items-center justify-center rounded-lg ${
-                  credits.jobPost > 0 ? 'bg-[#9fdf9f]/30' : 'bg-[#ff6b35]/10'
-                }`}>
-                  <Sparkles className={`h-6 w-6 ${
-                    credits.jobPost > 0 ? 'text-[#2d4a3e]' : 'text-[#ff6b35]'
-                  }`} />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {credits.jobPost}
-                  </p>
-                  <p className={`text-sm ${
-                    credits.jobPost > 0 ? 'text-[#2d4a3e]' : 'text-gray-600'
-                  }`}>
-                    Job Credits {credits.jobPost > 0 ? '✨' : ''}
-                  </p>
+          <Suspense fallback={
+            <div className="rounded-xl border p-6 shadow-sm border-gray-200 bg-white">
+              <div className="animate-pulse">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="mr-4 h-12 w-12 bg-gray-200 rounded-lg"></div>
+                    <div>
+                      <div className="h-8 w-16 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                  <div className="h-10 w-24 bg-gray-200 rounded"></div>
                 </div>
               </div>
-              {hasActiveSubscription ? (
-                <button
-                  onClick={() => setShowAddCreditsModal(true)}
-                  className="flex items-center rounded-lg bg-[#2d4a3e] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1d3a2e]"
-                >
-                  <CreditCard className="mr-1 h-4 w-4" />
-                  {credits.jobPost > 0 ? 'Add More' : 'Add Credits'}
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowBillingModal(true)}
-                  className="flex items-center rounded-lg bg-[#ff6b35] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#e55a2b]"
-                >
-                  <CreditCard className="mr-1 h-4 w-4" />
-                  Subscribe
-                </button>
-              )}
             </div>
-          </div>
+          }>
+            <CreditBalanceCard
+              credits={{
+                jobPost: credits.jobPost,
+                featuredPost: credits.featuredPost || 0,
+                socialGraphic: credits.socialGraphic || 0,
+                total: credits.jobPost + (credits.featuredPost || 0) + (credits.socialGraphic || 0),
+                expiringCount: 0, // Will be loaded from API
+                expiringDate: undefined,
+              }}
+              hasActiveSubscription={hasActiveSubscription}
+              onAddCredits={() => setShowAddCreditsModal(true)}
+              onSubscribe={() => setShowBillingModal(true)}
+            />
+          </Suspense>
         </div>
 
         {/* Main Content Grid */}

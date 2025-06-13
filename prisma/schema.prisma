@@ -93,6 +93,7 @@ model User {
   jobPostingPurchases   JobPostingPurchase[]
   jobPostingCredits     JobPostingCredit[]
   jobPostingPatterns    JobPostingPattern[]    @relation("EmployerPatterns")
+  jobUpsellPurchases    JobUpsellPurchase[]
   jobSeekerProfile      JobSeekerProfile?
   employerProfile       EmployerProfile?
 
@@ -232,6 +233,7 @@ model Job {
   alerts            Alert[]          @relation("AlertToJob")
   optimizedFrom     JobPostOptimizer[] @relation("OptimizedJob")
   usedCredits       JobPostingCredit[]
+  upsellPurchases   JobUpsellPurchase[]
 
   // Duplicate tracking relations
   duplicateOf       Job?             @relation("JobDuplicates", fields: [duplicateOfJobId], references: [id])
@@ -990,6 +992,38 @@ model JobPostingCredit {
   @@index([isUsed])
   @@index([expiresAt])
   @@index([usedAt])
+}
+
+model JobUpsellPurchase {
+  id                    String   @id @default(uuid())
+  userId                String
+  jobId                 String
+  stripeSessionId       String   @unique
+  stripePaymentIntentId String?
+
+  // Upsell options
+  socialMediaShoutout   Boolean  @default(false)
+  placementBump         Boolean  @default(false)
+  upsellBundle          Boolean  @default(false)
+
+  totalAmount           Decimal  @db.Decimal(10, 2)
+  currency              String   @default("usd")
+  status                String   @default("pending") // pending, completed, failed, refunded
+
+  // Metadata
+  metadata              Json?
+  purchasedAt           DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job                   Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([jobId])
+  @@index([status])
+  @@index([purchasedAt])
 }
 
 model AnalyticsReport {

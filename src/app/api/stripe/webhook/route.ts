@@ -8,6 +8,7 @@ import {
   BillingInterval,
   SubscriptionStatus,
 } from '@prisma/client';
+import { EmailQueue } from '@/lib/services/email-queue';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -98,7 +99,7 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
-  // Handle job posting purchases
+  // Handle job posting purchases and credit packs
   if (type === 'job_posting_purchase' || type === 'credit_pack_purchase') {
     await handleJobPostingPurchase(session);
     return;
@@ -107,6 +108,12 @@ async function handleCheckoutSessionCompleted(
   // Handle addon purchases
   if (type === 'addon_purchase') {
     await handleAddonPurchase(session);
+    return;
+  }
+
+  // Handle job upsell purchases
+  if (type === 'job_upsell_purchase') {
+    await handleJobUpsellPurchase(session);
     return;
   }
 
@@ -394,11 +401,12 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
   try {
     const userId = session.metadata?.userId;
     const tier = session.metadata?.tier;
+    const creditPack = session.metadata?.creditPack;
     const addonsJson = session.metadata?.addons;
     const totalAmount = session.metadata?.totalAmount;
 
-    if (!userId || !tier) {
-      console.error('Missing required metadata in job posting purchase:', session.id);
+    if (!userId) {
+      console.error('Missing userId in job posting purchase:', session.id);
       return;
     }
 
@@ -417,6 +425,15 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
         status: 'completed',
         stripePaymentIntentId: session.payment_intent as string,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          }
+        }
+      }
     });
 
     // Create individual credits for the user
@@ -461,7 +478,31 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
       });
     }
 
-    console.log(`Job posting purchase completed for user ${userId}: ${tier} tier with ${addons.length} addons`);
+    // Calculate total credits
+    const totalCredits = (purchase.jobPostCredits || 0) + (purchase.featuredPostCredits || 0) + (purchase.socialGraphicCredits || 0);
+
+    // Send credit confirmation email
+    try {
+      const emailQueue = EmailQueue.getInstance();
+      const planType = tier || creditPack || 'credit_pack';
+
+      await emailQueue.addCreditConfirmationEmail(
+        purchase.user.email,
+        {
+          userName: purchase.user.name || 'Valued Customer',
+          creditAmount: totalCredits,
+          planType: planType.replace('_', ' ').toUpperCase(),
+          dashboardUrl: `${process.env.NEXTAUTH_URL}/employers/dashboard`,
+          expirationDate: purchase.expiresAt ? new Date(purchase.expiresAt).toLocaleDateString() : null,
+        },
+        userId
+      );
+    } catch (emailError) {
+      console.error('Failed to send credit confirmation email:', emailError);
+      // Don't fail the webhook if email fails - credits are still assigned
+    }
+
+    console.log(`Job posting purchase completed for user ${userId}: ${tier || creditPack} with ${totalCredits} total credits`);
   } catch (error) {
     console.error('Error handling job posting purchase:', error);
   }
@@ -474,6 +515,94 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
   if (type === 'addon_purchase' && userId) {
     console.log(`Payment succeeded for addon purchase by user ${userId}`);
     // Additional logic if needed for payment confirmation
+  }
+}
+
+async function handleJobUpsellPurchase(session: Stripe.Checkout.Session) {
+  try {
+    const userId = session.metadata?.userId;
+    const jobId = session.metadata?.jobId;
+    const socialMediaShoutout = session.metadata?.socialMediaShoutout === 'true';
+    const placementBump = session.metadata?.placementBump === 'true';
+    const upsellBundle = session.metadata?.upsellBundle === 'true';
+    const totalAmount = parseFloat(session.metadata?.totalAmount || '0');
+
+    if (!userId || !jobId) {
+      console.error('Missing required metadata in job upsell purchase:', session.id);
+      return;
+    }
+
+    // Update the upsell purchase record
+    const upsellPurchase = await prisma.jobUpsellPurchase.update({
+      where: { stripeSessionId: session.id },
+      data: {
+        status: 'completed',
+        stripePaymentIntentId: session.payment_intent as string,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          }
+        },
+        job: {
+          select: {
+            id: true,
+            title: true,
+            company: true,
+          }
+        }
+      }
+    });
+
+    // Update the job with upsell flags
+    await prisma.job.update({
+      where: { id: jobId },
+      data: {
+        socialMediaShoutout,
+        placementBump,
+        upsellBundle,
+      },
+    });
+
+    // Send confirmation email
+    try {
+      const emailQueue = EmailQueue.getInstance();
+      await emailQueue.addEmailJob({
+        type: 'upsell_confirmation',
+        to: upsellPurchase.user.email,
+        subject: `🚀 Your job promotion for "${upsellPurchase.job.title}" is active!`,
+        template: 'system-notification',
+        data: {
+          userName: upsellPurchase.user.name || 'Valued Customer',
+          title: 'Job Promotion Activated!',
+          message: `Great news! Your promotion package for "${upsellPurchase.job.title}" is now active and working to get you more qualified applicants.`,
+          details: [
+            socialMediaShoutout && 'Social Media Shoutout: Your job will be promoted on our Instagram and X channels',
+            placementBump && 'On-Site Placement Bump: JobsGPT will actively recommend your job to chat users',
+            upsellBundle && 'Complete Bundle: You\'re getting maximum exposure with both services',
+          ].filter(Boolean),
+          ctaText: 'View Job Dashboard',
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/my-jobs`,
+        },
+        userId: upsellPurchase.user.id,
+        priority: 'high',
+        metadata: {
+          jobId,
+          upsellType: upsellBundle ? 'bundle' : (socialMediaShoutout && placementBump ? 'both' : socialMediaShoutout ? 'social' : 'placement'),
+          totalAmount,
+        },
+      });
+    } catch (emailError) {
+      console.error('Failed to send upsell confirmation email:', emailError);
+      // Don't fail the webhook if email fails
+    }
+
+    console.log(`Job upsell purchase completed for user ${userId}, job ${jobId}: $${totalAmount}`);
+  } catch (error) {
+    console.error('Error handling job upsell purchase:', error);
   }
 }
 

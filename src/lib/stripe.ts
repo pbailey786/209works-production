@@ -76,7 +76,7 @@ export const JOB_POSTING_CONFIG = {
   tiers: {
     starter: {
       name: 'Starter Tier',
-      price: 89,
+      price: 50,
       stripePriceId: process.env.STRIPE_PRICE_STARTER,
       features: {
         jobPosts: 2,
@@ -88,7 +88,7 @@ export const JOB_POSTING_CONFIG = {
     },
     standard: {
       name: 'Standard Tier',
-      price: 199,
+      price: 99,
       stripePriceId: process.env.STRIPE_PRICE_STANDARD,
       features: {
         jobPosts: 5,
@@ -100,11 +100,11 @@ export const JOB_POSTING_CONFIG = {
     },
     pro: {
       name: 'Pro Tier',
-      price: 349,
+      price: 200,
       stripePriceId: process.env.STRIPE_PRICE_PRO,
       features: {
         jobPosts: 10,
-        duration: 60,
+        duration: 30, // days - standardized to 30 days
         aiOptimization: true,
         analytics: 'premium',
         support: 'phone',

@@ -1,21 +1,18 @@
 'use client';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Award, AlertTriangle } from 'lucide-react';
+import { Award } from 'lucide-react';
 import Link from 'next/link';
-import PricingSection from '@/components/pricing/PricingSection';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
-// Employer pricing plans - Monthly subscription model
+// Employer pricing plans - One-time payment model
 const employerPlans = [
   {
     id: 'starter',
     name: 'Starter Tier',
-    monthlyPrice: 89, // Reduced from $99 to improve value perception
+    price: 50,
     description: 'Perfect for small businesses hiring occasionally',
     features: [
-      '2 Job Credits per month',
+      '2 Job Posts',
       'Basic Analytics Dashboard',
       'Applicant Management',
       '209 Area Targeting',
@@ -23,15 +20,15 @@ const employerPlans = [
       '30-day Job Duration',
       'Bulk Upload Access',
     ],
-    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
+    billingNote: '💳 One-time payment • Job credits expire in 30 days',
   },
   {
     id: 'standard',
     name: 'Standard Tier',
-    monthlyPrice: 199,
+    price: 99,
     description: 'Ideal for growing companies with multiple positions',
     features: [
-      '5 Job Credits per month',
+      '5 Job Posts',
       'Advanced Analytics & Reports',
       'Premium Job Placement',
       'Resume Database Access',
@@ -44,16 +41,16 @@ const employerPlans = [
     ],
     popular: true,
     badge: 'Most Popular',
-    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
+    billingNote: '💳 One-time payment • Job credits expire in 30 days',
     aiTooltip: 'Our AI suggests improvements to your job titles, descriptions, and categories to improve visibility.',
   },
   {
     id: 'pro',
     name: 'Pro Tier',
-    monthlyPrice: 349,
+    price: 200,
     description: 'For companies with high-volume hiring needs',
     features: [
-      '10 Job Credits per month',
+      '10 Job Posts',
       'Everything in Standard',
       'Team Management Tools',
       'Custom Analytics Dashboard',
@@ -65,60 +62,47 @@ const employerPlans = [
       'Dedicated Account Manager',
     ],
     badge: 'Most Value',
-    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
+    billingNote: '💳 One-time payment • Job credits expire in 30 days',
     aiTooltip: 'Advanced AI features including bulk optimization, smart categorization, and performance insights.',
     highlight: true, // Add visual emphasis
   },
 ];
 
 export default function EmployerPricingPage() {
-  const searchParams = useSearchParams();
-  const [showMessage, setShowMessage] = useState(false);
-
-  useEffect(() => {
-    const message = searchParams.get('message');
-    if (message === 'subscription_required_for_credits') {
-      setShowMessage(true);
-      // Auto-hide message after 10 seconds
-      setTimeout(() => setShowMessage(false), 10000);
-    }
-  }, [searchParams]);
 
   const handlePlanSelect = async (planId: string, billingInterval: string) => {
     try {
-      // Redirect to embedded checkout page
-      window.location.href = `/employers/checkout?plan=${planId}`;
+      // Use the job posting checkout API for one-time payments
+      const response = await fetch('/api/job-posting/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tier: planId,
+          addons: [],
+          successUrl: `${window.location.origin}/employers/dashboard?purchase_success=true`,
+          cancelUrl: `${window.location.origin}/employers/pricing?purchase_cancelled=true`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
     } catch (error) {
-      console.error('Error navigating to checkout:', error);
+      console.error('Error creating checkout session:', error);
       alert('Something went wrong. Please try again.');
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50">
-      {/* Subscription Required Message */}
-      {showMessage && (
-        <div className="bg-orange-100 border-l-4 border-orange-500 p-4">
-          <div className="mx-auto max-w-6xl flex items-center">
-            <AlertTriangle className="h-6 w-6 text-orange-500 mr-3" />
-            <div>
-              <h3 className="text-lg font-medium text-orange-800">
-                Subscription Required for Additional Credits
-              </h3>
-              <p className="text-orange-700">
-                To purchase additional job credits, you need an active monthly subscription.
-                Choose a plan below to get started and unlock the ability to buy extra credits when needed.
-              </p>
-            </div>
-            <button
-              onClick={() => setShowMessage(false)}
-              className="ml-auto text-orange-500 hover:text-orange-700"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
+
 
       {/* Hero Section */}
       <section className="px-4 py-16">
@@ -130,15 +114,15 @@ export default function EmployerPricingPage() {
             </span>
           </h1>
           <p className="mb-8 text-xl text-gray-600">
-            Connect with top talent in the 209 area with our flexible pricing
-            options
+            Connect with top talent in the 209 area with our simple, one-time
+            pricing packages
           </p>
 
           {/* Chamber Member Alert */}
           <Alert className="mx-auto mb-8 max-w-2xl border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50">
             <Award className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              <strong>Chamber Members:</strong> Get 25% off your first year!
+              <strong>Chamber Members:</strong> Get 25% off your first purchase!
               <Link
                 href="/signup/local-business"
                 className="ml-1 text-orange-700 underline hover:text-orange-900"
@@ -150,12 +134,12 @@ export default function EmployerPricingPage() {
         </div>
       </section>
 
-      {/* Pricing Cards - Monthly Only */}
+      {/* Pricing Cards - One-time Payments */}
       <section className="px-4 py-16">
         <div className="mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Employer Plans</h2>
-            <p className="text-xl text-gray-600">Choose the plan that fits your hiring needs</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Job Posting Packages</h2>
+            <p className="text-xl text-gray-600">Choose the package that fits your hiring needs</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -187,8 +171,8 @@ export default function EmployerPricingPage() {
                   <p className="text-gray-600 mb-6">{plan.description}</p>
 
                   <div className="mb-4">
-                    <span className="text-4xl font-bold text-gray-900">${plan.monthlyPrice}</span>
-                    <span className="text-gray-600">/mo</span>
+                    <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+                    <span className="text-gray-600"> one-time</span>
                   </div>
 
                   {/* Billing note */}
@@ -246,18 +230,16 @@ export default function EmployerPricingPage() {
               </h3>
               <p className="text-gray-600">
                 Chamber members receive 25% off when they verify their
-                membership during signup. The discount applies to all plans and
-                billing intervals.
+                membership during signup. The discount applies to all job posting
+                packages.
               </p>
             </div>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                Can I change plans anytime?
+                Can I purchase additional job posts?
               </h3>
               <p className="text-gray-600">
-                Yes! You can upgrade or downgrade your plan at any time. Changes
-                take effect immediately, and we'll prorate any billing
-                adjustments.
+                Yes! You can purchase additional job posting packages anytime. Each package gives you the specified number of job posts that expire after 30 days.
               </p>
             </div>
             <div>
@@ -270,10 +252,10 @@ export default function EmployerPricingPage() {
             </div>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                How does monthly billing work?
+                How does one-time billing work?
               </h3>
               <p className="text-gray-600">
-                You will be billed monthly for your selected plan. Cancel anytime - no long-term contracts required. Your subscription automatically renews each month.
+                You pay once for your selected job posting package. No recurring charges or subscriptions. When you need more job posts, simply purchase another package.
               </p>
             </div>
           </div>

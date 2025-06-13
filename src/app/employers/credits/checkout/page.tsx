@@ -125,16 +125,30 @@ export default function CreditsCheckoutPage() {
 
     setLoading(true);
     try {
-      // This is where Stripe integration will go
-      // For now, we'll simulate the process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Create Stripe Checkout session for credit purchase
+      const response = await fetch('/api/job-posting/buy-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          creditPack: selectedPackage.id,
+          successUrl: `${window.location.origin}/employers/dashboard?credit_purchase_success=true`,
+          cancelUrl: `${window.location.origin}/employers/credits/checkout?cancelled=true`,
+        }),
+      });
 
-      // Redirect to success page
-      router.push('/employers/dashboard?purchase=success');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
     } catch (error) {
       console.error('Purchase failed:', error);
       alert('Purchase failed. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
@@ -271,17 +285,26 @@ export default function CreditsCheckoutPage() {
         <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
           <h2 className="mb-6 text-xl font-semibold text-[#2d4a3e]">Payment Details</h2>
 
-          {/* Stripe Integration Placeholder */}
-          <div className="mb-6 rounded-lg border-2 border-dashed border-[#2d4a3e]/30 bg-[#2d4a3e]/5 p-8 text-center">
+          {/* Stripe Checkout Information */}
+          <div className="mb-6 rounded-lg border-2 border-solid border-[#2d4a3e]/20 bg-[#2d4a3e]/5 p-6 text-center">
             <CreditCard className="mx-auto mb-4 h-12 w-12 text-[#2d4a3e]" />
-            <h3 className="mb-2 text-lg font-semibold text-[#2d4a3e]">Stripe Integration</h3>
+            <h3 className="mb-2 text-lg font-semibold text-[#2d4a3e]">Secure Payment Processing</h3>
             <p className="text-sm text-gray-600 mb-4">
-              Secure payment processing will be integrated here using Stripe Checkout.
+              When you click "Complete Purchase", you'll be redirected to Stripe's secure checkout page to enter your payment details.
             </p>
-            <div className="text-xs text-gray-500">
-              <p>✓ PCI DSS Compliant</p>
-              <p>✓ 256-bit SSL Encryption</p>
-              <p>✓ Fraud Protection</p>
+            <div className="grid grid-cols-2 gap-4 text-xs text-gray-600">
+              <div className="flex items-center justify-center">
+                <span className="mr-1">✓</span> PCI DSS Level 1 Compliant
+              </div>
+              <div className="flex items-center justify-center">
+                <span className="mr-1">✓</span> 256-bit SSL Encryption
+              </div>
+              <div className="flex items-center justify-center">
+                <span className="mr-1">✓</span> Advanced Fraud Protection
+              </div>
+              <div className="flex items-center justify-center">
+                <span className="mr-1">✓</span> 3D Secure Authentication
+              </div>
             </div>
           </div>
 
@@ -348,15 +371,14 @@ export default function CreditsCheckoutPage() {
         </div>
       </div>
 
-      {/* Development Note */}
-      <div className="mt-8 rounded-lg border border-[#ff6b35]/30 bg-[#ff6b35]/10 p-4">
-        <h3 className="mb-2 text-sm font-semibold text-[#ff6b35]">
-          🚧 Development Note
+      {/* Payment Security Notice */}
+      <div className="mt-8 rounded-lg border border-green-200 bg-green-50 p-4">
+        <h3 className="mb-2 text-sm font-semibold text-green-800">
+          🔒 Secure Payment Processing
         </h3>
-        <p className="text-sm text-[#2d4a3e]">
-          This is the Stripe integration preparation. The actual Stripe Checkout will be integrated here,
-          allowing secure credit card processing. For now, clicking "Complete Purchase" will simulate
-          a successful transaction and redirect to the dashboard.
+        <p className="text-sm text-green-700">
+          All payments are processed securely through Stripe. We never store or handle your payment information directly.
+          Your data is protected with bank-level security and encryption.
         </p>
       </div>
     </div>
