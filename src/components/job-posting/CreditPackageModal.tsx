@@ -12,7 +12,7 @@ import {
   CreditCard,
   AlertTriangle
 } from 'lucide-react';
-import { JOB_POSTING_CONFIG } from '@/lib/stripe';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 
 interface CreditPackageModalProps {
   isOpen: boolean;
@@ -33,7 +33,7 @@ export default function CreditPackageModal({
 
   if (!isOpen) return null;
 
-  const tiers = JOB_POSTING_CONFIG.tiers;
+  const tiers = SUBSCRIPTION_TIERS_CONFIG;
 
   const handlePurchase = async () => {
     setIsLoading(true);
@@ -183,8 +183,8 @@ export default function CreditPackageModal({
                         {getTierIcon(key as TierKey)}
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">{tier.name.replace(' Tier', '')}</h3>
-                        <p className="text-3xl font-bold text-gray-900">${tier.price}</p>
+                        <h3 className="text-xl font-bold text-gray-900">{tier.name}</h3>
+                        <p className="text-3xl font-bold text-gray-900">${tier.monthlyPrice}</p>
                       </div>
                     </div>
 
@@ -239,9 +239,9 @@ export default function CreditPackageModal({
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-gray-900">
-                    ${tiers[selectedTier].price}
+                    ${tiers[selectedTier].monthlyPrice}
                   </p>
-                  <p className="text-xs text-gray-500">One-time payment</p>
+                  <p className="text-xs text-gray-500">Monthly subscription</p>
                 </div>
               </div>
 
@@ -264,7 +264,7 @@ export default function CreditPackageModal({
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-5 w-5" />
-                    Optimize Job Post → ${tiers[selectedTier].price}
+                    Subscribe → ${tiers[selectedTier].monthlyPrice}/month
                   </>
                 )}
               </button>

@@ -278,7 +278,7 @@ async function allocateSubscriptionCredits(userId: string, tier: string) {
   }
 
   if (creditsToCreate.length > 0) {
-    await prisma.credit.createMany({
+    await prisma.jobPostingCredit.createMany({
       data: creditsToCreate,
     });
     console.log(`Allocated ${creditsToCreate.length} credits to user ${userId} for tier ${tier}`);

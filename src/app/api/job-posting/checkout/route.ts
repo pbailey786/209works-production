@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { stripe } from '@/lib/stripe';
-import { JOB_POSTING_CONFIG } from '@/lib/stripe';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -31,9 +31,9 @@ export async function GET() {
       },
       tierConfig: {
         starter: {
-          name: JOB_POSTING_CONFIG.tiers.starter.name,
-          price: JOB_POSTING_CONFIG.tiers.starter.price,
-          hasPriceId: !!JOB_POSTING_CONFIG.tiers.starter.stripePriceId,
+          name: SUBSCRIPTION_TIERS_CONFIG.starter.name,
+          monthlyPrice: SUBSCRIPTION_TIERS_CONFIG.starter.monthlyPrice,
+          hasPriceId: !!SUBSCRIPTION_TIERS_CONFIG.starter.stripePriceId,
         }
       }
     });
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
     let jobCredits = 0;
 
     if (validatedData.tier && typeof validatedData.tier === 'string') {
-      tierConfig = JOB_POSTING_CONFIG.tiers[validatedData.tier as keyof typeof JOB_POSTING_CONFIG.tiers];
+      tierConfig = SUBSCRIPTION_TIERS_CONFIG[validatedData.tier as keyof typeof SUBSCRIPTION_TIERS_CONFIG];
       console.log('🎯 Tier config:', tierConfig);
       console.log('💰 Stripe Price ID:', tierConfig?.stripePriceId);
 
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      basePrice = tierConfig.price;
+      basePrice = tierConfig.monthlyPrice;
       jobCredits = tierConfig.features.jobPosts;
     } else if (validatedData.creditPack && typeof validatedData.creditPack === 'string') {
       creditPackConfig = JOB_POSTING_CONFIG.creditPacks[validatedData.creditPack as keyof typeof JOB_POSTING_CONFIG.creditPacks];
@@ -299,7 +299,7 @@ export async function POST(req: NextRequest) {
           // Check if this is a dynamic price ID (fallback)
           if (originalPriceId?.startsWith('price_dynamic_')) {
             if (tierConfig && tierConfig.stripePriceId === originalPriceId) {
-              priceAmount = tierConfig.price * 100; // Convert to cents
+              priceAmount = tierConfig.monthlyPrice * 100; // Convert to cents
               productName = tierConfig.name;
             } else if (creditPackConfig && creditPackConfig.stripePriceId === originalPriceId) {
               priceAmount = creditPackConfig.price * 100;
@@ -328,7 +328,7 @@ export async function POST(req: NextRequest) {
               console.error('❌ Error retrieving price from Stripe:', priceError);
               // Fallback to config values
               if (tierConfig && tierConfig.stripePriceId === originalPriceId) {
-                priceAmount = tierConfig.price * 100;
+                priceAmount = tierConfig.monthlyPrice * 100;
                 productName = tierConfig.name;
               } else if (creditPackConfig && creditPackConfig.stripePriceId === originalPriceId) {
                 priceAmount = creditPackConfig.price * 100;

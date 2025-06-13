@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
-import { JOB_POSTING_CONFIG } from '@/lib/stripe';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
 import type { Session } from 'next-auth';
 
 export async function GET(req: NextRequest) {
@@ -21,10 +21,10 @@ export async function GET(req: NextRequest) {
       STRIPE_SECRET_KEY: !!process.env.STRIPE_SECRET_KEY,
       STRIPE_WEBHOOK_SECRET: !!process.env.STRIPE_WEBHOOK_SECRET,
       
-      // Tier price IDs
-      STRIPE_PRICE_STARTER: !!process.env.STRIPE_PRICE_STARTER,
-      STRIPE_PRICE_STANDARD: !!process.env.STRIPE_PRICE_STANDARD,
-      STRIPE_PRICE_PRO: !!process.env.STRIPE_PRICE_PRO,
+      // Subscription tier price IDs (monthly)
+      STRIPE_STARTER_MONTHLY_PRICE_ID: !!process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
+      STRIPE_STANDARD_MONTHLY_PRICE_ID: !!process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
+      STRIPE_PRO_MONTHLY_PRICE_ID: !!process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
       
       // Addon price IDs
       STRIPE_PRICE_FEATURED: !!process.env.STRIPE_PRICE_FEATURED,
@@ -38,12 +38,12 @@ export async function GET(req: NextRequest) {
 
     // Get the actual price IDs (masked for security)
     const priceIds = {
-      starter: process.env.STRIPE_PRICE_STARTER ? 
-        `${process.env.STRIPE_PRICE_STARTER.substring(0, 10)}...` : 'NOT SET',
-      standard: process.env.STRIPE_PRICE_STANDARD ? 
-        `${process.env.STRIPE_PRICE_STANDARD.substring(0, 10)}...` : 'NOT SET',
-      pro: process.env.STRIPE_PRICE_PRO ? 
-        `${process.env.STRIPE_PRICE_PRO.substring(0, 10)}...` : 'NOT SET',
+      starter: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID ?
+        `${process.env.STRIPE_STARTER_MONTHLY_PRICE_ID.substring(0, 10)}...` : 'NOT SET',
+      standard: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID ?
+        `${process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID.substring(0, 10)}...` : 'NOT SET',
+      pro: process.env.STRIPE_PRO_MONTHLY_PRICE_ID ?
+        `${process.env.STRIPE_PRO_MONTHLY_PRICE_ID.substring(0, 10)}...` : 'NOT SET',
       featured: process.env.STRIPE_PRICE_FEATURED ?
         `${process.env.STRIPE_PRICE_FEATURED.substring(0, 10)}...` : 'NOT SET',
       graphic: process.env.STRIPE_PRICE_GRAPHIC ?
@@ -58,8 +58,9 @@ export async function GET(req: NextRequest) {
 
     // Check configuration validity
     const configCheck = {
-      tiersConfigured: Object.values(JOB_POSTING_CONFIG.tiers).every(tier => tier.stripePriceId),
+      subscriptionTiersConfigured: Object.values(SUBSCRIPTION_TIERS_CONFIG).every(tier => tier.stripePriceId),
       addonsConfigured: Object.values(JOB_POSTING_CONFIG.addons).every(addon => addon.stripePriceId),
+      creditPacksConfigured: Object.values(JOB_POSTING_CONFIG.creditPacks).every(pack => pack.stripePriceId),
     };
 
     const allEnvVarsSet = Object.values(envCheck).every(Boolean);
@@ -69,14 +70,17 @@ export async function GET(req: NextRequest) {
       environmentVariables: envCheck,
       priceIds,
       configuration: configCheck,
-      jobPostingConfig: {
-        tiers: Object.entries(JOB_POSTING_CONFIG.tiers).map(([key, tier]) => ({
+      subscriptionConfig: {
+        tiers: Object.entries(SUBSCRIPTION_TIERS_CONFIG).map(([key, tier]) => ({
           key,
           name: tier.name,
-          price: tier.price,
+          monthlyPrice: tier.monthlyPrice,
           hasPriceId: !!tier.stripePriceId,
           features: tier.features,
+          description: tier.description,
         })),
+      },
+      jobPostingConfig: {
         addons: Object.entries(JOB_POSTING_CONFIG.addons).map(([key, addon]) => ({
           key,
           name: addon.name,
@@ -84,6 +88,17 @@ export async function GET(req: NextRequest) {
           hasPriceId: !!addon.stripePriceId,
           description: addon.description,
         })),
+        creditPacks: Object.entries(JOB_POSTING_CONFIG.creditPacks).map(([key, pack]) => ({
+          key,
+          name: pack.name,
+          price: pack.price,
+          credits: pack.credits,
+          hasPriceId: !!pack.stripePriceId,
+          description: pack.description,
+        })),
+      },
+      stripeConfig: {
+        priceIds: STRIPE_PRICE_IDS,
       },
       recommendations: allEnvVarsSet ? [] : [
         'Set missing environment variables in Netlify dashboard',

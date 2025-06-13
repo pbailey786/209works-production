@@ -13,7 +13,7 @@ async function testCreditAllocation() {
     const testUserId = 'test-user-id';
     
     // Clean up any existing test data
-    await prisma.credit.deleteMany({
+    await prisma.jobPostingCredit.deleteMany({
       where: { userId: testUserId }
     });
     
@@ -76,25 +76,25 @@ async function testCreditAllocation() {
       }
 
       if (creditsToCreate.length > 0) {
-        await prisma.credit.createMany({
+        await prisma.jobPostingCredit.createMany({
           data: creditsToCreate,
         });
       }
 
       // Verify credits were created
-      const jobPostCredits = await prisma.credit.count({
+      const jobPostCredits = await prisma.jobPostingCredit.count({
         where: {
           userId: testUserId,
           type: 'job_post',
-          usedAt: null,
+          isUsed: false,
         },
       });
 
-      const featuredPostCredits = await prisma.credit.count({
+      const featuredPostCredits = await prisma.jobPostingCredit.count({
         where: {
           userId: testUserId,
           type: 'featured_post',
-          usedAt: null,
+          isUsed: false,
         },
       });
 
@@ -109,7 +109,7 @@ async function testCreditAllocation() {
       }
 
       // Clean up for next test
-      await prisma.credit.deleteMany({
+      await prisma.jobPostingCredit.deleteMany({
         where: { userId: testUserId }
       });
       

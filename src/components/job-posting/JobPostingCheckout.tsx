@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { JOB_POSTING_CONFIG } from '@/lib/stripe';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 import { 
   Check, 
   Star, 
@@ -36,11 +36,11 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
 
   if (!isOpen) return null;
 
-  const tierConfig = JOB_POSTING_CONFIG.tiers[selectedTier];
+  const tierConfig = SUBSCRIPTION_TIERS_CONFIG[selectedTier];
   const addonConfigs = JOB_POSTING_CONFIG.addons;
 
   // Calculate total price
-  const tierPrice = tierConfig.price;
+  const tierPrice = tierConfig.monthlyPrice;
   const addonPrice = selectedAddons.reduce((total, addonKey) => {
     return total + addonConfigs[addonKey].price;
   }, 0);
@@ -181,7 +181,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
               <h3 className="text-lg font-semibold text-gray-900">Choose Your Base Tier</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {Object.entries(JOB_POSTING_CONFIG.tiers).map(([key, tier]) => (
+              {Object.entries(SUBSCRIPTION_TIERS_CONFIG).map(([key, tier]) => (
                 <div
                   key={key}
                   className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
@@ -196,7 +196,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                       {getTierIcon(key as TierKey)}
                       <span className="ml-2 font-semibold text-gray-900">{tier.name}</span>
                     </div>
-                    <span className="text-2xl font-bold text-gray-900">${tier.price}</span>
+                    <span className="text-2xl font-bold text-gray-900">${tier.monthlyPrice}</span>
                   </div>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li className="flex items-center">
@@ -302,7 +302,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">{tierConfig.name}</span>
-                  <span className="font-semibold">${tierConfig.price}</span>
+                  <span className="font-semibold">${tierConfig.monthlyPrice}</span>
                 </div>
                 {selectedAddons.map(addonKey => {
                   const addon = addonConfigs[addonKey];
@@ -318,7 +318,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                     <span className="text-lg font-semibold text-gray-900">Total</span>
                     <span className="text-2xl font-bold text-gray-900">${totalPrice}</span>
                   </div>
-                  <p className="text-xs text-gray-500 text-right">One-time payment • Credits expire in 30 days</p>
+                  <p className="text-xs text-gray-500 text-right">Monthly subscription • Credits expire in 30 days</p>
                 </div>
               </div>
             </div>
