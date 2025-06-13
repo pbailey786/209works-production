@@ -591,7 +591,7 @@ function DashboardContent() {
                   Ready to hire?
                 </h3>
                 <p className="mb-6 text-gray-600">
-                  Post your first job and start finding great candidates.
+                  Use your credits to post your first job and start finding great candidates.
                 </p>
                 <button
                   onClick={handlePostJobClick}
@@ -640,7 +640,7 @@ function DashboardContent() {
                       Post a Job
                     </p>
                     <p className="text-sm text-gray-600">
-                      Create compelling job listings with AI
+                      Use your credits to create compelling job listings with AI
                     </p>
                   </div>
                 </div>

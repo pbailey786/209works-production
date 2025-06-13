@@ -12,15 +12,15 @@ const employerPlans = [
     price: 50,
     description: 'Perfect for small businesses hiring occasionally',
     features: [
-      '2 Job Posts',
+      '2 Job Posting Credits',
       'Basic Analytics Dashboard',
       'Applicant Management',
       '209 Area Targeting',
       'Email Support',
-      '30-day Job Duration',
+      '30-day Credit Duration',
       'Bulk Upload Access',
     ],
-    billingNote: '💳 One-time payment • Job credits expire in 30 days',
+    billingNote: '💳 One-time payment • Credits expire in 30 days',
   },
   {
     id: 'standard',
@@ -28,14 +28,14 @@ const employerPlans = [
     price: 99,
     description: 'Ideal for growing companies with multiple positions',
     features: [
-      '5 Job Posts',
+      '5 Job Posting Credits',
       'Advanced Analytics & Reports',
       'Premium Job Placement',
       'Resume Database Access',
       'Applicant Messaging',
       'Priority Support',
       'Company Profile Page',
-      '30-day Job Duration',
+      '30-day Credit Duration',
       'Bulk Upload Access',
       'AI Job Optimization*',
     ],
@@ -50,14 +50,14 @@ const employerPlans = [
     price: 200,
     description: 'For companies with high-volume hiring needs',
     features: [
-      '10 Job Posts',
+      '10 Job Posting Credits',
       'Everything in Standard',
       'Team Management Tools',
       'Custom Analytics Dashboard',
       'Bulk Job Management',
       'Priority Phone Support',
       'Advanced Reporting',
-      '30-day Job Duration',
+      '30-day Credit Duration',
       'Premium AI Features*',
       'Dedicated Account Manager',
     ],
@@ -138,8 +138,8 @@ export default function EmployerPricingPage() {
       <section className="px-4 py-16">
         <div className="mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Job Posting Packages</h2>
-            <p className="text-xl text-gray-600">Choose the package that fits your hiring needs</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Credit Packages</h2>
+            <p className="text-xl text-gray-600">Choose the credit package that fits your hiring needs</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -236,10 +236,10 @@ export default function EmployerPricingPage() {
             </div>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                Can I purchase additional job posts?
+                Can I purchase additional credits?
               </h3>
               <p className="text-gray-600">
-                Yes! You can purchase additional job posting packages anytime. Each package gives you the specified number of job posts that expire after 30 days.
+                Yes! You can purchase additional credit packages anytime. Each package gives you the specified number of job posting credits that expire after 30 days.
               </p>
             </div>
             <div>
@@ -247,7 +247,7 @@ export default function EmployerPricingPage() {
                 How do job credits work?
               </h3>
               <p className="text-gray-600">
-                Each job posting uses one credit. Unused job credits expire after 30 days. You can repost expired jobs anytime with a new credit.
+                Each job posting uses one credit. Unused credits expire after 30 days. You can repost expired jobs anytime with a new credit.
               </p>
             </div>
             <div>
@@ -255,7 +255,7 @@ export default function EmployerPricingPage() {
                 How does one-time billing work?
               </h3>
               <p className="text-gray-600">
-                You pay once for your selected job posting package. No recurring charges or subscriptions. When you need more job posts, simply purchase another package.
+                You pay once for your selected credit package. No recurring charges or subscriptions. When you need more credits, simply purchase another package.
               </p>
             </div>
           </div>

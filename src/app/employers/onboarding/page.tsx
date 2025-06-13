@@ -18,6 +18,7 @@ import {
   TrendingUp,
   Sparkles,
 } from 'lucide-react';
+import CreditSystemExplanationModal from '@/components/onboarding/CreditSystemExplanationModal';
 
 interface OnboardingData {
   // Step 1: Company Info & Contact Person
@@ -43,6 +44,7 @@ export default function EmployerOnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showCreditExplanation, setShowCreditExplanation] = useState(false);
   
   const [data, setData] = useState<OnboardingData>({
     companyName: '',
@@ -198,8 +200,8 @@ export default function EmployerOnboardingPage() {
       });
 
       if (response.ok) {
-        // Show success modal instead of redirecting
-        setShowSuccessModal(true);
+        // Show credit system explanation modal after successful onboarding
+        setShowCreditExplanation(true);
       } else {
         const errorData = await response.json();
         setErrors({ submit: errorData.error || 'Failed to complete onboarding' });
@@ -209,6 +211,16 @@ export default function EmployerOnboardingPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCreditExplanationComplete = () => {
+    setShowCreditExplanation(false);
+    setShowSuccessModal(true);
+  };
+
+  const handleGetStartedWithCredits = () => {
+    setShowCreditExplanation(false);
+    router.push('/employers/pricing');
   };
 
   const renderStep1 = () => (
@@ -716,6 +728,13 @@ export default function EmployerOnboardingPage() {
           )}
         </div>
       </div>
+
+      {/* Credit System Explanation Modal */}
+      <CreditSystemExplanationModal
+        isOpen={showCreditExplanation}
+        onClose={handleCreditExplanationComplete}
+        onGetStarted={handleGetStartedWithCredits}
+      />
 
       {/* Success Modal */}
       {showSuccessModal && renderSuccessModal()}

@@ -979,7 +979,7 @@ export default function CreateJobPostPage() {
                   <div className="text-center">
                     <h4 className="text-lg font-semibold text-gray-900 mb-1">Starter</h4>
                     <div className="text-2xl font-bold text-[#2d4a3e] mb-2">$89</div>
-                    <div className="text-sm text-gray-600 mb-3">2 Job Posts</div>
+                    <div className="text-sm text-gray-600 mb-3">2 Job Posting Credits</div>
                     <ul className="text-sm text-gray-600 space-y-1">
                       <li>• 30-day duration</li>
                       <li>• Basic analytics</li>
@@ -998,7 +998,7 @@ export default function CreateJobPostPage() {
                   <div className="text-center">
                     <h4 className="text-lg font-semibold text-gray-900 mb-1">Standard</h4>
                     <div className="text-2xl font-bold text-[#ff6b35] mb-2">$199</div>
-                    <div className="text-sm text-gray-600 mb-3">5 Job Posts</div>
+                    <div className="text-sm text-gray-600 mb-3">5 Job Posting Credits</div>
                     <ul className="text-sm text-gray-600 space-y-1">
                       <li>• 30-day duration</li>
                       <li>• AI optimization included</li>
@@ -1018,7 +1018,7 @@ export default function CreateJobPostPage() {
                   <div className="text-center">
                     <h4 className="text-lg font-semibold text-gray-900 mb-1">Pro</h4>
                     <div className="text-2xl font-bold text-[#2d4a3e] mb-2">$350</div>
-                    <div className="text-sm text-gray-600 mb-3">10 Job Posts</div>
+                    <div className="text-sm text-gray-600 mb-3">10 Job Posting Credits</div>
                     <ul className="text-sm text-gray-600 space-y-1">
                       <li>• 60-day duration</li>
                       <li>• AI optimization included</li>
@@ -1040,7 +1040,7 @@ export default function CreateJobPostPage() {
                   <div className="ml-3">
                     <h4 className="text-sm font-medium text-amber-800">Job posting credits required to optimize job posts</h4>
                     <p className="text-sm text-amber-700 mt-1">
-                      You'll need available job credits to proceed with optimization. Credits expire in 30 days.
+                      You'll need available credits to proceed with optimization. Credits expire in 30 days.
                     </p>
                   </div>
                 </div>

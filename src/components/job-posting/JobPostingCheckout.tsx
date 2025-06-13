@@ -144,9 +144,9 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                 <div>
                   <h3 className="text-lg font-semibold text-green-800">You have existing credits!</h3>
                   <p className="text-sm text-green-600">
-                    {userCredits.jobPost} job post{userCredits.jobPost > 1 ? 's' : ''} • {' '}
-                    {userCredits.featuredPost} featured post{userCredits.featuredPost !== 1 ? 's' : ''} • {' '}
-                    {userCredits.socialGraphic} social graphic{userCredits.socialGraphic !== 1 ? 's' : ''}
+                    {userCredits.jobPost} job posting credit{userCredits.jobPost > 1 ? 's' : ''} • {' '}
+                    {userCredits.featuredPost} featured credit{userCredits.featuredPost !== 1 ? 's' : ''} • {' '}
+                    {userCredits.socialGraphic} social graphic credit{userCredits.socialGraphic !== 1 ? 's' : ''}
                   </p>
                 </div>
                 <button

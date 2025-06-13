@@ -136,14 +136,14 @@ export const JOB_POSTING_CONFIG = {
   // Individual credit purchases for reposting and additional jobs
   creditPacks: {
     singleCredit: {
-      name: '1 Job Credit',
+      name: '1 Job Posting Credit',
       price: 59,
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_1,
       credits: 1,
       description: 'Perfect for reposting or one additional job',
     },
     fiveCredits: {
-      name: '5 Job Credits',
+      name: '5 Job Posting Credits',
       price: 249, // $49.80 per credit (16% discount)
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_5,
       credits: 5,

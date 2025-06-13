@@ -30,7 +30,7 @@ const employerNavigation = [
     name: 'Jobs',
     href: '/employers/my-jobs',
     icon: '💼',
-    description: 'Manage Job Posts',
+    description: 'Manage Job Postings',
     submenu: [
       { name: 'My Jobs', href: '/employers/my-jobs' },
       { name: 'Post New Job', href: '/employers/create-job-post' },

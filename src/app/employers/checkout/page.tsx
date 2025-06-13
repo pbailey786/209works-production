@@ -180,7 +180,7 @@ function CheckoutContent() {
                       You will be billed ${plan === 'starter' ? '89' : plan === 'standard' ? '199' : '349'} every month. Cancel anytime.
                     </p>
                     <p className="mt-1">
-                      Unused job credits expire after 30 days. You can repost expired jobs anytime with a new credit.
+                      Unused credits expire after 30 days. You can repost expired jobs anytime with a new credit.
                     </p>
                   </div>
                 </div>
