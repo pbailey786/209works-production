@@ -33,9 +33,9 @@ const packageTiers: PackageTier[] = [
     id: 'starter',
     name: 'Starter Tier',
     price: 0, // Price hidden from UI
-    jobPosts: 2,
+    jobPosts: 3, // Updated to match unified credit system
     duration: 30,
-    features: ['30 days duration'],
+    features: ['30 days duration', '3 universal credits'],
     icon: <Star className="h-5 w-5 text-blue-500" />,
     color: 'border-blue-500 bg-blue-50'
   },
@@ -45,7 +45,7 @@ const packageTiers: PackageTier[] = [
     price: 0, // Price hidden from UI
     jobPosts: 5,
     duration: 30,
-    features: ['30 days duration', 'AI optimization'],
+    features: ['30 days duration', '5 universal credits', 'AI optimization'],
     popular: true,
     icon: <Star className="h-5 w-5 text-orange-500" />,
     color: 'border-orange-500 bg-orange-50'
@@ -54,9 +54,9 @@ const packageTiers: PackageTier[] = [
     id: 'pro',
     name: 'Pro Tier',
     price: 0, // Price hidden from UI
-    jobPosts: 10,
+    jobPosts: 12, // Updated to match unified credit system (10 + 2 featured = 12 total)
     duration: 30,
-    features: ['30 days duration', 'AI optimization', '2 featured posts'],
+    features: ['30 days duration', '12 universal credits', 'AI optimization'],
     icon: <Crown className="h-5 w-5 text-purple-500" />,
     color: 'border-purple-500 bg-purple-50'
   }
@@ -197,7 +197,7 @@ export default function JobPostingPackageModal({ isOpen, onClose }: JobPostingPa
                       {tier.icon}
                       <span className="ml-2 font-semibold text-gray-900">{tier.name}</span>
                     </div>
-                    <div className="text-sm text-gray-600 mb-3">{tier.jobPosts} job posts</div>
+                    <div className="text-sm text-gray-600 mb-3">{tier.jobPosts} credits</div>
                     <ul className="text-sm text-gray-600 space-y-1 text-left">
                       {tier.features.map((feature, index) => (
                         <li key={index} className="flex items-center">

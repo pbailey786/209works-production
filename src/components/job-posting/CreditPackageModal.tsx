@@ -184,7 +184,7 @@ export default function CreditPackageModal({
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-gray-900">{tier.name}</h3>
-                        <p className="text-3xl font-bold text-gray-900">${tier.monthlyPrice}</p>
+                        <p className="text-lg font-medium text-gray-700">{tier.description}</p>
                       </div>
                     </div>
 
@@ -238,10 +238,10 @@ export default function CreditPackageModal({
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">
-                    ${tiers[selectedTier].monthlyPrice}
+                  <p className="text-lg font-medium text-gray-700">
+                    Monthly Subscription
                   </p>
-                  <p className="text-xs text-gray-500">Monthly subscription</p>
+                  <p className="text-xs text-gray-500">Credits included</p>
                 </div>
               </div>
 
@@ -264,7 +264,7 @@ export default function CreditPackageModal({
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-5 w-5" />
-                    Subscribe → ${tiers[selectedTier].monthlyPrice}/month
+                    Subscribe to {tiers[selectedTier].name}
                   </>
                 )}
               </button>

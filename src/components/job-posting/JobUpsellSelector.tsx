@@ -40,7 +40,7 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'social-media',
     name: 'Social Media Shoutout',
-    price: 49,
+    price: 0, // Price hidden from UI
     description:
       'Promote your job across our Instagram and X (Twitter) channels',
     features: [
@@ -56,7 +56,7 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'placement-bump',
     name: 'On-Site Placement Bump',
-    price: 49,
+    price: 0, // Price hidden from UI
     description: 'JobsGPT actively promotes your position to chat users',
     features: [
       'AI chatbot recommends your job to relevant users',
@@ -72,9 +72,9 @@ const upsellOptions: UpsellOption[] = [
   {
     id: 'bundle',
     name: 'Complete Promotion Bundle',
-    price: 85,
-    originalPrice: 98,
-    description: 'Get both services and save $13!',
+    price: 0, // Price hidden from UI
+    originalPrice: 0, // Price hidden from UI
+    description: 'Get both services for maximum exposure!',
     features: [
       'Everything from Social Media Shoutout',
       'Everything from On-Site Placement Bump',
@@ -84,7 +84,7 @@ const upsellOptions: UpsellOption[] = [
       'Best value for maximum exposure',
     ],
     icon: <Package className="h-6 w-6" />,
-    badge: 'SAVE $13',
+    badge: 'BEST VALUE',
   },
 ];
 
@@ -226,16 +226,7 @@ export default function JobUpsellSelector({
                 <h4 className="mb-1 text-lg font-semibold text-gray-900">
                   {option.name}
                 </h4>
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-bold text-gray-900">
-                    ${option.price}
-                  </span>
-                  {option.originalPrice && (
-                    <span className="text-lg text-gray-500 line-through">
-                      ${option.originalPrice}
-                    </span>
-                  )}
-                </div>
+                {/* Pricing removed per unified credit system */}
               </div>
 
               {/* Description */}

@@ -81,7 +81,7 @@ export const SUBSCRIPTION_TIERS_CONFIG = {
     monthlyPrice: 89,
     stripePriceId: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
     features: {
-      jobPosts: 3,
+      credits: 3, // Updated to use unified credit system
       duration: 30, // days
       aiOptimization: false,
       analytics: 'basic',
@@ -94,7 +94,7 @@ export const SUBSCRIPTION_TIERS_CONFIG = {
     monthlyPrice: 199,
     stripePriceId: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
     features: {
-      jobPosts: 5,
+      credits: 5, // Updated to use unified credit system
       duration: 30,
       aiOptimization: true,
       analytics: 'advanced',
@@ -108,12 +108,11 @@ export const SUBSCRIPTION_TIERS_CONFIG = {
     monthlyPrice: 349,
     stripePriceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
     features: {
-      jobPosts: 10,
+      credits: 12, // Updated to use unified credit system (10 + 2 featured = 12 total)
       duration: 60,
       aiOptimization: true,
       analytics: 'premium',
       support: 'phone',
-      featuredPosts: 2,
     },
     description: 'For high-volume hiring',
   },
@@ -124,40 +123,40 @@ export const JOB_POSTING_CONFIG = {
   addons: {
     featuredPost: {
       name: 'Featured Post',
-      price: 49,
+      price: 0, // Price hidden from UI per unified credit system
       stripePriceId: process.env.STRIPE_PRICE_FEATURED || 'price_dynamic_featured',
       description: 'Highlight your job at the top of search results',
     },
     socialGraphic: {
       name: 'Social Post Graphic',
-      price: 49,
+      price: 0, // Price hidden from UI per unified credit system
       stripePriceId: process.env.STRIPE_PRICE_GRAPHIC || 'price_dynamic_graphic',
       description: 'Custom social media graphic for your job post',
     },
     featureAndSocialBundle: {
       name: 'Feature and Social Bundle',
-      price: 85,
+      price: 0, // Price hidden from UI per unified credit system
       stripePriceId: process.env.STRIPE_PRICE_BOOST_PACK || 'price_dynamic_boost_pack',
-      description: 'Featured post + social graphic (save $13)',
+      description: 'Featured post + social graphic for maximum exposure',
       includes: ['featuredPost', 'socialGraphic'],
     },
   },
   // Individual credit purchases for reposting and additional jobs
   creditPacks: {
     singleCredit: {
-      name: '1 Job Posting Credit',
-      price: 59,
+      name: '1 Universal Credit',
+      price: 0, // Price hidden from UI per unified credit system
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_1 || 'price_dynamic_credit_1',
       credits: 1,
-      description: 'Perfect for reposting or one additional job',
+      description: 'Perfect for any feature: job posts, featured listings, social graphics',
     },
     fiveCredits: {
-      name: '5 Job Posting Credits',
-      price: 249, // $49.80 per credit (16% discount)
+      name: '5 Universal Credits',
+      price: 0, // Price hidden from UI per unified credit system
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_5 || 'price_dynamic_credit_5',
       credits: 5,
-      description: 'Best value for multiple job postings',
-      savings: 46, // $295 - $249
+      description: 'Best value for multiple features and job postings',
+      savings: 0, // Savings calculation hidden from UI
     },
   },
 };

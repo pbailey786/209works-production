@@ -90,6 +90,11 @@ export default function EmployerBulkUploadPage() {
   const [showGenieFirst, setShowGenieFirst] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+  // Helper function to get total credits (unified system)
+  const getTotalCredits = () => {
+    return userCredits.total || (userCredits.jobPost + (userCredits.featuredPost || 0) + (userCredits.socialGraphic || 0));
+  };
+
   // Fetch upload history and user credits on component mount
   useEffect(() => {
     fetchUploadHistory();
@@ -277,8 +282,8 @@ export default function EmployerBulkUploadPage() {
   };
 
   const handleFile = async (file: File) => {
-    // Check if user has any credits before processing
-    if (userCredits.jobPost === 0) {
+    // Check if user has any credits before processing (unified credit system)
+    if (getTotalCredits() === 0) {
       setShowUpgradeModal(true);
       return;
     }
@@ -338,13 +343,14 @@ export default function EmployerBulkUploadPage() {
 
     const successfulJobs = processedJobs.filter(job => job.status === 'success');
     const totalCreditsNeeded = successfulJobs.reduce((sum, job) => sum + job.creditsRequired, 0);
+    const totalCredits = getTotalCredits();
 
-    if (totalCreditsNeeded > userCredits.jobPost) {
-      if (userCredits.jobPost === 0) {
+    if (totalCreditsNeeded > totalCredits) {
+      if (totalCredits === 0) {
         setShowUpgradeModal(true);
         return;
       }
-      showError(`Insufficient credits. You need ${totalCreditsNeeded} credits but only have ${userCredits.jobPost}.`);
+      showError(`Insufficient credits. You need ${totalCreditsNeeded} credits but only have ${totalCredits}.`);
       return;
     }
 
@@ -415,9 +421,9 @@ export default function EmployerBulkUploadPage() {
 
   const handleOptimizeJob = async (job: ProcessedJob) => {
     try {
-      // Check if user has credits before optimizing
-      if (userCredits.jobPost === 0) {
-        showError('No job posting credits available. Please purchase credits to optimize jobs.');
+      // Check if user has credits before optimizing (unified credit system)
+      if (getTotalCredits() === 0) {
+        showError('No credits available. Please purchase credits to optimize jobs.');
         return;
       }
 
@@ -462,10 +468,11 @@ export default function EmployerBulkUploadPage() {
           prev.map(j => j.id === job.id ? optimizedJob : j)
         );
 
-        // Update user credits since optimization used one
+        // Update user credits since optimization used one (unified credit system)
         setUserCredits(prev => ({
           ...prev,
-          jobPost: prev.jobPost - 1,
+          total: prev.total ? prev.total - 1 : Math.max(0, (prev.jobPost + (prev.featuredPost || 0) + (prev.socialGraphic || 0)) - 1),
+          jobPost: prev.jobPost > 0 ? prev.jobPost - 1 : prev.jobPost, // Maintain backward compatibility
         }));
 
         showSuccess('Job optimized successfully! 1 credit used.');
@@ -563,16 +570,18 @@ export default function EmployerBulkUploadPage() {
               <div className="text-center">
                 <div className="flex items-center">
                   <Sparkles className="mr-2 h-5 w-5 text-orange-500" />
-                  <span className="text-2xl font-bold text-gray-900">{userCredits.jobPost}</span>
+                  <span className="text-2xl font-bold text-gray-900">
+                    {userCredits.total || (userCredits.jobPost + (userCredits.featuredPost || 0) + (userCredits.socialGraphic || 0))}
+                  </span>
                 </div>
-                <p className="text-sm text-gray-600">Job Credits</p>
+                <p className="text-sm text-gray-600">Universal Credits</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center">
-                  <TrendingUp className="mr-2 h-5 w-5 text-purple-500" />
-                  <span className="text-2xl font-bold text-gray-900">{userCredits.featuredPost}</span>
+                  <TrendingUp className="mr-2 h-5 w-5 text-blue-500" />
+                  <span className="text-sm font-medium text-gray-700">Any Feature</span>
                 </div>
-                <p className="text-sm text-gray-600">Featured</p>
+                <p className="text-xs text-gray-500">Jobs, Featured, Social</p>
               </div>
               <button
                 onClick={handleAddCredits}
@@ -640,19 +649,19 @@ export default function EmployerBulkUploadPage() {
             Upload Your Jobs
           </h2>
 
-          {userCredits.jobPost === 0 && (
+          {getTotalCredits() === 0 && (
             <div className="mb-6 rounded-lg bg-orange-50 border border-orange-200 p-4">
               <div className="flex items-center">
                 <CreditCard className="h-5 w-5 text-orange-600 mr-3" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-orange-800">Subscription Required</h3>
+                  <h3 className="text-sm font-medium text-orange-800">Credits Required</h3>
                   <p className="text-sm text-orange-700 mt-1">
-                    Bulk upload is available with paid plans.
+                    Bulk upload requires credits.
                     <button
                       onClick={() => setShowUpgradeModal(true)}
                       className="underline font-medium ml-1 hover:text-orange-800"
                     >
-                      Choose your plan
+                      Get credits
                     </button>
                     to start uploading multiple jobs at once.
                   </p>
@@ -663,26 +672,26 @@ export default function EmployerBulkUploadPage() {
 
           <div
             className={`rounded-xl border-2 border-dashed p-12 text-center transition-colors ${
-              userCredits.jobPost === 0
+              getTotalCredits() === 0
                 ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
                 : dragActive
                 ? 'border-[#2d4a3e] bg-[#9fdf9f]/10'
                 : 'border-gray-300 hover:border-[#2d4a3e]'
             }`}
-            onDragEnter={userCredits.jobPost > 0 ? handleDrag : undefined}
-            onDragLeave={userCredits.jobPost > 0 ? handleDrag : undefined}
-            onDragOver={userCredits.jobPost > 0 ? handleDrag : undefined}
-            onDrop={userCredits.jobPost > 0 ? handleDrop : undefined}
+            onDragEnter={getTotalCredits() > 0 ? handleDrag : undefined}
+            onDragLeave={getTotalCredits() > 0 ? handleDrag : undefined}
+            onDragOver={getTotalCredits() > 0 ? handleDrag : undefined}
+            onDrop={getTotalCredits() > 0 ? handleDrop : undefined}
           >
             {uploadStatus === 'idle' && (
               <>
-                <Upload className={`mx-auto mb-4 h-16 w-16 ${userCredits.jobPost === 0 ? 'text-gray-300' : 'text-gray-400'}`} />
+                <Upload className={`mx-auto mb-4 h-16 w-16 ${getTotalCredits() === 0 ? 'text-gray-300' : 'text-gray-400'}`} />
                 <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                  {userCredits.jobPost === 0 ? 'Credits Required for Upload' : 'Drag and drop your file here'}
+                  {getTotalCredits() === 0 ? 'Credits Required for Upload' : 'Drag and drop your file here'}
                 </h3>
                 <p className="mb-6 text-gray-600">
-                  {userCredits.jobPost === 0
-                    ? 'Purchase a plan to start uploading jobs in bulk'
+                  {getTotalCredits() === 0
+                    ? 'Purchase credits to start uploading jobs in bulk'
                     : 'Support for CSV, Excel (.xlsx), and JSON files up to 10MB'
                   }
                 </p>
@@ -692,18 +701,18 @@ export default function EmployerBulkUploadPage() {
                   onChange={handleFileInput}
                   className="hidden"
                   id="file-upload"
-                  disabled={userCredits.jobPost === 0}
+                  disabled={getTotalCredits() === 0}
                 />
                 <label
-                  htmlFor={userCredits.jobPost === 0 ? undefined : "file-upload"}
+                  htmlFor={getTotalCredits() === 0 ? undefined : "file-upload"}
                   className={`rounded-lg px-6 py-3 font-medium text-white transition-colors ${
-                    userCredits.jobPost === 0
+                    getTotalCredits() === 0
                       ? 'bg-gray-400 cursor-not-allowed'
                       : 'cursor-pointer bg-[#ff6b35] hover:bg-[#e55a2b]'
                   }`}
-                  onClick={userCredits.jobPost === 0 ? () => setShowUpgradeModal(true) : undefined}
+                  onClick={getTotalCredits() === 0 ? () => setShowUpgradeModal(true) : undefined}
                 >
-                  {userCredits.jobPost === 0 ? 'Get Credits' : 'Choose File'}
+                  {getTotalCredits() === 0 ? 'Get Credits' : 'Choose File'}
                 </label>
               </>
             )}
@@ -811,7 +820,7 @@ export default function EmployerBulkUploadPage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleBulkPublish}
-                  disabled={processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0) > userCredits.jobPost}
+                  disabled={processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0) > getTotalCredits()}
                   className="rounded-lg bg-[#2d4a3e] px-4 py-2 font-medium text-white transition-colors hover:bg-[#1d3a2e] disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   Publish All ({processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0)} credits)

@@ -125,9 +125,9 @@ export default function BuyCreditsModal({
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">${pack.price}</div>
+                    <div className="text-lg font-medium text-gray-700">Universal Credits</div>
                     <div className="text-xs text-gray-500">
-                      ${(pack.price / pack.credits).toFixed(0)} per credit
+                      Use for any feature
                     </div>
                   </div>
                 </div>
@@ -146,13 +146,13 @@ export default function BuyCreditsModal({
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-700">{selectedPackConfig.name}</span>
-              <span className="font-semibold">${selectedPackConfig.price}</span>
+              <span className="font-semibold">Universal Credits</span>
             </div>
             <div className="text-sm text-gray-600">
-              You'll receive {selectedPackConfig.credits} job posting credit{selectedPackConfig.credits > 1 ? 's' : ''}
+              You'll receive {selectedPackConfig.credits} universal credit{selectedPackConfig.credits > 1 ? 's' : ''}
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              Credits expire in 60 days
+              Use for job posts, featured listings, social graphics, and more. Credits expire in 60 days.
             </div>
           </div>
 
@@ -176,7 +176,7 @@ export default function BuyCreditsModal({
             ) : (
               <>
                 <CreditCard className="h-5 w-5 mr-2" />
-                Purchase for ${selectedPackConfig.price}
+                Purchase {selectedPackConfig.name}
               </>
             )}
           </button>

@@ -138,15 +138,16 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
 
         <div className="p-6">
           {/* Use Existing Credits Option */}
-          {userCredits && userCredits.jobPost > 0 && (
+          {userCredits && (userCredits.jobPost > 0 || userCredits.total > 0) && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-green-800">You have existing credits!</h3>
                   <p className="text-sm text-green-600">
-                    {userCredits.jobPost} job posting credit{userCredits.jobPost > 1 ? 's' : ''} • {' '}
-                    {userCredits.featuredPost} featured credit{userCredits.featuredPost !== 1 ? 's' : ''} • {' '}
-                    {userCredits.socialGraphic} social graphic credit{userCredits.socialGraphic !== 1 ? 's' : ''}
+                    {userCredits.total || (userCredits.jobPost + (userCredits.featuredPost || 0) + (userCredits.socialGraphic || 0))} universal credits available
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Use for any feature: job posts, featured listings, social graphics, and more
                   </p>
                 </div>
                 <button
@@ -164,7 +165,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
           )}
 
           {/* Divider */}
-          {userCredits && userCredits.jobPost > 0 && (
+          {userCredits && (userCredits.total > 0 || userCredits.jobPost > 0) && (
             <div className="mb-6 flex items-center">
               <div className="flex-1 border-t border-gray-300"></div>
               <span className="px-4 text-sm text-gray-500">or purchase more credits</span>
@@ -201,7 +202,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li className="flex items-center">
                       <Check className="h-3 w-3 text-green-500 mr-2" />
-                      <strong>{tier.features.jobPosts} job post{tier.features.jobPosts > 1 ? 's' : ''}</strong>
+                      <strong>{tier.features.credits || tier.features.jobPosts} universal credit{(tier.features.credits || tier.features.jobPosts) > 1 ? 's' : ''}</strong>
                     </li>
                     <li className="flex items-center">
                       <Check className="h-3 w-3 text-green-500 mr-2" />
@@ -213,12 +214,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                         AI optimization
                       </li>
                     )}
-                    {(tier.features as any).featuredPosts && (
-                      <li className="flex items-center">
-                        <Check className="h-3 w-3 text-green-500 mr-2" />
-                        {(tier.features as any).featuredPosts} featured post{(tier.features as any).featuredPosts > 1 ? 's' : ''}
-                      </li>
-                    )}
+                    {/* Featured posts are now part of universal credits */}
                   </ul>
                   {selectedTier === key && (
                     <div className="absolute top-2 right-2">
