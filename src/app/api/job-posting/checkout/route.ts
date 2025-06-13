@@ -118,8 +118,8 @@ export async function POST(req: NextRequest) {
     let basePrice = 0;
     let jobCredits = 0;
 
-    if (validatedData.tier) {
-      tierConfig = JOB_POSTING_CONFIG.tiers[validatedData.tier];
+    if (validatedData.tier && typeof validatedData.tier === 'string') {
+      tierConfig = JOB_POSTING_CONFIG.tiers[validatedData.tier as keyof typeof JOB_POSTING_CONFIG.tiers];
       console.log('🎯 Tier config:', tierConfig);
       console.log('💰 Stripe Price ID:', tierConfig?.stripePriceId);
 
@@ -141,8 +141,8 @@ export async function POST(req: NextRequest) {
 
       basePrice = tierConfig.price;
       jobCredits = tierConfig.features.jobPosts;
-    } else if (validatedData.creditPack) {
-      creditPackConfig = JOB_POSTING_CONFIG.creditPacks[validatedData.creditPack];
+    } else if (validatedData.creditPack && typeof validatedData.creditPack === 'string') {
+      creditPackConfig = JOB_POSTING_CONFIG.creditPacks[validatedData.creditPack as keyof typeof JOB_POSTING_CONFIG.creditPacks];
       console.log('📦 Credit pack config:', creditPackConfig);
       console.log('💰 Stripe Price ID:', creditPackConfig?.stripePriceId);
 
@@ -219,19 +219,21 @@ export async function POST(req: NextRequest) {
     let totalAddonPrice = 0;
     const selectedAddons = [];
     for (const addonKey of validatedData.addons) {
-      const addon = JOB_POSTING_CONFIG.addons[addonKey];
-      if (addon) {
-        lineItems.push({
-          price: addon.stripePriceId,
-          quantity: 1,
-        });
-        totalAddonPrice += addon.price;
-        selectedAddons.push({
-          key: addonKey,
-          name: addon.name,
-          price: addon.price,
-          stripePriceId: addon.stripePriceId,
-        });
+      if (typeof addonKey === 'string') {
+        const addon = JOB_POSTING_CONFIG.addons[addonKey as keyof typeof JOB_POSTING_CONFIG.addons];
+        if (addon) {
+          lineItems.push({
+            price: addon.stripePriceId,
+            quantity: 1,
+          });
+          totalAddonPrice += addon.price;
+          selectedAddons.push({
+            key: addonKey,
+            name: addon.name,
+            price: addon.price,
+            stripePriceId: addon.stripePriceId,
+          });
+        }
       }
     }
 
@@ -310,7 +312,7 @@ export async function POST(req: NextRequest) {
                 productName = addon.name;
               }
             }
-          } else {
+          } else if (originalPriceId && typeof originalPriceId === 'string') {
             // Try to get price from Stripe and convert to one-time
             try {
               const stripePrice = await stripe.prices.retrieve(originalPriceId);
@@ -318,9 +320,9 @@ export async function POST(req: NextRequest) {
 
               if (stripePrice.product && typeof stripePrice.product === 'string') {
                 const product = await stripe.products.retrieve(stripePrice.product);
-                productName = product.name;
-              } else if (typeof stripePrice.product === 'object' && stripePrice.product?.name) {
-                productName = stripePrice.product.name;
+                productName = product.name || 'Product';
+              } else if (typeof stripePrice.product === 'object' && stripePrice.product && 'name' in stripePrice.product) {
+                productName = (stripePrice.product as any).name || 'Product';
               }
             } catch (priceError) {
               console.error('❌ Error retrieving price from Stripe:', priceError);
@@ -348,7 +350,6 @@ export async function POST(req: NextRequest) {
               currency: 'usd',
               product_data: {
                 name: productName,
-                description: `One-time payment for ${productName}`,
               },
             });
 
