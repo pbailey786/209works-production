@@ -23,6 +23,7 @@ import {
 import { LazyOnVisible } from '../components/ui/lazy-component';
 import { Skeleton } from '../components/ui/skeleton';
 import SEOHead from '../components/SEOHead';
+import DynamicHeroHeadlines from '../components/DynamicHeroHeadlines';
 
 // Lazy load heavy components
 const Analytics = React.lazy(() => import('../components/Analytics'));
@@ -57,31 +58,16 @@ export default function Home() {
       {/* Hero Section - Dark Green Background like Wise */}
       <section className="relative overflow-hidden bg-[#2d4a3e] px-4 py-20">
         <div className="relative mx-auto max-w-6xl text-center">
+          {/* Dynamic Headlines Component */}
+          <DynamicHeroHeadlines />
+
+          {/* Search Bar */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-8"
           >
-            {/* Main Headline - Wise Style */}
-            <h1 className="mb-8 font-inter text-5xl font-black uppercase leading-tight tracking-tight text-[#9fdf9f] sm:text-6xl md:text-7xl">
-              INTRODUCING THE 209 WORKS
-              <br />
-              <span className="text-white">PLATFORM</span>
-            </h1>
-
-            {/* Subtitle */}
-            <p className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-gray-300 sm:text-2xl">
-              Connect with local employers, discover meaningful work, and build
-              your career right here in the Central Valley.
-            </p>
-
-            {/* Search Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-8"
-            >
               <div className="mx-auto max-w-2xl">
                 <form
                   onSubmit={e => {
@@ -148,7 +134,6 @@ export default function Home() {
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </motion.div>
-          </motion.div>
         </div>
       </section>
 
