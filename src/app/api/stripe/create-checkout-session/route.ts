@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create checkout session
+    // Create checkout session for monthly subscription
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customer.id,
       payment_method_types: STRIPE_CONFIG.payment_method_types as any,
@@ -89,24 +89,24 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      mode: STRIPE_CONFIG.mode,
+      mode: 'subscription', // Always subscription mode
       allow_promotion_codes: STRIPE_CONFIG.allow_promotion_codes,
       automatic_tax: STRIPE_CONFIG.automatic_tax,
       subscription_data: {
         metadata: {
           userId: user.id,
           tier,
-          billingInterval,
+          billingInterval: 'monthly', // Always monthly
         },
       },
       success_url:
         successUrl ||
-        `${process.env.NEXTAUTH_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${process.env.NEXTAUTH_URL}/pricing`,
+        `${process.env.NEXTAUTH_URL}/employers/dashboard?session_id={CHECKOUT_SESSION_ID}&success=true`,
+      cancel_url: cancelUrl || `${process.env.NEXTAUTH_URL}/employers/pricing`,
       metadata: {
         userId: user.id,
         tier,
-        billingInterval,
+        billingInterval: 'monthly',
       },
     });
 

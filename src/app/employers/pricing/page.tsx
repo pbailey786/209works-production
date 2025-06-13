@@ -148,18 +148,18 @@ export default function EmployerPricingPage() {
             <p className="text-xl text-gray-600">Choose the credit package that fits your hiring needs</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
             {employerPlans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-xl border-2 p-8 ${
+                className={`relative rounded-xl border-2 p-6 flex flex-col h-full ${
                   plan.highlight
-                    ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-green-50 shadow-xl ring-2 ring-orange-200'
+                    ? 'border-[#ff6b35] bg-gradient-to-br from-[#ff6b35]/5 to-[#9fdf9f]/10 shadow-xl ring-2 ring-[#ff6b35]/20'
                     : plan.popular
-                    ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-green-50 shadow-xl'
+                    ? 'border-[#ff6b35] bg-gradient-to-br from-[#ff6b35]/5 to-[#9fdf9f]/10 shadow-xl'
                     : plan.isEnterprise
                     ? 'border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-gray-400 hover:shadow-lg'
-                    : 'border-gray-200 bg-white hover:border-orange-300 hover:shadow-lg'
+                    : 'border-gray-200 bg-white hover:border-[#ff6b35]/30 hover:shadow-lg'
                 } transition-all`}
               >
                 {(plan.popular || plan.highlight || plan.badge) && (
@@ -178,45 +178,56 @@ export default function EmployerPricingPage() {
                   </div>
                 )}
 
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                  <p className="text-gray-600 mb-6">{plan.description}</p>
+                <div className="text-center flex-1 flex flex-col">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
+                  <p className="text-gray-600 mb-4">{plan.description}</p>
 
-                  <div className="mb-4">
+                  <div className="mb-3">
                     {plan.price ? (
                       <>
-                        <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
-                        <span className="text-gray-600"> one-time</span>
+                        <span className="text-3xl font-bold text-[#2d4a3e]">${plan.price}</span>
+                        <span className="text-gray-600 text-base">/month</span>
                       </>
                     ) : (
-                      <span className="text-2xl font-bold text-gray-900">Contact Us for Pricing</span>
+                      <span className="text-2xl font-semibold text-gray-900">Contact Us for Pricing</span>
                     )}
                   </div>
 
                   {/* Billing note */}
-                  <p className="text-xs text-gray-500 mb-6">{plan.billingNote}</p>
+                  <p className="text-sm text-gray-500 mb-4">{plan.billingNote}</p>
 
                   {/* Pro tip or why popular */}
                   {(plan.proTip || plan.whyPopular) && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-                      <p className="text-xs text-blue-700">
-                        <strong>Pro Tip:</strong> {plan.proTip || plan.whyPopular}
+                    <div className="bg-[#9fdf9f]/20 border border-[#2d4a3e]/20 rounded-lg p-3 mb-4">
+                      <p className="text-sm text-[#2d4a3e] font-medium">
+                        💡 Pro Tip: {plan.proTip || plan.whyPopular}
                       </p>
                     </div>
                   )}
 
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-2 mb-6 flex-1">
                     {plan.features.map((feature, index) => {
                       const hasAiTooltip = feature.includes('AI') && feature.includes('*');
                       const displayFeature = feature.replace('*', '');
 
+                      // Add consistent icons
+                      const getFeatureIcon = (feature: string) => {
+                        if (feature.includes('Job Posting') || feature.includes('job posts')) return '📝';
+                        if (feature.includes('Analytics') || feature.includes('Dashboard')) return '📊';
+                        if (feature.includes('AI') || feature.includes('Optimization')) return '🤖';
+                        if (feature.includes('Support') || feature.includes('Email')) return '💬';
+                        if (feature.includes('Featured') || feature.includes('Boost')) return '🚀';
+                        if (feature.includes('Bulk') || feature.includes('Upload')) return '📤';
+                        return '✅';
+                      };
+
                       return (
                         <li key={index} className="flex items-center text-sm text-gray-600">
-                          <span className="text-green-500 mr-2">✓</span>
+                          <span className="mr-2">{getFeatureIcon(displayFeature)}</span>
                           <span className="flex-1">{displayFeature}</span>
                           {hasAiTooltip && (
                             <div className="group relative ml-1">
-                              <span className="cursor-help text-orange-500">ⓘ</span>
+                              <span className="cursor-help text-[#ff6b35]">ⓘ</span>
                               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
                                 {plan.aiTooltip}
                               </div>
@@ -227,25 +238,27 @@ export default function EmployerPricingPage() {
                     })}
                   </ul>
 
-                  {plan.isEnterprise ? (
-                    <Link
-                      href="/contact"
-                      className="w-full py-3 px-6 rounded-lg font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 inline-block text-center"
-                    >
-                      Contact Sales
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => handlePlanSelect(plan.id, 'monthly')}
-                      className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
-                        plan.popular
-                          ? 'bg-gradient-to-r from-orange-600 to-green-600 text-white hover:from-orange-700 hover:to-green-700'
-                          : 'bg-gray-900 text-white hover:bg-gray-800'
-                      }`}
-                    >
-                      Get Started
-                    </button>
-                  )}
+                  <div className="mt-auto">
+                    {plan.isEnterprise ? (
+                      <Link
+                        href="/contact"
+                        className="w-full py-3 px-6 rounded-lg font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800 inline-block text-center"
+                      >
+                        Contact Sales
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => handlePlanSelect(plan.id, 'monthly')}
+                        className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
+                          plan.popular || plan.highlight
+                            ? 'bg-gradient-to-r from-[#ff6b35] to-[#2d4a3e] text-white hover:from-[#e55a2b] hover:to-[#1d3a2e]'
+                            : 'bg-gray-900 text-white hover:bg-gray-800'
+                        }`}
+                      >
+                        Get Started
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -288,10 +301,10 @@ export default function EmployerPricingPage() {
             </div>
             <div>
               <h3 className="mb-2 text-lg font-semibold">
-                How does one-time billing work?
+                How does monthly billing work?
               </h3>
               <p className="text-gray-600">
-                You pay once for your selected credit package. No recurring charges or subscriptions. When you need more credits, simply purchase another package.
+                All plans are monthly recurring subscriptions. You'll be billed automatically each month and receive your credit allocation. Cancel anytime with no long-term commitments.
               </p>
             </div>
           </div>

@@ -37,7 +37,7 @@ export default function CreditSystemExplanationModal({
       content: (
         <div className="space-y-6">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-green-500 rounded-2xl mb-4 shadow-lg">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#2d4a3e] to-[#9fdf9f] rounded-2xl mb-4 shadow-lg">
               <CreditCard className="h-10 w-10 text-white" />
             </div>
             <p className="text-lg text-gray-600 leading-relaxed">
@@ -64,13 +64,13 @@ export default function CreditSystemExplanationModal({
       content: (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
-            <div className="flex items-start space-x-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-5 w-5 text-green-600" />
+            <div className="flex items-start space-x-3 p-4 bg-[#9fdf9f]/20 border border-[#2d4a3e]/20 rounded-lg">
+              <div className="flex-shrink-0 w-8 h-8 bg-[#2d4a3e]/10 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-5 w-5 text-[#2d4a3e]" />
               </div>
               <div>
-                <h4 className="font-semibold text-green-800">✅ Post a Job</h4>
-                <p className="text-sm text-green-700">Get your listing live for 30 days — 1 credit per post.</p>
+                <h4 className="font-semibold text-[#2d4a3e]">📝 Standard Job Posting</h4>
+                <p className="text-sm text-gray-700">5 credits = 5 ways to get seen — post, boost, or promote any way you like.</p>
               </div>
             </div>
 
@@ -162,17 +162,17 @@ export default function CreditSystemExplanationModal({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-6 relative">
+        <div className="bg-gradient-to-r from-[#2d4a3e] to-[#9fdf9f] text-white p-6 relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
-          
+
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">{slides[currentSlide].title}</h2>
-            <p className="text-blue-100">{slides[currentSlide].subtitle}</p>
+            <p className="text-[#2d4a3e]/80">{slides[currentSlide].subtitle}</p>
           </div>
           
           {/* Progress Indicator */}

@@ -58,46 +58,65 @@ export const getStripe = (): Promise<StripeClient | null> => {
   return stripePromise;
 };
 
-// Stripe configuration
+// Stripe configuration for monthly recurring subscriptions
 export const STRIPE_CONFIG = {
   currency: 'usd',
   payment_method_types: ['card'],
-  mode: 'subscription' as const,
+  mode: 'subscription' as const, // All packages are monthly recurring subscriptions
   billing_address_collection: 'required' as const,
   customer_creation: 'always' as const,
   automatic_tax: {
     enabled: true,
   },
   allow_promotion_codes: true,
+  subscription_data: {
+    trial_period_days: 0, // No trial period for simplicity
+  },
 };
 
-// Job Posting Tiers and Add-ons Configuration (One-time payments)
-export const JOB_POSTING_CONFIG = {
-  tiers: {
-    starter: {
-      name: 'Starter Tier',
-      price: 89,
-      stripePriceId: process.env.STRIPE_PRICE_STARTER,
-      features: {
-        jobPosts: 3,
-        duration: 60, // days
-        aiOptimization: false,
-        analytics: 'basic',
-        support: 'email',
-      },
+// Monthly Subscription Tiers Configuration (All recurring subscriptions)
+export const SUBSCRIPTION_TIERS_CONFIG = {
+  starter: {
+    name: 'Starter',
+    monthlyPrice: 89,
+    stripePriceId: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
+    features: {
+      jobPosts: 3,
+      duration: 30, // days
+      aiOptimization: false,
+      analytics: 'basic',
+      support: 'email',
     },
-    standard: {
-      name: 'Standard Tier',
-      price: 179,
-      stripePriceId: process.env.STRIPE_PRICE_STANDARD || 'price_dynamic_standard',
-      features: {
-        jobPosts: 6,
-        duration: 60,
-        aiOptimization: true,
-        analytics: 'advanced',
-        support: 'priority',
-      },
+    description: 'Perfect for small businesses',
+  },
+  standard: {
+    name: 'Standard',
+    monthlyPrice: 199,
+    stripePriceId: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
+    features: {
+      jobPosts: 5,
+      duration: 30,
+      aiOptimization: true,
+      analytics: 'advanced',
+      support: 'priority',
     },
+    description: 'For growing businesses',
+    popular: true,
+  },
+  pro: {
+    name: 'Pro',
+    monthlyPrice: 349,
+    stripePriceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+    features: {
+      jobPosts: 10,
+      duration: 60,
+      aiOptimization: true,
+      analytics: 'premium',
+      support: 'phone',
+      featuredPosts: 2,
+    },
+    description: 'For high-volume hiring',
+  },
     pro: {
       name: 'Pro Tier',
       price: 349,

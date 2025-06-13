@@ -193,6 +193,7 @@ async function handleCheckoutSessionCompleted(
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
+  const tier = subscription.metadata?.tier;
 
   if (!userId) {
     console.error('Missing userId in subscription metadata:', subscription.id);
@@ -211,20 +212,23 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       return;
     }
 
+    // Create or update subscription
     await prisma.subscription.upsert({
       where: { userId },
       update: {
         stripeSubscriptionId: subscription.id,
         status: 'active',
+        tier: tier as any || 'starter',
         startDate: new Date((subscription as any).current_period_start * 1000),
         endDate: new Date((subscription as any).current_period_end * 1000),
+        price: subscription.items.data[0]?.price.unit_amount || 0,
       },
       create: {
         userId,
         email: user.email,
         stripeSubscriptionId: subscription.id,
-        tier: 'starter', // Default tier, should be updated from metadata
-        billingCycle: 'monthly', // Default, should be updated from metadata
+        tier: tier as any || 'starter',
+        billingCycle: 'monthly',
         status: subscription.status === 'trialing' ? 'trial' : 'active',
         startDate: new Date((subscription as any).current_period_start * 1000),
         endDate: new Date((subscription as any).current_period_end * 1000),
@@ -232,9 +236,52 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       },
     });
 
-    console.log(`Subscription created for user ${userId}`);
+    // Allocate credits based on tier
+    await allocateSubscriptionCredits(userId, tier as string || 'starter');
+
+    console.log(`Subscription created for user ${userId} with tier ${tier}`);
   } catch (error) {
     console.error('Error handling subscription created:', error);
+  }
+}
+
+// Helper function to allocate credits based on subscription tier
+async function allocateSubscriptionCredits(userId: string, tier: string) {
+  const creditAllocation = {
+    starter: { jobPosts: 3, featuredPosts: 0 },
+    standard: { jobPosts: 5, featuredPosts: 0 },
+    pro: { jobPosts: 10, featuredPosts: 2 },
+  };
+
+  const allocation = creditAllocation[tier as keyof typeof creditAllocation] || creditAllocation.starter;
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30); // Credits expire in 30 days
+
+  const creditsToCreate = [];
+
+  // Add job posting credits
+  for (let i = 0; i < allocation.jobPosts; i++) {
+    creditsToCreate.push({
+      userId,
+      type: 'job_post',
+      expiresAt,
+    });
+  }
+
+  // Add featured post credits
+  for (let i = 0; i < allocation.featuredPosts; i++) {
+    creditsToCreate.push({
+      userId,
+      type: 'featured_post',
+      expiresAt,
+    });
+  }
+
+  if (creditsToCreate.length > 0) {
+    await prisma.credit.createMany({
+      data: creditsToCreate,
+    });
+    console.log(`Allocated ${creditsToCreate.length} credits to user ${userId} for tier ${tier}`);
   }
 }
 
@@ -285,12 +332,19 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
     typeof (invoice as any).subscription === 'string'
   ) {
     try {
-      await prisma.subscription.update({
+      // Update subscription status
+      const subscription = await prisma.subscription.update({
         where: { stripeSubscriptionId: (invoice as any).subscription },
         data: {
           status: 'active',
         },
       });
+
+      // For recurring payments (not the first payment), allocate new credits
+      if (invoice.billing_reason === 'subscription_cycle') {
+        await allocateSubscriptionCredits(subscription.userId, subscription.tier);
+        console.log(`Allocated recurring credits for subscription: ${(invoice as any).subscription}`);
+      }
 
       console.log(
         `Invoice payment succeeded for subscription: ${(invoice as any).subscription}`

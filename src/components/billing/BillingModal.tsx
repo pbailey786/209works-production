@@ -44,11 +44,11 @@ export default function BillingModal({
       price: 89,
       description: 'Perfect for small businesses',
       features: [
-        '2 job posts',
-        '30-day listing duration',
-        'AI optimization',
-        'Basic analytics',
-        'Email support',
+        '📝 3 job posting credits',
+        '⏰ 30-day listing duration',
+        '🤖 AI optimization',
+        '📊 Basic analytics',
+        '💬 Email support',
       ],
       badge: 'Great for Local Business',
     },
@@ -58,11 +58,11 @@ export default function BillingModal({
       price: 199,
       description: 'For growing businesses',
       features: [
-        '5 job posts',
-        '30-day listing duration',
-        'AI optimization',
-        'Advanced analytics',
-        'Priority support',
+        '📝 5 job posting credits',
+        '⏰ 30-day listing duration',
+        '🤖 AI optimization',
+        '📊 Advanced analytics',
+        '💬 Priority support',
       ],
       badge: 'Most Popular',
       popular: true,
@@ -73,12 +73,12 @@ export default function BillingModal({
       price: 349,
       description: 'For high-volume hiring',
       features: [
-        '10 job posts',
-        '60-day listing duration',
-        'AI optimization',
-        'Premium analytics',
-        'Phone support',
-        '2 featured posts',
+        '📝 10 job posting credits',
+        '⏰ 60-day listing duration',
+        '🤖 AI optimization',
+        '📊 Premium analytics',
+        '💬 Phone support',
+        '🚀 2 featured posts',
       ],
       badge: 'Best Value',
     },
@@ -183,14 +183,14 @@ export default function BillingModal({
                     key={plan.id}
                     className={`relative cursor-pointer rounded-xl border-2 p-6 transition-all ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    } ${plan.popular ? 'ring-2 ring-blue-500' : ''}`}
+                        ? 'border-[#ff6b35] bg-[#ff6b35]/5'
+                        : 'border-gray-200 hover:border-[#ff6b35]/30'
+                    } ${plan.popular ? 'ring-2 ring-[#ff6b35]' : ''}`}
                     onClick={() => setSelectedPlan(plan.id)}
                   >
                     {plan.popular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2 transform">
-                        <span className="rounded-full bg-blue-500 px-3 py-1 text-sm font-medium text-white">
+                        <span className="rounded-full bg-gradient-to-r from-[#ff6b35] to-[#2d4a3e] px-3 py-1 text-sm font-medium text-white">
                           Most Popular
                         </span>
                       </div>
@@ -201,7 +201,7 @@ export default function BillingModal({
                         {plan.name}
                       </h3>
                       <div className="mt-2">
-                        <span className="text-3xl font-bold text-gray-900">
+                        <span className="text-3xl font-bold text-[#2d4a3e]">
                           ${price}
                         </span>
                         <span className="text-gray-500">
@@ -229,8 +229,10 @@ export default function BillingModal({
                       onClick={() => handlePlanSelect(plan.id)}
                       disabled={isLoading}
                       className={`mt-6 w-full rounded-lg px-4 py-3 font-semibold transition-colors ${
-                        isSelected
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        plan.popular
+                          ? 'bg-gradient-to-r from-[#ff6b35] to-[#2d4a3e] text-white hover:from-[#e55a2b] hover:to-[#1d3a2e]'
+                          : isSelected
+                          ? 'bg-[#2d4a3e] text-white hover:bg-[#1d3a2e]'
                           : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                       } disabled:opacity-50`}
                     >
