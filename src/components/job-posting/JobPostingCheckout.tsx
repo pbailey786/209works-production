@@ -44,9 +44,6 @@ interface UserSubscriptionStatus {
 interface UserCreditBalance {
   universal: number;
   total: number;
-  jobPost?: number;
-  featuredPost?: number;
-  socialGraphic?: number;
 }
 
 type TierKey = 'starter' | 'standard' | 'pro';
@@ -83,6 +80,16 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
       const creditsResponse = await fetch('/api/job-posting/credits');
       const creditsData = await creditsResponse.json();
 
+      if (!subscriptionResponse.ok) {
+        console.error('Subscription API error:', subscriptionData);
+        throw new Error(`Subscription API failed: ${subscriptionData.error || 'Unknown error'}`);
+      }
+
+      if (!creditsResponse.ok) {
+        console.error('Credits API error:', creditsData);
+        throw new Error(`Credits API failed: ${creditsData.error || 'Unknown error'}`);
+      }
+
       setSubscriptionStatus({
         hasActiveSubscription: subscriptionData.hasActiveSubscription,
         currentTier: subscriptionData.currentTier,
@@ -92,10 +99,8 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
       setCreditBalance({
         universal: creditsData.universal || 0,
         total: creditsData.total || 0,
-        jobPost: creditsData.jobPost || 0,
-        featuredPost: creditsData.featuredPost || 0,
-        socialGraphic: creditsData.socialGraphic || 0,
       });
+
     } catch (error) {
       console.error('Failed to fetch user status:', error);
       // Set default values on error
@@ -226,20 +231,20 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
   const renderSubscriptionWithCredits = () => (
     <div className="p-6">
       {/* Credit Balance Display */}
-      <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl">
+      <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-green-100 border border-[#2d4a3e] rounded-xl">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center mb-2">
-              <Coins className="h-6 w-6 text-green-600 mr-2" />
-              <h3 className="text-xl font-bold text-green-800">You have {creditBalance?.total || 0} universal credits</h3>
+              <Coins className="h-6 w-6 text-[#2d4a3e] mr-2" />
+              <h3 className="text-xl font-bold text-[#2d4a3e]">You have {creditBalance?.total || 0} universal credits</h3>
             </div>
-            <p className="text-sm text-green-700 mb-3">
+            <p className="text-sm text-[#2d4a3e] mb-3">
               Use your existing credits to post jobs, add featured listings, or create social graphics
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-green-600">{creditBalance?.total || 0}</div>
-            <div className="text-sm text-green-600">Credits</div>
+            <div className="text-3xl font-bold text-[#2d4a3e]">{creditBalance?.total || 0}</div>
+            <div className="text-sm text-[#2d4a3e]">Credits</div>
           </div>
         </div>
       </div>
@@ -247,26 +252,26 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
       {/* Add-on Upgrades */}
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Sparkles className="h-5 w-5 text-orange-500 mr-2" />
+          <Sparkles className="h-5 w-5 text-[#ff6b35] mr-2" />
           Upgrade Your Job Post
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
             className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
               selectedAddons.includes('featuredPost')
-                ? 'border-orange-500 bg-orange-50'
+                ? 'border-[#ff6b35] bg-orange-50'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
             onClick={() => handleAddonToggle('featuredPost')}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center">
-                <TrendingUp className="h-5 w-5 text-orange-500 mr-2" />
+                <TrendingUp className="h-5 w-5 text-[#ff6b35] mr-2" />
                 <span className="font-semibold">Featured Listing</span>
               </div>
               <div className="flex items-center">
-                <Coins className="h-4 w-4 text-orange-500 mr-1" />
-                <span className="font-bold text-orange-600">+1 Credit</span>
+                <Coins className="h-4 w-4 text-[#ff6b35] mr-1" />
+                <span className="font-bold text-[#ff6b35]">+1 Credit</span>
               </div>
             </div>
             <p className="text-sm text-gray-600">Highlight your job at the top of search results</p>
@@ -275,19 +280,19 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
           <div
             className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
               selectedAddons.includes('socialGraphic')
-                ? 'border-purple-500 bg-purple-50'
+                ? 'border-[#2d4a3e] bg-green-50'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
             onClick={() => handleAddonToggle('socialGraphic')}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center">
-                <Instagram className="h-5 w-5 text-purple-500 mr-2" />
+                <Instagram className="h-5 w-5 text-[#2d4a3e] mr-2" />
                 <span className="font-semibold">Social Media Graphic</span>
               </div>
               <div className="flex items-center">
-                <Coins className="h-4 w-4 text-purple-500 mr-1" />
-                <span className="font-bold text-purple-600">+1 Credit</span>
+                <Coins className="h-4 w-4 text-[#2d4a3e] mr-1" />
+                <span className="font-bold text-[#2d4a3e]">+1 Credit</span>
               </div>
             </div>
             <p className="text-sm text-gray-600">Custom social media graphic for your job post</p>
@@ -300,8 +305,8 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
         <div className="flex justify-between items-center">
           <span className="text-lg font-semibold">Total Credits Needed:</span>
           <div className="flex items-center">
-            <Coins className="h-5 w-5 text-blue-600 mr-1" />
-            <span className="text-2xl font-bold text-blue-600">{creditsNeeded}</span>
+            <Coins className="h-5 w-5 text-[#2d4a3e] mr-1" />
+            <span className="text-2xl font-bold text-[#2d4a3e]">{creditsNeeded}</span>
           </div>
         </div>
         <p className="text-sm text-gray-600 mt-1">
@@ -318,7 +323,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
       <button
         onClick={handleUseCredits}
         disabled={isLoading || (creditBalance?.total || 0) < creditsNeeded}
-        className="w-full bg-green-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+        className="w-full bg-[#2d4a3e] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#1d3a2e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
       >
         <Coins className="h-5 w-5 mr-2" />
         Use {creditsNeeded} Credit{creditsNeeded > 1 ? 's' : ''} to Post Job
@@ -362,23 +367,23 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
               key={key}
               className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                 selectedCreditPack === key
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-[#2d4a3e] bg-green-50'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
               onClick={() => setSelectedCreditPack(key as CreditPackKey)}
             >
               <div className="text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <Coins className="h-6 w-6 text-blue-600 mr-2" />
-                  <span className="text-2xl font-bold text-blue-600">{pack.credits}</span>
+                  <Coins className="h-6 w-6 text-[#2d4a3e] mr-2" />
+                  <span className="text-2xl font-bold text-[#2d4a3e]">{pack.credits}</span>
                 </div>
                 <h5 className="font-semibold text-gray-900 mb-1">{pack.name}</h5>
                 <p className="text-sm text-gray-600">{pack.description}</p>
-                <div className="mt-2 text-xs text-blue-600 font-medium">Universal Credits</div>
+                <div className="mt-2 text-xs text-[#2d4a3e] font-medium">Universal Credits</div>
               </div>
               {selectedCreditPack === key && (
                 <div className="absolute top-2 right-2">
-                  <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                  <div className="w-4 h-4 bg-[#2d4a3e] rounded-full flex items-center justify-center">
                     <Check className="h-3 w-3 text-white" />
                   </div>
                 </div>
@@ -397,7 +402,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
       <button
         onClick={handleBuyCredits}
         disabled={isLoading}
-        className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+        className="w-full bg-[#2d4a3e] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#1d3a2e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
       >
         {isLoading ? (
           <>
@@ -418,11 +423,11 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
   const renderNoSubscription = () => (
     <div className="p-6">
       {/* Subscription Required Banner */}
-      <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl">
+      <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-green-100 border border-[#2d4a3e] rounded-xl">
         <div className="text-center">
-          <Crown className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-          <h3 className="text-xl font-bold text-blue-800 mb-2">Start your subscription and get credits to post jobs immediately</h3>
-          <p className="text-sm text-blue-700">
+          <Crown className="h-8 w-8 text-[#2d4a3e] mx-auto mb-2" />
+          <h3 className="text-xl font-bold text-[#2d4a3e] mb-2">Start your subscription and get credits to post jobs immediately</h3>
+          <p className="text-sm text-[#2d4a3e]">
             Choose a plan below to unlock job posting with AI optimization and get universal credits.
           </p>
         </div>
@@ -437,14 +442,14 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
               key={key}
               className={`relative p-6 border-2 rounded-lg cursor-pointer transition-all ${
                 selectedTier === key
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-[#2d4a3e] bg-green-50'
                   : 'border-gray-200 hover:border-gray-300'
-              } ${tier.popular ? 'ring-2 ring-orange-200' : ''}`}
+              } ${tier.popular ? 'ring-2 ring-[#ff6b35] ring-opacity-50' : ''}`}
               onClick={() => setSelectedTier(key as TierKey)}
             >
               {tier.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                  <span className="bg-[#ff6b35] text-white px-3 py-1 rounded-full text-xs font-semibold">
                     POPULAR
                   </span>
                 </div>
@@ -459,21 +464,21 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
 
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-center">
-                    <Coins className="h-4 w-4 text-blue-600 mr-2" />
+                    <Coins className="h-4 w-4 text-[#2d4a3e] mr-2" />
                     <span className="font-semibold">{tier.features.credits} universal credits</span>
                   </div>
                   <div className="flex items-center justify-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
+                    <Check className="h-4 w-4 text-[#9fdf9f] mr-2" />
                     <span>{tier.features.duration} days duration</span>
                   </div>
                   {tier.features.aiOptimization && (
                     <div className="flex items-center justify-center">
-                      <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
+                      <Sparkles className="h-4 w-4 text-[#ff6b35] mr-2" />
                       <span>AI optimization</span>
                     </div>
                   )}
                   <div className="flex items-center justify-center">
-                    <Check className="h-4 w-4 text-green-500 mr-2" />
+                    <Check className="h-4 w-4 text-[#9fdf9f] mr-2" />
                     <span className="capitalize">{tier.features.analytics} analytics</span>
                   </div>
                 </div>
@@ -481,7 +486,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
 
               {selectedTier === key && (
                 <div className="absolute top-4 right-4">
-                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <div className="w-6 h-6 bg-[#2d4a3e] rounded-full flex items-center justify-center">
                     <Check className="h-4 w-4 text-white" />
                   </div>
                 </div>
@@ -515,7 +520,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
       <button
         onClick={handleSubscribe}
         disabled={isLoading}
-        className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+        className="w-full bg-[#2d4a3e] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#1d3a2e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
       >
         {isLoading ? (
           <>

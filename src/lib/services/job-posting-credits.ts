@@ -4,20 +4,16 @@ export type CreditType = 'universal'; // Simplified to single credit type
 
 export interface UserCredits {
   universal: number; // Single unified credit pool
-  total: number; // Total available credits
-  // Legacy fields for backward compatibility (will be removed)
-  jobPost?: number;
-  featuredPost?: number;
-  socialGraphic?: number;
+  total: number; // Total available credits (same as universal)
 }
 
 export class JobPostingCreditsService {
   /**
-   * Get available credits for a user
+   * Get available credits for a user (unified system - all credits are universal)
    */
   static async getUserCredits(userId: string): Promise<UserCredits> {
-    // Get all available credits (both new universal and legacy types)
-    const allCredits = await prisma.jobPostingCredit.findMany({
+    // Get all available credits (all should be universal type now)
+    const availableCredits = await prisma.jobPostingCredit.findMany({
       where: {
         userId,
         isUsed: false,
@@ -28,32 +24,20 @@ export class JobPostingCreditsService {
       }
     });
 
-    // Count universal credits
-    const universalCredits = allCredits.filter(c => c.type === 'universal').length;
-
-    // Count legacy credits (for backward compatibility)
-    const jobPostCredits = allCredits.filter(c => c.type === 'job_post').length;
-    const featuredPostCredits = allCredits.filter(c => c.type === 'featured_post').length;
-    const socialGraphicCredits = allCredits.filter(c => c.type === 'social_graphic').length;
-
-    // Total credits = universal + all legacy credits (since they can all be used for any purpose now)
-    const totalCredits = universalCredits + jobPostCredits + featuredPostCredits + socialGraphicCredits;
+    // In the unified system, all credits are universal and interchangeable
+    const totalCredits = availableCredits.length;
 
     return {
-      universal: universalCredits,
-      total: totalCredits,
-      // Legacy fields for backward compatibility
-      jobPost: jobPostCredits,
-      featuredPost: featuredPostCredits,
-      socialGraphic: socialGraphicCredits,
+      universal: totalCredits,
+      total: totalCredits, // Same as universal in unified system
     };
   }
 
   /**
-   * Check if user has enough credits (unified system)
+   * Check if user has enough credits (unified system - type parameter ignored)
    */
-  static async hasCredits(userId: string, type: CreditType | string, count: number = 1): Promise<boolean> {
-    // In the unified system, any credit can be used for any purpose
+  static async hasCredits(userId: string, type: CreditType | string = 'universal', count: number = 1): Promise<boolean> {
+    // In the unified system, all credits are universal and can be used for any purpose
     const userCredits = await this.getUserCredits(userId);
     return userCredits.total >= count;
   }
