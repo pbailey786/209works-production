@@ -74,8 +74,29 @@ export const STRIPE_CONFIG = {
   },
 };
 
+// Type definitions for subscription tiers
+export interface TierFeatures {
+  credits: number; // Unified credit system
+  duration: number;
+  aiOptimization: boolean;
+  analytics: string;
+  support: string;
+  // Legacy fields for backward compatibility
+  jobPosts?: number;
+  featuredPosts?: number;
+}
+
+export interface SubscriptionTier {
+  name: string;
+  monthlyPrice: number;
+  stripePriceId: string | undefined;
+  features: TierFeatures;
+  description: string;
+  popular?: boolean;
+}
+
 // Monthly Subscription Tiers Configuration (All recurring subscriptions)
-export const SUBSCRIPTION_TIERS_CONFIG = {
+export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   starter: {
     name: 'Starter',
     monthlyPrice: 89,

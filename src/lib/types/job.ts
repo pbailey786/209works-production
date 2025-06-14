@@ -17,10 +17,10 @@ export interface JobData {
 
   // Multi-area-code network fields
   areaCodes?: string[];
-  city?: string;
+  city?: string | null;
   targetCities?: string[];
-  lat?: number;
-  lng?: number;
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface CompanyInfo {

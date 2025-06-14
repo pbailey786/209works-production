@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
       }
 
       basePrice = tierConfig.monthlyPrice;
-      jobCredits = tierConfig.features.credits || tierConfig.features.jobPosts; // Support both new and legacy field names
+      jobCredits = tierConfig.features.credits || (tierConfig.features as any).jobPosts || 0; // Support both new and legacy field names
     } else if (validatedData.creditPack && typeof validatedData.creditPack === 'string') {
       creditPackConfig = JOB_POSTING_CONFIG.creditPacks[validatedData.creditPack as keyof typeof JOB_POSTING_CONFIG.creditPacks];
       console.log('📦 Credit pack config:', creditPackConfig);
@@ -419,8 +419,8 @@ export async function POST(req: NextRequest) {
         // Set expiration (30 days from now - standardized duration)
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         metadata: {
-          tierConfig,
-          creditPackConfig,
+          tierConfig: tierConfig ? JSON.parse(JSON.stringify(tierConfig)) : null,
+          creditPackConfig: creditPackConfig ? JSON.parse(JSON.stringify(creditPackConfig)) : null,
           selectedAddons,
           sessionMetadata: {
             userAgent: req.headers.get('user-agent'),

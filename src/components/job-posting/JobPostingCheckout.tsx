@@ -21,6 +21,7 @@ interface JobPostingCheckoutProps {
     jobPost: number;
     featuredPost: number;
     socialGraphic: number;
+    total?: number; // Added for unified credit system
   };
 }
 
@@ -138,7 +139,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
 
         <div className="p-6">
           {/* Use Existing Credits Option */}
-          {userCredits && (userCredits.jobPost > 0 || userCredits.total > 0) && (
+          {userCredits && (userCredits.jobPost > 0 || (userCredits.total && userCredits.total > 0)) && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
@@ -165,7 +166,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
           )}
 
           {/* Divider */}
-          {userCredits && (userCredits.total > 0 || userCredits.jobPost > 0) && (
+          {userCredits && ((userCredits.total && userCredits.total > 0) || userCredits.jobPost > 0) && (
             <div className="mb-6 flex items-center">
               <div className="flex-1 border-t border-gray-300"></div>
               <span className="px-4 text-sm text-gray-500">or purchase more credits</span>
@@ -202,7 +203,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li className="flex items-center">
                       <Check className="h-3 w-3 text-green-500 mr-2" />
-                      <strong>{tier.features.credits || tier.features.jobPosts} universal credit{(tier.features.credits || tier.features.jobPosts) > 1 ? 's' : ''}</strong>
+                      <strong>{tier.features.credits || (tier.features as any).jobPosts || 0} universal credit{(tier.features.credits || (tier.features as any).jobPosts || 0) > 1 ? 's' : ''}</strong>
                     </li>
                     <li className="flex items-center">
                       <Check className="h-3 w-3 text-green-500 mr-2" />

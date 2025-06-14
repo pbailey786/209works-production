@@ -192,7 +192,7 @@ export default function CreditPackageModal({
                     <ul className="space-y-2">
                       <li className="flex items-center text-sm">
                         <Check className="mr-2 h-4 w-4 text-green-500" />
-                        <strong>{tier.features.jobPosts} Job Posts</strong>
+                        <strong>{tier.features.credits || (tier.features as any).jobPosts || 0} Universal Credits</strong>
                       </li>
                       <li className="flex items-center text-sm text-gray-600">
                         <Check className="mr-2 h-4 w-4 text-green-500" />

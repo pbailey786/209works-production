@@ -64,6 +64,7 @@ export default function EmployerBulkUploadPage() {
     jobPost: 12,
     featuredPost: 3,
     socialGraphic: 5,
+    total: 0, // Added for unified credit system
   });
 
   // New state for error handling and modals
@@ -119,15 +120,15 @@ export default function EmployerBulkUploadPage() {
       const response = await fetch('/api/employers/credits');
       if (response.ok) {
         const data = await response.json();
-        setUserCredits(data.credits || { jobPost: 0, featuredPost: 0, socialGraphic: 0 });
+        setUserCredits(data.credits || { jobPost: 0, featuredPost: 0, socialGraphic: 0, total: 0 });
       } else {
         // If credits API fails, set zero credits
-        setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0 });
+        setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0, total: 0 });
       }
     } catch (error) {
       console.error('Failed to fetch user credits:', error);
       // Set zero credits if API fails
-      setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0 });
+      setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0, total: 0 });
     }
   };
 
