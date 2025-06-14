@@ -8,7 +8,7 @@ import { z } from 'zod';
 import type { Session } from 'next-auth';
 
 const buyCreditSchema = z.object({
-  creditPack: z.enum(['singleCredit', 'fiveCredits']),
+  creditPack: z.enum(['singleCredit', 'fiveCredits', 'small', 'medium', 'large']),
   successUrl: z.string().url().optional(),
   cancelUrl: z.string().url().optional(),
 });
@@ -91,6 +91,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // For new credit pack keys, use dynamic pricing (will be set in Stripe)
+    const isNewCreditPack = ['small', 'medium', 'large'].includes(validatedData.creditPack);
+    const actualPrice = isNewCreditPack ? 0 : creditPackConfig.price; // Price will be determined by Stripe price ID
+
     // Create or get Stripe customer
     let customerId = user.stripeCustomerId;
     if (!customerId) {
@@ -131,7 +135,7 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         creditPack: validatedData.creditPack.toUpperCase(),
         type: 'credit_pack_purchase',
-        totalAmount: creditPackConfig.price.toString(),
+        totalAmount: actualPrice.toString(),
         jobCredits: creditPackConfig.credits.toString(),
       },
     });
@@ -142,9 +146,9 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         stripeSessionId: checkoutSession.id,
         tier: `credit_pack_${validatedData.creditPack}`,
-        tierPrice: creditPackConfig.price,
+        tierPrice: actualPrice,
         addons: [],
-        totalAmount: creditPackConfig.price,
+        totalAmount: actualPrice,
         status: 'pending',
         jobPostCredits: creditPackConfig.credits,
         featuredPostCredits: 0,
@@ -153,7 +157,7 @@ export async function POST(req: NextRequest) {
         // Set expiration (60 days from now)
         expiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
         metadata: {
-          creditPackConfig,
+          creditPackConfig: JSON.parse(JSON.stringify(creditPackConfig)),
           sessionMetadata: {
             userAgent: req.headers.get('user-agent'),
             ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
@@ -168,8 +172,8 @@ export async function POST(req: NextRequest) {
       url: checkoutSession.url,
       creditPack: validatedData.creditPack,
       credits: creditPackConfig.credits,
-      price: creditPackConfig.price,
-      totalAmount: creditPackConfig.price,
+      price: actualPrice,
+      totalAmount: actualPrice,
     });
 
   } catch (error) {

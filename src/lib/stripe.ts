@@ -179,6 +179,28 @@ export const JOB_POSTING_CONFIG = {
       description: 'Best value for multiple features and job postings',
       savings: 0, // Savings calculation hidden from UI
     },
+    // New credit pack options for modal
+    small: {
+      name: 'Small Pack',
+      price: 0, // Price hidden from UI per unified credit system
+      stripePriceId: process.env.STRIPE_PRICE_CREDIT_3 || 'price_dynamic_credit_3',
+      credits: 3,
+      description: 'Perfect for a few job posts',
+    },
+    medium: {
+      name: 'Medium Pack',
+      price: 0, // Price hidden from UI per unified credit system
+      stripePriceId: process.env.STRIPE_PRICE_CREDIT_5 || 'price_dynamic_credit_5',
+      credits: 5,
+      description: 'Great for regular posting',
+    },
+    large: {
+      name: 'Large Pack',
+      price: 0, // Price hidden from UI per unified credit system
+      stripePriceId: process.env.STRIPE_PRICE_CREDIT_12 || 'price_dynamic_credit_12',
+      credits: 12,
+      description: 'Best value for high-volume hiring',
+    },
   },
 };
 
