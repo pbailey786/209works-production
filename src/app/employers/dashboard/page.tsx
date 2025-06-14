@@ -499,14 +499,10 @@ function DashboardContent() {
           }>
             <CreditBalanceCard
               credits={{
-                universal: credits.universal || 0,
-                total: credits.total || (credits.jobPost + (credits.featuredPost || 0) + (credits.socialGraphic || 0)),
+                universal: credits.universal || credits.total || 0,
+                total: credits.total || credits.universal || 0,
                 expiringCount: 0, // Will be loaded from API
                 expiringDate: undefined,
-                // Legacy fields for backward compatibility
-                jobPost: credits.jobPost,
-                featuredPost: credits.featuredPost || 0,
-                socialGraphic: credits.socialGraphic || 0,
               }}
               hasActiveSubscription={hasActiveSubscription}
               onAddCredits={() => setShowAddCreditsModal(true)}

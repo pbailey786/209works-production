@@ -21,10 +21,6 @@ interface CreditInfo {
   total: number;
   expiringCount: number;
   expiringDate?: string;
-  // Legacy fields for backward compatibility
-  jobPost?: number;
-  featuredPost?: number;
-  socialGraphic?: number;
 }
 
 interface CreditTransaction {
@@ -186,29 +182,7 @@ export default function CreditBalanceCard({
               <div className="text-sm text-gray-600">Use for any feature: job posts, featured listings, social graphics, and more</div>
             </div>
 
-            {/* Legacy Credit Breakdown (if any exist) */}
-            {(credits.jobPost || credits.featuredPost || credits.socialGraphic) && (
-              <div className="border-t pt-4">
-                <div className="text-sm font-medium text-gray-700 mb-3">Legacy Credits (being migrated)</div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-blue-600">{credits.jobPost || 0}</div>
-                    <div className="text-xs text-gray-600">Job Posts</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-purple-600">{credits.featuredPost || 0}</div>
-                    <div className="text-xs text-gray-600">Featured</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-green-600">{credits.socialGraphic || 0}</div>
-                    <div className="text-xs text-gray-600">Social</div>
-                  </div>
-                </div>
-                <div className="text-xs text-gray-500 mt-2 text-center">
-                  These legacy credits can be used for any feature
-                </div>
-              </div>
-            )}
+            {/* Unified Credit System - No Legacy Breakdown */}
 
             {/* Expiration Warning */}
             {credits.expiringCount > 0 && credits.expiringDate && (

@@ -131,7 +131,7 @@ export async function POST(
       success: true,
       message: 'Job reposted successfully',
       job: updatedJob,
-      creditsRemaining: updatedCredits.jobPost,
+      creditsRemaining: updatedCredits.total,
       newExpirationDate: newExpirationDate.toISOString(),
     });
 
@@ -212,7 +212,7 @@ export async function GET(
     return NextResponse.json({
       canRepost,
       hasCredits,
-      creditsAvailable: userCredits.jobPost,
+      creditsAvailable: userCredits.total,
       jobStatus: job.status,
       isExpired,
       expiresAt: job.expiresAt,

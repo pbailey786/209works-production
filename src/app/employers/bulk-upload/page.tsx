@@ -93,7 +93,7 @@ export default function EmployerBulkUploadPage() {
 
   // Helper function to get total credits (unified system)
   const getTotalCredits = () => {
-    return userCredits.total || (userCredits.jobPost + (userCredits.featuredPost || 0) + (userCredits.socialGraphic || 0));
+    return userCredits.total || userCredits.universal || 0;
   };
 
   // Fetch upload history and user credits on component mount
@@ -572,7 +572,7 @@ export default function EmployerBulkUploadPage() {
                 <div className="flex items-center">
                   <Sparkles className="mr-2 h-5 w-5 text-orange-500" />
                   <span className="text-2xl font-bold text-gray-900">
-                    {userCredits.total || (userCredits.jobPost + (userCredits.featuredPost || 0) + (userCredits.socialGraphic || 0))}
+                    {getTotalCredits()}
                   </span>
                 </div>
                 <p className="text-sm text-gray-600">Universal Credits</p>

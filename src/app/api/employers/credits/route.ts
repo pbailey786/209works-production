@@ -26,48 +26,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Get available credits by counting unused credits
-    const [jobPostCredits, featuredPostCredits, socialGraphicCredits] = await Promise.all([
-      prisma.jobPostingCredit.count({
-        where: {
-          userId: user.id,
-          type: 'job_post',
-          isUsed: false,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } }
-          ]
-        }
-      }),
-      prisma.jobPostingCredit.count({
-        where: {
-          userId: user.id,
-          type: 'featured_post',
-          isUsed: false,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } }
-          ]
-        }
-      }),
-      prisma.jobPostingCredit.count({
-        where: {
-          userId: user.id,
-          type: 'social_graphic',
-          isUsed: false,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } }
-          ]
-        }
-      })
-    ]);
+    // Get available credits (unified system - all credits are universal)
+    const totalCredits = await prisma.jobPostingCredit.count({
+      where: {
+        userId: user.id,
+        isUsed: false,
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } }
+        ]
+      }
+    });
 
-    // Return credits
+    // Return credits (unified system)
     const credits = {
-      jobPost: jobPostCredits,
-      featuredPost: featuredPostCredits,
-      socialGraphic: socialGraphicCredits,
+      universal: totalCredits,
+      total: totalCredits,
     };
 
     return NextResponse.json({
@@ -104,94 +78,42 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { jobPost, featuredPost, socialGraphic, operation = 'add', expiresAt } = body;
+    const { credits: creditCount, operation = 'add', expiresAt } = body;
 
-    // Create credit records based on operation
+    // Create credit records based on operation (unified system)
     const creditsToCreate = [];
 
-    if (operation === 'add') {
-      // Add job post credits
-      if (jobPost && jobPost > 0) {
-        for (let i = 0; i < jobPost; i++) {
-          creditsToCreate.push({
-            userId: user.id,
-            type: 'job_post',
-            expiresAt: expiresAt ? new Date(expiresAt) : null,
-          });
-        }
-      }
-
-      // Add featured post credits
-      if (featuredPost && featuredPost > 0) {
-        for (let i = 0; i < featuredPost; i++) {
-          creditsToCreate.push({
-            userId: user.id,
-            type: 'featured_post',
-            expiresAt: expiresAt ? new Date(expiresAt) : null,
-          });
-        }
-      }
-
-      // Add social graphic credits
-      if (socialGraphic && socialGraphic > 0) {
-        for (let i = 0; i < socialGraphic; i++) {
-          creditsToCreate.push({
-            userId: user.id,
-            type: 'social_graphic',
-            expiresAt: expiresAt ? new Date(expiresAt) : null,
-          });
-        }
+    if (operation === 'add' && creditCount && creditCount > 0) {
+      // Add universal credits
+      for (let i = 0; i < creditCount; i++) {
+        creditsToCreate.push({
+          userId: user.id,
+          type: 'universal',
+          expiresAt: expiresAt ? new Date(expiresAt) : null,
+        });
       }
 
       // Create all credits
-      if (creditsToCreate.length > 0) {
-        await prisma.jobPostingCredit.createMany({
-          data: creditsToCreate,
-        });
-      }
+      await prisma.jobPostingCredit.createMany({
+        data: creditsToCreate,
+      });
     }
 
-    // Get updated credit counts
-    const [jobPostCredits, featuredPostCredits, socialGraphicCredits] = await Promise.all([
-      prisma.jobPostingCredit.count({
-        where: {
-          userId: user.id,
-          type: 'job_post',
-          isUsed: false,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } }
-          ]
-        }
-      }),
-      prisma.jobPostingCredit.count({
-        where: {
-          userId: user.id,
-          type: 'featured_post',
-          isUsed: false,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } }
-          ]
-        }
-      }),
-      prisma.jobPostingCredit.count({
-        where: {
-          userId: user.id,
-          type: 'social_graphic',
-          isUsed: false,
-          OR: [
-            { expiresAt: null },
-            { expiresAt: { gt: new Date() } }
-          ]
-        }
-      })
-    ]);
+    // Get updated credit count (unified system)
+    const totalCredits = await prisma.jobPostingCredit.count({
+      where: {
+        userId: user.id,
+        isUsed: false,
+        OR: [
+          { expiresAt: null },
+          { expiresAt: { gt: new Date() } }
+        ]
+      }
+    });
 
     const credits = {
-      jobPost: jobPostCredits,
-      featuredPost: featuredPostCredits,
-      socialGraphic: socialGraphicCredits,
+      universal: totalCredits,
+      total: totalCredits,
     };
 
     return NextResponse.json({
