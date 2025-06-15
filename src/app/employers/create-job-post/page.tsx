@@ -21,11 +21,7 @@ import {
   HelpCircle,
   Check,
 } from 'lucide-react';
-import JobUpsellSelector from '@/components/job-posting/JobUpsellSelector';
-import JobPostingPackageModal from '@/components/job-posting/JobPostingPackageModal';
-import CreditPackageModal from '@/components/job-posting/CreditPackageModal';
-import PromotionUpsellPopup from '@/components/job-posting/PromotionUpsellPopup';
-import JobPostingUpsellModal from '@/components/job-posting/JobPostingUpsellModal';
+// Removed upsell and modal imports - Job Post Optimizer is now streamlined
 
 interface JobPostForm {
   // Basic Info
@@ -117,56 +113,16 @@ export default function CreateJobPostPage() {
     }
   }, [status]);
 
-  // Fetch credits info
-  useEffect(() => {
-    const fetchCredits = async () => {
-      try {
-        const response = await fetch('/api/job-posting-credits');
-        if (response.ok) {
-          const data = await response.json();
-          setCreditsInfo({
-            available: data.availableCredits || 0,
-            total: data.totalCredits || 0
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching credits:', error);
-      }
-    };
+  // Job Post Optimizer is now accessible to all employers without credit requirements
 
-    if (status === 'authenticated') {
-      fetchCredits();
-    }
-  }, [status]);
-
-  // Check for successful purchase and refresh credits
+  // Clean up URL parameters if any
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('purchase_success') === 'true') {
-      // Refresh credits after successful purchase
-      const fetchCredits = async () => {
-        try {
-          const response = await fetch('/api/job-posting-credits');
-          if (response.ok) {
-            const data = await response.json();
-            setCreditsInfo({
-              available: data.availableCredits || 0,
-              total: data.totalCredits || 0
-            });
-          }
-        } catch (error) {
-          console.error('Error fetching credits:', error);
-        }
-      };
-
-      if (status === 'authenticated') {
-        fetchCredits();
-      }
-
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [status]);
+  }, []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -175,17 +131,6 @@ export default function CreateJobPostPage() {
   const [optimizerJobId, setOptimizerJobId] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isAutofilling, setIsAutofilling] = useState(false);
-  const [creditsInfo, setCreditsInfo] = useState<{available: number, total: number} | null>(null);
-  const [showPackageModal, setShowPackageModal] = useState(false);
-  const [showCreditPackageModal, setShowCreditPackageModal] = useState(false);
-  const [showPromotionUpsell, setShowPromotionUpsell] = useState(false);
-  const [showJobPostingUpsell, setShowJobPostingUpsell] = useState(false);
-  const [selectedUpsells, setSelectedUpsells] = useState({
-    socialMediaShoutout: false,
-    placementBump: false,
-    upsellBundle: false,
-    total: 0,
-  });
 
   // Check authentication
   if (status === 'loading') {
@@ -209,20 +154,7 @@ export default function CreateJobPostPage() {
     }
   };
 
-  const handleUpsellChange = (selection: {
-    socialMediaShoutout: boolean;
-    placementBump: boolean;
-    upsellBundle: boolean;
-    total: number;
-  }) => {
-    setForm(prev => ({
-      ...prev,
-      socialMediaShoutout: selection.socialMediaShoutout,
-      placementBump: selection.placementBump,
-      upsellBundle: selection.upsellBundle,
-      upsellTotal: selection.total,
-    }));
-  };
+  // Removed upsell handling - Job Post Optimizer focuses purely on optimization
 
   const handleAutofill = async () => {
     if (!form.jobTitle.trim()) {
@@ -307,21 +239,9 @@ export default function CreateJobPostPage() {
         setGeneratedListing(data.aiGeneratedOutput);
         setOptimizerJobId(data.id);
         setShowPreview(true);
-        // Remove the old promotion upsell - now shown before publishing
       } else {
         const errorData = await response.json();
-        // Handle credits required error
-        if (response.status === 402 && errorData.code === 'CREDITS_REQUIRED') {
-          setShowCreditPackageModal(true);
-          return;
-        }
-        // BILLING REFACTOR: Handle subscription required error
-        if (response.status === 402 && errorData.code === 'SUBSCRIPTION_REQUIRED') {
-          // Redirect to billing/upgrade page
-          router.push('/employers/upgrade?reason=job-posting');
-          return;
-        }
-        setErrors({ submit: errorData.error || 'Failed to create job post' });
+        setErrors({ submit: errorData.error || 'Failed to optimize job post' });
       }
     } catch (error) {
       setErrors({ submit: 'Failed to create job post. Please try again.' });
@@ -330,34 +250,12 @@ export default function CreateJobPostPage() {
     }
   };
 
-  const handlePublish = () => {
-    // Show upsell modal before publishing
-    setShowJobPostingUpsell(true);
-  };
-
-  const handleUpsellSelection = (upsells: {
-    socialMediaShoutout: boolean;
-    placementBump: boolean;
-    upsellBundle: boolean;
-    total: number;
-  }) => {
-    setSelectedUpsells(upsells);
-    setShowJobPostingUpsell(false);
-    // Proceed with publishing
-    publishJobWithUpsells(upsells);
-  };
-
-  const publishJobWithUpsells = async (upsells: {
-    socialMediaShoutout: boolean;
-    placementBump: boolean;
-    upsellBundle: boolean;
-    total: number;
-  }) => {
+  const handlePublish = async () => {
     if (!optimizerJobId) return;
 
     setIsPublishing(true);
     try {
-      // First publish the job
+      // Publish the job without upsells
       const publishResponse = await fetch(
         `/api/job-post-optimizer/${optimizerJobId}/publish`,
         {
@@ -365,40 +263,11 @@ export default function CreateJobPostPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            upsells: upsells.total > 0 ? upsells : undefined,
-          }),
         }
       );
 
       if (publishResponse.ok) {
         const publishData = await publishResponse.json();
-
-        // If upsells were selected, process payment
-        if (upsells.total > 0) {
-          const checkoutResponse = await fetch('/api/job-posting/upsell-checkout', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              jobId: publishData.jobId,
-              upsells,
-              successUrl: `${window.location.origin}/employers/my-jobs?published=${publishData.jobId}&upsell_success=true`,
-              cancelUrl: `${window.location.origin}/employers/my-jobs?published=${publishData.jobId}&upsell_cancelled=true`,
-            }),
-          });
-
-          if (checkoutResponse.ok) {
-            const checkoutData = await checkoutResponse.json();
-            // Redirect to Stripe Checkout
-            window.location.href = checkoutData.url;
-            return;
-          } else {
-            console.error('Failed to create upsell checkout, proceeding without upsells');
-          }
-        }
-
         // Redirect to the published job or employer dashboard
         router.push(`/employers/my-jobs?published=${publishData.jobId}`);
       } else {
@@ -444,7 +313,7 @@ export default function CreateJobPostPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-orange-50">
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -464,72 +333,6 @@ export default function CreateJobPostPage() {
 
         {!showPreview ? (
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Credits Warning */}
-            {creditsInfo && creditsInfo.available === 0 && (
-              <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-6">
-                <div className="flex items-center">
-                  <div className="mr-4 rounded-full bg-amber-100 p-2">
-                    <DollarSign className="h-6 w-6 text-amber-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-amber-900">
-                      Job Posting Credits Required
-                    </h3>
-                    <p className="text-amber-700 mb-3">
-                      You need job posting credits to optimize and publish job posts.
-                      Get started with our affordable packages!
-                    </p>
-                    <div className="flex gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setShowCreditPackageModal(true)}
-                        className="inline-flex items-center bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-medium px-4 py-2 rounded-lg hover:shadow-lg transition-all"
-                      >
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        Buy Credits
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => router.push('/employers/dashboard')}
-                        className="inline-flex items-center bg-gray-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-gray-600 transition-all"
-                      >
-                        Dashboard
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-
-
-            {/* Credits Info */}
-            {creditsInfo && creditsInfo.available > 0 && (
-              <div className="rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="mr-3 rounded-full bg-green-100 p-2">
-                      <Check className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-green-900">
-                        Ready to Post
-                      </h4>
-                      <p className="text-sm text-green-700">
-                        You have {creditsInfo.available} job posting credit{creditsInfo.available !== 1 ? 's' : ''} available
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => router.push('/employers/dashboard')}
-                    className="text-sm text-green-700 hover:text-green-800 font-medium"
-                  >
-                    Manage Credits →
-                  </button>
-                </div>
-              </div>
-            )}
             {/* Basic Info Section */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="mb-6 flex items-center">
@@ -954,98 +757,7 @@ export default function CreateJobPostPage() {
               </div>
             </div>
 
-            {/* Upsell Section */}
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <JobUpsellSelector
-                onSelectionChange={handleUpsellChange}
-                className="mb-6"
-              />
-            </div>
-
-            {/* Credit Categories */}
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Choose Your Credit Package
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Select the package that best fits your hiring needs
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                {/* Starter Package */}
-                <div className="relative border-2 border-gray-200 rounded-lg p-4 hover:border-[#2d4a3e] transition-colors cursor-pointer">
-                  <div className="text-center">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-1">Starter</h4>
-                    <div className="text-2xl font-bold text-[#2d4a3e] mb-2">$89</div>
-                    <div className="text-sm text-gray-600 mb-3">2 Job Posting Credits</div>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>• 30-day duration</li>
-                      <li>• Basic analytics</li>
-                      <li>• Email support</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Standard Package */}
-                <div className="relative border-2 border-[#ff6b35] rounded-lg p-4 bg-gradient-to-br from-orange-50 to-red-50">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-[#ff6b35] text-white px-3 py-1 rounded-full text-xs font-medium">
-                      MOST POPULAR
-                    </span>
-                  </div>
-                  <div className="text-center">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-1">Standard</h4>
-                    <div className="text-2xl font-bold text-[#ff6b35] mb-2">$199</div>
-                    <div className="text-sm text-gray-600 mb-3">5 Job Posting Credits</div>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>• 30-day duration</li>
-                      <li>• AI optimization included</li>
-                      <li>• Advanced analytics</li>
-                      <li>• Priority support</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Pro Package */}
-                <div className="relative border-2 border-gray-200 rounded-lg p-4 hover:border-[#2d4a3e] transition-colors cursor-pointer">
-                  <div className="absolute -top-3 right-3">
-                    <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      SAVE $13
-                    </span>
-                  </div>
-                  <div className="text-center">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-1">Pro</h4>
-                    <div className="text-2xl font-bold text-[#2d4a3e] mb-2">$350</div>
-                    <div className="text-sm text-gray-600 mb-3">10 Job Posting Credits</div>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      <li>• 60-day duration</li>
-                      <li>• AI optimization included</li>
-                      <li>• Premium analytics</li>
-                      <li>• Phone support</li>
-                      <li>• 2 featured posts</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <h4 className="text-sm font-medium text-amber-800">Job posting credits required to optimize job posts</h4>
-                    <p className="text-sm text-amber-700 mt-1">
-                      You'll need available credits to proceed with optimization. Credits expire in 30 days.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Removed upsell and credit package sections - Job Post Optimizer is now free to use */}
 
             {/* Submit Button */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -1091,18 +803,18 @@ export default function CreateJobPostPage() {
           // Preview Section
           <div className="space-y-6">
             {/* Success Message */}
-            <div className="rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-blue-50 p-6">
+            <div className="rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-orange-50 p-6">
               <div className="flex items-center">
-                <div className="mr-4 rounded-full bg-green-100 p-2">
-                  <Sparkles className="h-6 w-6 text-green-600" />
+                <div className="mr-4 rounded-full bg-[#9fdf9f] p-2">
+                  <Sparkles className="h-6 w-6 text-[#2d4a3e]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-green-900">
+                  <h3 className="text-lg font-semibold text-[#2d4a3e]">
                     Job Post Optimized!
                   </h3>
-                  <p className="text-green-700">
+                  <p className="text-gray-700">
                     Your job listing has been transformed into a compelling,
-                    professional post.
+                    professional post using 209 Works AI optimization.
                   </p>
                 </div>
               </div>
@@ -1110,7 +822,7 @@ export default function CreateJobPostPage() {
 
             {/* Preview */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-              <div className="bg-gradient-to-r from-blue-600 to-green-600 px-6 py-4">
+              <div className="bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-6 py-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-semibold text-white">
                     Your Optimized Job Post
@@ -1125,7 +837,7 @@ export default function CreateJobPostPage() {
                     <button
                       onClick={handlePublish}
                       disabled={isPublishing}
-                      className="rounded-lg bg-white px-6 py-2 font-medium text-blue-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                      className="rounded-lg bg-white px-6 py-2 font-medium text-[#2d4a3e] transition-colors hover:bg-gray-50 disabled:opacity-50"
                     >
                       {isPublishing ? 'Publishing...' : 'Publish Job'}
                     </button>
@@ -1167,7 +879,7 @@ export default function CreateJobPostPage() {
                   <button
                     onClick={handlePublish}
                     disabled={isPublishing}
-                    className="rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-6 py-3 font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-green-700 disabled:opacity-50"
+                    className="rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-6 py-3 font-medium text-white shadow-lg transition-all hover:from-[#1d3a2e] hover:to-[#ff5722] disabled:opacity-50"
                   >
                     {isPublishing ? 'Publishing...' : 'Publish Job Post'}
                   </button>
@@ -1184,50 +896,7 @@ export default function CreateJobPostPage() {
         )}
       </div>
 
-      {/* Job Posting Package Modal */}
-      <JobPostingPackageModal
-        isOpen={showPackageModal}
-        onClose={() => setShowPackageModal(false)}
-      />
-
-      {/* Credit Package Modal */}
-      <CreditPackageModal
-        isOpen={showCreditPackageModal}
-        onClose={() => setShowCreditPackageModal(false)}
-        onSuccess={() => {
-          setShowCreditPackageModal(false);
-          // Refresh credits after successful purchase
-          const fetchCredits = async () => {
-            try {
-              const response = await fetch('/api/job-posting-credits');
-              if (response.ok) {
-                const data = await response.json();
-                setCreditsInfo({
-                  available: data.availableCredits || 0,
-                  total: data.totalCredits || 0
-                });
-              }
-            } catch (error) {
-              console.error('Error fetching credits:', error);
-            }
-          };
-          fetchCredits();
-        }}
-      />
-
-      {/* Job Posting Upsell Modal - Strategic placement BEFORE publishing */}
-      <JobPostingUpsellModal
-        isOpen={showJobPostingUpsell}
-        onClose={() => setShowJobPostingUpsell(false)}
-        onContinue={handleUpsellSelection}
-        jobTitle={form.jobTitle}
-        company={form.companyName}
-        userCredits={creditsInfo ? {
-          jobPost: creditsInfo.available,
-          featuredPost: 0,
-          socialGraphic: 0,
-        } : undefined}
-      />
+      {/* Removed all modal components - Job Post Optimizer is now streamlined without upsells */}
     </div>
   );
 }

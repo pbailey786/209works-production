@@ -102,25 +102,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if user has job posting credits for optimization
-    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
-
+    // Job Post Optimizer is now accessible to all employers without credit requirements
     const userId = (session!.user as any).id;
-    const userCredits = await JobPostingCreditsService.getUserCredits(userId);
-    console.log('User credits for optimization:', userCredits);
-
-    const canPost = await JobPostingCreditsService.canPostJob(userId);
-    if (!canPost) {
-      return NextResponse.json(
-        {
-          error: 'Job posting credits required to optimize job posts',
-          code: 'CREDITS_REQUIRED',
-          redirectUrl: '/employers/dashboard',
-          debug: { userCredits, canPost }
-        },
-        { status: 402 } // Payment Required
-      );
-    }
 
     // Parse and validate request body
     const body = await req.json();
@@ -200,23 +183,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Use a job posting credit for the optimization
-    // Note: Using optimizer ID as a reference since this is for optimization, not actual job posting
-    console.log('Attempting to use credit for user:', userId, 'optimizer:', jobPostOptimizer.id);
-    const creditResult = await JobPostingCreditsService.useJobPostCredit(userId, `optimizer_${jobPostOptimizer.id}`);
-    console.log('Credit usage result:', creditResult);
-
-    if (!creditResult.success) {
-      // If credit usage fails, delete the optimizer record and return error
-      await prisma.jobPostOptimizer.delete({ where: { id: jobPostOptimizer.id } });
-      return NextResponse.json(
-        {
-          error: creditResult.error || 'Failed to use credits. Please try again.',
-          debug: { creditResult, userCredits }
-        },
-        { status: 402 }
-      );
-    }
+    // Job Post Optimizer is now free to use - no credit deduction required
 
     return NextResponse.json({
       success: true,
