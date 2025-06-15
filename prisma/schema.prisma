@@ -884,6 +884,7 @@ model JobPostOptimizer {
   // AI Processing
   rawInput            Json?     // Store original form data
   aiGeneratedOutput   String?   // Store AI-generated job listing
+  editedContent       String?   // Store user-edited content
   optimizationPrompt  String?   // Store the prompt used for optimization
 
   // Upsells

@@ -23,6 +23,10 @@ export async function POST(
 
     const { id: optimizerJobId } = await params;
 
+    // Parse request body to check for edited content preference
+    const body = await req.json().catch(() => ({}));
+    const useEditedContent = body.useEditedContent || false;
+
     // Get the job post optimizer record
     const jobPostOptimizer = await prisma.jobPostOptimizer.findUnique({
       where: {
@@ -51,13 +55,20 @@ export async function POST(
     // Extract job type from the job title or default to full_time
     const jobType = extractJobType(jobPostOptimizer.jobTitle);
 
+    // Determine which content to use for the job description
+    let jobDescription = 'Job description not available';
+    if (useEditedContent && jobPostOptimizer.editedContent) {
+      jobDescription = jobPostOptimizer.editedContent;
+    } else if (jobPostOptimizer.aiGeneratedOutput) {
+      jobDescription = jobPostOptimizer.aiGeneratedOutput;
+    }
+
     // Create the actual job posting
     const publishedJob = await prisma.job.create({
       data: {
         title: jobPostOptimizer.jobTitle,
         company: jobPostOptimizer.companyName,
-        description:
-          jobPostOptimizer.aiGeneratedOutput || 'Job description not available',
+        description: jobDescription,
         location: jobPostOptimizer.location,
         jobType: jobType,
         source: 'job_post_optimizer',

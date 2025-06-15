@@ -33,6 +33,10 @@ const jobPostOptimizerSchema = z.object({
   placementBump: z.boolean().optional().default(false),
   upsellBundle: z.boolean().optional().default(false),
   upsellTotal: z.union([z.string(), z.number()]).optional(),
+
+  // Manual content options
+  manualContent: z.string().optional(),
+  skipAI: z.boolean().optional().default(false),
 });
 
 type JobPostOptimizerData = z.infer<typeof jobPostOptimizerSchema>;
@@ -109,47 +113,52 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const validatedData = jobPostOptimizerSchema.parse(body);
 
-    // Check if OpenAI API key is available
-    const hasValidApiKey =
-      process.env.OPENAI_API_KEY &&
-      process.env.OPENAI_API_KEY !== 'your-openai-key' &&
-      process.env.OPENAI_API_KEY !==
-        'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
-
     let aiGeneratedOutput = '';
     let optimizationPrompt = '';
 
-    if (hasValidApiKey) {
-      try {
-        // Generate AI-optimized job listing
-        optimizationPrompt = createOptimizationPrompt(validatedData);
+    // If user chose to skip AI, use manual content or empty string
+    if (validatedData.skipAI) {
+      aiGeneratedOutput = validatedData.manualContent || '';
+    } else {
+      // Check if OpenAI API key is available
+      const hasValidApiKey =
+        process.env.OPENAI_API_KEY &&
+        process.env.OPENAI_API_KEY !== 'your-openai-key' &&
+        process.env.OPENAI_API_KEY !==
+          'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
 
-        const response = await openai.chat.completions.create({
-          model: 'gpt-4',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are an expert job posting writer who creates compelling, modern job listings that attract qualified candidates. Write in a friendly, conversational tone and focus on what makes each opportunity unique and appealing.',
-            },
-            {
-              role: 'user',
-              content: optimizationPrompt,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 1500,
-        });
+      if (hasValidApiKey) {
+        try {
+          // Generate AI-optimized job listing
+          optimizationPrompt = createOptimizationPrompt(validatedData);
 
-        aiGeneratedOutput = response.choices[0]?.message?.content || '';
-      } catch (aiError) {
-        console.error('AI optimization failed:', aiError);
-        // Fallback to manual template if AI fails
+          const response = await openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'You are an expert job posting writer who creates compelling, modern job listings that attract qualified candidates. Write in a friendly, conversational tone and focus on what makes each opportunity unique and appealing.',
+              },
+              {
+                role: 'user',
+                content: optimizationPrompt,
+              },
+            ],
+            temperature: 0.7,
+            max_tokens: 1500,
+          });
+
+          aiGeneratedOutput = response.choices[0]?.message?.content || '';
+        } catch (aiError) {
+          console.error('AI optimization failed:', aiError);
+          // Fallback to manual template if AI fails
+          aiGeneratedOutput = createFallbackJobListing(validatedData);
+        }
+      } else {
+        // Use fallback template when OpenAI is not available
         aiGeneratedOutput = createFallbackJobListing(validatedData);
       }
-    } else {
-      // Use fallback template when OpenAI is not available
-      aiGeneratedOutput = createFallbackJobListing(validatedData);
     }
 
     // Save to database
@@ -171,8 +180,9 @@ export async function POST(req: NextRequest) {
         supplementalQuestions: validatedData.supplementalQuestions || [],
         rawInput: validatedData,
         aiGeneratedOutput,
-        optimizationPrompt: hasValidApiKey ? optimizationPrompt : null,
-        status: 'optimized',
+        editedContent: validatedData.manualContent || null, // Store manual content as edited content
+        optimizationPrompt: validatedData.skipAI ? null : (hasValidApiKey ? optimizationPrompt : null),
+        status: validatedData.skipAI ? 'draft' : 'optimized',
         // Upsells
         socialMediaShoutout: validatedData.socialMediaShoutout || false,
         placementBump: validatedData.placementBump || false,

@@ -128,6 +128,9 @@ export default function CreateJobPostPage() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [generatedListing, setGeneratedListing] = useState<string>('');
+  const [editedListing, setEditedListing] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [skipAI, setSkipAI] = useState(false);
   const [optimizerJobId, setOptimizerJobId] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isAutofilling, setIsAutofilling] = useState(false);
@@ -220,6 +223,15 @@ export default function CreateJobPostPage() {
 
     if (!validateForm()) return;
 
+    // If user chose to skip AI, go directly to manual editing
+    if (skipAI) {
+      setGeneratedListing('');
+      setEditedListing('');
+      setIsEditing(true);
+      setShowPreview(true);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/job-post-optimizer', {
@@ -237,7 +249,9 @@ export default function CreateJobPostPage() {
       if (response.ok) {
         const data = await response.json();
         setGeneratedListing(data.aiGeneratedOutput);
+        setEditedListing(data.aiGeneratedOutput); // Initialize edited content with AI output
         setOptimizerJobId(data.id);
+        setIsEditing(false); // Start in preview mode, not editing mode
         setShowPreview(true);
       } else {
         const errorData = await response.json();
@@ -251,11 +265,56 @@ export default function CreateJobPostPage() {
   };
 
   const handlePublish = async () => {
-    if (!optimizerJobId) return;
-
     setIsPublishing(true);
     try {
-      // Publish the job without upsells
+      // If user skipped AI, create a new optimizer record first
+      if (skipAI) {
+        if (!editedListing.trim()) {
+          setErrors({ publish: 'Please write your job post content before publishing.' });
+          setIsPublishing(false);
+          return;
+        }
+
+        // Create optimizer record for manual job post
+        const createResponse = await fetch('/api/job-post-optimizer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...form,
+            salaryRangeMin: form.salaryRangeMin ? parseInt(form.salaryRangeMin) : undefined,
+            salaryRangeMax: form.salaryRangeMax ? parseInt(form.salaryRangeMax) : undefined,
+            manualContent: editedListing, // Send manual content
+            skipAI: true, // Flag to indicate this is manual
+          }),
+        });
+
+        if (!createResponse.ok) {
+          const errorData = await createResponse.json();
+          setErrors({ publish: errorData.error || 'Failed to create job post' });
+          setIsPublishing(false);
+          return;
+        }
+
+        const createData = await createResponse.json();
+        setOptimizerJobId(createData.id);
+      }
+
+      // If we have edited content, update the optimizer record
+      if (editedListing && editedListing !== generatedListing && optimizerJobId) {
+        await fetch(`/api/job-post-optimizer/${optimizerJobId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            editedContent: editedListing,
+          }),
+        });
+      }
+
+      // Now publish the job
       const publishResponse = await fetch(
         `/api/job-post-optimizer/${optimizerJobId}/publish`,
         {
@@ -263,6 +322,9 @@ export default function CreateJobPostPage() {
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            useEditedContent: !!editedListing,
+          }),
         }
       );
 
@@ -275,6 +337,7 @@ export default function CreateJobPostPage() {
         setErrors({ publish: errorData.error || 'Failed to publish job post' });
       }
     } catch (error) {
+      console.error('Publish error:', error);
       setErrors({ publish: 'Failed to publish job post. Please try again.' });
     } finally {
       setIsPublishing(false);
@@ -757,18 +820,70 @@ export default function CreateJobPostPage() {
               </div>
             </div>
 
-            {/* Removed upsell and credit package sections - Job Post Optimizer is now free to use */}
+            {/* AI Optimization Choice */}
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Choose Your Approach
+                </h3>
+                <p className="text-sm text-gray-600">
+                  How would you like to create your job post?
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <input
+                    type="radio"
+                    id="useAI"
+                    name="optimizationChoice"
+                    checked={!skipAI}
+                    onChange={() => setSkipAI(false)}
+                    className="mt-1 h-4 w-4 text-[#2d4a3e] focus:ring-[#2d4a3e] border-gray-300"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="useAI" className="text-sm font-medium text-gray-900 cursor-pointer">
+                      🤖 Use AI Optimization (Recommended)
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Our AI will transform your job information into a compelling, professional job listing
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <input
+                    type="radio"
+                    id="skipAI"
+                    name="optimizationChoice"
+                    checked={skipAI}
+                    onChange={() => setSkipAI(true)}
+                    className="mt-1 h-4 w-4 text-[#2d4a3e] focus:ring-[#2d4a3e] border-gray-300"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="skipAI" className="text-sm font-medium text-gray-900 cursor-pointer">
+                      ✏️ Write Manually
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Skip AI optimization and write your job post content from scratch
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Submit Button */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Ready to optimize your job post?
+                    {skipAI ? 'Ready to create your job post?' : 'Ready to optimize your job post?'}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    Our AI will transform your info into a compelling job
-                    listing
+                    {skipAI
+                      ? 'You\'ll be able to write your job post content manually'
+                      : 'Our AI will transform your info into a compelling job listing'
+                    }
                   </p>
                 </div>
 
@@ -780,13 +895,23 @@ export default function CreateJobPostPage() {
                   {isSubmitting ? (
                     <>
                       <div className="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
-                      Optimizing...
+                      {skipAI ? 'Creating...' : 'Optimizing...'}
                     </>
                   ) : (
                     <>
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      Optimize Job Post
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                      {skipAI ? (
+                        <>
+                          <MessageSquare className="mr-2 h-5 w-5" />
+                          Create Job Post
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-5 w-5" />
+                          Optimize Job Post
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </>
+                      )}
                     </>
                   )}
                 </button>
@@ -806,37 +931,59 @@ export default function CreateJobPostPage() {
             <div className="rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-orange-50 p-6">
               <div className="flex items-center">
                 <div className="mr-4 rounded-full bg-[#9fdf9f] p-2">
-                  <Sparkles className="h-6 w-6 text-[#2d4a3e]" />
+                  {skipAI ? (
+                    <MessageSquare className="h-6 w-6 text-[#2d4a3e]" />
+                  ) : (
+                    <Sparkles className="h-6 w-6 text-[#2d4a3e]" />
+                  )}
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-[#2d4a3e]">
-                    Job Post Optimized!
+                    {skipAI ? 'Ready to Write Your Job Post!' : 'Job Post Optimized!'}
                   </h3>
                   <p className="text-gray-700">
-                    Your job listing has been transformed into a compelling,
-                    professional post using 209 Works AI optimization.
+                    {skipAI
+                      ? 'Create your job post content manually using the editor below.'
+                      : 'Your job listing has been transformed into a compelling, professional post using 209 Works AI optimization.'
+                    }
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Preview */}
+            {/* Preview/Editor */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
               <div className="bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-6 py-4">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-semibold text-white">
-                    Your Optimized Job Post
+                    {isEditing ? 'Edit Your Job Post' : (skipAI ? 'Create Your Job Post' : 'Your Optimized Job Post')}
                   </h2>
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => setShowPreview(false)}
                       className="rounded-lg bg-white/20 px-4 py-2 text-white transition-colors hover:bg-white/30"
                     >
-                      Edit
+                      ← Back to Form
                     </button>
+                    {!skipAI && !isEditing && (
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="rounded-lg bg-white/20 px-4 py-2 text-white transition-colors hover:bg-white/30"
+                      >
+                        ✏️ Edit Content
+                      </button>
+                    )}
+                    {isEditing && (
+                      <button
+                        onClick={() => setIsEditing(false)}
+                        className="rounded-lg bg-white/20 px-4 py-2 text-white transition-colors hover:bg-white/30"
+                      >
+                        👁️ Preview
+                      </button>
+                    )}
                     <button
                       onClick={handlePublish}
-                      disabled={isPublishing}
+                      disabled={isPublishing || (skipAI && !editedListing.trim())}
                       className="rounded-lg bg-white px-6 py-2 font-medium text-[#2d4a3e] transition-colors hover:bg-gray-50 disabled:opacity-50"
                     >
                       {isPublishing ? 'Publishing...' : 'Publish Job'}
@@ -846,14 +993,40 @@ export default function CreateJobPostPage() {
               </div>
 
               <div className="p-6">
-                <div className="prose prose-lg max-w-none">
-                  <div
-                    className="job-post-preview"
-                    dangerouslySetInnerHTML={{
-                      __html: renderJobPost(generatedListing),
-                    }}
-                  />
-                </div>
+                {isEditing || skipAI ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-gray-700">
+                        Job Post Content
+                      </label>
+                      <div className="text-xs text-gray-500">
+                        You can use basic markdown formatting (# for headers, ** for bold, etc.)
+                      </div>
+                    </div>
+                    <textarea
+                      value={editedListing}
+                      onChange={(e) => setEditedListing(e.target.value)}
+                      placeholder={skipAI
+                        ? "Write your job post content here...\n\nExample:\n# Customer Service Representative\n\n## About the Role\nWe're looking for a friendly and professional customer service representative...\n\n## Requirements\n- Excellent communication skills\n- Previous customer service experience preferred\n\n## Benefits\n- Competitive salary\n- Health insurance\n- Paid time off"
+                        : "Edit the AI-generated content here..."
+                      }
+                      rows={20}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e]/20 resize-none"
+                    />
+                    <div className="text-xs text-gray-500">
+                      {editedListing.length} characters
+                    </div>
+                  </div>
+                ) : (
+                  <div className="prose prose-lg max-w-none">
+                    <div
+                      className="job-post-preview"
+                      dangerouslySetInnerHTML={{
+                        __html: renderJobPost(editedListing || generatedListing),
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -862,11 +1035,13 @@ export default function CreateJobPostPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    What's next?
+                    Ready to publish?
                   </h3>
                   <p className="text-gray-600">
-                    You can edit your job post or publish it to start receiving
-                    applications.
+                    {skipAI && !editedListing.trim()
+                      ? 'Please write your job post content before publishing.'
+                      : 'Your job post is ready to be published and start receiving applications.'
+                    }
                   </p>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -874,11 +1049,19 @@ export default function CreateJobPostPage() {
                     onClick={() => setShowPreview(false)}
                     className="rounded-lg border border-gray-300 px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
                   >
-                    Make Changes
+                    ← Back to Form
                   </button>
+                  {!skipAI && !isEditing && (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="rounded-lg border border-[#2d4a3e] px-6 py-3 text-[#2d4a3e] transition-colors hover:bg-[#2d4a3e] hover:text-white"
+                    >
+                      ✏️ Edit Content
+                    </button>
+                  )}
                   <button
                     onClick={handlePublish}
-                    disabled={isPublishing}
+                    disabled={isPublishing || (skipAI && !editedListing.trim())}
                     className="rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-6 py-3 font-medium text-white shadow-lg transition-all hover:from-[#1d3a2e] hover:to-[#ff5722] disabled:opacity-50"
                   >
                     {isPublishing ? 'Publishing...' : 'Publish Job Post'}
