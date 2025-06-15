@@ -100,6 +100,22 @@ export default function EmployerBulkUploadPage() {
     fetchUploadHistory();
     fetchUserCredits();
     checkSubscriptionStatus();
+
+    // Handle credit purchase success/cancel from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('credit_purchase_success') === 'true') {
+      showSuccess('Credits purchased successfully! Your account has been updated.');
+      // Refresh credits after successful purchase
+      setTimeout(() => {
+        fetchUserCredits();
+      }, 1000);
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (urlParams.get('credit_purchase_cancelled') === 'true') {
+      showError('Credit purchase was cancelled. You can try again anytime.');
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }, []);
 
   const fetchUploadHistory = async () => {
@@ -160,26 +176,30 @@ export default function EmployerBulkUploadPage() {
       showError('Credit purchases are only available to active subscribers. Please upgrade your subscription to purchase additional credits.');
       return;
     }
+
     try {
-      const response = await fetch('/api/employers/credits', {
+      // Redirect to proper Stripe checkout for credit purchase
+      const response = await fetch('/api/job-posting/buy-credits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          credits: 20, // Add 20 universal credits
-          operation: 'add',
+          creditPack: 'fiveCredits', // Default to 5 credits pack
+          successUrl: `${window.location.origin}/employers/bulk-upload?credit_purchase_success=true`,
+          cancelUrl: `${window.location.origin}/employers/bulk-upload?credit_purchase_cancelled=true`,
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setUserCredits(data.credits);
-        showSuccess('Credits added successfully! You now have more credits to post jobs.');
-      } else {
-        throw new Error('Failed to add credits');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
       }
+
+      // Redirect to Stripe Checkout for payment processing
+      window.location.href = data.url;
     } catch (error) {
-      console.error('Failed to add credits:', error);
-      showError('Failed to add credits. Please try again.');
+      console.error('Credit purchase error:', error);
+      showError(error instanceof Error ? error.message : 'Failed to initiate credit purchase. Please try again.');
     }
   };
 

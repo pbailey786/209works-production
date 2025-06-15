@@ -6,6 +6,14 @@ import type { Session } from 'next-auth';
 
 export async function POST(req: NextRequest) {
   try {
+    // SECURITY: Only allow in development environment
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({
+        error: 'Test endpoints are disabled in production for security reasons',
+        message: 'Please use proper credit purchase flow via /api/job-posting/buy-credits'
+      }, { status: 403 });
+    }
+
     const session = await getServerSession(authOptions) as Session | null;
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });

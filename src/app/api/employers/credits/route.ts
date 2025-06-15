@@ -58,7 +58,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/employers/credits - Add credits to user's account (for admin use or purchases)
+// POST /api/employers/credits - DEPRECATED: Direct credit addition disabled for security
+// Credits can only be added through proper payment processing via Stripe
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
@@ -77,27 +78,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const body = await request.json();
-    const { credits: creditCount, operation = 'add', expiresAt } = body;
+    // SECURITY: Direct credit addition is disabled to prevent bypass of payment processing
+    // Credits can only be added through:
+    // 1. Stripe webhook after successful payment (/api/stripe/webhook)
+    // 2. Admin manual assignment (/api/admin/credits/assign)
+    // 3. Test environment only (/api/test/add-credits)
 
-    // Create credit records based on operation (unified system)
-    const creditsToCreate = [];
-
-    if (operation === 'add' && creditCount && creditCount > 0) {
-      // Add universal credits
-      for (let i = 0; i < creditCount; i++) {
-        creditsToCreate.push({
-          userId: user.id,
-          type: 'universal',
-          expiresAt: expiresAt ? new Date(expiresAt) : null,
-        });
-      }
-
-      // Create all credits
-      await prisma.jobPostingCredit.createMany({
-        data: creditsToCreate,
-      });
-    }
+    return NextResponse.json({
+      error: 'Direct credit addition is disabled. Please purchase credits through the proper checkout process.',
+      redirectUrl: '/employers/pricing',
+      supportedMethods: [
+        'Purchase credits via /api/job-posting/buy-credits',
+        'Admin assignment via /api/admin/credits/assign (admin only)',
+        'Automatic allocation via Stripe webhooks'
+      ]
+    }, { status: 403 });
 
     // Get updated credit count (unified system)
     const totalCredits = await prisma.jobPostingCredit.count({
