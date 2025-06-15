@@ -157,7 +157,72 @@ export default function CreateJobPostPage() {
     }
   };
 
-  // Removed upsell handling - Job Post Optimizer focuses purely on optimization
+  // Validation for manual job posts
+  const validateManualJobPost = (content: string): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    if (!content.trim()) {
+      errors.push('Job post content cannot be empty');
+      return { isValid: false, errors };
+    }
+
+    if (content.trim().length < 100) {
+      errors.push('Job post content should be at least 100 characters long');
+    }
+
+    // Check for basic required sections
+    const lowerContent = content.toLowerCase();
+    const hasJobTitle = lowerContent.includes(form.jobTitle.toLowerCase()) ||
+                       lowerContent.includes('position') ||
+                       lowerContent.includes('role') ||
+                       lowerContent.includes('job');
+
+    const hasCompany = lowerContent.includes(form.companyName.toLowerCase()) ||
+                      lowerContent.includes('company') ||
+                      lowerContent.includes('we are') ||
+                      lowerContent.includes('our team');
+
+    const hasLocation = lowerContent.includes(form.location.toLowerCase()) ||
+                       lowerContent.includes('location') ||
+                       lowerContent.includes('209') ||
+                       lowerContent.includes('stockton') ||
+                       lowerContent.includes('modesto') ||
+                       lowerContent.includes('tracy');
+
+    const hasResponsibilities = lowerContent.includes('responsibilities') ||
+                               lowerContent.includes('duties') ||
+                               lowerContent.includes('will') ||
+                               lowerContent.includes('you will') ||
+                               lowerContent.includes('role involves');
+
+    const hasRequirements = lowerContent.includes('requirements') ||
+                           lowerContent.includes('qualifications') ||
+                           lowerContent.includes('experience') ||
+                           lowerContent.includes('skills') ||
+                           lowerContent.includes('must have');
+
+    if (!hasJobTitle) {
+      errors.push('Consider mentioning the job title or position in your content');
+    }
+
+    if (!hasCompany) {
+      errors.push('Consider mentioning your company name or describing your organization');
+    }
+
+    if (!hasLocation) {
+      errors.push('Consider mentioning the job location or 209 area');
+    }
+
+    if (!hasResponsibilities) {
+      errors.push('Consider describing job responsibilities or what the role involves');
+    }
+
+    if (!hasRequirements) {
+      errors.push('Consider listing job requirements, qualifications, or desired skills');
+    }
+
+    return { isValid: errors.length === 0, errors };
+  };
 
   const handleAutofill = async () => {
     if (!form.jobTitle.trim()) {
@@ -269,8 +334,12 @@ export default function CreateJobPostPage() {
     try {
       // If user skipped AI, create a new optimizer record first
       if (skipAI) {
-        if (!editedListing.trim()) {
-          setErrors({ publish: 'Please write your job post content before publishing.' });
+        // Validate manual job post content
+        const validation = validateManualJobPost(editedListing);
+        if (!validation.isValid) {
+          setErrors({
+            publish: `Please improve your job post:\n• ${validation.errors.join('\n• ')}`
+          });
           setIsPublishing(false);
           return;
         }
@@ -334,6 +403,19 @@ export default function CreateJobPostPage() {
         router.push(`/employers/my-jobs?published=${publishData.jobId}`);
       } else {
         const errorData = await publishResponse.json();
+
+        // Handle credits required error
+        if (publishResponse.status === 402 && errorData.code === 'CREDITS_REQUIRED') {
+          setErrors({
+            publish: 'Job posting credits required to publish. Please purchase credits to continue.'
+          });
+          // Optionally redirect to dashboard after a delay
+          setTimeout(() => {
+            router.push('/employers/dashboard');
+          }, 3000);
+          return;
+        }
+
         setErrors({ publish: errorData.error || 'Failed to publish job post' });
       }
     } catch (error) {
@@ -1003,19 +1085,79 @@ export default function CreateJobPostPage() {
                         You can use basic markdown formatting (# for headers, ** for bold, etc.)
                       </div>
                     </div>
+
+                    {skipAI && (
+                      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                        <h4 className="text-sm font-medium text-blue-900 mb-2">
+                          📝 Writing Tips for Effective Job Posts
+                        </h4>
+                        <ul className="text-xs text-blue-800 space-y-1">
+                          <li>• <strong>Job Title:</strong> Include "{form.jobTitle}" and key responsibilities</li>
+                          <li>• <strong>Company:</strong> Mention "{form.companyName}" and what makes you unique</li>
+                          <li>• <strong>Location:</strong> Highlight "{form.location}" and 209 area benefits</li>
+                          <li>• <strong>Responsibilities:</strong> List 3-5 main duties and expectations</li>
+                          <li>• <strong>Requirements:</strong> Include skills, experience, and qualifications</li>
+                          <li>• <strong>Benefits:</strong> Mention salary range, perks, and growth opportunities</li>
+                          <li>• <strong>Call to Action:</strong> Clear instructions on how to apply</li>
+                        </ul>
+                        <p className="text-xs text-blue-700 mt-2">
+                          <strong>Minimum:</strong> 100+ characters. <strong>Recommended:</strong> 300-800 characters for best results.
+                        </p>
+                      </div>
+                    )}
+
                     <textarea
                       value={editedListing}
                       onChange={(e) => setEditedListing(e.target.value)}
                       placeholder={skipAI
-                        ? "Write your job post content here...\n\nExample:\n# Customer Service Representative\n\n## About the Role\nWe're looking for a friendly and professional customer service representative...\n\n## Requirements\n- Excellent communication skills\n- Previous customer service experience preferred\n\n## Benefits\n- Competitive salary\n- Health insurance\n- Paid time off"
+                        ? `Write your job post content here...\n\nExample:\n# ${form.jobTitle} at ${form.companyName}\n\n## About the Role\nWe're looking for a ${form.jobTitle.toLowerCase()} to join our team in ${form.location}...\n\n## What You'll Do\n- Handle customer inquiries and support\n- Collaborate with team members\n- Maintain accurate records\n\n## Requirements\n- Excellent communication skills\n- Previous experience preferred\n- Reliable and professional\n\n## Benefits\n- ${form.pay || 'Competitive salary'}\n- ${form.perks || 'Great benefits package'}\n- Growth opportunities\n\n## How to Apply\n${form.applicationCTA || 'Send your resume and cover letter to apply!'}`
                         : "Edit the AI-generated content here..."
                       }
                       rows={20}
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm focus:border-[#2d4a3e] focus:ring-2 focus:ring-[#2d4a3e]/20 resize-none"
                     />
-                    <div className="text-xs text-gray-500">
-                      {editedListing.length} characters
+
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-gray-500">
+                        {editedListing.length} characters
+                        {editedListing.length < 100 && (
+                          <span className="text-amber-600 ml-2">
+                            (Minimum 100 characters recommended)
+                          </span>
+                        )}
+                      </div>
+
+                      {skipAI && editedListing.length > 0 && (
+                        <div className="text-xs">
+                          {(() => {
+                            const validation = validateManualJobPost(editedListing);
+                            return validation.isValid ? (
+                              <span className="text-green-600">✓ Ready to publish</span>
+                            ) : (
+                              <span className="text-amber-600">
+                                {validation.errors.length} suggestion{validation.errors.length !== 1 ? 's' : ''}
+                              </span>
+                            );
+                          })()}
+                        </div>
+                      )}
                     </div>
+
+                    {skipAI && editedListing.length > 0 && (() => {
+                      const validation = validateManualJobPost(editedListing);
+                      return !validation.isValid && (
+                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                          <h5 className="text-sm font-medium text-amber-900 mb-1">
+                            💡 Suggestions to improve your job post:
+                          </h5>
+                          <ul className="text-xs text-amber-800 space-y-1">
+                            {validation.errors.map((error, index) => (
+                              <li key={index}>• {error}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })()}
                   </div>
                 ) : (
                   <div className="prose prose-lg max-w-none">

@@ -117,18 +117,10 @@ export async function POST(request: NextRequest) {
       processedJobs.push(processedJob);
     }
 
-    // Check if user has enough credits
-    const availableCredits = await prisma.jobPostingCredit.count({
-      where: {
-        userId: user.id,
-        type: 'job_post',
-        isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      }
-    });
+    // Check if user has enough credits (unified credit system)
+    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
+    const userCredits = await JobPostingCreditsService.getUserCredits(user.id);
+    const availableCredits = userCredits.total;
 
     if (totalCreditsNeeded > availableCredits) {
       return NextResponse.json({
@@ -136,45 +128,14 @@ export async function POST(request: NextRequest) {
         creditsNeeded: totalCreditsNeeded,
         creditsAvailable: availableCredits,
         processedJobs,
-      }, { status: 400 });
+      }, { status: 402 });
     }
 
     // Actually create the jobs in the database
     const createdJobs = [];
     const successfulJobs = processedJobs.filter(job => job.status === 'success');
 
-    // Get available credits to use
-    const creditsToUse = await prisma.jobPostingCredit.findMany({
-      where: {
-        userId: user.id,
-        type: 'job_post',
-        isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      },
-      take: successfulJobs.length,
-      orderBy: [
-        { expiresAt: 'asc' }, // Use expiring credits first
-        { createdAt: 'asc' }
-      ]
-    });
-
-    for (let i = 0; i < successfulJobs.length; i++) {
-      const jobData = successfulJobs[i];
-      const creditToUse = creditsToUse[i];
-
-      if (!creditToUse) {
-        // This shouldn't happen since we checked credits above, but just in case
-        const jobIndex = processedJobs.findIndex(j => j.title === jobData.title);
-        if (jobIndex !== -1) {
-          processedJobs[jobIndex].status = 'error';
-          processedJobs[jobIndex].validationErrors.push('No credits available');
-        }
-        continue;
-      }
-
+    for (const jobData of successfulJobs) {
       try {
         // Parse salary if provided
         let salaryMin = null;
@@ -209,15 +170,15 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // Mark the credit as used
-        await prisma.jobPostingCredit.update({
-          where: { id: creditToUse.id },
-          data: {
-            isUsed: true,
-            usedAt: new Date(),
-            usedForJobId: createdJob.id,
-          },
-        });
+        // Use unified credit system for job posting
+        const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
+        const creditResult = await JobPostingCreditsService.useJobPostCredit(user.id, createdJob.id);
+
+        if (!creditResult.success) {
+          // If credit usage fails, delete the job and continue with next job
+          await prisma.job.delete({ where: { id: createdJob.id } });
+          throw new Error(creditResult.error || 'Failed to use job posting credit');
+        }
 
         createdJobs.push(createdJob);
       } catch (error) {
@@ -254,18 +215,10 @@ export async function POST(request: NextRequest) {
         console.error('Failed to log bulk upload:', error);
       });
 
-    // Get remaining credits after usage
-    const remainingCredits = await prisma.jobPostingCredit.count({
-      where: {
-        userId: user.id,
-        type: 'job_post',
-        isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      }
-    });
+    // Get remaining credits after usage (unified credit system)
+    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
+    const remainingCreditsData = await JobPostingCreditsService.getUserCredits(user.id);
+    const remainingCredits = remainingCreditsData.total;
 
     return NextResponse.json({
       success: true,

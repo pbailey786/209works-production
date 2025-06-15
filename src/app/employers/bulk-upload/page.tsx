@@ -88,6 +88,7 @@ export default function EmployerBulkUploadPage() {
   const [askingGenie, setAskingGenie] = useState(false);
   const [showGenieFirst, setShowGenieFirst] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
 
   // Helper function to get total credits (unified system)
   const getTotalCredits = () => {
@@ -544,13 +545,24 @@ export default function EmployerBulkUploadPage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">
-            Bulk Job Upload
-          </h1>
-          <p className="text-gray-600">
-            Upload multiple job postings at once with AI optimization. Save time
-            and ensure quality with our intelligent processing.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">
+                Bulk Job Upload
+              </h1>
+              <p className="text-gray-600">
+                Upload multiple job postings at once with AI optimization. Save time
+                and ensure quality with our intelligent processing.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowInstructionsModal(true)}
+              className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              How It Works
+            </button>
+          </div>
         </div>
 
         {/* Credits Summary */}
@@ -1495,6 +1507,96 @@ export default function EmployerBulkUploadPage() {
                   <p className="text-xs text-gray-500 mt-4">
                     Plans start at $99/month • Starter, Standard, and Pro tiers available
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Instructions Modal */}
+        {showInstructionsModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-2xl w-full mx-4 bg-white rounded-lg shadow-xl">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">How Bulk Upload Works</h2>
+                  <button
+                    onClick={() => setShowInstructionsModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Step 1 */}
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-[#2d4a3e] text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      1
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Prepare Your File</h3>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Download our CSV template or create your own file with these required columns:
+                      </p>
+                      <div className="text-xs bg-gray-50 p-2 rounded border font-mono">
+                        title, company, location, description, salary (optional)
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-[#ff6b35] text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      2
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Upload & Process</h3>
+                      <p className="text-sm text-gray-600">
+                        Drag and drop your CSV, Excel, or JSON file. Our AI will automatically validate and optimize each job posting for better visibility.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-[#9fdf9f] text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      3
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Review & Publish</h3>
+                      <p className="text-sm text-gray-600">
+                        Review the processed jobs, edit any details if needed, and publish all at once. Each job uses 1 credit.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Quick Tips */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-900 mb-2">💡 Quick Tips</h4>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                      <li>• File size limit: 10MB</li>
+                      <li>• Supported formats: CSV, Excel (.xlsx), JSON</li>
+                      <li>• Each job posting requires 1 credit</li>
+                      <li>• AI optimization is included at no extra cost</li>
+                      <li>• You can edit jobs before publishing</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    onClick={downloadTemplate}
+                    className="px-4 py-2 text-[#2d4a3e] border border-[#2d4a3e] rounded-lg hover:bg-[#2d4a3e] hover:text-white transition-colors"
+                  >
+                    Download Template
+                  </button>
+                  <button
+                    onClick={() => setShowInstructionsModal(false)}
+                    className="px-4 py-2 bg-[#2d4a3e] text-white rounded-lg hover:bg-[#1d3a2e] transition-colors"
+                  >
+                    Got It!
+                  </button>
                 </div>
               </div>
             </div>

@@ -52,6 +52,21 @@ export async function POST(
       );
     }
 
+    // Check if user has credits before publishing
+    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
+    const canPost = await JobPostingCreditsService.canPostJob((session!.user as any).id);
+
+    if (!canPost) {
+      return NextResponse.json(
+        {
+          error: 'Job posting credits required to publish job posts',
+          code: 'CREDITS_REQUIRED',
+          redirectUrl: '/employers/dashboard'
+        },
+        { status: 402 }
+      );
+    }
+
     // Extract job type from the job title or default to full_time
     const jobType = extractJobType(jobPostOptimizer.jobTitle);
 
@@ -89,6 +104,22 @@ export async function POST(
         region: extractRegion(jobPostOptimizer.location),
       },
     });
+
+    // Use job posting credit for publishing
+    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
+    const creditResult = await JobPostingCreditsService.useJobPostCredit((session!.user as any).id, publishedJob.id);
+
+    if (!creditResult.success) {
+      // If credit usage fails, delete the job and return error
+      await prisma.job.delete({ where: { id: publishedJob.id } });
+      return NextResponse.json(
+        {
+          error: creditResult.error || 'Failed to use job posting credit',
+          code: 'CREDIT_USAGE_FAILED'
+        },
+        { status: 402 }
+      );
+    }
 
     // Update the job post optimizer to mark as published
     await prisma.jobPostOptimizer.update({

@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Helper function to process CSV files
+// Helper function to process CSV files with proper parsing
 async function processCSVFile(file: File): Promise<any[]> {
   const text = await file.text();
   const lines = text.split('\n').filter(line => line.trim());
@@ -143,16 +143,47 @@ async function processCSVFile(file: File): Promise<any[]> {
     throw new Error('File must contain at least a header row and one job');
   }
 
-  // Parse CSV (simple implementation - in production, use a proper CSV parser)
-  const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+  // Parse CSV with proper handling of quoted fields and commas within quotes
+  const parseCSVLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          // Handle escaped quotes
+          current += '"';
+          i++; // Skip next quote
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        // End of field
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+
+    // Add the last field
+    result.push(current.trim());
+    return result;
+  };
+
+  const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/"/g, ''));
   const jobs = lines.slice(1).map(line => {
-    const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+    const values = parseCSVLine(line);
     const job: any = {};
-    
+
     headers.forEach((header, index) => {
       job[header] = values[index] || '';
     });
-    
+
     return job;
   });
 
