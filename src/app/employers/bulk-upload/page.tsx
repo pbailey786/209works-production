@@ -1171,42 +1171,22 @@ export default function EmployerBulkUploadPage() {
                   onClick={startAIOptimization}
                   disabled={
                     processedJobs.filter(job => job.status === 'success').length === 0 ||
-                    uploadStatus === 'optimizing' ||
-                    uploadStatus === 'publishing'
+                    uploadStatus !== 'complete'
                   }
                   className="rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-4 py-2 font-medium text-white transition-colors hover:from-[#1d3a2e] hover:to-[#e55a2b] disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {uploadStatus === 'optimizing' ? (
-                    <>
-                      <div className="mr-2 inline h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
-                      Optimizing...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 inline h-4 w-4" />
-                      AI Optimize & Review
-                    </>
-                  )}
+                  <Sparkles className="mr-2 inline h-4 w-4" />
+                  AI Optimize & Review
                 </button>
                 <button
                   onClick={handleBulkPublish}
                   disabled={
                     processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0) > getTotalCredits() ||
-                    uploadStatus === 'optimizing' ||
-                    uploadStatus === 'publishing'
+                    uploadStatus !== 'complete'
                   }
                   className="rounded-lg bg-[#2d4a3e] px-4 py-2 font-medium text-white transition-colors hover:bg-[#1d3a2e] disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {uploadStatus === 'publishing' ? (
-                    <>
-                      <div className="mr-2 inline h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
-                      Publishing...
-                    </>
-                  ) : (
-                    <>
-                      Publish All ({processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0)} credits)
-                    </>
-                  )}
+                  Publish All ({processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0)} credits)
                 </button>
                 <button
                   disabled
