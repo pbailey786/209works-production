@@ -486,10 +486,11 @@ export default function EmployerBulkUploadPage() {
   };
 
   const downloadTemplate = () => {
-    const csvContent = `title,company,location,jobType,salary,description,requirements,benefits
-"Senior Software Engineer","Tech Solutions Inc.","Stockton, CA","Full-time","$85,000 - $110,000","We are looking for a senior software engineer to join our growing team. You will be responsible for developing and maintaining our web applications using modern technologies.","5+ years of experience with JavaScript, React, Node.js. Bachelor's degree in Computer Science or related field.","Health insurance, 401k, flexible work schedule, remote work options"
-"Marketing Manager","Central Valley Marketing","Modesto, CA","Full-time","$65,000 - $80,000","Join our dynamic marketing team as a Marketing Manager. You will lead marketing campaigns and strategies to grow our client base in the Central Valley.","3+ years of marketing experience, knowledge of digital marketing tools, excellent communication skills.","Health insurance, paid time off, professional development budget"
-"Sales Representative","Valley Sales Corp","Tracy, CA","Full-time","$45,000 - $60,000 + Commission","We are seeking an energetic sales representative to join our team. You will be responsible for building relationships with clients and driving sales growth.","Previous sales experience preferred, strong communication skills, self-motivated.","Base salary plus commission, health benefits, company car allowance"`;
+    const csvContent = `title,company,location,jobType,salary,description,requirements,benefits,experienceLevel,remote
+"Senior Software Engineer","Tech Solutions Inc.","Stockton, CA","Full-time","$85,000 - $110,000","We are looking for a senior software engineer to join our growing team. You will be responsible for developing and maintaining our web applications using modern technologies.","5+ years of experience with JavaScript, React, Node.js. Bachelor's degree in Computer Science or related field.","Health insurance, 401k, flexible work schedule, remote work options","Senior","Yes"
+"Marketing Manager","Central Valley Marketing","Modesto, CA","full_time","$65,000 - $80,000","Join our dynamic marketing team as a Marketing Manager. You will lead marketing campaigns and strategies to grow our client base in the Central Valley.","3+ years of marketing experience, knowledge of digital marketing tools, excellent communication skills.","Health insurance, paid time off, professional development budget","Mid-level","No"
+"Sales Representative","Valley Sales Corp","Tracy, CA","part-time","$45,000 - $60,000 + Commission","We are seeking an energetic sales representative to join our team. You will be responsible for building relationships with clients and driving sales growth.","Previous sales experience preferred, strong communication skills, self-motivated.","Base salary plus commission, health benefits, company car allowance","Entry","false"
+"Customer Service Rep","209 Support Services","Manteca, CA","contract","$18 - $22/hour","Provide excellent customer service support to our clients via phone, email, and chat. Handle inquiries, resolve issues, and maintain customer satisfaction.","High school diploma, excellent communication skills, customer service experience preferred.","Flexible schedule, training provided, growth opportunities","entry-level","remote"`;
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -1537,10 +1538,16 @@ export default function EmployerBulkUploadPage() {
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-1">Prepare Your File</h3>
                       <p className="text-sm text-gray-600 mb-2">
-                        Download our CSV template or create your own file with these required columns:
+                        Download our CSV template or create your own file with these columns:
                       </p>
                       <div className="text-xs bg-gray-50 p-2 rounded border font-mono">
-                        title, company, location, description, salary (optional)
+                        <strong>Required:</strong> title, company, location, description<br/>
+                        <strong>Optional:</strong> jobType, salary, requirements, benefits, experienceLevel, remote
+                      </div>
+                      <div className="text-xs text-gray-500 mt-2">
+                        <strong>💡 Flexible Formats:</strong> Job types can be "Full-time", "full_time", "Part-time", "Contract", etc.
+                        Experience levels accept "Entry", "Mid-level", "Senior", "Executive".
+                        Remote can be "Yes", "No", "true", "false", or "remote".
                       </div>
                     </div>
                   </div>
@@ -1580,6 +1587,8 @@ export default function EmployerBulkUploadPage() {
                       <li>• Each job posting requires 1 credit</li>
                       <li>• AI optimization is included at no extra cost</li>
                       <li>• You can edit jobs before publishing</li>
+                      <li>• <strong>Flexible formats:</strong> Use "Full-time" or "full_time" - both work!</li>
+                      <li>• Boolean fields accept: Yes/No, True/False, 1/0</li>
                     </ul>
                   </div>
                 </div>

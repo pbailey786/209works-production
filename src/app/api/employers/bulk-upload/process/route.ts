@@ -4,6 +4,81 @@ import authOptions from '@/app/api/auth/authOptions';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
 
+// Helper function to normalize job type formats
+function normalizeJobType(jobType: string): string {
+  if (!jobType) return 'full_time';
+
+  const normalized = jobType.toLowerCase().trim();
+
+  // Map common variations to our enum values
+  const jobTypeMap: Record<string, string> = {
+    'full-time': 'full_time',
+    'full_time': 'full_time',
+    'fulltime': 'full_time',
+    'full time': 'full_time',
+    'part-time': 'part_time',
+    'part_time': 'part_time',
+    'parttime': 'part_time',
+    'part time': 'part_time',
+    'contract': 'contract',
+    'contractor': 'contract',
+    'freelance': 'contract',
+    'temporary': 'temporary',
+    'temp': 'temporary',
+    'temporary work': 'temporary',
+    'internship': 'internship',
+    'intern': 'internship',
+    'student': 'internship',
+    'volunteer': 'volunteer',
+    'volunteering': 'volunteer',
+  };
+
+  return jobTypeMap[normalized] || 'full_time'; // Default to full_time if not found
+}
+
+// Helper function to normalize experience level
+function normalizeExperienceLevel(level: string): string {
+  if (!level) return 'entry';
+
+  const normalized = level.toLowerCase().trim();
+
+  const levelMap: Record<string, string> = {
+    'entry': 'entry',
+    'entry-level': 'entry',
+    'entry level': 'entry',
+    'junior': 'entry',
+    'beginner': 'entry',
+    'mid': 'mid',
+    'mid-level': 'mid',
+    'mid level': 'mid',
+    'middle': 'mid',
+    'intermediate': 'mid',
+    'senior': 'senior',
+    'senior-level': 'senior',
+    'senior level': 'senior',
+    'experienced': 'senior',
+    'expert': 'senior',
+    'executive': 'executive',
+    'leadership': 'executive',
+    'management': 'executive',
+    'director': 'executive',
+    'manager': 'executive',
+  };
+
+  return levelMap[normalized] || 'entry';
+}
+
+// Helper function to normalize boolean values
+function normalizeBoolean(value: any): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const normalized = value.toLowerCase().trim();
+    return normalized === 'true' || normalized === 'yes' || normalized === '1' ||
+           normalized === 'remote' || normalized === 'featured';
+  }
+  return false;
+}
+
 // Schema for processed job validation
 const processedJobSchema = z.object({
   title: z.string().min(1, 'Job title is required'),
@@ -103,11 +178,14 @@ export async function POST(request: NextRequest) {
         title: job.title || `Job ${jobId}`,
         company: job.company || '',
         location: job.location || '',
-        jobType: job.jobType || job.job_type || 'Full-time',
+        jobType: normalizeJobType(job.jobtype || job.jobType || job.job_type || ''),
         salary: job.salary || '',
         description: job.description || '',
         requirements: job.requirements || '',
         benefits: job.benefits || '',
+        experienceLevel: normalizeExperienceLevel(job.experiencelevel || job.experienceLevel || job.experience_level || ''),
+        remote: normalizeBoolean(job.remote),
+        featured: normalizeBoolean(job.featured),
         status: validation.status,
         warning: validation.warning,
         error: validation.error,

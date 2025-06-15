@@ -6,21 +6,102 @@ import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
 
+// Helper function to normalize job type formats
+function normalizeJobType(jobType: string): string {
+  if (!jobType) return 'full_time';
+
+  const normalized = jobType.toLowerCase().trim();
+
+  // Map common variations to our enum values
+  const jobTypeMap: Record<string, string> = {
+    'full-time': 'full_time',
+    'full_time': 'full_time',
+    'fulltime': 'full_time',
+    'full time': 'full_time',
+    'part-time': 'part_time',
+    'part_time': 'part_time',
+    'parttime': 'part_time',
+    'part time': 'part_time',
+    'contract': 'contract',
+    'contractor': 'contract',
+    'freelance': 'contract',
+    'temporary': 'temporary',
+    'temp': 'temporary',
+    'temporary work': 'temporary',
+    'internship': 'internship',
+    'intern': 'internship',
+    'student': 'internship',
+    'volunteer': 'volunteer',
+    'volunteering': 'volunteer',
+  };
+
+  return jobTypeMap[normalized] || 'full_time'; // Default to full_time if not found
+}
+
+// Helper function to normalize experience level
+function normalizeExperienceLevel(level: string): string {
+  if (!level) return 'entry';
+
+  const normalized = level.toLowerCase().trim();
+
+  const levelMap: Record<string, string> = {
+    'entry': 'entry',
+    'entry-level': 'entry',
+    'entry level': 'entry',
+    'junior': 'entry',
+    'beginner': 'entry',
+    'mid': 'mid',
+    'mid-level': 'mid',
+    'mid level': 'mid',
+    'middle': 'mid',
+    'intermediate': 'mid',
+    'senior': 'senior',
+    'senior-level': 'senior',
+    'senior level': 'senior',
+    'experienced': 'senior',
+    'expert': 'senior',
+    'executive': 'executive',
+    'leadership': 'executive',
+    'management': 'executive',
+    'director': 'executive',
+    'manager': 'executive',
+  };
+
+  return levelMap[normalized] || 'entry';
+}
+
 // Schema for bulk upload validation
 const bulkJobSchema = z.object({
   title: z.string().min(1, 'Job title is required'),
   company: z.string().min(1, 'Company name is required'),
   location: z.string().min(1, 'Location is required'),
-  jobType: z.enum(['full_time', 'part_time', 'contract', 'temporary', 'internship']).optional(),
+  jobType: z.string().optional().transform((val) => normalizeJobType(val || '')),
   description: z.string().min(50, 'Job description must be at least 50 characters'),
   salary: z.string().optional(),
   requirements: z.string().optional(),
   benefits: z.string().optional(),
   category: z.string().optional(),
-  experienceLevel: z.enum(['entry', 'mid', 'senior', 'executive']).optional(),
-  remote: z.boolean().optional(),
-  featured: z.boolean().optional(),
-  optimizationLevel: z.enum(['standard', 'enhanced', 'premium']).default('standard'),
+  experienceLevel: z.string().optional().transform((val) => normalizeExperienceLevel(val || '')),
+  remote: z.union([z.boolean(), z.string()]).optional().transform((val) => {
+    if (typeof val === 'string') {
+      const normalized = val.toLowerCase().trim();
+      return normalized === 'true' || normalized === 'yes' || normalized === '1' || normalized === 'remote';
+    }
+    return val || false;
+  }),
+  featured: z.union([z.boolean(), z.string()]).optional().transform((val) => {
+    if (typeof val === 'string') {
+      const normalized = val.toLowerCase().trim();
+      return normalized === 'true' || normalized === 'yes' || normalized === '1' || normalized === 'featured';
+    }
+    return val || false;
+  }),
+  optimizationLevel: z.string().optional().transform((val) => {
+    if (!val) return 'standard';
+    const normalized = val.toLowerCase().trim();
+    if (['enhanced', 'premium'].includes(normalized)) return normalized;
+    return 'standard';
+  }),
 });
 
 const bulkUploadSchema = z.object({
