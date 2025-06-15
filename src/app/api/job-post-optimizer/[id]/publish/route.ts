@@ -67,15 +67,57 @@ export async function POST(
       );
     }
 
+    // Validate required fields
+    if (!jobPostOptimizer.jobTitle?.trim()) {
+      return NextResponse.json(
+        {
+          error: 'Job title is required',
+          code: 'MISSING_TITLE'
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!jobPostOptimizer.companyName?.trim()) {
+      return NextResponse.json(
+        {
+          error: 'Company name is required',
+          code: 'MISSING_COMPANY'
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!jobPostOptimizer.location?.trim()) {
+      return NextResponse.json(
+        {
+          error: 'Location is required',
+          code: 'MISSING_LOCATION'
+        },
+        { status: 400 }
+      );
+    }
+
     // Extract job type from the job title or default to full_time
     const jobType = extractJobType(jobPostOptimizer.jobTitle);
 
     // Determine which content to use for the job description
-    let jobDescription = 'Job description not available';
+    let jobDescription = '';
     if (useEditedContent && jobPostOptimizer.editedContent) {
-      jobDescription = jobPostOptimizer.editedContent;
+      jobDescription = jobPostOptimizer.editedContent.trim();
     } else if (jobPostOptimizer.aiGeneratedOutput) {
-      jobDescription = jobPostOptimizer.aiGeneratedOutput;
+      jobDescription = jobPostOptimizer.aiGeneratedOutput.trim();
+    }
+
+    // Validate job description content
+    if (!jobDescription || jobDescription.length < 50) {
+      return NextResponse.json(
+        {
+          error: 'Job description is required and must be at least 50 characters long. Please add more details about the position.',
+          code: 'INVALID_DESCRIPTION'
+        },
+        { status: 400 }
+      );
     }
 
     // Create the actual job posting

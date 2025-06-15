@@ -404,19 +404,50 @@ export default function CreateJobPostPage() {
       } else {
         const errorData = await publishResponse.json();
 
-        // Handle credits required error
-        if (publishResponse.status === 402 && errorData.code === 'CREDITS_REQUIRED') {
-          setErrors({
-            publish: 'Job posting credits required to publish. Please purchase credits to continue.'
-          });
-          // Optionally redirect to dashboard after a delay
-          setTimeout(() => {
-            router.push('/employers/dashboard');
-          }, 3000);
-          return;
+        // Handle specific error codes
+        if (publishResponse.status === 402) {
+          if (errorData.code === 'CREDITS_REQUIRED') {
+            setErrors({
+              publish: 'Job posting credits required to publish. Please purchase credits to continue.'
+            });
+            // Optionally redirect to dashboard after a delay
+            setTimeout(() => {
+              router.push('/employers/dashboard');
+            }, 3000);
+            return;
+          } else if (errorData.code === 'CREDIT_USAGE_FAILED') {
+            setErrors({
+              publish: 'Failed to process credit payment. Please try again or contact support if the issue persists.'
+            });
+            return;
+          }
+        } else if (publishResponse.status === 400) {
+          if (errorData.code === 'INVALID_DESCRIPTION') {
+            setErrors({
+              publish: 'Please add more content to your job description. It should be at least 50 characters long and include details about the position.'
+            });
+            return;
+          } else if (errorData.code === 'MISSING_TITLE') {
+            setErrors({
+              publish: 'Job title is required. Please add a job title and try again.'
+            });
+            return;
+          } else if (errorData.code === 'MISSING_COMPANY') {
+            setErrors({
+              publish: 'Company name is required. Please add a company name and try again.'
+            });
+            return;
+          } else if (errorData.code === 'MISSING_LOCATION') {
+            setErrors({
+              publish: 'Location is required. Please add a location and try again.'
+            });
+            return;
+          }
         }
 
-        setErrors({ publish: errorData.error || 'Failed to publish job post' });
+        setErrors({
+          publish: errorData.error || 'Failed to publish job post. Please check your content and try again.'
+        });
       }
     } catch (error) {
       console.error('Publish error:', error);
