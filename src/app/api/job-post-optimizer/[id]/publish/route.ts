@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '../../../auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
+import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import type { Session } from 'next-auth';
 
 export async function POST(
@@ -53,7 +54,6 @@ export async function POST(
     }
 
     // Check if user has credits before publishing
-    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
     const canPost = await JobPostingCreditsService.canPostJob((session!.user as any).id);
 
     if (!canPost) {
@@ -106,7 +106,6 @@ export async function POST(
     });
 
     // Use job posting credit for publishing
-    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
     const creditResult = await JobPostingCreditsService.useJobPostCredit((session!.user as any).id, publishedJob.id);
 
     if (!creditResult.success) {

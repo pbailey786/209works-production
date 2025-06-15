@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
+import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
 
@@ -118,7 +119,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user has enough credits (unified credit system)
-    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
     const userCredits = await JobPostingCreditsService.getUserCredits(user.id);
     const availableCredits = userCredits.total;
 
@@ -171,7 +171,6 @@ export async function POST(request: NextRequest) {
         });
 
         // Use unified credit system for job posting
-        const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
         const creditResult = await JobPostingCreditsService.useJobPostCredit(user.id, createdJob.id);
 
         if (!creditResult.success) {
@@ -216,7 +215,6 @@ export async function POST(request: NextRequest) {
       });
 
     // Get remaining credits after usage (unified credit system)
-    const { JobPostingCreditsService } = await import('@/lib/services/job-posting-credits');
     const remainingCreditsData = await JobPostingCreditsService.getUserCredits(user.id);
     const remainingCredits = remainingCreditsData.total;
 
