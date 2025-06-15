@@ -36,6 +36,7 @@ interface ProcessedJob {
   description?: string;
   requirements?: string;
   benefits?: string;
+  category?: string; // Added missing category property
   experienceLevel?: string;
   remote?: boolean;
   featured?: boolean;
