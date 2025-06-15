@@ -61,10 +61,8 @@ export default function EmployerBulkUploadPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [uploadHistory, setUploadHistory] = useState<UploadHistory[]>([]);
   const [userCredits, setUserCredits] = useState({
-    jobPost: 12,
-    featuredPost: 3,
-    socialGraphic: 5,
-    total: 0, // Added for unified credit system
+    universal: 0,
+    total: 0, // Unified credit system
   });
 
   // New state for error handling and modals
@@ -120,15 +118,15 @@ export default function EmployerBulkUploadPage() {
       const response = await fetch('/api/employers/credits');
       if (response.ok) {
         const data = await response.json();
-        setUserCredits(data.credits || { jobPost: 0, featuredPost: 0, socialGraphic: 0, total: 0 });
+        setUserCredits(data.credits || { universal: 0, total: 0 });
       } else {
         // If credits API fails, set zero credits
-        setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0, total: 0 });
+        setUserCredits({ universal: 0, total: 0 });
       }
     } catch (error) {
       console.error('Failed to fetch user credits:', error);
       // Set zero credits if API fails
-      setUserCredits({ jobPost: 0, featuredPost: 0, socialGraphic: 0, total: 0 });
+      setUserCredits({ universal: 0, total: 0 });
     }
   };
 
@@ -166,9 +164,7 @@ export default function EmployerBulkUploadPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobPost: 10,
-          featuredPost: 5,
-          socialGraphic: 5,
+          credits: 20, // Add 20 universal credits
           operation: 'add',
         }),
       });
@@ -382,10 +378,10 @@ export default function EmployerBulkUploadPage() {
 
       const result = await response.json();
 
-      // Update user credits
+      // Update user credits (unified system)
       setUserCredits(prev => ({
-        ...prev,
-        jobPost: prev.jobPost - totalCreditsNeeded,
+        universal: Math.max(0, prev.universal - totalCreditsNeeded),
+        total: Math.max(0, prev.total - totalCreditsNeeded),
       }));
 
       showSuccess(`Successfully published ${result.createdJobs} out of ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
@@ -471,9 +467,8 @@ export default function EmployerBulkUploadPage() {
 
         // Update user credits since optimization used one (unified credit system)
         setUserCredits(prev => ({
-          ...prev,
-          total: prev.total ? prev.total - 1 : Math.max(0, (prev.jobPost + (prev.featuredPost || 0) + (prev.socialGraphic || 0)) - 1),
-          jobPost: prev.jobPost > 0 ? prev.jobPost - 1 : prev.jobPost, // Maintain backward compatibility
+          universal: Math.max(0, prev.universal - 1),
+          total: Math.max(0, prev.total - 1),
         }));
 
         showSuccess('Job optimized successfully! 1 credit used.');
