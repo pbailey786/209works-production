@@ -23,6 +23,7 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
+import JobApprovalModal from '@/components/JobApprovalModal';
 
 interface ProcessedJob {
   id: number;
@@ -53,10 +54,15 @@ export default function EmployerBulkUploadPage() {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<
-    'idle' | 'uploading' | 'processing' | 'complete' | 'error'
+    'idle' | 'uploading' | 'processing' | 'optimizing' | 'approving' | 'complete' | 'error'
   >('idle');
   const [processedJobs, setProcessedJobs] = useState<ProcessedJob[]>([]);
+  const [optimizedJobs, setOptimizedJobs] = useState<any[]>([]);
   const [showOptimization, setShowOptimization] = useState(false);
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [currentJobIndex, setCurrentJobIndex] = useState(0);
+  const [approvedJobs, setApprovedJobs] = useState<string[]>([]);
+  const [isApproving, setIsApproving] = useState(false);
   const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [uploadHistory, setUploadHistory] = useState<UploadHistory[]>([]);
@@ -344,8 +350,9 @@ export default function EmployerBulkUploadPage() {
 
       if (result.success) {
         setProcessedJobs(result.processedJobs || []);
-        setUploadStatus('complete');
-        showSuccess(`Successfully processed ${result.processedJobs?.length || 0} jobs from your file.`);
+
+        // Start AI optimization process
+        await handleAIOptimization(result.processedJobs || []);
       } else {
         throw new Error(result.error || 'Failed to process jobs');
       }
@@ -354,6 +361,178 @@ export default function EmployerBulkUploadPage() {
       setUploadStatus('error');
       showError(error instanceof Error ? error.message : 'Failed to process file');
     }
+  };
+
+  // New function to handle AI optimization of uploaded jobs
+  const handleAIOptimization = async (jobs: ProcessedJob[]) => {
+    try {
+      setUploadStatus('optimizing');
+
+      // Filter successful jobs for optimization
+      const successfulJobs = jobs.filter(job => job.status === 'success');
+
+      if (successfulJobs.length === 0) {
+        setUploadStatus('complete');
+        showSuccess('File processed successfully. No valid jobs found for optimization.');
+        return;
+      }
+
+      // Prepare jobs for AI optimization
+      const jobsForOptimization = successfulJobs.map(job => ({
+        id: job.id.toString(),
+        title: job.title,
+        company: job.company || '',
+        location: job.location,
+        description: job.description || '',
+        salary: job.salary,
+        jobType: job.jobType,
+        experienceLevel: 'entry', // Default value
+        remote: false, // Default value
+      }));
+
+      // Call AI optimization API
+      const response = await fetch('/api/employers/bulk-upload/optimize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobs: jobsForOptimization }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize jobs with AI');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        setOptimizedJobs(result.optimizedJobs || []);
+        setUploadStatus('approving');
+        setCurrentJobIndex(0);
+        setShowApprovalModal(true);
+        showSuccess(`AI optimization complete! Review and approve ${result.optimizedJobs?.length || 0} jobs.`);
+      } else {
+        throw new Error(result.error || 'AI optimization failed');
+      }
+    } catch (error) {
+      console.error('AI optimization error:', error);
+      setUploadStatus('complete');
+      showError(error instanceof Error ? error.message : 'AI optimization failed. You can still publish jobs manually.');
+    }
+  };
+
+  // Handle individual job approval
+  const handleJobApproval = async (jobData: any) => {
+    try {
+      setIsApproving(true);
+
+      const response = await fetch('/api/employers/bulk-upload/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jobData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 402) {
+          throw new Error(errorData.error || 'Insufficient credits to publish job');
+        }
+        throw new Error(errorData.error || 'Failed to approve job');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Add to approved jobs list
+        setApprovedJobs(prev => [...prev, jobData.id]);
+
+        // Update credits
+        setUserCredits(prev => ({
+          universal: Math.max(0, prev.universal - 1),
+          total: Math.max(0, prev.total - 1),
+        }));
+
+        showSuccess(`Job "${jobData.title}" published successfully! 1 credit used.`);
+
+        // Move to next job or close modal
+        if (currentJobIndex < optimizedJobs.length - 1) {
+          setCurrentJobIndex(prev => prev + 1);
+        } else {
+          // All jobs processed
+          setShowApprovalModal(false);
+          setUploadStatus('complete');
+          showSuccess(`Bulk upload complete! ${approvedJobs.length + 1} jobs published.`);
+
+          // Reset state
+          setOptimizedJobs([]);
+          setApprovedJobs([]);
+          setCurrentJobIndex(0);
+          setProcessedJobs([]);
+          setUploadedFile(null);
+
+          // Refresh upload history
+          fetchUploadHistory();
+        }
+      }
+    } catch (error) {
+      console.error('Job approval error:', error);
+      showError(error instanceof Error ? error.message : 'Failed to approve job');
+    } finally {
+      setIsApproving(false);
+    }
+  };
+
+  // Handle skipping a job
+  const handleJobSkip = () => {
+    if (currentJobIndex < optimizedJobs.length - 1) {
+      setCurrentJobIndex(prev => prev + 1);
+    } else {
+      // All jobs processed
+      setShowApprovalModal(false);
+      setUploadStatus('complete');
+
+      if (approvedJobs.length > 0) {
+        showSuccess(`Bulk upload complete! ${approvedJobs.length} jobs published.`);
+      } else {
+        showSuccess('Bulk upload complete. No jobs were published.');
+      }
+
+      // Reset state
+      setOptimizedJobs([]);
+      setApprovedJobs([]);
+      setCurrentJobIndex(0);
+      setProcessedJobs([]);
+      setUploadedFile(null);
+
+      // Refresh upload history
+      fetchUploadHistory();
+    }
+  };
+
+  // Handle job editing in approval modal
+  const handleJobEdit = (jobData: any) => {
+    // For now, just show a message - could implement inline editing later
+    showSuccess('Job editing will be available in the approval modal.');
+  };
+
+  // Handle upgrade button click
+  const handleUpgrade = () => {
+    window.location.href = '/employers/pricing';
+  };
+
+  // Download CSV template
+  const downloadTemplate = () => {
+    const csvContent = `title,company,location,description,jobType,salary,requirements,benefits,experienceLevel,remote
+"Customer Service Representative","Acme Corp","Stockton, CA","We are seeking a friendly customer service representative...","Full-time","$18-22/hour","High school diploma, excellent communication skills","Health insurance, paid time off","Entry","No"
+"Software Engineer","Tech Solutions","Modesto, CA","Join our development team...","Full-time","$75,000-95,000","Bachelor's degree in CS, 3+ years experience","Health, dental, 401k, remote work","Mid-level","Yes"`;
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '209works-bulk-upload-template.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   };
 
   const handleBulkPublish = async () => {
@@ -500,28 +679,7 @@ export default function EmployerBulkUploadPage() {
     }
   };
 
-  const handleUpgrade = () => {
-    // Redirect to pricing/subscription page
-    window.location.href = '/employers/pricing';
-  };
 
-  const downloadTemplate = () => {
-    const csvContent = `title,company,location,jobType,salary,description,requirements,benefits,experienceLevel,remote
-"Senior Software Engineer","Tech Solutions Inc.","Stockton, CA","Full-time","$85,000 - $110,000","We are looking for a senior software engineer to join our growing team. You will be responsible for developing and maintaining our web applications using modern technologies.","5+ years of experience with JavaScript, React, Node.js. Bachelor's degree in Computer Science or related field.","Health insurance, 401k, flexible work schedule, remote work options","Senior","Yes"
-"Marketing Manager","Central Valley Marketing","Modesto, CA","full_time","$65,000 - $80,000","Join our dynamic marketing team as a Marketing Manager. You will lead marketing campaigns and strategies to grow our client base in the Central Valley.","3+ years of marketing experience, knowledge of digital marketing tools, excellent communication skills.","Health insurance, paid time off, professional development budget","Mid-level","No"
-"Sales Representative","Valley Sales Corp","Tracy, CA","part-time","$45,000 - $60,000 + Commission","We are seeking an energetic sales representative to join our team. You will be responsible for building relationships with clients and driving sales growth.","Previous sales experience preferred, strong communication skills, self-motivated.","Base salary plus commission, health benefits, company car allowance","Entry","false"
-"Customer Service Rep","209 Support Services","Manteca, CA","contract","$18 - $22/hour","Provide excellent customer service support to our clients via phone, email, and chat. Handle inquiries, resolve issues, and maintain customer satisfaction.","High school diploma, excellent communication skills, customer service experience preferred.","Flexible schedule, training provided, growth opportunities","entry-level","remote"`;
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = '209works_bulk_upload_template.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -760,10 +918,38 @@ export default function EmployerBulkUploadPage() {
               <div className="text-center">
                 <Sparkles className="mx-auto mb-4 h-16 w-16 text-[#2d4a3e]" />
                 <h3 className="mb-2 text-xl font-semibold text-gray-900">
-                  AI Processing...
+                  Processing File...
                 </h3>
                 <p className="text-gray-600">
-                  Optimizing job descriptions and validating data
+                  Validating and parsing your job data
+                </p>
+              </div>
+            )}
+
+            {uploadStatus === 'optimizing' && (
+              <div className="text-center">
+                <div className="mx-auto mb-4 h-16 w-16 animate-pulse">
+                  <Sparkles className="h-16 w-16 text-[#ff6b35]" />
+                </div>
+                <h3 className="mb-2 text-xl font-semibold text-gray-900">
+                  AI Optimization in Progress...
+                </h3>
+                <p className="text-gray-600">
+                  Enhancing job descriptions with AI for better candidate attraction
+                </p>
+              </div>
+            )}
+
+            {uploadStatus === 'approving' && (
+              <div className="text-center">
+                <div className="mx-auto mb-4 h-16 w-16 animate-bounce">
+                  <CheckCircle className="h-16 w-16 text-[#9fdf9f]" />
+                </div>
+                <h3 className="mb-2 text-xl font-semibold text-gray-900">
+                  Ready for Approval!
+                </h3>
+                <p className="text-gray-600">
+                  Review and approve each optimized job posting
                 </p>
               </div>
             )}
@@ -1631,6 +1817,25 @@ export default function EmployerBulkUploadPage() {
             </div>
           </div>
         )}
+
+        {/* Job Approval Modal */}
+        <JobApprovalModal
+          isOpen={showApprovalModal}
+          onClose={() => {
+            setShowApprovalModal(false);
+            setUploadStatus('complete');
+            setOptimizedJobs([]);
+            setApprovedJobs([]);
+            setCurrentJobIndex(0);
+          }}
+          jobs={optimizedJobs}
+          currentJobIndex={currentJobIndex}
+          onApprove={handleJobApproval}
+          onSkip={handleJobSkip}
+          onEdit={handleJobEdit}
+          creditsRemaining={getTotalCredits()}
+          isApproving={isApproving}
+        />
       </div>
     </div>
   );
