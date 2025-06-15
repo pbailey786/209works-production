@@ -94,29 +94,6 @@ export async function POST(request: NextRequest) {
       ]
     }, { status: 403 });
 
-    // Get updated credit count (unified system)
-    const totalCredits = await prisma.jobPostingCredit.count({
-      where: {
-        userId: user.id,
-        isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      }
-    });
-
-    const credits = {
-      universal: totalCredits,
-      total: totalCredits,
-    };
-
-    return NextResponse.json({
-      success: true,
-      credits,
-      message: 'Credits updated successfully',
-    });
-
   } catch (error) {
     console.error('Error updating user credits:', error);
     return NextResponse.json(
