@@ -116,16 +116,17 @@ export async function POST(req: NextRequest) {
     let aiGeneratedOutput = '';
     let optimizationPrompt = '';
 
+    // Check if OpenAI API key is available (needed for both AI generation and response)
+    const hasValidApiKey =
+      process.env.OPENAI_API_KEY &&
+      process.env.OPENAI_API_KEY !== 'your-openai-key' &&
+      process.env.OPENAI_API_KEY !==
+        'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
+
     // If user chose to skip AI, use manual content or empty string
     if (validatedData.skipAI) {
       aiGeneratedOutput = validatedData.manualContent || '';
     } else {
-      // Check if OpenAI API key is available
-      const hasValidApiKey =
-        process.env.OPENAI_API_KEY &&
-        process.env.OPENAI_API_KEY !== 'your-openai-key' &&
-        process.env.OPENAI_API_KEY !==
-          'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
 
       if (hasValidApiKey) {
         try {
