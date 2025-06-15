@@ -222,8 +222,26 @@ export async function POST(request: NextRequest) {
     const createdJobs = [];
     const successfulJobs = processedJobs.filter(job => job.status === 'success');
 
-    for (const jobData of successfulJobs) {
+    for (const processedJobData of successfulJobs) {
       try {
+        // Extract only the job fields we need, excluding processing metadata
+        const jobData = {
+          title: processedJobData.title,
+          company: processedJobData.company,
+          description: processedJobData.description,
+          location: processedJobData.location,
+          jobType: processedJobData.jobType,
+          salary: processedJobData.salary,
+          requirements: processedJobData.requirements,
+          benefits: processedJobData.benefits,
+          category: processedJobData.category,
+          experienceLevel: processedJobData.experienceLevel,
+          remote: processedJobData.remote,
+          featured: processedJobData.featured,
+        };
+
+        console.log('Creating job with data:', JSON.stringify(jobData, null, 2));
+
         // Parse salary if provided
         let salaryMin = null;
         let salaryMax = null;
@@ -240,21 +258,63 @@ export async function POST(request: NextRequest) {
           }
         }
 
+        // Try creating a simple job first to test if basic creation works
+        console.log('Attempting to create job in database...');
+
+        const jobCreateData = {
+          title: jobData.title,
+          company: jobData.company,
+          description: jobData.description,
+          location: jobData.location,
+          jobType: jobData.jobType || 'full_time',
+          salaryMin,
+          salaryMax,
+          categories: jobData.category ? [jobData.category] : [],
+          employerId: user.id,
+          source: 'bulk_upload',
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/temp-${Date.now()}`, // Temporary URL
+          postedAt: new Date(),
+          status: 'active',
+          region: '209', // Default for 209 Works
+          // Optional fields
+          benefits: jobData.benefits,
+          requirements: jobData.requirements,
+          isRemote: jobData.remote || false,
+        };
+
+        console.log('Job create data:', JSON.stringify(jobCreateData, null, 2));
+
+        // Try to create a minimal job first to test database connection
+        try {
+          console.log('Testing minimal job creation...');
+          const testJob = await prisma.job.create({
+            data: {
+              title: 'Test Job',
+              company: 'Test Company',
+              description: 'This is a test job description that is longer than 50 characters to meet the minimum requirement.',
+              location: 'Test Location',
+              source: 'test',
+              url: 'https://test.com/job/123',
+              postedAt: new Date(),
+              categories: ['test'],
+              jobType: 'full_time',
+              employerId: user.id,
+              status: 'active',
+              region: '209',
+            },
+          });
+          console.log('Test job created successfully:', testJob.id);
+
+          // Delete the test job
+          await prisma.job.delete({ where: { id: testJob.id } });
+          console.log('Test job deleted successfully');
+        } catch (testError) {
+          console.error('Test job creation failed:', testError);
+          throw new Error('Database test failed: ' + (testError instanceof Error ? testError.message : 'Unknown error'));
+        }
+
         const createdJob = await prisma.job.create({
-          data: {
-            title: jobData.title,
-            company: jobData.company,
-            description: jobData.description,
-            location: jobData.location,
-            jobType: jobData.jobType || 'full_time',
-            salaryMin,
-            salaryMax,
-            categories: jobData.category ? [jobData.category] : [],
-            employerId: user.id,
-            source: '209works',
-            url: '',
-            postedAt: new Date(),
-          },
+          data: jobCreateData,
         });
 
         // Use unified credit system for job posting
@@ -266,11 +326,19 @@ export async function POST(request: NextRequest) {
           throw new Error(creditResult.error || 'Failed to use job posting credit');
         }
 
+        // Update the job URL with the actual job ID
+        await prisma.job.update({
+          where: { id: createdJob.id },
+          data: {
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${createdJob.id}`,
+          },
+        });
+
         createdJobs.push(createdJob);
       } catch (error) {
         console.error('Error creating job:', error);
         // Update the job status to error
-        const jobIndex = processedJobs.findIndex(j => j.title === jobData.title);
+        const jobIndex = processedJobs.findIndex(j => j.title === processedJobData.title);
         if (jobIndex !== -1) {
           processedJobs[jobIndex].status = 'error';
           processedJobs[jobIndex].validationErrors.push('Failed to create job in database');

@@ -155,33 +155,28 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Validate and process each job
-    const processedJobs = jobs.map((job, index) => {
-      const jobId = index + 1;
-      
-      // Validate required fields
-      const validation = validateJob(job);
-      
-      // Calculate credits required
+    // Process and normalize each job (validation already done in CSV processing)
+    const processedJobs = jobs.map((job) => {
+      // Calculate credits required based on optimization settings
       let creditsRequired = 1; // Base credit for job posting
-      
+
       if (optimizationSettings.optimizationLevel === 'enhanced') {
         creditsRequired += 0.5;
       } else if (optimizationSettings.optimizationLevel === 'premium') {
         creditsRequired += 1;
       }
-      
+
       if (optimizationSettings.generateGraphics) {
         creditsRequired += 1;
       }
-      
+
       if (optimizationSettings.createFeatured) {
         creditsRequired += 2;
       }
 
       return {
-        id: jobId,
-        title: job.title || `Job ${jobId}`,
+        ...job, // Keep all fields from CSV processing including id, status, validationErrors
+        title: job.title || '',
         company: job.company || '',
         location: job.location || '',
         jobType: normalizeJobType(job.jobtype || job.jobType || job.job_type || ''),
@@ -192,9 +187,6 @@ export async function POST(request: NextRequest) {
         experienceLevel: normalizeExperienceLevel(job.experiencelevel || job.experienceLevel || job.experience_level || ''),
         remote: normalizeBoolean(job.remote),
         featured: normalizeBoolean(job.featured),
-        status: validation.status,
-        warning: validation.warning,
-        error: validation.error,
         creditsRequired,
         optimized: false,
       };
@@ -260,16 +252,56 @@ async function processCSVFile(file: File): Promise<any[]> {
   };
 
   const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/"/g, ''));
-  const jobs = lines.slice(1).map(line => {
-    const values = parseCSVLine(line);
-    const job: any = {};
 
-    headers.forEach((header, index) => {
-      job[header] = values[index] || '';
-    });
+  // Validate required headers
+  const requiredHeaders = ['title', 'company', 'location', 'description'];
+  const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
 
-    return job;
-  });
+  if (missingHeaders.length > 0) {
+    throw new Error(`Missing required columns: ${missingHeaders.join(', ')}. Please ensure your CSV has these columns: ${requiredHeaders.join(', ')}`);
+  }
+
+  const jobs = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trim()) continue; // Skip empty lines
+
+    try {
+      const values = parseCSVLine(line);
+      const job: any = { csvRowIndex: i }; // Add unique index for tracking (not database ID)
+
+      headers.forEach((header, index) => {
+        let value = values[index] || '';
+        // Clean up the value
+        value = value.replace(/^["']|["']$/g, '').trim();
+        job[header] = value;
+      });
+
+      // Validate required fields
+      const errors = [];
+      if (!job.title) errors.push('Title is required');
+      if (!job.company) errors.push('Company is required');
+      if (!job.location) errors.push('Location is required');
+      if (!job.description || job.description.length < 10) errors.push('Description must be at least 10 characters');
+
+      job.validationErrors = errors;
+      job.status = errors.length === 0 ? 'success' : 'error';
+
+      jobs.push(job);
+    } catch (error) {
+      // Handle malformed rows
+      jobs.push({
+        csvRowIndex: i,
+        title: `Row ${i} - Parse Error`,
+        company: '',
+        location: '',
+        description: '',
+        validationErrors: [`Failed to parse row ${i}: ${error instanceof Error ? error.message : 'Unknown error'}`],
+        status: 'error'
+      });
+    }
+  }
 
   return jobs;
 }
@@ -288,23 +320,4 @@ async function processJSONFile(file: File): Promise<any[]> {
   }
 }
 
-// Helper function to validate job data
-function validateJob(job: any): { status: 'success' | 'warning' | 'error', warning?: string, error?: string } {
-  if (!job.title || job.title.trim() === '') {
-    return { status: 'error', error: 'Missing required field: job title' };
-  }
-  
-  if (!job.location || job.location.trim() === '') {
-    return { status: 'error', error: 'Missing required field: location' };
-  }
-  
-  if (!job.description || job.description.trim() === '') {
-    return { status: 'error', error: 'Missing required field: job description' };
-  }
-  
-  if (job.description.length < 50) {
-    return { status: 'warning', warning: 'Short description - consider expanding for better results' };
-  }
-  
-  return { status: 'success' };
-}
+

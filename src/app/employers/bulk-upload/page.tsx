@@ -26,7 +26,8 @@ import Link from 'next/link';
 import JobApprovalModal from '@/components/JobApprovalModal';
 
 interface ProcessedJob {
-  id: number;
+  id?: number;
+  csvRowIndex?: number; // For tracking CSV row position
   title: string;
   company?: string;
   location: string;
@@ -41,6 +42,7 @@ interface ProcessedJob {
   status: 'success' | 'warning' | 'error';
   warning?: string;
   error?: string;
+  validationErrors?: string[]; // For CSV validation errors
   creditsRequired: number;
   optimized?: boolean;
 }
@@ -59,8 +61,9 @@ export default function EmployerBulkUploadPage() {
   const [dragActive, setDragActive] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<
-    'idle' | 'uploading' | 'processing' | 'optimizing' | 'approving' | 'complete' | 'error'
+    'idle' | 'uploading' | 'processing' | 'optimizing' | 'approving' | 'publishing' | 'complete' | 'error'
   >('idle');
+  const [publishingProgress, setPublishingProgress] = useState({ current: 0, total: 0 });
   const [processedJobs, setProcessedJobs] = useState<ProcessedJob[]>([]);
   const [optimizedJobs, setOptimizedJobs] = useState<any[]>([]);
   const [showOptimization, setShowOptimization] = useState(false);
@@ -321,6 +324,8 @@ export default function EmployerBulkUploadPage() {
     setUploadStatus('uploading');
 
     try {
+      console.log('Starting file upload and validation...');
+
       // Validate file type and size
       const allowedTypes = ['.csv', '.xlsx', '.json'];
       const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
@@ -333,6 +338,7 @@ export default function EmployerBulkUploadPage() {
         throw new Error('File size too large. Please upload a file smaller than 10MB.');
       }
 
+      console.log('File validation passed, starting processing...');
       setUploadStatus('processing');
 
       // Create FormData for file upload
@@ -340,24 +346,40 @@ export default function EmployerBulkUploadPage() {
       formData.append('file', file);
       formData.append('optimizationSettings', JSON.stringify(optimizationSettings));
 
+      console.log('Sending file to processing API...');
+
       // Send file to API for processing
       const response = await fetch('/api/employers/bulk-upload/process', {
         method: 'POST',
         body: formData,
       });
 
+      console.log('Processing API response status:', response.status);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process file');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Processing API error:', errorData);
+        throw new Error(errorData.error || `Failed to process file (${response.status})`);
       }
 
       const result = await response.json();
+      console.log('Processing result:', result);
 
       if (result.success) {
         setProcessedJobs(result.processedJobs || []);
 
-        // Start AI optimization process
-        await handleAIOptimization(result.processedJobs || []);
+        // Check if there are any successful jobs
+        const successfulJobs = result.processedJobs?.filter((job: any) => job.status === 'success') || [];
+
+        if (successfulJobs.length === 0) {
+          setUploadStatus('complete');
+          showError('No valid jobs found in the uploaded file. Please check the format and required fields.');
+          return;
+        }
+
+        // Show processing complete status and let user choose next step
+        setUploadStatus('complete');
+        showSuccess(`File processed successfully! ${successfulJobs.length} valid jobs found. You can now review and optimize them individually or proceed with AI optimization.`);
       } else {
         throw new Error(result.error || 'Failed to process jobs');
       }
@@ -368,9 +390,20 @@ export default function EmployerBulkUploadPage() {
     }
   };
 
-  // New function to handle AI optimization of uploaded jobs
+  // Function to start AI optimization process
+  const startAIOptimization = async () => {
+    if (!processedJobs.length) {
+      showError('No jobs to optimize. Please upload a file first.');
+      return;
+    }
+
+    await handleAIOptimization(processedJobs);
+  };
+
+  // Function to handle AI optimization of uploaded jobs
   const handleAIOptimization = async (jobs: ProcessedJob[]) => {
     try {
+      console.log('Starting AI optimization process...');
       setUploadStatus('optimizing');
 
       // Filter successful jobs for optimization
@@ -378,13 +411,15 @@ export default function EmployerBulkUploadPage() {
 
       if (successfulJobs.length === 0) {
         setUploadStatus('complete');
-        showSuccess('File processed successfully. No valid jobs found for optimization.');
+        showError('No valid jobs found for optimization. Please fix the errors in your uploaded jobs.');
         return;
       }
 
+      console.log(`Preparing ${successfulJobs.length} jobs for AI optimization...`);
+
       // Prepare jobs for AI optimization
       const jobsForOptimization = successfulJobs.map(job => ({
-        id: job.id.toString(),
+        id: (job.csvRowIndex || job.id || Math.random()).toString(),
         title: job.title,
         company: job.company || '',
         location: job.location,
@@ -397,6 +432,8 @@ export default function EmployerBulkUploadPage() {
         remote: job.remote || false,
       }));
 
+      console.log('Sending jobs to AI optimization API...');
+
       // Call AI optimization API
       const response = await fetch('/api/employers/bulk-upload/optimize', {
         method: 'POST',
@@ -404,21 +441,33 @@ export default function EmployerBulkUploadPage() {
         body: JSON.stringify({ jobs: jobsForOptimization }),
       });
 
+      console.log('AI optimization API response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || 'Failed to optimize jobs with AI');
+        console.error('AI optimization API error:', errorData);
+        throw new Error(errorData.error || `Failed to optimize jobs with AI (${response.status})`);
       }
 
       const result = await response.json();
+      console.log('AI optimization result:', result);
 
-      if (result.success) {
-        setOptimizedJobs(result.optimizedJobs || []);
+      if (result.success && result.optimizedJobs && result.optimizedJobs.length > 0) {
+        setOptimizedJobs(result.optimizedJobs);
         setUploadStatus('approving');
         setCurrentJobIndex(0);
         setShowApprovalModal(true);
-        showSuccess(`AI optimization complete! Review and approve ${result.optimizedJobs?.length || 0} jobs.`);
+
+        const aiCount = result.optimizedJobs.filter((job: any) => job.optimizationStatus === 'success').length;
+        const fallbackCount = result.optimizedJobs.filter((job: any) => job.optimizationStatus === 'fallback').length;
+
+        if (aiCount > 0) {
+          showSuccess(`AI optimization complete! ${aiCount} jobs enhanced with AI${fallbackCount > 0 ? `, ${fallbackCount} using templates` : ''}. Review and approve each job.`);
+        } else {
+          showSuccess(`Jobs prepared for review! ${fallbackCount} jobs using templates (AI not available). Review and approve each job.`);
+        }
       } else {
-        throw new Error(result.error || 'AI optimization failed');
+        throw new Error(result.error || 'AI optimization returned no results');
       }
     } catch (error) {
       console.error('AI optimization error:', error);
@@ -426,8 +475,10 @@ export default function EmployerBulkUploadPage() {
       // Fallback: Create mock optimized jobs for manual approval
       const successfulJobs = jobs.filter(job => job.status === 'success');
       if (successfulJobs.length > 0) {
+        console.log('Creating fallback optimized jobs for manual review...');
+
         const fallbackOptimizedJobs = successfulJobs.map(job => ({
-          id: job.id.toString(),
+          id: (job.csvRowIndex || job.id || Math.random()).toString(),
           originalContent: job.description || 'No description provided',
           optimizedContent: job.description || 'No description provided',
           optimizationStatus: 'error' as const,
@@ -572,9 +623,18 @@ export default function EmployerBulkUploadPage() {
   };
 
   const handleBulkPublish = async () => {
-    if (!processedJobs.length) return;
+    if (!processedJobs.length) {
+      showError('No jobs to publish. Please upload a file first.');
+      return;
+    }
 
     const successfulJobs = processedJobs.filter(job => job.status === 'success');
+
+    if (successfulJobs.length === 0) {
+      showError('No valid jobs to publish. Please fix the errors in your uploaded jobs.');
+      return;
+    }
+
     const totalCreditsNeeded = successfulJobs.reduce((sum, job) => sum + job.creditsRequired, 0);
     const totalCredits = getTotalCredits();
 
@@ -588,47 +648,69 @@ export default function EmployerBulkUploadPage() {
     }
 
     try {
-      setUploadStatus('processing');
+      console.log('Starting bulk publish process...');
+      setUploadStatus('publishing');
+      setPublishingProgress({ current: 0, total: successfulJobs.length });
+
+      // Prepare job data for API
+      const jobsToPublish = successfulJobs.map(job => ({
+        title: job.title,
+        company: job.company,
+        location: job.location,
+        jobType: job.jobType || 'full_time',
+        description: job.description,
+        salary: job.salary,
+        requirements: job.requirements,
+        benefits: job.benefits,
+        category: job.category,
+        experienceLevel: job.experienceLevel,
+        remote: job.remote,
+        featured: job.featured,
+        optimizationLevel: optimizationSettings.optimizationLevel,
+      }));
+
+      console.log('Publishing jobs:', jobsToPublish);
 
       const response = await fetch('/api/employers/bulk-upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobs: successfulJobs.map(job => ({
-            title: job.title,
-            company: job.company,
-            location: job.location,
-            jobType: job.jobType?.toLowerCase().replace(' ', '_'),
-            description: job.description,
-            salary: job.salary,
-            optimizationLevel: optimizationSettings.optimizationLevel,
-          })),
+          jobs: jobsToPublish,
           optimizationSettings,
         }),
       });
 
+      console.log('Bulk publish response status:', response.status);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to publish jobs');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Bulk publish error response:', errorData);
+        throw new Error(errorData.error || `Failed to publish jobs (${response.status})`);
       }
 
       const result = await response.json();
+      console.log('Bulk publish result:', result);
 
-      // Update user credits (unified system)
-      setUserCredits(prev => ({
-        universal: Math.max(0, prev.universal - totalCreditsNeeded),
-        total: Math.max(0, prev.total - totalCreditsNeeded),
-      }));
+      if (result.success) {
+        // Update user credits (unified system)
+        setUserCredits(prev => ({
+          universal: Math.max(0, prev.universal - totalCreditsNeeded),
+          total: Math.max(0, prev.total - totalCreditsNeeded),
+        }));
 
-      showSuccess(`Successfully published ${result.createdJobs} out of ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
+        showSuccess(`Successfully published ${result.createdJobs} out of ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
 
-      // Reset the form
-      setProcessedJobs([]);
-      setUploadedFile(null);
-      setUploadStatus('idle');
+        // Reset the form
+        setProcessedJobs([]);
+        setUploadedFile(null);
+        setUploadStatus('idle');
 
-      // Refresh upload history
-      fetchUploadHistory();
+        // Refresh upload history and credits
+        fetchUploadHistory();
+        fetchUserCredits();
+      } else {
+        throw new Error(result.error || 'Bulk publish failed');
+      }
     } catch (error) {
       console.error('Bulk publish error:', error);
       showError(error instanceof Error ? error.message : 'Failed to publish jobs. Please try again.');
@@ -646,7 +728,7 @@ export default function EmployerBulkUploadPage() {
 
   const handleSaveEdit = (updatedJob: ProcessedJob) => {
     setProcessedJobs(prev =>
-      prev.map(job => job.id === updatedJob.id ? updatedJob : job)
+      prev.map(job => (job.csvRowIndex || job.id) === (updatedJob.csvRowIndex || updatedJob.id) ? updatedJob : job)
     );
     setEditingJob(null);
     showSuccess('Job updated successfully!');
@@ -698,7 +780,7 @@ export default function EmployerBulkUploadPage() {
         };
 
         setProcessedJobs(prev =>
-          prev.map(j => j.id === job.id ? optimizedJob : j)
+          prev.map(j => (j.csvRowIndex || j.id) === (job.csvRowIndex || job.id) ? optimizedJob : j)
         );
 
         // Update user credits since optimization used one (unified credit system)
@@ -990,6 +1072,21 @@ export default function EmployerBulkUploadPage() {
               </div>
             )}
 
+            {uploadStatus === 'publishing' && (
+              <div className="text-center">
+                <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>
+                <h3 className="mb-2 text-xl font-semibold text-gray-900">
+                  Publishing Jobs...
+                </h3>
+                <p className="text-gray-600">
+                  {publishingProgress.total > 0
+                    ? `Publishing job ${publishingProgress.current} of ${publishingProgress.total}`
+                    : 'Creating job postings in the database'
+                  }
+                </p>
+              </div>
+            )}
+
             {uploadStatus === 'complete' && (
               <div className="text-center">
                 <CheckCircle className="mx-auto mb-4 h-16 w-16 text-[#9fdf9f]" />
@@ -1070,11 +1167,45 @@ export default function EmployerBulkUploadPage() {
               </div>
               <div className="flex gap-3">
                 <button
+                  onClick={startAIOptimization}
+                  disabled={
+                    processedJobs.filter(job => job.status === 'success').length === 0 ||
+                    uploadStatus === 'optimizing' ||
+                    uploadStatus === 'publishing'
+                  }
+                  className="rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] px-4 py-2 font-medium text-white transition-colors hover:from-[#1d3a2e] hover:to-[#e55a2b] disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  {uploadStatus === 'optimizing' ? (
+                    <>
+                      <div className="mr-2 inline h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
+                      Optimizing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 inline h-4 w-4" />
+                      AI Optimize & Review
+                    </>
+                  )}
+                </button>
+                <button
                   onClick={handleBulkPublish}
-                  disabled={processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0) > getTotalCredits()}
+                  disabled={
+                    processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0) > getTotalCredits() ||
+                    uploadStatus === 'optimizing' ||
+                    uploadStatus === 'publishing'
+                  }
                   className="rounded-lg bg-[#2d4a3e] px-4 py-2 font-medium text-white transition-colors hover:bg-[#1d3a2e] disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  Publish All ({processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0)} credits)
+                  {uploadStatus === 'publishing' ? (
+                    <>
+                      <div className="mr-2 inline h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      Publish All ({processedJobs.reduce((sum, job) => sum + job.creditsRequired, 0)} credits)
+                    </>
+                  )}
                 </button>
                 <button
                   disabled
@@ -1087,9 +1218,9 @@ export default function EmployerBulkUploadPage() {
             </div>
 
             <div className="space-y-4">
-              {processedJobs.map(job => (
+              {processedJobs.map((job, index) => (
                 <div
-                  key={job.id}
+                  key={job.csvRowIndex || job.id || index}
                   className="rounded-lg border border-gray-200 p-4"
                 >
                   <div className="flex items-center justify-between">
