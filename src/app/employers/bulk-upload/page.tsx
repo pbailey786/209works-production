@@ -371,12 +371,10 @@ export default function EmployerBulkUploadPage() {
   // New function to handle AI optimization of uploaded jobs
   const handleAIOptimization = async (jobs: ProcessedJob[]) => {
     try {
-      console.log('Starting AI optimization with jobs:', jobs);
       setUploadStatus('optimizing');
 
       // Filter successful jobs for optimization
       const successfulJobs = jobs.filter(job => job.status === 'success');
-      console.log('Successful jobs for optimization:', successfulJobs);
 
       if (successfulJobs.length === 0) {
         setUploadStatus('complete');
@@ -400,23 +398,18 @@ export default function EmployerBulkUploadPage() {
       }));
 
       // Call AI optimization API
-      console.log('Sending jobs for optimization:', jobsForOptimization);
       const response = await fetch('/api/employers/bulk-upload/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobs: jobsForOptimization }),
       });
 
-      console.log('AI optimization response status:', response.status);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('AI optimization failed:', errorData);
         throw new Error(errorData.error || 'Failed to optimize jobs with AI');
       }
 
       const result = await response.json();
-      console.log('AI optimization result:', result);
 
       if (result.success) {
         setOptimizedJobs(result.optimizedJobs || []);
@@ -429,8 +422,36 @@ export default function EmployerBulkUploadPage() {
       }
     } catch (error) {
       console.error('AI optimization error:', error);
-      setUploadStatus('complete');
-      showError(error instanceof Error ? error.message : 'AI optimization failed. You can still publish jobs manually.');
+
+      // Fallback: Create mock optimized jobs for manual approval
+      const successfulJobs = jobs.filter(job => job.status === 'success');
+      if (successfulJobs.length > 0) {
+        const fallbackOptimizedJobs = successfulJobs.map(job => ({
+          id: job.id.toString(),
+          originalContent: job.description || 'No description provided',
+          optimizedContent: job.description || 'No description provided',
+          optimizationStatus: 'error' as const,
+          error: 'AI optimization failed - using original content',
+          metadata: {
+            title: job.title,
+            company: job.company || '',
+            location: job.location,
+            salary: job.salary,
+            jobType: job.jobType,
+            experienceLevel: job.experienceLevel,
+            remote: job.remote,
+          },
+        }));
+
+        setOptimizedJobs(fallbackOptimizedJobs);
+        setUploadStatus('approving');
+        setCurrentJobIndex(0);
+        setShowApprovalModal(true);
+        showError('AI optimization failed, but you can still review and publish jobs manually.');
+      } else {
+        setUploadStatus('complete');
+        showError(error instanceof Error ? error.message : 'AI optimization failed and no valid jobs found.');
+      }
     }
   };
 
