@@ -6,14 +6,17 @@ import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
 
+// Define the JobType enum to match Prisma schema
+type JobType = 'full_time' | 'part_time' | 'contract' | 'internship' | 'temporary' | 'volunteer' | 'other';
+
 // Helper function to normalize job type formats
-function normalizeJobType(jobType: string): string {
+function normalizeJobType(jobType: string): JobType {
   if (!jobType) return 'full_time';
 
   const normalized = jobType.toLowerCase().trim();
 
   // Map common variations to our enum values
-  const jobTypeMap: Record<string, string> = {
+  const jobTypeMap: Record<string, JobType> = {
     'full-time': 'full_time',
     'full_time': 'full_time',
     'fulltime': 'full_time',
@@ -38,13 +41,16 @@ function normalizeJobType(jobType: string): string {
   return jobTypeMap[normalized] || 'full_time'; // Default to full_time if not found
 }
 
+// Define the ExperienceLevel enum to match Prisma schema
+type ExperienceLevel = 'entry' | 'mid' | 'senior' | 'executive';
+
 // Helper function to normalize experience level
-function normalizeExperienceLevel(level: string): string {
+function normalizeExperienceLevel(level: string): ExperienceLevel {
   if (!level) return 'entry';
 
   const normalized = level.toLowerCase().trim();
 
-  const levelMap: Record<string, string> = {
+  const levelMap: Record<string, ExperienceLevel> = {
     'entry': 'entry',
     'entry-level': 'entry',
     'entry level': 'entry',
