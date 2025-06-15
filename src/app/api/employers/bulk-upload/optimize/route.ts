@@ -99,14 +99,19 @@ Ready to join our team? We'd love to hear from you! Apply today and take the nex
 // POST /api/employers/bulk-upload/optimize - Optimize jobs with AI
 export async function POST(request: NextRequest) {
   try {
+    console.log('AI optimization endpoint called');
     const session = await getServerSession(authOptions) as Session | null;
 
     if (!session?.user?.email) {
+      console.log('Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
+    console.log('Request body received:', body);
+
     const validatedData = bulkOptimizeSchema.parse(body);
+    console.log('Data validated successfully:', validatedData);
 
     // Check if OpenAI API key is available
     const hasValidApiKey =
@@ -117,7 +122,9 @@ export async function POST(request: NextRequest) {
     const optimizedJobs = [];
 
     // Process each job for optimization
+    console.log(`Processing ${validatedData.jobs.length} jobs for optimization`);
     for (const job of validatedData.jobs) {
+      console.log(`Processing job ${job.id}: ${job.title}`);
       let optimizedContent = '';
       let optimizationStatus = 'success';
       let error = null;
@@ -126,6 +133,7 @@ export async function POST(request: NextRequest) {
         try {
           // Generate AI-optimized job listing
           const optimizationPrompt = createBulkOptimizationPrompt(job);
+          console.log(`Generated prompt for job ${job.id}`);
 
           const response = await openai.chat.completions.create({
             model: 'gpt-4',
@@ -144,7 +152,8 @@ export async function POST(request: NextRequest) {
           });
 
           optimizedContent = response.choices[0]?.message?.content || '';
-          
+          console.log(`AI optimization completed for job ${job.id}`);
+
           if (!optimizedContent) {
             throw new Error('Empty response from AI');
           }
@@ -156,6 +165,7 @@ export async function POST(request: NextRequest) {
           error = 'AI optimization failed, using template';
         }
       } else {
+        console.log(`Using fallback optimization for job ${job.id} (no AI key)`);
         // Use fallback template when OpenAI is not available
         optimizedContent = createFallbackOptimization(job);
         optimizationStatus = 'fallback';
@@ -180,6 +190,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    console.log(`Optimization complete. Returning ${optimizedJobs.length} optimized jobs`);
     return NextResponse.json({
       success: true,
       optimizedJobs,

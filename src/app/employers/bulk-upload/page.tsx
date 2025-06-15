@@ -33,6 +33,11 @@ interface ProcessedJob {
   jobType?: string;
   salary?: string;
   description?: string;
+  requirements?: string;
+  benefits?: string;
+  experienceLevel?: string;
+  remote?: boolean;
+  featured?: boolean;
   status: 'success' | 'warning' | 'error';
   warning?: string;
   error?: string;
@@ -366,10 +371,12 @@ export default function EmployerBulkUploadPage() {
   // New function to handle AI optimization of uploaded jobs
   const handleAIOptimization = async (jobs: ProcessedJob[]) => {
     try {
+      console.log('Starting AI optimization with jobs:', jobs);
       setUploadStatus('optimizing');
 
       // Filter successful jobs for optimization
       const successfulJobs = jobs.filter(job => job.status === 'success');
+      console.log('Successful jobs for optimization:', successfulJobs);
 
       if (successfulJobs.length === 0) {
         setUploadStatus('complete');
@@ -384,24 +391,32 @@ export default function EmployerBulkUploadPage() {
         company: job.company || '',
         location: job.location,
         description: job.description || '',
-        salary: job.salary,
-        jobType: job.jobType,
-        experienceLevel: 'entry', // Default value
-        remote: false, // Default value
+        salary: job.salary || '',
+        requirements: job.requirements || '',
+        benefits: job.benefits || '',
+        jobType: job.jobType || 'full_time',
+        experienceLevel: job.experienceLevel || 'entry',
+        remote: job.remote || false,
       }));
 
       // Call AI optimization API
+      console.log('Sending jobs for optimization:', jobsForOptimization);
       const response = await fetch('/api/employers/bulk-upload/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobs: jobsForOptimization }),
       });
 
+      console.log('AI optimization response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to optimize jobs with AI');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('AI optimization failed:', errorData);
+        throw new Error(errorData.error || 'Failed to optimize jobs with AI');
       }
 
       const result = await response.json();
+      console.log('AI optimization result:', result);
 
       if (result.success) {
         setOptimizedJobs(result.optimizedJobs || []);
