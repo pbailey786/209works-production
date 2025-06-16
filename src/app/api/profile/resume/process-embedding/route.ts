@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
+import { createSuccessResponse, createErrorResponse, ApiError, ErrorCode } from '@/lib/errors/api-errors';
 import { JobQueueService } from '@/lib/services/job-queue';
 import { ResumeEmbeddingService } from '@/lib/services/resume-embedding';
-import { prisma } from '@/app/api/auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 const processResumeSchema = z.object({
@@ -22,7 +22,7 @@ export const POST = withAPIMiddleware(
 
       // Check if user is a job seeker
       if (user!.role !== 'jobseeker') {
-        return createErrorResponse('Only job seekers can process resume embeddings', 403);
+        return createErrorResponse(new ApiError('Only job seekers can process resume embeddings', 403, ErrorCode.AUTHORIZATION_ERROR));
       }
 
       // Check if user has opted in for job alerts
@@ -32,7 +32,7 @@ export const POST = withAPIMiddleware(
       });
 
       if (!jobSeekerProfile?.optInEmailAlerts) {
-        return createErrorResponse('You must opt in to job alerts to use AI matching features', 400);
+        return createErrorResponse(new ApiError('You must opt in to job alerts to use AI matching features', 400, ErrorCode.BAD_REQUEST));
       }
 
       if (immediate) {
@@ -72,9 +72,7 @@ export const POST = withAPIMiddleware(
     } catch (error) {
       console.error(`Failed to process resume embedding for user ${userId}:`, error);
       return createErrorResponse(
-        'Failed to process resume embedding',
-        500,
-        error instanceof Error ? error.message : 'Unknown error'
+        error instanceof Error ? error : new Error('Failed to process resume embedding')
       );
     }
   },
@@ -141,7 +139,7 @@ export const GET = withAPIMiddleware(
 
     } catch (error) {
       console.error(`Failed to get resume embedding status for user ${userId}:`, error);
-      return createErrorResponse('Failed to get resume embedding status', 500);
+      return createErrorResponse(error instanceof Error ? error : new Error('Failed to get resume embedding status'));
     }
   },
   {

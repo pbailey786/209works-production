@@ -4,7 +4,7 @@ import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-err
 import { JobMatchingService } from '@/lib/services/job-matching';
 import { ResumeEmbeddingService } from '@/lib/services/resume-embedding';
 import { JobQueueService } from '@/lib/services/job-queue';
-import { prisma } from '@/app/api/auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 const testSchema = z.object({
