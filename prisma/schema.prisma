@@ -1422,9 +1422,9 @@ model JobMatch {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  job               Job              @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resumeEmbedding   ResumeEmbedding  @relation(fields: [userId], references: [userId])
+  job               Job              @relation(fields: [jobId], references: [id], onDelete: Cascade, map: "JobMatch_jobId_fkey")
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade, map: "JobMatch_userId_fkey")
+  resumeEmbedding   ResumeEmbedding  @relation(fields: [userId], references: [userId], map: "JobMatch_resumeEmbedding_fkey")
 
   @@unique([jobId, userId]) // Prevent duplicate matches for same job/user
   @@index([jobId])

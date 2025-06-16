@@ -73,7 +73,7 @@ async function checkDatabaseStatus() {
       
       if (testJobs.length > 0) {
         console.log(`⚠️  Found ${testJobs.length} potential test jobs:`);
-        testJobs.forEach(job => {
+        testJobs.forEach((job: { id: string; title: string; company: string }) => {
           console.log(`   - ${job.title} at ${job.company} (ID: ${job.id})`);
         });
       } else {
