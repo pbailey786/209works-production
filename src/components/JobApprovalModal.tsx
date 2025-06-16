@@ -249,10 +249,24 @@ export default function JobApprovalModal({
                         Template
                       </span>
                     )}
+                    {currentJob.optimizationStatus === 'error' && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        Error
+                      </span>
+                    )}
                   </div>
+
+                  {currentJob.error && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Note:</strong> {currentJob.error}
+                      </p>
+                    </div>
+                  )}
+
                   <div className="bg-green-50 rounded-lg p-4 h-96 overflow-y-auto">
                     <div className="whitespace-pre-wrap text-sm text-gray-700">
-                      {currentJob.optimizedContent}
+                      {currentJob.optimizedContent || 'No optimized content available. Please use the original content or try again.'}
                     </div>
                   </div>
                 </div>

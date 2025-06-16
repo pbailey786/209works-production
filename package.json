@@ -47,9 +47,12 @@
     "queue:test": "ts-node -r tsconfig-paths/register -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/test-email-queue.ts",
     "deploy:chat-history": "node scripts/deploy-chat-history.js",
     "debug:applications": "node scripts/debug-job-applications.js",
-    "cleanup:test-data": "node scripts/cleanup-test-data.js"
+    "cleanup:test-data": "node scripts/cleanup-test-data.js",
+    "setup:ai-matching": "node scripts/setup-ai-matching.js",
+    "test:ai-matching": "curl -H \"Authorization: Bearer ${ADMIN_SECRET}\" \"${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}/api/admin/test-ai-matching\""
   },
   "dependencies": {
+    "@anthropic-ai/claude-code": "^1.0.24",
     "@anthropic-ai/sdk": "^0.54.0",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.0.1",

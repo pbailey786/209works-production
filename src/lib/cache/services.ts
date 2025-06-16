@@ -76,7 +76,7 @@ export class JobCacheService {
 
     // Build where condition from filters
     const whereCondition = this.buildJobWhereCondition(filters);
-    const orderBy = buildSortCondition(sortBy, sortOrder);
+    const orderBy = this.buildJobSortCondition(sortBy, sortOrder);
 
     let data: any[] = [];
     let pagination: CursorPaginationMeta | OffsetPaginationMeta;
@@ -280,7 +280,7 @@ export class JobCacheService {
       cacheKey,
       async () => {
         const whereCondition = { companyId: employerId };
-        const orderBy = buildSortCondition('createdAt', 'desc');
+        const orderBy = this.buildJobSortCondition('createdAt', 'desc');
 
         if ('cursor' in params) {
           const { cursor, limit } = params;
@@ -294,6 +294,17 @@ export class JobCacheService {
             where: { ...whereCondition, ...cursorCondition },
             orderBy,
             take: limit + 1,
+            include: {
+              companyRef: {
+                select: {
+                  id: true,
+                  name: true,
+                  website: true,
+                  logo: true,
+                  subscriptionTier: true,
+                },
+              },
+            },
           });
 
           const hasNextPage = data.length > limit;
@@ -327,6 +338,17 @@ export class JobCacheService {
             orderBy,
             skip,
             take,
+            include: {
+              companyRef: {
+                select: {
+                  id: true,
+                  name: true,
+                  website: true,
+                  logo: true,
+                  subscriptionTier: true,
+                },
+              },
+            },
           });
 
           return createPaginatedResponse(data, meta, {
@@ -433,6 +455,17 @@ export class JobCacheService {
     }
 
     return where;
+  }
+
+  // Build sort condition that prioritizes featured jobs
+  private static buildJobSortCondition(sortBy: string, sortOrder: 'asc' | 'desc'): any {
+    const primarySort = buildSortCondition(sortBy, sortOrder);
+    
+    // Always prioritize featured jobs first, then apply user sorting
+    return [
+      { featured: 'desc' }, // Featured jobs first (true = 1, false = 0, so desc puts true first)
+      ...Array.isArray(primarySort) ? primarySort : [primarySort]
+    ];
   }
 }
 

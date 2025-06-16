@@ -6,6 +6,9 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+[[plugins]]
+  package = "@netlify/plugin-scheduled-functions"
+
 [build.environment]
   NODE_VERSION = "18"
   SKIP_REDIS = "true"
@@ -17,3 +20,7 @@
 
 [functions]
   node_bundler = "esbuild"
+
+# Scheduled function to process job queue every 5 minutes
+[functions.process-job-queue]
+  schedule = "*/5 * * * *"

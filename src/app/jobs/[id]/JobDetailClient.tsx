@@ -91,8 +91,50 @@ export default function JobDetailClient({
     setIsFirstTimeUser(!hasUsedFeature);
   }, []);
 
+  // Track impression for featured jobs
+  useEffect(() => {
+    const trackImpression = async () => {
+      if (job.featured) {
+        try {
+          await fetch(`/api/jobs/${job.id}/analytics/impression`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        } catch (error) {
+          // Silently fail - analytics shouldn't break the user experience
+          console.debug('Failed to track impression:', error);
+        }
+      }
+    };
+
+    // Track impression after a short delay to ensure the page is fully loaded
+    const timer = setTimeout(trackImpression, 1000);
+    return () => clearTimeout(timer);
+  }, [job.id, job.featured]);
+
+  // Helper function to track clicks
+  const trackClick = useCallback(async (action: string, source: string = 'direct') => {
+    if (job.featured) {
+      try {
+        await fetch(`/api/jobs/${job.id}/analytics/click`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action, source }),
+        });
+      } catch (error) {
+        // Silently fail - analytics shouldn't break the user experience
+        console.debug('Failed to track click:', error);
+      }
+    }
+  }, [job.id, job.featured]);
+
   // Mark feature as used when modal opens
   const handleShouldIApplyOpen = () => {
+    trackClick('should_i_apply');
     setShouldIApplyOpen(true);
     if (isFirstTimeUser) {
       localStorage.setItem('shouldIApply_used', 'true');
@@ -140,6 +182,9 @@ export default function JobDetailClient({
     setSaving(true);
     setError(null);
 
+    // Track click for featured jobs
+    await trackClick('save_job');
+
     try {
       const response = await fetch('/api/profile/saved-jobs', {
         method: 'POST',
@@ -171,7 +216,7 @@ export default function JobDetailClient({
     } finally {
       setSaving(false);
     }
-  }, [isAuthenticated, job.id, clearError]);
+  }, [isAuthenticated, job.id, clearError, trackClick]);
 
   // Handle share job with improved error handling
   const handleShare = useCallback(async () => {
@@ -608,7 +653,10 @@ export default function JobDetailClient({
 
                       <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
                         <button
-                          onClick={() => setApplicationModalOpen(true)}
+                          onClick={() => {
+                            trackClick('apply_click');
+                            setApplicationModalOpen(true);
+                          }}
                           className="inline-flex transform items-center justify-center rounded-2xl bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-10 py-5 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
                         >
                           <PaperAirplaneIcon className="mr-3 h-6 w-6" />
@@ -620,6 +668,7 @@ export default function JobDetailClient({
                             href={job.url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => trackClick('apply_click', 'external')}
                             className="inline-flex transform items-center justify-center rounded-2xl border-2 border-[#2d4a3e] bg-white px-8 py-5 text-lg font-bold text-[#2d4a3e] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#2d4a3e] hover:text-white hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
                           >
                             <svg

@@ -65,6 +65,7 @@ export default function EmployerBulkUploadPage() {
     'idle' | 'uploading' | 'processing' | 'optimizing' | 'approving' | 'publishing' | 'complete' | 'error'
   >('idle');
   const [publishingProgress, setPublishingProgress] = useState({ current: 0, total: 0 });
+  const [optimizationProgress, setOptimizationProgress] = useState({ current: 0, total: 0 });
   const [processedJobs, setProcessedJobs] = useState<ProcessedJob[]>([]);
   const [optimizedJobs, setOptimizedJobs] = useState<any[]>([]);
   const [showOptimization, setShowOptimization] = useState(false);
@@ -417,6 +418,9 @@ export default function EmployerBulkUploadPage() {
       }
 
       console.log(`Preparing ${successfulJobs.length} jobs for AI optimization...`);
+      
+      // Set initial progress
+      setOptimizationProgress({ current: 0, total: successfulJobs.length });
 
       // Prepare jobs for AI optimization
       const jobsForOptimization = successfulJobs.map(job => ({
@@ -433,45 +437,119 @@ export default function EmployerBulkUploadPage() {
         remote: job.remote || false,
       }));
 
-      console.log('Sending jobs to AI optimization API...');
-
-      // Call AI optimization API
-      const response = await fetch('/api/employers/bulk-upload/optimize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobs: jobsForOptimization }),
+      console.log('Sending jobs to AI optimization API...', {
+        jobCount: jobsForOptimization.length,
+        jobs: jobsForOptimization.map(j => ({ id: j.id, title: j.title }))
       });
 
-      console.log('AI optimization API response status:', response.status);
+      // Process jobs in batches for better progress tracking
+      const batchSize = 3; // Process 3 jobs at a time to show progress
+      const optimizedJobs = [];
+      
+      for (let i = 0; i < jobsForOptimization.length; i += batchSize) {
+        const batch = jobsForOptimization.slice(i, i + batchSize);
+        
+        // Update progress
+        setOptimizationProgress({ current: i, total: jobsForOptimization.length });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('AI optimization API error:', errorData);
-        throw new Error(errorData.error || `Failed to optimize jobs with AI (${response.status})`);
+        // Call AI optimization API for this batch
+        const response = await fetch('/api/employers/bulk-upload/optimize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobs: batch }),
+        });
+
+        console.log(`AI optimization API response status for batch ${Math.floor(i/batchSize) + 1}:`, response.status);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('AI optimization API error:', errorData);
+          
+          // Create fallback for this batch
+          const fallbackBatch = batch.map(job => ({
+            id: job.id,
+            originalContent: job.description || 'No description provided',
+            optimizedContent: `# ${job.title}\n\n**${job.company}** - ${job.location}\n\n## Job Description\n\n${job.description}\n\n## Requirements\n\n${job.requirements || 'Please refer to the job description for specific requirements.'}\n\n## Benefits\n\n${job.benefits || 'Competitive compensation and benefits package.'}\n\n## Apply Today\n\nReady to join our team? Apply now to start your career with ${job.company}!`,
+            optimizationStatus: 'fallback' as const,
+            error: `API error: ${errorData.error || 'Unknown error'}`,
+            metadata: {
+              title: job.title,
+              company: job.company,
+              location: job.location,
+              salary: job.salary,
+              jobType: job.jobType,
+              experienceLevel: job.experienceLevel,
+              remote: job.remote,
+            },
+          }));
+          
+          optimizedJobs.push(...fallbackBatch);
+          continue;
+        }
+
+        const result = await response.json();
+        console.log(`AI optimization result for batch ${Math.floor(i/batchSize) + 1}:`, {
+          success: result.success,
+          hasAI: result.hasAI,
+          jobCount: result.optimizedJobs?.length || 0,
+        });
+
+        if (result.success && result.optimizedJobs && result.optimizedJobs.length > 0) {
+          optimizedJobs.push(...result.optimizedJobs);
+        } else {
+          // Create fallback for this batch
+          const fallbackBatch = batch.map(job => ({
+            id: job.id,
+            originalContent: job.description || 'No description provided',
+            optimizedContent: `# ${job.title}\n\n**${job.company}** - ${job.location}\n\n## Job Description\n\n${job.description}\n\n## Requirements\n\n${job.requirements || 'Please refer to the job description for specific requirements.'}\n\n## Benefits\n\n${job.benefits || 'Competitive compensation and benefits package.'}\n\n## Apply Today\n\nReady to join our team? Apply now to start your career with ${job.company}!`,
+            optimizationStatus: 'fallback' as const,
+            error: result.error || 'AI optimization returned no results',
+            metadata: {
+              title: job.title,
+              company: job.company,
+              location: job.location,
+              salary: job.salary,
+              jobType: job.jobType,
+              experienceLevel: job.experienceLevel,
+              remote: job.remote,
+            },
+          }));
+          
+          optimizedJobs.push(...fallbackBatch);
+        }
+
+        // Small delay to show progress
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
 
-      const result = await response.json();
-      console.log('AI optimization result:', result);
+      // Final progress update
+      setOptimizationProgress({ current: jobsForOptimization.length, total: jobsForOptimization.length });
 
-      if (result.success && result.optimizedJobs && result.optimizedJobs.length > 0) {
-        setOptimizedJobs(result.optimizedJobs);
+      if (optimizedJobs.length > 0) {
+        setOptimizedJobs(optimizedJobs);
         setUploadStatus('approving');
         setCurrentJobIndex(0);
         setShowApprovalModal(true);
 
-        const aiCount = result.optimizedJobs.filter((job: any) => job.optimizationStatus === 'success').length;
-        const fallbackCount = result.optimizedJobs.filter((job: any) => job.optimizationStatus === 'fallback').length;
+        const aiCount = optimizedJobs.filter((job: any) => job.optimizationStatus === 'success').length;
+        const fallbackCount = optimizedJobs.filter((job: any) => job.optimizationStatus === 'fallback').length;
+        const errorCount = optimizedJobs.filter((job: any) => job.optimizationStatus === 'error').length;
 
         if (aiCount > 0) {
-          showSuccess(`AI optimization complete! ${aiCount} jobs enhanced with AI${fallbackCount > 0 ? `, ${fallbackCount} using templates` : ''}. Review and approve each job.`);
-        } else {
+          showSuccess(`AI optimization complete! ${aiCount} jobs enhanced with AI${fallbackCount > 0 ? `, ${fallbackCount} using templates` : ''}${errorCount > 0 ? `, ${errorCount} with errors` : ''}. Review and approve each job.`);
+        } else if (fallbackCount > 0) {
           showSuccess(`Jobs prepared for review! ${fallbackCount} jobs using templates (AI not available). Review and approve each job.`);
+        } else {
+          showError(`Optimization completed with ${errorCount} errors. You can still review and edit jobs manually.`);
         }
       } else {
-        throw new Error(result.error || 'AI optimization returned no results');
+        throw new Error('No jobs could be processed');
       }
     } catch (error) {
       console.error('AI optimization error:', error);
+
+      // Reset progress
+      setOptimizationProgress({ current: 0, total: 0 });
 
       // Fallback: Create mock optimized jobs for manual approval
       const successfulJobs = jobs.filter(job => job.status === 'success');
@@ -1047,15 +1125,46 @@ export default function EmployerBulkUploadPage() {
 
             {uploadStatus === 'optimizing' && (
               <div className="text-center">
-                <div className="mx-auto mb-4 h-16 w-16 animate-pulse">
-                  <Sparkles className="h-16 w-16 text-[#ff6b35]" />
+                <div className="mx-auto mb-4 h-16 w-16">
+                  <div className="relative">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#ff6b35]"></div>
+                    <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-8 w-8 text-[#ff6b35] animate-pulse" />
+                  </div>
                 </div>
                 <h3 className="mb-2 text-xl font-semibold text-gray-900">
                   AI Optimization in Progress...
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 mb-2">
                   Enhancing job descriptions with AI for better candidate attraction
                 </p>
+                <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                    <div className="w-2 h-2 bg-[#ff6b35] rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                  </div>
+                  <span>
+                    {optimizationProgress.total > 0
+                      ? `Processing job ${optimizationProgress.current} of ${optimizationProgress.total}...`
+                      : 'Processing jobs with AI...'
+                    }
+                  </span>
+                </div>
+                {optimizationProgress.total > 0 && (
+                  <div className="mt-4 w-full max-w-md mx-auto">
+                    <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div 
+                        className="bg-[#ff6b35] h-2 rounded-full transition-all duration-300 ease-out"
+                        style={{ 
+                          width: `${(optimizationProgress.current / optimizationProgress.total) * 100}%` 
+                        }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 text-center">
+                      {Math.round((optimizationProgress.current / optimizationProgress.total) * 100)}% complete
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1409,13 +1518,37 @@ export default function EmployerBulkUploadPage() {
                 Having trouble with bulk uploads? Our support team is here to help you get the most out of your job posting experience.
               </p>
             </div>
-            <button
-              onClick={() => setShowSupportModal(true)}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 flex items-center"
-            >
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Contact Support
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/debug/openai-status');
+                    const data = await response.json();
+                    console.log('OpenAI Status:', data);
+                    
+                    if (data.status === 'configured') {
+                      showSuccess(`AI is working! ${data.connectionTest?.success ? 'Connection test passed.' : 'Connection test failed.'}`);
+                    } else {
+                      showError(`AI not configured: ${data.message}`);
+                    }
+                  } catch (error) {
+                    console.error('Failed to check AI status:', error);
+                    showError('Failed to check AI status');
+                  }
+                }}
+                className="rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 flex items-center text-sm"
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                Test AI
+              </button>
+              <button
+                onClick={() => setShowSupportModal(true)}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 flex items-center"
+              >
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Contact Support
+              </button>
+            </div>
           </div>
         </div>
 

@@ -1,0 +1,80 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { openai } from '@/lib/openai';
+
+// Test endpoint to check AI configuration without authentication
+// This is a temporary debugging endpoint - remove in production
+export async function GET(request: NextRequest) {
+  try {
+    // Check if OpenAI API key is available
+    const hasValidApiKey =
+      process.env.OPENAI_API_KEY &&
+      process.env.OPENAI_API_KEY !== 'your-openai-key' &&
+      process.env.OPENAI_API_KEY !== 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key' &&
+      process.env.OPENAI_API_KEY !== 'dummy-key-for-build' &&
+      process.env.OPENAI_API_KEY.length > 20 &&
+      (process.env.OPENAI_API_KEY.startsWith('sk-') || process.env.OPENAI_API_KEY.startsWith('sk-proj-'));
+
+    let aiTestResult = null;
+
+    // Test actual OpenAI API call if key is valid
+    if (hasValidApiKey) {
+      try {
+        console.log('Testing OpenAI API connection...');
+        const response = await openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'user',
+              content: 'Say "Hello from 209 Works!" in exactly those words.',
+            },
+          ],
+          max_tokens: 20,
+          temperature: 0,
+        });
+
+        aiTestResult = {
+          success: true,
+          response: response.choices[0]?.message?.content || 'No response',
+          model: response.model,
+          usage: response.usage,
+        };
+        console.log('OpenAI API test successful:', aiTestResult);
+      } catch (aiError) {
+        console.error('OpenAI API test failed:', aiError);
+        aiTestResult = {
+          success: false,
+          error: aiError instanceof Error ? aiError.message : 'Unknown AI error',
+          errorType: aiError instanceof Error ? aiError.constructor.name : 'Unknown',
+        };
+      }
+    } else {
+      console.log('OpenAI API key validation failed');
+    }
+
+    const result = {
+      success: true,
+      timestamp: new Date().toISOString(),
+      config: {
+        hasKey: !!process.env.OPENAI_API_KEY,
+        keyLength: process.env.OPENAI_API_KEY?.length || 0,
+        keyPrefix: process.env.OPENAI_API_KEY?.substring(0, 8) || 'none',
+        hasValidApiKey,
+        environment: process.env.NODE_ENV,
+      },
+      aiTest: aiTestResult,
+    };
+
+    console.log('AI config test result:', result);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('AI config test error:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to check AI configuration',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
+  }
+}

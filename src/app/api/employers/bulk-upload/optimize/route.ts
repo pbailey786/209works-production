@@ -112,7 +112,18 @@ export async function POST(request: NextRequest) {
     const hasValidApiKey =
       process.env.OPENAI_API_KEY &&
       process.env.OPENAI_API_KEY !== 'your-openai-key' &&
-      process.env.OPENAI_API_KEY !== 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key';
+      process.env.OPENAI_API_KEY !== 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key' &&
+      process.env.OPENAI_API_KEY !== 'dummy-key-for-build' &&
+      process.env.OPENAI_API_KEY.length > 20 &&
+      (process.env.OPENAI_API_KEY.startsWith('sk-') || process.env.OPENAI_API_KEY.startsWith('sk-proj-'));
+
+    console.log('🤖 Bulk optimization - API key validation:', {
+      hasKey: !!process.env.OPENAI_API_KEY,
+      keyLength: process.env.OPENAI_API_KEY?.length || 0,
+      keyPrefix: process.env.OPENAI_API_KEY?.substring(0, 10) || 'none',
+      hasValidApiKey,
+      timestamp: new Date().toISOString()
+    });
 
     const optimizedJobs = [];
 
@@ -122,13 +133,16 @@ export async function POST(request: NextRequest) {
       let optimizationStatus = 'success';
       let error = null;
 
+      console.log(`🚀 Processing job ${job.id}: ${job.title} - hasValidApiKey: ${hasValidApiKey}`);
+
       if (hasValidApiKey) {
         try {
           // Generate AI-optimized job listing
           const optimizationPrompt = createBulkOptimizationPrompt(job);
+          console.log(`📤 Sending AI request for job ${job.id}...`);
 
           const response = await openai.chat.completions.create({
-            model: 'gpt-4',
+            model: 'gpt-4o-mini', // Use faster, cheaper model for bulk operations
             messages: [
               {
                 role: 'system',
@@ -144,25 +158,30 @@ export async function POST(request: NextRequest) {
           });
 
           optimizedContent = response.choices[0]?.message?.content || '';
+          console.log(`✅ AI response for job ${job.id}: ${optimizedContent ? `Success (${optimizedContent.length} chars)` : 'Empty response'}`);
 
           if (!optimizedContent) {
             throw new Error('Empty response from AI');
           }
+
+          // Successful AI optimization
+          optimizationStatus = 'success';
         } catch (aiError) {
-          console.error(`AI optimization failed for job ${job.id}:`, aiError);
+          console.error(`❌ AI optimization failed for job ${job.id}:`, aiError);
           // Fallback to template optimization
           optimizedContent = createFallbackOptimization(job);
           optimizationStatus = 'fallback';
-          error = 'AI optimization failed, using template';
+          error = `AI optimization failed: ${aiError instanceof Error ? aiError.message : 'Unknown error'}`;
         }
       } else {
+        console.log(`📝 Using fallback optimization for job ${job.id} - no valid API key`);
         // Use fallback template when OpenAI is not available
         optimizedContent = createFallbackOptimization(job);
         optimizationStatus = 'fallback';
         error = 'AI not available, using template';
       }
 
-      optimizedJobs.push({
+      const optimizedJob = {
         id: job.id,
         originalContent: job.description,
         optimizedContent,
@@ -177,14 +196,33 @@ export async function POST(request: NextRequest) {
           experienceLevel: job.experienceLevel,
           remote: job.remote,
         },
+      };
+
+      console.log(`Job ${job.id} optimization result:`, {
+        status: optimizationStatus,
+        hasContent: !!optimizedContent,
+        contentLength: optimizedContent.length,
+        error
       });
+
+      optimizedJobs.push(optimizedJob);
     }
+
+    const aiSuccessCount = optimizedJobs.filter(job => job.optimizationStatus === 'success').length;
+    const fallbackCount = optimizedJobs.filter(job => job.optimizationStatus === 'fallback').length;
+
+    console.log('Bulk optimization complete:', {
+      total: optimizedJobs.length,
+      aiSuccess: aiSuccessCount,
+      fallback: fallbackCount,
+      hasValidApiKey
+    });
 
     return NextResponse.json({
       success: true,
       optimizedJobs,
       hasAI: hasValidApiKey,
-      message: `Successfully optimized ${optimizedJobs.length} job${optimizedJobs.length !== 1 ? 's' : ''}`,
+      message: `Successfully processed ${optimizedJobs.length} job${optimizedJobs.length !== 1 ? 's' : ''} (${aiSuccessCount} AI-optimized, ${fallbackCount} template-based)`,
     });
   } catch (error) {
     console.error('Bulk optimization error:', error);

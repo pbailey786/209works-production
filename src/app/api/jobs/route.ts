@@ -182,10 +182,32 @@ export const POST = withAPIMiddleware(
       console.warn('Failed to update posting pattern:', error);
     }
 
+    // If job was created as featured, trigger AI matching
+    if (job.featured) {
+      try {
+        const { JobQueueService } = await import('@/lib/services/job-queue');
+        const { FeaturedJobAnalyticsService } = await import('@/lib/services/featured-job-analytics');
+        
+        // Create analytics tracking
+        await FeaturedJobAnalyticsService.createFeaturedJobAnalytics(job.id);
+        
+        // Queue AI matching process
+        await JobQueueService.queueFeaturedJobMatching(job.id, 10);
+        
+        console.log(`✨ Featured job ${job.id} created, AI matching queued`);
+      } catch (error) {
+        console.error(`Failed to queue AI matching for featured job ${job.id}:`, error);
+        // Don't fail the job creation if AI matching fails
+      }
+    }
+
     // Invalidate job caches since we added a new job
     await JobCacheService.invalidateJobCaches(undefined, employerId);
 
-    return createSuccessResponse({ job }, 'Job created successfully', 201);
+    return createSuccessResponse({ 
+      job,
+      aiMatchingQueued: job.featured 
+    }, 'Job created successfully', 201);
   },
   {
     requiredRoles: ['admin', 'employer'],
