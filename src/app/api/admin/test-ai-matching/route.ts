@@ -167,7 +167,11 @@ async function testEmailSending(jobId?: string) {
 async function runFullTest() {
   console.log('🧪 Running full AI matching system test');
   
-  const results = {
+  const results: {
+    steps: string[];
+    success: boolean;
+    errors: string[];
+  } = {
     steps: [],
     success: true,
     errors: []
