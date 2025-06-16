@@ -41,7 +41,7 @@ export const GET = withAPIMiddleware(
         topPerforming: {
           byImpressions: topByImpressions,
           byClicks: topByClicks,
-          byConversionRate: topByConversion.filter(job => job.conversionRate > 0)
+          byConversionRate: topByConversion.filter(job => job.conversionRate && job.conversionRate.toNumber() > 0)
         },
         insights: {
           totalFeaturedJobs: summary.totalJobs,
@@ -56,7 +56,7 @@ export const GET = withAPIMiddleware(
       });
     } catch (error) {
       console.error('Failed to get employer featured analytics:', error);
-      return createErrorResponse('Failed to retrieve featured analytics', 500);
+      return createErrorResponse(error);
     }
   },
   {

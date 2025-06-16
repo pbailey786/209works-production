@@ -193,8 +193,8 @@ export class JobMatchingService {
     // Skills overlap
     const jobSkills = job.skills || [];
     const candidateSkills = candidate.skills || [];
-    const skillsOverlap = jobSkills.filter(skill => 
-      candidateSkills.some(cSkill => 
+    const skillsOverlap = jobSkills.filter((skill: string) => 
+      candidateSkills.some((cSkill: string) => 
         cSkill.toLowerCase().includes(skill.toLowerCase()) ||
         skill.toLowerCase().includes(cSkill.toLowerCase())
       )
@@ -206,7 +206,7 @@ export class JobMatchingService {
 
     // Industry experience
     const candidateIndustries = candidate.industries || [];
-    if (candidateIndustries.some(industry => 
+    if (candidateIndustries.some((industry: string) => 
       job.description.toLowerCase().includes(industry.toLowerCase())
     )) {
       reasons.push('industry_experience');
@@ -214,7 +214,7 @@ export class JobMatchingService {
 
     // Job title relevance
     const candidateJobTitles = candidate.jobTitles || [];
-    if (candidateJobTitles.some(title => 
+    if (candidateJobTitles.some((title: string) => 
       job.title.toLowerCase().includes(title.toLowerCase()) ||
       title.toLowerCase().includes(job.title.toLowerCase())
     )) {

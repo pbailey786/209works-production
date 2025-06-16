@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
+import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AuthorizationError } from '@/lib/errors/api-errors';
 import { prisma } from '@/app/api/auth/prisma';
 import { JobQueueService } from '@/lib/services/job-queue';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
@@ -19,7 +19,7 @@ export const POST = withAPIMiddleware(
     const jobId = params?.id as string;
 
     if (!jobId) {
-      return createErrorResponse('Job ID is required', 400);
+      return createErrorResponse(new ValidationError('Job ID is required'));
     }
 
     try {
@@ -37,16 +37,16 @@ export const POST = withAPIMiddleware(
       });
 
       if (!job) {
-        return createErrorResponse('Job not found', 404);
+        return createErrorResponse(new NotFoundError('Job'));
       }
 
       // Check permissions - must be job owner or admin
       if (user!.role !== 'admin' && job.employerId !== user!.id) {
-        return createErrorResponse('Unauthorized - you can only feature your own jobs', 403);
+        return createErrorResponse(new AuthorizationError('You can only feature your own jobs'));
       }
 
       if (job.status !== 'active') {
-        return createErrorResponse('Only active jobs can be featured', 400);
+        return createErrorResponse(new ValidationError('Only active jobs can be featured'));
       }
 
       const { featured, paymentConfirmed, creditUsed } = body!;
@@ -109,7 +109,7 @@ export const POST = withAPIMiddleware(
 
     } catch (error) {
       console.error(`Failed to feature/unfeature job ${jobId}:`, error);
-      return createErrorResponse('Failed to update job featured status', 500);
+      return createErrorResponse(error);
     }
   },
   {
@@ -127,7 +127,7 @@ export const GET = withAPIMiddleware(
     const jobId = params?.id as string;
 
     if (!jobId) {
-      return createErrorResponse('Job ID is required', 400);
+      return createErrorResponse(new ValidationError('Job ID is required'));
     }
 
     try {
@@ -145,12 +145,12 @@ export const GET = withAPIMiddleware(
       });
 
       if (!job) {
-        return createErrorResponse('Job not found', 404);
+        return createErrorResponse(new NotFoundError('Job'));
       }
 
       // Check permissions - must be job owner or admin
       if (user!.role !== 'admin' && job.employerId !== user!.id) {
-        return createErrorResponse('Unauthorized - you can only view your own job stats', 403);
+        return createErrorResponse(new AuthorizationError('You can only view your own job stats'));
       }
 
       let matchingStats = null;
@@ -186,7 +186,7 @@ export const GET = withAPIMiddleware(
 
     } catch (error) {
       console.error(`Failed to get featured job status for ${jobId}:`, error);
-      return createErrorResponse('Failed to retrieve job featured status', 500);
+      return createErrorResponse(error);
     }
   },
   {

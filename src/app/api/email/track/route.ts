@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
+import { createSuccessResponse, createErrorResponse, ValidationError } from '@/lib/errors/api-errors';
 import { JobMatchingService } from '@/lib/services/job-matching';
 
 // GET /api/email/track - Track email interactions (opens, clicks)

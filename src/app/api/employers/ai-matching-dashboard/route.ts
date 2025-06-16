@@ -110,7 +110,16 @@ export const GET = withAPIMiddleware(
       });
 
       // Performance insights
-      const insights = this.generatePerformanceInsights(summary, jobsWithStats);
+      const insights = {
+        topPerformingJob: jobsWithStats.length > 0 ? jobsWithStats[0].title : 'No featured jobs',
+        averageResponseRate: summary.totalEmailsSent > 0 ? 
+          ((summary.totalMatches / summary.totalEmailsSent) * 100).toFixed(1) + '%' : '0%',
+        recommendation: summary.totalFeaturedJobs === 0 ? 
+          'Consider featuring some of your job posts to attract more qualified candidates' :
+          summary.averageMatchScore < 50 ? 
+            'Consider updating job descriptions to attract better matches' :
+            'Great job! Your featured posts are performing well'
+      };
 
       return createSuccessResponse({
         summary,
@@ -132,7 +141,7 @@ export const GET = withAPIMiddleware(
 
     } catch (error) {
       console.error('Failed to get AI matching dashboard data:', error);
-      return createErrorResponse('Failed to retrieve dashboard data', 500);
+      return createErrorResponse(error);
     }
   },
   {

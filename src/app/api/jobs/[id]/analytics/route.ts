@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
+import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AuthorizationError } from '@/lib/errors/api-errors';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 import { prisma } from '@/app/api/auth/prisma';
 
@@ -11,7 +11,7 @@ export const GET = withAPIMiddleware(
     const jobId = params?.id as string;
 
     if (!jobId) {
-      return createErrorResponse('Job ID is required', 400);
+      return createErrorResponse(new ValidationError('Job ID is required'));
     }
 
     try {
@@ -33,12 +33,12 @@ export const GET = withAPIMiddleware(
       });
 
       if (!job) {
-        return createErrorResponse('Job not found', 404);
+        return createErrorResponse(new NotFoundError('Job'));
       }
 
       // Check permissions - must be job owner or admin
       if (user!.role !== 'admin' && job.employerId !== user!.id) {
-        return createErrorResponse('Unauthorized - you can only view analytics for your own jobs', 403);
+        return createErrorResponse(new AuthorizationError('You can only view analytics for your own jobs'));
       }
 
       if (!job.featured) {
@@ -88,7 +88,7 @@ export const GET = withAPIMiddleware(
       });
     } catch (error) {
       console.error('Failed to get job analytics:', error);
-      return createErrorResponse('Failed to retrieve analytics', 500);
+      return createErrorResponse(error);
     }
   },
   {

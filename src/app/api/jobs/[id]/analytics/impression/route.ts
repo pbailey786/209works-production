@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
+import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/lib/errors/api-errors';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 import { prisma } from '@/app/api/auth/prisma';
 
@@ -11,7 +11,7 @@ export const POST = withAPIMiddleware(
     const jobId = params?.id as string;
 
     if (!jobId) {
-      return createErrorResponse('Job ID is required', 400);
+      return createErrorResponse(new ValidationError('Job ID is required'));
     }
 
     try {
@@ -22,7 +22,7 @@ export const POST = withAPIMiddleware(
       });
 
       if (!job) {
-        return createErrorResponse('Job not found', 404);
+        return createErrorResponse(new NotFoundError('Job'));
       }
 
       // Only track analytics for featured jobs
@@ -46,12 +46,12 @@ export const POST = withAPIMiddleware(
       });
     } catch (error) {
       console.error('Failed to track impression:', error);
-      return createErrorResponse('Failed to track impression', 500);
+      return createErrorResponse(error);
     }
   },
   {
     requiredRoles: [], // Public endpoint
-    rateLimit: { enabled: true, type: 'public' },
+    rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: false }, // Don't log these frequent requests
   }
 );

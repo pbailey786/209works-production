@@ -74,7 +74,7 @@ export class JobQueueService {
     try {
       console.log(`🔄 Processing ${job.jobType} job: ${job.id}`);
       
-      const result = await this.executeJob(job.jobType, job.payload, job.jobId, job.userId);
+      const result = await this.executeJob(job.jobType as JobQueueType, job.payload, job.jobId, job.userId);
       
       if (result.success) {
         await this.markJobAsCompleted(job.id, result.data);
@@ -241,7 +241,7 @@ export class JobQueueService {
   /**
    * Process email batch sending
    */
-  private static async processEmailBatch(payload: any): Promise<{ success: boolean; sent: number }> {
+  private static async processEmailBatch(payload: any): Promise<{ success: boolean; sent: number; errors?: any[]; error?: string }> {
     const { jobId, userIds = [], template = 'featured_job_match' } = payload;
 
     console.log(`📧 Processing email batch for job ${jobId}: ${userIds.length} recipients`);
