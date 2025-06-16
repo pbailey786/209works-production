@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
 
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return createErrorResponse('Unauthorized', 401);
+    return createErrorResponse(new Error('Unauthorized'));
   }
 
   try {
@@ -34,11 +34,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ Job queue processing failed:', error);
     
-    return createErrorResponse(
-      'Job queue processing failed',
-      500,
-      error instanceof Error ? error.message : 'Unknown error'
-    );
+    return createErrorResponse(error);
   }
 }
 
@@ -66,10 +62,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Manual job queue processing failed:', error);
     
-    return createErrorResponse(
-      'Manual job queue processing failed',
-      500,
-      error instanceof Error ? error.message : 'Unknown error'
-    );
+    return createErrorResponse(error);
   }
 }
