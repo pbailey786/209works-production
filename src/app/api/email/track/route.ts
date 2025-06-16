@@ -10,11 +10,11 @@ export async function GET(request: NextRequest) {
   const action = searchParams.get('action'); // 'open' or 'click'
 
   if (!jobId || !userId || !action) {
-    return createErrorResponse('Missing required parameters', 400);
+    return createErrorResponse(new Error('Missing required parameters'));
   }
 
   if (!['open', 'click'].includes(action)) {
-    return createErrorResponse('Invalid action. Must be "open" or "click"', 400);
+    return createErrorResponse(new Error('Invalid action. Must be "open" or "click"'));
   }
 
   try {
@@ -71,6 +71,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return createErrorResponse('Failed to track interaction', 500);
+    return createErrorResponse(error);
   }
 }
