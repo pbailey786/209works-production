@@ -36,16 +36,12 @@ export const POST = withAPIMiddleware(
           return await runFullTest();
         
         default:
-          return createErrorResponse('Invalid action', 400);
+          return createErrorResponse(new Error('Invalid action'));
       }
 
     } catch (error) {
       console.error('AI matching test failed:', error);
-      return createErrorResponse(
-        'Test failed',
-        500,
-        error instanceof Error ? error.message : 'Unknown error'
-      );
+      return createErrorResponse(error);
     }
   },
   {
@@ -58,7 +54,7 @@ export const POST = withAPIMiddleware(
 
 async function testResumeProcessing(userId?: string, testResumeText?: string) {
   if (!userId) {
-    return createErrorResponse('User ID required for resume processing test', 400);
+    return createErrorResponse(new Error('User ID required for resume processing test'));
   }
 
   const resumeText = testResumeText || `
@@ -102,7 +98,7 @@ JavaScript, React, Node.js, PostgreSQL, MongoDB, AWS, Docker, Git, Python
       embeddingLength: embedding?.embedding ? JSON.parse(embedding.embedding).length : 0
     });
   } catch (error) {
-    return createErrorResponse('Resume processing failed', 500, error instanceof Error ? error.message : 'Unknown error');
+    return createErrorResponse(error);
   }
 }
 
@@ -115,7 +111,7 @@ async function testJobMatching(jobId?: string) {
     });
 
     if (!featuredJob) {
-      return createErrorResponse('No featured jobs found for testing', 404);
+      return createErrorResponse(new Error('No featured jobs found for testing'));
     }
     
     jobId = featuredJob.id;
@@ -130,7 +126,7 @@ async function testJobMatching(jobId?: string) {
       result
     });
   } catch (error) {
-    return createErrorResponse('Job matching failed', 500, error instanceof Error ? error.message : 'Unknown error');
+    return createErrorResponse(error);
   }
 }
 
@@ -147,7 +143,7 @@ async function testEmailSending(jobId?: string) {
     });
 
     if (!jobWithMatches) {
-      return createErrorResponse('No jobs with unsent matches found for testing', 404);
+      return createErrorResponse(new Error('No jobs with unsent matches found for testing'));
     }
     
     jobId = jobWithMatches.jobId;
@@ -164,7 +160,7 @@ async function testEmailSending(jobId?: string) {
       result
     });
   } catch (error) {
-    return createErrorResponse('Email sending failed', 500, error instanceof Error ? error.message : 'Unknown error');
+    return createErrorResponse(error);
   }
 }
 
@@ -230,7 +226,7 @@ async function runFullTest() {
     results.success = false;
     results.errors.push(error instanceof Error ? error.message : 'Unknown error');
     
-    return createErrorResponse('Full test failed', 500, JSON.stringify(results));
+    return createErrorResponse(new Error(`Full test failed: ${JSON.stringify(results)}`));
   }
 }
 
@@ -270,7 +266,7 @@ export const GET = withAPIMiddleware(
 
     } catch (error) {
       console.error('Failed to get system status:', error);
-      return createErrorResponse('Failed to get system status', 500);
+      return createErrorResponse(error);
     }
   },
   {
