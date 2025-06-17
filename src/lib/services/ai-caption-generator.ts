@@ -328,7 +328,7 @@ ${job.company} is seeking qualified candidates for this ${job.jobType.replace('_
 
     // Adjust for job type
     if (job.jobType === 'full_time') baseReach += 50;
-    if (job.jobType === 'remote') baseReach += 75;
+    if (job.isRemote) baseReach += 75;
 
     // Adjust for salary range
     if (job.salaryMin && job.salaryMin > 75000) baseReach += 100;
@@ -360,7 +360,7 @@ ${job.company} is seeking qualified candidates for this ${job.jobType.replace('_
       tips.push('Highlight competitive salary in graphics');
     }
 
-    if (job.jobType === 'remote') {
+    if (job.isRemote) {
       tips.push('Target remote work hashtags and communities');
     }
 
