@@ -37,6 +37,12 @@ export interface PasswordResetData {
   expiresIn?: string;
 }
 
+export interface PasswordChangeConfirmationData {
+  userName: string;
+  changedAt: string;
+  ipAddress: string;
+}
+
 export interface ApplicationConfirmationData {
   userName: string;
   jobTitle: string;
@@ -123,6 +129,21 @@ export class EmailHelpers {
     return emailService.sendTemplatedEmail('password-reset', to, data, {
       priority: 'urgent',
       tags: [{ name: 'type', value: 'password-reset' }],
+      ...options,
+    });
+  }
+
+  /**
+   * Send password change confirmation email
+   */
+  static async sendPasswordChangeConfirmation(
+    to: string,
+    data: PasswordChangeConfirmationData,
+    options: EmailServiceOptions = {}
+  ): Promise<EmailResult> {
+    return emailService.sendTemplatedEmail('password-change-confirmation', to, data, {
+      priority: 'urgent',
+      tags: [{ name: 'type', value: 'password-change-confirmation' }],
       ...options,
     });
   }
@@ -243,6 +264,7 @@ export const {
   sendWeeklyDigest,
   sendWelcomeEmail,
   sendPasswordReset,
+  sendPasswordChangeConfirmation,
   sendApplicationConfirmation,
   sendNewApplicantNotification,
   sendBulkJobAlerts,
