@@ -290,9 +290,10 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     let isJobOwner = false;
     
     if (isAuthenticated && session?.user?.email) {
+      const userEmail = session.user.email; // Already checked it exists
       const userQuery = await safeDBQuery(() => 
         prisma.user.findUnique({
-          where: { email: session.user?.email },
+          where: { email: userEmail },
           select: { id: true, role: true },
         })
       );
