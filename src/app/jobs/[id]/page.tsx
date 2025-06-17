@@ -7,6 +7,7 @@ import { prisma } from '@/app/api/auth/prisma';
 import JobDetailClient from './JobDetailClient';
 import { Job, JobType } from '@prisma/client';
 import type { Session } from 'next-auth';
+import { safeDBQuery, validateSession } from '@/lib/utils/safe-fetch';
 
 interface JobDetailPageProps {
   params: Promise<{ id: string }>;
@@ -14,9 +15,19 @@ interface JobDetailPageProps {
 
 // Cached helper function to get job by ID with optimized query
 const getJob = cache(async (id: string): Promise<Job | null> => {
-  try {
-    const job = await prisma.job.findUnique({
-      where: { id },
+  // Validate job ID format
+  if (!id || typeof id !== 'string' || id.length < 10) {
+    console.error('Invalid job ID format:', id);
+    return null;
+  }
+
+  const jobQuery = await safeDBQuery(() => 
+    prisma.job.findUnique({
+      where: { 
+        id,
+        deletedAt: null, // Exclude soft-deleted jobs
+        status: { not: 'deleted' }, // Exclude deleted jobs
+      },
       // Only select needed fields for better performance
       select: {
         id: true,
@@ -34,24 +45,38 @@ const getJob = cache(async (id: string): Promise<Job | null> => {
         createdAt: true,
         updatedAt: true,
         employerId: true,
+        featured: true,
+        status: true,
+        // Upsell feature fields
+        socialMediaShoutout: true,
+        placementBump: true,
+        upsellBundle: true,
       },
-    });
-    return job as Job;
-  } catch (error) {
-    console.error('Error fetching job:', error);
+    })
+  );
+
+  if (!jobQuery.success) {
+    console.error('Database error fetching job:', jobQuery.error);
     return null;
   }
+
+  return jobQuery.data as Job;
 });
 
 // Cached helper function to get related jobs with optimized query
 const getRelatedJobs = cache(
   async (job: Job, limit: number = 4): Promise<Job[]> => {
-    try {
-      // Use a more efficient query with indexed fields
-      const relatedJobs = await prisma.job.findMany({
+    if (!job || !job.id) {
+      return [];
+    }
+
+    const relatedJobsQuery = await safeDBQuery(() => 
+      prisma.job.findMany({
         where: {
           AND: [
             { id: { not: job.id } },
+            { deletedAt: null },
+            { status: 'active' },
             {
               OR: [
                 // Prioritize same company jobs first
@@ -86,12 +111,15 @@ const getRelatedJobs = cache(
           { createdAt: 'desc' },
         ],
         take: limit,
-      });
-      return relatedJobs as Job[];
-    } catch (error) {
-      console.error('Error fetching related jobs:', error);
+      })
+    );
+
+    if (!relatedJobsQuery.success) {
+      console.error('Error fetching related jobs:', relatedJobsQuery.error);
       return [];
     }
+
+    return relatedJobsQuery.data as Job[];
   }
 );
 
@@ -119,22 +147,43 @@ const isJobSaved = cache(
 export async function generateMetadata({
   params,
 }: JobDetailPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const job = await getJob(id);
+  try {
+    const { id } = await params;
+    
+    // Validate ID format before attempting database query
+    if (!id || typeof id !== 'string' || id.length < 10) {
+      return {
+        title: 'Invalid Job ID | 209Jobs',
+        description: 'The job ID format is invalid.',
+        robots: 'noindex, nofollow',
+      };
+    }
+    
+    const job = await getJob(id);
 
-  if (!job) {
-    return {
-      title: 'Job Not Found | 209Jobs',
-      description: 'The requested job listing could not be found.',
-      robots: 'noindex, nofollow',
-    };
-  }
+    if (!job) {
+      return {
+        title: 'Job Not Found | 209Jobs',
+        description: 'The requested job listing could not be found.',
+        robots: 'noindex, nofollow',
+      };
+    }
 
-  // Truncate description for better SEO
-  const truncatedDescription =
-    job.description.length > 160
-      ? `${job.description.substring(0, 157)}...`
-      : job.description;
+    // Validate job data before using it
+    if (!job.title || !job.company) {
+      return {
+        title: 'Job Information Incomplete | 209Jobs',
+        description: 'The job listing information is incomplete.',
+        robots: 'noindex, nofollow',
+      };
+    }
+
+    // Truncate description for better SEO with safe string handling
+    const description = job.description || 'No description available';
+    const truncatedDescription =
+      description.length > 160
+        ? `${description.substring(0, 157)}...`
+        : description;
 
   const salaryRange =
     job.salaryMin && job.salaryMax
@@ -158,12 +207,12 @@ export async function generateMetadata({
       job.title,
       job.company,
       job.location,
-      job.jobType.replace('_', ' '),
-      ...job.categories,
+      job.jobType?.replace('_', ' ') || 'job',
+      ...(job.categories || []),
       'job search',
       'employment',
       'career opportunities',
-    ].join(', '),
+    ].filter(Boolean).join(', '),
     openGraph: {
       title,
       description,
@@ -194,39 +243,66 @@ export async function generateMetadata({
       'job:company': job.company,
       'job:location': job.location,
       'job:type': job.jobType,
-      'job:posted': job.postedAt.toISOString(),
+      'job:posted': job.postedAt?.toISOString() || new Date().toISOString(),
     },
   };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Job Listing | 209Jobs',
+      description: 'View job listing on 209Jobs',
+      robots: 'noindex, nofollow',
+    };
+  }
 }
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
 
-  // Parallelize data fetching for better performance
-  const [job, session] = await Promise.all([
-    getJob(id),
-    getServerSession(authOptions) as Promise<Session | null>,
-  ]);
+    // Validate ID format
+    if (!id || typeof id !== 'string' || id.length < 10) {
+      console.error('Invalid job ID format:', id);
+      notFound();
+    }
 
-  if (!job) {
-    notFound();
-  }
+    // Parallelize data fetching for better performance
+    const [job, session] = await Promise.all([
+      getJob(id),
+      getServerSession(authOptions) as Promise<Session | null>,
+    ]);
+
+    if (!job) {
+      notFound();
+    }
+
+    // Validate essential job data
+    if (!job.title || !job.company || !job.description) {
+      console.error('Job missing essential data:', { id, title: job.title, company: job.company });
+      notFound();
+    }
 
   const isAuthenticated = !!session?.user;
 
-  // Get user ID and role if authenticated
-  let userId: string | undefined;
-  let userRole: string | undefined;
-  let isJobOwner = false;
-  if (isAuthenticated && session?.user?.email) {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user?.email },
-      select: { id: true, role: true },
-    });
-    userId = user?.id;
-    userRole = user?.role;
-    isJobOwner = user?.role === 'employer' && user?.id === job.employerId;
-  }
+    // Get user ID and role if authenticated with safe database query
+    let userId: string | undefined;
+    let userRole: string | undefined;
+    let isJobOwner = false;
+    
+    if (isAuthenticated && session?.user?.email) {
+      const userQuery = await safeDBQuery(() => 
+        prisma.user.findUnique({
+          where: { email: session.user?.email },
+          select: { id: true, role: true },
+        })
+      );
+      
+      if (userQuery.success && userQuery.data) {
+        userId = userQuery.data.id;
+        userRole = userQuery.data.role;
+        isJobOwner = userQuery.data.role === 'employer' && userQuery.data.id === job.employerId;
+      }
+    }
 
   // Parallelize related jobs and saved status check
   const [relatedJobs, isSaved] = await Promise.all([
@@ -315,6 +391,11 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
       />
     </>
   );
+  } catch (error) {
+    console.error('Error in JobDetailPage:', error);
+    // Return a safe fallback or trigger not found
+    notFound();
+  }
 }
 
 // Enable static generation for popular job pages

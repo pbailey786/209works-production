@@ -107,18 +107,24 @@ export async function POST(request: NextRequest) {
 // Helper function to queue social media posting
 async function queueSocialMediaPost(job: any) {
   try {
+    // Generate AI-powered caption and hashtags
+    const caption = await generateSocialMediaCaption(job);
+    const hashtags = generateHashtags(job);
+
     // Create Instagram post entry
     await prisma.instagramPost.create({
       data: {
         jobId: job.id,
-        caption: generateSocialMediaCaption(job),
-        hashtags: generateHashtags(job),
+        caption,
+        hashtags,
         status: 'scheduled',
         scheduledFor: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes from now
+        type: 'job_listing',
       },
     });
 
     console.log(`Queued social media post for job: ${job.title}`);
+    console.log(`Caption preview: ${caption.substring(0, 100)}...`);
   } catch (error) {
     console.error('Error queuing social media post:', error);
   }
@@ -142,8 +148,26 @@ async function updateJobPriority(jobId: string) {
 }
 
 // Helper function to generate social media caption
-function generateSocialMediaCaption(job: any): string {
-  return `🚨 NEW JOB ALERT! 🚨
+async function generateSocialMediaCaption(job: any): Promise<string> {
+  try {
+    // Use AI caption generator for better captions
+    const AICaptionGenerator = (await import('@/lib/services/ai-caption-generator')).default;
+    const captionGenerator = new AICaptionGenerator();
+    
+    const result = await captionGenerator.generateJobCaption(job, {
+      tone: 'energetic',
+      length: 'medium',
+      includeEmojis: true,
+      includeCTA: true,
+      domain: '209.works'
+    });
+    
+    return result.caption;
+  } catch (error) {
+    console.error('Error generating AI caption, using fallback:', error);
+    
+    // Fallback to simple template
+    return `🚨 NEW JOB ALERT! 🚨
 
 ${job.title} at ${job.company}
 📍 ${job.location}
@@ -153,6 +177,7 @@ ${job.description.substring(0, 150)}...
 Apply now on 209Works.com! 
 
 #209Jobs #${job.location.replace(/\s+/g, '')} #Hiring #LocalJobs #209Works`;
+  }
 }
 
 // Helper function to generate hashtags

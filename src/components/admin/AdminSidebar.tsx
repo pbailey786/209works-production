@@ -166,6 +166,12 @@ const navigation: NavItem[] = [
     ],
   },
   {
+    name: 'Social Media',
+    href: '/admin/social-media',
+    icon: Send,
+    permission: Permission.VIEW_ANALYTICS,
+  },
+  {
     name: 'Email Management',
     href: '/admin/email',
     icon: Mail,

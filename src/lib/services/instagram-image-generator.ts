@@ -23,9 +23,11 @@ export interface InstagramImageOptions {
   textColor?: string;
   fontFamily?: string;
   fontSize?: number;
-  template?: 'modern' | 'classic' | 'minimal' | 'gradient';
+  template?: 'modern' | 'classic' | 'minimal' | 'gradient' | 'professional' | 'vibrant';
   brandColor?: string;
   domainConfig?: DomainConfig;
+  logoUrl?: string;
+  overlayOpacity?: number;
 }
 
 export interface JobImageData {
@@ -48,6 +50,8 @@ export class InstagramImageGenerator {
     template: 'modern',
     brandColor: '#3b82f6',
     domainConfig: getDomainConfig('209.works'),
+    logoUrl: '',
+    overlayOpacity: 0.3,
   };
 
   constructor(private options: InstagramImageOptions = {}) {
@@ -148,6 +152,12 @@ export class InstagramImageGenerator {
         break;
       case 'gradient':
         await this.applyGradientTemplate(ctx, opts, jobData);
+        break;
+      case 'professional':
+        await this.applyProfessionalTemplate(ctx, opts, jobData);
+        break;
+      case 'vibrant':
+        await this.applyVibrantTemplate(ctx, opts, jobData);
         break;
       default:
         await this.applyModernTemplate(ctx, opts, jobData);
@@ -452,10 +462,217 @@ export class InstagramImageGenerator {
   }
 
   /**
+   * Professional template with corporate styling
+   */
+  private async applyProfessionalTemplate(
+    ctx: any,
+    opts: Required<InstagramImageOptions>,
+    jobData: JobImageData
+  ): Promise<void> {
+    const { width, height, brandColor } = opts;
+
+    // Clean white background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+
+    // Professional header bar
+    ctx.fillStyle = '#1f2937';
+    ctx.fillRect(0, 0, width, 120);
+
+    // Company logo area (placeholder)
+    ctx.fillStyle = brandColor;
+    ctx.fillRect(60, 30, 60, 60);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('LOGO', 90, 65);
+
+    // Header text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('JOB OPPORTUNITY', 150, 70);
+
+    // Main content area
+    const contentY = 200;
+    const padding = 60;
+
+    // Job title with underline
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 42px Arial';
+    this.wrapText(ctx, jobData.jobTitle, padding, contentY, width - padding * 2, 55);
+
+    // Underline
+    ctx.strokeStyle = brandColor;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(padding, contentY + 70);
+    ctx.lineTo(width - padding, contentY + 70);
+    ctx.stroke();
+
+    // Company info
+    ctx.fillStyle = brandColor;
+    ctx.font = 'bold 36px Arial';
+    ctx.fillText(jobData.company, padding, contentY + 140);
+
+    // Details in structured format
+    ctx.fillStyle = '#374151';
+    ctx.font = '28px Arial';
+    
+    // Location
+    ctx.fillText('📍 Location:', padding, contentY + 200);
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 28px Arial';
+    ctx.fillText(jobData.location, padding + 150, contentY + 200);
+
+    // Job type
+    ctx.fillStyle = '#374151';
+    ctx.font = '28px Arial';
+    ctx.fillText('💼 Type:', padding, contentY + 250);
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'bold 28px Arial';
+    ctx.fillText(jobData.jobType, padding + 150, contentY + 250);
+
+    // Salary
+    if (jobData.salary) {
+      ctx.fillStyle = '#374151';
+      ctx.font = '28px Arial';
+      ctx.fillText('💰 Salary:', padding, contentY + 300);
+      ctx.fillStyle = '#059669';
+      ctx.font = 'bold 28px Arial';
+      ctx.fillText(jobData.salary, padding + 150, contentY + 300);
+    }
+
+    // Professional CTA
+    const ctaY = height - 200;
+    ctx.fillStyle = brandColor;
+    ctx.fillRect(padding, ctaY, width - padding * 2, 80);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 32px Arial';
+    ctx.textAlign = 'center';
+    const domain = opts.domainConfig?.domain || '209.works';
+    ctx.fillText(`Apply Today • ${domain}`, width / 2, ctaY + 50);
+
+    // Professional footer
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '18px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Your Next Career Opportunity Awaits', width / 2, height - 60);
+  }
+
+  /**
+   * Vibrant template with energetic colors and modern design
+   */
+  private async applyVibrantTemplate(
+    ctx: any,
+    opts: Required<InstagramImageOptions>,
+    jobData: JobImageData
+  ): Promise<void> {
+    const { width, height, brandColor } = opts;
+
+    // Dynamic gradient background
+    const gradient = ctx.createRadialGradient(
+      width / 2, height / 2, 0,
+      width / 2, height / 2, width / 2
+    );
+    gradient.addColorStop(0, '#ff6b6b');
+    gradient.addColorStop(0.3, '#4ecdc4');
+    gradient.addColorStop(0.6, '#45b7d1');
+    gradient.addColorStop(1, '#6c5ce7');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Overlay for readability
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.fillRect(0, 0, width, height);
+
+    // Decorative shapes
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.beginPath();
+    ctx.arc(100, 150, 80, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(width - 100, height - 150, 120, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Main content
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+
+    // Exciting header
+    ctx.font = 'bold 36px Arial';
+    ctx.fillText('🚀 AMAZING OPPORTUNITY! 🚀', width / 2, 120);
+
+    // Job title with emphasis
+    ctx.font = 'bold 52px Arial';
+    this.wrapText(
+      ctx,
+      jobData.jobTitle,
+      width / 2,
+      220,
+      width - 120,
+      65,
+      'center'
+    );
+
+    // Company with background
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillRect(width / 2 - 200, 320, 400, 60);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = 'bold 32px Arial';
+    ctx.fillText(jobData.company, width / 2, 360);
+
+    // Location and type with icons
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px Arial';
+    ctx.fillText(`📍 ${jobData.location}`, width / 2, 440);
+    ctx.fillText(`💼 ${jobData.jobType}`, width / 2, 480);
+
+    // Salary highlight
+    if (jobData.salary) {
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 36px Arial';
+      ctx.fillText(`💰 ${jobData.salary}`, width / 2, 540);
+    }
+
+    // Energetic CTA
+    const ctaY = height - 220;
+    
+    // CTA background with gradient
+    const ctaGradient = ctx.createLinearGradient(0, ctaY, 0, ctaY + 100);
+    ctaGradient.addColorStop(0, '#ff6b6b');
+    ctaGradient.addColorStop(1, '#ee5a52');
+    
+    ctx.fillStyle = ctaGradient;
+    ctx.fillRect(width / 2 - 200, ctaY, 400, 80);
+
+    // CTA shadow
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(width / 2 - 195, ctaY + 5, 400, 80);
+
+    // CTA text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 32px Arial';
+    ctx.fillText('APPLY NOW!', width / 2, ctaY + 30);
+    
+    ctx.font = '24px Arial';
+    const domain = opts.domainConfig?.domain || '209.works';
+    ctx.fillText(domain, width / 2, ctaY + 60);
+
+    // Fun footer
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '20px Arial';
+    ctx.fillText('✨ #DreamJob #209Works #NowHiring ✨', width / 2, height - 60);
+  }
+
+  /**
    * Get available templates
    */
   static getAvailableTemplates(): string[] {
-    return ['modern', 'classic', 'minimal', 'gradient'];
+    return ['modern', 'classic', 'minimal', 'gradient', 'professional', 'vibrant'];
   }
 }
 

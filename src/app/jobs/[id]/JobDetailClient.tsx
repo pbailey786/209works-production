@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Job } from '@prisma/client';
 import {
@@ -30,6 +30,7 @@ import {
   formatJobDescription,
   extractJobHighlights,
 } from '@/lib/utils/jobDescriptionFormatter';
+import { safeFetchAPI } from '@/lib/utils/safe-fetch';
 
 interface JobDetailClientProps {
   job: Job;
@@ -74,6 +75,16 @@ export default function JobDetailClient({
   userRole,
   isJobOwner,
 }: JobDetailClientProps) {
+  // Debug upsell features
+  console.log('🔍 Job upsell features:', {
+    id: job.id,
+    title: job.title,
+    socialMediaShoutout: job.socialMediaShoutout,
+    placementBump: job.placementBump,
+    upsellBundle: job.upsellBundle,
+    featured: job.featured,
+  });
+
   const [saved, setSaved] = useState(isSaved);
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -84,6 +95,10 @@ export default function JobDetailClient({
   const [shouldIApplyOpen, setShouldIApplyOpen] = useState(false);
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
+  
+  // Refs for cleanup
+  const timersRef = useRef<Set<NodeJS.Timeout>>(new Set());
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Check if user has used "Should I Apply" feature before
   useEffect(() => {
@@ -91,46 +106,59 @@ export default function JobDetailClient({
     setIsFirstTimeUser(!hasUsedFeature);
   }, []);
 
-  // Track impression for featured jobs
+  // Track impression for featured jobs with proper cleanup
   useEffect(() => {
+    if (!job?.featured || !job?.id) return;
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     const trackImpression = async () => {
-      if (job.featured) {
-        try {
-          await fetch(`/api/jobs/${job.id}/analytics/impression`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-        } catch (error) {
-          // Silently fail - analytics shouldn't break the user experience
-          console.debug('Failed to track impression:', error);
+      try {
+        const result = await safeFetchAPI(`/api/jobs/${job.id}/analytics/impression`, {
+          method: 'POST',
+          signal: controller.signal,
+        });
+        
+        if (!result.success && result.error !== 'Request timeout') {
+          console.debug('Failed to track impression:', result.error);
         }
+      } catch (error) {
+        // Silently fail - analytics shouldn't break the user experience
+        console.debug('Failed to track impression:', error);
       }
     };
 
     // Track impression after a short delay to ensure the page is fully loaded
     const timer = setTimeout(trackImpression, 1000);
-    return () => clearTimeout(timer);
-  }, [job.id, job.featured]);
+    timersRef.current.add(timer);
 
-  // Helper function to track clicks
+    return () => {
+      clearTimeout(timer);
+      timersRef.current.delete(timer);
+      controller.abort();
+    };
+  }, [job?.id, job?.featured]);
+
+  // Helper function to track clicks with proper error handling
   const trackClick = useCallback(async (action: string, source: string = 'direct') => {
-    if (job.featured) {
-      try {
-        await fetch(`/api/jobs/${job.id}/analytics/click`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ action, source }),
-        });
-      } catch (error) {
-        // Silently fail - analytics shouldn't break the user experience
-        console.debug('Failed to track click:', error);
+    if (!job?.featured || !job?.id) return;
+
+    try {
+      const result = await safeFetchAPI(`/api/jobs/${job.id}/analytics/click`, {
+        method: 'POST',
+        body: JSON.stringify({ action, source }),
+        timeout: 5000, // Short timeout for analytics
+      });
+      
+      if (!result.success && result.error !== 'Request timeout') {
+        console.debug('Failed to track click:', result.error);
       }
+    } catch (error) {
+      // Silently fail - analytics shouldn't break the user experience
+      console.debug('Failed to track click:', error);
     }
-  }, [job.id, job.featured]);
+  }, [job?.id, job?.featured]);
 
   // Mark feature as used when modal opens
   const handleShouldIApplyOpen = () => {
@@ -165,10 +193,15 @@ export default function JobDetailClient({
     [job.jobType]
   );
 
-  // Clear error after timeout
+  // Clear error after timeout with proper cleanup
   const clearError = useCallback(() => {
     if (error) {
-      setTimeout(() => setError(null), 5000);
+      const timer = setTimeout(() => setError(null), 5000);
+      timersRef.current.add(timer);
+      return () => {
+        clearTimeout(timer);
+        timersRef.current.delete(timer);
+      };
     }
   }, [error]);
 
@@ -186,24 +219,19 @@ export default function JobDetailClient({
     await trackClick('save_job');
 
     try {
-      const response = await fetch('/api/profile/saved-jobs', {
+      const result = await safeFetchAPI('/api/profile/saved-jobs', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
         body: JSON.stringify({
           jobId: job.id,
           action: saved ? 'unsave' : 'save',
         }),
+        timeout: 10000,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save job');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save job');
       }
 
-      const data = await response.json();
       setSaved(!saved); // Toggle the saved state
     } catch (error) {
       console.error('Error saving job:', error);
@@ -303,6 +331,20 @@ export default function JobDetailClient({
     setReportReason('');
     setReportSubmitted(false);
     setError(null);
+  }, []);
+
+  // Cleanup effect to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Clear all timers
+      timersRef.current.forEach(timer => clearTimeout(timer));
+      timersRef.current.clear();
+      
+      // Abort any ongoing requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, []);
 
   return (

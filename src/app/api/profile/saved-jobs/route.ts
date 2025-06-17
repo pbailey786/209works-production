@@ -4,6 +4,7 @@ import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
+import { validateSession, safeDBQuery } from '@/lib/utils/safe-fetch';
 
 // Schema for saving/unsaving jobs
 const saveJobSchema = z.object({
@@ -15,20 +16,31 @@ const saveJobSchema = z.object({
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    // Safely validate session
+    const sessionValidation = validateSession(session);
+    if (!sessionValidation.isValid || !sessionValidation.user) {
+      return NextResponse.json({ 
+        error: 'Unauthorized',
+        message: sessionValidation.error || 'Invalid session'
+      }, { status: 401 });
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-      select: { id: true, role: true },
-    });
+    // Get user from database with error handling
+    const userQuery = await safeDBQuery(() => 
+      prisma.user.findUnique({
+        where: { email: sessionValidation.user!.email },
+        select: { id: true, role: true },
+      })
+    );
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!userQuery.success || !userQuery.data) {
+      return NextResponse.json({ 
+        error: userQuery.error || 'User not found' 
+      }, { status: userQuery.error?.includes('Database') ? 500 : 404 });
     }
+
+    const user = userQuery.data;
 
     if (user.role !== 'jobseeker') {
       return NextResponse.json(
@@ -43,42 +55,53 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
     const offset = (page - 1) * limit;
 
-    // Get saved jobs with job details
-    const [savedJobs, totalCount] = await Promise.all([
-      prisma.jobApplication.findMany({
-        where: {
-          userId: user.id,
-          status: 'saved',
-        },
-        include: {
-          job: {
-            select: {
-              id: true,
-              title: true,
-              company: true,
-              location: true,
-              jobType: true,
-              salaryMin: true,
-              salaryMax: true,
-              description: true,
-              postedAt: true,
-              expiresAt: true,
-              isRemote: true,
-              categories: true,
+    // Get saved jobs with job details - with error handling
+    const savedJobsQuery = await safeDBQuery(() => 
+      Promise.all([
+        prisma.jobApplication.findMany({
+          where: {
+            userId: user.id,
+            status: 'saved',
+          },
+          include: {
+            job: {
+              select: {
+                id: true,
+                title: true,
+                company: true,
+                location: true,
+                jobType: true,
+                salaryMin: true,
+                salaryMax: true,
+                description: true,
+                postedAt: true,
+                expiresAt: true,
+                isRemote: true,
+                categories: true,
+              },
             },
           },
-        },
-        orderBy: { appliedAt: 'desc' },
-        skip: offset,
-        take: limit,
-      }),
-      prisma.jobApplication.count({
-        where: {
-          userId: user.id,
-          status: 'saved',
-        },
-      }),
-    ]);
+          orderBy: { appliedAt: 'desc' },
+          skip: offset,
+          take: limit,
+        }),
+        prisma.jobApplication.count({
+          where: {
+            userId: user.id,
+            status: 'saved',
+          },
+        }),
+      ])
+    );
+
+    if (!savedJobsQuery.success || !savedJobsQuery.data) {
+      return NextResponse.json({ 
+        error: 'Failed to fetch saved jobs',
+        message: savedJobsQuery.error
+      }, { status: 500 });
+    }
+
+    const [savedJobs, totalCount] = savedJobsQuery.data;
 
     // Format the response
     const formattedJobs = savedJobs.map(savedJob => ({
@@ -123,20 +146,31 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions) as Session | null;
-
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    // Safely validate session
+    const sessionValidation = validateSession(session);
+    if (!sessionValidation.isValid || !sessionValidation.user) {
+      return NextResponse.json({ 
+        error: 'Unauthorized',
+        message: sessionValidation.error || 'Invalid session'
+      }, { status: 401 });
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-      select: { id: true, role: true },
-    });
+    // Get user from database with error handling
+    const userQuery = await safeDBQuery(() => 
+      prisma.user.findUnique({
+        where: { email: sessionValidation.user!.email },
+        select: { id: true, role: true },
+      })
+    );
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!userQuery.success || !userQuery.data) {
+      return NextResponse.json({ 
+        error: userQuery.error || 'User not found' 
+      }, { status: userQuery.error?.includes('Database') ? 500 : 404 });
     }
+
+    const user = userQuery.data;
 
     if (user.role !== 'jobseeker') {
       return NextResponse.json(
