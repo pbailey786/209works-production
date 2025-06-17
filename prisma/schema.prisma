@@ -67,6 +67,8 @@ model User {
   lastLoginAt          DateTime?
   lockedUntil          DateTime?
   mfaVerified          Boolean                    @default(false)
+  sessionVersion       Int                        @default(0)
+  passwordChangedAt    DateTime?
   stripeCustomerId     String?                    @unique
   alerts               Alert[]
   auditLogs            AuditLog[]
@@ -98,6 +100,7 @@ model User {
   employerProfile       EmployerProfile?
   resumeEmbedding       ResumeEmbedding?
   jobMatches            JobMatch[]
+  securityLogs          SecurityLog[]
 
   @@index([deletedAt])
 }
@@ -1483,4 +1486,22 @@ model MatchingConfig {
   @@index([name])
   @@index([isActive])
   @@index([minMatchScore])
+}
+
+// Security audit logging
+model SecurityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  event     String   // LOGIN_SUCCESS, LOGIN_FAILED, PASSWORD_RESET_REQUESTED, etc.
+  ipAddress String   @default("")
+  userAgent String   @default("")
+  metadata  Json     @default("{}") // Additional event-specific data
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([userId, event])
 }

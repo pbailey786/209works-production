@@ -179,11 +179,11 @@ export async function generateMetadata({
     }
 
     // Truncate description for better SEO with safe string handling
-    const description = job.description || 'No description available';
+    const jobDescription = job.description || 'No description available';
     const truncatedDescription =
-      description.length > 160
-        ? `${description.substring(0, 157)}...`
-        : description;
+      jobDescription.length > 160
+        ? `${jobDescription.substring(0, 157)}...`
+        : jobDescription;
 
   const salaryRange =
     job.salaryMin && job.salaryMax
