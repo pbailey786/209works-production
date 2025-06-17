@@ -239,7 +239,7 @@ const enhancedAuthOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, trigger }: { token: any; user?: any; trigger?: string }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
@@ -319,7 +319,7 @@ const enhancedAuthOptions: NextAuthOptions = {
       return session;
     },
 
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       // Only allow redirects to our domain
       if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
@@ -331,7 +331,7 @@ const enhancedAuthOptions: NextAuthOptions = {
   },
 
   events: {
-    async signIn({ user, account, isNewUser }) {
+    async signIn({ user, account, isNewUser }: { user: any; account?: any; isNewUser?: boolean }) {
       if (user?.id) {
         await SecurityUtils.logSecurityEvent(
           user.id,
@@ -344,7 +344,7 @@ const enhancedAuthOptions: NextAuthOptions = {
       }
     },
 
-    async signOut({ token }) {
+    async signOut({ token }: { token?: any }) {
       if (token?.id) {
         await SecurityUtils.logSecurityEvent(
           token.id as string,

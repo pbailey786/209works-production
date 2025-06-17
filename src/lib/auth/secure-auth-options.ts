@@ -283,7 +283,7 @@ const secureAuthOptions: NextAuthOptions = {
   },
   
   callbacks: {
-    async jwt({ token, user, account, trigger }) {
+    async jwt({ token, user, account, trigger }: { token: any; user?: any; account?: any; trigger?: string }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
@@ -345,7 +345,7 @@ const secureAuthOptions: NextAuthOptions = {
       return session;
     },
     
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       // Only allow redirects to our domain
       if (url.startsWith('/')) {
         return `${baseUrl}${url}`;
@@ -357,7 +357,7 @@ const secureAuthOptions: NextAuthOptions = {
   },
   
   events: {
-    async signIn({ user, account, isNewUser }) {
+    async signIn({ user, account, isNewUser }: { user: any; account?: any; isNewUser?: boolean }) {
       // Log sign in event
       if (user?.id) {
         await prisma.securityLog.create({
@@ -375,7 +375,7 @@ const secureAuthOptions: NextAuthOptions = {
       }
     },
     
-    async signOut({ token }) {
+    async signOut({ token }: { token?: any }) {
       // Log sign out event
       if (token?.id) {
         await prisma.securityLog.create({
