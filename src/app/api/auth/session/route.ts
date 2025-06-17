@@ -29,7 +29,9 @@ export async function GET(req: NextRequest) {
       success: true,
       session: {
         user: validation.user,
-        expires: session?.expires || null,
+        // NextAuth Session type doesn't have expires by default
+        // We can add expiry info based on our auth configuration
+        expiresAt: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
       },
     });
   } catch (error) {
