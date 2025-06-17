@@ -27,9 +27,9 @@ const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60, // 1 day
   },
-  // Override any environment URL configuration for development
+  // Use dynamic URL for development to handle different ports
   ...(process.env.NODE_ENV === 'development' && {
-    url: 'http://localhost:3001',
+    url: process.env.NEXTAUTH_URL?.replace(':3000', ':3001') || 'http://localhost:3001',
   }),
   providers: [
     CredentialsProvider({
@@ -143,9 +143,12 @@ const authOptions: NextAuthOptions = {
         '🎟️ JWT callback - user:',
         !!user,
         'token.email:',
-        token.email
+        token.email,
+        'user.id:',
+        user?.id
       );
       if (user) {
+        token.id = user.id;
         token.role = (user as any).role;
         token.onboardingCompleted = (user as any).onboardingCompleted;
       }
@@ -157,15 +160,20 @@ const authOptions: NextAuthOptions = {
         token.email,
         'token.role:',
         token.role,
+        'token.id:',
+        token.id,
         'token.sub:',
         token.sub
       );
 
+      // Use token.id if available, fallback to token.sub
+      const userId = token.id || token.sub;
+
       // Fetch latest user data to include profile picture
-      if (token.sub && session.user?.email && process.env.DATABASE_URL) {
+      if (userId && session.user?.email && process.env.DATABASE_URL) {
         try {
           const user = await prisma.user.findUnique({
-            where: { id: token.sub },
+            where: { id: userId },
             select: {
               profilePictureUrl: true,
               name: true,
@@ -177,7 +185,7 @@ const authOptions: NextAuthOptions = {
               ...session,
               user: {
                 ...session.user,
-                id: token.sub,
+                id: userId,
                 role: token.role,
                 onboardingCompleted: token.onboardingCompleted,
                 image: user.profilePictureUrl,
@@ -195,7 +203,7 @@ const authOptions: NextAuthOptions = {
         ...session,
         user: {
           ...session.user,
-          id: token.sub,
+          id: userId,
           role: token.role,
           onboardingCompleted: token.onboardingCompleted,
         },

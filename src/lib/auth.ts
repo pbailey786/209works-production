@@ -1,5 +1,7 @@
 import { NextRequest } from 'next/server';
+import { getServerSession as nextAuthGetServerSession } from 'next-auth';
 import { prisma } from '@/lib/database/prisma';
+import authOptions from '../app/api/auth/authOptions';
 
 // Re-export authOptions from the NextAuth configuration
 export { default as authOptions } from '../app/api/auth/authOptions';
@@ -12,17 +14,30 @@ export interface AuthUser {
 }
 
 export async function getServerSession(): Promise<AuthUser | null> {
-  // TODO: Implement proper session management
-  // This is a placeholder implementation
-  return null;
+  try {
+    const session = await nextAuthGetServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return null;
+    }
+
+    return {
+      id: (session.user as any).id || '',
+      email: session.user.email,
+      name: session.user.name || null,
+      role: (session.user as any).role || 'jobseeker',
+    };
+  } catch (error) {
+    console.error('Error getting server session:', error);
+    return null;
+  }
 }
 
 export async function getCurrentUser(
   request?: NextRequest
 ): Promise<AuthUser | null> {
-  // TODO: Implement proper user authentication
-  // This is a placeholder implementation
-  return null;
+  // For server-side rendering, use getServerSession
+  return await getServerSession();
 }
 
 export async function requireAuth(request?: NextRequest): Promise<AuthUser> {
