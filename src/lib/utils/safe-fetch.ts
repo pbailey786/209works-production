@@ -49,12 +49,32 @@ export async function safeFetch<T = any>(
         : timeoutController.signal;
 
       try {
+        // Safely handle headers - convert Headers object to plain object if needed
+        const headersObject: Record<string, string> = {};
+
+        if (fetchOptions.headers) {
+          if (fetchOptions.headers instanceof Headers) {
+            // Convert Headers object to plain object
+            fetchOptions.headers.forEach((value, key) => {
+              headersObject[key] = value;
+            });
+          } else if (Array.isArray(fetchOptions.headers)) {
+            // Convert array format to plain object
+            fetchOptions.headers.forEach(([key, value]) => {
+              headersObject[key] = value;
+            });
+          } else {
+            // Already a plain object
+            Object.assign(headersObject, fetchOptions.headers);
+          }
+        }
+
         const response = await fetch(url, {
           ...fetchOptions,
           signal: combinedSignal,
           headers: {
             'Content-Type': 'application/json',
-            ...fetchOptions.headers,
+            ...headersObject,
           },
         });
 
@@ -148,13 +168,33 @@ export async function safeFetchAPI<T = any>(
   url: string,
   options: RequestInit & SafeFetchOptions = {}
 ): Promise<SafeFetchResult<T>> {
+  // Safely handle headers - convert Headers object to plain object if needed
+  const headersObject: Record<string, string> = {};
+
+  if (options.headers) {
+    if (options.headers instanceof Headers) {
+      // Convert Headers object to plain object
+      options.headers.forEach((value, key) => {
+        headersObject[key] = value;
+      });
+    } else if (Array.isArray(options.headers)) {
+      // Convert array format to plain object
+      options.headers.forEach(([key, value]) => {
+        headersObject[key] = value;
+      });
+    } else {
+      // Already a plain object
+      Object.assign(headersObject, options.headers);
+    }
+  }
+
   return safeFetch<T>(url, {
     ...options,
     credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...headersObject,
     },
     validateResponse: (response) => response.status < 500, // Accept 4xx errors as valid responses
   });
