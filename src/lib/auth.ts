@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getServerSession as nextAuthGetServerSession } from 'next-auth/next';
+import { Session } from 'next-auth';
 import { prisma } from '@/lib/database/prisma';
 import authOptions from '../app/api/auth/authOptions';
 
@@ -15,7 +16,7 @@ export interface AuthUser {
 
 export async function getServerSession(): Promise<AuthUser | null> {
   try {
-    const session = await nextAuthGetServerSession(authOptions);
+    const session = await nextAuthGetServerSession(authOptions) as Session | null;
     
     if (!session?.user?.email) {
       return null;
