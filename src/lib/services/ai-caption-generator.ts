@@ -294,12 +294,18 @@ ${job.company} is seeking qualified candidates for this ${job.jobType.replace('_
     }
 
     // Add job type hashtags
-    if (job.jobType === 'remote') {
+    if (job.isRemote) {
       hashtags.push('RemoteWork', 'WorkFromHome');
-    } else if (job.jobType === 'part_time') {
+    }
+    
+    if (job.jobType === 'part_time') {
       hashtags.push('PartTime', 'FlexibleWork');
-    } else {
+    } else if (job.jobType === 'full_time') {
       hashtags.push('FullTime');
+    } else if (job.jobType === 'contract') {
+      hashtags.push('Contract', 'Freelance');
+    } else if (job.jobType === 'internship') {
+      hashtags.push('Internship', 'EntryLevel');
     }
 
     // Add custom hashtags
