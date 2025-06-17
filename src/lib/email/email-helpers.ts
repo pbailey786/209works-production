@@ -34,6 +34,7 @@ export interface WelcomeEmailData {
 export interface PasswordResetData {
   userName: string;
   resetUrl: string;
+  expiresIn?: string;
 }
 
 export interface ApplicationConfirmationData {
