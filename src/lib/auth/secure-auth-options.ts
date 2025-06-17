@@ -3,7 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from '@/lib/database/prisma';
 import { compare } from 'bcryptjs';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import speakeasy from 'speakeasy';
+import * as speakeasy from 'speakeasy';
 import crypto from 'crypto';
 // @ts-ignore - NextAuth v4 type import issues
 import type { NextAuthOptions, Session } from 'next-auth';

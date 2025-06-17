@@ -7,7 +7,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from '@/lib/database/prisma';
 import { compare } from 'bcryptjs';
-import speakeasy from 'speakeasy';
+import * as speakeasy from 'speakeasy';
 // @ts-ignore - NextAuth v4 type import issues
 import type { NextAuthOptions, Session } from 'next-auth';
 // @ts-ignore - NextAuth v4 JWT type import issues

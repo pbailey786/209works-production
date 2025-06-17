@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import speakeasy from 'speakeasy';
+import * as speakeasy from 'speakeasy';
 import { prisma } from '@/lib/database/prisma';
 import { normalizeEmail } from '@/lib/utils/email-utils';
 import { compare } from 'bcryptjs';
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
 
     if (!isValidTotp) {
       // Log failed 2FA attempt
-      const headersList = headers();
+      const headersList = await headers();
       const ipAddress = headersList.get('x-forwarded-for') || 
                        headersList.get('x-real-ip') || 
                        'unknown';
@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Log successful 2FA verification
-    const headersList = headers();
+    const headersList = await headers();
     const ipAddress = headersList.get('x-forwarded-for') || 
                      headersList.get('x-real-ip') || 
                      'unknown';

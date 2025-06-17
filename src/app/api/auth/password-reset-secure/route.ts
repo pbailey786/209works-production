@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Extract IP and User-Agent for security logging
-    const headersList = headers();
+    const headersList = await headers();
     const ipAddress = headersList.get('x-forwarded-for') || 
                      headersList.get('x-real-ip') || 
                      'unknown';
@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Extract IP and User-Agent for security logging
-    const headersList = headers();
+    const headersList = await headers();
     const ipAddress = headersList.get('x-forwarded-for') || 
                      headersList.get('x-real-ip') || 
                      'unknown';
