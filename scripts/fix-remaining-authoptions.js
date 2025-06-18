@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Fix remaining authOptions imports for NextAuth v5
+ * Fix remaining authOptions imports that previous script missed
  */
 
 const fs = require('fs');
@@ -11,16 +11,17 @@ const { execSync } = require('child_process');
 console.log('🔄 Fixing remaining authOptions imports...');
 
 try {
-  const filesWithAuthOptions = execSync(
-    'grep -r -l "authOptions" src/',
+  const filesWithAuthOptionsImports = execSync(
+    'grep -r "import.*authOptions" src/',
     { encoding: 'utf8', cwd: '/mnt/c/Users/pbail/100devs/209jobs' }
   ).trim().split('\n').filter(Boolean);
 
-  console.log(`📋 Found ${filesWithAuthOptions.length} files with authOptions`);
+  console.log(`📋 Found ${filesWithAuthOptionsImports.length} files with authOptions imports`);
 
   let updatedCount = 0;
 
-  for (const file of filesWithAuthOptions) {
+  for (const line of filesWithAuthOptionsImports) {
+    const [file] = line.split(':');
     const fullPath = path.join('/mnt/c/Users/pbail/100devs/209jobs', file);
     
     try {
@@ -29,17 +30,24 @@ try {
       let content = fs.readFileSync(fullPath, 'utf8');
       let modified = false;
 
-      // Remove authOptions import lines completely
-      const authOptionsImportPattern = /import\s+authOptions\s+from\s+[^;]+;?\s*\n/g;
-      if (authOptionsImportPattern.test(content)) {
-        content = content.replace(authOptionsImportPattern, '');
+      // Remove authOptions import lines from @/lib/auth
+      const authOptionsLibImportPattern = /import\s*{\s*authOptions\s*}\s*from\s*['"]@\/lib\/auth['"]\s*;?\s*\n/g;
+      if (authOptionsLibImportPattern.test(content)) {
+        content = content.replace(authOptionsLibImportPattern, '');
         modified = true;
       }
 
-      // Remove authOptions references in getServerSession calls
-      const authOptionsUsagePattern = /getServerSession\([^)]*authOptions[^)]*\)/g;
+      // Remove authOptions usage in getServerSession calls - replace with empty call
+      const authOptionsUsagePattern = /getServerSession\(\s*authOptions\s*\)/g;
       if (authOptionsUsagePattern.test(content)) {
         content = content.replace(authOptionsUsagePattern, 'getServerSession()');
+        modified = true;
+      }
+
+      // Remove standalone authOptions references 
+      const standaloneAuthOptionsPattern = /\bauthOptions\b/g;
+      if (standaloneAuthOptionsPattern.test(content)) {
+        content = content.replace(standaloneAuthOptionsPattern, '{}');
         modified = true;
       }
 
@@ -56,7 +64,7 @@ try {
     }
   }
 
-  console.log(`\n📊 AuthOptions Cleanup:`);
+  console.log(`\n📊 Remaining AuthOptions Cleanup:`);
   console.log(`✅ Successfully updated: ${updatedCount} files`);
 
 } catch (error) {

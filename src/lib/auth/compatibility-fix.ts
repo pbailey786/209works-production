@@ -28,7 +28,7 @@ export function fixNextAuthCompat() {
 export async function getCompatibleServerSession() {
   try {
     const { getServerSession } = await import('next-auth/next');
-    const authOptions = (await import('../../app/api/auth/authOptions')).default;
+    const {} = (await import('../../app/api/auth/{}')).default;
     
     return await getServerSession();
   } catch (error) {

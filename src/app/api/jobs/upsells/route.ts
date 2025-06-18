@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth as getServerSession } from "@/auth";
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
 import { stripe } from '@/lib/stripe';
 import { z } from 'zod';

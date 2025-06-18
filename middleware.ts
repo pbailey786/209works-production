@@ -2,7 +2,7 @@ import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export default auth((req) => {
+export default auth((req: NextRequest & { auth: any }) => {
   console.log('🛡️ Middleware v5 processing:', req.nextUrl.pathname)
   
   const { pathname } = req.nextUrl

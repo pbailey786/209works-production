@@ -204,5 +204,5 @@ const config = {
   trustHost: true, // Important for production
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth(config as any)
+export const { handlers, auth, signIn, signOut } = NextAuth(config)
 export { config as authConfig }

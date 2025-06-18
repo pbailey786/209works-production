@@ -8,7 +8,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth as getServerSession } from "@/auth";
-import { authOptions } from '@/lib/auth';
 import { OptimizedJobSearchService } from '@/lib/database/optimized-queries';
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';

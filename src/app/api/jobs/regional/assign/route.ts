@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth as getServerSession } from "@/auth";
-import { authOptions } from '@/lib/auth';
 import { RegionalJobService } from '@/lib/services/regional-job-service';
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
