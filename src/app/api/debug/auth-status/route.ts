@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth } from '@/auth';
 import { validateNextAuthConfig } from '@/lib/auth/url-fix';
 
 export async function GET(request: NextRequest) {
@@ -13,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Get current session
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     
     // Validate configuration
     const configValidation = validateNextAuthConfig();

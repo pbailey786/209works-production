@@ -218,7 +218,7 @@ export default function Header() {
               </div>
             )}
 
-            {status === 'authenticated' && session.user && (
+            {status === 'authenticated' && session?.user && (
               <div className="relative">
                 <div className="flex items-center space-x-3">
                   {/* User Menu Dropdown */}

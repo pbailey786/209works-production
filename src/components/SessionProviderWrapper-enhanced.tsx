@@ -64,11 +64,10 @@ export default function SessionProviderWrapper({ children }: SessionProviderWrap
   // Always render SessionProvider but handle hydration gracefully
   return (
     <SessionProvider 
-      // Reduced refetch interval to avoid overwhelming slow connections
-      refetchInterval={process.env.NODE_ENV === 'development' ? 60 : 300} // 1 min dev, 5 min prod
+      // v5 has better default session handling, reduce refetch frequency
+      refetchInterval={process.env.NODE_ENV === 'development' ? 300 : 0} // 5 min dev, disabled prod
       refetchOnWindowFocus={true}
       refetchWhenOffline={false}
-      basePath="/api/auth"
     >
       {isMounted ? children : (
         <div className="min-h-screen bg-white flex items-center justify-center">

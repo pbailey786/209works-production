@@ -1,40 +1,6 @@
-import NextAuth from 'next-auth';
-import authOptions from '../authOptions';
+import { handlers } from '@/auth'
 
-console.log('🚀 NextAuth route loaded');
+console.log('🚀 NextAuth v5 route loaded')
 
-// @ts-ignore - NextAuth v4 App Router compatibility
-const handler = NextAuth(authOptions);
-
-// Wrap handlers with logging and error catching
-const loggedGET = async (req: Request, context: any) => {
-  console.log('📥 NextAuth GET request:', req.url);
-  console.log('📥 GET pathname:', new URL(req.url).pathname);
-  try {
-    const result = await handler(req, context);
-    return result;
-  } catch (error) {
-    console.error('💥 NextAuth GET Error:', error);
-    throw error;
-  }
-};
-
-const loggedPOST = async (req: Request, context: any) => {
-  console.log('📤 NextAuth POST request:', req.url);
-  console.log('📤 POST pathname:', new URL(req.url).pathname);
-
-  try {
-    const result = await handler(req, context);
-    console.log('✅ NextAuth POST completed successfully');
-    return result;
-  } catch (error) {
-    console.error('💥 NextAuth POST Error:', error);
-    console.error(
-      '💥 Error stack:',
-      error instanceof Error ? error.stack : 'No stack trace'
-    );
-    throw error;
-  }
-};
-
-export { loggedGET as GET, loggedPOST as POST };
+// The new v5 handlers include built-in error handling and logging
+export const { GET, POST } = handlers

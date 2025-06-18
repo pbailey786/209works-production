@@ -1,183 +1,125 @@
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { auth } from '@/auth'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-// Import compatibility fixes
-import '@/lib/auth/compatibility-fix';
+export default auth((req) => {
+  console.log('🛡️ Middleware v5 processing:', req.nextUrl.pathname)
+  
+  const { pathname } = req.nextUrl
+  const session = req.auth
 
-export default withAuth(
-  function middleware(req) {
-    console.log('🛡️ Middleware processing:', req.nextUrl.pathname);
-    
-    const { pathname } = req.nextUrl;
-    const token = req.nextauth.token;
-
-    console.log('🛡️ Token exists:', !!token);
-    if (token) {
-      console.log('🛡️ Token role:', token.role);
-      console.log('🛡️ Token ID:', token.id);
-    }
-
-    // Routes that require email verification
-    const emailVerificationRequired = [
-      '/employers',
-      '/admin',
-      '/profile',
-      '/applications',
-      '/saved-jobs',
-      '/job-alerts',
-      '/apply'
-    ];
-
-    // Check if email verification is required for this route
-    const requiresVerification = emailVerificationRequired.some(route =>
-      pathname.startsWith(route)
-    );
-
-    // If user is authenticated but email not verified and route requires verification
-    // Temporarily disabled to debug authentication issues
-    // if (token && requiresVerification && !token.isEmailVerified) {
-    //   return NextResponse.redirect(new URL('/verify-email', req.url));
-    // }
-
-    // Comprehensive Role-Based Access Control (RBAC)
-    if (token) {
-      const userRole = token.role;
-      console.log('🛡️ Token data for RBAC:', { 
-        id: token.id, 
-        role: userRole, 
-        email: token.email,
-        sub: token.sub 
-      });
-
-      // Check if token has required user data
-      if (!token.id && !token.sub) {
-        console.warn('⚠️ Token missing user ID - session may be incomplete');
-        // Allow navigation but log the issue
-      }
-
-      // Define role-specific protected routes
-      const jobSeekerRoutes = ['/dashboard', '/profile', '/applications', '/saved-jobs', '/job-alerts'];
-      const employerRoutes = ['/employers'];
-      const adminRoutes = ['/admin'];
-
-      // Check if current path matches any protected route patterns
-      const isJobSeekerRoute = jobSeekerRoutes.some(route =>
-        pathname === route || pathname.startsWith(route + '/')
-      );
-      const isEmployerRoute = employerRoutes.some(route =>
-        pathname === route || pathname.startsWith(route + '/')
-      );
-      const isAdminRoute = adminRoutes.some(route =>
-        pathname === route || pathname.startsWith(route + '/')
-      );
-
-      // Role-based access control
-      if (userRole === 'employer') {
-        // Employers trying to access job seeker routes
-        if (isJobSeekerRoute) {
-          return NextResponse.redirect(new URL('/employers/dashboard', req.url));
-        }
-        // Redirect generic /dashboard to employer dashboard
-        if (pathname === '/dashboard') {
-          return NextResponse.redirect(new URL('/employers/dashboard', req.url));
-        }
-      } else if (userRole === 'jobseeker') {
-        // Job seekers trying to access employer routes
-        if (isEmployerRoute) {
-          return NextResponse.redirect(new URL('/dashboard', req.url));
-        }
-      } else if (userRole === 'admin') {
-        // Admins have access to all routes, no restrictions
-      } else {
-        // Unknown role - redirect to home
-        if (isJobSeekerRoute || isEmployerRoute || isAdminRoute) {
-          return NextResponse.redirect(new URL('/', req.url));
-        }
-      }
-    }
-
-    // If user is authenticated and visiting root, redirect based on role
-    if (pathname === '/' && token) {
-      if (token.role === 'admin') {
-        return NextResponse.redirect(new URL('/admin', req.url));
-      }
-      if (token.role === 'employer') {
-        return NextResponse.redirect(new URL('/employers/dashboard', req.url));
-      }
-      // Job seekers stay on home page
-      return NextResponse.next();
-    }
-
-    // Protect admin routes (but allow access if no database to show error page)
-    if (pathname.startsWith('/admin')) {
-      // If no database URL, allow access to show error page
-      if (!process.env.DATABASE_URL) {
-        return NextResponse.next();
-      }
-      if (!token || token.role !== 'admin') {
-        return NextResponse.redirect(new URL('/signin?redirect=/admin', req.url));
-      }
-    }
-
-    // Protect employer routes
-    if (pathname.startsWith('/employers')) {
-      if (!token || token.role !== 'employer') {
-        return NextResponse.redirect(new URL('/employers/signin?redirect=' + encodeURIComponent(pathname), req.url));
-      }
-    }
-
-    console.log('🛡️ Middleware complete, allowing request');
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
-        
-        console.log('🔐 Authorization check for:', pathname);
-        console.log('🔐 Token exists:', !!token);
-        
-        // Allow public routes
-        if (
-          pathname.startsWith('/auth') ||
-          pathname.startsWith('/api/auth') ||
-          pathname.startsWith('/api/debug') ||
-          pathname.startsWith('/_next') ||
-          pathname.startsWith('/favicon') ||
-          pathname === '/' ||
-          pathname.startsWith('/jobs') ||
-          pathname.startsWith('/chat') ||
-          pathname.startsWith('/signin') ||
-          pathname.startsWith('/signup') ||
-          pathname.startsWith('/employers/signin') ||
-          pathname.startsWith('/employers/signup') ||
-          pathname.startsWith('/verify-email') ||
-          pathname.startsWith('/contact') ||
-          pathname.startsWith('/about') ||
-          pathname.startsWith('/password-reset') ||
-          pathname.startsWith('/reset-password') ||
-          pathname.startsWith('/onboarding') ||
-          pathname.startsWith('/debug') ||
-          pathname.startsWith('/test-auth')
-        ) {
-          console.log('🔐 Public route, allowing access');
-          return true;
-        }
-
-        // Require authentication for protected routes
-        const hasAuth = !!token;
-        console.log('🔐 Protected route, auth required:', hasAuth);
-        return hasAuth;
-      },
-    },
-    // Add compatibility options for NextAuth v4 + Next.js v15
-    pages: {
-      signIn: '/signin',
-      error: '/signin',
-    },
+  console.log('🛡️ Session exists:', !!session)
+  if (session?.user) {
+    console.log('🛡️ User role:', (session.user as any)?.role)
+    console.log('🛡️ User ID:', session.user.id)
   }
-);
+
+  // Routes that require email verification
+  const emailVerificationRequired = [
+    '/employers',
+    '/admin',
+    '/profile',
+    '/applications',
+    '/saved-jobs',
+    '/job-alerts',
+    '/apply'
+  ]
+
+  // Check if email verification is required for this route
+  const requiresVerification = emailVerificationRequired.some(route =>
+    pathname.startsWith(route)
+  )
+
+  // Comprehensive Role-Based Access Control (RBAC)
+  if (session?.user) {
+    const userRole = (session.user as any)?.role
+    console.log('🛡️ User data for RBAC:', { 
+      id: session.user.id, 
+      role: userRole, 
+      email: session.user.email,
+    })
+
+    // Check if session has required user data
+    if (!session.user.id) {
+      console.warn('⚠️ Session missing user ID - session may be incomplete')
+      // Allow navigation but log the issue
+    }
+
+    // Define role-specific protected routes
+    const jobSeekerRoutes = ['/dashboard', '/profile', '/applications', '/saved-jobs', '/job-alerts']
+    const employerRoutes = ['/employers']
+    const adminRoutes = ['/admin']
+
+    // Check if current path matches any protected route patterns
+    const isJobSeekerRoute = jobSeekerRoutes.some(route =>
+      pathname === route || pathname.startsWith(route + '/')
+    )
+    const isEmployerRoute = employerRoutes.some(route =>
+      pathname === route || pathname.startsWith(route + '/')
+    )
+    const isAdminRoute = adminRoutes.some(route =>
+      pathname === route || pathname.startsWith(route + '/')
+    )
+
+    // Role-based access control
+    if (userRole === 'employer') {
+      // Employers trying to access job seeker routes
+      if (isJobSeekerRoute) {
+        return NextResponse.redirect(new URL('/employers/dashboard', req.url))
+      }
+      // Redirect generic /dashboard to employer dashboard
+      if (pathname === '/dashboard') {
+        return NextResponse.redirect(new URL('/employers/dashboard', req.url))
+      }
+    } else if (userRole === 'jobseeker') {
+      // Job seekers trying to access employer routes
+      if (isEmployerRoute) {
+        return NextResponse.redirect(new URL('/dashboard', req.url))
+      }
+    } else if (userRole === 'admin') {
+      // Admins have access to all routes, no restrictions
+    } else {
+      // Unknown role - redirect to home
+      if (isJobSeekerRoute || isEmployerRoute || isAdminRoute) {
+        return NextResponse.redirect(new URL('/', req.url))
+      }
+    }
+  }
+
+  // If user is authenticated and visiting root, redirect based on role
+  if (pathname === '/' && session?.user) {
+    const userRole = (session.user as any)?.role
+    if (userRole === 'admin') {
+      return NextResponse.redirect(new URL('/admin', req.url))
+    }
+    if (userRole === 'employer') {
+      return NextResponse.redirect(new URL('/employers/dashboard', req.url))
+    }
+    // Job seekers stay on home page
+    return NextResponse.next()
+  }
+
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    // If no database URL, allow access to show error page
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.next()
+    }
+    if (!session?.user || (session.user as any)?.role !== 'admin') {
+      return NextResponse.redirect(new URL('/signin?redirect=/admin', req.url))
+    }
+  }
+
+  // Protect employer routes
+  if (pathname.startsWith('/employers')) {
+    if (!session?.user || (session.user as any)?.role !== 'employer') {
+      return NextResponse.redirect(new URL('/employers/signin?redirect=' + encodeURIComponent(pathname), req.url))
+    }
+  }
+
+  console.log('🛡️ Middleware complete, allowing request')
+  return NextResponse.next()
+})
 
 export const config = {
   matcher: [
@@ -187,7 +129,12 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * But require auth for protected routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    // Protect these API routes
+    '/api/admin/:path*',
+    '/api/employer/:path*',
+    '/api/user/:path*',
   ],
-};
+}
