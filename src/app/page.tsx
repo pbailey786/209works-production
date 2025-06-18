@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -32,6 +33,12 @@ const Footer = React.lazy(() => import('../components/Footer'));
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  // Debug session state
+  console.log('🏠 Homepage - Session status:', status);
+  console.log('🏠 Homepage - Session data:', session);
+  console.log('🏠 Homepage - User:', session?.user);
 
   const handleSearch = (query: string) => {
     setLoading(true);
@@ -120,19 +127,40 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* CTA Button */}
+            {/* CTA Buttons - conditional based on auth status */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
+              className="flex flex-col gap-4 sm:flex-row sm:justify-center"
             >
-              <Link
-                href="/jobs"
-                className="inline-flex transform items-center gap-3 rounded-lg bg-[#ff6b35] px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:scale-105 hover:bg-[#e55a2b]"
-              >
-                <span>Explore our jobs</span>
-                <ArrowRight className="h-5 w-5" />
-              </Link>
+              {status === 'authenticated' ? (
+                // Authenticated user - show explore jobs
+                <Link
+                  href="/jobs"
+                  className="inline-flex transform items-center gap-3 rounded-lg bg-[#ff6b35] px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:scale-105 hover:bg-[#e55a2b]"
+                >
+                  <span>Explore Jobs</span>
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+              ) : (
+                // Unauthenticated user - show sign up and sign in
+                <>
+                  <Link
+                    href="/signup"
+                    className="inline-flex transform items-center gap-3 rounded-lg bg-[#ff6b35] px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:scale-105 hover:bg-[#e55a2b]"
+                  >
+                    <span>Get Started</span>
+                    <ArrowRight className="h-5 w-5" />
+                  </Link>
+                  <Link
+                    href="/signin"
+                    className="inline-flex transform items-center gap-3 rounded-lg border-2 border-white bg-transparent px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:scale-105 hover:bg-white hover:text-[#2d4a3e]"
+                  >
+                    <span>Sign In</span>
+                  </Link>
+                </>
+              )}
             </motion.div>
         </div>
       </section>

@@ -37,6 +37,9 @@ export default function Header() {
   console.log('🔍 Header - Session status:', status);
   console.log('🔍 Header - Session data:', session);
   console.log('🔍 Header - User:', session?.user);
+  console.log('🔍 Header - User ID:', (session?.user as any)?.id);
+  console.log('🔍 Header - User email:', session?.user?.email);
+  console.log('🔍 Header - User role:', (session?.user as any)?.role);
 
   const navigation = [
     { name: 'Find Jobs', href: '/jobs', icon: Search },

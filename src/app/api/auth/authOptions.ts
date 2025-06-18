@@ -55,6 +55,19 @@ const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // TEMPORARY: Test mode for debugging authentication without database
+        if (credentials.email === 'test@test.com' && credentials.password === 'test123') {
+          console.log('🧪 TEST MODE: Using test credentials');
+          const testUser = {
+            id: 'test-user-id',
+            email: 'test@test.com',
+            name: 'Test User',
+            role: 'jobseeker', // Use the correct enum value from Prisma schema
+          };
+          console.log('✅ TEST USER RETURNED:', testUser);
+          return testUser;
+        }
+
         // Check if database is available
         if (!process.env.DATABASE_URL) {
           console.log('❌ FAILED: No DATABASE_URL configured');
@@ -150,10 +163,12 @@ const authOptions: NextAuthOptions = {
       // On sign in, user object will be available
       if (user) {
         console.log('🎟️ Adding user data to token');
+        console.log('🎟️ User object:', JSON.stringify(user, null, 2));
         token.id = user.id;
-        token.role = user.role || 'job_seeker';
+        token.role = user.role || 'jobseeker'; // Use correct enum value
         token.email = user.email;
         token.name = user.name;
+        console.log('🎟️ Token after user data added:', JSON.stringify(token, null, 2));
       }
 
       // For OAuth providers, ensure user data is properly set
@@ -181,26 +196,34 @@ const authOptions: NextAuthOptions = {
 
     async session({ session, token }: { session: Session; token: any }) {
       console.log('📋 Session callback triggered');
-      console.log('  - Token ID:', token.id);
-      console.log('  - Token email:', token.email);
-      console.log('  - Session user email:', session.user?.email);
+      console.log('  - Token:', JSON.stringify(token, null, 2));
+      console.log('  - Session before:', JSON.stringify(session, null, 2));
 
-      if (session.user && token) {
-        // Ensure user ID is properly set
-        const userId = token.id || token.sub;
-        
-        session.user.id = userId as string;
-        session.user.role = token.role as string || 'job_seeker';
-        session.user.email = token.email as string || session.user.email;
-        session.user.name = token.name as string || session.user.name;
-
-        console.log('📋 Session user prepared:', {
-          id: session.user.id,
-          email: session.user.email,
-          role: session.user.role,
-        });
+      // Always ensure session.user exists
+      if (!session.user) {
+        console.log('📋 Creating session.user object');
+        session.user = {
+          id: '',
+          email: '',
+          name: '',
+        };
       }
 
+      if (token) {
+        // Ensure user data is properly set from token
+        session.user.id = token.id || token.sub || '';
+        session.user.email = token.email || session.user.email || '';
+        session.user.name = token.name || session.user.name || '';
+
+        // Add custom properties
+        (session.user as any).role = token.role || 'jobseeker';
+
+        console.log('📋 Session user after update:', JSON.stringify(session.user, null, 2));
+      } else {
+        console.log('📋 No token found in session callback');
+      }
+
+      console.log('📋 Final session:', JSON.stringify(session, null, 2));
       return session;
     },
 

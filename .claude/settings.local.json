@@ -18,7 +18,8 @@
       "Bash(pkill:*)",
       "Bash(true)",
       "Bash(npm run list-users:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": []
   }

@@ -6,6 +6,7 @@ import SessionProviderWrapper from '../components/SessionProviderWrapper-enhance
 import PerformanceProvider from '../components/PerformanceProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { SessionDebugger } from '@/components/SessionDebugger';
+import SessionTester from '@/components/SessionTester';
 import { headers } from 'next/headers';
 import { getDomainConfig } from '@/lib/domain/config';
 
@@ -137,6 +138,7 @@ export default function RootLayout({
               {children}
             </main>
             <SessionDebugger />
+            <SessionTester />
             <Toaster />
           </PerformanceProvider>
         </SessionProviderWrapper>
