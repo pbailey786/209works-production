@@ -14,7 +14,10 @@
       "Bash(git add:*)",
       "Bash(test:*)",
       "Bash(sed:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(npm run list-users:*)"
     ],
     "deny": []
   }

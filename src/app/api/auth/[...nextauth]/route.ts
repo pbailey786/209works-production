@@ -24,14 +24,6 @@ const loggedPOST = async (req: Request, context: any) => {
   console.log('📤 POST pathname:', new URL(req.url).pathname);
 
   try {
-    const clone = req.clone();
-    const body = await clone.text();
-    console.log('📤 POST body:', body);
-  } catch (e) {
-    console.log('📤 Could not read POST body');
-  }
-
-  try {
     const result = await handler(req, context);
     console.log('✅ NextAuth POST completed successfully');
     return result;
