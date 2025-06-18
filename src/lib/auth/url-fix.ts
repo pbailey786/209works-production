@@ -1,0 +1,76 @@
+/**
+ * Fix NextAuth URL configuration issues
+ */
+
+export function getCorrectNextAuthUrl(): string {
+  // If running in browser, use the current origin
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  
+  // Server-side logic
+  const envUrl = process.env.NEXTAUTH_URL;
+  const nodeEnv = process.env.NODE_ENV;
+  
+  // If we have an env URL, validate and use it
+  if (envUrl) {
+    try {
+      new URL(envUrl); // Validate URL format
+      return envUrl;
+    } catch {
+      console.warn('⚠️ Invalid NEXTAUTH_URL in environment:', envUrl);
+    }
+  }
+  
+  // Fallback based on environment
+  if (nodeEnv === 'production') {
+    return 'https://209.works';
+  } else {
+    return 'http://localhost:3000';
+  }
+}
+
+export function validateNextAuthConfig(): {
+  isValid: boolean;
+  issues: string[];
+  recommendations: string[];
+} {
+  const issues: string[] = [];
+  const recommendations: string[] = [];
+  
+  const nextAuthUrl = process.env.NEXTAUTH_URL;
+  const nextAuthSecret = process.env.NEXTAUTH_SECRET;
+  const nodeEnv = process.env.NODE_ENV;
+  
+  // Check NEXTAUTH_URL
+  if (!nextAuthUrl) {
+    issues.push('NEXTAUTH_URL environment variable is not set');
+    recommendations.push('Set NEXTAUTH_URL to match your domain (e.g., https://209.works)');
+  } else {
+    try {
+      const url = new URL(nextAuthUrl);
+      if (nodeEnv === 'production' && url.protocol !== 'https:') {
+        issues.push('NEXTAUTH_URL should use HTTPS in production');
+      }
+      if (url.pathname !== '/') {
+        issues.push('NEXTAUTH_URL should not include a path');
+      }
+    } catch {
+      issues.push('NEXTAUTH_URL is not a valid URL');
+    }
+  }
+  
+  // Check NEXTAUTH_SECRET
+  if (!nextAuthSecret) {
+    issues.push('NEXTAUTH_SECRET environment variable is not set');
+    recommendations.push('Set NEXTAUTH_SECRET to a secure random string');
+  } else if (nextAuthSecret.length < 32) {
+    issues.push('NEXTAUTH_SECRET should be at least 32 characters long');
+  }
+  
+  return {
+    isValid: issues.length === 0,
+    issues,
+    recommendations,
+  };
+}

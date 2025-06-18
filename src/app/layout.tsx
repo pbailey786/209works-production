@@ -7,6 +7,8 @@ import PerformanceProvider from '../components/PerformanceProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { SessionDebugger } from '@/components/SessionDebugger';
 import SessionTester from '@/components/SessionTester';
+import SecurityErrorHandler from '@/components/SecurityErrorHandler';
+import TimeoutDetector from '@/components/TimeoutDetector';
 import { headers } from 'next/headers';
 import { getDomainConfig } from '@/lib/domain/config';
 
@@ -124,6 +126,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} min-h-screen antialiased`}
       >
+        <SecurityErrorHandler />
         <SessionProviderWrapper>
           <PerformanceProvider>
             {/* Skip Navigation Link */}
@@ -139,6 +142,7 @@ export default function RootLayout({
             </main>
             <SessionDebugger />
             <SessionTester />
+            <TimeoutDetector />
             <Toaster />
           </PerformanceProvider>
         </SessionProviderWrapper>

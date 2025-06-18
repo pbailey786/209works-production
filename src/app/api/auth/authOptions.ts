@@ -14,11 +14,23 @@ import type { SessionStrategy } from 'next-auth';
 import { normalizeEmail } from '@/lib/utils/email-utils';
 // Import compatibility fix
 import '@/lib/auth/compatibility-fix';
+import { getCorrectNextAuthUrl, validateNextAuthConfig } from '@/lib/auth/url-fix';
 
 console.log('🔧 AuthOptions loading...');
+
+// Validate NextAuth configuration
+const configValidation = validateNextAuthConfig();
+console.log('🔑 NextAuth Configuration Check:');
+console.log('  - Is Valid:', configValidation.isValid);
+if (configValidation.issues.length > 0) {
+  console.warn('⚠️ Configuration Issues:', configValidation.issues);
+  console.warn('💡 Recommendations:', configValidation.recommendations);
+}
+
 console.log('🔑 Environment check:');
 console.log('  - NEXTAUTH_SECRET exists:', !!process.env.NEXTAUTH_SECRET);
 console.log('  - NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
+console.log('  - Calculated URL:', getCorrectNextAuthUrl());
 console.log('  - DATABASE_URL exists:', !!process.env.DATABASE_URL);
 
 console.log('🔧 Creating CredentialsProvider...');
@@ -29,10 +41,8 @@ const authOptions: NextAuthOptions = {
     maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30)
     updateAge: 4 * 60 * 60, // 4 hours (reduced from 24 hours)
   },
-  // Use dynamic URL for development to handle different ports
-  ...(process.env.NODE_ENV === 'development' && {
-    url: process.env.NEXTAUTH_URL || 'http://localhost:3000',
-  }),
+  // Use the correct URL based on environment and validation
+  url: getCorrectNextAuthUrl(),
   providers: [
     CredentialsProvider({
       id: 'credentials',
@@ -274,17 +284,31 @@ const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       console.log('🔄 Redirect callback:', { url, baseUrl });
       
-      // Handle relative URLs
-      if (url.startsWith('/')) {
-        return `${baseUrl}${url}`;
+      // Fix for SecurityError: Ensure URLs are properly formatted
+      try {
+        // Handle relative URLs
+        if (url.startsWith('/')) {
+          const fullUrl = `${baseUrl}${url}`;
+          console.log('🔄 Redirecting to relative URL:', fullUrl);
+          return fullUrl;
+        }
+        
+        // Validate URL before redirecting
+        const urlObj = new URL(url, baseUrl);
+        
+        // Ensure same origin
+        if (urlObj.origin === new URL(baseUrl).origin) {
+          console.log('🔄 Redirecting to same origin URL:', urlObj.toString());
+          return urlObj.toString();
+        }
+        
+        console.log('🔄 Defaulting to baseUrl:', baseUrl);
+        return baseUrl;
+      } catch (error) {
+        console.error('🔄 Redirect error:', error);
+        console.log('🔄 Falling back to baseUrl:', baseUrl);
+        return baseUrl;
       }
-      
-      // Handle same origin URLs
-      if (url.startsWith(baseUrl)) {
-        return url;
-      }
-      
-      return baseUrl;
     },
   },
 

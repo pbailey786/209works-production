@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/database/prisma';
 import redis from '@/lib/redis';
-
-// Create clients for health checks
-const prisma = new PrismaClient();
 
 interface HealthCheck {
   status: 'healthy' | 'unhealthy' | 'degraded';
@@ -46,8 +43,13 @@ async function checkDatabase(): Promise<{
 }> {
   const start = Date.now();
   try {
-    // Simple database query to check connectivity
-    await prisma.$queryRaw`SELECT 1`;
+    // Simple database query to check connectivity with timeout
+    const dbPromise = prisma.$queryRaw`SELECT 1`;
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Database query timeout')), 5000)
+    );
+    
+    await Promise.race([dbPromise, timeoutPromise]);
     const responseTime = Date.now() - start;
     return { status: 'healthy', responseTime };
   } catch (error) {
@@ -236,10 +238,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(errorResponse, { status: 503 });
   } finally {
-    // Clean up database connection
-    await prisma.$disconnect().catch(() => {
-      // Ignore cleanup errors
-    });
+    // Don't disconnect shared prisma instance
   }
 }
 
