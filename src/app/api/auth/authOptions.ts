@@ -24,8 +24,8 @@ console.log('🔧 Creating CredentialsProvider...');
 const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt' as SessionStrategy,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 1 day
+    maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30)
+    updateAge: 4 * 60 * 60, // 4 hours (reduced from 24 hours)
   },
   // Use dynamic URL for development to handle different ports
   ...(process.env.NODE_ENV === 'development' && {
