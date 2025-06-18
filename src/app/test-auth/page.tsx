@@ -401,7 +401,7 @@ export default function TestAuthPage() {
           <li>Click "Test Login" to authenticate with test@test.com/test123</li>
           <li>Check that session status becomes "authenticated"</li>
           <li>Verify that user data (ID, email, name, role) is populated</li>
-          <li>Check browser console for debug logs from authOptions</li>
+          <li>Check browser console for debug logs from auth.ts (v5)</li>
           <li>Click "Check Server Health" to verify connectivity</li>
           <li>Click "Test Logout" to end the session</li>
           <li>Verify that session status becomes "unauthenticated"</li>

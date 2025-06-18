@@ -91,11 +91,10 @@ export async function GET(request: NextRequest) {
         analysis,
       },
       authConfig: {
+        version: 'v5',
         strategy: 'jwt',
-        providers: authOptions.providers?.length || 0,
-        hasJwtCallback: !!authOptions.callbacks?.jwt,
-        hasSessionCallback: !!authOptions.callbacks?.session,
-        sessionMaxAge: authOptions.session?.maxAge,
+        note: 'Auth configuration migrated to auth.ts',
+        status: 'migrated'
       },
     };
 

@@ -41,14 +41,12 @@ export async function GET(request: NextRequest) {
       console.error('🔍 Database connection error:', error);
     }
 
-    // Check NextAuth configuration
+    // Check NextAuth v5 configuration
     const authConfig = {
-      providersCount: authOptions.providers?.length || 0,
-      hasJwtCallback: !!authOptions.callbacks?.jwt,
-      hasSessionCallback: !!authOptions.callbacks?.session,
-      sessionStrategy: authOptions.session?.strategy,
-      maxAge: authOptions.session?.maxAge,
-      hasPages: !!authOptions.pages,
+      version: 'v5',
+      note: 'Configuration moved to auth.ts - debug info limited in v5',
+      sessionStrategy: 'jwt', // v5 default
+      status: 'migrated'
     };
 
     const debugInfo = {

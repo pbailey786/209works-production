@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   // Test imports first
   try {
     console.log('🔧 Testing imports...');
-    console.log('🔧 authOptions:', typeof authOptions);
+    console.log('🔧 auth (v5):', 'migrated to auth.ts');
     console.log('🔧 stripe:', typeof stripe);
     console.log('🔧 JOB_POSTING_CONFIG:', typeof JOB_POSTING_CONFIG);
     console.log('🔧 prisma:', typeof prisma);
