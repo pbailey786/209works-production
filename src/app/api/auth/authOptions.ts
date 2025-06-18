@@ -12,6 +12,8 @@ import speakeasy from 'speakeasy';
 // @ts-ignore - NextAuth v4 SessionStrategy type import issues
 import type { SessionStrategy } from 'next-auth';
 import { normalizeEmail } from '@/lib/utils/email-utils';
+// Import compatibility fix
+import '@/lib/auth/compatibility-fix';
 
 console.log('🔧 AuthOptions loading...');
 console.log('🔑 Environment check:');
@@ -29,7 +31,7 @@ const authOptions: NextAuthOptions = {
   },
   // Use dynamic URL for development to handle different ports
   ...(process.env.NODE_ENV === 'development' && {
-    url: process.env.NEXTAUTH_URL?.replace(':3000', ':3001') || 'http://localhost:3001',
+    url: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   }),
   providers: [
     CredentialsProvider({
@@ -137,95 +139,109 @@ const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/signin', // Default to job seeker sign-in page
   },
+  // Callbacks are essential for proper session handling
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }: any) {
-      console.log(
-        '🎟️ JWT callback - user:',
-        !!user,
-        'token.email:',
-        token.email,
-        'user.id:',
-        user?.id
-      );
+    async jwt({ token, user, account, profile }: any) {
+      console.log('🎟️ JWT callback triggered');
+      console.log('  - User exists:', !!user);
+      console.log('  - Token sub:', token.sub);
+      console.log('  - Account provider:', account?.provider);
+
+      // On sign in, user object will be available
       if (user) {
+        console.log('🎟️ Adding user data to token');
         token.id = user.id;
-        token.role = (user as any).role;
-        token.onboardingCompleted = (user as any).onboardingCompleted;
+        token.role = user.role || 'job_seeker';
+        token.email = user.email;
+        token.name = user.name;
       }
-      return token;
-    },
-    async session({ session, token }: { session: Session; token: any }) {
-      console.log(
-        '📋 Session callback - token.email:',
-        token.email,
-        'token.role:',
-        token.role,
-        'token.id:',
-        token.id,
-        'token.sub:',
-        token.sub
-      );
 
-      // Use token.id if available, fallback to token.sub
-      const userId = token.id || token.sub;
-
-      // Fetch latest user data to include profile picture
-      if (userId && session.user?.email && process.env.DATABASE_URL) {
+      // For OAuth providers, ensure user data is properly set
+      if (account?.provider === 'google' && user?.email) {
+        console.log('🎟️ Handling Google OAuth user');
         try {
-          const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-              profilePictureUrl: true,
-              name: true,
-            },
+          const { prisma } = await import('@/lib/database/prisma');
+          const dbUser = await prisma.user.findUnique({
+            where: { email: normalizeEmail(user.email) },
+            select: { id: true, role: true, name: true },
           });
 
-          if (user) {
-            return {
-              ...session,
-              user: {
-                ...session.user,
-                id: userId,
-                role: token.role,
-                onboardingCompleted: token.onboardingCompleted,
-                image: user.profilePictureUrl,
-                name: user.name || session.user.name,
-              },
-            };
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.role = dbUser.role;
           }
         } catch (error) {
-          console.error('Error fetching user data in session callback:', error);
-          // Continue with basic session data if database fails
+          console.error('💥 Error in JWT callback:', error);
         }
       }
 
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: userId,
-          role: token.role,
-          onboardingCompleted: token.onboardingCompleted,
-        },
-      };
+      console.log('🎟️ Token prepared with ID:', token.id);
+      return token;
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      // If user is signing in, check their role and redirect accordingly
-      if (url.startsWith('/')) {
-        // Handle relative URLs
-        const fullUrl = new URL(url, baseUrl);
-        return fullUrl.toString();
+
+    async session({ session, token }: { session: Session; token: any }) {
+      console.log('📋 Session callback triggered');
+      console.log('  - Token ID:', token.id);
+      console.log('  - Token email:', token.email);
+      console.log('  - Session user email:', session.user?.email);
+
+      if (session.user && token) {
+        // Ensure user ID is properly set
+        const userId = token.id || token.sub;
+        
+        session.user.id = userId as string;
+        session.user.role = token.role as string || 'job_seeker';
+        session.user.email = token.email as string || session.user.email;
+        session.user.name = token.name as string || session.user.name;
+
+        console.log('📋 Session user prepared:', {
+          id: session.user.id,
+          email: session.user.email,
+          role: session.user.role,
+        });
       }
 
-      // For sign-in redirects, we'll handle this in the sign-in page
-      // This callback is mainly for external URLs
+      return session;
+    },
+
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      console.log('🔄 Redirect callback:', { url, baseUrl });
+      
+      // Handle relative URLs
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      
+      // Handle same origin URLs
       if (url.startsWith(baseUrl)) {
         return url;
       }
-
+      
       return baseUrl;
     },
   },
+
+  // Add events for better debugging
+  events: {
+    async signIn({ user, account, profile, isNewUser }: any) {
+      console.log('🎉 Sign in event:', {
+        userId: user.id,
+        email: user.email,
+        provider: account?.provider,
+        isNewUser,
+      });
+    },
+    
+    async session({ session, token }: any) {
+      console.log('📱 Session event:', {
+        userId: session?.user?.id,
+        email: session?.user?.email,
+      });
+    },
+  },
+
+  // Enable debug in development
+  debug: process.env.NODE_ENV === 'development',
 };
 
 export default authOptions;

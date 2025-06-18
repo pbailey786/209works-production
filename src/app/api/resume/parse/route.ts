@@ -4,8 +4,8 @@ import authOptions from '@/app/api/auth/authOptions';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
-import { saveResumeFile, isValidResumeFile } from '@/lib/fileUpload';
-import { extractTextFromFile, validateExtractedText } from '@/lib/textExtraction';
+import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
+import { extractTextFromFile, validateExtractedText } from '@/lib/enhanced-text-extraction';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
 import type { Session } from 'next-auth';
 
@@ -69,10 +69,14 @@ export async function POST(request: NextRequest) {
     const validation = isValidResumeFile(file);
     if (!validation.valid) {
       console.log('❌ File validation failed:', validation);
-      return NextResponse.json({ error: validation.error }, { status: 400 });
+      return NextResponse.json({ 
+        error: validation.error,
+        warnings: validation.warnings,
+        debug: process.env.NODE_ENV === 'development' ? validation : undefined
+      }, { status: 400 });
     }
 
-    console.log('✅ File validation passed');
+    console.log('✅ File validation passed:', validation.fileInfo);
 
     // Get user ID for file naming
     console.log('🔍 Looking up user:', session.user.email);
@@ -94,14 +98,27 @@ export async function POST(request: NextRequest) {
 
     let extractionResult;
     try {
-      extractionResult = await extractTextFromFile(fileBuffer, file.type, file.name);
+      extractionResult = await extractTextFromFile(fileBuffer, file.type, file.name, {
+        fallbackStrategies: true,
+        maxRetries: 3,
+        timeout: 30000,
+        preserveFormatting: false,
+        extractMetadata: true,
+      });
     } catch (extractionError: any) {
       console.log('❌ Text extraction failed:', extractionError.message);
       return NextResponse.json(
         {
-          error: 'Could not extract text from resume.',
+          error: 'Could not extract text from resume file.',
           details: extractionError.message,
-          debug: process.env.NODE_ENV === 'development' ? { error: extractionError.message } : undefined
+          warnings: [
+            'The file may be corrupted, password-protected, or in an unsupported format',
+            'Please try saving your resume as a PDF or Word document and try again',
+          ],
+          debug: process.env.NODE_ENV === 'development' ? { 
+            error: extractionError.message,
+            fileInfo: validation.fileInfo 
+          } : undefined
         },
         { status: 400 }
       );
@@ -113,11 +130,16 @@ export async function POST(request: NextRequest) {
       console.log('❌ Text validation failed:', textValidation.issues);
       return NextResponse.json(
         {
-          error: 'Extracted text quality is too low.',
+          error: 'Extracted text quality is insufficient for parsing.',
           details: textValidation.issues.join('. '),
+          warnings: [
+            'This may indicate the file is mostly images or has formatting issues',
+            'Try using a different file format or ensuring the resume contains readable text',
+          ],
           debug: process.env.NODE_ENV === 'development' ? {
             extractionResult,
-            textValidation
+            textValidation,
+            score: textValidation.score
           } : undefined
         },
         { status: 400 }
@@ -234,17 +256,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Compile all warnings
+    const allWarnings: string[] = [];
+    if (validation.warnings) allWarnings.push(...validation.warnings);
+    if (extractionResult.warnings) allWarnings.push(...extractionResult.warnings);
+    if (extractionResult.confidence < 0.7) {
+      allWarnings.push('Text extraction confidence is lower than usual - please review extracted information');
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         ...validatedData,
         resumeUrl,
+        fileInfo: validation.fileInfo,
         extractionInfo: {
           method: extractionResult.method,
           confidence: extractionResult.confidence,
-          warnings: extractionResult.warnings
+          warnings: extractionResult.warnings || [],
+          metadata: extractionResult.metadata
         }
       },
+      warnings: allWarnings.length > 0 ? allWarnings : undefined,
       message: resumeUrl
         ? 'Resume parsed and saved successfully!'
         : 'Resume parsed successfully! (File not saved due to storage error)',

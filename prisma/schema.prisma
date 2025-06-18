@@ -101,6 +101,7 @@ model User {
   resumeEmbedding       ResumeEmbedding?
   jobMatches            JobMatch[]
   securityLogs          SecurityLog[]
+  paymentFailures       PaymentFailure[]
 
   @@index([deletedAt])
 }
@@ -593,6 +594,7 @@ model Subscription {
   updatedAt            DateTime           @updatedAt
   stripeSubscriptionId String?            @unique
   user                 User               @relation(fields: [userId], references: [id])
+  paymentFailures      PaymentFailure[]
 
   @@index([userId])
   @@index([tier])
@@ -1504,4 +1506,63 @@ model SecurityLog {
   @@index([event])
   @@index([createdAt])
   @@index([userId, event])
+}
+
+// Webhook event tracking for idempotency and audit
+model WebhookEvent {
+  id             String   @id @default(uuid())
+  stripeEventId  String   @unique
+  type           String   // Event type from Stripe
+  data           Json     // Full event data
+  processedAt    DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([stripeEventId])
+  @@index([type])
+  @@index([processedAt])
+}
+
+// Webhook error logging for monitoring
+model WebhookError {
+  id             String   @id @default(uuid())
+  stripeEventId  String?
+  eventType      String?
+  errorType      String   // SIGNATURE_VERIFICATION, MISSING_METADATA, etc.
+  errorMessage   String
+  stackTrace     String?
+  createdAt      DateTime @default(now())
+
+  @@index([stripeEventId])
+  @@index([eventType])
+  @@index([errorType])
+  @@index([createdAt])
+}
+
+// Payment failure tracking for retry logic and customer service
+model PaymentFailure {
+  id               String    @id @default(uuid())
+  userId           String
+  subscriptionId   String?
+  invoiceId        String?
+  paymentIntentId  String?
+  amount           Int       // Amount in cents
+  currency         String    @default("usd")
+  reason           String    // Failure reason from Stripe
+  attemptCount     Int       @default(1)
+  nextRetryAt      DateTime?
+  resolved         Boolean   @default(false)
+  resolvedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([invoiceId])
+  @@index([paymentIntentId])
+  @@index([resolved])
+  @@index([nextRetryAt])
+  @@index([createdAt])
 }

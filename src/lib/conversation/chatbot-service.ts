@@ -421,8 +421,8 @@ export class ChatbotService {
       const completion = await openai.chat.completions.create({
         model: 'gpt-4-turbo',
         messages: messages as any,
-        max_tokens: 500,
-        temperature: 0.7,
+        max_tokens: 200, // Shorter responses for text-like conversation
+        temperature: 0.8, // Slightly more natural/casual
       });
 
       return (
@@ -448,46 +448,45 @@ export class ChatbotService {
     switch (intent) {
       case 'job_search':
         suggestions.push(
-          'Find more jobs in specific 209 cities',
-          'Show me healthcare jobs in the Central Valley',
-          'What logistics companies are hiring in Stockton?',
-          'Tell me about commute options to Bay Area'
+          'Show me more in Modesto',
+          'Any healthcare jobs?',
+          'What about logistics work?',
+          'Remote options?'
         );
         break;
 
       case 'company_info':
         suggestions.push(
-          'What are the major employers in Modesto?',
-          'Tell me about Gallo Winery opportunities',
-          'Show me jobs at local hospitals',
-          'What companies are in the Port of Stockton?'
+          'What about their pay?',
+          'How do they treat people?',
+          'Any other jobs there?',
+          'Worth applying?'
         );
         break;
 
       case 'career_guidance':
         suggestions.push(
-          'What skills are in demand in the 209 area?',
-          'Should I consider commuting to Bay Area or work locally?',
-          "What's the job market like in Central Valley?",
-          'How can I transition to a local career?'
+          'What skills should I learn?',
+          'Stay local or commute?',
+          'What pays better around here?',
+          'How do I get started?'
         );
         break;
 
       case 'market_insights':
         suggestions.push(
-          'What are local salary ranges for my field?',
-          'How does Central Valley pay compare to Bay Area?',
-          'What industries are growing in the 209 area?',
-          'Show me the best employers in Stockton'
+          'What does that pay here?',
+          'Better than Bay Area?',
+          "What's hot right now?",
+          'Where should I look?'
         );
         break;
 
       default:
-        // General 209-focused suggestions
         suggestions.push(
-          'Find jobs near me in the 209 area',
-          'What companies are hiring locally?',
-          'Tell me about career opportunities in Central Valley'
+          'Show me jobs nearby',
+          "What's hiring?",
+          'Help me figure out my next move'
         );
     }
 

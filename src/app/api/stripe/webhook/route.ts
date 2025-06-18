@@ -12,26 +12,77 @@ import { EmailQueue } from '@/lib/services/email-queue';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+// Webhook error types for better error handling
+enum WebhookErrorType {
+  SIGNATURE_VERIFICATION = 'SIGNATURE_VERIFICATION',
+  MISSING_METADATA = 'MISSING_METADATA',
+  DATABASE_ERROR = 'DATABASE_ERROR',
+  STRIPE_API_ERROR = 'STRIPE_API_ERROR',
+  UNKNOWN = 'UNKNOWN',
+}
+
+class WebhookError extends Error {
+  constructor(
+    message: string,
+    public type: WebhookErrorType,
+    public eventType?: string,
+    public eventId?: string
+  ) {
+    super(message);
+    this.name = 'WebhookError';
+  }
+}
+
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  let event: Stripe.Event | undefined;
+  
   try {
     const body = await request.text();
     const headersList = await headers();
     const signature = headersList.get('stripe-signature');
 
     if (!signature) {
-      return NextResponse.json(
-        { error: 'Missing stripe-signature header' },
-        { status: 400 }
+      throw new WebhookError(
+        'Missing stripe-signature header',
+        WebhookErrorType.SIGNATURE_VERIFICATION
       );
     }
-
-    let event: Stripe.Event;
 
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+      throw new WebhookError(
+        `Webhook signature verification failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        WebhookErrorType.SIGNATURE_VERIFICATION
+      );
+    }
+
+    // Log webhook received
+    console.log(`[Stripe Webhook] Received: ${event.type} (${event.id})`);
+
+    // Check for idempotency - prevent duplicate processing
+    const existingEvent = await prisma.webhookEvent.findUnique({
+      where: { stripeEventId: event.id },
+    }).catch(() => null); // Handle case where table doesn't exist yet
+
+    if (existingEvent) {
+      console.log(`[Stripe Webhook] Event already processed: ${event.id}`);
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
+    // Record webhook event (optional - only if table exists)
+    try {
+      await prisma.webhookEvent.create({
+        data: {
+          stripeEventId: event.id,
+          type: event.type,
+          data: event.data.object as any,
+          processedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      console.warn('[Stripe Webhook] Could not log webhook event:', error);
     }
 
     // Handle the event
@@ -74,16 +125,63 @@ export async function POST(request: NextRequest) {
         await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
         break;
 
+      case 'payment_intent.payment_failed':
+        await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent);
+        break;
+
+      case 'customer.subscription.trial_will_end':
+        await handleSubscriptionTrialWillEnd(
+          event.data.object as Stripe.Subscription
+        );
+        break;
+
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
     }
 
-    return NextResponse.json({ received: true });
+    const processingTime = Date.now() - startTime;
+    console.log(`[Stripe Webhook] Processed ${event.type} in ${processingTime}ms`);
+    
+    return NextResponse.json({ received: true, processingTime });
   } catch (error) {
-    console.error('Webhook error:', error);
+    const errorType = error instanceof WebhookError ? error.type : WebhookErrorType.UNKNOWN;
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    console.error(`[Stripe Webhook] Error:`, {
+      type: errorType,
+      message: errorMessage,
+      eventType: event?.type,
+      eventId: event?.id,
+      error,
+    });
+
+    // Log to monitoring service (e.g., Sentry)
+    if (event) {
+      try {
+        await prisma.webhookError.create({
+          data: {
+            stripeEventId: event.id,
+            eventType: event.type,
+            errorType,
+            errorMessage,
+            createdAt: new Date(),
+          },
+        });
+      } catch (logError) {
+        console.warn('[Stripe Webhook] Could not log webhook error:', logError);
+      }
+    }
+
+    // Return appropriate status code based on error type
+    const statusCode = errorType === WebhookErrorType.SIGNATURE_VERIFICATION ? 400 : 500;
+    
     return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 500 }
+      { 
+        error: 'Webhook handler failed',
+        type: errorType,
+        message: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+      },
+      { status: statusCode }
     );
   }
 }
@@ -285,19 +383,103 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   }
 
   try {
+    // Get the current subscription data
+    const currentSubscription = await prisma.subscription.findUnique({
+      where: { stripeSubscriptionId: subscription.id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!currentSubscription) {
+      console.error('Subscription not found:', subscription.id);
+      return;
+    }
+
+    // Detect plan changes (upgrades/downgrades)
+    const newPriceId = subscription.items.data[0]?.price.id;
+    const oldTier = currentSubscription.tier;
+    const newTier = detectTierFromPriceId(newPriceId);
+    const isUpgrade = isSubscriptionUpgrade(oldTier, newTier);
+    const isDowngrade = isSubscriptionDowngrade(oldTier, newTier);
+
+    // Update subscription
     await prisma.subscription.update({
       where: { stripeSubscriptionId: subscription.id },
       data: {
         status: mapStripeStatusToSubscriptionStatus(subscription.status),
+        tier: newTier as any,
         startDate: new Date((subscription as any).current_period_start * 1000),
         endDate: new Date((subscription as any).current_period_end * 1000),
         price: subscription.items.data[0]?.price.unit_amount || 0,
+        updatedAt: new Date(),
       },
     });
 
-    console.log(`Subscription updated for user ${userId}`);
+    // Handle upgrades - immediate credit allocation
+    if (isUpgrade && subscription.status === 'active') {
+      await allocateSubscriptionCredits(userId, newTier);
+      
+      // Send upgrade confirmation
+      const emailQueue = EmailQueue.getInstance();
+      await emailQueue.addEmailJob({
+        type: 'generic',
+        to: currentSubscription.user.email,
+        subject: '🎉 Subscription Upgraded Successfully!',
+        template: 'system-notification',
+        data: {
+          userName: currentSubscription.user.name || 'Valued Customer',
+          title: 'Subscription Upgraded!',
+          message: `Your subscription has been upgraded from ${oldTier} to ${newTier}. Your new credits are now available!`,
+          details: [
+            `New plan: ${newTier.charAt(0).toUpperCase() + newTier.slice(1)}`,
+            `Monthly credits: ${getCreditsForTier(newTier)}`,
+            'Credits are available immediately',
+          ],
+          ctaText: 'Post a Job',
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/post-job`,
+        },
+        userId,
+        priority: 'normal',
+      });
+    }
+
+    // Handle downgrades - will take effect at end of billing period
+    if (isDowngrade) {
+      // Send downgrade confirmation
+      const emailQueue = EmailQueue.getInstance();
+      await emailQueue.addEmailJob({
+        type: 'generic',
+        to: currentSubscription.user.email,
+        subject: 'Subscription Change Confirmed',
+        template: 'system-notification',
+        data: {
+          userName: currentSubscription.user.name || 'Valued Customer',
+          title: 'Subscription Change Scheduled',
+          message: `Your subscription will change from ${oldTier} to ${newTier} at the end of your current billing period.`,
+          details: [
+            `Current plan remains active until: ${new Date((subscription as any).current_period_end * 1000).toLocaleDateString()}`,
+            `New plan starts: ${new Date((subscription as any).current_period_end * 1000).toLocaleDateString()}`,
+            'You can continue using your current credits until they expire',
+          ],
+          ctaText: 'View Subscription',
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`,
+        },
+        userId,
+        priority: 'normal',
+      });
+    }
+
+    console.log(`Subscription updated for user ${userId}: ${oldTier} -> ${newTier}`);
   } catch (error) {
     console.error('Error handling subscription updated:', error);
+    throw error;
   }
 }
 
@@ -352,18 +534,88 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     typeof (invoice as any).subscription === 'string'
   ) {
     try {
-      await prisma.subscription.update({
+      const subscription = await prisma.subscription.findUnique({
         where: { stripeSubscriptionId: (invoice as any).subscription },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      if (!subscription) {
+        console.error('Subscription not found for failed invoice:', (invoice as any).subscription);
+        return;
+      }
+
+      // Update subscription status
+      await prisma.subscription.update({
+        where: { id: subscription.id },
         data: {
           status: 'past_due',
+          updatedAt: new Date(),
+        },
+      });
+
+      // Create payment failure record for tracking (optional)
+      try {
+        await prisma.paymentFailure.create({
+          data: {
+            subscriptionId: subscription.id,
+            userId: subscription.userId,
+            invoiceId: invoice.id,
+            amount: invoice.amount_due,
+            currency: invoice.currency,
+            attemptCount: invoice.attempt_count || 1,
+            nextRetryAt: invoice.next_payment_attempt 
+              ? new Date(invoice.next_payment_attempt * 1000)
+              : null,
+            reason: (invoice as any).last_payment_error?.message || 'Unknown error',
+            createdAt: new Date(),
+          },
+        });
+      } catch (paymentFailureError) {
+        console.warn('[Stripe Webhook] Could not create payment failure record:', paymentFailureError);
+      }
+
+      // Send payment failure notification
+      const emailQueue = EmailQueue.getInstance();
+      await emailQueue.addEmailJob({
+        type: 'generic',
+        to: subscription.user.email,
+        subject: '⚠️ Payment Failed - Action Required',
+        template: 'system-notification',
+        data: {
+          userName: subscription.user.name || 'Valued Customer',
+          title: 'Payment Failed',
+          message: `We were unable to process your payment for your ${subscription.tier} subscription. Please update your payment method to continue enjoying uninterrupted service.`,
+          details: [
+            `Amount due: $${(invoice.amount_due / 100).toFixed(2)}`,
+            `Next retry: ${invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000).toLocaleDateString() : 'No automatic retry scheduled'}`,
+            'Your subscription will remain active during the grace period',
+          ],
+          ctaText: 'Update Payment Method',
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`,
+        },
+        userId: subscription.userId,
+        priority: 'high',
+        metadata: {
+          invoiceId: invoice.id,
+          subscriptionId: subscription.id,
+          attemptCount: invoice.attempt_count,
         },
       });
 
       console.log(
-        `Invoice payment failed for subscription: ${(invoice as any).subscription}`
+        `Invoice payment failed for subscription: ${(invoice as any).subscription} (attempt ${invoice.attempt_count})`
       );
     } catch (error) {
       console.error('Error handling invoice payment failed:', error);
+      throw error;
     }
   }
 }
@@ -667,5 +919,143 @@ function mapStripeStatusToSubscriptionStatus(
       return 'past_due';
     default:
       return 'active';
+  }
+}
+
+// Helper function to detect tier from Stripe price ID
+function detectTierFromPriceId(priceId?: string): PricingTier {
+  if (!priceId) return 'starter';
+  
+  const priceIdLower = priceId.toLowerCase();
+  
+  if (priceIdLower.includes('pro') || priceIdLower.includes('premium')) {
+    return 'premium' as any;
+  } else if (priceIdLower.includes('standard') || priceIdLower.includes('professional')) {
+    return 'professional' as any;
+  } else if (priceIdLower.includes('starter') || priceIdLower.includes('basic')) {
+    return 'basic' as any;
+  }
+  
+  // Check environment variables
+  if (priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID) return 'premium' as any;
+  if (priceId === process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID) return 'professional' as any;
+  if (priceId === process.env.STRIPE_STARTER_MONTHLY_PRICE_ID) return 'basic' as any;
+  
+  return 'basic' as any; // Default
+}
+
+// Helper function to check if subscription is an upgrade
+function isSubscriptionUpgrade(oldTier: string, newTier: string): boolean {
+  const tierRanking = { basic: 1, essential: 2, professional: 3, enterprise: 4, premium: 5, starter: 1 };
+  const oldRank = tierRanking[oldTier as keyof typeof tierRanking] || 0;
+  const newRank = tierRanking[newTier as keyof typeof tierRanking] || 0;
+  return newRank > oldRank;
+}
+
+// Helper function to check if subscription is a downgrade
+function isSubscriptionDowngrade(oldTier: string, newTier: string): boolean {
+  const tierRanking = { basic: 1, essential: 2, professional: 3, enterprise: 4, premium: 5, starter: 1 };
+  const oldRank = tierRanking[oldTier as keyof typeof tierRanking] || 0;
+  const newRank = tierRanking[newTier as keyof typeof tierRanking] || 0;
+  return newRank < oldRank;
+}
+
+// Helper function to get credits for a tier
+function getCreditsForTier(tier: string): number {
+  const creditMap = {
+    basic: 3,
+    essential: 5,
+    professional: 8,
+    enterprise: 15,
+    premium: 20,
+    starter: 3,
+  };
+  return creditMap[tier as keyof typeof creditMap] || 3;
+}
+
+// New handler for payment intent failures
+async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  const userId = paymentIntent.metadata?.userId;
+  const subscriptionId = paymentIntent.metadata?.subscriptionId;
+
+  if (!userId) {
+    console.error('Missing userId in payment intent metadata:', paymentIntent.id);
+    return;
+  }
+
+  try {
+    // Log the failure for analysis (optional)
+    try {
+      await prisma.paymentFailure.create({
+        data: {
+          userId,
+          subscriptionId,
+          paymentIntentId: paymentIntent.id,
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          reason: (paymentIntent as any).last_payment_error?.message || 'Unknown error',
+          attemptCount: 1,
+          createdAt: new Date(),
+        },
+      });
+    } catch (error) {
+      console.warn('[Stripe Webhook] Could not create payment failure record:', error);
+    }
+
+    console.log(`Payment intent failed for user ${userId}: ${paymentIntent.id}`);
+  } catch (error) {
+    console.error('Error handling payment intent failed:', error);
+  }
+}
+
+// New handler for trial ending notifications
+async function handleSubscriptionTrialWillEnd(subscription: Stripe.Subscription) {
+  const userId = subscription.metadata?.userId;
+
+  if (!userId) {
+    console.error('Missing userId in subscription metadata:', subscription.id);
+    return;
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true, name: true },
+    });
+
+    if (!user) {
+      console.error('User not found:', userId);
+      return;
+    }
+
+    // Send trial ending notification
+    const emailQueue = EmailQueue.getInstance();
+    const trialEndDate = new Date((subscription as any).trial_end * 1000);
+    const daysRemaining = Math.ceil((trialEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+
+    await emailQueue.addEmailJob({
+      type: 'generic',
+      to: user.email,
+      subject: `⏰ Your trial ends in ${daysRemaining} days`,
+      template: 'system-notification',
+      data: {
+        userName: user.name || 'Valued Customer',
+        title: 'Trial Ending Soon',
+        message: `Your trial period will end on ${trialEndDate.toLocaleDateString()}. Add a payment method now to ensure uninterrupted service.`,
+        details: [
+          `Trial ends: ${trialEndDate.toLocaleDateString()}`,
+          'No charges until trial ends',
+          'Cancel anytime without charge',
+        ],
+        ctaText: 'Add Payment Method',
+        ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`,
+      },
+      userId,
+      priority: 'high',
+    });
+
+    console.log(`Trial ending notification sent for subscription: ${subscription.id}`);
+  } catch (error) {
+    console.error('Error handling trial ending notification:', error);
   }
 }

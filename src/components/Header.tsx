@@ -33,6 +33,11 @@ export default function Header() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
+  // Debug logging
+  console.log('🔍 Header - Session status:', status);
+  console.log('🔍 Header - Session data:', session);
+  console.log('🔍 Header - User:', session?.user);
+
   const navigation = [
     { name: 'Find Jobs', href: '/jobs', icon: Search },
     { name: 'For Employers', href: '/employers', icon: Building2 },

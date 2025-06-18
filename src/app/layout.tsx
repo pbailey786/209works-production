@@ -2,9 +2,10 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import './globals.css';
 import Header from '../components/Header';
-import SessionProviderWrapper from '../components/SessionProviderWrapper';
+import SessionProviderWrapper from '../components/SessionProviderWrapper-enhanced';
 import PerformanceProvider from '../components/PerformanceProvider';
 import { Toaster } from '@/components/ui/toaster';
+import { SessionDebugger } from '@/components/SessionDebugger';
 import { headers } from 'next/headers';
 import { getDomainConfig } from '@/lib/domain/config';
 
@@ -135,6 +136,7 @@ export default function RootLayout({
             <main id="main-content" className="min-h-screen" role="main">
               {children}
             </main>
+            <SessionDebugger />
             <Toaster />
           </PerformanceProvider>
         </SessionProviderWrapper>

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import authOptions from '@/app/api/auth/authOptions';
 import { ChatbotService } from '@/lib/conversation/chatbot-service';
 import { ConversationManager } from '@/lib/conversation/manager';
-import { prisma } from '@/app/api/auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
 // POST /api/jobs/chatbot - Main chatbot endpoint
@@ -111,11 +111,11 @@ export async function GET(req: NextRequest) {
         messageCount: 0,
         intent: 'general_chat',
         welcomeMessage:
-          "Name's Rust. Been around. Done the jobs. Watched the bosses. I help people get hired without sweating through their shirt. Built from cold mornings in Tracy and 14 different bosses named Steve. What kind of work you looking for?",
+          "Hey. I'm Rust - I know the job scene around here. Lived in Tracy, worked everywhere from Stockton warehouses to Modesto ag companies. What kind of work you looking for?",
         suggestions: [
-          "Find me a warehouse gig that doesn't look like a trap",
-          "What's the scene like in Tracy right now?",
-          'Show me something in logistics that actually pays',
+          "Show me warehouse jobs around here",
+          "What's hiring in Tracy?",
+          'Find me something in logistics',
         ],
       });
     }

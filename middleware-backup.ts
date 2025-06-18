@@ -1,22 +1,10 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-
-// Import compatibility fixes
-import '@/lib/auth/compatibility-fix';
 
 export default withAuth(
   function middleware(req) {
-    console.log('🛡️ Middleware processing:', req.nextUrl.pathname);
-    
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
-
-    console.log('🛡️ Token exists:', !!token);
-    if (token) {
-      console.log('🛡️ Token role:', token.role);
-      console.log('🛡️ Token ID:', token.id);
-    }
 
     // Routes that require email verification
     const emailVerificationRequired = [
@@ -115,16 +103,12 @@ export default withAuth(
       }
     }
 
-    console.log('🛡️ Middleware complete, allowing request');
     return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
-        
-        console.log('🔐 Authorization check for:', pathname);
-        console.log('🔐 Token exists:', !!token);
         
         // Allow public routes
         if (
@@ -147,20 +131,12 @@ export default withAuth(
           pathname.startsWith('/onboarding') ||
           pathname.startsWith('/debug')
         ) {
-          console.log('🔐 Public route, allowing access');
           return true;
         }
 
         // Require authentication for protected routes
-        const hasAuth = !!token;
-        console.log('🔐 Protected route, auth required:', hasAuth);
-        return hasAuth;
+        return !!token;
       },
-    },
-    // Add compatibility options for NextAuth v4 + Next.js v15
-    pages: {
-      signIn: '/signin',
-      error: '/signin',
     },
   }
 );
@@ -169,11 +145,11 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes) - but allow /api/auth for NextAuth
+     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
   ],
 };

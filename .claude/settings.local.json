@@ -17,7 +17,8 @@
       "Bash(git commit:*)",
       "Bash(pkill:*)",
       "Bash(true)",
-      "Bash(npm run list-users:*)"
+      "Bash(npm run list-users:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
