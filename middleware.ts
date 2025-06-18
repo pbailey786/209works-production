@@ -8,7 +8,7 @@ export default withAuth(
 
     // Routes that require email verification
     const emailVerificationRequired = [
-      '/employer',
+      '/employers',
       '/admin',
       '/profile',
       '/applications',
@@ -96,9 +96,9 @@ export default withAuth(
     }
 
     // Protect employer routes
-    if (pathname.startsWith('/employer')) {
+    if (pathname.startsWith('/employers')) {
       if (!token || token.role !== 'employer') {
-        return NextResponse.redirect(new URL('/signin?redirect=/employer', req.url));
+        return NextResponse.redirect(new URL('/employers/signin?redirect=' + encodeURIComponent(pathname), req.url));
       }
     }
 
@@ -120,6 +120,8 @@ export default withAuth(
           pathname.startsWith('/chat') ||
           pathname.startsWith('/signin') ||
           pathname.startsWith('/signup') ||
+          pathname.startsWith('/employers/signin') ||
+          pathname.startsWith('/employers/signup') ||
           pathname.startsWith('/verify-email') ||
           pathname.startsWith('/contact') ||
           pathname.startsWith('/about') ||
