@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { EmailHelpers } from '@/lib/email/email-helpers';
 import type { Session } from 'next-auth';
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin permissions
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -159,7 +158,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session?.user?.email || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }

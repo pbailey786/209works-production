@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { headers, cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
@@ -35,7 +34,7 @@ export async function GET(request: NextRequest) {
     
     try {
       console.log('🔍 Attempting getServerSession...');
-      serverSession = await getServerSession(authOptions);
+      serverSession = await getServerSession();
       console.log('🔍 Server session result:', serverSession);
     } catch (error) {
       sessionError = error instanceof Error ? error.message : 'Unknown session error';

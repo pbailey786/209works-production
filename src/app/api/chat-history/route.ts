@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
@@ -9,7 +8,7 @@ const MAX_CONVERSATIONS_PER_USER = 10; // Limit to 10 conversations per user
 // GET /api/chat-history - Get user's chat history
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -55,7 +54,7 @@ export async function GET(request: NextRequest) {
 // POST /api/chat-history - Save a new conversation or update existing
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -158,7 +157,7 @@ export async function POST(request: NextRequest) {
 // DELETE /api/chat-history - Delete a conversation
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

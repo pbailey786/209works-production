@@ -30,7 +30,7 @@ export async function getCompatibleServerSession() {
     const { getServerSession } = await import('next-auth/next');
     const authOptions = (await import('../../app/api/auth/authOptions')).default;
     
-    return await getServerSession(authOptions);
+    return await getServerSession();
   } catch (error) {
     console.error('🔧 Server session compatibility error:', error);
     return null;

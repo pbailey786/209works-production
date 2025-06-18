@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../auth/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -47,7 +46,7 @@ const updateEmailAlertSchema = createEmailAlertSchema.partial().extend({
 // GET /api/email-alerts - List user's email alerts
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -124,7 +123,7 @@ export async function GET(req: NextRequest) {
 // POST /api/email-alerts - Create new email alert
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -204,7 +203,7 @@ export async function POST(req: NextRequest) {
 // PATCH /api/email-alerts - Bulk update alerts (e.g., enable/disable all)
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

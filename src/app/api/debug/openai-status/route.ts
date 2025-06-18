@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { openai } from '@/lib/openai';
 import type { Session } from 'next-auth';
 
 // GET /api/debug/openai-status - Debug OpenAI configuration
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

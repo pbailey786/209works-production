@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
 import { SecurityLogger } from '../security/security-monitor';
@@ -300,7 +299,7 @@ class AuthenticationValidator {
   static async validateUser(
     req: NextRequest
   ): Promise<SecureAuthContext['user']> {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session?.user?.email) return null;
 
     const user = await prisma.user.findUnique({

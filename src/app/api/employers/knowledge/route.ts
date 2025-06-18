@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { CompanyKnowledgeService } from '@/lib/knowledge/company-knowledge';
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
@@ -8,7 +7,7 @@ import type { Session } from 'next-auth';
 // GET /api/employers/knowledge - Get company knowledge entries
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -113,7 +112,7 @@ export async function GET(req: NextRequest) {
 // POST /api/employers/knowledge - Add new knowledge entry
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -184,7 +183,7 @@ export async function POST(req: NextRequest) {
 // PUT /api/employers/knowledge - Update knowledge entry
 export async function PUT(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -273,7 +272,7 @@ export async function PUT(req: NextRequest) {
 // DELETE /api/employers/knowledge - Delete knowledge entry
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

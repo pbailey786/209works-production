@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { redirect } from 'next/navigation';
-import authOptions from '@/app/api/auth/authOptions';
 import type { Session } from 'next-auth';
 import { prisma } from '@/lib/database/prisma';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
@@ -120,7 +119,7 @@ async function getCreditData() {
 }
 
 export default async function AdminCreditsPage() {
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = await getServerSession() as Session | null;
 
   if (!session?.user?.email) {
     redirect('/signin');

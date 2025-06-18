@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -21,7 +20,7 @@ const updateApplicationSchema = z.object({
 // GET /api/profile/applications - Get user's job applications
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -182,7 +181,7 @@ export async function GET(req: NextRequest) {
 // PATCH /api/profile/applications - Update application status or notes
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -304,7 +303,7 @@ export async function PATCH(req: NextRequest) {
 // DELETE /api/profile/applications - Withdraw an application
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

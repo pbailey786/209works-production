@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../../api/auth/prisma';
 import {
   Card,
@@ -24,7 +23,7 @@ import {
 } from 'lucide-react';
 
 export default async function AdminSettingsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
 
   // Fetch admin users for role management
   const adminUsers = await prisma.user.findMany({

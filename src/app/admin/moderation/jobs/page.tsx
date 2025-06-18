@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { redirect } from 'next/navigation';
-import authOptions from '../../../api/auth/authOptions';
 import { prisma } from '../../../api/auth/prisma';
 import JobModerationTable from '@/components/admin/JobModerationTable';
 import JobModerationFilters from '@/components/admin/JobModerationFilters';
@@ -21,7 +20,7 @@ export default async function JobModerationPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = await getServerSession() as Session | null;
 
   // Check authentication and permissions
   if (!session) {

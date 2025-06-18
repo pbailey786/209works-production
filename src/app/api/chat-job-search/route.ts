@@ -11,8 +11,7 @@ import {
   type AISecurityContext,
   sanitizeUserData,
 } from '@/lib/middleware/ai-security';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { generateJobSearchResponse } from '@/lib/ai';
 
 // Type definitions for conversation messages

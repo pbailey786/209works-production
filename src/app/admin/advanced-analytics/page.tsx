@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,7 +17,7 @@ import AutomatedReportsPanel from '@/components/admin/AutomatedReportsPanel';
 import UserImpersonationPanel from '@/components/admin/UserImpersonationPanel';
 
 export default async function AdvancedAnalyticsPage() {
-  const session = await getServerSession(authOptions) as any;
+  const session = await getServerSession() as any;
 
   if (!session?.user || session.user.role !== 'admin') {
     redirect('/auth/signin');

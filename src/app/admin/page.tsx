@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../api/auth/prisma';
 import {
   Card,
@@ -46,7 +45,7 @@ export const revalidate = 0;
 export default async function AdminDashboard() {
   try {
     // Get session for user info
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     // Check if we're in build mode or if database is not available
     if (!process.env.DATABASE_URL) {

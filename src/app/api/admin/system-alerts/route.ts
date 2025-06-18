@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../../auth/prisma';
 import type { Session } from 'next-auth';
 
@@ -19,7 +18,7 @@ interface SystemAlert {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -240,7 +239,7 @@ export async function GET(request: NextRequest) {
 // POST endpoint to resolve alerts or create custom alerts
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

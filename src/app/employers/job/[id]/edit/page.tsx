@@ -1,6 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import EditJobForm from './EditJobForm';
 import type { Session } from 'next-auth';
@@ -25,7 +24,7 @@ interface PageProps {
 
 export default async function EditJobPage({ params }: PageProps) {
   const { id } = await params;
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = await getServerSession() as Session | null;
 
   // Check authentication
   if (!session?.user?.email) {

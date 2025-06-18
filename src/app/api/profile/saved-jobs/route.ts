@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -15,7 +14,7 @@ const saveJobSchema = z.object({
 // GET /api/profile/saved-jobs - Get user's saved jobs
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     
     // Safely validate session
     const sessionValidation = validateSession(session);
@@ -145,7 +144,7 @@ export async function GET(req: NextRequest) {
 // POST /api/profile/saved-jobs - Save or unsave a job
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     
     // Safely validate session
     const sessionValidation = validateSession(session);
@@ -270,7 +269,7 @@ export async function POST(req: NextRequest) {
 // DELETE /api/profile/saved-jobs - Remove a saved job by application ID
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

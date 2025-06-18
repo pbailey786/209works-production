@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { stripe, STRIPE_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { PricingTier, BillingInterval } from '@prisma/client';

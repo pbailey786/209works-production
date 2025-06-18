@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -99,7 +98,7 @@ Ready to join our team? We'd love to hear from you! Apply today and take the nex
 // POST /api/employers/bulk-upload/optimize - Optimize jobs with AI
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

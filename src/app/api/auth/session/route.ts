@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../authOptions';
+import { auth as getServerSession } from "@/auth";
 import { validateSession } from '@/lib/utils/safe-fetch';
 import type { Session } from 'next-auth';
 
@@ -11,7 +10,7 @@ import type { Session } from 'next-auth';
 export async function GET(req: NextRequest) {
   try {
     // Get session with proper error handling
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     
     // Validate session structure
     const validation = validateSession(session);

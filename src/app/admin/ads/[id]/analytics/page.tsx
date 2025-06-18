@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { redirect } from 'next/navigation';
-import authOptions from '../../../../api/auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import AdAnalyticsDashboard from '@/components/admin/AdAnalyticsDashboard';
 import type { Session } from 'next-auth';
@@ -13,7 +12,7 @@ interface PageProps {
 
 export default async function AdAnalyticsPage({ params }: PageProps) {
   const { id } = await params;
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = await getServerSession() as Session | null;
 
   // Check authentication and permissions
   if (!session) {

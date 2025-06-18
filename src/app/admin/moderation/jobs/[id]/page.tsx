@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { redirect } from 'next/navigation';
-import authOptions from '../../../../api/auth/authOptions';
 import { prisma } from '../../../../api/auth/prisma';
 import JobModerationDetail from '@/components/admin/JobModerationDetail';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
@@ -16,7 +15,7 @@ interface PageProps {
 
 export default async function JobModerationDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = await getServerSession() as Session | null;
 
   // Check authentication and permissions
   if (!session) {

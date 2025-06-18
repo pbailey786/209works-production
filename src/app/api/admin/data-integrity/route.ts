@@ -6,8 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { DataIntegrityService } from '@/lib/database/data-integrity';
 import type { Session } from 'next-auth';
 
@@ -17,7 +16,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(
@@ -141,7 +140,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(

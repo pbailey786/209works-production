@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { cache } from 'react';
-import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/app/api/auth/prisma';
 import JobDetailClient from './JobDetailClient';
 import { Job, JobType } from '@prisma/client';
@@ -269,7 +268,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     // Parallelize data fetching for better performance
     const [job, session] = await Promise.all([
       getJob(id),
-      getServerSession(authOptions) as Promise<Session | null>,
+      getServerSession() as Promise<Session | null>,
     ]);
 
     if (!job) {

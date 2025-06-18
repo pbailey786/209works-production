@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../../auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../../../auth/prisma';
 import { Resend } from 'resend';
 
@@ -14,7 +13,7 @@ function getResendClient() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as any;
+    const session = await getServerSession() as any;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

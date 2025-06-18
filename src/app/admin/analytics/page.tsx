@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../../api/auth/prisma';
 import {
   Card,
@@ -33,7 +32,7 @@ import {
 import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
 
 export default async function AnalyticsPage() {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
 
   // Get date ranges for analytics
   const now = new Date();

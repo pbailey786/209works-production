@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../../auth/prisma';
 import type { Session } from 'next-auth';
 import { normalizeEmail } from '@/lib/utils/email-utils';
@@ -8,7 +7,7 @@ import { normalizeEmail } from '@/lib/utils/email-utils';
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

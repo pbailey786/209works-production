@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { getUserPermissions, hasPermission } from '@/lib/rbac/permissions';
 import { Permission } from '@/lib/rbac/permissions';
 import type { Session } from 'next-auth';
@@ -7,7 +6,7 @@ import type { Session } from 'next-auth';
 export const dynamic = 'force-dynamic';
 
 export default async function DebugPermissions() {
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = await getServerSession() as Session | null;
 
   if (!session) {
     return <div>Not authenticated</div>;

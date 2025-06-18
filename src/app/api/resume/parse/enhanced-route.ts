@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
 import { extractTextFromFile, validateExtractedText, type TextExtractionResult } from '@/lib/enhanced-text-extraction';
@@ -100,7 +99,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ResumePar
     }
 
     // Authentication
-    sessionData = await getServerSession(authOptions) as Session | null;
+    sessionData = await getServerSession() as Session | null;
     if (!sessionData?.user?.email) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json<ResumeParseResponse>({

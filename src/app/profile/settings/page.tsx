@@ -1,6 +1,5 @@
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { redirect } from 'next/navigation';
-import authOptions from '../../api/auth/authOptions';
 import { prisma } from '../../api/auth/prisma';
 import ProfileSettingsClient from './ProfileSettingsClient';
 import type { Session } from 'next-auth';
@@ -39,7 +38,7 @@ async function getUserSettings(userId: string) {
 }
 
 export default async function ProfileSettingsPage() {
-  const session = await getServerSession(authOptions) as Session | null;
+  const session = await getServerSession() as Session | null;
 
   if (!session!.user?.email) {
     redirect('/signin');

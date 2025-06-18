@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import { auth as getServerSession } from "@/auth";
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
 import { stripe } from '@/lib/stripe';
@@ -22,7 +22,7 @@ const addonPurchaseSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -200,7 +200,7 @@ function generateHashtags(job: any): string[] {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

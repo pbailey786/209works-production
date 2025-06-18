@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 
@@ -20,7 +19,7 @@ export async function POST(
 ) {
   try {
     // Check authentication
-    const session = (await getServerSession(authOptions)) as AuthSession;
+    const session = (await getServerSession()) as AuthSession;
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -151,7 +150,7 @@ export async function GET(
 ) {
   try {
     // Check authentication
-    const session = (await getServerSession(authOptions)) as AuthSession;
+    const session = (await getServerSession()) as AuthSession;
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },

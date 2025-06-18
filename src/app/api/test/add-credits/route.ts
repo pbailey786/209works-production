@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
@@ -14,7 +13,7 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
 
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }

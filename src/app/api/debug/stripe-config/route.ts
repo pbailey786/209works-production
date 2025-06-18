@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
 import type { Session } from 'next-auth';
 
 export async function GET(req: NextRequest) {
   try {
     // Check authentication - only allow admins to see this debug info
-    const session = (await getServerSession(authOptions)) as Session | null;
+    const session = (await getServerSession()) as Session | null;
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },

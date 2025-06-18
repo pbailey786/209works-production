@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth/next';
-import authOptions from '../../api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { prisma } from '../../api/auth/prisma';
 import {
   Card,
@@ -58,7 +57,7 @@ export default async function UsersPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession();
 
   // Await searchParams in Next.js 15
   const params = await searchParams;

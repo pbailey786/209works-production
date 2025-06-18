@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import authOptions from '@/app/api/auth/authOptions';
+import { auth as getServerSession } from "@/auth";
 import { Resend } from 'resend';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -24,7 +23,7 @@ const supportSchema = z.object({
 // POST /api/support/bulk-upload - Send support message for bulk upload issues
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -115,7 +114,7 @@ Please respond to the user at: ${userEmail}
 // GET /api/support/bulk-upload - Get support information (for future use)
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    const session = await getServerSession() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
