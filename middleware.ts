@@ -43,6 +43,18 @@ export default withAuth(
     // Comprehensive Role-Based Access Control (RBAC)
     if (token) {
       const userRole = token.role;
+      console.log('🛡️ Token data for RBAC:', { 
+        id: token.id, 
+        role: userRole, 
+        email: token.email,
+        sub: token.sub 
+      });
+
+      // Check if token has required user data
+      if (!token.id && !token.sub) {
+        console.warn('⚠️ Token missing user ID - session may be incomplete');
+        // Allow navigation but log the issue
+      }
 
       // Define role-specific protected routes
       const jobSeekerRoutes = ['/dashboard', '/profile', '/applications', '/saved-jobs', '/job-alerts'];
@@ -130,6 +142,7 @@ export default withAuth(
         if (
           pathname.startsWith('/auth') ||
           pathname.startsWith('/api/auth') ||
+          pathname.startsWith('/api/debug') ||
           pathname.startsWith('/_next') ||
           pathname.startsWith('/favicon') ||
           pathname === '/' ||
@@ -145,7 +158,8 @@ export default withAuth(
           pathname.startsWith('/password-reset') ||
           pathname.startsWith('/reset-password') ||
           pathname.startsWith('/onboarding') ||
-          pathname.startsWith('/debug')
+          pathname.startsWith('/debug') ||
+          pathname.startsWith('/test-auth')
         ) {
           console.log('🔐 Public route, allowing access');
           return true;

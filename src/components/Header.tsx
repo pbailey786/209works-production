@@ -25,6 +25,7 @@ import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { useSessionDebug } from '@/hooks/useSessionDebug';
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -33,13 +34,13 @@ export default function Header() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // Debug logging
-  console.log('🔍 Header - Session status:', status);
-  console.log('🔍 Header - Session data:', session);
-  console.log('🔍 Header - User:', session?.user);
-  console.log('🔍 Header - User ID:', (session?.user as any)?.id);
-  console.log('🔍 Header - User email:', session?.user?.email);
-  console.log('🔍 Header - User role:', (session?.user as any)?.role);
+  // Enhanced session debugging
+  const sessionDebug = useSessionDebug();
+  
+  // Log critical session issues
+  if (sessionDebug.isIncomplete) {
+    console.error('🚨 HEADER: Incomplete session detected', sessionDebug);
+  }
 
   const navigation = [
     { name: 'Find Jobs', href: '/jobs', icon: Search },

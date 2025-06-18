@@ -9,28 +9,27 @@ interface SessionProviderWrapperProps {
 }
 
 export default function SessionProviderWrapper({ children }: SessionProviderWrapperProps) {
-  const [isHydrated, setIsHydrated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Ensure we're hydrated on the client side
-    setIsHydrated(true);
+    console.log('🔄 SessionProvider mounting...');
+    setIsMounted(true);
   }, []);
 
-  // Prevent hydration mismatch by not rendering until client-side
-  if (!isHydrated) {
-    return <div className="min-h-screen bg-white" />; // Loading placeholder
-  }
-
+  // Always render SessionProvider but handle hydration gracefully
   return (
     <SessionProvider 
-      // Reduce refetch interval to help with stuck loading states
-      refetchInterval={5 * 60} // 5 minutes instead of default 60 minutes
+      // More aggressive refetch to catch session issues
+      refetchInterval={60} // 1 minute for debugging
       refetchOnWindowFocus={true}
       refetchWhenOffline={false}
-      // Ensure session is properly loaded on mount
       basePath="/api/auth"
     >
-      {children}
+      {isMounted ? children : (
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-gray-500">Loading application...</div>
+        </div>
+      )}
     </SessionProvider>
   );
 }

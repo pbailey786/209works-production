@@ -6,10 +6,27 @@ import { useState } from 'react';
 export default function SessionTester() {
   const { data: session, status, update } = useSession();
   const [refreshCount, setRefreshCount] = useState(0);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [lastDebugCheck, setLastDebugCheck] = useState<string>('');
 
   const refreshSession = async () => {
+    console.log('🔄 Manual session refresh triggered');
     await update();
     setRefreshCount(prev => prev + 1);
+  };
+
+  const runDebugCheck = async () => {
+    try {
+      console.log('🔍 Running session debug check...');
+      const response = await fetch('/api/debug/session-flow');
+      const data = await response.json();
+      setDebugInfo(data);
+      setLastDebugCheck(new Date().toLocaleTimeString());
+      console.log('🔍 Debug check complete:', data);
+    } catch (error) {
+      console.error('🔍 Debug check failed:', error);
+      setDebugInfo({ error: 'Failed to run debug check' });
+    }
   };
 
   if (process.env.NODE_ENV !== 'development') {
@@ -77,18 +94,41 @@ export default function SessionTester() {
           </>
         )}
         
-        <div className="mt-2 border-t border-gray-600 pt-2">
+        <div className="mt-2 border-t border-gray-600 pt-2 space-y-2">
           <button 
             onClick={refreshSession}
-            className="text-blue-300 hover:text-blue-200 underline"
+            className="text-blue-300 hover:text-blue-200 underline block"
           >
             Refresh Session ({refreshCount})
           </button>
+          <button 
+            onClick={runDebugCheck}
+            className="text-yellow-300 hover:text-yellow-200 underline block"
+          >
+            Run Debug Check
+          </button>
+          {lastDebugCheck && (
+            <div className="text-xs text-gray-500">
+              Last check: {lastDebugCheck}
+            </div>
+          )}
         </div>
         
-        <div className="mt-1 text-xs text-gray-400">
-          Raw session: {JSON.stringify(session, null, 2)}
+        <div className="mt-2 text-xs text-gray-400">
+          <div className="mb-1">Client session:</div>
+          <div className="bg-gray-900 p-2 rounded text-xs overflow-auto max-h-32">
+            {JSON.stringify(session, null, 2)}
+          </div>
         </div>
+
+        {debugInfo && (
+          <div className="mt-2 text-xs text-gray-400">
+            <div className="mb-1">Server debug info:</div>
+            <div className="bg-gray-900 p-2 rounded text-xs overflow-auto max-h-32">
+              {JSON.stringify(debugInfo, null, 2)}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

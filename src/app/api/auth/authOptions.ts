@@ -155,20 +155,40 @@ const authOptions: NextAuthOptions = {
   // Callbacks are essential for proper session handling
   callbacks: {
     async jwt({ token, user, account, profile }: any) {
-      console.log('🎟️ JWT callback triggered');
+      console.log('🎟️ JWT callback triggered at:', new Date().toISOString());
       console.log('  - User exists:', !!user);
-      console.log('  - Token sub:', token.sub);
+      console.log('  - Token before processing:', JSON.stringify(token, null, 2));
       console.log('  - Account provider:', account?.provider);
 
       // On sign in, user object will be available
       if (user) {
-        console.log('🎟️ Adding user data to token');
-        console.log('🎟️ User object:', JSON.stringify(user, null, 2));
+        console.log('🎟️ NEW LOGIN: Adding user data to token');
+        console.log('🎟️ User object received:', JSON.stringify(user, null, 2));
+        
+        // Explicitly set all user fields
         token.id = user.id;
-        token.role = user.role || 'jobseeker'; // Use correct enum value
+        token.role = user.role || 'jobseeker';
         token.email = user.email;
         token.name = user.name;
+        token.sub = user.id; // Ensure sub matches id
+        
         console.log('🎟️ Token after user data added:', JSON.stringify(token, null, 2));
+      } else {
+        // This is a subsequent request, not a new login
+        console.log('🎟️ EXISTING SESSION: No user object, preserving token data');
+        console.log('🎟️ Current token data:', {
+          id: token.id,
+          role: token.role,
+          email: token.email,
+          name: token.name,
+          sub: token.sub
+        });
+        
+        // Ensure critical fields are preserved
+        if (!token.id && token.sub) {
+          token.id = token.sub;
+          console.log('🎟️ Restored token.id from token.sub:', token.id);
+        }
       }
 
       // For OAuth providers, ensure user data is properly set
@@ -195,9 +215,23 @@ const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }: { session: Session; token: any }) {
-      console.log('📋 Session callback triggered');
-      console.log('  - Token:', JSON.stringify(token, null, 2));
-      console.log('  - Session before:', JSON.stringify(session, null, 2));
+      console.log('📋 Session callback triggered at:', new Date().toISOString());
+      console.log('📋 Input token:', JSON.stringify(token, null, 2));
+      console.log('📋 Input session:', JSON.stringify(session, null, 2));
+
+      // Critical check - ensure we have a token
+      if (!token) {
+        console.error('🚨 CRITICAL: Session callback called without token!');
+        return session;
+      }
+
+      // Validate token has required data
+      const tokenValidation = {
+        hasId: !!(token.id || token.sub),
+        hasEmail: !!token.email,
+        hasRole: !!token.role,
+      };
+      console.log('📋 Token validation:', tokenValidation);
 
       // Always ensure session.user exists
       if (!session.user) {
@@ -209,21 +243,31 @@ const authOptions: NextAuthOptions = {
         };
       }
 
-      if (token) {
-        // Ensure user data is properly set from token
-        session.user.id = token.id || token.sub || '';
-        session.user.email = token.email || session.user.email || '';
-        session.user.name = token.name || session.user.name || '';
-
-        // Add custom properties
-        (session.user as any).role = token.role || 'jobseeker';
-
-        console.log('📋 Session user after update:', JSON.stringify(session.user, null, 2));
-      } else {
-        console.log('📋 No token found in session callback');
+      // Populate session user data from token
+      const userId = token.id || token.sub;
+      if (!userId) {
+        console.error('🚨 CRITICAL: Token missing both id and sub!');
       }
 
-      console.log('📋 Final session:', JSON.stringify(session, null, 2));
+      session.user.id = userId || '';
+      session.user.email = token.email || '';
+      session.user.name = token.name || '';
+      (session.user as any).role = token.role || 'jobseeker';
+
+      // Validate final session
+      const sessionValidation = {
+        hasUserId: !!session.user.id,
+        hasUserEmail: !!session.user.email,
+        hasUserRole: !!(session.user as any).role,
+      };
+      
+      console.log('📋 Session validation:', sessionValidation);
+      console.log('📋 Final session user:', JSON.stringify(session.user, null, 2));
+
+      if (!sessionValidation.hasUserId || !sessionValidation.hasUserEmail || !sessionValidation.hasUserRole) {
+        console.error('🚨 CRITICAL: Session created with missing user data!', sessionValidation);
+      }
+
       return session;
     },
 
