@@ -24,7 +24,7 @@ const authConfig = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
+      async authorize(credentials: Record<string, any>) {
         console.log('🔐 NextAuth v5 credential authorization starting...')
         
         if (!credentials?.email || !credentials?.password) {
