@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthConfig } from 'next-auth'
+import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
@@ -9,7 +9,7 @@ import { normalizeEmail } from '@/lib/utils/email-utils'
 
 console.log('🔧 Auth.js v5 configuration loading...')
 
-const authConfig: NextAuthConfig = {
+const authConfig = {
   adapter: PrismaAdapter(prisma),
   
   session: {
@@ -188,4 +188,4 @@ const authConfig: NextAuthConfig = {
   trustHost: true, // Important for production
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig as any)
