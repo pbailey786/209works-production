@@ -1,4 +1,15 @@
 declare module 'next-auth' {
+  interface NextAuthConfig {
+    adapter?: any
+    session?: any
+    providers?: any[]
+    callbacks?: any
+    pages?: any
+    events?: any
+    debug?: boolean
+    trustHost?: boolean
+  }
+
   interface Session {
     user: {
       id: string;
@@ -19,6 +30,15 @@ declare module 'next-auth' {
     twoFactorEnabled?: boolean;
     isEmailVerified?: boolean;
   }
+
+  function NextAuth(config: NextAuthConfig): {
+    handlers: any
+    auth: any
+    signIn: any
+    signOut: any
+  }
+
+  export default NextAuth
 }
 
 declare module 'next-auth/jwt' {
