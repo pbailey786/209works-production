@@ -57,7 +57,7 @@ const authConfig = {
             return null
           }
 
-          const isPasswordValid = await compare(credentials.password as string, user.password || '')
+          const isPasswordValid = await compare(credentials.password as string, user.passwordHash || '')
           
           if (!isPasswordValid) {
             console.log('❌ Invalid password')
