@@ -9,7 +9,7 @@ import { normalizeEmail } from '@/lib/utils/email-utils'
 
 console.log('🔧 Auth.js v5 configuration loading...')
 
-const authConfig: import('next-auth').NextAuthConfig = {
+const authConfig = {
   adapter: PrismaAdapter(prisma),
   
   session: {
@@ -189,7 +189,7 @@ const authConfig: import('next-auth').NextAuthConfig = {
 }
 
 // Create the NextAuth instance
-const nextAuthInstance = NextAuth(authConfig)
+const nextAuthInstance = (NextAuth as any)(authConfig)
 
 // Export the destructured components
 export const handlers = nextAuthInstance.handlers
