@@ -45,7 +45,7 @@ const authConfig = {
           }
 
           // Production authentication logic
-          const normalizedEmail = normalizeEmail(credentials.email)
+          const normalizedEmail = normalizeEmail(credentials.email as string)
           console.log('🔍 Looking for user:', normalizedEmail)
 
           const user = await prisma.user.findUnique({
@@ -57,7 +57,7 @@ const authConfig = {
             return null
           }
 
-          const isPasswordValid = await compare(credentials.password, user.password || '')
+          const isPasswordValid = await compare(credentials.password as string, user.password || '')
           
           if (!isPasswordValid) {
             console.log('❌ Invalid password')
@@ -141,7 +141,7 @@ const authConfig = {
 
       if (account?.provider === 'google') {
         try {
-          const normalizedEmail = normalizeEmail(user.email)
+          const normalizedEmail = normalizeEmail(user.email as string)
           
           let dbUser = await prisma.user.findUnique({
             where: { email: normalizedEmail }
