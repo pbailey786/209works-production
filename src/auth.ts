@@ -196,3 +196,6 @@ export const handlers = nextAuthInstance.handlers
 export const auth = nextAuthInstance.auth  
 export const signIn = nextAuthInstance.signIn
 export const signOut = nextAuthInstance.signOut
+
+// Export the configuration for compatibility
+export { authConfig }
