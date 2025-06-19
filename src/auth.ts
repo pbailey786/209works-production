@@ -153,9 +153,9 @@ const authConfig = {
               data: {
                 email: normalizedEmail,
                 name: user.name || user.email,
+                passwordHash: '', // OAuth users don't have passwords
                 role: 'jobseeker',
-                emailVerified: new Date(),
-                provider: 'google'
+                isEmailVerified: true // Google users are pre-verified
               }
             })
           }
