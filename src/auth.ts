@@ -188,4 +188,11 @@ const authConfig = {
   trustHost: true, // Important for production
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig as any)
+// Create the NextAuth instance
+const nextAuthInstance = NextAuth(authConfig as any)
+
+// Export the destructured components
+export const handlers = nextAuthInstance.handlers
+export const auth = nextAuthInstance.auth  
+export const signIn = nextAuthInstance.signIn
+export const signOut = nextAuthInstance.signOut
