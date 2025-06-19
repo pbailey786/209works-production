@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth'
+import NextAuth, { type NextAuthConfig } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
@@ -9,7 +9,7 @@ import { normalizeEmail } from '@/lib/utils/email-utils'
 
 console.log('🔧 Auth.js v5 configuration loading...')
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   
   session: {
@@ -186,5 +186,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: process.env.NODE_ENV === 'development',
   
   trustHost: true, // Important for production
-})
-// Config is now inlined above
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
