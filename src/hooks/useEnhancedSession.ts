@@ -122,7 +122,18 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
     }
 
     if (status === 'authenticated' && session) {
-      const validated = validateSession(session as Session);
+      // Type assertion to handle NextAuth v5 beta type differences
+      const sessionWithUser = session as Session & {
+        user: {
+          id: string;
+          email: string;
+          name?: string | null;
+          image?: string | null;
+          role: 'jobseeker' | 'employer' | 'admin';
+        }
+      };
+
+      const validated = validateSession(sessionWithUser);
       if (validated) {
         setEnhancedSession(validated);
         setError(null);

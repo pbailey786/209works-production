@@ -254,15 +254,16 @@ const authConfig = {
   trustHost: true, // Important for production
 }
 
-// For NextAuth v5 beta, use the correct destructuring approach
-const nextAuth = NextAuth(authConfig)
+// For NextAuth v5 beta, create instance and export components
+const nextAuthInstance = NextAuth(authConfig)
 
-export const {
-  handlers,
-  auth,
-  signIn,
-  signOut
-} = nextAuth
+export const handlers = nextAuthInstance.handlers
+export const auth = nextAuthInstance.auth
+export const signIn = nextAuthInstance.signIn
+export const signOut = nextAuthInstance.signOut
+
+// Default export for compatibility
+export default nextAuthInstance
 
 // Export the configuration for compatibility
 export { authConfig }
