@@ -122,7 +122,7 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
     }
 
     if (status === 'authenticated' && session) {
-      const validated = validateSession(session);
+      const validated = validateSession(session as Session);
       if (validated) {
         setEnhancedSession(validated);
         setError(null);

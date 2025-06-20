@@ -254,13 +254,15 @@ const authConfig = {
   trustHost: true, // Important for production
 }
 
-// For NextAuth v5, use the correct destructuring approach
+// For NextAuth v5 beta, use the correct destructuring approach
+const nextAuth = NextAuth(authConfig)
+
 export const {
   handlers,
   auth,
   signIn,
   signOut
-} = NextAuth(authConfig)
+} = nextAuth
 
 // Export the configuration for compatibility
 export { authConfig }
