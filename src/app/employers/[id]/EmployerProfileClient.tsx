@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 
 'use client';
 
+import {
+  import {
   MapPin,
   Globe,
   Calendar,
@@ -10,7 +12,7 @@ import { motion } from 'framer-motion';
   Briefcase,
   Heart,
   ExternalLink,
-  ArrowLeft,
+  ArrowLeft
 } from 'lucide-react';
 
 interface Employer {

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 
 'use client';
 
+import {
+  import {
   Clock,
   User,
   FileText,
@@ -9,7 +11,7 @@ import { useState, useEffect } from 'react';
   AlertCircle,
   CheckCircle,
   XCircle,
-  Eye,
+  Eye
 } from 'lucide-react';
 
 interface Activity {

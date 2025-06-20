@@ -2,9 +2,11 @@ import { cn } from '@/lib/utils';
 
 'use client';
 
+import {
+  import {
   CheckIcon,
   ChevronRightIcon,
-  DotFilledIcon,
+  DotFilledIcon
 } from '@radix-ui/react-icons';
 
 

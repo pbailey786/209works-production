@@ -10,20 +10,26 @@ import { requireRole } from '../../app/api/auth/requireRole';
   shouldRateLimit,
   RateLimitType,
   RateLimitResult,
-} from './ratelimit';
+} from '@/components/ui/card';
+import {
+  import {
   startRequestLogging,
   endRequestLogging,
-  getPerformanceMetrics,
-} from './logging';
+  getPerformanceMetrics
+} from '@/components/ui/card';
+import {
+  import {
   generateRequestId,
   createErrorResponse,
   createSuccessResponse,
   AuthenticationError,
-  AuthorizationError,
-} from '../errors/api-errors';
+  AuthorizationError
+} from '@/components/ui/card';
+import {
+  import {
   errorMonitor,
   createErrorContext,
-  ErrorLogger,
+  ErrorLogger
 } from '../monitoring/error-monitor';
 
 // API middleware configuration interface

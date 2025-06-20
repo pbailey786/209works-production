@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Search,
   Filter,
   MapPin,
@@ -19,7 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   Mail,
   Globe,
   Star,
-  TrendingUp,
+  TrendingUp
 } from 'lucide-react';
 
 export const metadata: Metadata = {

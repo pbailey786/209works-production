@@ -2,12 +2,14 @@ import { useState } from 'react';
 
 'use client';
 
+import {
+  import {
   Download,
   FileText,
   Users,
   Calendar,
   ChevronDown,
-  ChevronRight,
+  ChevronRight
 } from 'lucide-react';
 
 export default function DocumentVaultPage() {

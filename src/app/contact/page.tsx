@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 
 'use client';
 
+import {
+  import {
   Mail,
   Phone,
   MapPin,
@@ -14,7 +16,7 @@ import { Button } from '@/components/ui/button';
   AlertCircle,
   Users,
   Building,
-  Headphones,
+  Headphones
 } from 'lucide-react';
 
 export default function ContactPage() {

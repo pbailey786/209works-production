@@ -8,18 +8,24 @@ import { addDays, format } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   TrendingUp,
   TrendingDown,
   Eye,
@@ -31,7 +37,7 @@ import { addDays, format } from 'date-fns';
   BarChart3,
   AlertTriangle,
   Calendar,
-  Filter,
+  Filter
 } from 'lucide-react';
 
 interface AnalyticsData {

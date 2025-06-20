@@ -6,6 +6,8 @@ import { usePermissions } from '@/hooks/usePermissions';
 
 'use client';
 
+import {
+  import {
   LayoutDashboard,
   FileText,
   Users,
@@ -26,7 +28,7 @@ import { usePermissions } from '@/hooks/usePermissions';
   Mail,
   Send,
   TestTube,
-  CreditCard,
+  CreditCard
 } from 'lucide-react';
 
 interface NavItem {

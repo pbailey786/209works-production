@@ -5,12 +5,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 'use client';
 
+import {
+  import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  DialogTitle
+} from '@/components/ui/card';
+import {
+  import {
   Monitor,
   Smartphone,
   Tablet,
@@ -21,7 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   Calendar,
   DollarSign,
   Target,
-  X,
+  X
 } from 'lucide-react';
 
 interface AdPreviewModalProps {

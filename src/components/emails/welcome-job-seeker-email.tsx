@@ -1,5 +1,7 @@
 
 
+import {
+  import {
   Body,
   Button,
   Container,
@@ -9,7 +11,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface WelcomeJobSeekerEmailProps {

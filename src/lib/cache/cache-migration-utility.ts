@@ -8,7 +8,9 @@ import { getAtomicCacheManager } from './atomic-cache-manager';
   JobCacheService as NewJobCacheService,
   UserCacheService as NewUserCacheService,
   SearchCacheService as NewSearchCacheService,
-  CacheHealthMonitor,
+import {
+  import {
+  CacheHealthMonitor
 } from './enhanced-cache-services';
 
 /**

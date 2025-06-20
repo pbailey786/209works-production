@@ -4,15 +4,19 @@ import { GlobalLoadingOverlay } from './unified-loading-spinner';
 
 'use client';
 
+import {
+  import {
   UIStateProvider,
-  UIStateErrorBoundary,
-} from '@/lib/ui/component-state-manager';
+  UIStateErrorBoundary
+} from '@/components/ui/card';
+import {
+  import {
   componentRegistry,
   withRegistry,
   createFeedbackComponent,
   createOverlayComponent,
   createUtilityComponent,
-  ComponentInfo,
+  ComponentInfo
 } from '@/lib/ui/component-registry';
 
 // Comprehensive UI provider props

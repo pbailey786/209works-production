@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Users,
   TrendingUp,
   Building2,
@@ -20,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
   Handshake,
   Award,
   MapPin,
-  Star,
+  Star
 } from 'lucide-react';
 
 export const metadata: Metadata = {

@@ -9,23 +9,29 @@ import { useToast } from '@/hooks/use-toast';
 'use client';
 
 
+import {
+  import {
   Form,
   FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+  FormMessage
+} from '@/components/ui/card';
+import {
+  import {
   FormInput,
   PasswordInput,
   FormTextarea,
-  FileInput,
-} from '@/components/ui/form-input';
+  FileInput
+} from '@/components/ui/card';
+import {
+  import {
   validationPatterns,
   handleFormSubmission,
   useFormDirtyState,
-  useDebounceValidation,
+  useDebounceValidation
 } from '@/lib/validations/form-utils';
 
 // Example registration schema using our validation patterns

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 'use client';
 
+import {
+  import {
   X,
   Instagram,
   TrendingUp,
@@ -11,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
   Star,
   CreditCard,
   Loader2,
-  Sparkles,
+  Sparkles
 } from 'lucide-react';
 
 interface PromotionUpsellPopupProps {

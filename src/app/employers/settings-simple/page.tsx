@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   User,
   Building,
   CreditCard,
@@ -14,7 +16,7 @@ import { useRouter } from 'next/navigation';
   Mail,
   Phone,
   Globe,
-  MapPin,
+  MapPin
 } from 'lucide-react';
 
 interface CompanyProfile {

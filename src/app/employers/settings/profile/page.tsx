@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   Building2,
   Globe,
   Mail,
@@ -16,7 +18,7 @@ import { useRouter } from 'next/navigation';
   AlertCircle,
   CheckCircle,
   Upload,
-  ArrowRight,
+  ArrowRight
 } from 'lucide-react';
 
 interface CompanyProfile {

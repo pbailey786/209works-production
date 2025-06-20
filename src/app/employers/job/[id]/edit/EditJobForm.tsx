@@ -3,6 +3,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   ArrowLeft,
   Save,
   X,
@@ -11,7 +13,7 @@ import { useRouter } from 'next/navigation';
   Clock,
   Building,
   FileText,
-  Tag,
+  Tag
 } from 'lucide-react';
 
 interface Job {

@@ -3,12 +3,14 @@ import { formatDistanceToNow } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   Heart,
   MapPin,
   DollarSign,
   Clock,
   Trash2,
-  ExternalLink,
+  ExternalLink
 } from 'lucide-react';
 
 interface SavedJob {

@@ -6,10 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 'use client';
 
-  Send, 
-  Calendar, 
-  Users, 
-  TrendingUp, 
+import {
+  import {
+  Send,
+  Calendar,
+  Users,
+  TrendingUp,
   ArrowLeft,
   Plus,
   Eye,
@@ -18,7 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   MoreHorizontal,
   CheckCircle,
   Clock,
-  AlertTriangle,
+  AlertTriangle
 } from 'lucide-react';
 
 interface Campaign {

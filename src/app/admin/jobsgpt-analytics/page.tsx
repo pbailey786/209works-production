@@ -7,12 +7,16 @@ import { Input } from '@/components/ui/input';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Search,
   TrendingUp,
   MessageSquare,
@@ -20,7 +24,7 @@ import { Input } from '@/components/ui/input';
   Calendar,
   Download,
   Eye,
-  Bot,
+  Bot
 } from 'lucide-react';
 
 interface ChatAnalytics {

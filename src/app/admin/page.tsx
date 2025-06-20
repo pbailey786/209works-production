@@ -11,6 +11,8 @@ import { prisma } from '@/lib/database/prisma';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Users,
   Building2,
   Briefcase,
@@ -27,7 +29,7 @@ import { prisma } from '@/lib/database/prisma';
   Crown,
   Target,
   MessageSquare,
-  Search,
+  Search
 } from 'lucide-react';
 
 export const metadata: Metadata = {

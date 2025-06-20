@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 
 'use client';
 
+import {
+  import {
   MapPin,
   Users,
   Briefcase,
@@ -17,7 +19,7 @@ import { Button } from '@/components/ui/button';
   Star,
   Building,
   Globe,
-  Sparkles,
+  Sparkles
 } from 'lucide-react';
 
 const stats = [

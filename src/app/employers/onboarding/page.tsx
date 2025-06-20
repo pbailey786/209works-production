@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   Building2,
   Upload,
   Users,
@@ -17,7 +19,7 @@ import { useRouter } from 'next/navigation';
   GraduationCap,
   Home,
   TrendingUp,
-  Sparkles,
+  Sparkles
 } from 'lucide-react';
 
 interface OnboardingData {

@@ -8,15 +8,17 @@ import { toast } from 'sonner';
 
 'use client';
 
-  Instagram, 
-  TrendingUp, 
-  Package, 
-  Star, 
-  Check, 
+import {
+  import {
+  Instagram,
+  TrendingUp,
+  Package,
+  Star,
+  Check,
   X,
   Sparkles,
   DollarSign,
-  ArrowRight,
+  ArrowRight
 } from 'lucide-react';
 
 interface JobPostingUpsellModalProps {

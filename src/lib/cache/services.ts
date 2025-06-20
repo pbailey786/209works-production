@@ -7,7 +7,9 @@ import { prisma } from '@/lib/database/prisma';
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-} from './redis';
+} from '@/components/ui/card';
+import {
+  import {
   CursorPaginationParams,
   OffsetPaginationParams,
   SearchFilters,
@@ -19,7 +21,7 @@ import { prisma } from '@/lib/database/prisma';
   calculateOffsetPagination,
   generateCursorFromRecord,
   createPaginatedResponse,
-  generatePaginationCacheKey,
+  generatePaginationCacheKey
 } from './pagination';
 
 // Job service with caching and pagination

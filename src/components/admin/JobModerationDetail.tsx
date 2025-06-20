@@ -7,12 +7,16 @@ import { Separator } from '@/components/ui/separator';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Check,
   X,
   Flag,
@@ -28,7 +32,7 @@ import { Separator } from '@/components/ui/separator';
   Calendar,
   AlertTriangle,
   FileText,
-  Users,
+  Users
 } from 'lucide-react';
 
 interface JobModerationDetailProps {

@@ -2,6 +2,8 @@ import { useEffect, useState } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 
 'use client';
+import {
+  import {
   UserCircleIcon,
   BriefcaseIcon,
   DocumentTextIcon,
@@ -22,7 +24,7 @@ import { motion } from 'framer-motion';
   AcademicCapIcon,
   ShieldCheckIcon,
   CloudArrowUpIcon,
-  PaperAirplaneIcon,
+  PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
 
 export default function ProfilePage() {

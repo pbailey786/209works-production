@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   X,
   Check,
   Star,
@@ -13,7 +15,7 @@ import { useRouter } from 'next/navigation';
   ArrowRight,
   Loader2,
   Sparkles,
-  TrendingUp,
+  TrendingUp
 } from 'lucide-react';
 
 interface AddCreditsModalProps {

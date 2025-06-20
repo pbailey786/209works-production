@@ -11,12 +11,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -26,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   Search,
   Calendar,
   Download,
-  RefreshCw,
+  RefreshCw
 } from 'lucide-react';
 
 export default async function AnalyticsPage() {

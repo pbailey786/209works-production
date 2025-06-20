@@ -5,10 +5,12 @@ import { cn } from '@/lib/utils';
 
 'use client';
 
+import {
   useModalAccessibility,
   createDialogAriaProps,
   createModalId,
   validateModalAccessibility,
+  import {
   type ModalAccessibilityOptions,
 } from '@/utils/modal-accessibility';
 

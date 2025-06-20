@@ -4,6 +4,8 @@ import { formatDistanceToNow } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   ArrowLeft,
   Star,
   Calendar,
@@ -27,7 +29,7 @@ import { formatDistanceToNow } from 'date-fns';
   Clock,
   Eye,
   X,
-  Send,
+  Send
 } from 'lucide-react';
 
 interface CandidateSnapshot {

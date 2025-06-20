@@ -6,12 +6,14 @@ import { prisma } from '@/lib/database/prisma';
   RelevanceScorer,
   GeolocationUtils,
   SEARCH_CONFIG,
-} from './algorithms';
+} from '@/components/ui/card';
+import {
+  import {
   getCache,
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
-  DEFAULT_TTL,
+  DEFAULT_TTL
 } from '../cache/redis';
 
 // Enhanced alert criteria interface

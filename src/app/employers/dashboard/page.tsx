@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 'use client';
 
+import {
+  import {
   BarChart3,
   Users,
   Briefcase,
@@ -27,7 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton';
   Settings,
   Sparkles,
   Upload,
-  CreditCard,
+  CreditCard
 } from 'lucide-react';
 // Removed NextAuth debug panel
 

@@ -3,18 +3,20 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
-  Upload, 
-  User, 
-  MapPin, 
-  Briefcase, 
-  Target, 
+import {
+  import {
+  Upload,
+  User,
+  MapPin,
+  Briefcase,
+  Target,
   Bell,
   ArrowRight,
   ArrowLeft,
   CheckCircle,
   FileText,
   Clock,
-  Star,
+  Star
 } from 'lucide-react';
 
 // Import step components

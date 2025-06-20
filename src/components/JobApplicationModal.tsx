@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 'use client';
 
+import {
+  import {
   XMarkIcon,
   PaperAirplaneIcon,
   DocumentTextIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ArrowTopRightOnSquareIcon,
+  ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline';
 
 interface JobApplicationModalProps {

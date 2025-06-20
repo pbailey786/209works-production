@@ -13,17 +13,19 @@ import { toast } from 'sonner';
 
 'use client';
 
-  CreditCard, 
-  Users, 
-  TrendingUp, 
-  Clock, 
-  Plus, 
+import {
+  import {
+  CreditCard,
+  Users,
+  TrendingUp,
+  Clock,
+  Plus,
   Search,
   Calendar,
   DollarSign,
   CheckCircle,
   XCircle,
-  AlertCircle,
+  AlertCircle
 } from 'lucide-react';
 
 interface CreditData {

@@ -2,17 +2,19 @@ import { useState, useEffect } from 'react';
 
 'use client';
 
-  Database, 
-  Download, 
-  Trash2, 
-  RefreshCw, 
-  Clock, 
-  CheckCircle, 
+import {
+  import {
+  Database,
+  Download,
+  Trash2,
+  RefreshCw,
+  Clock,
+  CheckCircle,
   XCircle,
   AlertCircle,
   Calendar,
   HardDrive,
-  Settings,
+  Settings
 } from 'lucide-react';
 
 interface Backup {

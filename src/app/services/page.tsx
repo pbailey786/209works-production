@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 
 'use client';
 
+import {
+  import {
   Search,
   Building,
   MapPin,
@@ -14,7 +16,7 @@ import { Button } from '@/components/ui/button';
   BarChart3,
   Target,
   CheckCircle,
-  ArrowRight,
+  ArrowRight
 } from 'lucide-react';
 
 const services = [

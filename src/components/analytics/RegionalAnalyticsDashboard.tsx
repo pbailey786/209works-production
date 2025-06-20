@@ -11,12 +11,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
  * Dashboard for viewing PostHog analytics with regional insights
  */
 'use client';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   BarChart,
   Bar,
   XAxis,
@@ -28,8 +32,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   Line,
   PieChart,
   Pie,
-  Cell,
-} from 'recharts';
+  Cell
+} from '@/components/ui/card';
+import {
+  import {
   TrendingUp,
   Users,
   Search,
@@ -40,7 +46,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   UserPlus,
   Calendar,
   Filter,
-  Download,
+  Download
 } from 'lucide-react';
 
 interface AnalyticsData {

@@ -8,18 +8,24 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   Building2,
   MapPin,
   CheckCircle,
@@ -27,7 +33,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
   Star,
   Users,
   Percent,
-  Award,
+  Award
 } from 'lucide-react';
 
 // Define pricing plans

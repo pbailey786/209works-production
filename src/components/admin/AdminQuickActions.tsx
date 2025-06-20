@@ -1,5 +1,7 @@
 
 
+import {
+  import {
   Shield,
   Users,
   BarChart3,
@@ -7,7 +9,7 @@
   Settings,
   Download,
   AlertTriangle,
-  FileText,
+  FileText
 } from 'lucide-react';
 
 interface QuickAction {

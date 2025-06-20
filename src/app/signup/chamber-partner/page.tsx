@@ -12,18 +12,22 @@ import { Badge } from '@/components/ui/badge';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   Building2,
   Users,
   CheckCircle,
   Shield,
   TrendingUp,
-  Handshake,
+  Handshake
 } from 'lucide-react';
 
 export const metadata: Metadata = {

@@ -8,28 +8,34 @@ import { Textarea } from '@/components/ui/textarea';
 
 
 'use client';
+import {
+  import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  TableRow
+} from '@/components/ui/card';
+import {
+  import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-  UserCheck, 
-  Search, 
-  Eye, 
+  DialogTrigger
+} from '@/components/ui/card';
+import {
+  import {
+  UserCheck,
+  Search,
+  Eye,
   StopCircle,
   AlertTriangle,
   Clock,
-  User,
+  User
 } from 'lucide-react';
 
 interface User {

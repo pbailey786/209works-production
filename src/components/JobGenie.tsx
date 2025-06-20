@@ -5,12 +5,14 @@ import { JobGenieProps } from '@/lib/types/component-props';
 
 'use client';
 
+import {
+  import {
   ChatBubbleLeftRightIcon,
   PaperAirplaneIcon,
   XMarkIcon,
   SparklesIcon,
   ExclamationTriangleIcon,
-  ArrowPathIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
 interface Message {

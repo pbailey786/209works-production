@@ -7,11 +7,13 @@ import { generateJobSearchResponse } from '@/lib/ai';
 
   generateConversationalResponse,
   extractJobSearchFiltersWithContext,
-} from '@/lib/llm/conversationalResponse';
+} from '@/components/ui/card';
+import {
   withAISecurity,
   aiSecurityConfigs,
   type AISecurityContext,
-  sanitizeUserData,
+  import {
+  sanitizeUserData
 } from '@/lib/middleware/ai-security';
 
 // Type definitions for conversation messages

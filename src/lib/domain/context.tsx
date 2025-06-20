@@ -2,10 +2,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 'use client';
 
+import {
+  import {
   DomainConfig,
   getDomainConfig,
   DEFAULT_DOMAIN,
-  DOMAIN_CONFIGS,
+  DOMAIN_CONFIGS
 } from './config';
 
 interface DomainContextType {

@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 import { cronScheduler } from '@/components/ui/card';
 import { config } from '@/components/ui/card';
 import { writeFileSync, existsSync, readFileSync } from '@/components/ui/card';
 import { join } from 'path';
 
-#!/usr/bin/env node
+
 
 /**
  * Cron Scheduler Startup Script

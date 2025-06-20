@@ -5,15 +5,17 @@ import { useEffect, useState } from 'react';
 
 'use client';
 
-  Mail, 
-  Settings, 
-  Users, 
-  BarChart3, 
+import {
+  import {
+  Mail,
+  Settings,
+  Users,
+  BarChart3,
   FileText,
   Shield,
   Activity,
   Database,
-  Download,
+  Download
 } from 'lucide-react';
 
 export default function SimpleAdminPage() {

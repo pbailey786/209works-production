@@ -13,13 +13,17 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
  * Real-time performance tracking and system health monitoring
  */
 'use client';
+import {
+  import {
   usePerformanceMonitor,
   CoreWebVitals,
   SystemHealthMetric,
   UserExperienceMetric,
   PerformanceAlert,
-  APIPerformanceMetric,
-} from '@/lib/monitoring/performance-monitor';
+  APIPerformanceMetric
+} from '@/components/ui/card';
+import {
+  import {
   Activity,
   AlertTriangle,
   CheckCircle,
@@ -38,7 +42,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
   AlertCircle,
   Info,
   Download,
-  Eye,
+  Eye
 } from 'lucide-react';
 
 interface PerformanceData {

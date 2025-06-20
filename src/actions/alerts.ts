@@ -5,11 +5,13 @@ import { ActionResult } from '@/types/actions';
 
 'use server';
 
+import {
+  import {
   createAlertSchema,
   updateAlertSchema,
   testAlertSchema,
-  AlertCriteria,
-} from '@/lib/validations/alerts';
+  AlertCriteria
+} from '@/components/ui/card';
 import {
   EnhancedJobMatchingService,
   findMatchingJobs as enhancedFindMatchingJobs,

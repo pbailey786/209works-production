@@ -1,5 +1,7 @@
 
 
+import {
+  import {
   Body,
   Button,
   Container,
@@ -10,7 +12,7 @@
   Text,
   Hr,
   Link,
-  Img,
+  Img
 } from '@react-email/components';
 
 interface NewsletterItem {

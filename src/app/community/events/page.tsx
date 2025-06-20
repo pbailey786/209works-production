@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Calendar,
   MapPin,
   Clock,
@@ -17,7 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   Filter,
   Search,
   Plus,
-  ExternalLink,
+  ExternalLink
 } from 'lucide-react';
 
 export const metadata: Metadata = {

@@ -13,10 +13,12 @@ import { generateCacheKey, CACHE_PREFIXES, DEFAULT_TTL } from './redis';
   generateCursorFromRecord,
   createPaginatedResponse,
   generatePaginationCacheKey,
-} from './pagination';
+} from '@/components/ui/card';
+import {
+  import {
   getAtomicCacheManager,
   AtomicCacheUtils,
-  AtomicCacheManager,
+  AtomicCacheManager
 } from './atomic-cache-manager';
 
 /**

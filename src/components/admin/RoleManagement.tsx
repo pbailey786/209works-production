@@ -8,38 +8,50 @@ import { PermissionGate } from './PermissionGate';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  TableRow
+} from '@/components/ui/card';
+import {
+  import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  DialogTrigger
+} from '@/components/ui/card';
+import {
+  import {
   AdminRole,
   Permission,
   ROLE_PERMISSIONS,
   ROLE_DISPLAY_INFO,
-  getUserPermissions,
-} from '@/lib/rbac/permissions';
+  getUserPermissions
+} from '@/components/ui/card';
+import {
+  import {
   Shield,
   Users,
   Settings,
@@ -47,7 +59,7 @@ import { PermissionGate } from './PermissionGate';
   Edit,
   Plus,
   Check,
-  X,
+  X
 } from 'lucide-react';
 
 interface RoleManagementProps {

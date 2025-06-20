@@ -5,11 +5,13 @@ import { prisma } from '@/lib/database/prisma';
 
   createSuccessResponse,
   AuthorizationError,
-} from '@/lib/errors/api-errors';
+} from '@/components/ui/card';
+import {
+  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute,
+  getCacheOrExecute
 } from '@/lib/cache/redis';
 
 // GET /api/ads/stats - Get comprehensive ad analytics

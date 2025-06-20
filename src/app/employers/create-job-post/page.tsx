@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   Briefcase,
   Building2,
   MapPin,
@@ -20,7 +22,7 @@ import { useRouter } from 'next/navigation';
   Sparkles,
   ArrowRight,
   HelpCircle,
-  Check,
+  Check
 } from 'lucide-react';
 // Removed upsell and modal imports - Job Post Optimizer is now streamlined
 

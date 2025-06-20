@@ -6,12 +6,14 @@ import { LocalKnowledgeService } from './local-knowledge';
 
   CompanyKnowledgeService,
   CompanyInfo,
-} from '@/lib/knowledge/company-knowledge';
+} from '@/components/ui/card';
+import {
+  import {
   ConversationIntent,
   ChatbotResponse,
   ConversationContext,
   JobContext,
-  Message,
+  Message
 } from './types';
 
 interface ChatContextualData {

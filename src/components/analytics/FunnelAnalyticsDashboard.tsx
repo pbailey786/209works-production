@@ -13,20 +13,26 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 'use client';
 
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   useFunnelAnalysis,
   FunnelAnalysis,
   FunnelStep,
   DropOffPoint,
   OptimizationRecommendation,
   JOB_SEEKER_FUNNEL,
-  EMPLOYER_FUNNEL,
-} from '@/lib/analytics/funnel-analysis';
+  EMPLOYER_FUNNEL
+} from '@/components/ui/card';
+import {
+  import {
   BarChart,
   Bar,
   XAxis,
@@ -39,8 +45,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
   FunnelChart,
   Funnel,
   Cell,
-  LabelList,
-} from 'recharts';
+  LabelList
+} from '@/components/ui/card';
+import {
+  import {
   TrendingDown,
   TrendingUp,
   Users,
@@ -62,7 +70,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
   UserPlus,
   FileText,
   CreditCard,
-  Repeat,
+  Repeat
 } from 'lucide-react';
 
 interface FunnelDashboardProps {

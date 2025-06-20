@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 
 'use client';
 
+import {
+  import {
   BarChart,
   Bar,
   XAxis,
@@ -24,8 +26,10 @@ import { useToast } from '@/hooks/use-toast';
   Pie,
   Cell,
   Area,
-  AreaChart,
-} from 'recharts';
+  AreaChart
+} from '@/components/ui/card';
+import {
+  import {
   Mail,
   TrendingUp,
   Users,
@@ -39,19 +43,23 @@ import { useToast } from '@/hooks/use-toast';
   Calendar,
   Filter,
   Download,
-  RefreshCw,
-} from 'lucide-react';
+  RefreshCw
+} from '@/components/ui/card';
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select';
 
 interface EmailMetrics {

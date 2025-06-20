@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 
 'use client';
 
+import {
+  import {
   MoreVertical,
   Edit,
   Eye,
@@ -16,7 +18,7 @@ import { Button } from '@/components/ui/button';
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  Building,
+  Building
 } from 'lucide-react';
 
 interface Advertisement {

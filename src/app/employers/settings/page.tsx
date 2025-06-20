@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 'use client';
 
+import {
+  import {
   User,
   Building,
   CreditCard,
@@ -17,7 +19,7 @@ import { useState } from 'react';
   Camera,
   MapPin,
   Phone,
-  ExternalLink,
+  ExternalLink
 } from 'lucide-react';
 
 export default function EmployerSettingsPage() {

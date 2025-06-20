@@ -9,21 +9,25 @@ import { prisma } from '@/lib/database/prisma';
   calculateOffsetPagination,
   generateCursorFromRecord,
   generatePaginationCacheKey,
-} from '../cache/pagination';
+} from '@/components/ui/card';
+import {
+  import {
   getCache,
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute,
-} from '../cache/redis';
+  getCacheOrExecute
+} from '@/components/ui/card';
+import {
+  import {
   EnhancedSearchFilters,
   SearchResult,
   TextProcessor,
   RelevanceScorer,
   GeolocationUtils,
   FacetedSearch,
-  SEARCH_CONFIG,
+  SEARCH_CONFIG
 } from './algorithms';
 
 // Enhanced search service for jobs

@@ -15,6 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 
 'use client';
 
+import {
+  import {
   Plus,
   Edit3,
   Trash2,
@@ -23,25 +25,31 @@ import { useToast } from '@/hooks/use-toast';
   Bell,
   Mail,
   Clock,
-  Target,
-} from 'lucide-react';
+  Target
+} from '@/components/ui/card';
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  DialogTrigger
+} from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select';
 
 interface JobAlert {

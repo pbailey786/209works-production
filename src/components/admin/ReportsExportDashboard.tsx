@@ -8,22 +8,30 @@ import { format } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+  PopoverTrigger
+} from '@/components/ui/card';
+import {
+  import {
   BarChart3,
   CalendarIcon,
   Download,
@@ -36,7 +44,7 @@ import { format } from 'date-fns';
   Activity,
   AlertCircle,
   CheckCircle,
-  Clock,
+  Clock
 } from 'lucide-react';
 
 interface ReportConfig {

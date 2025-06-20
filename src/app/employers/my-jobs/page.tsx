@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   Search,
   Filter,
   Plus,
@@ -25,7 +27,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
   CheckCircle,
   Clock,
   Download,
-  RefreshCw,
+  RefreshCw
 } from 'lucide-react';
 
 interface Job {

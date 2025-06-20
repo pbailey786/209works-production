@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 'use client';
 
+import {
+  import {
   Check,
   X,
   Edit,
@@ -13,7 +15,7 @@ import { useState } from 'react';
   Building,
   DollarSign,
   ChevronLeft,
-  ChevronRight,
+  ChevronRight
 } from 'lucide-react';
 
 interface Job {

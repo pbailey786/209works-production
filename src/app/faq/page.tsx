@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 'use client';
 
+import {
+  import {
   ChevronDown,
   ChevronUp,
   Users,
@@ -10,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
   Headphones,
   Search,
   HelpCircle,
-  MessageCircle,
+  MessageCircle
 } from 'lucide-react';
 
 interface FAQItem {

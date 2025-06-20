@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 
 'use client';
 
+import {
+  import {
   Activity,
   Server,
   Database,
@@ -9,7 +11,7 @@ import { useState, useEffect } from 'react';
   CheckCircle,
   AlertTriangle,
   XCircle,
-  RefreshCw,
+  RefreshCw
 } from 'lucide-react';
 
 interface SystemHealth {

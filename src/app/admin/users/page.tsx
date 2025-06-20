@@ -12,19 +12,25 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  TableRow
+} from '@/components/ui/card';
+import {
+  import {
   Search,
   Filter,
   MoreHorizontal,
@@ -32,12 +38,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   Download,
   Eye,
   Edit,
-  Trash2,
-} from 'lucide-react';
+  Trash2
+} from '@/components/ui/card';
+import {
+  import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 
 interface SearchParams {

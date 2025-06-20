@@ -6,6 +6,8 @@ import { safeFetchAPI } from '@/lib/utils/safe-fetch';
 
 'use client';
 
+import {
+  import {
   BookmarkIcon,
   ShareIcon,
   ExclamationTriangleIcon,
@@ -20,10 +22,12 @@ import { safeFetchAPI } from '@/lib/utils/safe-fetch';
   SparklesIcon,
   PaperAirplaneIcon,
   MegaphoneIcon,
-  ArrowTrendingUpIcon,
-} from '@heroicons/react/24/outline';
+  ArrowTrendingUpIcon
+} from '@/components/ui/card';
+import {
+  import {
   formatJobDescription,
-  extractJobHighlights,
+  extractJobHighlights
 } from '@/lib/utils/jobDescriptionFormatter';
 
 interface JobDetailClientProps {

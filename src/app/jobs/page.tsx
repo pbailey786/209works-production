@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 'use client';
 
+import {
+  import {
   Search,
   Filter,
   MapPin,
@@ -12,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
   Briefcase,
   X,
   ChevronDown,
-  SlidersHorizontal,
+  SlidersHorizontal
 } from 'lucide-react';
 
 

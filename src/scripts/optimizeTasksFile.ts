@@ -1,10 +1,10 @@
-import { TaskPerformanceOptimizer } from '@/components/ui/card';
-import { ConfigManager } from '../lib/task-management/config';
-
 #!/usr/bin/env node
-
+import { TaskPerformanceOptimizer } from '@/components/ui/card';
+import { ConfigManager } from '@/components/ui/card';
+import {
+  import {
   TaskValidator,
-  TasksCollection,
+  TasksCollection
 } from '../lib/task-management/validation';
 
 /**

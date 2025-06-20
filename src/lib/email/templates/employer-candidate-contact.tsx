@@ -1,5 +1,7 @@
 
 
+import {
+  import {
   Html,
   Head,
   Body,
@@ -8,7 +10,7 @@
   Text,
   Link,
   Hr,
-  Img,
+  Img
 } from '@react-email/components';
 
 interface EmployerCandidateContactProps {

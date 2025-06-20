@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 
 'use client';
 
+import {
+  import {
   Heart,
   MessageCircle,
   Send,
   Bookmark,
-  MoreHorizontal,
+  MoreHorizontal
 } from 'lucide-react';
 
 interface InstagramPostAdProps {

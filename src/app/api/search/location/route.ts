@@ -9,10 +9,12 @@ import { prisma } from '@/lib/database/prisma';
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-} from '@/lib/cache/redis';
+} from '@/components/ui/card';
+import {
+  import {
   GeolocationUtils,
   RelevanceScorer,
-  TextProcessor,
+  TextProcessor
 } from '@/lib/search/algorithms';
 
 // GET /api/search/location - Location-based job search

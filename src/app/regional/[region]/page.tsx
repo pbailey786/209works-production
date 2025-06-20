@@ -8,12 +8,16 @@ import { Badge } from '@/components/ui/badge';
  * Handles routes for /regional/209, /regional/916, /regional/510, /regional/norcal
  */
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   MapPin,
   Building2,
   Users,
@@ -21,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
   Star,
   Briefcase,
   GraduationCap,
-  Heart,
+  Heart
 } from 'lucide-react';
 
 interface RegionConfig {

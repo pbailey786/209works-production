@@ -3,12 +3,14 @@ import { redirect } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   Permission,
   hasPermission,
   hasAnyPermission,
   hasAllPermissions,
   getUserPermissions,
-  canAccessRoute,
+  canAccessRoute
 } from '@/lib/rbac/permissions';
 
 export function usePermissions() {

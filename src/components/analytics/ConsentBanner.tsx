@@ -11,6 +11,8 @@ import { usePostHog } from '@/lib/analytics/posthog-provider';
 
 'use client';
 
+import {
+  import {
   Cookie,
   Shield,
   Settings,
@@ -18,7 +20,7 @@ import { usePostHog } from '@/lib/analytics/posthog-provider';
   ChevronDown,
   ChevronUp,
   Info,
-  MapPin,
+  MapPin
 } from 'lucide-react';
 
 interface ConsentBannerProps {

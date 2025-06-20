@@ -1,10 +1,12 @@
 
 
+import {
+  import {
   ConversationContext,
   ConversationSession,
   Message,
   ConversationIntent,
-  UserProfile,
+  UserProfile
 } from './types';
 
 // In-memory storage for conversation sessions (in production, use Redis or database)

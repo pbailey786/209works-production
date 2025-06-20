@@ -7,28 +7,34 @@ import { Badge } from '@/components/ui/badge';
 
 
 'use client';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-  Mail, 
-  Calendar, 
-  FileText, 
-  Send, 
+  TableRow
+} from '@/components/ui/card';
+import {
+  import {
+  Mail,
+  Calendar,
+  FileText,
+  Send,
   Trash2,
   Plus,
   Clock,
   CheckCircle,
-  AlertCircle,
+  AlertCircle
 } from 'lucide-react';
 
 interface ReportSchedule {

@@ -7,12 +7,14 @@ import { prisma } from '@/lib/database/prisma';
   createSuccessResponse,
   NotFoundError,
   AuthorizationError,
-} from '@/lib/errors/api-errors';
+} from '@/components/ui/card';
+import {
+  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags,
+  invalidateCacheByTags
 } from '@/lib/cache/redis';
 
 // GET /api/alerts/:id - Get specific alert details

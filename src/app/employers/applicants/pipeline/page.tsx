@@ -3,6 +3,8 @@ import { formatDistanceToNow } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   ArrowLeft,
   Users,
   Clock,
@@ -11,7 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
   Briefcase,
   UserCheck,
   UserX,
-  ChevronRight,
+  ChevronRight
 } from 'lucide-react';
 
 interface Application {

@@ -4,6 +4,8 @@ import { formatDistanceToNow } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   ArrowLeft,
   User,
   Mail,
@@ -19,7 +21,7 @@ import { formatDistanceToNow } from 'date-fns';
   Gift,
   XCircle,
   AlertCircle,
-  Download,
+  Download
 } from 'lucide-react';
 
 interface ApplicationDetail {

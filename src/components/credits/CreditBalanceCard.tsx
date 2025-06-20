@@ -7,13 +7,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 'use client';
 
+import {
+  import {
   CreditCard,
   Sparkles,
   TrendingUp,
   Clock,
   Plus,
   History,
-  AlertTriangle,
+  AlertTriangle
 } from 'lucide-react';
 
 interface CreditInfo {

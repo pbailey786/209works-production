@@ -12,6 +12,8 @@ import { memoryLeakDetector } from '@/lib/monitoring/memory-leak-detector';
  * Admin dashboard component for monitoring memory leaks in real-time
  */
 
+import {
+  import {
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -19,7 +21,7 @@ import { memoryLeakDetector } from '@/lib/monitoring/memory-leak-detector';
   Download,
   TrendingUp,
   TrendingDown,
-  Activity,
+  Activity
 } from 'lucide-react';
 
 interface MemoryStats {

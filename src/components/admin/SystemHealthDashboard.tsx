@@ -4,12 +4,16 @@ import { Button } from '@/components/ui/button';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   Activity,
   AlertTriangle,
   CheckCircle,
@@ -23,7 +27,7 @@ import { Button } from '@/components/ui/button';
   TrendingUp,
   Users,
   Zap,
-  XCircle,
+  XCircle
 } from 'lucide-react';
 
 interface SystemMetrics {

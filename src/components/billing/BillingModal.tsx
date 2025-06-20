@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   X,
   Check,
   Star,
@@ -12,7 +14,7 @@ import { useRouter } from 'next/navigation';
   Users,
   Zap,
   Shield,
-  ArrowRight,
+  ArrowRight
 } from 'lucide-react';
 
 interface BillingModalProps {

@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 'use client';
+import {
+  import {
   Search,
   Briefcase,
   User,
@@ -24,7 +26,7 @@ import { cn } from '@/lib/utils';
   FileText,
   BarChart3,
   Users,
-  Building2,
+  Building2
 } from 'lucide-react';
 // Removed NextAuth session hook
 

@@ -3,12 +3,14 @@ import { JOB_POSTING_CONFIG } from '@/lib/stripe';
 
 'use client';
 
-  CreditCard, 
-  Zap, 
+import {
+  import {
+  CreditCard,
+  Zap,
   Package,
   Loader2,
   X,
-  Check,
+  Check
 } from 'lucide-react';
 
 interface BuyCreditsModalProps {

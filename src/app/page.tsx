@@ -7,6 +7,8 @@ import { Skeleton } from '../components/ui/skeleton';
 
 'use client';
 
+import {
+  import {
   MapPin,
   Users,
   Building2,
@@ -19,7 +21,7 @@ import { Skeleton } from '../components/ui/skeleton';
   Briefcase,
   Clock,
   Shield,
-  Zap,
+  Zap
 } from 'lucide-react';
 
 

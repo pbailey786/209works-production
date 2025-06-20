@@ -5,12 +5,14 @@ import { formatDistanceToNow } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   Clock,
   MessageSquare,
   Trash2,
   ChevronRight,
   User,
-  Bot,
+  Bot
 } from 'lucide-react';
 
 interface ChatMessage {

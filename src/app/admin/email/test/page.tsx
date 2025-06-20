@@ -10,13 +10,15 @@ import { Badge } from '@/components/ui/badge';
 
 'use client';
 
-  TestTube, 
-  Send, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  import {
+  TestTube,
+  Send,
+  CheckCircle,
+  AlertTriangle,
   Loader2,
   ArrowLeft,
-  Mail,
+  Mail
 } from 'lucide-react';
 
 interface TestType {

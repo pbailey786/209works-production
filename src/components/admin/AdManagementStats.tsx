@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 'use client';
 
+import {
+  import {
   TrendingUp,
   Play,
   Clock,
@@ -9,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
   BarChart3,
   DollarSign,
   Eye,
-  MousePointer,
+  MousePointer
 } from 'lucide-react';
 
 interface AdManagementStatsProps {

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 
 'use client';
 
+import {
+  import {
   Upload,
   FileText,
   CheckCircle,
@@ -20,7 +22,7 @@ import { useState, useEffect } from 'react';
   Users,
   TrendingUp,
   MessageCircle,
-  X,
+  X
 } from 'lucide-react';
 
 interface ProcessedJob {

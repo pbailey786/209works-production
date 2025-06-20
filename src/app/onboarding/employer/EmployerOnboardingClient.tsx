@@ -3,12 +3,14 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
-  Building2, 
-  MapPin, 
-  Users, 
+import {
+  import {
+  Building2,
+  MapPin,
+  Users,
   Target,
   CheckCircle,
-  Upload,
+  Upload
 } from 'lucide-react';
 
 interface User {

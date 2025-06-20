@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 
 'use client';
 
+import {
+  import {
   Megaphone,
   TrendingUp,
   Package,
@@ -11,7 +13,7 @@ import { motion } from 'framer-motion';
   Instagram,
   MessageSquare,
   Sparkles,
-  DollarSign,
+  DollarSign
 } from 'lucide-react';
 
 interface UpsellOption {

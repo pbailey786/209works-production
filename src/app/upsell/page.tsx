@@ -9,6 +9,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Check,
   Star,
   Zap,
@@ -22,7 +24,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
   Users,
   FileText,
   Bell,
-  Eye,
+  Eye
 } from 'lucide-react';
 
 export const metadata: Metadata = {

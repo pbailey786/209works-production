@@ -4,6 +4,8 @@ import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/sol
 
 'use client';
 
+import {
+  import {
   XMarkIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -12,7 +14,7 @@ import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/sol
   ClockIcon,
   UserIcon,
   AcademicCapIcon,
-  ChartBarIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline';
 
 interface ShouldIApplyCalculatorProps {

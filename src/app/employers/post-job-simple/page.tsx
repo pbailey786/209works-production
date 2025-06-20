@@ -5,13 +5,15 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   Briefcase,
   MapPin,
   DollarSign,
   Clock,
   Send,
   ArrowLeft,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
 
 interface SimpleJobForm {

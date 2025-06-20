@@ -8,12 +8,16 @@ import { Badge } from '@/components/ui/badge';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   ArrowLeft,
   Save,
   Loader2,
@@ -21,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
   DollarSign,
   Building,
   ExternalLink,
-  MapPin,
+  MapPin
 } from 'lucide-react';
 
 interface Advertisement {

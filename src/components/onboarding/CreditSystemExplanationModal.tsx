@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 'use client';
 
+import {
+  import {
   X,
   CreditCard,
   Star,
@@ -12,7 +14,7 @@ import React, { useState } from 'react';
   CheckCircle,
   Sparkles,
   RefreshCw,
-  Lightbulb,
+  Lightbulb
 } from 'lucide-react';
 
 interface CreditSystemExplanationModalProps {

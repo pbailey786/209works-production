@@ -11,17 +11,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
  * Comprehensive analytics dashboard for job board business intelligence
  */
 'use client';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   useBusinessMetrics,
   DashboardData,
   BusinessInsight,
-  JobBoardKPIs,
-} from '@/lib/analytics/business-metrics';
+  JobBoardKPIs
+} from '@/components/ui/card';
+import {
+  import {
   TrendingUp,
   TrendingDown,
   Users,
@@ -44,7 +50,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   MousePointer,
   Star,
   UserPlus,
-  Plus,
+  Plus
 } from 'lucide-react';
 
 interface KPICardProps {

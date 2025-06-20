@@ -6,7 +6,9 @@ import { Input } from '@/components/ui/input';
 
 'use client';
 
-  FileText, 
+import {
+  import {
+  FileText,
   ArrowLeft,
   Search,
   Eye,
@@ -14,7 +16,7 @@ import { Input } from '@/components/ui/input';
   Copy,
   MoreHorizontal,
   Plus,
-  Filter,
+  Filter
 } from 'lucide-react';
 
 interface EmailTemplate {

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 'use client';
 
+import {
+  import {
   X,
   Megaphone,
   TrendingUp,
@@ -13,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
   MessageSquare,
   Sparkles,
   DollarSign,
-  CreditCard,
+  CreditCard
 } from 'lucide-react';
 
 interface JobUpsellModalProps {

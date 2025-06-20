@@ -11,6 +11,8 @@ import { Permission } from '@/lib/rbac/permissions';
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  import {
   Settings,
   Shield,
   Users,
@@ -18,7 +20,7 @@ import { Permission } from '@/lib/rbac/permissions';
   Mail,
   Bell,
   Lock,
-  Globe,
+  Globe
 } from 'lucide-react';
 
 export default async function AdminSettingsPage() {

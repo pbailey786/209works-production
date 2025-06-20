@@ -3,6 +3,8 @@ import { formatDistanceToNow } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   FileText,
   MapPin,
   DollarSign,
@@ -11,7 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
   Building2,
   Bookmark,
   Archive,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
 
 interface Application {

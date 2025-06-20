@@ -3,13 +3,15 @@ import { useSearchParams, useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   CreditCard,
   ArrowLeft,
   Check,
   Sparkles,
   TrendingUp,
   Shield,
-  Clock,
+  Clock
 } from 'lucide-react';
 
 interface CreditPackage {

@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 import { config } from '@/components/ui/card';
 import { writeFileSync, existsSync, mkdirSync } from '@/components/ui/card';
 import { join } from '@/components/ui/card';
 import { upsertAdzunaJobsToDb } from '../app/services/adzunaToDb';
 
-#!/usr/bin/env node
+
 
 /**
  * Adzuna Job Import Cron Script

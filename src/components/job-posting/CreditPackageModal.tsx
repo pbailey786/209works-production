@@ -4,14 +4,16 @@ import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 
 'use client';
 
-  X, 
-  Star, 
-  Crown, 
-  Zap, 
-  Check, 
+import {
+  import {
+  X,
+  Star,
+  Crown,
+  Zap,
+  Check,
   Loader2,
   CreditCard,
-  AlertTriangle,
+  AlertTriangle
 } from 'lucide-react';
 
 interface CreditPackageModalProps {

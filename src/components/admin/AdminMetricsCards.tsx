@@ -1,5 +1,7 @@
 
 
+import {
+  import {
   Users,
   FileText,
   Send,
@@ -7,7 +9,7 @@
   Shield,
   TrendingUp,
   PlayCircle,
-  Activity,
+  Activity
 } from 'lucide-react';
 
 interface MetricsData {

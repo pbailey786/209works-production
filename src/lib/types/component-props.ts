@@ -9,6 +9,8 @@
  */
 
   safeDateFormat as safeDateFormatUtil,
+import {
+  import {
   safeTimeFormat,
   getRelativeTime,
   safeString,
@@ -20,7 +22,7 @@
   capitalizeFirst,
   capitalizeWords,
   isNonEmptyString,
-  isValidURL,
+  isValidURL
 } from '@/lib/utils/safe-operations';
 
 // ===== JOB-RELATED INTERFACES =====

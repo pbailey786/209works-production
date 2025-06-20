@@ -11,12 +11,16 @@ import { Input } from '@/components/ui/input';
  * Dynamic landing page for regional domains (209.works, 916.works, 510.works, norcal.works)
  */
 'use client';
+import {
+  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  SelectValue
+} from '@/components/ui/card';
+import {
+  import {
   MapPin,
   Briefcase,
   TrendingUp,
@@ -27,7 +31,7 @@ import { Input } from '@/components/ui/input';
   ArrowRight,
   Star,
   Clock,
-  Target,
+  Target
 } from 'lucide-react';
 
 interface RegionalConfig {

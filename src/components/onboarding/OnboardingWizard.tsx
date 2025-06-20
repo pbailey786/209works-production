@@ -4,6 +4,8 @@ import { useUser } from '@clerk/nextjs';
 
 'use client';
 
+import {
+  import {
   CheckCircle,
   ArrowRight,
   ArrowLeft,
@@ -17,7 +19,7 @@ import { useUser } from '@clerk/nextjs';
   Building2,
   Users,
   Target,
-  Zap,
+  Zap
 } from 'lucide-react';
 
 interface OnboardingStep {

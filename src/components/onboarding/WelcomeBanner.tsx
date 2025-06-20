@@ -3,6 +3,8 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   CheckCircle,
   ArrowRight,
   X,
@@ -14,7 +16,7 @@ import { useRouter } from 'next/navigation';
   Building2,
   Target,
   Star,
-  TrendingUp,
+  TrendingUp
 } from 'lucide-react';
 
 interface WelcomeBannerProps {

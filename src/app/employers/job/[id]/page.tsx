@@ -4,6 +4,8 @@ import { useUser } from '@clerk/nextjs';
 
 'use client';
 
+import {
+  import {
   Eye,
   Users,
   Calendar,
@@ -26,7 +28,7 @@ import { useUser } from '@clerk/nextjs';
   TrendingDown,
   AlertCircle,
   CheckCircle,
-  XCircle,
+  XCircle
 } from 'lucide-react';
 
 export default function EmployerJobDetailsPage() {

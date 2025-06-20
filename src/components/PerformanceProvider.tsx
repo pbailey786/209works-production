@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 
 'use client';
 
+import {
+  import {
   reportWebVitals,
-  PerformanceMonitor,
+  PerformanceMonitor
 } from '@/lib/performance/performance-monitor';
 
 export default function PerformanceProvider({

@@ -3,6 +3,8 @@ import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 
 'use client';
 
+import {
+  import {
   Check,
   Star,
   Zap,
@@ -16,7 +18,7 @@ import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
   Sparkles,
   TrendingUp,
   Instagram,
-  AlertCircle,
+  AlertCircle
 } from 'lucide-react';
 
 interface JobPostingCheckoutProps {

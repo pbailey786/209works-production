@@ -5,15 +5,19 @@ import { prisma } from '@/lib/database/prisma';
 
   createSuccessResponse,
   AuthorizationError,
-} from '@/lib/errors/api-errors';
+} from '@/components/ui/card';
+import {
+  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags,
-} from '@/lib/cache/redis';
+  invalidateCacheByTags
+} from '@/components/ui/card';
+import {
+  import {
   calculateOffsetPagination,
-  createPaginatedResponse,
+  createPaginatedResponse
 } from '@/lib/cache/pagination';
 
 // GET /api/ads - List advertisements (admins see all, employers see their own)

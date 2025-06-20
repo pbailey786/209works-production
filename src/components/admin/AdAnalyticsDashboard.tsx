@@ -5,12 +5,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
+import {
+  import {
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -23,7 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
   ArrowLeft,
   Download,
   RefreshCw,
-  AlertCircle,
+  AlertCircle
 } from 'lucide-react';
 
 interface AdAnalyticsProps {

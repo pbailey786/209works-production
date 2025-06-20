@@ -3,6 +3,8 @@ import { formatDistanceToNow } from 'date-fns';
 
 'use client';
 
+import {
+  import {
   Users,
   Search,
   Filter,
@@ -19,7 +21,7 @@ import { formatDistanceToNow } from 'date-fns';
   FileText,
   Mail,
   Phone,
-  ExternalLink,
+  ExternalLink
 } from 'lucide-react';
 
 interface Application {

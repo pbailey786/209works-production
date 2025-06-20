@@ -9,11 +9,13 @@ import { useRouter } from 'next/navigation';
 
 'use client';
 
+import {
+  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from '@/components/ui/card';
 
 interface PricingCardProps {
