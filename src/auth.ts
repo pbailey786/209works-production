@@ -12,7 +12,7 @@ const authConfig = {
   adapter: PrismaAdapter(prisma),
   
   session: {
-    strategy: 'database' as const,
+    strategy: 'jwt' as const,
     maxAge: 7 * 24 * 60 * 60, // 7 days
     updateAge: 24 * 60 * 60, // 24 hours
   },
@@ -124,44 +124,16 @@ const authConfig = {
           email: user.email,
           role: user.role
         })
+
+        // For NextAuth v5 beta, ensure sub is set properly
+        token.sub = user.id
         token.id = user.id
-        token.role = user.role || 'jobseeker'
         token.email = user.email
         token.name = user.name
+        token.role = user.role || 'jobseeker'
         token.onboardingCompleted = (user as any).onboardingCompleted || false
         token.twoFactorEnabled = (user as any).twoFactorEnabled || false
         token.isEmailVerified = (user as any).isEmailVerified || false
-      }
-
-      // If we don't have user ID but have email, fetch from database
-      if (!token.id && token.email) {
-        try {
-          console.log('🔧 Fetching user ID from database for email:', token.email)
-          const dbUser = await prisma.user.findUnique({
-            where: { email: token.email as string },
-            select: {
-              id: true,
-              email: true,
-              name: true,
-              role: true,
-              onboardingCompleted: true,
-              twoFactorEnabled: true,
-              isEmailVerified: true,
-            }
-          })
-
-          if (dbUser) {
-            console.log('🔧 Found user in database, updating token:', { id: dbUser.id, role: dbUser.role })
-            token.id = dbUser.id
-            token.role = dbUser.role
-            token.name = dbUser.name
-            token.onboardingCompleted = dbUser.onboardingCompleted
-            token.twoFactorEnabled = dbUser.twoFactorEnabled
-            token.isEmailVerified = dbUser.isEmailVerified
-          }
-        } catch (error) {
-          console.error('❌ Failed to fetch user data in JWT callback:', error)
-        }
       }
 
       console.log('🔧 JWT callback returning token:', {
@@ -174,52 +146,52 @@ const authConfig = {
       return token
     },
 
-    async session({ session, user }: any) {
-      console.log('🔧 NextAuth v5 Database Session callback triggered:', {
+    async session({ session, token }: any) {
+      console.log('🔧 NextAuth v5 JWT Session callback triggered:', {
         hasSession: !!session,
-        hasUser: !!user,
-        hasSessionUser: !!session?.user,
-        userId: user?.id,
-        userEmail: user?.email,
-        userRole: user?.role
+        hasToken: !!token,
+        sessionExpires: session?.expires,
+        tokenSub: token?.sub,
+        tokenEmail: token?.email
       })
 
-      // With database strategy, user comes from database directly
+      // Return early if no session
       if (!session) {
-        console.warn('🔧 Session callback: No session object provided')
-        return { user: {}, expires: '' }
+        console.warn('🔧 Session callback: No session provided')
+        return null
       }
 
-      if (user) {
-        // User data comes from database with database strategy
-        console.log('🔧 Adding database user data to session...')
+      // Return early if no token
+      if (!token) {
+        console.warn('🔧 Session callback: No token provided')
+        return session
+      }
 
-        const enhancedSession = {
-          ...session,
+      // Build the session with explicit typing for NextAuth v5 beta
+      try {
+        const userSession = {
+          expires: session.expires,
           user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role || 'jobseeker',
-            onboardingCompleted: user.onboardingCompleted || false,
-            twoFactorEnabled: user.twoFactorEnabled || false,
-            isEmailVerified: user.isEmailVerified || false
+            id: token.id || token.sub,
+            email: token.email,
+            name: token.name,
+            role: token.role || 'jobseeker',
+            onboardingCompleted: token.onboardingCompleted || false,
+            twoFactorEnabled: token.twoFactorEnabled || false,
+            isEmailVerified: token.isEmailVerified || false
           }
         }
 
-        console.log('🔧 Enhanced database session created:', {
-          user: {
-            id: enhancedSession.user.id,
-            email: enhancedSession.user.email,
-            name: enhancedSession.user.name,
-            role: enhancedSession.user.role,
-            onboardingCompleted: enhancedSession.user.onboardingCompleted
-          }
+        console.log('🔧 JWT Session created successfully:', {
+          expires: userSession.expires,
+          userId: userSession.user.id,
+          userEmail: userSession.user.email,
+          userRole: userSession.user.role
         })
 
-        return enhancedSession
-      } else {
-        console.warn('🔧 Session callback: No user data provided')
+        return userSession
+      } catch (error) {
+        console.error('🔧 Error creating session:', error)
         return session
       }
     },
