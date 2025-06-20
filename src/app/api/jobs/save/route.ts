@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
 
 // GET /api/jobs/save - Get saved jobs for the authenticated user
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    // Check authentication with Clerk
+    const { userId } = auth();
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user from database
+    // Get user from database using Clerk user ID
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { clerkId: userId },
     });
 
     if (!user) {
@@ -66,15 +65,15 @@ export async function GET(req: NextRequest) {
 // POST /api/jobs/save - Save or unsave a job for the authenticated user
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    // Check authentication with Clerk
+    const { userId } = auth();
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user from database
+    // Get user from database using Clerk user ID
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { clerkId: userId },
     });
 
     if (!user) {

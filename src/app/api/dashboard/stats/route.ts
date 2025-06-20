@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
-import { prisma } from '@/app/api/auth/prisma';
-import type { Session } from 'next-auth';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication - NextAuth v5 beta
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const { userId: clerkUserId } = auth();
+    if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { clerkId: clerkUserId },
       select: { id: true },
     });
 

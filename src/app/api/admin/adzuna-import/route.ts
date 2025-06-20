@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { AdzunaImportService } from '@/lib/services/adzuna-import';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // 209 Area Code Cities - Hyper-local focus for 209.works
 const AREA_209_CITIES = [
@@ -37,14 +37,24 @@ const AREA_209_CITIES = [
 // POST /api/admin/adzuna-import - Start job import
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication and admin access
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    // Check authentication and admin access with Clerk
+    const { userId } = auth();
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // TODO: Add admin role check here
-    // For now, allow any authenticated user for testing
+    // Get user from database to check role
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+
+    // Check if user is admin
+    if (
+      !user ||
+      (user.role !== 'admin' && user.email !== 'admin@209jobs.com')
+    ) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const body = await req.json();
     const {

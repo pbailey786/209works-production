@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useUser, useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -33,12 +33,13 @@ const Footer = React.lazy(() => import('../components/Footer'));
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
 
-  // Debug session state
-  console.log('🏠 Homepage - Session status:', status);
-  console.log('🏠 Homepage - Session data:', session);
-  console.log('🏠 Homepage - User:', session?.user);
+  // Debug Clerk auth state
+  console.log('🏠 Homepage - Is signed in:', isSignedIn);
+  console.log('🏠 Homepage - User:', user);
+  console.log('🏠 Homepage - Is loaded:', isLoaded);
 
   const handleSearch = (query: string) => {
     setLoading(true);

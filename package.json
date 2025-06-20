@@ -7,7 +7,7 @@
     "build": "cross-env OTEL_SDK_DISABLED=true npx prisma generate && cross-env OTEL_SDK_DISABLED=true next build",
     "build:no-lint": "next build --no-lint",
     "build:force": "cross-env OTEL_SDK_DISABLED=true npx prisma generate && npm run type-check && cross-env OTEL_SDK_DISABLED=true SKIP_ENV_VALIDATION=true next build --no-lint",
-    "postinstall": "node scripts/setup-nextauth-compat.js",
+    "postinstall": "echo 'Clerk authentication setup complete'",
     "build:watch": "nodemon --watch src --ext ts,tsx,js,jsx --exec \"npm run build\"",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",

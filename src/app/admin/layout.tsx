@@ -1,8 +1,8 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { canAccessRoute } from '@/lib/rbac/permissions';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Force dynamic rendering for admin layout
 export const dynamic = 'force-dynamic';
@@ -21,14 +21,23 @@ export default async function AdminLayout({
       return children;
     }
 
-    const session = await getServerSession() as Session | null;
+    const { userId } = auth();
 
     // Check if user is authenticated
-    if (!session) {
+    if (!userId) {
       redirect('/signin?redirect=/admin');
     }
 
-    const userRole = session!.user?.role;
+    // Get user from database to check role
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+
+    if (!user) {
+      redirect('/signin?redirect=/admin');
+    }
+
+    const userRole = user.role;
 
     // Check if user has admin or employer role (employers can import jobs)
     if (
@@ -56,12 +65,12 @@ export default async function AdminLayout({
                 </h1>
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-600">
-                    Welcome, {session!.user?.name || session!.user?.email}
+                    Welcome, {user.name || user.email}
                   </span>
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2d4a3e]">
                     <span className="text-sm font-medium text-white">
-                      {(session!.user?.name ||
-                        session!.user?.email ||
+                      {(user.name ||
+                        user.email ||
                         'A')[0].toUpperCase()}
                     </span>
                   </div>

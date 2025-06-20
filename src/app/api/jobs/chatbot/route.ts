@@ -66,13 +66,13 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get('sessionId');
 
-    // Get user session if authenticated - NextAuth v5 requires request object
-    const session = await auth() as Session | null;
+    // Get user session if authenticated with Clerk
+    const { userId: clerkUserId } = auth();
     let userId;
 
-    if (session?.user?.email) {
+    if (clerkUserId) {
       const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
+        where: { clerkId: clerkUserId },
       });
       userId = user?.id;
     }

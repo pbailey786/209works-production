@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -17,14 +17,15 @@ import {
 } from 'lucide-react';
 
 export default function SimpleAdminPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
   const router = useRouter();
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
+    if (!isLoaded) return;
+
+    if (!isSignedIn || !user) {
       router.push('/signin?redirect=/admin-simple');
       return;
     }
@@ -34,9 +35,9 @@ export default function SimpleAdminPage() {
       .then(res => res.json())
       .then(data => setUserInfo(data))
       .catch(err => console.error('Error fetching user info:', err));
-  }, [session, status, router]);
+  }, [user, isLoaded, isSignedIn, router]);
 
-  if (status === 'loading') {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -44,11 +45,11 @@ export default function SimpleAdminPage() {
     );
   }
 
-  if (!session) {
+  if (!isSignedIn || !user) {
     return null;
   }
 
-  const userRole = (session.user as any)?.role;
+  const userRole = user.publicMetadata?.role as string;
   const isAdmin = userRole === 'admin' || userRole?.includes('admin');
 
   const adminLinks = [
@@ -113,7 +114,7 @@ export default function SimpleAdminPage() {
             </h1>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                {session.user?.email}
+                {user.emailAddresses?.[0]?.emailAddress}
               </span>
               <span className={`px-2 py-1 text-xs rounded ${
                 isAdmin ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -132,7 +133,7 @@ export default function SimpleAdminPage() {
           <h2 className="text-lg font-semibold mb-3">Debug Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <strong>Email:</strong> {session.user?.email}
+              <strong>Email:</strong> {user.emailAddresses?.[0]?.emailAddress}
             </div>
             <div>
               <strong>Role:</strong> {userRole || 'Not set'}
@@ -141,7 +142,7 @@ export default function SimpleAdminPage() {
               <strong>Is Admin:</strong> {isAdmin ? 'Yes' : 'No'}
             </div>
             <div>
-              <strong>Session Status:</strong> {status}
+              <strong>Auth Status:</strong> {isSignedIn ? 'Signed In' : 'Not Signed In'}
             </div>
           </div>
           
