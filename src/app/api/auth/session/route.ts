@@ -9,7 +9,7 @@ import type { Session } from 'next-auth';
  */
 export async function GET(req: NextRequest) {
   try {
-    // Get session with proper error handling
+    // Get session with proper error handling - NextAuth v5 requires request object
     const session = await getServerSession() as Session | null;
     
     // Validate session structure

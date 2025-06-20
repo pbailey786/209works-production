@@ -90,44 +90,71 @@ const authConfig = {
   ],
 
   callbacks: {
-    async jwt({ token, user, account }: any) {
-      console.log('🔧 NextAuth v5 JWT callback:', { 
+    async jwt({ token, user, account, profile }) {
+      console.log('🔧 NextAuth v5 JWT callback triggered:', { 
         hasToken: !!token, 
         hasUser: !!user, 
-        hasAccount: !!account 
+        hasAccount: !!account,
+        tokenSub: token?.sub,
+        userEmail: user?.email
       })
 
+      // On initial sign in, user object will be available
       if (user) {
-        console.log('🔧 Adding user data to token:', { 
+        console.log('🔧 Initial sign in - adding user data to token:', { 
           id: user.id, 
-          role: (user as any).role 
+          email: user.email,
+          role: user.role 
         })
-        token.role = (user as any).role || 'jobseeker'
         token.id = user.id
+        token.role = user.role || 'jobseeker'
+        token.email = user.email
       }
+
+      console.log('🔧 JWT callback returning token:', {
+        id: token.id,
+        email: token.email,
+        role: token.role,
+        sub: token.sub
+      })
 
       return token
     },
 
-    async session({ session, token }: any) {
-      console.log('🔧 NextAuth v5 Session callback:', { 
+    async session({ session, token }) {
+      console.log('🔧 NextAuth v5 Session callback triggered:', { 
         hasSession: !!session, 
-        hasToken: !!token 
+        hasToken: !!token,
+        hasSessionUser: !!session?.user,
+        tokenId: token?.id,
+        tokenEmail: token?.email,
+        tokenRole: token?.role
       })
 
-      if (token && session.user) {
-        console.log('🔧 Adding token data to session:', { 
-          id: token.id, 
-          role: token.role 
-        })
-        session.user.id = token.id as string
+      if (token && session?.user) {
+        console.log('🔧 Adding token data to session user...')
+        
+        // Ensure user object has all required fields
+        session.user.id = token.id as string || token.sub as string
+        session.user.email = token.email as string || session.user.email
         ;(session.user as any).role = token.role || 'jobseeker'
+
+        console.log('🔧 Session user updated:', {
+          id: session.user.id,
+          email: session.user.email,
+          role: (session.user as any).role
+        })
+      } else {
+        console.warn('🔧 Session callback: Missing token or session.user')
       }
 
-      console.log('🔧 Final session:', {
-        id: session.user?.id,
-        email: session.user?.email,
-        role: (session.user as any)?.role
+      console.log('🔧 Final session being returned:', {
+        user: {
+          id: session.user?.id,
+          email: session.user?.email,
+          name: session.user?.name,
+          role: (session.user as any)?.role
+        }
       })
 
       return session
@@ -188,14 +215,13 @@ const authConfig = {
   trustHost: true, // Important for production
 }
 
-// Create the NextAuth instance
-const nextAuthInstance = (NextAuth as any)(authConfig)
-
-// Export the destructured components
-export const handlers = nextAuthInstance.handlers
-export const auth = nextAuthInstance.auth  
-export const signIn = nextAuthInstance.signIn
-export const signOut = nextAuthInstance.signOut
+// For NextAuth v5, use the correct destructuring approach
+export const {
+  handlers,
+  auth,
+  signIn,
+  signOut
+} = NextAuth(authConfig)
 
 // Export the configuration for compatibility
 export { authConfig }

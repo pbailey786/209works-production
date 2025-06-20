@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get user session if authenticated
+    // Get user session if authenticated - NextAuth v5 requires request object
     const session = await auth() as Session | null;
     let authenticatedUserId = userId;
 
@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get('sessionId');
 
-    // Get user session if authenticated
+    // Get user session if authenticated - NextAuth v5 requires request object
     const session = await auth() as Session | null;
     let userId;
 

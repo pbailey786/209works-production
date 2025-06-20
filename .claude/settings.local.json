@@ -20,7 +20,8 @@
       "Bash(npm run list-users:*)",
       "Bash(cp:*)",
       "Bash(npm run dev:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Get current session
+    // Get current session - NextAuth v5 requires request object
     const session = await auth();
     
     // Validate configuration

@@ -43,17 +43,33 @@ async function checkDatabase(): Promise<{
 }> {
   const start = Date.now();
   try {
-    // Simple database query to check connectivity with timeout
-    const dbPromise = prisma.$queryRaw`SELECT 1`;
+    // Create a timeout promise
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Database query timeout')), 5000)
+      setTimeout(() => reject(new Error('Database query timeout')), 3000)
     );
     
-    await Promise.race([dbPromise, timeoutPromise]);
+    // Simple query to check connectivity
+    const queryPromise = prisma.$queryRaw`SELECT 1 as ping`;
+    
+    // Race between query and timeout
+    await Promise.race([queryPromise, timeoutPromise]);
+    
     const responseTime = Date.now() - start;
     return { status: 'healthy', responseTime };
   } catch (error) {
     const responseTime = Date.now() - start;
+    console.error('Database health check failed:', error);
+    
+    // Try to reconnect on failure
+    if (error instanceof Error && error.message.includes('timeout')) {
+      try {
+        await prisma.$disconnect();
+        await prisma.$connect();
+      } catch (reconnectError) {
+        console.error('Failed to reconnect to database:', reconnectError);
+      }
+    }
+    
     return {
       status: 'unhealthy',
       responseTime,
@@ -169,7 +185,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         externalServices.push(
           checkExternalAPI(
             'Google OAuth',
-            'https://accounts.google.com/.well-known/openid_configuration'
+            'https://accounts.google.com/.well-known/openid-configuration'
           )
         );
       }
