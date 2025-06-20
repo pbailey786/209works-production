@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { LazyOnVisible } from '@/components/ui/lazy-component';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SessionDebugPanel } from '@/components/debug/SessionDebugPanel';
 
 // Lazy load heavy components
 const BillingModal = React.lazy(() => import('@/components/billing/BillingModal'));
@@ -83,6 +84,31 @@ function DashboardContent() {
   console.log('🏢 Dashboard - Session status:', status);
   console.log('🏢 Dashboard - Session data:', session);
   console.log('🏢 Dashboard - User:', session?.user);
+
+  // Additional debugging for NextAuth v5
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      console.log('🔍 Detailed session analysis:', {
+        sessionExists: !!session,
+        userExists: !!session.user,
+        userId: session.user?.id,
+        userEmail: session.user?.email,
+        userRole: (session.user as any)?.role,
+        sessionExpires: session.expires,
+        fullSession: JSON.stringify(session, null, 2)
+      });
+
+      // Test direct API call to session endpoint
+      fetch('/api/auth/session')
+        .then(res => res.json())
+        .then(data => {
+          console.log('🌐 Direct API session call result:', data);
+        })
+        .catch(err => {
+          console.error('❌ Direct API session call failed:', err);
+        });
+    }
+  }, [status, session]);
 
   const [stats, setStats] = useState<DashboardStats>({
     totalJobs: 0,
@@ -779,6 +805,9 @@ function DashboardContent() {
           />
         </Suspense>
       )}
+
+      {/* Debug Panel - Remove in production */}
+      {process.env.NODE_ENV === 'development' && <SessionDebugPanel />}
     </div>
   );
 }

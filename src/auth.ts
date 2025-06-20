@@ -24,7 +24,9 @@ const authConfig = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: process.env.NODE_ENV === 'production',
+        // Force new cookies on secret change
+        maxAge: 7 * 24 * 60 * 60 // 7 days
       }
     }
   },
