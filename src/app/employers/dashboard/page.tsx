@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { LazyOnVisible } from '@/components/ui/lazy-component';
 import { Skeleton } from '@/components/ui/skeleton';
-import { SessionDebugPanel } from '@/components/debug/SessionDebugPanel';
+// Removed NextAuth debug panel
 
 // Lazy load heavy components
 const BillingModal = React.lazy(() => import('@/components/billing/BillingModal'));
@@ -73,42 +73,22 @@ interface Applicant {
 
 // Component that uses search params - needs to be wrapped in Suspense
 function DashboardContent() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isWelcome = searchParams.get('welcome') === 'true';
   const isPosted = searchParams.get('posted') === 'true';
   const isPurchaseSuccess = searchParams.get('purchase_success') === 'true' || searchParams.get('credit_purchase_success') === 'true';
 
-  // Debug session
-  console.log('🏢 Dashboard - Session status:', status);
-  console.log('🏢 Dashboard - Session data:', session);
-  console.log('🏢 Dashboard - User:', session?.user);
+  // Simplified auth state
+  const isAuthenticated = isSignedIn && !!user;
+  const isLoading = !isLoaded;
 
-  // Additional debugging for NextAuth v5
-  useEffect(() => {
-    if (status === 'authenticated' && session) {
-      console.log('🔍 Detailed session analysis:', {
-        sessionExists: !!session,
-        userExists: !!session.user,
-        userId: session.user?.id,
-        userEmail: session.user?.email,
-        userRole: (session.user as any)?.role,
-        sessionExpires: session.expires,
-        fullSession: JSON.stringify(session, null, 2)
-      });
-
-      // Test direct API call to session endpoint
-      fetch('/api/auth/session')
-        .then(res => res.json())
-        .then(data => {
-          console.log('🌐 Direct API session call result:', data);
-        })
-        .catch(err => {
-          console.error('❌ Direct API session call failed:', err);
-        });
-    }
-  }, [status, session]);
+  // Debug Clerk user
+  console.log('🏢 Dashboard - Clerk user:', user);
+  console.log('🏢 Dashboard - Is signed in:', isSignedIn);
+  console.log('🏢 Dashboard - Is loaded:', isLoaded);
 
   const [stats, setStats] = useState<DashboardStats>({
     totalJobs: 0,
@@ -226,17 +206,17 @@ function DashboardContent() {
 
   // Handle authentication redirect in useEffect
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!isLoading && !isAuthenticated) {
       router.push('/employers/signin');
-    } else if (status === 'authenticated' && session?.user) {
+    } else if (isAuthenticated && user) {
       // Check if user needs onboarding
       checkOnboardingStatus();
     }
-  }, [status, router, session]);
+  }, [isLoading, isAuthenticated, user, router]);
 
   // Handle purchase success - refresh credits
   useEffect(() => {
-    if (isPurchaseSuccess && status === 'authenticated') {
+    if (isPurchaseSuccess && isAuthenticated) {
       // Refresh credits after a short delay to ensure webhook has processed
       const refreshCredits = async () => {
         try {
@@ -256,7 +236,7 @@ function DashboardContent() {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [isPurchaseSuccess, status]);
+  }, [isPurchaseSuccess, isAuthenticated]);
 
   const checkOnboardingStatus = async () => {
     try {
@@ -336,7 +316,7 @@ function DashboardContent() {
     window.location.reload();
   };
 
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -347,7 +327,7 @@ function DashboardContent() {
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (!isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -446,7 +426,7 @@ function DashboardContent() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-[#2d4a3e]">
-              Hey {session?.user?.name?.split(' ')[0] || 'there'}! 👋
+              Hey {user?.firstName || user?.fullName?.split(' ')[0] || 'there'}! 👋
             </h1>
             <p className="mt-1 text-gray-600">
               Everything you need to hire great people, simplified.
@@ -820,8 +800,7 @@ function DashboardContent() {
         </Suspense>
       )}
 
-      {/* Debug Panel - Remove in production */}
-      {process.env.NODE_ENV === 'development' && <SessionDebugPanel />}
+      {/* Removed NextAuth debug panel */}
     </div>
   );
 }
