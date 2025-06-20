@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -38,7 +38,7 @@ const jobSeekerProfileSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session || !session.user || (session!.user as any).role !== 'jobseeker') {
       return NextResponse.json(
         { error: 'Authentication required. Only job seekers can create profiles.' },
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
 // GET /api/profile/jobseeker - Get job seeker profile
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session || !session.user || (session!.user as any).role !== 'jobseeker') {
       return NextResponse.json(
         { error: 'Authentication required' },

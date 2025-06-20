@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await auth();
 
     if (!session!.user?.email) {
       return NextResponse.json(

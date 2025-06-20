@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     console.log('🔧 JOB_POSTING_CONFIG loaded:', !!JOB_POSTING_CONFIG);
 
     // Check authentication
-    const session = (await getServerSession()) as Session | null;
+    const session = (await auth()) as Session | null;
     console.log('🔐 Session check:', !!session, session?.user?.email);
 
     if (!session?.user?.email) {

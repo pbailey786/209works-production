@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
@@ -94,7 +94,7 @@ Make this job posting compelling and authentic. Focus on attracting the right pe
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         {
@@ -254,7 +254,7 @@ ${data.applicationCTA || `Interested in this position? We'd love to hear from yo
 // GET endpoint to retrieve job post optimizers for an employer
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },

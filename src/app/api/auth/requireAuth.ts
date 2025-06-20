@@ -1,4 +1,4 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { NextRequest, NextResponse } from 'next/server';
 /**
  * Checks for a valid session. If not authenticated, returns a 401 response.
@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * Usage: Call at the top of your API route handler.
  */
 export async function requireAuth(req: NextRequest) {
-  const session = await getServerSession();
+  const session = await auth();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

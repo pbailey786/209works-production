@@ -11,7 +11,7 @@ import {
   type AISecurityContext,
   sanitizeUserData,
 } from '@/lib/middleware/ai-security';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { generateJobSearchResponse } from '@/lib/ai';
 
 // Type definitions for conversation messages

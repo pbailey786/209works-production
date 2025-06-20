@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import { z } from 'zod';
@@ -60,7 +60,7 @@ const approveJobSchema = z.object({
 // POST /api/employers/bulk-upload/approve - Approve and publish a single job
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { DuplicateDetectionService } from '@/lib/services/duplicate-detection';
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
@@ -8,7 +8,7 @@ import type { Session } from 'next-auth';
 export async function POST(req: NextRequest) {
   try {
     // Check authentication (admin or system)
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     const apiKey = req.headers.get('x-api-key');
     
     // Allow admin users or valid API key
@@ -222,7 +222,7 @@ function generateRecommendations(riskAssessment: any, duplicates: any) {
 export async function GET(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     const apiKey = req.headers.get('x-api-key');
     
     const isAuthorized = (session?.user && (session.user as any).role === 'admin') || 

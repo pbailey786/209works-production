@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     
     // Only allow admins or during development
     if (!session?.user?.email || (session.user as any).role !== 'admin') {

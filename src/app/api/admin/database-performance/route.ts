@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { OptimizedJobSearchService } from '@/lib/database/optimized-queries';
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(
@@ -188,7 +188,7 @@ function generateRecommendations(
 // Support POST for manual refresh and analysis
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(

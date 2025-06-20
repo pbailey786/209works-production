@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import type { Session } from 'next-auth';
 import { prisma } from '@/lib/database/prisma';
 import { stripe } from '@/lib/stripe';
@@ -19,7 +19,7 @@ const upsellCheckoutSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json(

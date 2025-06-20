@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { templateManager } from '@/lib/email/template-manager';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import type { Session } from 'next-auth';
@@ -7,7 +7,7 @@ import type { Session } from 'next-auth';
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

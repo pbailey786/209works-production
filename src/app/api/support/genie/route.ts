@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/lib/openai';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { z } from 'zod';
 import type { Session } from 'next-auth';
 
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // Check authentication
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

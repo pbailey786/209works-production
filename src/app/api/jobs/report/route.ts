@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/app/api/auth/prisma';
 import type { Session } from 'next-auth';
 
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get session for additional context
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     // Get user ID from database if session exists
     let sessionUserId;

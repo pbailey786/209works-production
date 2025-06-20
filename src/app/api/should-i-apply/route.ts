@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { getJobMatchScore } from '@/lib/matching';
 import { ShouldIApplyAnalysisService } from '@/lib/llm/shouldIApplyAnalysis';
@@ -14,7 +14,7 @@ const shouldIApplySchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     console.log('🤔 Should I Apply API called');
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       console.log('❌ No session found');

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { openai } from '@/lib/openai';
 import { isValidResumeFile } from '@/lib/fileUpload';
 import type { Session } from 'next-auth';
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       nodeEnv: process.env.NODE_ENV,
     });
 
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({
         error: 'Unauthorized',

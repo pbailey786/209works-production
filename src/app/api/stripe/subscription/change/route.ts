@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { stripe, STRIPE_PRICE_IDS } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
@@ -15,7 +15,7 @@ const changeSubscriptionSchema = z.object({
 // POST /api/stripe/subscription/change - Upgrade or downgrade subscription
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
 // GET /api/stripe/subscription/change - Get change preview
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json(

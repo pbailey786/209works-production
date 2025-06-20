@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { checkAuthEnvironment } from '@/lib/auth/env-checker';
 
 export async function GET(request: NextRequest) {
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     let sessionError = null;
     
     try {
-      sessionData = await getServerSession();
+      sessionData = await auth();
       console.log('🔍 Server session data:', sessionData);
     } catch (error) {
       sessionError = error instanceof Error ? error.message : 'Unknown session error';

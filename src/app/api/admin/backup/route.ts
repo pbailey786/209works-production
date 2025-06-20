@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { createDatabaseBackup } from '@/lib/backup/database-backup';
@@ -18,7 +18,7 @@ interface BackupResult {
 // GET - List all backups
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
 // POST - Create new backup
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
 // DELETE - Delete backup
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

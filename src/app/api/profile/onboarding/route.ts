@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { Session } from 'next-auth';
@@ -38,7 +38,7 @@ const onboardingSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     console.log('🚀 Onboarding API called');
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       console.log('❌ No session or email found');
@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
 // GET endpoint to check onboarding status
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

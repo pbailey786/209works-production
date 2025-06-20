@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { isResumeParsingAvailable, getEnvironmentConfig } from '@/lib/env-validation';
 import { isValidResumeFile } from '@/lib/fileUpload';
 import { prisma } from '@/lib/database/prisma';
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Test authentication
     console.log('🔍 STEP 2: Testing authentication...');
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({
         error: 'Authentication failed',

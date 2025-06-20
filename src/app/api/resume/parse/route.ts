@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

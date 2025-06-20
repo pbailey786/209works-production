@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { emailService } from '@/lib/email/email-service';
 import { templateManager } from '@/lib/email/template-manager';
 import { emailAgent } from '@/lib/agents/email-agent';
@@ -8,7 +8,7 @@ import type { Session } from 'next-auth';
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin permissions
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin permissions
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }

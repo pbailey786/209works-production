@@ -7,7 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fall
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as any;
+    const session = await auth() as any;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession() as any;
+    const session = await auth() as any;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

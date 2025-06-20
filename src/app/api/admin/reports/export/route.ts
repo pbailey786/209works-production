@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
@@ -282,7 +282,7 @@ async function generateReportData(
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

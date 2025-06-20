@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { PaymentRetryService } from '@/lib/services/payment-retry';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
@@ -12,7 +12,7 @@ const manualRetrySchema = z.object({
 // POST /api/admin/payment-retry - Manual payment retry for admin/customer service
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
 // GET /api/admin/payment-retry - Get payment failure statistics and pending retries
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json(

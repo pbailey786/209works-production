@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '../../auth/prisma';
 import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
 
     // Check if user is admin
     if (!session?.user || session.user.role !== 'admin') {
@@ -196,7 +196,7 @@ export async function GET(request: NextRequest) {
 // POST endpoint to log AI events for tracking
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

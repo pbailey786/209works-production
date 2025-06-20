@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import type { Session } from 'next-auth';
@@ -10,7 +10,7 @@ export async function POST(
 ) {
   try {
     // Check authentication
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         {

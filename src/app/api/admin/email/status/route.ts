@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { emailService } from '@/lib/email/email-service';
 import { emailAgent } from '@/lib/agents/email-agent';
@@ -8,7 +8,7 @@ import type { Session } from 'next-auth';
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const session = await getServerSession() as Session | null;
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

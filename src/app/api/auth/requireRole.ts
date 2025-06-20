@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import type { Session } from 'next-auth';
 
 /**
@@ -13,7 +13,7 @@ export async function requireRole(
   req: NextRequest,
   allowedRoles: string | string[]
 ) {
-  const session = await getServerSession() as Session | null;
+  const session = await auth() as Session | null;
   if (!session || !session.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
