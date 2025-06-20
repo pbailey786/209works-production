@@ -12,7 +12,7 @@ const authConfig = {
   adapter: PrismaAdapter(prisma),
   
   session: {
-    strategy: 'jwt' as const,
+    strategy: 'database' as const,
     maxAge: 7 * 24 * 60 * 60, // 7 days
     updateAge: 24 * 60 * 60, // 24 hours
   },
@@ -52,7 +52,10 @@ const authConfig = {
               id: 'test-user-id',
               email: 'test@test.com',
               name: 'Test User',
-              role: 'jobseeker'
+              role: 'jobseeker',
+              onboardingCompleted: false,
+              twoFactorEnabled: false,
+              isEmailVerified: true
             }
           }
 
@@ -86,7 +89,10 @@ const authConfig = {
             id: user.id,
             email: user.email,
             name: user.name || user.email,
-            role: user.role || 'jobseeker'
+            role: user.role || 'jobseeker',
+            onboardingCompleted: user.onboardingCompleted || false,
+            twoFactorEnabled: user.twoFactorEnabled || false,
+            isEmailVerified: user.isEmailVerified || false
           }
         } catch (error) {
           console.error('❌ Auth error:', error)
@@ -122,6 +128,9 @@ const authConfig = {
         token.role = user.role || 'jobseeker'
         token.email = user.email
         token.name = user.name
+        token.onboardingCompleted = (user as any).onboardingCompleted || false
+        token.twoFactorEnabled = (user as any).twoFactorEnabled || false
+        token.isEmailVerified = (user as any).isEmailVerified || false
       }
 
       // If we don't have user ID but have email, fetch from database
@@ -165,63 +174,54 @@ const authConfig = {
       return token
     },
 
-    async session({ session, token, trigger, newSession }: any) {
-      console.log('🔧 NextAuth v5 Session callback triggered:', {
+    async session({ session, user }: any) {
+      console.log('🔧 NextAuth v5 Database Session callback triggered:', {
         hasSession: !!session,
-        hasToken: !!token,
+        hasUser: !!user,
         hasSessionUser: !!session?.user,
-        tokenId: token?.id,
-        tokenEmail: token?.email,
-        tokenRole: token?.role,
-        trigger,
-        newSession
+        userId: user?.id,
+        userEmail: user?.email,
+        userRole: user?.role
       })
 
-      // Ensure session object exists
+      // With database strategy, user comes from database directly
       if (!session) {
         console.warn('🔧 Session callback: No session object provided')
+        return { user: {}, expires: '' }
+      }
+
+      if (user) {
+        // User data comes from database with database strategy
+        console.log('🔧 Adding database user data to session...')
+
+        const enhancedSession = {
+          ...session,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role || 'jobseeker',
+            onboardingCompleted: user.onboardingCompleted || false,
+            twoFactorEnabled: user.twoFactorEnabled || false,
+            isEmailVerified: user.isEmailVerified || false
+          }
+        }
+
+        console.log('🔧 Enhanced database session created:', {
+          user: {
+            id: enhancedSession.user.id,
+            email: enhancedSession.user.email,
+            name: enhancedSession.user.name,
+            role: enhancedSession.user.role,
+            onboardingCompleted: enhancedSession.user.onboardingCompleted
+          }
+        })
+
+        return enhancedSession
+      } else {
+        console.warn('🔧 Session callback: No user data provided')
         return session
       }
-
-      // Ensure user object exists in session
-      if (!session.user) {
-        console.log('🔧 Creating user object in session')
-        session.user = {}
-      }
-
-      if (token) {
-        console.log('🔧 Adding token data to session user...')
-
-        // Ensure user object has all required fields from token
-        session.user.id = token.id as string || token.sub as string
-        session.user.email = token.email as string || session.user.email
-        session.user.name = token.name as string || session.user.name
-        ;(session.user as any).role = token.role || 'jobseeker'
-        ;(session.user as any).onboardingCompleted = token.onboardingCompleted || false
-        ;(session.user as any).twoFactorEnabled = token.twoFactorEnabled || false
-        ;(session.user as any).isEmailVerified = token.isEmailVerified || false
-
-        console.log('🔧 Session user updated:', {
-          id: session.user.id,
-          email: session.user.email,
-          name: session.user.name,
-          role: (session.user as any).role,
-          onboardingCompleted: (session.user as any).onboardingCompleted
-        })
-      } else {
-        console.warn('🔧 Session callback: No token provided')
-      }
-
-      console.log('🔧 Final session being returned:', {
-        user: {
-          id: session.user?.id,
-          email: session.user?.email,
-          name: session.user?.name,
-          role: (session.user as any)?.role
-        }
-      })
-
-      return session
     },
 
     async signIn({ user, account, profile }: any) {
