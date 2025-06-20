@@ -2,11 +2,10 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import './globals.css';
 import Header from '../components/Header';
-import SessionProviderWrapper from '../components/SessionProviderWrapper-enhanced';
+import { ClerkProvider } from '@clerk/nextjs';
 import PerformanceProvider from '../components/PerformanceProvider';
 import { Toaster } from '@/components/ui/toaster';
-import { SessionDebugger } from '@/components/SessionDebugger';
-import SessionTester from '@/components/SessionTester';
+// Removed NextAuth debug components
 import SecurityErrorHandler from '@/components/SecurityErrorHandler';
 import TimeoutDetector from '@/components/TimeoutDetector';
 import { headers } from 'next/headers';
@@ -127,7 +126,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} min-h-screen antialiased`}
       >
         <SecurityErrorHandler />
-        <SessionProviderWrapper>
+        <ClerkProvider>
           <PerformanceProvider>
             {/* Skip Navigation Link */}
             <a
@@ -140,12 +139,11 @@ export default function RootLayout({
             <main id="main-content" className="min-h-screen" role="main">
               {children}
             </main>
-            <SessionDebugger />
-            <SessionTester />
+            {/* Removed NextAuth debug components */}
             <TimeoutDetector />
             <Toaster />
           </PerformanceProvider>
-        </SessionProviderWrapper>
+        </ClerkProvider>
       </body>
     </html>
   );

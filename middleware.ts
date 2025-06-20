@@ -1,153 +1,113 @@
-import { auth } from '@/auth'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
-export default auth((req: NextRequest & { auth: any }) => {
-  console.log('🛡️ Middleware v5 processing:', req.nextUrl.pathname)
-  
-  const { pathname } = req.nextUrl
-  const session = req.auth
+// Define protected routes that require authentication
+const isProtectedRoute = createRouteMatcher([
+  '/employers/dashboard(.*)',
+  '/employers/jobs(.*)',
+  '/employers/candidates(.*)',
+  '/employers/account(.*)',
+  '/admin(.*)',
+  '/dashboard(.*)',
+  '/profile(.*)',
+  '/applications(.*)',
+  '/saved-jobs(.*)',
+  '/job-alerts(.*)',
+]);
 
-  console.log('🛡️ Session exists:', !!session)
-  if (session?.user) {
-    console.log('🛡️ User data in middleware:', {
-      id: session.user.id,
-      email: session.user.email,
-      role: (session.user as any)?.role,
-      hasRole: !!(session.user as any)?.role
-    })
-  } else {
-    console.log('🛡️ No session.user found in middleware')
+// Define employer-only routes
+const isEmployerRoute = createRouteMatcher([
+  '/employers(.*)',
+]);
+
+// Define admin-only routes
+const isAdminRoute = createRouteMatcher([
+  '/admin(.*)',
+]);
+
+// Define job seeker routes
+const isJobSeekerRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/profile(.*)',
+  '/applications(.*)',
+  '/saved-jobs(.*)',
+  '/job-alerts(.*)',
+]);
+
+export default clerkMiddleware((auth, req) => {
+  const { pathname } = req.nextUrl;
+  const { userId, sessionClaims } = auth();
+
+  console.log('🛡️ Clerk Middleware processing:', pathname);
+  console.log('🛡️ User ID:', userId);
+  console.log('🛡️ Session claims:', sessionClaims);
+
+  // Protect routes that require authentication
+  if (isProtectedRoute(req)) {
+    auth().protect();
   }
 
-  // Routes that require email verification
-  const emailVerificationRequired = [
-    '/employers',
-    '/admin',
-    '/profile',
-    '/applications',
-    '/saved-jobs',
-    '/job-alerts',
-    '/apply'
-  ]
+  // Role-based access control
+  if (userId && sessionClaims) {
+    const userRole = sessionClaims.metadata?.role || sessionClaims.publicMetadata?.role;
+    console.log('🛡️ User role:', userRole);
 
-  // Check if email verification is required for this route
-  const requiresVerification = emailVerificationRequired.some(route =>
-    pathname.startsWith(route)
-  )
-
-  // Comprehensive Role-Based Access Control (RBAC)
-  if (session?.user) {
-    const userRole = (session.user as any)?.role
-    console.log('🛡️ User data for RBAC:', { 
-      id: session.user.id, 
-      role: userRole, 
-      email: session.user.email,
-    })
-
-    // Check if session has required user data
-    if (!session.user.id) {
-      console.warn('⚠️ Session missing user ID - session may be incomplete')
-      // Allow navigation but log the issue
+    // If user is authenticated and visiting root, redirect based on role
+    if (pathname === '/') {
+      if (userRole === 'admin') {
+        return NextResponse.redirect(new URL('/admin', req.url));
+      }
+      if (userRole === 'employer') {
+        return NextResponse.redirect(new URL('/employers/dashboard', req.url));
+      }
+      // Job seekers stay on home page
+      return NextResponse.next();
     }
 
-    // Define role-specific protected routes
-    const jobSeekerRoutes = ['/dashboard', '/profile', '/applications', '/saved-jobs', '/job-alerts']
-    const employerRoutes = ['/employers']
-    const adminRoutes = ['/admin']
-
-    // Check if current path matches any protected route patterns
-    const isJobSeekerRoute = jobSeekerRoutes.some(route =>
-      pathname === route || pathname.startsWith(route + '/')
-    )
-    const isEmployerRoute = employerRoutes.some(route =>
-      pathname === route || pathname.startsWith(route + '/')
-    )
-    const isAdminRoute = adminRoutes.some(route =>
-      pathname === route || pathname.startsWith(route + '/')
-    )
-
-    // Role-based access control
+    // Role-based route protection
     if (userRole === 'employer') {
       // Employers trying to access job seeker routes
-      if (isJobSeekerRoute) {
-        return NextResponse.redirect(new URL('/employers/dashboard', req.url))
+      if (isJobSeekerRoute(req)) {
+        return NextResponse.redirect(new URL('/employers/dashboard', req.url));
       }
       // Redirect generic /dashboard to employer dashboard
       if (pathname === '/dashboard') {
-        return NextResponse.redirect(new URL('/employers/dashboard', req.url))
+        return NextResponse.redirect(new URL('/employers/dashboard', req.url));
       }
     } else if (userRole === 'jobseeker') {
       // Job seekers trying to access employer routes
-      if (isEmployerRoute) {
-        return NextResponse.redirect(new URL('/dashboard', req.url))
+      if (isEmployerRoute(req)) {
+        return NextResponse.redirect(new URL('/dashboard', req.url));
       }
     } else if (userRole === 'admin') {
       // Admins have access to all routes, no restrictions
     } else {
-      // Unknown role - redirect to home
-      if (isJobSeekerRoute || isEmployerRoute || isAdminRoute) {
-        return NextResponse.redirect(new URL('/', req.url))
+      // Unknown role - redirect to home for protected routes
+      if (isJobSeekerRoute(req) || isEmployerRoute(req) || isAdminRoute(req)) {
+        return NextResponse.redirect(new URL('/', req.url));
       }
     }
-  }
 
-  // If user is authenticated and visiting root, redirect based on role
-  if (pathname === '/' && session?.user) {
-    const userRole = (session.user as any)?.role
-    if (userRole === 'admin') {
-      return NextResponse.redirect(new URL('/admin', req.url))
+    // Protect admin routes
+    if (isAdminRoute(req) && userRole !== 'admin') {
+      return NextResponse.redirect(new URL('/signin?redirect=/admin', req.url));
     }
-    if (userRole === 'employer') {
-      return NextResponse.redirect(new URL('/employers/dashboard', req.url))
-    }
-    // Job seekers stay on home page
-    return NextResponse.next()
-  }
 
-  // Protect admin routes
-  if (pathname.startsWith('/admin')) {
-    // If no database URL, allow access to show error page
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.next()
-    }
-    if (!session?.user || (session.user as any)?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/signin?redirect=/admin', req.url))
+    // Protect employer routes
+    if (isEmployerRoute(req) && userRole !== 'employer') {
+      return NextResponse.redirect(new URL('/employers/signin?redirect=' + encodeURIComponent(pathname), req.url));
     }
   }
 
-  // Protect employer routes
-  if (pathname.startsWith('/employers')) {
-    console.log('🛡️ Checking employer route access:', {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      userRole: (session?.user as any)?.role,
-      isEmployer: (session?.user as any)?.role === 'employer',
-      pathname
-    })
-
-    if (!session?.user || (session.user as any)?.role !== 'employer') {
-      console.log('🚫 Redirecting to employer signin - insufficient permissions')
-      return NextResponse.redirect(new URL('/employers/signin?redirect=' + encodeURIComponent(pathname), req.url))
-    }
-
-    console.log('✅ Employer route access granted')
-  }
-
-  console.log('🛡️ Middleware complete, allowing request')
-  return NextResponse.next()
-})
+  console.log('🛡️ Clerk middleware complete, allowing request');
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes) - API routes handle their own auth
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * Only protect page routes, not API routes
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
-}
+};

@@ -1,5 +1,5 @@
 'use client';
-import { signIn, signOut } from 'next-auth/react';
+import { useUser, useAuth, SignInButton, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -26,19 +26,17 @@ import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { useEnhancedSession } from '@/hooks/useEnhancedSession';
+// Removed NextAuth session hook
 
 export default function Header() {
-  const { session, status, isLoading, isAuthenticated, user, error } = useEnhancedSession();
+  const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
+  // Removed user menu state - Clerk handles this
 
-  // Log session errors
-  if (error) {
-    console.error('🚨 HEADER: Session error detected', error);
-  }
+  // Simplified auth state
+  const isAuthenticated = isSignedIn && !!user;
+  const isLoading = !isLoaded;
 
   const navigation = [
     { name: 'Find Jobs', href: '/jobs', icon: Search },
@@ -51,7 +49,7 @@ export default function Header() {
   const getUserNavigation = () => {
     if (!user) return [];
 
-    const userRole = user.role;
+    const userRole = user.publicMetadata?.role as string;
 
     if (userRole === 'employer') {
       return [
@@ -81,32 +79,7 @@ export default function Header() {
 
   const userNavigation = getUserNavigation();
 
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    setAuthError(null);
-
-    try {
-      await signOut({
-        redirect: false,
-        callbackUrl: '/',
-      });
-      // Redirect to home page after sign out
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Sign out error:', error);
-      setAuthError('Failed to sign out. Please try again.');
-
-      // Clear error after 3 seconds
-      setTimeout(() => setAuthError(null), 3000);
-    } finally {
-      setIsSigningOut(false);
-    }
-  };
-
-  const handleSignIn = () => {
-    // Navigate to the job seeker sign-in page
-    window.location.href = '/signin';
-  };
+  // Clerk handles sign-in/sign-out automatically
 
   return (
     <header
@@ -200,130 +173,54 @@ export default function Header() {
 
             {!isLoading && !isAuthenticated && (
               <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  onClick={handleSignIn}
-                  className="text-gray-700 hover:text-[#2d4a3e]"
-                >
-                  Sign In
-                </Button>
-                <Button
-                  asChild
-                  className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
-                >
-                  <Link href="/signup">Sign Up</Link>
-                </Button>
+                <SignInButton mode="modal">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-700 hover:text-[#2d4a3e]"
+                  >
+                    Sign In
+                  </Button>
+                </SignInButton>
+                <SignInButton mode="modal">
+                  <Button
+                    className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
+                  >
+                    Sign Up
+                  </Button>
+                </SignInButton>
               </div>
             )}
 
             {isAuthenticated && user && (
               <div className="relative">
                 <div className="flex items-center space-x-3">
-                  {/* User Menu Dropdown */}
-                  <div className="relative">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                      disabled={isSigningOut}
-                      className={cn(
-                        'flex h-10 items-center space-x-2 rounded-lg px-3',
-                        'hover:bg-gray-100 focus:ring-2 focus:ring-blue-500',
-                        isUserMenuOpen && 'bg-gray-100'
-                      )}
-                      aria-expanded={isUserMenuOpen}
-                      aria-haspopup="true"
-                      aria-label={`User menu for ${user.name || user.email}`}
-                    >
-                      <ProfileIcon
-                        size={32}
-                        showLoadingState={true}
-                      />
-                      <span className="hidden max-w-[120px] truncate text-sm font-medium text-gray-700 sm:block">
-                        {user.name || user.email}
-                      </span>
-                      <ChevronDown
-                        className={cn(
-                          'h-4 w-4 text-gray-500 transition-transform duration-200',
-                          isUserMenuOpen && 'rotate-180'
-                        )}
-                      />
-                    </Button>
+                  {/* Clerk User Button with custom appearance */}
+                  <UserButton
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-10 h-10",
+                        userButtonPopoverCard: "bg-white border border-gray-200 shadow-lg",
+                        userButtonPopoverActionButton: "text-gray-700 hover:bg-gray-50"
+                      }
+                    }}
+                  />
 
-                    {/* Dropdown Menu */}
-                    <AnimatePresence>
-                      {isUserMenuOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
-                          role="menu"
-                          aria-label="User account menu"
+                  {/* Navigation links for authenticated users */}
+                  <div className="hidden lg:flex items-center space-x-4 ml-4">
+                    {userNavigation.slice(0, 3).map(item => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-[#2d4a3e] transition-colors"
                         >
-                          {/* User Info */}
-                          <div className="border-b border-gray-100 px-4 py-3">
-                            <p className="truncate text-sm font-medium text-gray-900">
-                              {user.name || 'User'}
-                            </p>
-                            <p className="truncate text-xs text-gray-500">
-                              {user.email}
-                            </p>
-                            <p className="truncate text-xs text-gray-400 capitalize">
-                              {user.role}
-                            </p>
-                          </div>
-
-                          {/* Menu Items */}
-                          {userNavigation.map(item => {
-                            const Icon = item.icon;
-                            return (
-                              <Link
-                                key={item.name}
-                                href={item.href}
-                                className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-50"
-                                role="menuitem"
-                                onClick={() => setIsUserMenuOpen(false)}
-                              >
-                                <Icon className="h-4 w-4 text-gray-400" />
-                                {item.name}
-                              </Link>
-                            );
-                          })}
-
-                          <hr
-                            className="my-2 border-gray-100"
-                            role="separator"
-                          />
-
-                          <button
-                            onClick={() => {
-                              setIsUserMenuOpen(false);
-                              handleSignOut();
-                            }}
-                            disabled={isSigningOut}
-                            className="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                            role="menuitem"
-                          >
-                            {isSigningOut ? (
-                              <>
-                                <LoadingSpinner
-                                  size="sm"
-                                  variant="spinner"
-                                  color="gray"
-                                />
-                                Signing Out...
-                              </>
-                            ) : (
-                              <>
-                                <LogOut className="h-4 w-4 text-gray-400" />
-                                Sign Out
-                              </>
-                            )}
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                          <Icon className="h-4 w-4" />
+                          {item.name}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -394,30 +291,18 @@ export default function Header() {
                         </Link>
                       );
                     })}
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        handleSignOut();
-                      }}
-                      disabled={isSigningOut}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e] disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {isSigningOut ? (
-                        <>
-                          <LoadingSpinner
-                            size="sm"
-                            variant="spinner"
-                            color="gray"
-                          />
-                          Signing Out...
-                        </>
-                      ) : (
-                        <>
-                          <LogOut className="h-5 w-5" />
-                          Sign Out
-                        </>
-                      )}
-                    </button>
+                    {/* Clerk UserButton for mobile */}
+                    <div className="px-3 py-3">
+                      <UserButton
+                        afterSignOutUrl="/"
+                        appearance={{
+                          elements: {
+                            avatarBox: "w-8 h-8",
+                            userButtonPopoverCard: "bg-white border border-gray-200 shadow-lg"
+                          }
+                        }}
+                      />
+                    </div>
                   </>
                 )}
               </div>
@@ -426,14 +311,7 @@ export default function Header() {
         </AnimatePresence>
       </div>
 
-      {/* Click outside to close user menu */}
-      {isUserMenuOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsUserMenuOpen(false)}
-          aria-hidden="true"
-        />
-      )}
+      {/* Clerk handles user menu interactions */}
     </header>
   );
 }

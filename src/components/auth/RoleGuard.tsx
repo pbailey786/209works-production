@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useUser, useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, ReactNode } from 'react';
 
@@ -19,28 +19,29 @@ interface RoleGuardProps {
  * @param redirectTo - Where to redirect if user doesn't have required role
  * @param fallback - Component to show while loading or if unauthorized
  */
-export default function RoleGuard({ 
-  children, 
-  allowedRoles, 
+export default function RoleGuard({
+  children,
+  allowedRoles,
   redirectTo,
-  fallback 
+  fallback
 }: RoleGuardProps) {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'loading') return; // Still loading
+    if (!isLoaded) return; // Still loading
 
-    console.log('🛡️ RoleGuard check:', {
-      status,
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      userRole: (session?.user as any)?.role,
+    console.log('🛡️ Clerk RoleGuard check:', {
+      isLoaded,
+      isSignedIn,
+      hasUser: !!user,
+      userRole: user?.publicMetadata?.role,
       allowedRoles,
-      sessionData: session
+      userData: user
     });
 
-    if (status === 'unauthenticated') {
+    if (!isSignedIn || !user) {
       console.log('🚪 RoleGuard: Redirecting unauthenticated user');
       // Redirect to appropriate sign-in page
       const signInUrl = allowedRoles.includes('employer') ? '/employers/signin' : '/signin';
@@ -48,29 +49,19 @@ export default function RoleGuard({
       return;
     }
 
-    if (session?.user) {
-      const userRole = (session.user as any).role;
+    if (user) {
+      const userRole = user.publicMetadata?.role as string;
 
       // Enhanced debugging for role issues
       console.log('🔍 RoleGuard role check:', {
         userRole,
         allowedRoles,
         hasRole: userRole && allowedRoles.includes(userRole),
-        userObject: session.user
+        publicMetadata: user.publicMetadata
       });
 
-      // If role is undefined, this is definitely a broken session from before our fixes
-      if (!userRole) {
-        console.error('🚨 RoleGuard: User role is undefined - forcing session clear');
-        console.error('🔄 Redirecting to session clear page...');
-
-        // Force session clear for broken sessions
-        router.push('/debug/clear-session');
-        return;
-      }
-
       // Check if user has required role
-      if (!allowedRoles.includes(userRole)) {
+      if (!userRole || !allowedRoles.includes(userRole)) {
         console.log('🚫 RoleGuard: User does not have required role, redirecting');
         if (redirectTo) {
           router.push(redirectTo);
@@ -94,10 +85,10 @@ export default function RoleGuard({
 
       console.log('✅ RoleGuard: Access granted');
     }
-  }, [session, status, router, allowedRoles, redirectTo]);
+  }, [user, isLoaded, isSignedIn, router, allowedRoles, redirectTo]);
 
   // Show loading state while checking authentication
-  if (status === 'loading') {
+  if (!isLoaded) {
     return fallback || (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
@@ -106,7 +97,7 @@ export default function RoleGuard({
   }
 
   // Show loading state while redirecting unauthorized users
-  if (status === 'unauthenticated') {
+  if (!isSignedIn || !user) {
     return fallback || (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
@@ -114,10 +105,10 @@ export default function RoleGuard({
     );
   }
 
-  // Check role authorization (but allow undefined roles for now to prevent logout loops)
-  if (session?.user) {
-    const userRole = (session.user as any).role;
-    if (userRole && !allowedRoles.includes(userRole)) {
+  // Check role authorization
+  if (user) {
+    const userRole = user.publicMetadata?.role as string;
+    if (!userRole || !allowedRoles.includes(userRole)) {
       return fallback || (
         <div className="flex min-h-screen items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
@@ -134,19 +125,20 @@ export default function RoleGuard({
  * Hook to check if current user has specific role(s)
  */
 export function useRoleCheck(allowedRoles: string[]) {
-  const { data: session, status } = useSession();
-  
-  if (status === 'loading') {
+  const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
+
+  if (!isLoaded) {
     return { hasRole: false, isLoading: true, userRole: null };
   }
-  
-  if (!session?.user) {
+
+  if (!isSignedIn || !user) {
     return { hasRole: false, isLoading: false, userRole: null };
   }
-  
-  const userRole = (session.user as any).role;
-  const hasRole = allowedRoles.includes(userRole);
-  
+
+  const userRole = user.publicMetadata?.role as string;
+  const hasRole = userRole && allowedRoles.includes(userRole);
+
   return { hasRole, isLoading: false, userRole };
 }
 
