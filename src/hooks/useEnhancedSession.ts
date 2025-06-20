@@ -15,7 +15,8 @@ interface EnhancedUser {
   isEmailVerified?: boolean;
 }
 
-interface EnhancedSession extends Omit<Session, 'user'> {
+// Use the Session type directly since our auth.d.ts already defines the correct user type
+interface EnhancedSession extends Session {
   user: EnhancedUser;
 }
 
@@ -45,9 +46,9 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
       return null;
     }
 
-    const user = sessionData.user as any;
-    
-    // Check for required fields
+    const user = sessionData.user;
+
+    // Check for required fields - handle both optional and required types
     if (!user.email) {
       console.warn('🚨 Session user missing email');
       setError('Session missing required user email');
@@ -60,22 +61,23 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
       return null;
     }
 
-    // Create enhanced user object with defaults
+    // Create enhanced user object with proper type casting
     const enhancedUser: EnhancedUser = {
       id: user.id,
       email: user.email,
       name: user.name || null,
       image: user.image || null,
-      role: user.role || 'jobseeker',
-      onboardingCompleted: user.onboardingCompleted || false,
-      twoFactorEnabled: user.twoFactorEnabled || false,
-      isEmailVerified: user.isEmailVerified || false,
+      role: (user as any).role || 'jobseeker',
+      onboardingCompleted: (user as any).onboardingCompleted || false,
+      twoFactorEnabled: (user as any).twoFactorEnabled || false,
+      isEmailVerified: (user as any).isEmailVerified || false,
     };
 
+    // Return properly typed enhanced session
     return {
       ...sessionData,
       user: enhancedUser
-    };
+    } as EnhancedSession;
   }, []);
 
   // Refresh session data
