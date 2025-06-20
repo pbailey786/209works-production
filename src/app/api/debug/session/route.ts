@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import { validateStripeConfig } from '@/lib/stripe';
 import type { Session } from 'next-auth';
@@ -10,12 +10,12 @@ import type { Session } from 'next-auth';
  */
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
-  
+
   try {
     console.log('🔍 Debug session route called');
-    
-    // Get session information
-    const session = await getServerSession() as Session | null;
+
+    // Get session information - NextAuth v5 beta
+    const session = await auth() as Session | null;
     
     // Basic session info
     const sessionInfo = {

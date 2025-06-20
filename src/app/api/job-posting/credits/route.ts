@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication
-    const session = (await getServerSession()) as Session | null;
+    // Check authentication - NextAuth v5 beta
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -70,8 +70,8 @@ export async function GET(req: NextRequest) {
 // POST endpoint to manually use credits (for testing or admin purposes)
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    const session = (await getServerSession()) as Session | null;
+    // Check authentication - NextAuth v5 beta
+    const session = await auth() as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },

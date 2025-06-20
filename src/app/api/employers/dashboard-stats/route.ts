@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from '@/lib/database/prisma';
 import type { Session } from 'next-auth';
 
@@ -9,8 +9,8 @@ export async function GET(request: NextRequest) {
   try {
     console.log('🔍 Dashboard stats API called');
 
-    // Get session with enhanced logging
-    const session = await getServerSession() as Session | null;
+    // Get session with enhanced logging - NextAuth v5 beta
+    const session = await auth() as Session | null;
 
     console.log('🔍 Session check:', {
       hasSession: !!session,
