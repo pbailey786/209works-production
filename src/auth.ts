@@ -17,6 +17,13 @@ const authConfig = {
     updateAge: 24 * 60 * 60, // 24 hours
   },
 
+  // NextAuth v5 requires explicit JWT configuration
+  jwt: {
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+    // Ensure JWT secret is properly set
+    secret: process.env.NEXTAUTH_SECRET,
+  },
+
   cookies: {
     sessionToken: {
       name: `next-auth.session-token`,
@@ -110,13 +117,14 @@ const authConfig = {
   ],
 
   callbacks: {
-    async jwt({ token, user, account, profile }: any) {
+    async jwt({ token, user, account }: any) {
       console.log('🔧 NextAuth v5 JWT callback triggered:', {
         hasToken: !!token,
         hasUser: !!user,
         hasAccount: !!account,
         tokenSub: token?.sub,
-        userEmail: user?.email
+        userEmail: user?.email,
+        accountProvider: account?.provider
       })
 
       // On initial sign in, user object will be available
@@ -127,22 +135,31 @@ const authConfig = {
           role: user.role
         })
 
-        // For NextAuth v5 beta, ensure sub is set properly
+        // For NextAuth v5, ensure all required fields are set
         token.sub = user.id
         token.id = user.id
         token.email = user.email
         token.name = user.name
         token.role = user.role || 'jobseeker'
-        token.onboardingCompleted = (user as any).onboardingCompleted || false
-        token.twoFactorEnabled = (user as any).twoFactorEnabled || false
-        token.isEmailVerified = (user as any).isEmailVerified || false
+        token.onboardingCompleted = user.onboardingCompleted || false
+        token.twoFactorEnabled = user.twoFactorEnabled || false
+        token.isEmailVerified = user.isEmailVerified || false
+
+        // Add timestamp for debugging
+        token.lastUpdated = Date.now()
+      }
+
+      // Ensure token always has required fields (for subsequent requests)
+      if (!token.id && token.sub) {
+        token.id = token.sub
       }
 
       console.log('🔧 JWT callback returning token:', {
         id: token.id,
         email: token.email,
         role: token.role,
-        sub: token.sub
+        sub: token.sub,
+        lastUpdated: token.lastUpdated
       })
 
       return token
@@ -155,34 +172,43 @@ const authConfig = {
         tokenId: token?.id,
         tokenSub: token?.sub,
         tokenEmail: token?.email,
-        tokenRole: token?.role
+        tokenRole: token?.role,
+        tokenLastUpdated: token?.lastUpdated
       })
 
-      // NextAuth v5 beta: Modify session.user directly instead of returning new object
-      if (token && session?.user) {
-        // Populate session.user with data from JWT token
-        session.user.id = token.id || token.sub
-        session.user.email = token.email
-        session.user.name = token.name
-        session.user.role = token.role || 'jobseeker'
-        session.user.onboardingCompleted = token.onboardingCompleted || false
-        session.user.twoFactorEnabled = token.twoFactorEnabled || false
-        session.user.isEmailVerified = token.isEmailVerified || false
-
-        console.log('✅ Session populated successfully:', {
-          userId: session.user.id,
-          userEmail: session.user.email,
-          userRole: session.user.role,
-          sessionExpires: session.expires
-        })
-      } else {
-        console.warn('⚠️ Session callback: Missing token or session.user')
+      // Ensure session.user exists
+      if (!session?.user) {
+        console.error('❌ Session callback: session.user is missing')
+        return session
       }
+
+      // Ensure token exists and has required data
+      if (!token || (!token.id && !token.sub)) {
+        console.error('❌ Session callback: token is missing or invalid', { token })
+        return session
+      }
+
+      // Populate session.user with data from JWT token
+      session.user.id = token.id || token.sub
+      session.user.email = token.email || session.user.email
+      session.user.name = token.name || session.user.name
+      session.user.role = token.role || 'jobseeker'
+      session.user.onboardingCompleted = token.onboardingCompleted || false
+      session.user.twoFactorEnabled = token.twoFactorEnabled || false
+      session.user.isEmailVerified = token.isEmailVerified || false
+
+      console.log('✅ Session populated successfully:', {
+        userId: session.user.id,
+        userEmail: session.user.email,
+        userRole: session.user.role,
+        sessionExpires: session.expires,
+        tokenLastUpdated: token.lastUpdated
+      })
 
       return session
     },
 
-    async signIn({ user, account, profile }: any) {
+    async signIn({ user, account }: any) {
       console.log('🔧 NextAuth v5 SignIn callback:', { 
         provider: account?.provider,
         userEmail: user?.email 
