@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState } from '@/components/ui/card';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {

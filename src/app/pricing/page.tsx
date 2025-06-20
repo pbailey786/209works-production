@@ -1,7 +1,7 @@
+import { PRICING_CONFIG } from '@/lib/services/subscription';
+
 'use client';
 
-import { PRICING_CONFIG } from '@/lib/services/subscription';
-import PricingSection from '@/components/pricing/PricingSection';
 
 export default function JobSeekerPricingPage() {
   // Job seeker pricing plans with monthly/yearly options

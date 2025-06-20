@@ -1,14 +1,13 @@
-import { Metadata } from 'next';
-import {
+import { Metadata } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
   Users,
   TrendingUp,
   Building2,
@@ -23,7 +22,6 @@ import {
   MapPin,
   Star,
 } from 'lucide-react';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Chamber Partnership | 209jobs',

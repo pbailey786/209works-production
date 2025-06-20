@@ -1,7 +1,8 @@
+import { useState } from '@/components/ui/card';
+import { X, Star, TrendingUp, Crown, Loader2 } from 'lucide-react';
+
 'use client';
 
-import { useState } from 'react';
-import { X, Star, TrendingUp, Crown, Loader2 } from 'lucide-react';
 
 interface JobPostingPackageModalProps {
   isOpen: boolean;

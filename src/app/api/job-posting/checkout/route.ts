@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { stripe } from '@/lib/stripe';
-import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { stripe } from '@/components/ui/card';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
+
 
 const checkoutSchema = z.object({
   tier: z.enum(['starter', 'standard', 'pro']).optional(),

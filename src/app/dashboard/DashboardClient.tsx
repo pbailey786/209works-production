@@ -1,8 +1,8 @@
+import { useState } from '@/components/ui/card';
+import { formatDistanceToNow } from 'date-fns';
+
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
 
 interface Job {
   id: string;

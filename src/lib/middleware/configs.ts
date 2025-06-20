@@ -1,5 +1,5 @@
-import { APIMiddlewareConfig } from './api';
-import { RateLimitType } from './ratelimit';
+import { APIMiddlewareConfig } from '@/components/ui/card';
+import { RateLimitType } from '@/components/ui/card';
 import { getCORSConfig } from './cors';
 
 // Preset configurations for common use cases

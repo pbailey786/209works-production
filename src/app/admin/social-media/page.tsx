@@ -1,11 +1,12 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Calendar, Clock, TrendingUp, Eye, Heart, MessageCircle, Share2, ExternalLink, RefreshCw } from 'lucide-react';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, TrendingUp, Eye, Heart, MessageCircle, Share2, ExternalLink, RefreshCw } from 'lucide-react';
 
 interface InstagramPost {
   id: string;

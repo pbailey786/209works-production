@@ -1,24 +1,23 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import {
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -26,8 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
   Search,
   Filter,
   MoreHorizontal,
@@ -37,7 +34,6 @@ import {
   Edit,
   Trash2,
 } from 'lucide-react';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

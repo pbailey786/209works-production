@@ -1,11 +1,12 @@
+import { openai } from '@/components/ui/card';
+import { Job } from '@/components/ui/card';
+import { getDomainConfig } from '@/lib/domain/config';
+
 /**
  * AI-Powered Instagram Caption Generator
  * Creates engaging, optimized captions for job post social media promotion
  */
 
-import { openai } from '@/lib/openai';
-import { Job } from '@prisma/client';
-import { getDomainConfig } from '@/lib/domain/config';
 
 export interface CaptionOptions {
   tone?: 'professional' | 'casual' | 'energetic' | 'urgent' | 'friendly';

@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from '@/components/ui/card';
 import { motion } from 'framer-motion';
+
 
 interface Message {
   role: 'user' | 'assistant';

@@ -1,7 +1,8 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface EnvTestResult {
   success: boolean;

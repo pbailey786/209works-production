@@ -1,5 +1,5 @@
 import React from 'react';
-import { OptimizedImage } from '@/components/ui/optimized-image';
+import { OptimizedImage } from '@/components/ui/card';
 import { generateAltText } from '@/utils/accessibility';
 
 interface AvatarProps {

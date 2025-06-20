@@ -1,7 +1,7 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/components/ui/card';
 import { ErrorLogger, ErrorSeverity, ErrorCategory } from './error-monitor';
 
-// Database performance thresholds
+
 export const DB_PERFORMANCE_THRESHOLDS = {
   SLOW_QUERY_WARNING: 1000, // 1 second
   SLOW_QUERY_ERROR: 5000, // 5 seconds

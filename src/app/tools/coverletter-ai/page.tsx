@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Metadata } from 'next';
+
 
 export const metadata: Metadata = {
   title: 'AI Cover Letter Generator - 209 Works',

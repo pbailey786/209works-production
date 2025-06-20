@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { stripe, STRIPE_PRICE_IDS } from '@/lib/stripe';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { stripe, STRIPE_PRICE_IDS } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
 import type { PricingTier, BillingInterval } from '@prisma/client';
 
@@ -214,7 +214,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
 
@@ -237,7 +237,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user with current subscription
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
       include: {
         subscriptions: true,

@@ -1,10 +1,13 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { hasPermission, Permission } from '@/components/ui/card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import {
+import Link from 'next/link';
+import { prisma } from '@/lib/database/prisma';
+
   PlayCircle, 
   PauseCircle, 
   DollarSign, 
@@ -15,10 +18,8 @@ import {
   Users,
   Edit,
   Trash2,
-  Plus
+  Plus,
 } from 'lucide-react';
-import Link from 'next/link';
-import { prisma } from '@/lib/database/prisma';
 
 export const metadata = {
   title: 'Ad Campaigns | Admin Dashboard',

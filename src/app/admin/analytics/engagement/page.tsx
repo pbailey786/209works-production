@@ -1,9 +1,10 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { hasPermission, Permission } from '@/components/ui/card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
+import { Badge } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
+
   Users, 
   Clock, 
   MousePointer,
@@ -13,9 +14,8 @@ import {
   TrendingUp,
   TrendingDown,
   Calendar,
-  Activity
+  Activity,
 } from 'lucide-react';
-import { prisma } from '@/lib/database/prisma';
 
 export const metadata = {
   title: 'User Engagement Analytics | Admin Dashboard',

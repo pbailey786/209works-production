@@ -1,11 +1,16 @@
-'use client';
-import { useUser, useAuth, SignInButton, UserButton } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useUser, useAuth, SignInButton, UserButton } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
 import {
+import Avatar from './Avatar';
+import ProfileIcon from './auth/ProfileIcon';
+import LoadingSpinner from './ui/LoadingSpinner';
+import ErrorDisplay from './ui/ErrorDisplay';
+import { Button } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+'use client';
   Search,
   Briefcase,
   User,
@@ -21,12 +26,6 @@ import {
   Users,
   Building2,
 } from 'lucide-react';
-import Avatar from './Avatar';
-import ProfileIcon from './auth/ProfileIcon';
-import LoadingSpinner from './ui/LoadingSpinner';
-import ErrorDisplay from './ui/ErrorDisplay';
-import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
 // Removed NextAuth session hook
 
 export default function Header() {

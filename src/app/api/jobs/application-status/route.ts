@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/jobs/application-status - Check application status for multiple jobs
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
 
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user and verify they're a job seeker
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
       select: { id: true, role: true },
     });

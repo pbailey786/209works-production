@@ -1,3 +1,8 @@
+import { prisma } from '@/components/ui/card';
+import { Prisma } from '@/components/ui/card';
+import { setCache, getCache, invalidateCache } from '@/components/ui/card';
+import { DEFAULT_TTL } from '@/lib/cache/config';
+
 /**
  * Optimized Database Queries Service
  * Task 45.13: Fix Database Performance Issues and N+1 Query Problems
@@ -10,10 +15,6 @@
  * 5. Optimize vector similarity searches
  */
 
-import { prisma } from '@/lib/database/prisma';
-import { Prisma } from '@prisma/client';
-import { setCache, getCache, invalidateCache } from '@/lib/cache/redis';
-import { DEFAULT_TTL } from '@/lib/cache/config';
 
 // Types for optimized queries
 export interface OptimizedJobQuery {

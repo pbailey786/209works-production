@@ -1,3 +1,7 @@
+import { prisma } from '@/components/ui/card';
+import { getCache, setCache, invalidateCache } from '@/components/ui/card';
+import { DEFAULT_TTL } from '@/lib/cache/config';
+
 /**
  * Data Integrity Service
  * Task 45.14: Fix Cascading Delete Risks and Data Integrity Constraints
@@ -6,9 +10,6 @@
  * to prevent cascading delete issues and maintain referential integrity.
  */
 
-import { prisma } from '@/lib/database/prisma';
-import { getCache, setCache, invalidateCache } from '@/lib/cache/redis';
-import { DEFAULT_TTL } from '@/lib/cache/config';
 
 // Types for data integrity operations
 export interface DeletionResult {

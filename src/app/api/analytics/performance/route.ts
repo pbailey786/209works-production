@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { QueryPerformanceMonitor } from '@/lib/performance/db-optimization';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { QueryPerformanceMonitor } from '@/components/ui/card';
 import { memoryCache } from '@/lib/performance/cache-utils';
+
 
 export async function GET(request: NextRequest) {
   try {

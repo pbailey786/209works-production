@@ -1,11 +1,11 @@
-'use client';
-
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Cross2Icon } from '@radix-ui/react-icons';
-import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { Cross2Icon } from '@/components/ui/card';
+import { cn } from '@/components/ui/card';
 import { useModal, useFocusManagement } from '@/lib/ui/component-state-manager';
 import type { ModalState } from '@/lib/ui/component-state-manager';
+
+'use client';
+
 
 // Base modal component with centralized state management
 interface UnifiedModalProps {

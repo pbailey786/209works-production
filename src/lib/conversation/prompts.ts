@@ -1,5 +1,6 @@
 import { ConversationIntent, ConversationContext, Message } from './types';
 
+
 export class ChatbotPrompts {
   /**
    * Base system prompt for all conversations

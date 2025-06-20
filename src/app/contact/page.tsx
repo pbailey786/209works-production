@@ -1,8 +1,9 @@
+import { useState } from '@/components/ui/card';
+import { motion } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
 'use client';
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import {
   Mail,
   Phone,
   MapPin,
@@ -15,7 +16,6 @@ import {
   Building,
   Headphones,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({

@@ -1,7 +1,7 @@
+import { Target, Zap, TrendingUp, Search } from 'lucide-react';
+
 'use client';
 
-import React from 'react';
-import { Target, Zap, TrendingUp, Search } from 'lucide-react';
 
 interface CareerGoalsStepProps {
   formData: any;

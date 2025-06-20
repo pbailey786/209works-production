@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { PrismaClient } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 const prisma = new PrismaClient();

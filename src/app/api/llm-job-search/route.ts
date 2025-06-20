@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { extractJobSearchFilters } from '@/lib/llm/extractJobSearchFilters';
-import { summarizeJobResults } from '@/lib/llm/summarizeJobResults';
-import { generateConversationalResponse } from '@/lib/llm/conversationalResponse';
-import { analyzeJobMatches } from '@/lib/llm/jobMatching';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { extractJobSearchFilters } from '@/components/ui/card';
+import { summarizeJobResults } from '@/components/ui/card';
+import { generateConversationalResponse } from '@/components/ui/card';
+import { analyzeJobMatches } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import {
+
   withAISecurity,
   aiSecurityConfigs,
   type AISecurityContext,

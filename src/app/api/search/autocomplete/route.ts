@@ -1,16 +1,16 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { autocompleteQuerySchema } from '@/lib/validations/search';
-import { createSuccessResponse } from '@/lib/errors/api-errors';
-import { prisma } from '@/lib/database/prisma';
-import {
+import { NextRequest } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { autocompleteQuerySchema } from '@/components/ui/card';
+import { createSuccessResponse } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { TextProcessor } from '@/lib/search/algorithms';
+
   getCache,
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
 } from '@/lib/cache/redis';
-import { TextProcessor } from '@/lib/search/algorithms';
 
 // GET /api/search/autocomplete - Get search suggestions
 export const GET = withAPIMiddleware(

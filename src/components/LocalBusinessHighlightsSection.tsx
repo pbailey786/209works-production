@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+
 
 interface LocalBusiness {
   id: string;

@@ -1,6 +1,7 @@
+import { useState } from 'react';
+
 'use client';
 
-import { useState } from 'react';
 
 export default function TestEmailPage() {
   const [loading, setLoading] = useState(false);

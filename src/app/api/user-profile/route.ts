@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/user-profile - Get user profile for job matching
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
@@ -156,7 +156,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
@@ -222,7 +222,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 

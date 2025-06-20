@@ -1,5 +1,5 @@
-import React from 'react';
 import { XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
+
 
 interface JobGenieContextInfo {
   hasCompanyInfo: boolean;

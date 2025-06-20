@@ -1,8 +1,8 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
-import {
   Check,
   Star,
   Zap,
@@ -16,7 +16,7 @@ import {
   Sparkles,
   TrendingUp,
   Instagram,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 interface JobPostingCheckoutProps {

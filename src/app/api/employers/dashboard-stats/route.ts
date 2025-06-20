@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/session-validator';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { requireRole } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();

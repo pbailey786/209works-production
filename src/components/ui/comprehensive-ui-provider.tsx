@@ -1,14 +1,12 @@
+import { UnifiedToastContainer } from '@/components/ui/card';
+import { UnifiedModalContainer } from '@/components/ui/card';
+import { GlobalLoadingOverlay } from './unified-loading-spinner';
+
 'use client';
 
-import React from 'react';
-import {
   UIStateProvider,
   UIStateErrorBoundary,
 } from '@/lib/ui/component-state-manager';
-import { UnifiedToastContainer } from './unified-toast-system';
-import { UnifiedModalContainer } from './unified-modal-system';
-import { GlobalLoadingOverlay } from './unified-loading-spinner';
-import {
   componentRegistry,
   withRegistry,
   createFeedbackComponent,

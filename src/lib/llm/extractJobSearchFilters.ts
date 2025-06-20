@@ -1,5 +1,6 @@
 import { extractJobFiltersWithAI } from '@/lib/ai';
 
+
 export interface JobSearchFilters {
   age: number | null;
   location: string | null;

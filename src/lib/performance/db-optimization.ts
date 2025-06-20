@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import {
+
   createCachedFunction,
   CACHE_TAGS,
   CACHE_DURATIONS,

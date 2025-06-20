@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import JobCard from './JobCard';
+import React, { useState, useEffect } from '@/components/ui/card';
 import { safeDateFormat } from '@/lib/utils/safe-operations';
+
 
 interface Job {
   id: number;

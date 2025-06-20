@@ -1,6 +1,7 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-import { z } from 'zod';
+import { Prisma, PrismaClient } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+
 
 /**
  * Type-safe Prisma operations to prevent runtime type errors and data corruption

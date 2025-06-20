@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 const MAX_CONVERSATIONS_PER_USER = 10; // Limit to 10 conversations per user
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
 
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the current user
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 
@@ -176,7 +176,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
 
@@ -185,7 +185,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get the current user
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 

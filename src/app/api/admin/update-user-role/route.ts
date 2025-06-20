@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/database/prisma';
-import { auth } from '@clerk/nextjs/server';
-
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
 import { redirect } from 'next/navigation';
 export async function POST(req: NextRequest) {
   try {

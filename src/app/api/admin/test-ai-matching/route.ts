@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
-import { JobMatchingService } from '@/lib/services/job-matching';
-import { ResumeEmbeddingService } from '@/lib/services/resume-embedding';
-import { JobQueueService } from '@/lib/services/job-queue';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { createSuccessResponse, createErrorResponse } from '@/components/ui/card';
+import { JobMatchingService } from '@/components/ui/card';
+import { ResumeEmbeddingService } from '@/components/ui/card';
+import { JobQueueService } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
+
 
 const testSchema = z.object({
   action: z.enum(['process_resume', 'match_job', 'send_emails', 'full_test']),

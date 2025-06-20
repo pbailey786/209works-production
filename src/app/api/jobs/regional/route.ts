@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { RegionalJobService } from '@/lib/services/regional-job-service';
-import { JobType } from '@prisma/client';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { RegionalJobService } from '@/components/ui/card';
+import { JobType } from '@/components/ui/card';
 import { z } from 'zod';
 
 const regionalJobsSchema = z.object({

@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useRef, useReducer } from 'react';
-import JobCard from './JobCard';
+import React, { useState, useEffect, useRef, useReducer } from '@/components/ui/card';
 import { JobWithOptionalFields } from '@/lib/types/component-props';
-import LoadingSpinner from './ui/LoadingSpinner';
-import ErrorDisplay from './ui/ErrorDisplay';
-import AdDisplay from './ads/AdDisplay';
+
 
 interface AsyncOperationState {
   isLoading: boolean;

@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { JobType, UserRole } from '@prisma/client';
+import { z } from '@/components/ui/card';
+import { JobType, UserRole } from '@/components/ui/card';
 import { validationPatterns } from './form-utils';
 
 // Common validation patterns

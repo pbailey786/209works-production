@@ -1,5 +1,5 @@
-import React from 'react';
 import { validateMultimediaAccessibility } from '@/utils/accessibility';
+
 
 interface AccessibleVideoProps {
   src: string;

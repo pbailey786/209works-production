@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { motion } from '@/components/ui/card';
+import { cn } from '@/components/ui/card';
 import { useLoading } from '@/lib/ui/component-state-manager';
 
 interface UnifiedLoadingSpinnerProps {

@@ -1,11 +1,12 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { useRouter } from '@/components/ui/card';
+import { useUser, useAuth } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { LazyOnVisible } from '@/components/ui/card';
+import { Skeleton } from '../components/ui/skeleton';
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUser, useAuth } from '@clerk/nextjs';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   MapPin,
   Users,
   Building2,
@@ -21,10 +22,6 @@ import {
   Zap,
 } from 'lucide-react';
 
-import { LazyOnVisible } from '../components/ui/lazy-component';
-import { Skeleton } from '../components/ui/skeleton';
-import SEOHead from '../components/SEOHead';
-import DynamicHeroHeadlines from '../components/DynamicHeroHeadlines';
 
 // Lazy load heavy components
 const Analytics = React.lazy(() => import('../components/Analytics'));

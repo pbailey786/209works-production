@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

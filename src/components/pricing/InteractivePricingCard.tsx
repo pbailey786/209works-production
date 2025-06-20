@@ -1,13 +1,14 @@
+import React, { useState } from '@/components/ui/card';
+import { motion } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter } from '@/components/ui/card';
+import { Check, Star, CreditCard, Zap, Shield, Award } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
 'use client';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import { Check, Star, CreditCard, Zap, Shield, Award } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 // import { toast } from 'sonner';
 
 interface PricingPlan {

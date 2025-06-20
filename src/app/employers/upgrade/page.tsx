@@ -1,10 +1,10 @@
+import React, { useState, useEffect, Suspense } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter, useSearchParams } from 'next/navigation';
-import {
   Crown,
   Zap,
   Shield,
@@ -13,13 +13,12 @@ import {
   Sparkles,
   Building2,
   Users,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
-import BillingModal from '@/components/billing/BillingModal';
 
 // Component that uses search params - needs to be wrapped in Suspense
 function UpgradeContent() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showBillingModal, setShowBillingModal] = useState(false);

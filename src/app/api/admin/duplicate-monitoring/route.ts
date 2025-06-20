@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { DuplicateDetectionService } from '@/lib/services/duplicate-detection';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { DuplicateDetectionService } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/admin/duplicate-monitoring - Get duplicate monitoring data
@@ -135,7 +135,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
     if (!session?.user || (session.user as any).role !== 'admin') {

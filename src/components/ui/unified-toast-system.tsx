@@ -1,12 +1,12 @@
-'use client';
-
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Cross2Icon } from '@radix-ui/react-icons';
-import { CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { Cross2Icon } from '@/components/ui/card';
+import { CheckCircle, AlertCircle, Info, AlertTriangle } from '@/components/ui/card';
+import { cn } from '@/components/ui/card';
 import { useToast as useUIToast } from '@/lib/ui/component-state-manager';
 import type { ToastState } from '@/lib/ui/component-state-manager';
+
+'use client';
+
 
 // Unified toast component that works with centralized state
 interface UnifiedToastProps {

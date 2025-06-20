@@ -1,23 +1,22 @@
-/**
+import React, { useState, useEffect } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+
+  /**
  * Regional Analytics Dashboard
  * Dashboard for viewing PostHog analytics with regional insights
  */
-
 'use client';
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
   BarChart,
   Bar,
   XAxis,
@@ -31,7 +30,6 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import {
   TrendingUp,
   Users,
   Search,

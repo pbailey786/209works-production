@@ -1,17 +1,6 @@
-import React from 'react';
 import { render } from '@react-email/render';
 
-// Import email templates
-import JobAlertEmail from '@/components/emails/job-alert-email';
-import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
-import WelcomeJobSeekerEmail from '@/components/emails/welcome-job-seeker-email';
-import WelcomeEmployerEmail from '@/components/emails/welcome-employer-email';
-import PasswordResetEmail from '@/components/emails/password-reset-email';
-import InterviewInvitationEmail from '@/components/emails/interview-invitation-email';
-import ApplicationStatusEmail from '@/components/emails/application-status-email';
-import CompanyNewsletterEmail from '@/components/emails/company-newsletter-email';
-import PlatformNoticeEmail from '@/components/emails/platform-notice-email';
-import CreditConfirmationEmail from '@/components/emails/credit-confirmation-email';
+
 
 export interface EmailTemplate {
   id: string;

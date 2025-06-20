@@ -1,25 +1,23 @@
-import { Metadata } from 'next';
-import {
+import { Metadata } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import {
   Building2,
   Users,
   CheckCircle,
@@ -27,7 +25,6 @@ import {
   TrendingUp,
   Handshake,
 } from 'lucide-react';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Chamber Partner Signup | 209jobs',

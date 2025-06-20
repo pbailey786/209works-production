@@ -1,8 +1,9 @@
+import React, { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
+
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   XMarkIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -13,7 +14,6 @@ import {
   AcademicCapIcon,
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
-import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
 
 interface ShouldIApplyCalculatorProps {
   isOpen: boolean;

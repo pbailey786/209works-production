@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from '@/components/ui/card';
 import { motion } from 'framer-motion';
+
 
 export default function EmailSubscriptionCTA() {
   const [email, setEmail] = useState('');

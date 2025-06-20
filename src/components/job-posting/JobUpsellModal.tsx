@@ -1,8 +1,8 @@
+import React, { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
+
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   X,
   Megaphone,
   TrendingUp,

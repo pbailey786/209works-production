@@ -1,7 +1,8 @@
+import React, { useState } from '@/components/ui/card';
+import { User, Phone, Mail, MapPin } from 'lucide-react';
+
 'use client';
 
-import React, { useState } from 'react';
-import { User, Phone, Mail, MapPin } from 'lucide-react';
 
 interface ReviewEditStepProps {
   formData: any;

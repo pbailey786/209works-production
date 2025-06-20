@@ -1,14 +1,13 @@
+import { CalendarIcon } from '@/components/ui/card';
+import { format } from '@/components/ui/card';
+import { DateRange } from '@/components/ui/card';
+import { cn } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Calendar } from '@/components/ui/calendar';
+
 'use client';
 
-import * as React from 'react';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { DateRange } from 'react-day-picker';
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,

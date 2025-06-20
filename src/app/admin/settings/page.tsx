@@ -1,18 +1,16 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import {
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { PermissionGate } from '@/components/ui/card';
+import { Permission } from '@/lib/rbac/permissions';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import RoleManagement from '@/components/admin/RoleManagement';
-import { PermissionGate } from '@/components/admin/PermissionGate';
-import { Permission } from '@/lib/rbac/permissions';
-import {
   Settings,
   Shield,
   Users,

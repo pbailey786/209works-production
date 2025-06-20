@@ -1,12 +1,12 @@
-import { Resend } from 'resend';
-import {
+import { Resend } from '@/components/ui/card';
+import { SecurityLogger } from './security/security-monitor';
+
   emailSecurityValidator,
   emailAddressSchema,
   emailSubjectSchema,
   emailRecipientsSchema,
   EMAIL_SECURITY_CONFIG,
 } from './email/security';
-import { SecurityLogger } from './security/security-monitor';
 
 // Validate environment variables (but allow build-time flexibility)
 if (

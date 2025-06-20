@@ -1,8 +1,7 @@
-'use client';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import {
+
+'use client';
   UserCircleIcon,
   BriefcaseIcon,
   DocumentTextIcon,
@@ -25,8 +24,6 @@ import {
   CloudArrowUpIcon,
   PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
-import Input from '../../components/Input';
-import Button from '../../components/Button';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);

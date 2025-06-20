@@ -1,11 +1,10 @@
+import { useUser, useAuth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+
 'use client';
 
-import { useUser, useAuth } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { 
   Mail, 
   Settings, 
   Users, 
@@ -14,7 +13,7 @@ import {
   Shield,
   Activity,
   Database,
-  Download
+  Download,
 } from 'lucide-react';
 
 export default function SimpleAdminPage() {

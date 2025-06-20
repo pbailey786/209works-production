@@ -1,11 +1,11 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { apiConfigs } from '@/lib/middleware/configs';
-import { createSuccessResponse } from '@/lib/errors/api-errors';
-import { getDatabaseHealthReport } from '@/lib/monitoring/database-monitor';
+import { NextRequest } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { apiConfigs } from '@/components/ui/card';
+import { createSuccessResponse } from '@/components/ui/card';
+import { getDatabaseHealthReport } from '@/components/ui/card';
 import { errorMonitor } from '@/lib/monitoring/error-monitor';
 
-// System health status
+
 interface SystemHealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;

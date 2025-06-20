@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { paginatedQuerySchema } from '@/lib/cache/pagination';
-import { routeParamsSchemas } from '@/lib/middleware/validation';
+import { NextRequest } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { paginatedQuerySchema } from '@/components/ui/card';
+import { routeParamsSchemas } from '@/components/ui/card';
 import { UserCacheService } from '@/lib/cache/services';
-import {
+
   createSuccessResponse,
   AuthorizationError,
 } from '@/lib/errors/api-errors';

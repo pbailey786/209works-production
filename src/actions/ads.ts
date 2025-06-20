@@ -1,9 +1,10 @@
+import { revalidatePath } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { ActionResult } from '@/types/actions';
+
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
-import { ActionResult } from '@/types/actions';
 
 // Import validation schemas from existing files
 import {
@@ -169,7 +170,7 @@ export async function updateAdAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const clerkUserId = formData.get('userId') as string;
+    const userId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,

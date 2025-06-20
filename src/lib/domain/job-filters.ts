@@ -1,5 +1,6 @@
 import { DomainConfig } from './config';
 
+
 export interface JobFilterParams {
   location?: string;
   radius?: number;

@@ -1,8 +1,7 @@
-'use client';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/components/ui/card';
 import { ReactNode } from 'react';
-import RoleGuard from '@/components/auth/RoleGuard';
+
+'use client';
 
 interface EmployerLayoutProps {
   children: ReactNode;

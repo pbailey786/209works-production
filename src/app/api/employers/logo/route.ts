@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(req: NextRequest) {
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email! },
       select: { 
         id: true, 
@@ -147,7 +147,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
@@ -157,7 +157,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email! },
       select: { id: true },
     });

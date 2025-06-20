@@ -1,5 +1,6 @@
 import { DomainConfig } from './config';
 
+
 export interface EmailTemplateData {
   recipientName?: string;
   jobTitle?: string;

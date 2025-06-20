@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Zap, Crown } from 'lucide-react';
+import { Star, Zap, Crown } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface FeaturedJobBadgeProps {

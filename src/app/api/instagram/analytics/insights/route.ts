@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { auth } from '@clerk/nextjs/server';
 import InstagramAnalyticsService from '@/lib/services/instagram-analytics';
-import { prisma } from '@/lib/database/prisma';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
 
 const insightsQuerySchema = z.object({

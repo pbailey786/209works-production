@@ -1,7 +1,7 @@
+import { useState, useEffect } from 'react';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
   Upload,
   FileText,
   CheckCircle,
@@ -22,8 +22,6 @@ import {
   MessageCircle,
   X,
 } from 'lucide-react';
-import Link from 'next/link';
-import JobApprovalModal from '@/components/JobApprovalModal';
 
 interface ProcessedJob {
   id?: number;

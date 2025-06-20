@@ -1,10 +1,11 @@
+import React, { useState, useEffect, Suspense } from '@/components/ui/card';
+import { useUser, useAuth } from '@/components/ui/card';
+import { useRouter, useSearchParams } from '@/components/ui/card';
+import { LazyOnVisible } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useUser, useAuth } from '@clerk/nextjs';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import {
   BarChart3,
   Users,
   Briefcase,
@@ -28,8 +29,6 @@ import {
   Upload,
   CreditCard,
 } from 'lucide-react';
-import { LazyOnVisible } from '@/components/ui/lazy-component';
-import { Skeleton } from '@/components/ui/skeleton';
 // Removed NextAuth debug panel
 
 // Lazy load heavy components
@@ -426,7 +425,7 @@ function DashboardContent() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-[#2d4a3e]">
-              Hey {user?.firstName || user?.fullName?.split(' ')[0] || 'there'}! 👋
+              Hey {user?.firstName || user?.name?.split(' ')[0] || 'there'}! 👋
             </h1>
             <p className="mt-1 text-gray-600">
               Everything you need to hire great people, simplified.

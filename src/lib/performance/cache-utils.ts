@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
 
-// Cache configuration
+
 export const CACHE_TAGS = {
   JOBS: 'jobs',
   USER: 'user',

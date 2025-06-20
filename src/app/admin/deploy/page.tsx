@@ -1,21 +1,21 @@
+import { useState } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import { useState } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import { 
   Rocket, 
   Database, 
   Trash2, 
   CheckCircle, 
   AlertCircle,
   Loader2,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 export default function AdminDeployPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<any>(null);

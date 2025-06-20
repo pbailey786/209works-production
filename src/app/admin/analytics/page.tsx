@@ -1,24 +1,22 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import {
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -30,7 +28,6 @@ import {
   Download,
   RefreshCw,
 } from 'lucide-react';
-import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
 
 export default async function AnalyticsPage() {
   const { userId } = await auth();

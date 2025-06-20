@@ -1,5 +1,6 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+
 
 /**
  * Enhanced Prisma middleware for data validation and integrity checks

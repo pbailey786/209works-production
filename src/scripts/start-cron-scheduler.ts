@@ -1,3 +1,8 @@
+import { cronScheduler } from '@/components/ui/card';
+import { config } from '@/components/ui/card';
+import { writeFileSync, existsSync, readFileSync } from '@/components/ui/card';
+import { join } from 'path';
+
 #!/usr/bin/env node
 
 /**
@@ -24,10 +29,6 @@
  *   npm run cron:test
  */
 
-import { cronScheduler } from '../lib/services/cron-scheduler';
-import { config } from 'dotenv';
-import { writeFileSync, existsSync, readFileSync } from 'fs';
-import { join } from 'path';
 
 // Load environment variables
 config();

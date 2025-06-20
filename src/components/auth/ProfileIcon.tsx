@@ -1,7 +1,7 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import Avatar from '../Avatar';
 import { User } from 'lucide-react';
@@ -19,7 +19,7 @@ export default function ProfileIcon({
   fallbackIcon,
   className = ""
 }: ProfileIconProps) {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const [mounted, setMounted] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -34,9 +34,9 @@ export default function ProfileIcon({
       hasSession: !!session,
       hasUser: !!session?.user,
       hasUserId: !!(session?.user as any)?.id,
-      hasUserEmail: !!user?.emailAddresses?.[0]?.emailAddress,
-      userName: user?.fullName,
-      userEmail: user?.emailAddresses?.[0]?.emailAddress
+      hasUserEmail: !!user?.email,
+      userName: user?.name,
+      userEmail: user?.email
     });
   }, [session, status]);
 

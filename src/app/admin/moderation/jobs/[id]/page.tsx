@@ -1,10 +1,9 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import JobModerationDetail from '@/components/admin/JobModerationDetail';
-import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { hasPermission, Permission } from '@/components/ui/card';
+import { ArrowLeft } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+
 
 interface PageProps {
   params: Promise<{

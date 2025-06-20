@@ -1,9 +1,9 @@
+import { useState, useEffect, useCallback, Suspense } from '@/components/ui/card';
+import { useSearchParams, useRouter } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
+
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   Search,
   Filter,
   MapPin,
@@ -14,15 +14,7 @@ import {
   ChevronDown,
   SlidersHorizontal,
 } from 'lucide-react';
-import Card from '../../components/Card';
-import Input from '../../components/Input';
-import Button from '../../components/Button';
-import Badge from '../../components/Badge';
-import Spinner from '../../components/Spinner';
-import AdDisplay from '../../components/ads/AdDisplay';
-import JobPagination from '../../components/job-search/JobPagination';
 
-import EnhancedJobCard from '../../components/job-search/EnhancedJobCard';
 
 const suggestions = [
   'Full time warehouse jobs in Stockton',

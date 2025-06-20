@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/database/prisma';
 
-// Usage limits for different user types
+
 export const SHOULD_I_APPLY_LIMITS = {
   free: {
     dailyLimit: 3,
@@ -197,7 +197,7 @@ export class ShouldIApplyUsageService {
     userTier: string;
     limits: typeof SHOULD_I_APPLY_LIMITS.free;
   }> {
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { id: userId },
       include: { subscriptions: true },
     });
@@ -279,7 +279,7 @@ export class ShouldIApplyUsageService {
    * Check if user has premium features
    */
   static async hasPremiumFeatures(userId: string): Promise<boolean> {
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { id: userId },
       include: { subscriptions: true },
     });

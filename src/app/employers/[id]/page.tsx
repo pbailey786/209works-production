@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound } from '@/components/ui/card';
 import { Metadata } from 'next';
 import EmployerProfileClient from './EmployerProfileClient';
 

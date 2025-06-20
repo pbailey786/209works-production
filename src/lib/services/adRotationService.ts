@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
+
 interface AdRotationOptions {
   placement: string;
   location?: string;

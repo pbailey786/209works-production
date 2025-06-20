@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-// Log levels
+
 export enum LogLevel {
   ERROR = 'error',
   WARN = 'warn',

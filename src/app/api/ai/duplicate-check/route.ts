@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { DuplicateDetectionService } from '@/lib/services/duplicate-detection';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { DuplicateDetectionService } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// POST /api/ai/duplicate-check - Check for job duplicates (AI assistant endpoint)
+
 export async function POST(req: NextRequest) {
   try {
     // Check authentication (admin or system)

@@ -1,3 +1,5 @@
+import { useEffect, useRef, useCallback } from 'react';
+
 /**
  * Session Tracker
  * Automatically tracks user session engagement and behavior patterns
@@ -5,8 +7,6 @@
 
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
-import {
   useJobBoardAnalytics,
   UserEngagementEvent,
 } from './job-board-analytics';

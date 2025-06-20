@@ -1,13 +1,13 @@
+import { useState } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/card';
+import { toast } from 'sonner';
+
 'use client';
 
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
-import { 
   Instagram, 
   TrendingUp, 
   Package, 
@@ -16,7 +16,7 @@ import {
   X,
   Sparkles,
   DollarSign,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 
 interface JobPostingUpsellModalProps {

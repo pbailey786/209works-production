@@ -1,11 +1,10 @@
+import { useState, useEffect, Suspense } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import {
   Search,
   Filter,
   Plus,
@@ -54,7 +53,7 @@ interface Job {
 }
 
 function MyJobsContent() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');

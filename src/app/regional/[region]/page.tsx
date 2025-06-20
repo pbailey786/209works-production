@@ -1,20 +1,19 @@
+import { Metadata } from '@/components/ui/card';
+import { notFound } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
 /**
  * Dynamic Regional Landing Page
  * Handles routes for /regional/209, /regional/916, /regional/510, /regional/norcal
  */
 
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
   MapPin,
   Building2,
   Users,
@@ -24,7 +23,6 @@ import {
   GraduationCap,
   Heart,
 } from 'lucide-react';
-import Link from 'next/link';
 
 interface RegionConfig {
   name: string;

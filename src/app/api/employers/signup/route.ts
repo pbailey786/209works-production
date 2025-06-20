@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 import bcrypt from 'bcryptjs';
 import { EmailHelpers } from '@/lib/email/email-helpers';

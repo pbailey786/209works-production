@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Common validation constants
+
 export const VALIDATION_LIMITS = {
   // String limits
   MAX_STRING_LENGTH: 10000,

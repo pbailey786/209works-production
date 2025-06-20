@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import React, { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Switch } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
   Star, 
   TrendingUp, 
   Eye, 
@@ -9,13 +14,8 @@ import {
   Info,
   Zap,
   Crown,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
 
 interface FeaturedPostUpgradeProps {
   isSelected: boolean;

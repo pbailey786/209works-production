@@ -1,7 +1,7 @@
-import { prisma } from '@/lib/database/prisma';
-import { stripe } from '@/lib/stripe';
+import { prisma } from '@/components/ui/card';
+import { stripe } from '@/components/ui/card';
 import { EmailQueue } from './email-queue';
-// import type { PaymentFailure, Subscription, User } from '@prisma/client';
+
 
 export interface PaymentRetryOptions {
   maxRetryAttempts: number;

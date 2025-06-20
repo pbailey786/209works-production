@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import { stripe } from '@/lib/stripe';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { stripe } from '@/components/ui/card';
 import { z } from 'zod';
+
 
 const upsellSchema = z.object({
   jobId: z.string().uuid(),
@@ -224,7 +225,7 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action'); // 'addons' or 'status'
 
     // Get user details
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email! },
       select: { id: true, currentTier: true }
     });

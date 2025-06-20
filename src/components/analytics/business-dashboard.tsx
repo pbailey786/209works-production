@@ -1,29 +1,27 @@
-/**
+import React, { useState, useEffect } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+
+  /**
  * Business Metrics Dashboard
  * Comprehensive analytics dashboard for job board business intelligence
  */
-
 'use client';
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
   useBusinessMetrics,
   DashboardData,
   BusinessInsight,
   JobBoardKPIs,
 } from '@/lib/analytics/business-metrics';
-import {
   TrendingUp,
   TrendingDown,
   Users,

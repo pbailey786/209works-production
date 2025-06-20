@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getEmbedding, getChatCompletion } from '@/lib/openai';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { getEmbedding, getChatCompletion } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Input validation utilities
+
 class SemanticSearchValidator {
   static isValidQuery(query: any): query is string {
     return (

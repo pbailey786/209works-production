@@ -1,10 +1,8 @@
-'use client';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from '@/components/ui/card';
+import { motion } from '@/components/ui/card';
 import { Mail, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
-import Input from '../../components/Input';
-import Button from '../../components/Button';
+
+'use client';
 
 export default function PasswordResetRequestPage() {
   const [email, setEmail] = useState('');

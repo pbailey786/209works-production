@@ -1,9 +1,10 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { Building, ExternalLink, MapPin } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Building, ExternalLink, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 interface Advertisement {
   id: string;

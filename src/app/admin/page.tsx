@@ -1,16 +1,16 @@
-import { Metadata } from 'next';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import {
+import { Metadata } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
   Users,
   Building2,
   Briefcase,
@@ -29,8 +29,6 @@ import {
   MessageSquare,
   Search,
 } from 'lucide-react';
-import Link from 'next/link';
-import { prisma } from '@/lib/database/prisma';
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard | 209 Works',

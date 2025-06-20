@@ -1,3 +1,6 @@
+import { ChatbotService } from '@/components/ui/card';
+import { ConversationManager } from '@/lib/conversation/manager';
+
 /**
  * Test script for Phase 1 209jobs-GPT implementation
  *
@@ -8,8 +11,6 @@
  * - Context retention
  */
 
-import { ChatbotService } from '@/lib/conversation/chatbot-service';
-import { ConversationManager } from '@/lib/conversation/manager';
 
 async function testChatbot() {
   console.log('🤖 Testing 209jobs-GPT Phase 1 Implementation\n');

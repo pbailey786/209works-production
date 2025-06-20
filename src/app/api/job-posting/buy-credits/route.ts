@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/session-validator';
-import { stripe } from '@/lib/stripe';
-import { JOB_POSTING_CONFIG } from '@/lib/stripe';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { requireRole } from '@/components/ui/card';
+import { stripe } from '@/components/ui/card';
+import { JOB_POSTING_CONFIG } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
 
 const buyCreditSchema = z.object({

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { openai } from '@/lib/openai';
-import { prisma } from '@/lib/database/prisma';
-import { auth } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { openai } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
 import { z } from 'zod';
-import {
+
   enhancedIdSchema,
   messageSchema,
   enhancedArraySchema,

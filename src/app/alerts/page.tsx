@@ -1,9 +1,20 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Switch } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/card';
+import { LoadingSpinner } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import {
   Plus,
   Edit3,
   Trash2,
@@ -14,38 +25,24 @@ import {
   Clock,
   Target,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { useToast } from '@/hooks/use-toast';
 
 interface JobAlert {
   id: string;
@@ -120,7 +117,7 @@ const FREQUENCY_OPTIONS = [
 ];
 
 export default function AlertsPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const { toast } = useToast();
   const [alerts, setAlerts] = useState<JobAlert[]>([]);
   const [stats, setStats] = useState<AlertStats | null>(null);

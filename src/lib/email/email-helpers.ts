@@ -1,4 +1,4 @@
-import { emailService, EmailServiceOptions } from '@/lib/email/email-service';
+import { emailService, EmailServiceOptions } from '@/components/ui/card';
 import { EmailResult } from '@/lib/agents/email-agent';
 
 export interface JobAlertData {

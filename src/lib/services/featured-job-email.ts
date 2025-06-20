@@ -1,5 +1,6 @@
-import { prisma } from '@/lib/database/prisma';
+import { prisma } from '@/components/ui/card';
 import { JobMatchingService } from './job-matching';
+
 
 export interface EmailJobMatch {
   jobId: string;

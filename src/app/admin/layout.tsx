@@ -1,10 +1,9 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import AdminSidebar from '@/components/admin/AdminSidebar';
-import { canAccessRoute } from '@/lib/rbac/permissions';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { canAccessRoute } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Force dynamic rendering for admin layout
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const revalidate = 0;

@@ -1,8 +1,9 @@
+import React, { Component, ErrorInfo, ReactNode } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+
 'use client';
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, RefreshCw } from 'lucide-react';
 
 interface ErrorBoundaryState {
   hasError: boolean;

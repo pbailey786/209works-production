@@ -1,6 +1,7 @@
+import { useParams } from 'next/navigation';
+
 'use client';
 
-import { useParams } from 'next/navigation';
 
 export default function UpgradeJobPage() {
   const params = useParams();

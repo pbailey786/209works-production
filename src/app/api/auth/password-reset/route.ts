@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { randomBytes } from 'crypto';
-import { prisma } from '@/lib/database/prisma';
-import { EmailHelpers } from '@/lib/email/email-helpers';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { randomBytes } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { EmailHelpers } from '@/components/ui/card';
 import { normalizeEmail } from '@/lib/utils/email-utils';
 
 export async function POST(req: NextRequest) {

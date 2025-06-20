@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
 
 // Validation schema for onboarding data
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user's current onboarding data
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { id: (session!.user as any).id },
       select: {
         id: true,

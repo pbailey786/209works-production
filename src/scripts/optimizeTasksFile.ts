@@ -1,13 +1,11 @@
+import { TaskPerformanceOptimizer } from '@/components/ui/card';
+import { ConfigManager } from '../lib/task-management/config';
+
 #!/usr/bin/env node
 
-import fs from 'fs/promises';
-import path from 'path';
-import {
   TaskValidator,
   TasksCollection,
 } from '../lib/task-management/validation';
-import { TaskPerformanceOptimizer } from '../lib/task-management/performance';
-import { ConfigManager } from '../lib/task-management/config';
 
 /**
  * Task File Optimization Script

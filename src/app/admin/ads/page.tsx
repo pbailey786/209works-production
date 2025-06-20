@@ -1,20 +1,16 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import AdManagementTable from '@/components/admin/AdManagementTable';
-import AdManagementFilters from '@/components/admin/AdManagementFilters';
-import AdManagementStats from '@/components/admin/AdManagementStats';
-import {
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { hasPermission, Permission } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Plus } from 'lucide-react';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
 
 interface SearchParams {
   status?: string;

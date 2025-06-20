@@ -1,7 +1,8 @@
+import { motion } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
 'use client';
 
-import { motion } from 'framer-motion';
-import {
   Search,
   Building,
   MapPin,
@@ -15,8 +16,6 @@ import {
   CheckCircle,
   ArrowRight,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 const services = [
   {

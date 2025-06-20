@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { Resend } from 'resend';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { Resend } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Lazy-load Resend client to avoid build-time errors
+
 function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
     throw new Error('RESEND_API_KEY environment variable is required');

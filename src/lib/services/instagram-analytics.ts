@@ -1,11 +1,12 @@
+import { prisma } from '@/components/ui/card';
+import { InstagramAPI, InstagramInsightsResponse } from '@/components/ui/card';
+import { InstagramAlertType } from '@prisma/client';
+
 /**
  * Instagram Analytics Service
  * Handles fetching, storing, and analyzing Instagram post performance data
  */
 
-import { prisma } from '@/lib/database/prisma';
-import { InstagramAPI, InstagramInsightsResponse } from './instagram-api';
-import { InstagramAlertType } from '@prisma/client';
 
 export interface AnalyticsData {
   impressions: number;

@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { isResumeParsingAvailable, getEnvironmentConfig } from '@/lib/env-validation';
-import { isValidResumeFile } from '@/lib/fileUpload';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { isResumeParsingAvailable, getEnvironmentConfig } from '@/components/ui/card';
+import { isValidResumeFile } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {

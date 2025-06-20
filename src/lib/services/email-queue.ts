@@ -1,18 +1,14 @@
-import { Queue, Worker, Job, QueueEvents } from 'bullmq';
-import IORedis from 'ioredis';
-import React from 'react';
-import { prisma } from '@/lib/database/prisma';
-import {
+import { Queue, Worker, Job, QueueEvents } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { emailSecurityValidator } from '@/components/ui/card';
+import { SecurityLogger } from '@/components/ui/card';
+import { emailService } from '@/components/ui/card';
+import { EmailHelpers } from '@/lib/email/email-helpers';
+
   sendEmail,
   validateEmailAddress,
   EMAIL_SECURITY_CONFIG,
 } from '@/lib/email';
-import { emailSecurityValidator } from '@/lib/email/security';
-import { SecurityLogger } from '@/lib/security/security-monitor';
-import JobAlertEmail from '@/components/emails/job-alert-email';
-import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
-import { emailService } from '@/lib/email/email-service';
-import { EmailHelpers } from '@/lib/email/email-helpers';
 
 // Email job types for queue system
 export interface QueueEmailJobData {

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/database/prisma';
+import { prisma } from '@/components/ui/card';
 import { createServerSupabaseClient } from '@/lib/supabase';
 
 interface BackupResult {

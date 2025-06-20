@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 // Define the JobType enum to match Prisma schema
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       where: { clerkId: userId },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

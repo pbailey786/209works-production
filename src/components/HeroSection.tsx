@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+
 
 export default function HeroSection() {
   const router = useRouter();

@@ -1,7 +1,8 @@
+import { motion } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
 'use client';
 
-import { motion } from 'framer-motion';
-import {
   MapPin,
   Users,
   Briefcase,
@@ -18,8 +19,6 @@ import {
   Globe,
   Sparkles,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 const stats = [
   { number: '50,000+', label: 'Jobs Posted', icon: Briefcase },

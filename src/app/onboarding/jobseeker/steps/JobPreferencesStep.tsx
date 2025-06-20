@@ -1,7 +1,7 @@
+import { Briefcase } from 'lucide-react';
+
 'use client';
 
-import React from 'react';
-import { Briefcase } from 'lucide-react';
 
 interface JobPreferencesStepProps {
   formData: any;

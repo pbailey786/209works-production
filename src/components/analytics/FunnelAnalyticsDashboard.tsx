@@ -1,3 +1,11 @@
+import React, { useState, useEffect, useCallback } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Progress } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 /**
  * Funnel Analytics Dashboard
  * Comprehensive visualization of conversion funnels and optimization insights
@@ -5,21 +13,12 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import {
   useFunnelAnalysis,
   FunnelAnalysis,
   FunnelStep,
@@ -28,7 +27,6 @@ import {
   JOB_SEEKER_FUNNEL,
   EMPLOYER_FUNNEL,
 } from '@/lib/analytics/funnel-analysis';
-import {
   BarChart,
   Bar,
   XAxis,
@@ -43,7 +41,6 @@ import {
   Cell,
   LabelList,
 } from 'recharts';
-import {
   TrendingDown,
   TrendingUp,
   Users,

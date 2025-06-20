@@ -1,3 +1,7 @@
+import { getRedisClient, isRedisAvailable } from '@/components/ui/card';
+import { getAtomicCacheManager } from '@/components/ui/card';
+import { CacheHealthMonitor } from '../lib/cache/enhanced-cache-services';
+
 #!/usr/bin/env node
 
 /**
@@ -7,14 +11,10 @@
  * addressing all critical race conditions and data consistency issues identified in subtask 29.
  */
 
-import { getRedisClient, isRedisAvailable } from '../lib/cache/redis';
-import { getAtomicCacheManager } from '../lib/cache/atomic-cache-manager';
-import {
   CacheMigrationManager,
   CacheCompatibilityLayer,
   MigrationUtils,
 } from '../lib/cache/cache-migration-utility';
-import { CacheHealthMonitor } from '../lib/cache/enhanced-cache-services';
 
 // Migration configuration
 interface FinalizationConfig {

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
+
   checkDatabaseHealth, 
   getDatabaseMetrics, 
   optimizeDatabase,
   checkIndexUsage,
-  getTableSizes 
+  getTableSizes,
 } from '@/lib/database/health';
 
 /**

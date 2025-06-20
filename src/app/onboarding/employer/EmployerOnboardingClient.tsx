@@ -1,14 +1,14 @@
+import React, { useState } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { 
   Building2, 
   MapPin, 
   Users, 
   Target,
   CheckCircle,
-  Upload
+  Upload,
 } from 'lucide-react';
 
 interface User {

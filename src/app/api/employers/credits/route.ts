@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/session-validator';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { requireRole } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// GET /api/employers/credits - Get user's credit balance
+
 export async function GET(request: NextRequest) {
   try {
     const { user } = await requireRole(['employer', 'admin']);

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/session-validator';
-import { prisma } from '@/lib/database/prisma';
-import { getJobMatchScore } from '@/lib/matching';
-import { ShouldIApplyAnalysisService } from '@/lib/llm/shouldIApplyAnalysis';
-import { JobAnalysisInput } from '@/lib/prompts/shouldIApply';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { requireRole } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { getJobMatchScore } from '@/components/ui/card';
+import { ShouldIApplyAnalysisService } from '@/components/ui/card';
+import { JobAnalysisInput } from '@/components/ui/card';
 import { z } from 'zod';
 
 const shouldIApplySchema = z.object({

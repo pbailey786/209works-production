@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import JobCard from './JobCard';
+import React, { useState, useEffect } from '@/components/ui/card';
 import { Spinner } from './Spinner';
+
 
 interface Job {
   id: string;

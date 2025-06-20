@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
-// import { emailService } from '@/lib/email'; // Temporarily disabled
 
-// Schema for contacting applicant
+
 const contactApplicantSchema = z.object({
   applicationId: z.string().uuid('Invalid application ID'),
   subject: z.string().min(1, 'Subject is required').max(200, 'Subject too long'),
@@ -178,7 +177,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
 
@@ -187,7 +186,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user and verify they're an employer
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
       select: { id: true, role: true },
     });

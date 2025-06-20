@@ -1,6 +1,6 @@
 import { SearchFilters } from '../cache/pagination';
 
-// Search algorithm configuration
+
 export const SEARCH_CONFIG = {
   // Weight factors for relevance scoring
   weights: {

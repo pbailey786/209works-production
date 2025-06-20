@@ -1,11 +1,9 @@
-'use client';
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { useState, useEffect, Suspense } from '@/components/ui/card';
+import { useSearchParams } from '@/components/ui/card';
+import { motion } from '@/components/ui/card';
 import { Mail, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
-import Link from 'next/link';
-import Input from '../../components/Input';
-import Button from '../../components/Button';
+
+'use client';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();

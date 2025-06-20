@@ -1,3 +1,9 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { usePostHog } from '@/lib/analytics/posthog-provider';
+
 /**
  * GDPR-Compliant Consent Banner
  * Handles user consent for analytics tracking with regional context
@@ -5,11 +11,6 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
   Cookie,
   Shield,
   Settings,
@@ -19,7 +20,6 @@ import {
   Info,
   MapPin,
 } from 'lucide-react';
-import { usePostHog } from '@/lib/analytics/posthog-provider';
 
 interface ConsentBannerProps {
   region?: string;

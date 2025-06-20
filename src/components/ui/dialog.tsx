@@ -1,11 +1,10 @@
+import { Cross2Icon } from '@/components/ui/card';
+import { createInformativeIconProps } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
 'use client';
 
-import * as React from 'react';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { Cross2Icon } from '@radix-ui/react-icons';
-import { createInformativeIconProps } from '@/utils/accessibility';
 
-import { cn } from '@/lib/utils';
 
 const Dialog = DialogPrimitive.Root;
 

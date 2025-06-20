@@ -1,7 +1,8 @@
+import React, { useState, useRef } from '@/components/ui/card';
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 interface ResumeUploadStepProps {
   formData: any;

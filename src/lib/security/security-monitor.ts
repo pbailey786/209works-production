@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/database/prisma';
 
-// Security event types
+
 export enum SecurityEventType {
   // Authentication events
   LOGIN_SUCCESS = 'login_success',

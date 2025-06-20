@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, MapPin, DollarSign, Briefcase, Star } from 'lucide-react';
+import React, { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { X, User, MapPin, DollarSign, Briefcase, Star } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+
 
 interface QuickProfileSetupProps {
   isOpen: boolean;

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Pagination configuration
+
 export const PAGINATION_CONFIG = {
   defaultLimit: 20,
   maxLimit: 100,

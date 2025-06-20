@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { validateEnvironmentVariables, getEnvironmentConfig, isResumeParsingAvailable } from '@/lib/env-validation';
 
 export async function GET(request: NextRequest) {

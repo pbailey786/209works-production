@@ -1,15 +1,14 @@
-import { Metadata } from 'next';
-import {
+import { Metadata } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
   Check,
   Star,
   Zap,
@@ -25,7 +24,6 @@ import {
   Bell,
   Eye,
 } from 'lucide-react';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Upgrade to Premium | 209jobs',

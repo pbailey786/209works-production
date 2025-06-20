@@ -1,5 +1,6 @@
-import { prisma } from '@/lib/database/prisma';
-import {
+import { prisma } from '@/components/ui/card';
+import { generateCacheKey, CACHE_PREFIXES, DEFAULT_TTL } from './redis';
+
   CursorPaginationParams,
   OffsetPaginationParams,
   SearchFilters,
@@ -13,12 +14,10 @@ import {
   createPaginatedResponse,
   generatePaginationCacheKey,
 } from './pagination';
-import {
   getAtomicCacheManager,
   AtomicCacheUtils,
   AtomicCacheManager,
 } from './atomic-cache-manager';
-import { generateCacheKey, CACHE_PREFIXES, DEFAULT_TTL } from './redis';
 
 /**
  * Enhanced Cache Services with Atomic Operations

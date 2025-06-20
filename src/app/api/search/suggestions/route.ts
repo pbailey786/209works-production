@@ -1,15 +1,15 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse } from '@/lib/errors/api-errors';
-import { prisma } from '@/lib/database/prisma';
-import {
+import { NextRequest } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { createSuccessResponse } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { z } from 'zod';
+
   getCache,
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
 } from '@/lib/cache/redis';
-import { z } from 'zod';
 
 // Query schema for suggestions
 const suggestionsQuerySchema = z.object({

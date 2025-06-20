@@ -1,10 +1,10 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import {
   Building2,
   Globe,
   Mail,
@@ -33,7 +33,7 @@ interface CompanyProfile {
 }
 
 export default function EmployerProfileSettingsPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   const [profile, setProfile] = useState<CompanyProfile>({
@@ -119,7 +119,7 @@ export default function EmployerProfileSettingsPage() {
           console.error('Error loading company profile:', error);
           setProfile(prev => ({
             ...prev,
-            contactEmail: user?.emailAddresses?.[0]?.emailAddress || '',
+            contactEmail: user?.email || '',
           }));
           setIsFirstTime(true);
         }

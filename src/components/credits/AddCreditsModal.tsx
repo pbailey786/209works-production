@@ -1,8 +1,9 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   X,
   Check,
   Star,
@@ -14,7 +15,6 @@ import {
   Sparkles,
   TrendingUp,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface AddCreditsModalProps {
   isOpen: boolean;

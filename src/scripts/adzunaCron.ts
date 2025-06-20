@@ -1,3 +1,8 @@
+import { config } from '@/components/ui/card';
+import { writeFileSync, existsSync, mkdirSync } from '@/components/ui/card';
+import { join } from '@/components/ui/card';
+import { upsertAdzunaJobsToDb } from '../app/services/adzunaToDb';
+
 #!/usr/bin/env node
 
 /**
@@ -21,11 +26,6 @@
  *   pm2 start dist/scripts/adzunaCron.js --name "adzuna-cron"
  */
 
-import * as cron from 'node-cron';
-import { config } from 'dotenv';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { upsertAdzunaJobsToDb } from '../app/services/adzunaToDb';
 
 // Load environment variables
 config();

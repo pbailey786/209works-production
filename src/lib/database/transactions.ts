@@ -1,5 +1,6 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+
 
 /**
  * Transaction management utilities to prevent race conditions and ensure data consistency
@@ -332,7 +333,7 @@ export async function toggleJobSaveSafe(data: {
       }
 
       // Verify user exists
-      const dbUser = await tx.user.findUnique({
+      const userRecord = await tx.user.findUnique({
         where: { id: data.userId },
         select: { id: true },
       });
@@ -610,7 +611,7 @@ export async function createAlertSafe(data: {
   return safeTransaction(
     async tx => {
       // Verify user exists and get current alert count
-      const dbUser = await tx.user.findUnique({
+      const userRecord = await tx.user.findUnique({
         where: { id: data.userId },
         select: {
           id: true,

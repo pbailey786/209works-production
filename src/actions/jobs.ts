@@ -1,10 +1,11 @@
-import { prisma } from '@/lib/database/prisma';
+import { prisma } from '@/components/ui/card';
+import { revalidatePath } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
+import { ActionResult } from '@/types/actions';
+
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { z } from 'zod';
-import { ActionResult } from '@/types/actions';
 
 // Validation schemas
 const createJobSchema = z.object({
@@ -187,7 +188,7 @@ export async function updateJobAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const clerkUserId = formData.get('userId') as string;
+    const userId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -362,7 +363,7 @@ export async function applyToJobAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const clerkUserId = formData.get('userId') as string;
+    const userId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -493,7 +494,7 @@ export async function saveJobAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const clerkUserId = formData.get('userId') as string;
+    const userId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,

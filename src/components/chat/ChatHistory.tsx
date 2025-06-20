@@ -1,10 +1,10 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { formatDistanceToNow } from 'date-fns';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { formatDistanceToNow } from 'date-fns';
-import {
   Clock,
   MessageSquare,
   Trash2,

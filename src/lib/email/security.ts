@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import validator from 'validator';
 
-// Safe HTML sanitization for email content
+
 function sanitizeHtml(html: string): string {
   if (typeof html !== 'string') return '';
 

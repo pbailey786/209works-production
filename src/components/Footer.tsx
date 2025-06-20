@@ -1,8 +1,6 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import {
+import { motion } from '@/components/ui/card';
+import { Button } from './ui/button';
+
   MapPin,
   Mail,
   Phone,
@@ -17,7 +15,6 @@ import {
   Users,
   Building2,
 } from 'lucide-react';
-import { Button } from './ui/button';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

@@ -1,27 +1,25 @@
+import { Button } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
 'use client';
 
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
   Building2,
   MapPin,
   CheckCircle,
@@ -31,8 +29,6 @@ import {
   Percent,
   Award,
 } from 'lucide-react';
-import Link from 'next/link';
-import PricingSection from '@/components/pricing/PricingSection';
 
 // Define pricing plans
 const pricingPlans = [

@@ -1,7 +1,7 @@
+import { Bell, Mail, MessageSquare, CheckCircle } from 'lucide-react';
+
 'use client';
 
-import React from 'react';
-import { Bell, Mail, MessageSquare, CheckCircle } from 'lucide-react';
 
 interface OptInStepProps {
   formData: any;

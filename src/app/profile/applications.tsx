@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Table from '../../components/Table';
+
 
 export default function JobApplicationsPage() {
   const [applications, setApplications] = useState<any[]>([]);

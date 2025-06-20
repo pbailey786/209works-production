@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PasswordResetService } from '@/lib/auth/password-reset-service';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { PasswordResetService } from '@/components/ui/card';
 import { headers } from 'next/headers';
 
 export async function POST(req: NextRequest) {

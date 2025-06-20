@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import redis from '@/lib/redis';
+
 
 interface HealthCheck {
   status: 'healthy' | 'unhealthy' | 'degraded';

@@ -1,8 +1,9 @@
+import React, { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   X,
   Check,
   Star,
@@ -13,7 +14,6 @@ import {
   Shield,
   ArrowRight,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface BillingModalProps {
   isOpen: boolean;

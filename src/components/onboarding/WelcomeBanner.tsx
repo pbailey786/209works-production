@@ -1,8 +1,8 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import {
   CheckCircle,
   ArrowRight,
   X,

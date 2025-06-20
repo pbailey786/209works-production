@@ -1,6 +1,7 @@
-import React, { forwardRef } from 'react';
-import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
+import React, { forwardRef } from '@/components/ui/card';
+import { useKeyboardNavigation } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+
 
 interface EnhancedButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

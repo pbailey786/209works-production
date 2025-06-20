@@ -1,16 +1,17 @@
+import React, { useState, useEffect, useRef } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Progress } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/card';
+import { memoryLeakDetector } from '@/lib/monitoring/memory-leak-detector';
+
 /**
  * Memory Leak Monitoring Dashboard
  *
  * Admin dashboard component for monitoring memory leaks in real-time
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -20,7 +21,6 @@ import {
   TrendingDown,
   Activity,
 } from 'lucide-react';
-import { memoryLeakDetector } from '@/lib/monitoring/memory-leak-detector';
 
 interface MemoryStats {
   heapUsed: number;

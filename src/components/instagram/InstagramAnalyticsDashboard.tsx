@@ -1,25 +1,25 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { DatePickerWithRange } from '@/components/ui/card';
+import { DateRange } from '@/components/ui/card';
+import { addDays, format } from 'date-fns';
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DatePickerWithRange } from '@/components/ui/date-range-picker';
-import {
   TrendingUp,
   TrendingDown,
   Eye,
@@ -33,8 +33,6 @@ import {
   Calendar,
   Filter,
 } from 'lucide-react';
-import { DateRange } from 'react-day-picker';
-import { addDays, format } from 'date-fns';
 
 interface AnalyticsData {
   id: string;

@@ -1,20 +1,19 @@
+import { useState } from '@/components/ui/card';
+import { useRouter } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import {
   ArrowLeft,
   Save,
   Loader2,
@@ -24,7 +23,6 @@ import {
   ExternalLink,
   MapPin,
 } from 'lucide-react';
-import Link from 'next/link';
 
 interface Advertisement {
   id: string;

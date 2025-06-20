@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
 
-// Email notification utility
+
 async function sendFailoverNotification(
   failedProvider: 'openai' | 'anthropic',
   error: string,

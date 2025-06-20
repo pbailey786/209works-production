@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/jobs/save - Get saved jobs for the authenticated user

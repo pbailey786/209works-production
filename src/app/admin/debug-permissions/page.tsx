@@ -1,7 +1,7 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { getUserPermissions, hasPermission } from '@/lib/rbac/permissions';
-import { Permission } from '@/lib/rbac/permissions';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { getUserPermissions, hasPermission } from '@/components/ui/card';
+import { Permission } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 export const dynamic = 'force-dynamic';

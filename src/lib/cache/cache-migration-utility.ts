@@ -1,11 +1,10 @@
-import { getRedisClient, isRedisAvailable } from './redis';
+import { getRedisClient, isRedisAvailable } from '@/components/ui/card';
 import { getAtomicCacheManager } from './atomic-cache-manager';
-import {
+
   JobCacheService as OldJobCacheService,
   UserCacheService as OldUserCacheService,
   SearchCacheService as OldSearchCacheService,
 } from './services';
-import {
   JobCacheService as NewJobCacheService,
   UserCacheService as NewUserCacheService,
   SearchCacheService as NewSearchCacheService,

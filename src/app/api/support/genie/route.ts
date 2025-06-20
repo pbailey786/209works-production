@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { openai } from '@/lib/openai';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { openai } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Rate limiting - simple in-memory store (in production, use Redis)
+
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 5; // 5 requests per minute for support

@@ -1,14 +1,14 @@
+import React, { useState } from '@/components/ui/card';
+import { JOB_POSTING_CONFIG } from '@/lib/stripe';
+
 'use client';
 
-import React, { useState } from 'react';
-import { JOB_POSTING_CONFIG } from '@/lib/stripe';
-import { 
   CreditCard, 
   Zap, 
   Package,
   Loader2,
   X,
-  Check
+  Check,
 } from 'lucide-react';
 
 interface BuyCreditsModalProps {

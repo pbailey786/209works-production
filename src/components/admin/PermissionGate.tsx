@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { Permission } from '@/lib/rbac/permissions';
+import { ReactNode } from '@/components/ui/card';
+import { Permission } from '@/components/ui/card';
 import { usePermissions } from '@/hooks/usePermissions';
 
 interface PermissionGateProps {

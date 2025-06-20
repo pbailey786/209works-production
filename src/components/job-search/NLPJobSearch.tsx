@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
+import React, { useState, useEffect, useRef } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
   Search,
   Sparkles,
   ArrowRight,
@@ -9,8 +11,6 @@ import {
   Clock,
   DollarSign,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 interface NLPJobSearchProps {
   onSearch: (query: string) => void;

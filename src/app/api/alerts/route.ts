@@ -1,29 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { z } from 'zod';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import {
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
+
   alertQuerySchema,
   createAlertSchema as createAlertValidationSchema,
 } from '@/lib/validations/alerts';
-import {
   createSuccessResponse,
   NotFoundError,
   AuthorizationError,
 } from '@/lib/errors/api-errors';
-import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
   invalidateCacheByTags,
 } from '@/lib/cache/redis';
-import {
   calculateOffsetPagination,
   createPaginatedResponse,
 } from '@/lib/cache/pagination';
-import { prisma } from '@/lib/database/prisma';
 
 // Validation schemas
 const createAlertSchema = z.object({
@@ -112,7 +109,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
     
@@ -120,7 +117,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 

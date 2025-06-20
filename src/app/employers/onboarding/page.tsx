@@ -1,10 +1,10 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import {
   Building2,
   Upload,
   Users,
@@ -19,7 +19,6 @@ import {
   TrendingUp,
   Sparkles,
 } from 'lucide-react';
-import CreditSystemExplanationModal from '@/components/onboarding/CreditSystemExplanationModal';
 
 interface OnboardingData {
   // Step 1: Company Info & Contact Person
@@ -38,7 +37,7 @@ interface OnboardingData {
 }
 
 export default function EmployerOnboardingPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   
   const [currentStep, setCurrentStep] = useState(1);

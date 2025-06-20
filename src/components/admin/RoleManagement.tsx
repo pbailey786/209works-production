@@ -1,23 +1,25 @@
+import { useState } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/card';
+import { usePermissions } from '@/components/ui/card';
+import { PermissionGate } from './PermissionGate';
+
 'use client';
 
-import { useState } from 'react';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -25,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -33,18 +34,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
   AdminRole,
   Permission,
   ROLE_PERMISSIONS,
   ROLE_DISPLAY_INFO,
   getUserPermissions,
 } from '@/lib/rbac/permissions';
-import { usePermissions } from '@/hooks/usePermissions';
-import { PermissionGate } from './PermissionGate';
-import {
   Shield,
   Users,
   Settings,

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { EnhancedJobMatchingService } from '@/lib/search/job-matching';
-import { emailQueue } from '@/lib/services/email-queue';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { EnhancedJobMatchingService } from '@/components/ui/card';
+import { emailQueue } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Validation for cron job requests
+
 const cronRequestSchema = z.object({
   authorization: z.string().optional(),
   frequency: z.enum(['immediate', 'daily']).optional(),

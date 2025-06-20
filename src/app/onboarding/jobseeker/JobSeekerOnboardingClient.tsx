@@ -1,8 +1,8 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { 
   Upload, 
   User, 
   MapPin, 
@@ -14,16 +14,10 @@ import {
   CheckCircle,
   FileText,
   Clock,
-  Star
+  Star,
 } from 'lucide-react';
 
 // Import step components
-import ResumeUploadStep from './steps/ResumeUploadStep';
-import ReviewEditStep from './steps/ReviewEditStep';
-import AvailabilityStep from './steps/AvailabilityStep';
-import JobPreferencesStep from './steps/JobPreferencesStep';
-import CareerGoalsStep from './steps/CareerGoalsStep';
-import OptInStep from './steps/OptInStep';
 
 interface User {
   id: string;

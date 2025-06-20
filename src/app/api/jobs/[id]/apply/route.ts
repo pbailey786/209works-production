@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/database/prisma';
-import { withAPIMiddleware, apiConfigs } from '@/lib/middleware/api';
-import { createJobApplicationSchema } from '@/lib/validations/api';
+import { NextRequest } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { withAPIMiddleware, apiConfigs } from '@/components/ui/card';
+import { createJobApplicationSchema } from '@/components/ui/card';
 import { routeParamsSchemas } from '@/lib/middleware/validation';
-import {
+
   createSuccessResponse,
   NotFoundError,
   ConflictError,

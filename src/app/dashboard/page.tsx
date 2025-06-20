@@ -1,10 +1,8 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import DashboardClient from './DashboardClient';
 
-// Type definitions for dashboard data
+
 interface DashboardStats {
   savedJobs: number;
   totalAlerts: number;

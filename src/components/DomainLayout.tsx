@@ -1,9 +1,7 @@
+import { useDomain } from '@/lib/domain/context';
+
 'use client';
 
-import React from 'react';
-import { useDomain } from '@/lib/domain/context';
-import Image from 'next/image';
-import Link from 'next/link';
 
 interface DomainLayoutProps {
   children: React.ReactNode;

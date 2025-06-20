@@ -1,9 +1,8 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import ProfileSettingsClient from './ProfileSettingsClient';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Server-side data fetching
+
 async function getUserSettings(userId: string) {
   try {
     const user = await prisma.user.findUnique({
@@ -51,7 +50,7 @@ export default async function ProfileSettingsPage() {
   }
 
   // Get user by email since (session!.user as any).id doesn't exist by default
-  const dbUser = await prisma.user.findUnique({
+  const userRecord = await prisma.user.findUnique({
     where: { email: user?.email },
     select: { id: true },
   });

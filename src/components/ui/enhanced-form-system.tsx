@@ -1,10 +1,10 @@
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { CheckCircle, AlertCircle, Eye, EyeOff, Loader2 } from '@/components/ui/card';
+import { cn } from '@/components/ui/card';
+import { useLoading, useToast } from '@/lib/ui/component-state-manager';
+
 'use client';
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useLoading, useToast } from '@/lib/ui/component-state-manager';
 
 // Enhanced form validation types
 export interface ValidationRule {

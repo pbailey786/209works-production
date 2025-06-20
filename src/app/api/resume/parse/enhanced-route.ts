@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
-import { extractTextFromFile, validateExtractedText, type TextExtractionResult } from '@/lib/enhanced-text-extraction';
-import { parseResumeWithEnhancedAI, sanitizeResumeData, type ParsedResumeResult } from '@/lib/enhanced-ai-parsing';
-import { isResumeParsingAvailable, logEnvironmentStatus } from '@/lib/env-validation';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/components/ui/card';
+import { extractTextFromFile, validateExtractedText, type TextExtractionResult } from '@/components/ui/card';
+import { parseResumeWithEnhancedAI, sanitizeResumeData, type ParsedResumeResult } from '@/components/ui/card';
+import { isResumeParsingAvailable, logEnvironmentStatus } from '@/components/ui/card';
 import { z } from 'zod';
 
 // Request options schema

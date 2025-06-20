@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-import { ZodError } from 'zod';
+import { NextResponse } from '@/components/ui/card';
+import { ZodError } from '@/components/ui/card';
 import { Prisma } from '@prisma/client';
 
-// Standard error response interface
+
 export interface ApiErrorResponse {
   error: string;
   message: string;

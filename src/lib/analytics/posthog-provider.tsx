@@ -1,3 +1,6 @@
+import React, { createContext, useContext, useEffect, useState } from '@/components/ui/card';
+import { PostHogProvider as PHProvider } from 'posthog-js/react';
+
 /**
  * PostHog Analytics Provider
  * Provides PostHog analytics with regional context tracking and GDPR compliance
@@ -5,9 +8,6 @@
 
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import posthog from 'posthog-js';
-import { PostHogProvider as PHProvider } from 'posthog-js/react';
 
 interface RegionalContext {
   region?: string;

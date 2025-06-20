@@ -1,9 +1,9 @@
-import {
+import { prisma } from '@/lib/database/prisma';
+
   PricingTier,
   SubscriptionStatus,
   BillingInterval,
 } from '@prisma/client';
-import { prisma } from '@/lib/database/prisma';
 
 // Updated pricing configuration with 209 Works pricing
 export const PRICING_CONFIG = {

@@ -1,8 +1,7 @@
-import { prisma } from '@/lib/database/prisma';
-import crypto from 'crypto';
+import { prisma } from '@/components/ui/card';
 import { NextRequest } from 'next/server';
 
-// Security event types
+
 export enum SecurityEvent {
   LOGIN_SUCCESS = 'LOGIN_SUCCESS',
   LOGIN_FAILED = 'LOGIN_FAILED',

@@ -1,8 +1,8 @@
 import { getChatCompletion } from '@/lib/openai';
-import { 
+
   ShouldIApplyPrompts, 
   JobAnalysisInput, 
-  JobAnalysisResult 
+  JobAnalysisResult,
 } from '@/lib/prompts/shouldIApply';
 
 /**

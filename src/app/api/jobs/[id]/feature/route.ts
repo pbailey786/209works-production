@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AuthorizationError } from '@/lib/errors/api-errors';
-import { JobQueueService } from '@/lib/services/job-queue';
-import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AuthorizationError } from '@/components/ui/card';
+import { JobQueueService } from '@/components/ui/card';
+import { FeaturedJobAnalyticsService } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 const featureJobSchema = z.object({

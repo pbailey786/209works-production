@@ -1,5 +1,5 @@
-import { PricingTier, BillingInterval } from '@prisma/client';
-import { prisma } from '@/lib/database/prisma';
+import { PricingTier, BillingInterval } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { PRICING_CONFIG } from './subscription';
 
 export interface MigrationPlan {

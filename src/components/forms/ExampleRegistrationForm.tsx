@@ -1,13 +1,14 @@
+import { useForm } from '@/components/ui/card';
+import { zodResolver } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
+import { Loader2 } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { FormErrorBoundary } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+
 'use client';
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Loader2 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import {
   Form,
   FormControl,
   FormDescription,
@@ -16,20 +17,16 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
   FormInput,
   PasswordInput,
   FormTextarea,
   FileInput,
 } from '@/components/ui/form-input';
-import { FormErrorBoundary } from '@/components/ErrorBoundary';
-import {
   validationPatterns,
   handleFormSubmission,
   useFormDirtyState,
   useDebounceValidation,
 } from '@/lib/validations/form-utils';
-import { useToast } from '@/hooks/use-toast';
 
 // Example registration schema using our validation patterns
 const registrationSchema = z

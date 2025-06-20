@@ -3,7 +3,7 @@
  * Handles scheduling and automation of Instagram posts
  */
 
-import { prisma } from '@/lib/database/prisma';
+import { prisma } from '@/components/ui/card';
 import { InstagramPostStatus, InstagramPostType } from '@prisma/client';
 
 export interface ScheduleOptions {

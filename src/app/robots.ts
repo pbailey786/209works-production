@@ -1,5 +1,5 @@
-import { MetadataRoute } from 'next';
-import { headers } from 'next/headers';
+import { MetadataRoute } from '@/components/ui/card';
+import { headers } from '@/components/ui/card';
 import { getDomainConfig } from '@/lib/domain/config';
 
 export default async function robots(): Promise<MetadataRoute.Robots> {

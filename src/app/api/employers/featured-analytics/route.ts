@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { createSuccessResponse, createErrorResponse } from '@/components/ui/card';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 
-// GET /api/employers/featured-analytics - Get featured job analytics summary for employer
+
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { user } = context;

@@ -1,9 +1,10 @@
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { usePermissions } from '@/components/ui/card';
+import { Permission } from '@/lib/rbac/permissions';
+
 'use client';
 
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { usePermissions } from '@/hooks/usePermissions';
-import { Permission } from '@/lib/rbac/permissions';
 
 export default function DebugEmailPage() {
   const { user, isLoaded } = useUser();

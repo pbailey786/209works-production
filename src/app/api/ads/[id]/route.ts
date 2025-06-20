@@ -1,14 +1,13 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { updateAdSchema } from '@/lib/validations/ads';
-import { routeParamsSchemas } from '@/lib/middleware/validation';
+import { NextRequest } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { updateAdSchema } from '@/components/ui/card';
+import { routeParamsSchemas } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import {
+
   createSuccessResponse,
   NotFoundError,
   AuthorizationError,
 } from '@/lib/errors/api-errors';
-import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getEmbedding } from '@/lib/openai';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createJobSchema } from '@/lib/validations/api';
-import { sanitizeFormData } from '@/lib/utils/sanitization';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { getEmbedding } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { createJobSchema } from '@/components/ui/card';
+import { sanitizeFormData } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 export const POST = withAPIMiddleware(

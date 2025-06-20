@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { normalizeEmail } from '@/lib/utils/email-utils';
 
 export async function POST(req: NextRequest) {

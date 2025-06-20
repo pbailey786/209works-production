@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { AdRotationService } from '@/lib/services/adRotationService';
 
 export async function GET(request: NextRequest) {

@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { ChatbotService } from '@/lib/conversation/chatbot-service';
-import { ConversationManager } from '@/lib/conversation/manager';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { ChatbotService } from '@/components/ui/card';
+import { ConversationManager } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 
-// POST /api/jobs/chatbot - Main chatbot endpoint
+
 export async function POST(req: NextRequest) {
   try {
     const { message, sessionId, userId } = await req.json();

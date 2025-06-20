@@ -1,8 +1,8 @@
+import { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
+
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   ChevronDown,
   ChevronUp,
   Users,

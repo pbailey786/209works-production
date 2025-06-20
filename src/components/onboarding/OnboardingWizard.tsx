@@ -1,9 +1,9 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { useRouter } from '@/components/ui/card';
+import { useUser } from '@clerk/nextjs';
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
-import {
   CheckCircle,
   ArrowRight,
   ArrowLeft,

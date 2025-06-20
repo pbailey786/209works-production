@@ -1,11 +1,12 @@
+import { useState } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/card';
+import { Loader2, Database, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Database, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 
 interface DatabaseStatus {
   timestamp: string;

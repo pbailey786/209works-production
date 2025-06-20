@@ -1,10 +1,11 @@
+import { useEffect, useState } from '@/components/ui/card';
+import { AlertCircle, RefreshCw, Wifi, WifiOff } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
+
 'use client';
 
-import { useEffect, useState } from 'react';
-import { AlertCircle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
 
 export default function TimeoutDetector() {
   const [isOnline, setIsOnline] = useState(true);

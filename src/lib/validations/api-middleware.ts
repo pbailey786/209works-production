@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { parseErrorToFormErrors, FormError } from './form-utils';
 
 /**

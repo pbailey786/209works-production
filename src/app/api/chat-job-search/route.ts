@@ -1,19 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { extractJobSearchFilters } from '@/lib/llm/extractJobSearchFilters';
-import { prisma } from '@/lib/database/prisma';
-import {
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { extractJobSearchFilters } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { generateJobSearchResponse } from '@/lib/ai';
+
   generateConversationalResponse,
   extractJobSearchFiltersWithContext,
 } from '@/lib/llm/conversationalResponse';
-import {
   withAISecurity,
   aiSecurityConfigs,
   type AISecurityContext,
   sanitizeUserData,
 } from '@/lib/middleware/ai-security';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { generateJobSearchResponse } from '@/lib/ai';
 
 // Type definitions for conversation messages
 interface ConversationMessage {

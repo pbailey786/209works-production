@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/database/prisma';
 
+
 export type CreditType = 'universal'; // Simplified to single credit type
 
 export interface UserCredits {

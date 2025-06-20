@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import { EmailQueue } from '@/lib/services/email-queue';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { hasPermission, Permission } from '@/components/ui/card';
+import { EmailQueue } from '@/components/ui/card';
 import { z } from 'zod';
 
 const assignCreditsSchema = z.object({

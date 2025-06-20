@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
-import {
+
   CompanyKnowledgeCategory,
   CompanyKnowledgeSource,
   Prisma,

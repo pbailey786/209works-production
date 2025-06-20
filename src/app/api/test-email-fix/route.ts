@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { TemplateManager } from '@/lib/email/template-manager';
-import { emailAgent } from '@/lib/agents/email-agent';
-import { render } from '@react-email/render';
-import React from 'react';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { TemplateManager } from '@/components/ui/card';
+import { emailAgent } from '@/components/ui/card';
+import { render } from '@/components/ui/card';
 import { Html, Body, Container, Text } from '@react-email/components';
 
-// Simple test endpoint to verify email template fixes (no auth required for testing)
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

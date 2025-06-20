@@ -1,19 +1,18 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
   Search,
   TrendingUp,
   MessageSquare,
@@ -46,7 +45,7 @@ interface AnalyticsStats {
 }
 
 export default function JobsGPTAnalyticsPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const [analytics, setAnalytics] = useState<ChatAnalytics[]>([]);
   const [stats, setStats] = useState<AnalyticsStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,7 +57,7 @@ export default function JobsGPTAnalyticsPage() {
   // Check if user is admin
   const isAdmin =
     (session?.user as any)?.role === 'admin' ||
-    user?.emailAddresses?.[0]?.emailAddress === 'admin@209jobs.com';
+    user?.email === 'admin@209jobs.com';
 
   useEffect(() => {
     if (status === 'authenticated' && isAdmin) {

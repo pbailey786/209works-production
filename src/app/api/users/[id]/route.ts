@@ -1,10 +1,10 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { updateUserSchema } from '@/lib/validations/api';
-import { routeParamsSchemas } from '@/lib/middleware/validation';
-import { UserCacheService } from '@/lib/cache/services';
+import { NextRequest } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { updateUserSchema } from '@/components/ui/card';
+import { routeParamsSchemas } from '@/components/ui/card';
+import { UserCacheService } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import {
+
   createSuccessResponse,
   NotFoundError,
   AuthorizationError,
@@ -42,7 +42,7 @@ export const GET = withAPIMiddleware(
 export const PUT = withAPIMiddleware(
   async (req, context) => {
     const { user, params, body, performance } = context;
-    const clerkUserId = params.id;
+    const userId = params.id;
 
     // Users can update their own profile, admins can update any profile
     if (user!.id !== userId && user!.role !== 'admin') {

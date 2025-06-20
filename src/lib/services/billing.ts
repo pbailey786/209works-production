@@ -1,10 +1,10 @@
-import {
+import { prisma } from '@/components/ui/card';
+import { PRICING_CONFIG } from './subscription';
+
   PricingTier,
   BillingInterval,
   SubscriptionStatus,
 } from '@prisma/client';
-import { prisma } from '@/lib/database/prisma';
-import { PRICING_CONFIG } from './subscription';
 
 export interface BillingData {
   userId: string;

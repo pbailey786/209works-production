@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/lib/errors/api-errors';
-import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/components/ui/card';
+import { FeaturedJobAnalyticsService } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 // POST /api/jobs/[id]/analytics/impression - Track job impression
 export const POST = withAPIMiddleware(

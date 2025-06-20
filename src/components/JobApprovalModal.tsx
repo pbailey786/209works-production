@@ -1,7 +1,8 @@
+import React, { useState } from '@/components/ui/card';
+import { X, Check, Edit3, Eye, EyeOff, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
+
 'use client';
 
-import React, { useState } from 'react';
-import { X, Check, Edit3, Eye, EyeOff, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface OptimizedJob {
   id: string;

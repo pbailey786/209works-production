@@ -1,7 +1,8 @@
-import { randomBytes } from 'crypto';
-import { prisma } from '@/lib/database/prisma';
-import { sendEmail } from '@/lib/email';
+import { randomBytes } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { sendEmail } from '@/components/ui/card';
 import { EmailVerificationTemplate } from '@/lib/email/templates/email-verification';
+
 
 export interface SendVerificationEmailOptions {
   userId: string;

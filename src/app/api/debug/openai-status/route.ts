@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { openai } from '@/lib/openai';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { openai } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/debug/openai-status - Debug OpenAI configuration
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       where: { clerkId: userId },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

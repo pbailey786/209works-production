@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/database/prisma';
-import { JobType } from '@prisma/client';
-import { auth } from '@clerk/nextjs/server';
-
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { JobType } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
 import { redirect } from 'next/navigation';
 function isValidJobType(type: any): type is JobType {
   return Object.values(JobType).includes(type);
@@ -114,7 +113,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
 
@@ -123,7 +122,7 @@ export async function DELETE(
     }
 
     // Get user and verify they're an admin or employer
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
       select: { id: true, role: true },
     });

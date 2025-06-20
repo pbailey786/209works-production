@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { AdRotationService } from '@/lib/services/adRotationService';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { AdRotationService } from '@/components/ui/card';
 import { z } from 'zod';
 
 const clickSchema = z.object({

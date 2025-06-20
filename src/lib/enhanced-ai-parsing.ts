@@ -1,9 +1,10 @@
+import { processWithAI } from '@/components/ui/card';
+import { z } from 'zod';
+
 /**
  * Enhanced AI-powered resume parsing with improved reliability and validation
  */
 
-import { processWithAI } from '@/lib/ai';
-import { z } from 'zod';
 
 // Enhanced schema for parsed resume data
 export const EnhancedResumeSchema = z.object({

@@ -1,8 +1,9 @@
+import React, { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
+
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
   X, 
   Star, 
   Crown, 
@@ -10,9 +11,8 @@ import {
   Check, 
   Loader2,
   CreditCard,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
-import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 
 interface CreditPackageModalProps {
   isOpen: boolean;

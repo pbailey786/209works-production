@@ -1,9 +1,8 @@
-'use client';
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from '@/components/ui/card';
+import { motion } from '@/components/ui/card';
 import { CheckCircle, Mail, AlertCircle } from 'lucide-react';
-import Input from '../../../components/Input';
-import Button from '../../../components/Button';
+
+'use client';
 
 export default function VerifyUsersPage() {
   const [email, setEmail] = useState('onethoughtstudio@gmail.com');

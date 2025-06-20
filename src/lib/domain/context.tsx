@@ -1,7 +1,7 @@
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
   DomainConfig,
   getDomainConfig,
   DEFAULT_DOMAIN,

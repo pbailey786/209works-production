@@ -1,11 +1,12 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { hasPermission, Permission } from '@/components/ui/card';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
+
   Mail, 
   Send, 
   Users, 
@@ -18,10 +19,8 @@ import {
   AlertTriangle,
   Clock,
   Eye,
-  MousePointer
+  MousePointer,
 } from 'lucide-react';
-import { prisma } from '@/lib/database/prisma';
-import Link from 'next/link';
 
 export const metadata = {
   title: 'Email Management | Admin Dashboard',

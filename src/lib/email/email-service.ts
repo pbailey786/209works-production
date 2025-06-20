@@ -1,6 +1,7 @@
-import { emailAgent, EmailJobData, EmailResult, EmailMetrics } from '@/lib/agents/email-agent';
-import { templateManager, TemplateRenderResult } from '@/lib/email/template-manager';
+import { emailAgent, EmailJobData, EmailResult, EmailMetrics } from '@/components/ui/card';
+import { templateManager, TemplateRenderResult } from '@/components/ui/card';
 import { SecurityLogger } from '@/lib/security/security-monitor';
+
 
 export interface EmailServiceOptions {
   priority?: 'low' | 'normal' | 'high' | 'urgent';

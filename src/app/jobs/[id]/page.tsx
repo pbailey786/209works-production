@@ -1,12 +1,12 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { cache } from 'react';
-import JobDetailClient from './JobDetailClient';
-import { Job, JobType } from '@prisma/client';
-import { prisma } from '@/lib/database/prisma';
+import { Metadata } from '@/components/ui/card';
+import { notFound } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { cache } from '@/components/ui/card';
+import { Job, JobType } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { safeDBQuery, validateSession } from '@/lib/utils/safe-fetch';
+
 
 interface JobDetailPageProps {
   params: Promise<{ id: string }>;

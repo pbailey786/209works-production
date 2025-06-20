@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { CompanyKnowledgeService } from '@/lib/knowledge/company-knowledge';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { CompanyKnowledgeService } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/employers/knowledge - Get company knowledge entries
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
     if (!user?.email) {
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user is an employer and get their company
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
       include: { company: true },
     });
@@ -202,7 +202,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
     if (!user?.email) {
@@ -210,7 +210,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Check if user is an employer and get their company
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
       include: { company: true },
     });
@@ -298,7 +298,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
     if (!user?.email) {
@@ -306,7 +306,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Check if user is an employer and get their company
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
       include: { company: true },
     });

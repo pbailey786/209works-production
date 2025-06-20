@@ -1,7 +1,7 @@
+import { useEffect } from 'react';
+
 'use client';
 
-import { useEffect } from 'react';
-import {
   reportWebVitals,
   PerformanceMonitor,
 } from '@/lib/performance/performance-monitor';

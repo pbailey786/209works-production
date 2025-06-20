@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from '@/components/ui/card';
 import { JobWithOptionalFields } from '@/lib/types/component-props';
 
 interface UseJobSearchOptions {

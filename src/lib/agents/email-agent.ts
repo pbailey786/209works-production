@@ -1,9 +1,9 @@
-import { Resend } from 'resend';
-import { render } from '@react-email/render';
-import React from 'react';
-import { SecurityLogger } from '@/lib/security/security-monitor';
-import { emailSecurityValidator } from '@/lib/email/security';
+import { Resend } from '@/components/ui/card';
+import { render } from '@/components/ui/card';
+import { SecurityLogger } from '@/components/ui/card';
+import { emailSecurityValidator } from '@/components/ui/card';
 import { templateManager } from '@/lib/email/template-manager';
+
 
 export interface EmailJobData {
   id: string;

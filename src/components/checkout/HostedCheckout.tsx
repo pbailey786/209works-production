@@ -1,9 +1,10 @@
+import React, { useEffect, useState } from '@/components/ui/card';
+import { loadStripe } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
 
 interface HostedCheckoutProps {
   sessionId: string;

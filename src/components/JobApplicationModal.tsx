@@ -1,8 +1,8 @@
+import React, { useState, useEffect } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   XMarkIcon,
   PaperAirplaneIcon,
   DocumentTextIcon,

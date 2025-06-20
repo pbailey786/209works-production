@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { TemplateManager } from '@/lib/email/template-manager';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { TemplateManager } from '@/components/ui/card';
 import { emailAgent } from '@/lib/agents/email-agent';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth() as any;
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth() as any;
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

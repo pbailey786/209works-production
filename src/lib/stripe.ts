@@ -1,7 +1,6 @@
 import { loadStripe, Stripe as StripeClient } from '@stripe/stripe-js';
-import Stripe from 'stripe';
 
-// Server-side Stripe instance (lazy-loaded to avoid build-time connection)
+
 let stripeInstance: Stripe | null = null;
 
 function getStripeInstance(): Stripe {

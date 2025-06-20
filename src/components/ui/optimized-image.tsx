@@ -1,8 +1,9 @@
+import Image, { ImageProps } from '@/components/ui/card';
+import { useState } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
 'use client';
 
-import Image, { ImageProps } from 'next/image';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
   fallbackSrc?: string;

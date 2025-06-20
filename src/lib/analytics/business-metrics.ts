@@ -1,9 +1,10 @@
+import { usePostHog } from './posthog-provider';
+
 /**
  * Business Metrics Service
  * Comprehensive KPI tracking and business intelligence for job board analytics
  */
 
-import { usePostHog } from './posthog-provider';
 
 // Business KPI Types
 export interface JobBoardKPIs {

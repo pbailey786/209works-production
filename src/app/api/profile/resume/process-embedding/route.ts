@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { createSuccessResponse, createErrorResponse, ApiError, ErrorCode } from '@/lib/errors/api-errors';
-import { JobQueueService } from '@/lib/services/job-queue';
-import { ResumeEmbeddingService } from '@/lib/services/resume-embedding';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { createSuccessResponse, createErrorResponse, ApiError, ErrorCode } from '@/components/ui/card';
+import { JobQueueService } from '@/components/ui/card';
+import { ResumeEmbeddingService } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
 
 const processResumeSchema = z.object({
@@ -88,7 +88,7 @@ export const POST = withAPIMiddleware(
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { user } = context;
-    const clerkUserId = user!.id;
+    const userId = user!.id;
 
     try {
       // Get current embedding status

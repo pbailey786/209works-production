@@ -1,9 +1,10 @@
+import React, { useState } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { X, Check, Star, Info, Sparkles } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, Star, Info, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface PricingPlan {
   id: string;

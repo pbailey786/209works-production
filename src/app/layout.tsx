@@ -1,15 +1,10 @@
-import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
-import './globals.css';
-import Header from '../components/Header';
-import { ClerkProvider } from '@clerk/nextjs';
-import PerformanceProvider from '../components/PerformanceProvider';
-import { Toaster } from '@/components/ui/toaster';
-// Removed NextAuth debug components
-import SecurityErrorHandler from '@/components/SecurityErrorHandler';
-import TimeoutDetector from '@/components/TimeoutDetector';
-import { headers } from 'next/headers';
+import type { Metadata, Viewport } from '@/components/ui/card';
+import { Geist, Geist_Mono, Inter } from '@/components/ui/card';
+import { ClerkProvider } from '@/components/ui/card';
+import { Toaster } from '@/components/ui/card';
+import { headers } from '@/components/ui/card';
 import { getDomainConfig } from '@/lib/domain/config';
+
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

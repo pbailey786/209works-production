@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
-import {
+
   EnhancedSearchFilters,
   SearchResult,
   TextProcessor,
@@ -7,7 +7,6 @@ import {
   GeolocationUtils,
   SEARCH_CONFIG,
 } from './algorithms';
-import {
   getCache,
   setCache,
   generateCacheKey,

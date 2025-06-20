@@ -1,20 +1,20 @@
+import { useState } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Check, X } from '@/components/ui/card';
+import { PricingTier, BillingInterval } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Check, X } from 'lucide-react';
-import { PricingTier, BillingInterval } from '@prisma/client';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 
 interface PricingCardProps {
   name: string;

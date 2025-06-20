@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { openai } from '@/lib/openai';
-import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
-import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
-import { extractTextFromFile, validateExtractedText } from '@/lib/enhanced-text-extraction';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { openai } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/components/ui/card';
+import { extractTextFromFile, validateExtractedText } from '@/components/ui/card';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
 
 // Schema for parsed resume data

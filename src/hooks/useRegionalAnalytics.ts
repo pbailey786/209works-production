@@ -5,8 +5,8 @@
 
 'use client';
 
-import { useEffect, useCallback, useRef } from 'react';
-import { usePostHog } from '@/lib/analytics/posthog-provider';
+import { useEffect, useCallback, useRef } from '@/components/ui/card';
+import { usePostHog } from '@/components/ui/card';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 interface JobData {

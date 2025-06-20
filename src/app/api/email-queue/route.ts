@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { emailQueue } from '@/lib/services/email-queue';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { emailQueue } from '@/components/ui/card';
 import { z } from 'zod';
 
 // Validation schemas

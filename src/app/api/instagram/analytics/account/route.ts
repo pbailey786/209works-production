@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { auth } from '@clerk/nextjs/server';
 import InstagramAnalyticsService from '@/lib/services/instagram-analytics';
-import { prisma } from '@/lib/database/prisma';
+import { prisma } from '@/components/ui/card';
 import { z } from 'zod';
 
 const accountMetricsQuerySchema = z.object({
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
     if (!user?.email) {
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user from database
-    const dbUser = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 

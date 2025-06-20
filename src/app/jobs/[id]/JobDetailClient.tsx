@@ -1,9 +1,11 @@
+import React, { useState, useCallback, useMemo, useEffect, useRef } from '@/components/ui/card';
+import { Job } from '@/components/ui/card';
+import { BookmarkIcon as BookmarkSolidIcon } from '@/components/ui/card';
+import { motion } from '@/components/ui/card';
+import { safeFetchAPI } from '@/lib/utils/safe-fetch';
+
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { Job } from '@prisma/client';
-import {
   BookmarkIcon,
   ShareIcon,
   ExclamationTriangleIcon,
@@ -20,17 +22,9 @@ import {
   MegaphoneIcon,
   ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline';
-import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
-import { motion } from 'framer-motion';
-import JobCard from '@/components/JobCard';
-import JobGenie from '@/components/JobGenie';
-import ShouldIApplyCalculator from '@/components/ShouldIApplyCalculator';
-import JobApplicationModal from '@/components/JobApplicationModal';
-import {
   formatJobDescription,
   extractJobHighlights,
 } from '@/lib/utils/jobDescriptionFormatter';
-import { safeFetchAPI } from '@/lib/utils/safe-fetch';
 
 interface JobDetailClientProps {
   job: Job;

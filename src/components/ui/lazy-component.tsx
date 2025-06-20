@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, lazy, ComponentType, useState, useEffect } from 'react';
+import { Suspense, lazy, ComponentType, useState, useEffect } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface LazyComponentProps {

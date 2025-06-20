@@ -1,5 +1,6 @@
 import { getChatCompletionWithFallback } from '@/lib/ai';
 
+
 interface ConversationalResponseParams {
   userMessage: string;
   filters: any;

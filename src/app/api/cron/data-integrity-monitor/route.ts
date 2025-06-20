@@ -5,8 +5,8 @@
  * This endpoint runs automated data integrity checks and alerts if issues are found
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { DataIntegrityService } from '@/lib/database/data-integrity';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { DataIntegrityService } from '@/components/ui/card';
 import { headers } from 'next/headers';
 
 export const runtime = 'nodejs';

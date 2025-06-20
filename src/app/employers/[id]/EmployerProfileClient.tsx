@@ -1,8 +1,8 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
   MapPin,
   Globe,
   Calendar,
@@ -12,8 +12,6 @@ import {
   ExternalLink,
   ArrowLeft,
 } from 'lucide-react';
-import Link from 'next/link';
-import EnhancedJobCard from '../../../components/job-search/EnhancedJobCard';
 
 interface Employer {
   id: string;

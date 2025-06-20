@@ -1,7 +1,7 @@
+import { useState, useEffect } from 'react';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { 
   Database, 
   Download, 
   Trash2, 
@@ -12,7 +12,7 @@ import {
   AlertCircle,
   Calendar,
   HardDrive,
-  Settings
+  Settings,
 } from 'lucide-react';
 
 interface Backup {

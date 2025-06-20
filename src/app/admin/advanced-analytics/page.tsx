@@ -1,9 +1,9 @@
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import {
+
   BarChart3, 
   FileText, 
   UserCheck, 
@@ -13,9 +13,6 @@ import {
   Briefcase,
   MessageSquare,
 } from 'lucide-react';
-import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
-import AutomatedReportsPanel from '@/components/admin/AutomatedReportsPanel';
-import UserImpersonationPanel from '@/components/admin/UserImpersonationPanel';
 
 export default async function AdvancedAnalyticsPage() {
   const { userId } = await auth();

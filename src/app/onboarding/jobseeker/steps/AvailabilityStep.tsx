@@ -1,7 +1,7 @@
+import { Clock, MapPin, Calendar } from 'lucide-react';
+
 'use client';
 
-import React from 'react';
-import { Clock, MapPin, Calendar } from 'lucide-react';
 
 interface AvailabilityStepProps {
   formData: any;

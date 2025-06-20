@@ -1,18 +1,18 @@
-/**
+import React, { useState, useEffect, useCallback } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Progress } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+
+
+  /**
  * Performance Monitoring Dashboard
  * Real-time performance tracking and system health monitoring
  */
-
 'use client';
-
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import {
   usePerformanceMonitor,
   CoreWebVitals,
   SystemHealthMetric,
@@ -20,7 +20,6 @@ import {
   PerformanceAlert,
   APIPerformanceMetric,
 } from '@/lib/monitoring/performance-monitor';
-import {
   Activity,
   AlertTriangle,
   CheckCircle,

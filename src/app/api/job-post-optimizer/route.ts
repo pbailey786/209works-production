@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/database/prisma';
-import { openai } from '@/lib/openai';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
+import { openai } from '@/components/ui/card';
 import { z } from 'zod';
 
-// Validation schema for job post optimizer
+
 const jobPostOptimizerSchema = z.object({
   jobTitle: z.string().min(1, 'Job title is required').max(200),
   companyName: z.string().min(1, 'Company name is required').max(100),

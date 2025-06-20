@@ -1,8 +1,10 @@
+import React, { useState, useRef, useEffect } from '@/components/ui/card';
+import { motion, AnimatePresence } from '@/components/ui/card';
+import { ChatBubbleLeftRightIcon as ChatSolidIcon } from '@/components/ui/card';
+import { JobGenieProps } from '@/lib/types/component-props';
+
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
   ChatBubbleLeftRightIcon,
   PaperAirplaneIcon,
   XMarkIcon,
@@ -10,10 +12,6 @@ import {
   ExclamationTriangleIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
-import { ChatBubbleLeftRightIcon as ChatSolidIcon } from '@heroicons/react/24/solid';
-import { JobGenieProps } from '@/lib/types/component-props';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import ErrorDisplay from '@/components/ui/ErrorDisplay';
 
 interface Message {
   role: 'user' | 'assistant';

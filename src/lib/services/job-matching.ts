@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/database/prisma';
-import { ResumeEmbeddingService } from './resume-embedding';
+import { prisma } from '@/components/ui/card';
+import { ResumeEmbeddingService } from '@/components/ui/card';
 import { FeaturedJobAnalyticsService } from './featured-job-analytics';
 
 export interface JobMatchResult {

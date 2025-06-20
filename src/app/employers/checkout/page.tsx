@@ -1,10 +1,10 @@
+import { useEffect, useState, Suspense } from '@/components/ui/card';
+import { useSearchParams, useRouter } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import EmbeddedCheckout from '@/components/checkout/EmbeddedCheckout';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
 
 function CheckoutContent() {
   const searchParams = useSearchParams();

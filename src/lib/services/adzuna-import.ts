@@ -1,8 +1,8 @@
-import { fetchAdzunaJobs, AdzunaJob } from '@/app/services/adzunaService';
-import { prisma } from '@/lib/database/prisma';
+import { fetchAdzunaJobs, AdzunaJob } from '@/components/ui/card';
+import { prisma } from '@/components/ui/card';
 import { JobType } from '@prisma/client';
 
-// Enhanced job import service with better error handling and filtering
+
 export class AdzunaImportService {
   /**
    * Map Adzuna contract time to our JobType enum

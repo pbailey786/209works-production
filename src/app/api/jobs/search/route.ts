@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api';
-import { enhancedSearchQuerySchema } from '@/lib/validations/search';
-import { EnhancedJobSearchService } from '@/lib/search/services';
+import { NextRequest } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/components/ui/card';
+import { enhancedSearchQuerySchema } from '@/components/ui/card';
+import { EnhancedJobSearchService } from '@/components/ui/card';
 import { createSuccessResponse } from '@/lib/errors/api-errors';
 
 // GET /api/jobs/search - Enhanced job search with relevance scoring and geolocation

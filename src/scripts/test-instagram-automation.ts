@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import InstagramImageGenerator from '../lib/services/instagram-image-generator';
 import InstagramScheduler from '../lib/services/instagram-scheduler';
-import { writeFileSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync } from '@/components/ui/card';
+import { join } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
 const prisma = new PrismaClient();

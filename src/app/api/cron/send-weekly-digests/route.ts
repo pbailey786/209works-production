@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { emailQueue } from '@/lib/services/email-queue';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { emailQueue } from '@/components/ui/card';
+import { z } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Validation for cron job requests
+
 const cronRequestSchema = z.object({
   authorization: z.string().optional(),
   dayOfWeek: z.number().min(0).max(6).optional(), // 0=Sunday, 1=Monday, etc.

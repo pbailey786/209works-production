@@ -1,31 +1,29 @@
+import { useState } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
+import { Calendar } from '@/components/ui/card';
+import { format } from 'date-fns';
+
 'use client';
 
-import { useState } from 'react';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
   BarChart3,
   CalendarIcon,
   Download,
@@ -40,7 +38,6 @@ import {
   CheckCircle,
   Clock,
 } from 'lucide-react';
-import { format } from 'date-fns';
 
 interface ReportConfig {
   id: string;

@@ -1,7 +1,8 @@
+import { useEffect, useState } from '@/components/ui/card';
+import { useParams } from 'next/navigation';
+
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 
 interface TemplatePreview {
   html: string;

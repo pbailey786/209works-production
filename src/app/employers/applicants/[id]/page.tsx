@@ -1,10 +1,9 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useParams, useRouter } from '@/components/ui/card';
+import { formatDistanceToNow } from 'date-fns';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
-import {
   ArrowLeft,
   User,
   Mail,

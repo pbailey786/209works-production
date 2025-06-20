@@ -1,23 +1,22 @@
-/**
+import React, { useState, useEffect } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+
+
+
+  /**
  * Regional Landing Page Component
  * Dynamic landing page for regional domains (209.works, 916.works, 510.works, norcal.works)
  */
-
 'use client';
-
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
   MapPin,
   Briefcase,
   TrendingUp,

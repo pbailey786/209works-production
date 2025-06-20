@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 
+
 interface DatabaseHealthCheck {
   isHealthy: boolean;
   responseTime: number;

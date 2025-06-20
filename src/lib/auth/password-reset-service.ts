@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import { prisma } from '@/lib/database/prisma';
-import { EmailHelpers } from '@/lib/email/email-helpers';
-import { normalizeEmail } from '@/lib/utils/email-utils';
+import { prisma } from '@/components/ui/card';
+import { EmailHelpers } from '@/components/ui/card';
+import { normalizeEmail } from '@/components/ui/card';
 import { hash } from 'bcryptjs';
 
 // Security constants
@@ -332,7 +332,7 @@ export class PasswordResetService {
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    const dbUser = await prisma.user.findFirst({
+    const userRecord = await prisma.user.findFirst({
       where: {
         passwordResetToken: hashedToken,
         passwordResetExpires: {

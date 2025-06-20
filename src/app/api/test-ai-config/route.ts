@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { openai } from '@/lib/openai';
 
 // Test endpoint to check AI configuration without authentication

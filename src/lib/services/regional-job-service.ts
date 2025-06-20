@@ -1,10 +1,11 @@
+import { prisma } from '@/components/ui/card';
+import { Job, JobType } from '@prisma/client';
+
 /**
  * Regional Job Service
  * Handles regional job filtering, assignment, and management
  */
 
-import { prisma } from '@/lib/database/prisma';
-import { Job, JobType } from '@prisma/client';
 
 export interface RegionalJobFilters {
   region?: string;

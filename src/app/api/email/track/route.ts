@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createSuccessResponse, createErrorResponse, ValidationError } from '@/lib/errors/api-errors';
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { createSuccessResponse, createErrorResponse, ValidationError } from '@/components/ui/card';
 import { JobMatchingService } from '@/lib/services/job-matching';
 
 // GET /api/email/track - Track email interactions (opens, clicks)

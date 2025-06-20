@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import {
+import React, { useState } from '@/components/ui/card';
+import { motion } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { cn } from '@/components/ui/card';
+import { FeaturedBadgeFloating } from './FeaturedJobBadge';
+
   MapPin,
   Clock,
   DollarSign,
@@ -14,10 +18,6 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { FeaturedBadgeFloating } from './FeaturedJobBadge';
 
 interface FeaturedJobCardProps {
   id: string;

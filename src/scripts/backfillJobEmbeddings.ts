@@ -1,7 +1,7 @@
-import { getEmbedding } from '../lib/openai';
+import { getEmbedding } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 
-// Configuration with environment variable support
+
 interface BackfillConfig {
   batchSize: number;
   maxRetries: number;

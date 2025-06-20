@@ -1,5 +1,6 @@
 import { getChatCompletion } from '@/lib/openai';
 
+
 interface JobMatch {
   id: string;
   title: string;

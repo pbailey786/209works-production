@@ -1,3 +1,9 @@
+import { NextRequest, NextResponse } from '@/components/ui/card';
+import { auth } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { OptimizedJobSearchService } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
+
 /**
  * Admin API: Database Performance Monitoring
  * Task 45.13: Database Performance Optimization
@@ -6,11 +12,6 @@
  * slow queries, index usage, and overall database health
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-import { OptimizedJobSearchService } from '@/lib/database/optimized-queries';
-import { prisma } from '@/lib/database/prisma';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

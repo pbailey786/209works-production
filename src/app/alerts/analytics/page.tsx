@@ -1,9 +1,16 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
+import { LoadingSpinner } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import {
   BarChart,
   Bar,
   XAxis,
@@ -19,7 +26,6 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
-import {
   Mail,
   TrendingUp,
   Users,
@@ -35,27 +41,18 @@ import {
   Download,
   RefreshCw,
 } from 'lucide-react';
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { useToast } from '@/hooks/use-toast';
 
 interface EmailMetrics {
   totalSent: number;
@@ -103,7 +100,7 @@ interface UserEngagement {
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 export default function AlertAnalytics() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState('30');

@@ -1,10 +1,10 @@
+import { useState, useEffect } from '@/components/ui/card';
+import { useUser } from '@/components/ui/card';
+import { redirect } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import {
   Briefcase,
   Building2,
   MapPin,
@@ -62,7 +62,7 @@ interface JobPostForm {
 }
 
 export default function CreateJobPostPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   const [form, setForm] = useState<JobPostForm>({

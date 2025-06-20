@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from '@/components/ui/card';
 import { getSessionFromRequest, destroySession } from '@/lib/auth/iron-session';
 
 export async function POST(req: NextRequest) {

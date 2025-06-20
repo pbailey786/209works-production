@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Eye, EyeOff, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Eye, EyeOff, Loader2, CheckCircle, AlertCircle } from '@/components/ui/card';
+import { cn } from '@/components/ui/card';
+import { Input } from '@/components/ui/card';
+import { Label } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+
 
 export interface FormInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

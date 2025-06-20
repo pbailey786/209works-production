@@ -1,9 +1,10 @@
+import { NextRequest } from 'next/server';
+
 /**
  * Regional Routing Utilities
  * Handles domain-based routing for regional .works domains
  */
 
-import { NextRequest } from 'next/server';
 
 export interface RegionalDomain {
   domain: string;

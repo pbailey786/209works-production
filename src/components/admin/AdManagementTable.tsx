@@ -1,11 +1,9 @@
+import { useState } from '@/components/ui/card';
+import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import AdPreviewModal from './AdPreviewModal';
-import {
   MoreVertical,
   Edit,
   Eye,

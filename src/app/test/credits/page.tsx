@@ -1,8 +1,9 @@
+import { useState } from '@/components/ui/card';
+import { Button } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function TestCreditsPage() {
   const [isLoading, setIsLoading] = useState(false);

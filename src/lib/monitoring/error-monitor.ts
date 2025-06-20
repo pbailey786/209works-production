@@ -1,7 +1,6 @@
-import * as Sentry from '@sentry/nextjs';
 import { NextRequest } from 'next/server';
 
-// Error severity levels
+
 export enum ErrorSeverity {
   LOW = 'low',
   MEDIUM = 'medium',
