@@ -123,25 +123,34 @@ export async function requireValidSession(): Promise<{ session: Session; user: a
  * Validates session for specific role
  */
 export async function requireRole(allowedRoles: string | string[]): Promise<{ session: Session; user: any }> {
-  const validation = await validateSession();
-  
-  if (!validation.isValid) {
-    const error = new Error(`Authentication failed: ${validation.errors.join(', ')}`);
-    (error as any).statusCode = 401;
+  try {
+    const validation = await validateSession();
+
+    if (!validation.isValid) {
+      console.error('🔒 Session validation failed:', validation.errors);
+      const error = new Error(`Authentication failed: ${validation.errors.join(', ')}`);
+      (error as any).statusCode = 401;
+      throw error;
+    }
+
+    const userRole = validation.user.role;
+    const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+
+    console.log('🔍 Role check:', { userRole, requiredRoles: roles, userId: validation.user.id });
+
+    // Admin role can access everything
+    if (userRole === 'admin' || roles.includes(userRole)) {
+      return { session: validation.session!, user: validation.user! };
+    }
+
+    console.error('🚫 Insufficient permissions:', { userRole, requiredRoles: roles });
+    const error = new Error(`Insufficient permissions. Required: ${roles.join(' or ')}, Current: ${userRole}`);
+    (error as any).statusCode = 403;
+    throw error;
+  } catch (error) {
+    console.error('💥 Error in requireRole:', error);
     throw error;
   }
-  
-  const userRole = validation.user.role;
-  const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
-  
-  // Admin role can access everything
-  if (userRole === 'admin' || roles.includes(userRole)) {
-    return { session: validation.session!, user: validation.user! };
-  }
-  
-  const error = new Error(`Insufficient permissions. Required: ${roles.join(' or ')}, Current: ${userRole}`);
-  (error as any).statusCode = 403;
-  throw error;
 }
 
 /**

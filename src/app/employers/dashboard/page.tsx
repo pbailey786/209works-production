@@ -180,6 +180,16 @@ function DashboardContent() {
         if (creditsResponse.ok) {
           const creditsData = await creditsResponse.json();
           setCredits(creditsData);
+        } else {
+          console.error('Credits API failed:', creditsResponse.status, await creditsResponse.text());
+          // Set default credits on error
+          setCredits({
+            universal: 0,
+            total: 0,
+            jobPost: 0,
+            featuredPost: 0,
+            socialGraphic: 0,
+          });
         }
 
         // Fetch subscription status
@@ -187,6 +197,10 @@ function DashboardContent() {
         if (subscriptionResponse.ok) {
           const subscriptionData = await subscriptionResponse.json();
           setHasActiveSubscription(subscriptionData.hasActiveSubscription || false);
+        } else {
+          console.error('Subscription API failed:', subscriptionResponse.status, await subscriptionResponse.text());
+          // Set default subscription status on error
+          setHasActiveSubscription(false);
         }
 
       } catch (error) {

@@ -10,8 +10,14 @@ export default auth((req: NextRequest & { auth: any }) => {
 
   console.log('🛡️ Session exists:', !!session)
   if (session?.user) {
-    console.log('🛡️ User role:', (session.user as any)?.role)
-    console.log('🛡️ User ID:', session.user.id)
+    console.log('🛡️ User data in middleware:', {
+      id: session.user.id,
+      email: session.user.email,
+      role: (session.user as any)?.role,
+      hasRole: !!(session.user as any)?.role
+    })
+  } else {
+    console.log('🛡️ No session.user found in middleware')
   }
 
   // Routes that require email verification
@@ -112,9 +118,20 @@ export default auth((req: NextRequest & { auth: any }) => {
 
   // Protect employer routes
   if (pathname.startsWith('/employers')) {
+    console.log('🛡️ Checking employer route access:', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userRole: (session?.user as any)?.role,
+      isEmployer: (session?.user as any)?.role === 'employer',
+      pathname
+    })
+
     if (!session?.user || (session.user as any)?.role !== 'employer') {
+      console.log('🚫 Redirecting to employer signin - insufficient permissions')
       return NextResponse.redirect(new URL('/employers/signin?redirect=' + encodeURIComponent(pathname), req.url))
     }
+
+    console.log('✅ Employer route access granted')
   }
 
   console.log('🛡️ Middleware complete, allowing request')

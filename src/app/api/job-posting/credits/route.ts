@@ -5,8 +5,12 @@ import { prisma } from '@/lib/database/prisma';
 
 export async function GET(req: NextRequest) {
   try {
+    console.log('🔍 Checking job posting credits...');
+
     // Check authentication using modern session validator
     const { user } = await requireRole(['employer', 'admin']);
+
+    console.log('✅ Auth successful for credits check:', user.id);
 
     // Get user's available credits
     const credits = await JobPostingCreditsService.getUserCredits(user.id);
@@ -31,10 +35,26 @@ export async function GET(req: NextRequest) {
       })),
     });
 
-  } catch (error) {
-    console.error('Error fetching job posting credits:', error);
+  } catch (error: any) {
+    console.error('💥 Error fetching job posting credits:', error);
+
+    // Handle authentication errors specifically
+    if (error.statusCode === 401) {
+      return NextResponse.json(
+        { error: 'Authentication required', code: 'AUTH_REQUIRED' },
+        { status: 401 }
+      );
+    }
+
+    if (error.statusCode === 403) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions', code: 'INSUFFICIENT_PERMISSIONS' },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to fetch credits' },
+      { error: 'Failed to fetch credits', code: 'INTERNAL_ERROR' },
       { status: 500 }
     );
   }

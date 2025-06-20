@@ -117,26 +117,12 @@ const authConfig = {
   ],
 
   callbacks: {
-    async jwt({ token, user, account }: any) {
-      console.log('🔧 NextAuth v5 JWT callback triggered:', {
-        hasToken: !!token,
-        hasUser: !!user,
-        hasAccount: !!account,
-        tokenSub: token?.sub,
-        userEmail: user?.email,
-        accountProvider: account?.provider
-      })
-
+    async jwt({ token, user }: any) {
       // On initial sign in, user object will be available
       if (user) {
-        console.log('🔧 Initial sign in - adding user data to token:', {
-          id: user.id,
-          email: user.email,
-          role: user.role
-        })
+        console.log('🔧 JWT: Adding user data to token:', { id: user.id, email: user.email, role: user.role })
 
-        // For NextAuth v5, ensure all required fields are set
-        token.sub = user.id
+        // Essential: Copy user data to token for NextAuth v5
         token.id = user.id
         token.email = user.email
         token.name = user.name
@@ -144,23 +130,12 @@ const authConfig = {
         token.onboardingCompleted = user.onboardingCompleted || false
         token.twoFactorEnabled = user.twoFactorEnabled || false
         token.isEmailVerified = user.isEmailVerified || false
-
-        // Add timestamp for debugging
-        token.lastUpdated = Date.now()
       }
 
-      // Ensure token always has required fields (for subsequent requests)
+      // Ensure token always has required fields
       if (!token.id && token.sub) {
         token.id = token.sub
       }
-
-      console.log('🔧 JWT callback returning token:', {
-        id: token.id,
-        email: token.email,
-        role: token.role,
-        sub: token.sub,
-        lastUpdated: token.lastUpdated
-      })
 
       return token
     },

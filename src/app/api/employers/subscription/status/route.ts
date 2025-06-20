@@ -5,8 +5,12 @@ import { prisma } from '@/lib/database/prisma';
 // GET /api/employers/subscription/status - Check user's subscription status
 export async function GET(request: NextRequest) {
   try {
+    console.log('🔍 Checking subscription status...');
+
     // Check authentication using modern session validator
     const { user: authUser } = await requireRole(['employer', 'admin']);
+
+    console.log('✅ Auth successful for user:', authUser.id);
 
     // Get full user data with subscription info
     const user = await prisma.user.findUnique({
@@ -84,10 +88,26 @@ export async function GET(request: NextRequest) {
         : 'No active subscription. Upgrade to access premium features.',
     });
 
-  } catch (error) {
-    console.error('Error checking subscription status:', error);
+  } catch (error: any) {
+    console.error('💥 Error checking subscription status:', error);
+
+    // Handle authentication errors specifically
+    if (error.statusCode === 401) {
+      return NextResponse.json(
+        { error: 'Authentication required', code: 'AUTH_REQUIRED' },
+        { status: 401 }
+      );
+    }
+
+    if (error.statusCode === 403) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions', code: 'INSUFFICIENT_PERMISSIONS' },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to check subscription status' },
+      { error: 'Failed to check subscription status', code: 'INTERNAL_ERROR' },
       { status: 500 }
     );
   }
