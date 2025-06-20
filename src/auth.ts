@@ -5,11 +5,10 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/database/prisma'
 import { compare } from 'bcryptjs'
 import { normalizeEmail } from '@/lib/utils/email-utils'
-import type { NextAuthConfig } from 'next-auth'
 
 console.log('🔧 Auth.js v5 configuration loading...')
 
-const authConfig: NextAuthConfig = {
+const authConfig = {
   adapter: PrismaAdapter(prisma),
   
   session: {

@@ -62,13 +62,13 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
       return null;
     }
 
-    // Create enhanced user object with proper type casting
+    // Create enhanced user object that matches the Session.user type plus additional fields
     const enhancedUser: EnhancedUser = {
       id: user.id,
       email: user.email,
       name: user.name || null,
       image: user.image || null,
-      role: (user as any).role || 'jobseeker',
+      role: user.role || 'jobseeker',
       onboardingCompleted: (user as any).onboardingCompleted || false,
       twoFactorEnabled: (user as any).twoFactorEnabled || false,
       isEmailVerified: (user as any).isEmailVerified || false,
@@ -77,7 +77,7 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
     // Return properly typed enhanced session
     return {
       user: enhancedUser,
-      expires: sessionData.expires
+      expires: (sessionData as any).expires || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
     };
   }, []);
 
