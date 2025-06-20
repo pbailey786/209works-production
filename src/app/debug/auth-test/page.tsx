@@ -42,7 +42,7 @@ export default function AuthTestPage() {
       console.log('Credentials login result:', result);
     } catch (error) {
       console.error('Credentials login error:', error);
-      setTestResult({ error: error.message });
+      setTestResult({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
   };
 
@@ -55,7 +55,7 @@ export default function AuthTestPage() {
       console.log('Google login result:', result);
     } catch (error) {
       console.error('Google login error:', error);
-      setTestResult({ error: error.message });
+      setTestResult({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
   };
 

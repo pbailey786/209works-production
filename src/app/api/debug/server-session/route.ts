@@ -32,10 +32,10 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('🔍 Debug: Server session error:', error);
-    
+
     return NextResponse.json({
       session: null,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       debug: {
         hasSession: false,
         timestamp: new Date().toISOString(),

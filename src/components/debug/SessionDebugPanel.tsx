@@ -18,7 +18,7 @@ export function SessionDebugPanel() {
         setApiSessionData(data);
       } catch (error) {
         console.error('API session test failed:', error);
-        setApiSessionData({ error: error.message });
+        setApiSessionData({ error: error instanceof Error ? error.message : 'Unknown error' });
       }
     };
 
@@ -34,7 +34,7 @@ export function SessionDebugPanel() {
         setServerSessionData(data);
       } catch (error) {
         console.error('Server session test failed:', error);
-        setServerSessionData({ error: error.message });
+        setServerSessionData({ error: error instanceof Error ? error.message : 'Unknown error' });
       }
     };
 
