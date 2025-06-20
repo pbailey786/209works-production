@@ -9,9 +9,10 @@ datasource db {
 
 model User {
   id                   String                     @id @default(uuid())
+  clerkId              String?                    @unique // Clerk user ID for authentication
   email                String                     @unique
   name                 String?
-  passwordHash         String
+  passwordHash         String?
   createdAt            DateTime                   @default(now())
   isEmailVerified      Boolean                    @default(false)
   magicLinkExpires     DateTime?

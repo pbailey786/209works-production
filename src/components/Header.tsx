@@ -86,28 +86,7 @@ export default function Header() {
       className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 shadow-sm backdrop-blur-md"
       role="banner"
     >
-      {/* Auth Error Display */}
-      <AnimatePresence>
-        {authError && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-b border-red-200 bg-red-50 px-4 py-2"
-            role="alert"
-            aria-live="assertive"
-          >
-            <ErrorDisplay
-              error={authError}
-              type="error"
-              size="sm"
-              variant="inline"
-              onDismiss={() => setAuthError(null)}
-              showIcon={false}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Auth Error Display - Removed for Clerk migration */}
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">

@@ -5,7 +5,7 @@ import { prisma } from '@/lib/database/prisma';
 export async function GET(req: NextRequest) {
   try {
     // Check authentication with Clerk
-    const { userId: clerkUserId } = auth();
+    const { userId: clerkUserId } = await auth();
     if (!clerkUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

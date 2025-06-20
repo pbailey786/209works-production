@@ -83,7 +83,7 @@ function DashboardContent() {
 
   // Simplified auth state
   const isAuthenticated = isSignedIn && !!user;
-  const isLoading = !isLoaded;
+  const isAuthLoading = !isLoaded;
 
   // Debug Clerk user
   console.log('🏢 Dashboard - Clerk user:', user);
@@ -108,7 +108,7 @@ function DashboardContent() {
     featuredPost: 0,
     socialGraphic: 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
   // BILLING REFACTOR: Add billing modal state
   const [showBillingModal, setShowBillingModal] = useState(false);
@@ -197,7 +197,7 @@ function DashboardContent() {
         setJobs([]);
         setApplicants([]);
       } finally {
-        setIsLoading(false);
+        setIsDataLoading(false);
       }
     };
 
@@ -206,13 +206,13 @@ function DashboardContent() {
 
   // Handle authentication redirect in useEffect
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthLoading && !isAuthenticated) {
       router.push('/employers/signin');
     } else if (isAuthenticated && user) {
       // Check if user needs onboarding
       checkOnboardingStatus();
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isAuthLoading, isAuthenticated, user, router]);
 
   // Handle purchase success - refresh credits
   useEffect(() => {
@@ -316,7 +316,7 @@ function DashboardContent() {
     window.location.reload();
   };
 
-  if (isLoading) {
+  if (isAuthLoading || isDataLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">

@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
     const sessionId = searchParams.get('sessionId');
 
     // Get user session if authenticated with Clerk
-    const { userId: clerkUserId } = auth();
+    const { userId: clerkUserId } = await auth();
     let userId;
 
     if (clerkUserId) {

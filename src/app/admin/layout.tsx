@@ -21,7 +21,7 @@ export default async function AdminLayout({
       return children;
     }
 
-    const { userId } = auth();
+    const { userId } = await auth();
 
     // Check if user is authenticated
     if (!userId) {
