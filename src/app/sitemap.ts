@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getDomainConfig, getAllDomains } from '@/lib/domain/config';
 import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/database/prisma';
 
 const prisma = new PrismaClient();
 

@@ -1,6 +1,7 @@
 import { openai } from '@/lib/openai';
 import { ConversationManager } from './manager';
 import { ChatbotPrompts } from './prompts';
+import { prisma } from '@/lib/database/prisma';
 import {
   CompanyKnowledgeService,
   CompanyInfo,

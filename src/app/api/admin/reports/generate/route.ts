@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Resend } from 'resend';
+import { prisma } from '@/lib/database/prisma';
 
 // Lazy-load Resend client to avoid build-time errors
 function getResendClient() {

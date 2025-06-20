@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/database/prisma';
 'use server';
 
 import { revalidatePath } from 'next/cache';

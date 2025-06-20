@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
 
 /**
  * Type-safe Prisma operations to prevent runtime type errors and data corruption

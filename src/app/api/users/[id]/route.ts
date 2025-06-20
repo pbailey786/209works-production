@@ -3,6 +3,7 @@ import { withAPIMiddleware } from '@/lib/middleware/api';
 import { updateUserSchema } from '@/lib/validations/api';
 import { routeParamsSchemas } from '@/lib/middleware/validation';
 import { UserCacheService } from '@/lib/cache/services';
+import { prisma } from '@/lib/database/prisma';
 import {
   createSuccessResponse,
   NotFoundError,

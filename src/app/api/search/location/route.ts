@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { geolocationSearchSchema } from '@/lib/validations/search';
 import { createSuccessResponse } from '@/lib/errors/api-errors';
+import { prisma } from '@/lib/database/prisma';
 import {
   getCache,
   setCache,

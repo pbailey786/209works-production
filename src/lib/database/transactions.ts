@@ -278,7 +278,7 @@ export async function createUserWithCompanySafe(data: {
       }
 
       // Create user atomically
-      const user = await tx.user.create({
+      const dbUser = await tx.user.create({
         data: {
           email: data.email,
           name: data.name,
@@ -332,7 +332,7 @@ export async function toggleJobSaveSafe(data: {
       }
 
       // Verify user exists
-      const user = await tx.user.findUnique({
+      const dbUser = await tx.user.findUnique({
         where: { id: data.userId },
         select: { id: true },
       });
@@ -610,7 +610,7 @@ export async function createAlertSafe(data: {
   return safeTransaction(
     async tx => {
       // Verify user exists and get current alert count
-      const user = await tx.user.findUnique({
+      const dbUser = await tx.user.findUnique({
         where: { id: data.userId },
         select: {
           id: true,

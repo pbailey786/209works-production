@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
 import {
   Card,
   CardContent,

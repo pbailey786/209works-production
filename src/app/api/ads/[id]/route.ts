@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { updateAdSchema } from '@/lib/validations/ads';
 import { routeParamsSchemas } from '@/lib/middleware/validation';
+import { prisma } from '@/lib/database/prisma';
 import {
   createSuccessResponse,
   NotFoundError,

@@ -88,7 +88,7 @@ export const POST = withAPIMiddleware(
 export const GET = withAPIMiddleware(
   async (req, context) => {
     const { user } = context;
-    const userId = user!.id;
+    const clerkUserId = user!.id;
 
     try {
       // Get current embedding status

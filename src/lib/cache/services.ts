@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/database/prisma';
 import {
   getCache,
   setCache,

@@ -3,6 +3,7 @@ import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/lib/errors/api-errors';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
 
 const clickTrackingSchema = z.object({
   action: z.enum(['view_details', 'apply_click', 'company_click', 'save_job']).optional(),

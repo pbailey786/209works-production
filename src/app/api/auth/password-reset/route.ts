@@ -73,7 +73,7 @@ export async function PATCH(req: NextRequest) {
     );
   }
 
-  const user = await prisma.user.findFirst({
+  const dbUser = await prisma.user.findFirst({
     where: {
       passwordResetToken: token,
       passwordResetExpires: { gt: new Date() },

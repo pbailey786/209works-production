@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/database/prisma';
 // Verify the request is coming from Vercel Cron or is properly authorized
 function verifyCronRequest(req: NextRequest): boolean {
   const authHeader = req.headers.get('authorization');

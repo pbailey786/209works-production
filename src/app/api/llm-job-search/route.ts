@@ -3,6 +3,7 @@ import { extractJobSearchFilters } from '@/lib/llm/extractJobSearchFilters';
 import { summarizeJobResults } from '@/lib/llm/summarizeJobResults';
 import { generateConversationalResponse } from '@/lib/llm/conversationalResponse';
 import { analyzeJobMatches } from '@/lib/llm/jobMatching';
+import { prisma } from '@/lib/database/prisma';
 import {
   withAISecurity,
   aiSecurityConfigs,

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { adQuerySchema, createAdSchema } from '@/lib/validations/ads';
+import { prisma } from '@/lib/database/prisma';
 import {
   createSuccessResponse,
   AuthorizationError,

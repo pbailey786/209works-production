@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/database/prisma';
 
 /**
  * Enhanced Prisma middleware for data validation and integrity checks

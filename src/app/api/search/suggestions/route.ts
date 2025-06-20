@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createSuccessResponse } from '@/lib/errors/api-errors';
+import { prisma } from '@/lib/database/prisma';
 import {
   getCache,
   setCache,

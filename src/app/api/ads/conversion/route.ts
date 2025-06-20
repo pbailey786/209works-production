@@ -3,6 +3,7 @@ import { withAPIMiddleware } from '@/lib/middleware/api';
 import { adConversionSchema } from '@/lib/validations/ads';
 import { createSuccessResponse, NotFoundError } from '@/lib/errors/api-errors';
 import { headers } from 'next/headers';
+import { prisma } from '@/lib/database/prisma';
 
 // POST /api/ads/conversion - Track ad conversion
 export const POST = withAPIMiddleware(

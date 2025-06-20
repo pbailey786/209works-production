@@ -4,6 +4,7 @@ import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createJobSchema } from '@/lib/validations/api';
 import { sanitizeFormData } from '@/lib/utils/sanitization';
 import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
 
 export const POST = withAPIMiddleware(
   async (req: NextRequest, context) => {

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/database/prisma';
 import {
   createCachedFunction,
   CACHE_TAGS,

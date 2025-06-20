@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { randomBytes } from 'crypto';
+import { prisma } from '@/lib/database/prisma';
 
 // Validation schemas
 const unsubscribeSchema = z.object({

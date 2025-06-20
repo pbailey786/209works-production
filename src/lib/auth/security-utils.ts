@@ -217,7 +217,7 @@ export class SecurityUtils {
     newAttemptCount: number;
     shouldLock: boolean;
   }> {
-    const user = await prisma.user.update({
+    const dbUser = await prisma.user.update({
       where: { id: userId },
       data: {
         failedLoginAttempts: { increment: 1 }

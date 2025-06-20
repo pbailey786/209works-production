@@ -28,7 +28,7 @@ export async function GET(
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 
@@ -70,7 +70,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
     if (!user?.email) {
@@ -78,7 +78,7 @@ export async function PUT(
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 
@@ -174,7 +174,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
     if (!user?.email) {
@@ -182,7 +182,7 @@ export async function DELETE(
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 

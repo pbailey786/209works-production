@@ -2,7 +2,8 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import { prisma } from '@/lib/database/prisma';
+import {
   BarChart3, 
   FileText, 
   UserCheck, 

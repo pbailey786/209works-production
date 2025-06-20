@@ -1,6 +1,7 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
 import IORedis from 'ioredis';
 import React from 'react';
+import { prisma } from '@/lib/database/prisma';
 import {
   sendEmail,
   validateEmailAddress,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { emailQueue } from '@/lib/services/email-queue';
 import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
 
 // Validation for cron job requests
 const cronRequestSchema = z.object({

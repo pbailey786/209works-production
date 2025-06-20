@@ -18,7 +18,7 @@ export default async function ApplicationsPage() {
   }
 
   // Get user data
-  const user = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: { email: user?.email },
     select: { id: true, role: true },
   });

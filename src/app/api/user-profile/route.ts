@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user profile from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
       select: {
         id: true,
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
@@ -156,7 +156,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
@@ -222,7 +222,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 

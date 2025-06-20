@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user from database using Clerk user ID
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 

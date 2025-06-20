@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth() as any;

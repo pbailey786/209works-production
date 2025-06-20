@@ -1,4 +1,5 @@
 import { getEmbedding } from '../lib/openai';
+import { prisma } from '@/lib/database/prisma';
 
 // Configuration with environment variable support
 interface BackfillConfig {

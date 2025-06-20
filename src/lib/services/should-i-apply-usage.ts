@@ -166,7 +166,7 @@ export class ShouldIApplyUsageService {
     analysisType: string = 'basic'
   ): Promise<UsageRecord> {
     // Get user tier
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       include: { subscriptions: true },
     });
@@ -197,7 +197,7 @@ export class ShouldIApplyUsageService {
     userTier: string;
     limits: typeof SHOULD_I_APPLY_LIMITS.free;
   }> {
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       include: { subscriptions: true },
     });
@@ -279,7 +279,7 @@ export class ShouldIApplyUsageService {
    * Check if user has premium features
    */
   static async hasPremiumFeatures(userId: string): Promise<boolean> {
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       include: { subscriptions: true },
     });

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
       select: { id: true, role: true },
     });
@@ -192,7 +192,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
@@ -201,7 +201,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
       select: { id: true, role: true },
     });
@@ -321,7 +321,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
     

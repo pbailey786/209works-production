@@ -3,6 +3,7 @@ import InstagramImageGenerator from '../lib/services/instagram-image-generator';
 import InstagramScheduler from '../lib/services/instagram-scheduler';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { prisma } from '@/lib/database/prisma';
 
 const prisma = new PrismaClient();
 

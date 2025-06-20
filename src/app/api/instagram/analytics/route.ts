@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
     if (!user?.email) {
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { email: user?.email },
     });
 

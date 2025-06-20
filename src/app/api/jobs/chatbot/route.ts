@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { ChatbotService } from '@/lib/conversation/chatbot-service';
 import { ConversationManager } from '@/lib/conversation/manager';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+
 
 // POST /api/jobs/chatbot - Main chatbot endpoint
 export async function POST(req: NextRequest) {

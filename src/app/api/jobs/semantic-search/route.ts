@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEmbedding, getChatCompletion } from '@/lib/openai';
+import { prisma } from '@/lib/database/prisma';
 
 // Input validation utilities
 class SemanticSearchValidator {

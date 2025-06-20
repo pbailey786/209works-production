@@ -3,6 +3,7 @@ import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
 import { JobMatchingService } from '@/lib/services/job-matching';
 import { FeaturedJobEmailService } from '@/lib/services/featured-job-email';
+import { prisma } from '@/lib/database/prisma';
 // GET /api/employers/ai-matching-dashboard - Get AI matching dashboard data for employer
 export const GET = withAPIMiddleware(
   async (req, context) => {

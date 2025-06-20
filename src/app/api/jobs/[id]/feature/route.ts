@@ -4,6 +4,7 @@ import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundEr
 import { JobQueueService } from '@/lib/services/job-queue';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
 
 const featureJobSchema = z.object({
   featured: z.boolean(),

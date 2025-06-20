@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { Session } from 'next-auth';
 
 // GET /api/employers/candidates/:id - Get candidate snapshot
 export async function GET(

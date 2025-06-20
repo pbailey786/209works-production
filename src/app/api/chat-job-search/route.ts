@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractJobSearchFilters } from '@/lib/llm/extractJobSearchFilters';
+import { prisma } from '@/lib/database/prisma';
 import {
   generateConversationalResponse,
   extractJobSearchFiltersWithContext,

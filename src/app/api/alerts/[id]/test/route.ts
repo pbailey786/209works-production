@@ -4,6 +4,7 @@ import { testAlertSchema } from '@/lib/validations/alerts';
 import { routeParamsSchemas } from '@/lib/middleware/validation';
 import { createSuccessResponse, NotFoundError } from '@/lib/errors/api-errors';
 import { EnhancedJobSearchService } from '@/lib/search/services';
+import { prisma } from '@/lib/database/prisma';
 import {
   EnhancedJobMatchingService,
   findMatchingJobs,
