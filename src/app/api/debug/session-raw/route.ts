@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       session1 = await auth();
       console.log('🔍 Method 1 - auth():', !!session1);
     } catch (e) {
-      console.log('🔍 Method 1 failed:', e.message);
+      console.log('🔍 Method 1 failed:', e instanceof Error ? e.message : 'Unknown error');
     }
     
     // Method 2 not needed since NextAuth v5 uses auth() without params
