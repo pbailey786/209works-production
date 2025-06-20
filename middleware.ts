@@ -125,16 +125,12 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes) - but allow /api/auth for NextAuth
+     * - api (API routes) - API routes handle their own auth
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * But require auth for protected routes
+     * Only protect page routes, not API routes
      */
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
-    // Protect these API routes
-    '/api/admin/:path*',
-    '/api/employer/:path*',
-    '/api/user/:path*',
   ],
 }

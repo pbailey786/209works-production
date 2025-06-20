@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { prisma } from '@/lib/database/prisma';
 import { getJobMatchScore } from '@/lib/matching';
 import { ShouldIApplyAnalysisService } from '@/lib/llm/shouldIApplyAnalysis';
 import { JobAnalysisInput } from '@/lib/prompts/shouldIApply';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
 
 const shouldIApplySchema = z.object({
   jobId: z.string().min(1, 'Job ID is required'),
@@ -14,28 +13,8 @@ const shouldIApplySchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     console.log('🤔 Should I Apply API called');
-    const session = await auth() as Session | null;
-
-    if (!session?.user?.email) {
-      console.log('❌ No session found');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user) {
-      console.log('❌ User not found');
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    if (user.role !== 'jobseeker') {
-      console.log('❌ User is not a job seeker');
-      return NextResponse.json({ error: 'This feature is only available for job seekers' }, { status: 403 });
-    }
+    // Check authentication using modern session validator
+    const { user } = await requireRole(['jobseeker', 'admin']);
 
     const body = await req.json();
     const validationResult = shouldIApplySchema.safeParse(body);

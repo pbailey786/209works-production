@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
@@ -9,67 +8,16 @@ export async function GET(request: NextRequest) {
   try {
     console.log('🔍 Dashboard stats API called');
 
-    // Get session with enhanced logging - NextAuth v5 beta
-    const session = await auth() as Session | null;
+    // Check authentication using modern session validator
+    const { user: authUser } = await requireRole(['employer', 'admin']);
 
     console.log('🔍 Session check:', {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      hasEmail: !!session?.user?.email,
-      hasId: !!(session?.user as any)?.id,
-      userEmail: session?.user?.email,
-      userId: (session?.user as any)?.id
+      hasUser: !!authUser,
+      hasEmail: !!authUser?.email,
+      hasId: !!authUser?.id,
+      userEmail: authUser?.email,
+      userId: authUser?.id
     });
-
-    if (!session?.user?.email) {
-      console.warn('❌ No session or user email found');
-      return NextResponse.json({
-        error: 'Unauthorized',
-        message: 'No valid session found'
-      }, { status: 401 });
-    }
-
-    // Get the current user with enhanced error handling
-    let user;
-    try {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-          name: true
-        }
-      });
-
-      console.log('🔍 User lookup result:', {
-        found: !!user,
-        userId: user?.id,
-        userRole: user?.role
-      });
-    } catch (dbError) {
-      console.error('❌ Database error during user lookup:', dbError);
-      return NextResponse.json({
-        error: 'Database Error',
-        message: 'Failed to verify user credentials'
-      }, { status: 500 });
-    }
-
-    if (!user) {
-      console.warn('❌ User not found in database:', session.user.email);
-      return NextResponse.json({
-        error: 'User Not Found',
-        message: 'User account not found in database'
-      }, { status: 404 });
-    }
-
-    if (user.role !== 'employer') {
-      console.warn('❌ User is not an employer:', { userId: user.id, role: user.role });
-      return NextResponse.json({
-        error: 'Forbidden',
-        message: 'Access denied. Employer role required.'
-      }, { status: 403 });
-    }
 
     console.log('✅ User authenticated as employer, fetching stats...');
 
@@ -80,14 +28,14 @@ export async function GET(request: NextRequest) {
     // Fetch employer-specific statistics with timeout protection
     let stats;
     try {
-      console.log('🔍 Executing database queries for user:', user.id);
+      console.log('🔍 Executing database queries for user:', authUser.id);
 
       const queryTimeout = 5000; // 5 second timeout
       const queryPromise = Promise.all([
         // Total jobs posted by this employer
         prisma.job.count({
           where: {
-            employerId: user.id,
+            employerId: authUser.id,
             deletedAt: null // Exclude soft-deleted jobs
           }
         }),
@@ -95,7 +43,7 @@ export async function GET(request: NextRequest) {
         // Active jobs by this employer
         prisma.job.count({
           where: {
-            employerId: user.id,
+            employerId: authUser.id,
             status: {
               in: ['active', 'published']
             },
@@ -107,7 +55,7 @@ export async function GET(request: NextRequest) {
         prisma.jobApplication.count({
           where: {
             job: {
-              employerId: user.id,
+              employerId: authUser.id,
               deletedAt: null
             }
           }
@@ -117,7 +65,7 @@ export async function GET(request: NextRequest) {
         prisma.jobApplication.count({
           where: {
             job: {
-              employerId: user.id,
+              employerId: authUser.id,
               deletedAt: null
             },
             appliedAt: {

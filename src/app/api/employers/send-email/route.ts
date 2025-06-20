@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { Resend } from 'resend';
-import type { Session } from 'next-auth';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth() as Session | null;
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userRole = (session.user as any).role;
-    if (userRole !== 'employer' && userRole !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    // Check authentication using modern session validator
+    const { user } = await requireRole(['employer', 'admin']);
 
     const { to, subject, message, candidateName, jobTitle } = await request.json();
 

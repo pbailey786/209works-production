@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    // Check authentication using modern session validator
+    const { user } = await requireRole(['employer', 'admin']);
 
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userRole = (session.user as any).role;
-    if (userRole !== 'employer' && userRole !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
-    const userId = (session.user as any).id;
+    const userId = user.id;
 
     // Fetch jobs with their applications using Prisma
     const jobs = await prisma.job.findMany({

@@ -1,39 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication - NextAuth v5 beta
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    if (user.role !== 'employer') {
-      return NextResponse.json(
-        { error: 'Only employers can access job posting credits' },
-        { status: 403 }
-      );
-    }
+    // Check authentication using modern session validator
+    const { user } = await requireRole(['employer', 'admin']);
 
     // Get user's available credits
     const credits = await JobPostingCreditsService.getUserCredits(user.id);
@@ -70,34 +43,8 @@ export async function GET(req: NextRequest) {
 // POST endpoint to manually use credits (for testing or admin purposes)
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication - NextAuth v5 beta
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    if (user.role !== 'employer') {
-      return NextResponse.json(
-        { error: 'Only employers can use job posting credits' },
-        { status: 403 }
-      );
-    }
+    // Check authentication using modern session validator
+    const { user } = await requireRole(['employer', 'admin']);
 
     const body = await req.json();
     const { jobId, creditType, count = 1 } = body;

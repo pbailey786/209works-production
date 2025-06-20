@@ -1,22 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
 
 // GET /api/employers/subscription/status - Check user's subscription status
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    // Check authentication using modern session validator
+    const { user: authUser } = await requireRole(['employer', 'admin']);
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user and verify they're an employer
+    // Get full user data with subscription info
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { 
-        id: true, 
+      where: { id: authUser.id },
+      select: {
+        id: true,
         role: true,
         currentTier: true,
         subscriptionEndsAt: true,
@@ -24,8 +20,8 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    if (!user || user.role !== 'employer') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Check if user has an active subscription

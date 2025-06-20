@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
 
 const buyCreditSchema = z.object({
   creditPack: z.enum(['singleCredit', 'fiveCredits', 'small', 'medium', 'large']),
@@ -14,18 +13,12 @@ const buyCreditSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication - NextAuth v5 beta
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+    // Check authentication using modern session validator
+    const { user: authUser } = await requireRole(['employer', 'admin']);
 
-    // Get user from database
+    // Get full user data from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { id: authUser.id },
       select: { id: true, email: true, name: true, stripeCustomerId: true, role: true, currentTier: true },
     });
 
@@ -33,13 +26,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
-      );
-    }
-
-    if (user.role !== 'employer') {
-      return NextResponse.json(
-        { error: 'Only employers can purchase job posting credits' },
-        { status: 403 }
       );
     }
 

@@ -1,29 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication - NextAuth v5 beta
-    const session = await auth() as Session | null;
-    if (!session || !session.user || (session!.user as any).role !== 'employer') {
-      return NextResponse.json(
-        {
-          error: 'Authentication required. Only employers can view their jobs.',
-        },
-        { status: 401 }
-      );
-    }
+    // Check authentication using modern session validator
+    const { user } = await requireRole(['employer', 'admin']);
 
     const { searchParams } = new URL(req.url);
-    const employerId = searchParams.get('employerId') || (session!.user as any).id;
+    const employerId = searchParams.get('employerId') || user.id;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const status = searchParams.get('status');
 
-    // Ensure the employer can only see their own jobs
-    if (employerId !== (session!.user as any).id) {
+    // Ensure the employer can only see their own jobs (unless admin)
+    if (user.role !== 'admin' && employerId !== user.id) {
       return NextResponse.json(
         { error: 'You can only view your own jobs.' },
         { status: 403 }

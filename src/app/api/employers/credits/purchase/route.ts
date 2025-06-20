@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
 
 // Credit packages available for purchase
 const CREDIT_PACKAGES = {
@@ -51,20 +50,17 @@ const purchaseSchema = z.object({
 // POST /api/employers/credits/purchase - Create Stripe checkout session (prep)
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    // Check authentication using modern session validator
+    const { user: authUser } = await requireRole(['employer', 'admin']);
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user and verify they're an employer
+    // Get full user data
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { id: authUser.id },
       select: { id: true, role: true, email: true, name: true },
     });
 
-    if (!user || user.role !== 'employer') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const body = await request.json();
@@ -179,21 +175,8 @@ export async function POST(request: NextRequest) {
 // GET /api/employers/credits/purchase - Get available credit packages
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user and verify they're an employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user || user.role !== 'employer') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    // Check authentication using modern session validator
+    const { user } = await requireRole(['employer', 'admin']);
 
     return NextResponse.json({
       success: true,
