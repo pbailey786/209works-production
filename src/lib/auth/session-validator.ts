@@ -13,51 +13,60 @@ interface SessionValidationResult {
  */
 export async function validateSession(): Promise<SessionValidationResult> {
   const errors: string[] = [];
-  
+
   try {
     const session = await auth() as Session | null;
-    
+
     // No session
     if (!session) {
       errors.push('No active session');
       return { isValid: false, session: null, user: null, errors };
     }
-    
+
     // No user in session
     if (!session.user) {
       errors.push('Session missing user data');
       return { isValid: false, session, user: null, errors };
     }
-    
+
     const user = session.user as any;
-    
-    // Validate required user fields
+
+    // Validate critical user fields (ID and email are required)
     if (!user.id) {
       errors.push('User missing ID');
     }
-    
+
     if (!user.email) {
       errors.push('User missing email');
     }
-    
+
+    // Role is important but not critical - provide default if missing
     if (!user.role) {
-      errors.push('User missing role');
+      console.warn('⚠️ User missing role, defaulting to jobseeker:', {
+        userId: user.id,
+        email: user.email
+      });
+      user.role = 'jobseeker'; // Default role for users without role
     }
-    
-    // If we have critical errors, session is invalid
-    if (errors.length > 0) {
-      console.error('🚨 Session validation failed:', errors, { session, user });
-      return { isValid: false, session, user, errors };
+
+    // Only fail validation for critical missing fields (ID, email)
+    const criticalErrors = errors.filter(error =>
+      error.includes('missing ID') || error.includes('missing email')
+    );
+
+    if (criticalErrors.length > 0) {
+      console.error('🚨 Session validation failed (critical errors):', criticalErrors, { session, user });
+      return { isValid: false, session, user, errors: criticalErrors };
     }
-    
-    console.log('✅ Session validation passed:', { 
-      userId: user.id, 
-      email: user.email, 
-      role: user.role 
+
+    console.log('✅ Session validation passed:', {
+      userId: user.id,
+      email: user.email,
+      role: user.role
     });
-    
+
     return { isValid: true, session, user, errors: [] };
-    
+
   } catch (error) {
     console.error('❌ Session validation error:', error);
     errors.push(`Session validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

@@ -29,7 +29,10 @@ export async function GET(request: NextRequest) {
       userId: (session?.user as any)?.id,
       userName: session?.user?.name,
       userRole: (session?.user as any)?.role,
-      userImage: session?.user?.image
+      userImage: session?.user?.image,
+      // Additional debugging info
+      fullUser: session?.user,
+      sessionExpires: session?.expires
     };
     
     // Database user lookup if we have an email
