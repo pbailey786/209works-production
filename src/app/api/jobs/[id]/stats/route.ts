@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/jobs/:id/stats - Get job statistics (employer only)
@@ -15,16 +15,16 @@ export async function GET(
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user and verify they're an employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
       select: { id: true, role: true },
     });
 

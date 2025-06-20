@@ -1,5 +1,3 @@
-import { prisma } from '../../app/api/auth/prisma';
-
 interface AdRotationOptions {
   placement: string;
   location?: string;

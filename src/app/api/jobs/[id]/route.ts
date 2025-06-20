@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { JobType } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
 
+import { redirect } from 'next/navigation';
 function isValidJobType(type: any): type is JobType {
   return Object.values(JobType).includes(type);
 }
@@ -32,16 +32,16 @@ export async function PUT(
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user and verify they're an admin or employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
       select: { id: true, role: true },
     });
 
@@ -114,17 +114,17 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user and verify they're an admin or employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
       select: { id: true, role: true },
     });
 

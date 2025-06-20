@@ -21,7 +21,7 @@ export default async function CreateAdPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -29,7 +29,7 @@ export default async function CreateAdPage() {
     redirect('/signin?redirect=/admin/ads/create');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }

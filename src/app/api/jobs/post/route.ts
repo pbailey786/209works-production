@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../auth/prisma';
 import { getEmbedding } from '@/lib/openai';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createJobSchema } from '@/lib/validations/api';

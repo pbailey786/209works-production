@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { RegionalJobService } from '@/lib/services/regional-job-service';
 import { prisma } from '@/lib/database/prisma';
-import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +15,7 @@ export async function POST(request: NextRequest) {
       where: { clerkId: userId },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },
         { status: 401 }
@@ -25,7 +24,7 @@ export async function POST(request: NextRequest) {
 
     // Get user from database to check role
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
       select: { id: true, role: true },
     });
 

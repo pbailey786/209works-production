@@ -131,7 +131,7 @@ export async function updateAlertAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -322,7 +322,7 @@ export async function testAlertAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,

@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import OnboardingClient from './OnboardingClient';
-import { prisma } from '@/lib/database/prisma';
 
 export default async function OnboardingPage() {
   const { userId } = await auth();
@@ -14,13 +13,13 @@ export default async function OnboardingPage() {
       where: { clerkId: userId },
     });
 
-  if (!user?.emailAddresses?.[0]?.emailAddress) {
+  if (!user?.email) {
     redirect('/signin?callbackUrl=/onboarding');
   }
 
   // Get user data
   const user = await prisma.user.findUnique({
-    where: { email: user?.emailAddresses?.[0]?.emailAddress },
+    where: { email: user?.email },
     select: {
       id: true,
       name: true,

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 
 const checkoutSchema = z.object({
   tier: z.enum(['starter', 'standard', 'pro']).optional(),
@@ -70,10 +70,10 @@ export async function POST(req: NextRequest) {
     console.log('🔧 JOB_POSTING_CONFIG loaded:', !!JOB_POSTING_CONFIG);
 
     // Check authentication
-    const session = (await auth()) as Session | null;
-    console.log('🔐 Session check:', !!session, user?.emailAddresses?.[0]?.emailAddress);
+    const session = (await auth()) ;
+    console.log('🔐 Session check:', !!session, user?.email);
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       console.log('❌ No session or email found');
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -82,9 +82,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user from database
-    console.log('🔍 Looking up user:', session.user.email);
+    console.log('🔍 Looking up user:', user?.email);
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: user?.email },
       select: { id: true, email: true, name: true, stripeCustomerId: true, role: true },
     });
     console.log('👤 User found:', !!user, user?.role);

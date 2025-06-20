@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { isResumeParsingAvailable, getEnvironmentConfig } from '@/lib/env-validation';
 import { isValidResumeFile } from '@/lib/fileUpload';
-import { prisma } from '@/lib/database/prisma';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
@@ -33,15 +33,15 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({
         error: 'Authentication failed',
         debug: {
           step: 'authentication',
           hasSession: !!session,
-          hasEmail: !!user?.emailAddresses?.[0]?.emailAddress
+          hasEmail: !!user?.email
         }
       }, { status: 401 });
     }
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
     // Step 5: Test database connection
     console.log('🔍 STEP 5: Testing database connection...');
     try {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
+      const dbUser = await prisma.user.findUnique({
+        where: { email: user?.email },
         select: { id: true, email: true },
       });
 
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
           error: 'User not found in database',
           debug: {
             step: 'database_user_lookup',
-            email: session.user.email
+            email: user?.email
           }
         }, { status: 404 });
       }
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
           step: 'complete',
           details: {
             environment: { isAvailable, config },
-            authentication: { email: session.user.email },
+            authentication: { email: user?.email },
             file: {
               name: file.name,
               type: file.type,

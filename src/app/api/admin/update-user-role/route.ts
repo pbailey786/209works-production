@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { auth } from '@clerk/nextjs/server';
 
+import { redirect } from 'next/navigation';
 export async function POST(req: NextRequest) {
   try {
     // Get current session
     const session = await auth();
     
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(`🔍 Admin request to update user role:`, {
-      requestedBy: session.user.email,
+      requestedBy: user?.email,
       targetEmail: email,
       newRole: role
     });

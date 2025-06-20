@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../auth/prisma';
 import { emailQueue } from '@/lib/services/email-queue';
 import { z } from 'zod';
 

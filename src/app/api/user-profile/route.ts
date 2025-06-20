@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../auth/prisma';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/user-profile - Get user profile for job matching
@@ -15,13 +14,13 @@ export async function GET(req: NextRequest) {
       where: { clerkId: userId },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     // Get user profile from database
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
       select: {
         id: true,
         name: true,
@@ -77,7 +76,7 @@ export async function POST(req: NextRequest) {
       where: { clerkId: userId },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
@@ -119,7 +118,7 @@ export async function POST(req: NextRequest) {
     // For now, just return success without saving to database
     // In a real implementation, you would save to a UserProfile table
     const updatedUser = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
       select: {
         id: true,
         name: true,
@@ -161,7 +160,7 @@ export async function PUT(req: NextRequest) {
       where: { clerkId: userId },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
@@ -227,7 +226,7 @@ export async function DELETE(req: NextRequest) {
       where: { clerkId: userId },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 

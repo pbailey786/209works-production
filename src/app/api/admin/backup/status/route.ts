@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 // GET - Get backup system status and statistics
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     if (!session?.user || (session.user as any).role !== 'admin') {

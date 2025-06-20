@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import {
   Briefcase,
@@ -80,7 +81,7 @@ export default function SimplePostJobPage() {
     if (user?.emailAddresses?.[0]?.emailAddress) {
       setForm(prev => ({
         ...prev,
-        contactEmail: session.user?.email || '',
+        contactEmail: user?.email || '',
       }));
     }
   }, [session]);

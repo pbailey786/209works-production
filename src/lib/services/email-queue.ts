@@ -8,7 +8,6 @@ import {
 } from '@/lib/email';
 import { emailSecurityValidator } from '@/lib/email/security';
 import { SecurityLogger } from '@/lib/security/security-monitor';
-import { prisma } from '../../app/api/auth/prisma';
 import JobAlertEmail from '@/components/emails/job-alert-email';
 import WeeklyDigestEmail from '@/components/emails/weekly-digest-email';
 import { emailService } from '@/lib/email/email-service';

@@ -15,7 +15,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { prisma } from '@/lib/database/prisma';
 
 interface SearchParams {
   status?: string;
@@ -48,7 +47,7 @@ export default async function AdManagementPage({
     redirect('/signin?redirect=/admin/ads');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }

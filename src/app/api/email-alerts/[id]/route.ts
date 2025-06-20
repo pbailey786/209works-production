@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../auth/prisma';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 
@@ -52,15 +52,15 @@ export async function GET(
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
-
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+    
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
     });
 
     if (!user) {
@@ -120,16 +120,16 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
-
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+    
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
     });
 
     if (!user) {
@@ -208,16 +208,16 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
-
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+    
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
     });
 
     if (!user) {

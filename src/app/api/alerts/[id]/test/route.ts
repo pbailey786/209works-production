@@ -3,7 +3,6 @@ import { withAPIMiddleware } from '@/lib/middleware/api';
 import { testAlertSchema } from '@/lib/validations/alerts';
 import { routeParamsSchemas } from '@/lib/middleware/validation';
 import { createSuccessResponse, NotFoundError } from '@/lib/errors/api-errors';
-import { prisma } from '../../../auth/prisma';
 import { EnhancedJobSearchService } from '@/lib/search/services';
 import {
   EnhancedJobMatchingService,

@@ -1,6 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { prisma } from '../../api/auth/prisma';
 import ProfileSettingsClient from './ProfileSettingsClient';
 import { prisma } from '@/lib/database/prisma';
 
@@ -43,17 +42,17 @@ export default async function ProfileSettingsPage() {
       redirect('/signin');
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
-  if (!user?.emailAddresses?.[0]?.emailAddress) {
+  if (!user?.email) {
     redirect('/signin');
   }
 
   // Get user by email since (session!.user as any).id doesn't exist by default
-  const user = await prisma.user.findUnique({
-    where: { email: user?.emailAddresses?.[0]?.emailAddress },
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user?.email },
     select: { id: true },
   });
 

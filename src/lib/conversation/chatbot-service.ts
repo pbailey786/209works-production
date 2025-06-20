@@ -1,5 +1,4 @@
 import { openai } from '@/lib/openai';
-import { prisma } from '@/app/api/auth/prisma';
 import { ConversationManager } from './manager';
 import { ChatbotPrompts } from './prompts';
 import {

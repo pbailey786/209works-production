@@ -35,7 +35,7 @@ export default async function EmailManagementPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -43,7 +43,7 @@ export default async function EmailManagementPage() {
     redirect('/signin?redirect=/admin/email');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   // Temporarily allow admin users to access email management
   if (userRole !== 'admin' && !hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES)) {
     redirect('/admin');

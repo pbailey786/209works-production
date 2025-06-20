@@ -3,7 +3,6 @@ import { auth } from '@clerk/nextjs/server';
 import InstagramAnalyticsService from '@/lib/services/instagram-analytics';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 
 const analyticsQuerySchema = z.object({
   startDate: z.string().datetime().optional(),
@@ -29,13 +28,13 @@ export async function GET(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
     });
 
     if (!user) {
@@ -104,13 +103,13 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
     });
 
     if (!user) {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Crown,

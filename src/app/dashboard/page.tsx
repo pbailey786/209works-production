@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '@/lib/database/prisma';
 import DashboardClient from './DashboardClient';
-import { prisma } from '@/lib/database/prisma';
 
 // Type definitions for dashboard data
 interface DashboardStats {
@@ -204,16 +203,16 @@ export default async function DashboardPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-  if (!user?.emailAddresses?.[0]?.emailAddress) {
+  if (!user?.email) {
     redirect('/signin');
   }
 
-  // Get user by email since session.user.id doesn't exist by default
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  // Get user by email since user?.id doesn't exist by default
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user?.email },
     select: {
       id: true,
       role: true,
@@ -248,7 +247,7 @@ export default async function DashboardPage() {
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">
-            Welcome back, {session.user?.name || session.user?.email}
+            Welcome back, {user?.name || user?.email}
           </h1>
           <p className="mt-2 text-sm text-gray-600 sm:text-base">
             Here's an overview of your job search activity.

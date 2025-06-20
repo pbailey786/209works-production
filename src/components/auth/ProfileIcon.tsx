@@ -1,6 +1,7 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Avatar from '../Avatar';
 import { User } from 'lucide-react';

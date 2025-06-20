@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { emailService } from '@/lib/email/email-service';
 import { templateManager } from '@/lib/email/template-manager';
 import { emailAgent } from '@/lib/agents/email-agent';
@@ -14,9 +15,9 @@ export async function GET(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress || session.user.role !== 'admin') {
+    if (!user?.email || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
@@ -102,10 +103,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress || session.user.role !== 'admin') {
+    if (!user?.email || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

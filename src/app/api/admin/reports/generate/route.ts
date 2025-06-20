@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../../auth/prisma';
+import { redirect } from 'next/navigation';
 import { Resend } from 'resend';
 
 // Lazy-load Resend client to avoid build-time errors
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth() as any;
 
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const reportRecord = await prisma.analyticsReport.create({
       data: {
         type: reportType,
-        generatedBy: session.user.id,
+        generatedBy: user?.id,
         data: JSON.stringify(report),
         recipients: recipients.join(','),
         status: 'generated',

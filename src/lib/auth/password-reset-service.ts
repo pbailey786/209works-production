@@ -218,7 +218,7 @@ export class PasswordResetService {
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
     // Find user with valid token
-    const user = await prisma.user.findFirst({
+    const dbUser = await prisma.user.findFirst({
       where: {
         passwordResetToken: hashedToken,
         passwordResetExpires: {
@@ -332,7 +332,7 @@ export class PasswordResetService {
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    const user = await prisma.user.findFirst({
+    const dbUser = await prisma.user.findFirst({
       where: {
         passwordResetToken: hashedToken,
         passwordResetExpires: {

@@ -32,7 +32,7 @@ export default async function AdCampaignsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -40,7 +40,7 @@ export default async function AdCampaignsPage() {
     redirect('/signin?redirect=/admin/ads/campaigns');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_AD_CAMPAIGNS)) {
     redirect('/admin');
   }

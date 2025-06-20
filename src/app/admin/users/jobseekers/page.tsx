@@ -33,7 +33,7 @@ export default async function JobSeekersPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -41,7 +41,7 @@ export default async function JobSeekersPage() {
     redirect('/signin?redirect=/admin/users/jobseekers');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_USERS)) {
     redirect('/admin');
   }

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../api/auth/prisma';
+import { redirect } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -51,7 +51,7 @@ export default async function AdminDashboard() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     // Check if we're in build mode or if database is not available
@@ -249,7 +249,7 @@ export default async function AdminDashboard() {
             Overview of 209 Works platform performance and key metrics
           </p>
           <p className="text-sm text-gray-500">
-            Welcome back, {user?.fullName || user?.emailAddresses?.[0]?.emailAddress}
+            Welcome back, {user?.name || user?.email}
           </p>
         </div>
 

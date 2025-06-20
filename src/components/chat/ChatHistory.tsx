@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import {
   Clock,

@@ -29,7 +29,7 @@ export default async function UserReportsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -37,7 +37,7 @@ export default async function UserReportsPage() {
     redirect('/signin?redirect=/admin/moderation/reports');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.HANDLE_REPORTS)) {
     redirect('/admin');
   }

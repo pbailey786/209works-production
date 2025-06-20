@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { stripe } from '@/lib/stripe';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 
 const upsellSchema = z.object({
   jobId: z.string().uuid(),
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
@@ -211,8 +211,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
@@ -224,8 +224,8 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action'); // 'addons' or 'status'
 
     // Get user details
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email! },
       select: { id: true, currentTier: true }
     });
 

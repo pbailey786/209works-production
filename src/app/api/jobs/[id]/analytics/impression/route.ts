@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/lib/errors/api-errors';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
-import { prisma } from '@/app/api/auth/prisma';
-
 // POST /api/jobs/[id]/analytics/impression - Track job impression
 export const POST = withAPIMiddleware(
   async (req, context) => {

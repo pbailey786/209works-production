@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     // Get current user by email
     const currentUser = await prisma.user.findUnique({
-      where: { email: session.user.email! },
+      where: { email: user?.email! },
       select: { id: true, role: true },
     });
 
@@ -99,8 +99,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
@@ -109,8 +109,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email! },
       select: { 
         id: true, 
         companyLogo: true,
@@ -147,8 +147,8 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
@@ -157,8 +157,8 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email! },
       select: { id: true },
     });
 

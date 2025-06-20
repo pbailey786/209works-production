@@ -1,6 +1,7 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Permission } from '@/lib/rbac/permissions';
 

@@ -3,7 +3,6 @@ import { auth } from '@clerk/nextjs/server';
 import InstagramScheduler from '@/lib/services/instagram-scheduler';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 
 const updatePostSchema = z.object({
   caption: z.string().min(1).max(2200).optional(),
@@ -24,13 +23,13 @@ export async function GET(
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
     });
 
     if (!user) {
@@ -74,13 +73,13 @@ export async function PUT(
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
     });
 
     if (!user) {
@@ -178,13 +177,13 @@ export async function DELETE(
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
     });
 
     if (!user) {

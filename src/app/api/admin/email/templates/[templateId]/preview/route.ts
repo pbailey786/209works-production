@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { TemplateManager } from '@/lib/email/template-manager';
-import { prisma } from '@/lib/database/prisma';
 
 export async function GET(
   request: NextRequest,
@@ -11,13 +11,13 @@ export async function GET(
   try {
     const session = await auth() as any;
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user is admin
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: user?.email },
       select: { role: true },
     });
 

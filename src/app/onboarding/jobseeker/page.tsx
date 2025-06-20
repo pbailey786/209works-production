@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import JobSeekerOnboardingClient from './JobSeekerOnboardingClient';
-import { prisma } from '@/lib/database/prisma';
 
 export default async function JobSeekerOnboardingPage() {
   const { userId } = await auth();
@@ -11,16 +11,16 @@ export default async function JobSeekerOnboardingPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-  if (!user?.emailAddresses?.[0]?.emailAddress) {
+  if (!user?.email) {
     redirect('/signin?callbackUrl=/onboarding/jobseeker');
   }
 
   // Get user data
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user?.email },
     select: {
       id: true,
       name: true,

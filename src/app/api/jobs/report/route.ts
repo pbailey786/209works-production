@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/app/api/auth/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 interface JobReport {
@@ -54,14 +54,14 @@ export async function POST(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     // Get user ID from database if session exists
     let sessionUserId;
-    if (user?.emailAddresses?.[0]?.emailAddress) {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user?.email },
+    if (user?.email) {
+      const dbUser = await prisma.user.findUnique({
+        where: { email: user?.email },
       });
       sessionUserId = user?.id;
     }
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       jobId,
       reason: reason.trim(),
       reporterUserId: reporterUserId || sessionUserId,
-      reporterEmail: user?.emailAddresses?.[0]?.emailAddress || undefined,
+      reporterEmail: user?.email || undefined,
       reportedAt: new Date(),
       status: 'pending',
     };

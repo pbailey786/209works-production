@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
@@ -10,11 +11,11 @@ export async function GET(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     
     // Only allow admins or during development
-    if (!user?.emailAddresses?.[0]?.emailAddress || (session.user as any).role !== 'admin') {
+    if (!user?.email || (session.user as any).role !== 'admin') {
       if (process.env.NODE_ENV === 'production') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }

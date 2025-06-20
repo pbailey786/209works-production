@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../api/auth/prisma';
+import { redirect } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -23,7 +23,14 @@ import {
 } from 'lucide-react';
 
 export default async function AdminSettingsPage() {
-  const session = await getServerSession();
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId! },
+    });
 
   // Fetch admin users for role management
   const adminUsers = await prisma.user.findMany({

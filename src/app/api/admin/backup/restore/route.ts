@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { createServerSupabaseClient } from '@/lib/supabase';
-import { prisma } from '@/lib/database/prisma';
 
 interface RestoreResult {
   success: boolean;
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     if (!session?.user || (session.user as any).role !== 'admin') {

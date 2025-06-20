@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { DuplicateDetectionService } from '@/lib/services/duplicate-detection';
-import { prisma } from '@/lib/database/prisma';
 import { prisma } from '@/lib/database/prisma';
 
 // POST /api/ai/duplicate-check - Check for job duplicates (AI assistant endpoint)
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     const apiKey = req.headers.get('x-api-key');
     
@@ -234,8 +234,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
     const apiKey = req.headers.get('x-api-key');
     

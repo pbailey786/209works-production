@@ -8,8 +8,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { OptimizedJobSearchService } from '@/lib/database/optimized-queries';
-import { prisma } from '@/lib/database/prisma';
 import { prisma } from '@/lib/database/prisma';
 
 export const runtime = 'nodejs';
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     if (!session?.user || (session!.user as any).role !== 'admin') {
@@ -200,8 +200,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
     if (!session?.user || (session!.user as any).role !== 'admin') {

@@ -20,13 +20,13 @@ export async function GET(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
     });
 
     if (!user) {
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
     const userEngagement = [
       {
         userId: user.id,
-        email: user?.emailAddresses?.[0]?.emailAddress,
+        email: user?.email,
         alertsCount: totalAlerts,
         emailsReceived: emailMetrics.totalSent,
         engagementScore: Math.floor(Math.random() * 30) + 70,

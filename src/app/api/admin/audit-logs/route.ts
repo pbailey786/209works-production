@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import { prisma } from '@/lib/database/prisma';
 import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
@@ -12,14 +12,14 @@ export async function GET(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = user?.publicMetadata?.role || 'guest';
+    const userRole = user?.role || 'guest';
     if (!hasPermission(userRole, Permission.VIEW_AUDIT_LOGS)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }

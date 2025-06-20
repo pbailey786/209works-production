@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { prisma } from '@/app/api/auth/prisma';
 import { ActionResult } from '@/types/actions';
 
 // Validation schemas
@@ -187,7 +186,7 @@ export async function updateJobAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -362,7 +361,7 @@ export async function applyToJobAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -493,7 +492,7 @@ export async function saveJobAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,

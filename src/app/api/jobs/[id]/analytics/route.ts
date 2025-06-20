@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AuthorizationError } from '@/lib/errors/api-errors';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
-import { prisma } from '@/app/api/auth/prisma';
-
 // GET /api/jobs/[id]/analytics - Get analytics for a specific job
 export const GET = withAPIMiddleware(
   async (req, context) => {

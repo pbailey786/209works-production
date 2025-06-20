@@ -8,8 +8,6 @@ import {
   NotFoundError,
   AuthorizationError,
 } from '@/lib/errors/api-errors';
-import { prisma } from '../../auth/prisma';
-
 // GET /api/users/:id - Get user profile (own profile or admin)
 export const GET = withAPIMiddleware(
   async (req, context) => {
@@ -43,7 +41,7 @@ export const GET = withAPIMiddleware(
 export const PUT = withAPIMiddleware(
   async (req, context) => {
     const { user, params, body, performance } = context;
-    const userId = params.id;
+    const clerkUserId = params.id;
 
     // Users can update their own profile, admins can update any profile
     if (user!.id !== userId && user!.role !== 'admin') {

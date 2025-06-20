@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../api/auth/prisma';
+import { redirect } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -57,7 +57,14 @@ export default async function UsersPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const session = await getServerSession();
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId! },
+    });
 
   // Await searchParams in Next.js 15
   const params = await searchParams;

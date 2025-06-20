@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { Session } from 'next-auth';
 
@@ -12,10 +13,10 @@ export async function GET(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ 
         error: 'Not authenticated',
         session: null 
@@ -23,8 +24,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
       select: {
         id: true,
         email: true,
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ 
         error: 'User not found in database',
-        sessionEmail: session.user.email 
+        sessionEmail: user?.email 
       }, { status: 404 });
     }
 
@@ -47,8 +48,8 @@ export async function GET(req: NextRequest) {
       success: true,
       user: user,
       session: {
-        email: session.user.email,
-        name: session.user.name,
+        email: user?.email,
+        name: user?.name,
         role: (session.user as any).role,
       },
       needsAdminUpdate: user.role !== 'admin',

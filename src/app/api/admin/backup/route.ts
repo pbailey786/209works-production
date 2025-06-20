@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { createDatabaseBackup } from '@/lib/backup/database-backup';
-import { prisma } from '@/lib/database/prisma';
 
 interface BackupResult {
   success: boolean;
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     if (!session?.user || (session.user as any).role !== 'admin') {
@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
     if (!session?.user || (session.user as any).role !== 'admin') {
@@ -102,8 +102,8 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
     if (!session?.user || (session.user as any).role !== 'admin') {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
@@ -20,7 +20,7 @@ export async function PATCH(
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(

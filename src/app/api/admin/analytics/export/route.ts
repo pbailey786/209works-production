@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../../auth/prisma';
-
+import { redirect } from 'next/navigation';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth() as any;
 
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

@@ -8,8 +8,6 @@ import { paginatedQuerySchema } from '@/lib/cache/pagination';
 import { JobCacheService } from '@/lib/cache/services';
 import { createJobSchema } from '@/lib/validations/api';
 import { createSuccessResponse } from '@/lib/errors/api-errors';
-import { prisma } from '../auth/prisma';
-
 // GET /api/jobs - List jobs with caching and pagination
 export const GET = withAPIMiddleware(
   async (req, context) => {

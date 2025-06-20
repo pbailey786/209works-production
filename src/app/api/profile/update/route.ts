@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../auth/prisma';
 import { prisma } from '@/lib/database/prisma';
 import { normalizeEmail } from '@/lib/utils/email-utils';
 
@@ -15,13 +14,13 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get current user by email
     const currentUser = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+      where: { email: user?.email },
     });
 
     if (!currentUser) {
@@ -38,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     // Normalize email for case-insensitive comparison
     const normalizedEmail = normalizeEmail(email);
-    const normalizedSessionEmail = normalizeEmail(user?.emailAddresses?.[0]?.emailAddress || '');
+    const normalizedSessionEmail = normalizeEmail(user?.email || '');
 
     // Check if email is already taken by another user
     if (normalizedEmail !== normalizedSessionEmail) {

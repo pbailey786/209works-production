@@ -24,12 +24,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user session if authenticated - NextAuth v5 requires request object
-    const session = await auth() as Session | null;
+    const session = await auth() ;
     let authenticatedUserId = userId;
 
-    if (session?.user?.email) {
+    if (user?.email) {
       const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
+        where: { email: user?.email },
       });
       authenticatedUserId = user?.id || userId;
     }
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
     let userId;
 
     if (clerkUserId) {
-      const user = await prisma.user.findUnique({
+      const dbUser = await prisma.user.findUnique({
         where: { clerkId: clerkUserId },
       });
       userId = user?.id;

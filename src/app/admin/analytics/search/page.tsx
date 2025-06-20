@@ -29,7 +29,7 @@ export default async function SearchAnalyticsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -37,7 +37,7 @@ export default async function SearchAnalyticsPage() {
     redirect('/signin?redirect=/admin/analytics/search');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_ANALYTICS)) {
     redirect('/admin');
   }

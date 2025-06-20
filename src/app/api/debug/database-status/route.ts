@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     // First, let's check if we can even get a session
-    let session: Session | null = null;
+    let session = null;
     try {
-      session = await auth() as Session | null;
+      session = await auth() ;
     } catch (sessionError) {
       return NextResponse.json({
         success: false,
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Only allow admin access
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized - No session or email' }, { status: 401 });
     }
 
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     let user;
     try {
       user = await prisma.user.findUnique({
-        where: { email: session.user.email },
+        where: { email: user?.email },
       });
     } catch (userError) {
       return NextResponse.json({

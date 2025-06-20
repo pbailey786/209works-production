@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 // GET /api/company-profile - Get company profile for authenticated user
@@ -13,11 +13,11 @@ export async function GET() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     console.log('🏢 Session check:', {
       hasSession: !!session,
-      userEmail: user?.emailAddresses?.[0]?.emailAddress,
+      userEmail: user?.email,
       userId: (session?.user as any)?.id,
     });
 
@@ -27,7 +27,7 @@ export async function GET() {
     }
 
     // Check if user has employer role
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: (session?.user as any)?.id },
       include: {
         company: true,
@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
     if (!(session?.user as any)?.id) {
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user has employer role
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: (session?.user as any)?.id },
     });
 

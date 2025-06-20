@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -70,13 +71,13 @@ export default function SimpleSettingsPage() {
   useEffect(() => {
     if (session?.user) {
       setUserProfile({
-        name: session.user.name || '',
-        email: session.user?.email || '',
+        name: user?.name || '',
+        email: user?.email || '',
         phone: '',
       });
       setCompanyProfile(prev => ({
         ...prev,
-        contactEmail: session.user?.email || '',
+        contactEmail: user?.email || '',
       }));
     }
   }, [session]);

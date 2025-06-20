@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { Resend } from 'resend';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
@@ -29,10 +30,10 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -42,8 +43,8 @@ export async function POST(request: NextRequest) {
     const { message, page, userAgent, timestamp } = validatedData;
     
     // Get user info for context
-    const userEmail = session.user.email;
-    const userName = session.user.name || 'Unknown User';
+    const userEmail = user?.email;
+    const userName = user?.name || 'Unknown User';
     
     // Prepare support email content
     const supportEmailContent = `
@@ -126,11 +127,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

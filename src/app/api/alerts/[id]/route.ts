@@ -7,7 +7,6 @@ import {
   NotFoundError,
   AuthorizationError,
 } from '@/lib/errors/api-errors';
-import { prisma } from '../../auth/prisma';
 import {
   generateCacheKey,
   CACHE_PREFIXES,

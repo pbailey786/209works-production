@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../auth/prisma';
 import { z } from 'zod';
 import { randomBytes } from 'crypto';
 

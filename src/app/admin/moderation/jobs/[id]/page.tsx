@@ -1,6 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { prisma } from '../../../../api/auth/prisma';
 import JobModerationDetail from '@/components/admin/JobModerationDetail';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import Link from 'next/link';
@@ -21,7 +20,7 @@ export default async function JobModerationDetailPage({ params }: PageProps) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -29,7 +28,7 @@ export default async function JobModerationDetailPage({ params }: PageProps) {
     redirect('/signin?redirect=/admin/moderation/jobs/' + id);
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
     redirect('/admin');
   }

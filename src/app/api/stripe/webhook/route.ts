@@ -290,7 +290,7 @@ async function handleCheckoutSessionCompleted(
 }
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  const userId = subscription.metadata?.userId;
+  const clerkUserId = subscription.metadata?.userId;
   const tier = subscription.metadata?.tier;
 
   if (!userId) {
@@ -300,7 +300,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
   try {
     // Get user email
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { email: true },
     });
@@ -375,7 +375,7 @@ async function allocateSubscriptionCredits(userId: string, tier: string) {
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  const userId = subscription.metadata?.userId;
+  const clerkUserId = subscription.metadata?.userId;
 
   if (!userId) {
     console.error('Missing userId in subscription metadata:', subscription.id);
@@ -621,7 +621,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 }
 
 async function handleAddonPurchase(session: Stripe.Checkout.Session) {
-  const userId = session.metadata?.userId;
+  const clerkUserId = session.metadata?.userId;
   const addonId = session.metadata?.addonId;
   const jobId = session.metadata?.jobId;
 
@@ -642,7 +642,7 @@ async function handleAddonPurchase(session: Stripe.Checkout.Session) {
     }
 
     // Get user email
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { email: true }
     });
@@ -696,7 +696,7 @@ async function handleAddonPurchase(session: Stripe.Checkout.Session) {
 
 async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
   try {
-    const userId = session.metadata?.userId;
+    const clerkUserId = session.metadata?.userId;
     const tier = session.metadata?.tier;
     const creditPack = session.metadata?.creditPack;
     const addonsJson = session.metadata?.addons;
@@ -806,7 +806,7 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  const userId = paymentIntent.metadata?.userId;
+  const clerkUserId = paymentIntent.metadata?.userId;
   const type = paymentIntent.metadata?.type;
 
   if (type === 'addon_purchase' && userId) {
@@ -817,7 +817,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
 async function handleJobUpsellPurchase(session: Stripe.Checkout.Session) {
   try {
-    const userId = session.metadata?.userId;
+    const clerkUserId = session.metadata?.userId;
     const jobId = session.metadata?.jobId;
     const socialMediaShoutout = session.metadata?.socialMediaShoutout === 'true';
     const placementBump = session.metadata?.placementBump === 'true';
@@ -975,7 +975,7 @@ function getCreditsForTier(tier: string): number {
 
 // New handler for payment intent failures
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
-  const userId = paymentIntent.metadata?.userId;
+  const clerkUserId = paymentIntent.metadata?.userId;
   const subscriptionId = paymentIntent.metadata?.subscriptionId;
 
   if (!userId) {
@@ -1010,7 +1010,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 
 // New handler for trial ending notifications
 async function handleSubscriptionTrialWillEnd(subscription: Stripe.Subscription) {
-  const userId = subscription.metadata?.userId;
+  const clerkUserId = subscription.metadata?.userId;
 
   if (!userId) {
     console.error('Missing userId in subscription metadata:', subscription.id);
@@ -1018,7 +1018,7 @@ async function handleSubscriptionTrialWillEnd(subscription: Stripe.Subscription)
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { email: true, name: true },
     });

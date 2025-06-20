@@ -228,7 +228,7 @@ export async function updateNotificationPreferencesAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -296,7 +296,7 @@ export async function updatePrivacySettingsAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -364,7 +364,7 @@ export async function changePasswordAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -451,7 +451,7 @@ export async function uploadResumeAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -524,7 +524,7 @@ export async function deleteAccountAction(
 ): Promise<ActionResult> {
   try {
     // TODO: Get current user from session
-    const userId = formData.get('userId') as string;
+    const clerkUserId = formData.get('userId') as string;
     if (!userId) {
       return {
         success: false,
@@ -540,7 +540,7 @@ export async function deleteAccountAction(
     const validatedData = deleteAccountSchema.parse(rawData);
 
     // Get current user
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, email: true },
     });

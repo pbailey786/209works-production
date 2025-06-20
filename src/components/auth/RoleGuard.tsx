@@ -1,6 +1,7 @@
 'use client';
 
 import { useUser, useAuth } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useEffect, ReactNode } from 'react';
 
@@ -36,7 +37,7 @@ export default function RoleGuard({
       isLoaded,
       isSignedIn,
       hasUser: !!user,
-      userRole: user?.publicMetadata?.role,
+      userRole: user?.role,
       allowedRoles,
       userData: user
     });

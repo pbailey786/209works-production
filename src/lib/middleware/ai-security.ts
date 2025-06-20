@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 /**
@@ -216,9 +216,9 @@ export function withAISecurity(
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
-        if (!user?.emailAddresses?.[0]?.emailAddress) {
+        if (!user?.email) {
           return NextResponse.json(
             { error: 'Authentication required for this AI service' },
             { status: 401 }
@@ -226,7 +226,7 @@ export function withAISecurity(
         }
 
         user = await prisma.user.findUnique({
-          where: { email: session.user.email },
+          where: { email: user?.email },
           select: { id: true, email: true, role: true },
         });
 
@@ -261,12 +261,12 @@ export function withAISecurity(
       redirect('/signin');
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
-        if (user?.emailAddresses?.[0]?.emailAddress) {
+        if (user?.email) {
           user = await prisma.user.findUnique({
-            where: { email: session.user.email },
+            where: { email: user?.email },
             select: { id: true, email: true, role: true },
           });
           isAuthenticated = !!user;

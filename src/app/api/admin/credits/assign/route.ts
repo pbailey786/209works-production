@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { EmailQueue } from '@/lib/services/email-queue';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 
 const assignCreditsSchema = z.object({
   userEmail: z.string().email('Invalid email address'),
@@ -23,10 +23,10 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Get admin user and verify permissions
     const adminUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: user?.email },
       select: { id: true, role: true, name: true },
     });
 
@@ -166,11 +166,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
 
     // Get admin user and verify permissions
     const adminUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: user?.email },
       select: { id: true, role: true },
     });
 

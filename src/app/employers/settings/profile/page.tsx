@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import {
   Building2,
@@ -101,7 +102,7 @@ export default function EmployerProfileSettingsPage() {
                 founded: data.company.founded?.toString() || '',
                 headquarters: data.company.headquarters || '',
                 contactEmail:
-                  data.company.contactEmail || session.user?.email || '',
+                  data.company.contactEmail || user?.email || '',
                 contactPhone: data.company.contactPhone || '',
                 logo: data.company.logo || '',
               });
@@ -109,7 +110,7 @@ export default function EmployerProfileSettingsPage() {
               // New company profile - pre-fill with user email
               setProfile(prev => ({
                 ...prev,
-                contactEmail: session.user?.email || '',
+                contactEmail: user?.email || '',
               }));
               setIsFirstTime(true);
             }

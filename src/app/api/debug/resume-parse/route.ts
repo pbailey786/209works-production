@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { openai } from '@/lib/openai';
 import { isValidResumeFile } from '@/lib/fileUpload';
 import { prisma } from '@/lib/database/prisma';
@@ -20,16 +21,16 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({
         error: 'Unauthorized',
         debug: {
           step: 'authentication',
           details: {
             hasSession: !!session,
-            hasUserEmail: !!user?.emailAddresses?.[0]?.emailAddress
+            hasUserEmail: !!user?.email
           }
         }
       }, { status: 401 });

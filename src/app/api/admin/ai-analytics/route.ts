@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../auth/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
@@ -11,11 +11,11 @@ export async function GET(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     // Check if user is admin
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -208,8 +208,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
     
     if (!user) {
@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
         // Track when AI helps with job application
         await prisma.chatAnalytics.create({
           data: {
-            userId: session.user.id,
+            userId: user?.id,
             question: data.query || 'AI Application Assistance',
             response: data.recommendation || '',
             jobsFound: data.jobsFound || 0,
@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
         // Track "Should I Apply" feature usage
         await prisma.chatAnalytics.create({
           data: {
-            userId: session.user.id,
+            userId: user?.id,
             question: data.query || 'Should I Apply Query',
             response: data.response || '',
             jobsFound: 1, // Always 1 for specific job queries
@@ -264,7 +264,7 @@ export async function POST(request: NextRequest) {
         // Track queries that didn't return good results
         await prisma.chatAnalytics.create({
           data: {
-            userId: session.user.id,
+            userId: user?.id,
             question: data.query || '',
             response: 'No suitable matches found',
             jobsFound: 0,

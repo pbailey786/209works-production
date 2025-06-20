@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { prisma } from '@/lib/database/prisma';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import CreditManagementDashboard from '@/components/admin/CreditManagementDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -125,16 +124,16 @@ export default async function AdminCreditsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-  if (!user?.emailAddresses?.[0]?.emailAddress) {
+  if (!user?.email) {
     redirect('/signin');
   }
 
   // Get user with role
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user?.email },
     select: { id: true, role: true },
   });
 

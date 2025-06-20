@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/lib/openai';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 
@@ -139,9 +140,9 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -166,7 +167,7 @@ export async function POST(request: NextRequest) {
       contextInfo = `
 **User Context:**
 - Page: ${context.page || 'bulk-upload'}
-- User: ${session.user.email}
+- User: ${user?.email}
 - Error Details: ${context.errorDetails || 'None provided'}
 `;
     }
@@ -201,7 +202,7 @@ export async function POST(request: NextRequest) {
 
     // Log support interaction for analytics
     console.log('Support Genie interaction:', {
-      userEmail: session.user.email,
+      userEmail: user?.email,
       page: context?.page || 'bulk-upload',
       messageLength: message.length,
       timestamp: new Date().toISOString(),

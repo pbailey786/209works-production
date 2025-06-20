@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 
 // Validation schema for onboarding data
 const onboardingSchema = z.object({
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
@@ -116,8 +116,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user's current onboarding data
-    const user = await prisma.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: (session!.user as any).id },
       select: {
         id: true,

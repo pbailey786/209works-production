@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
 import { PricingTier, BillingInterval } from '@prisma/client';
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 
 interface PricingCardProps {

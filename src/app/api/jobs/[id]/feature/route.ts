@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AuthorizationError } from '@/lib/errors/api-errors';
-import { prisma } from '@/app/api/auth/prisma';
 import { JobQueueService } from '@/lib/services/job-queue';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 import { z } from 'zod';

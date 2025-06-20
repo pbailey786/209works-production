@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../../../auth/prisma';
-
+import { redirect } from 'next/navigation';
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -9,7 +8,7 @@ export async function DELETE(
   try {
     const session = await auth() as any;
 
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -29,7 +28,7 @@ export async function DELETE(
         action: 'REPORT_SCHEDULE_DELETED',
         targetType: 'REPORT_SCHEDULE',
         targetId: scheduleId,
-        performedBy: session.user.id,
+        performedBy: user?.id,
         details: JSON.stringify({
           scheduleId,
           deletedAt: new Date().toISOString(),

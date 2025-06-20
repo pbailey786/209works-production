@@ -1,5 +1,6 @@
 'use client';
 import { useUser, useAuth, SignInButton, UserButton } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';

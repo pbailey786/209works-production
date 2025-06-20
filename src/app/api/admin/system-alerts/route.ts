@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '../../auth/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 interface SystemAlert {
@@ -24,10 +24,10 @@ export async function GET(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -251,11 +251,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -267,7 +267,7 @@ export async function POST(request: NextRequest) {
       // For now, we'll just log the resolution
       await prisma.auditLog.create({
         data: {
-          userId: session.user.id,
+          userId: user?.id,
           action: 'ALERT_RESOLVED',
           resource: 'ALERT',
           resourceId: alertId,
@@ -294,7 +294,7 @@ export async function POST(request: NextRequest) {
       // Log the custom alert creation
       await prisma.auditLog.create({
         data: {
-          userId: session.user.id,
+          userId: user?.id,
           action: 'ALERT_CREATED',
           resource: 'ALERT',
           resourceId: alert.id,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { headers, cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
@@ -11,11 +11,11 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
     // Check if user is admin
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
               action: 'USER_BANNED',
               targetType: 'USER',
               targetId: userId,
-              performedBy: session.user.id,
+              performedBy: user?.id,
               details: JSON.stringify({ reason: reason || 'Bulk ban action' }),
               createdAt: new Date(),
             })),
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
               action: 'JOB_SOFT_DELETED',
               targetType: 'JOB',
               targetId: jobId,
-              performedBy: session.user.id,
+              performedBy: user?.id,
               details: JSON.stringify({ reason: reason || 'Bulk soft delete action' }),
               createdAt: new Date(),
             })),
@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
     // Log the bulk action
     await prisma.auditLog.create({
       data: {
-        userId: session.user.id,
+        userId: user?.id,
         action: `BULK_${action.toUpperCase()}`,
         resource: targetType.toUpperCase(),
         resourceId: targetIds.join(','),
@@ -256,11 +256,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!session?.user || user?.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

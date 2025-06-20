@@ -1,8 +1,8 @@
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import EditJobForm from './EditJobForm';
-import { prisma } from '@/lib/database/prisma';
 
 interface Job {
   id: string;
@@ -30,17 +30,17 @@ export default async function EditJobPage({ params }: PageProps) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication
-  if (!user?.emailAddresses?.[0]?.emailAddress) {
+  if (!user?.email) {
     redirect('/signin');
   }
 
   // Get user and verify they're an employer
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  const dbUser = await prisma.user.findUnique({
+    where: { email: user?.email },
     select: { id: true, role: true },
   });
 

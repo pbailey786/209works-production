@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { TemplateManager } from '@/lib/email/template-manager';
 import { emailAgent } from '@/lib/agents/email-agent';
 
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const templateId = searchParams.get('template') || 'welcome-job-seeker';
     const action = searchParams.get('action') || 'preview';
-    const email = searchParams.get('email') || session.user.email;
+    const email = searchParams.get('email') || user?.email;
 
     const templateManager = new TemplateManager();
 

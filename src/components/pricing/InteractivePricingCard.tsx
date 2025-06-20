@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Check, Star, CreditCard, Zap, Shield, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';

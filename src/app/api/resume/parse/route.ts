@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
 import { extractTextFromFile, validateExtractedText } from '@/lib/enhanced-text-extraction';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
-import { prisma } from '@/lib/database/prisma';
 
 // Schema for parsed resume data
 const ParsedResumeSchema = z.object({
@@ -50,9 +50,9 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -85,14 +85,14 @@ export async function POST(request: NextRequest) {
     console.log('✅ File validation passed:', validation.fileInfo);
 
     // Get user ID for file naming
-    console.log('🔍 Looking up user:', session.user.email);
-    const user = await prisma.user.findUnique({
-      where: { email: user?.emailAddresses?.[0]?.emailAddress },
+    console.log('🔍 Looking up user:', user?.email);
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
       select: { id: true },
     });
 
     if (!user) {
-      console.log('❌ User not found in database:', session.user.email);
+      console.log('❌ User not found in database:', user?.email);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 

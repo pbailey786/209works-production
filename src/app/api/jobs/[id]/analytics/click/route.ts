@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/lib/errors/api-errors';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
-import { prisma } from '@/app/api/auth/prisma';
 import { z } from 'zod';
 
 const clickTrackingSchema = z.object({

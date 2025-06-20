@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 // import { emailService } from '@/lib/email'; // Temporarily disabled
 
 // Schema for contacting applicant
@@ -24,16 +24,16 @@ export async function POST(request: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user and verify they're an employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
       select: { id: true, role: true, name: true },
     });
 
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       message: validatedData.message,
       nextSteps: validatedData.nextSteps,
       interviewLink: validatedData.interviewLink,
-      employerEmail: session.user.email,
+      employerEmail: user?.email,
       applicationUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/profile/applications`,
     };
 
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       //       { name: 'job-id', value: application.job.id },
       //       { name: 'application-id', value: application.id },
       //     ],
-      //     replyTo: session.user.email, // Allow candidate to reply directly to employer
+      //     replyTo: user?.email, // Allow candidate to reply directly to employer
       //     subject: validatedData.subject,
       //   }
       // );
@@ -178,17 +178,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
 
-    if (!user?.emailAddresses?.[0]?.emailAddress) {
+    if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user and verify they're an employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user?.email },
       select: { id: true, role: true },
     });
 

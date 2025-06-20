@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { getUserPermissions, hasPermission } from '@/lib/rbac/permissions';
 import { Permission } from '@/lib/rbac/permissions';
 import { prisma } from '@/lib/database/prisma';
@@ -12,14 +13,14 @@ export default async function DebugPermissions() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   if (!user) {
     return <div>Not authenticated</div>;
   }
 
-  const userRole = session.user?.role || 'unknown';
+  const userRole = user?.role || 'unknown';
   const userPermissions = getUserPermissions(userRole);
   const hasEmailPermission = hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES);
 
@@ -29,7 +30,7 @@ export default async function DebugPermissions() {
       
       <div className="space-y-4">
         <div>
-          <strong>User Email:</strong> {session.user?.email}
+          <strong>User Email:</strong> {user?.email}
         </div>
         
         <div>

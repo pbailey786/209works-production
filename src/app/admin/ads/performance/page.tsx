@@ -30,7 +30,7 @@ export default async function AdPerformancePage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
 
   // Check authentication and permissions
@@ -38,7 +38,7 @@ export default async function AdPerformancePage() {
     redirect('/signin?redirect=/admin/ads/performance');
   }
 
-  const userRole = user?.publicMetadata?.role || 'guest';
+  const userRole = user?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_AD_PERFORMANCE)) {
     redirect('/admin');
   }

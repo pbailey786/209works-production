@@ -270,14 +270,14 @@ export function validateSession(session: any): {
     return { isValid: false, user: null, error: 'No user in session' };
   }
 
-  if (!session.user.email) {
+  if (!user?.email) {
     return { isValid: false, user: null, error: 'No email in session' };
   }
 
   // Extract user info safely
   const user = {
     id: (session.user as any).id || '',
-    email: session.user.email,
+    email: user?.email,
     role: (session.user as any).role,
   };
 

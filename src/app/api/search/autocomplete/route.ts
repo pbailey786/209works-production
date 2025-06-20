@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { autocompleteQuerySchema } from '@/lib/validations/search';
 import { createSuccessResponse } from '@/lib/errors/api-errors';
-import { prisma } from '../../auth/prisma';
 import {
   getCache,
   setCache,

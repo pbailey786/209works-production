@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { DuplicateDetectionService } from '@/lib/services/duplicate-detection';
 import { prisma } from '@/lib/database/prisma';
 
@@ -13,7 +14,7 @@ export async function GET(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
@@ -73,8 +74,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
@@ -100,7 +101,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const reviewedBy = (session.user as any).id || session.user.email;
+    const reviewedBy = (session.user as any).id || user?.email;
     
     const result = await DuplicateDetectionService.reviewDuplicateAlert(
       alertId,
@@ -134,8 +135,8 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: userId! },
     });
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(

@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import { adConversionSchema } from '@/lib/validations/ads';
 import { createSuccessResponse, NotFoundError } from '@/lib/errors/api-errors';
-import { prisma } from '../../auth/prisma';
 import { headers } from 'next/headers';
 
 // POST /api/ads/conversion - Track ad conversion

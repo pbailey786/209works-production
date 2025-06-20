@@ -3,6 +3,7 @@ export interface ActionResult {
   success: boolean;
   message?: string;
   error?: string;
+  errors?: Record<string, string[]>; // For form validation errors
   data?: any;
 }
 

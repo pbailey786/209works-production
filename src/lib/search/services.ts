@@ -1,4 +1,3 @@
-import { prisma } from '../../app/api/auth/prisma';
 import {
   CursorPaginationParams,
   OffsetPaginationParams,

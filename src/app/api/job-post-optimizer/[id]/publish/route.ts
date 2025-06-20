@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
-import { prisma } from '@/lib/database/prisma';
 
 export async function POST(
   req: NextRequest,
@@ -16,7 +16,7 @@ export async function POST(
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
+      where: { clerkId: userId! },
     });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(

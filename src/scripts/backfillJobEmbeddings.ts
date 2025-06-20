@@ -1,4 +1,3 @@
-import { prisma } from '../app/api/auth/prisma';
 import { getEmbedding } from '../lib/openai';
 
 // Configuration with environment variable support

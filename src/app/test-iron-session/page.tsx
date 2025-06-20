@@ -92,19 +92,19 @@ export default function TestIronSessionPage() {
             <>
               <div>
                 <span className="font-bold">User ID:</span> 
-                <span className="text-green-600">{session.user.id}</span>
+                <span className="text-green-600">{user?.id}</span>
               </div>
               <div>
                 <span className="font-bold">Email:</span> 
-                <span className="text-green-600">{session.user.email}</span>
+                <span className="text-green-600">{user?.email}</span>
               </div>
               <div>
                 <span className="font-bold">Name:</span> 
-                <span className="text-green-600">{session.user.name}</span>
+                <span className="text-green-600">{user?.name}</span>
               </div>
               <div>
                 <span className="font-bold">Role:</span> 
-                <span className="text-green-600">{session.user.role}</span>
+                <span className="text-green-600">{user?.role}</span>
               </div>
             </>
           )}

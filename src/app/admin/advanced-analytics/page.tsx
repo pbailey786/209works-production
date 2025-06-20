@@ -17,9 +17,16 @@ import AutomatedReportsPanel from '@/components/admin/AutomatedReportsPanel';
 import UserImpersonationPanel from '@/components/admin/UserImpersonationPanel';
 
 export default async function AdvancedAnalyticsPage() {
-  const session = await getServerSession() as any;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId! },
+    });
 
-  if (!session?.user || session.user.role !== 'admin') {
+  if (!session?.user || user?.role !== 'admin') {
     redirect('/auth/signin');
   }
 

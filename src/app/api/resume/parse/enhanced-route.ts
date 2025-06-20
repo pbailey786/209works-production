@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
 import { extractTextFromFile, validateExtractedText, type TextExtractionResult } from '@/lib/enhanced-text-extraction';
 import { parseResumeWithEnhancedAI, sanitizeResumeData, type ParsedResumeResult } from '@/lib/enhanced-ai-parsing';
 import { isResumeParsingAvailable, logEnvironmentStatus } from '@/lib/env-validation';
 import { z } from 'zod';
-import { prisma } from '@/lib/database/prisma';
 
 // Request options schema
 const ParseOptionsSchema = z.object({
@@ -74,7 +74,7 @@ interface ResumeParseResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<ResumeParseResponse>> {
   const startTime = Date.now();
-  let sessionData: Session | null = null;
+  let sessionData = null;
   let fileValidation: FileValidationResult | null = null;
   let extractionResult: TextExtractionResult | null = null;
   let parsingResult: ParsedResumeResult | null = null;
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ResumePar
     }
 
     // Authentication
-    sessionData = await auth() as Session | null;
+    sessionData = await auth() ;
     if (!sessionData?.user?.email) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json<ResumeParseResponse>({

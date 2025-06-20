@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractJobSearchFilters } from '@/lib/llm/extractJobSearchFilters';
-import { prisma } from '../auth/prisma';
 import {
   generateConversationalResponse,
   extractJobSearchFiltersWithContext,
@@ -12,6 +11,7 @@ import {
   sanitizeUserData,
 } from '@/lib/middleware/ai-security';
 import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { generateJobSearchResponse } from '@/lib/ai';
 
 // Type definitions for conversation messages
