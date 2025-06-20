@@ -1,0 +1,69 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
+
+// PATCH /api/profile/resumes/[id]/default - Set resume as default
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+
+    if (!user || user.role !== 'jobseeker') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const resumeId = params.id;
+
+    // Verify the resume belongs to the user
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: resumeId,
+        userId: user.id,
+      },
+    });
+
+    if (!resume) {
+      return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
+    }
+
+    // Use a transaction to ensure consistency
+    await prisma.$transaction(async (tx) => {
+      // First, unset all other resumes as default
+      await tx.resume.updateMany({
+        where: {
+          userId: user.id,
+          isDefault: true,
+        },
+        data: {
+          isDefault: false,
+        },
+      });
+
+      // Then set this resume as default
+      await tx.resume.update({
+        where: { id: resumeId },
+        data: { isDefault: true },
+      });
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Resume set as default successfully',
+    });
+  } catch (error) {
+    console.error('Error setting default resume:', error);
+    return NextResponse.json(
+      { error: 'Failed to set default resume' },
+      { status: 500 }
+    );
+  }
+}

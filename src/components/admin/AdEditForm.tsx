@@ -14,7 +14,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -25,7 +25,7 @@ import {
   DollarSign,
   Building,
   ExternalLink,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 
 interface Advertisement {

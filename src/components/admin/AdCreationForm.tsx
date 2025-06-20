@@ -1,28 +1,25 @@
-import { useState } from '@/components/ui/card';
-import { useRouter } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/card';
-import { CalendarIcon, Upload, X } from '@/components/ui/card';
-import { format } from 'date-fns';
-
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
+import { CalendarIcon, Upload, X } from 'lucide-react';
+import { format } from 'date-fns';
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from '@/components/ui/card';
+  SelectValue,
+} from '@/components/ui/select';
 import {
-  import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from '@/components/ui/popover';
 
 interface AdFormData {

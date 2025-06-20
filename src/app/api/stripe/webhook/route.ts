@@ -732,40 +732,23 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
       }
     });
 
-    // Create individual credits for the user
+    // Create individual credits for the user (unified system - all credits are universal)
     const creditsToCreate = [];
 
-    // Add job posting credits
-    for (let i = 0; i < purchase.jobPostCredits; i++) {
+    // Calculate total credits from all sources (unified system)
+    const totalCredits = purchase.jobPostCredits + purchase.featuredPostCredits + purchase.socialGraphicCredits;
+
+    // Add all credits as universal type (unified system)
+    for (let i = 0; i < totalCredits; i++) {
       creditsToCreate.push({
         userId,
         purchaseId: purchase.id,
-        type: 'job_post',
+        type: 'universal', // All credits are now universal and interchangeable
         expiresAt: purchase.expiresAt,
       });
     }
 
-    // Add featured post credits
-    for (let i = 0; i < purchase.featuredPostCredits; i++) {
-      creditsToCreate.push({
-        userId,
-        purchaseId: purchase.id,
-        type: 'featured_post',
-        expiresAt: purchase.expiresAt,
-      });
-    }
-
-    // Add social graphic credits
-    for (let i = 0; i < purchase.socialGraphicCredits; i++) {
-      creditsToCreate.push({
-        userId,
-        purchaseId: purchase.id,
-        type: 'social_graphic',
-        expiresAt: purchase.expiresAt,
-      });
-    }
-
-    // Note: Repost functionality removed - credits don't roll over month to month
+    // Note: All credits are now universal and interchangeable in the unified system
 
     // Create all credits
     if (creditsToCreate.length > 0) {

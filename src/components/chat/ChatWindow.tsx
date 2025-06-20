@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';

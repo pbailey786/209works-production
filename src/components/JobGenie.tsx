@@ -12,7 +12,7 @@ import {
   XMarkIcon,
   SparklesIcon,
   ExclamationTriangleIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 interface Message {

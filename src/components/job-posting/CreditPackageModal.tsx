@@ -13,7 +13,7 @@ import {
   Check,
   Loader2,
   CreditCard,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 
 interface CreditPackageModalProps {

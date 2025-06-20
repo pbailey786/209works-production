@@ -17,7 +17,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
@@ -32,7 +32,7 @@ import {
   Line,
   PieChart,
   Pie,
-  Cell
+  Cell,
 } from '@/components/ui/card';
 import {
   import {
@@ -46,7 +46,7 @@ import {
   UserPlus,
   Calendar,
   Filter,
-  Download
+  Download,
 } from 'lucide-react';
 
 interface AnalyticsData {
@@ -71,7 +71,7 @@ interface RegionalAnalyticsDashboardProps {
   className?: string;
 }
 
-const COLORS = ['#2d4a3e', '#F59E0B', '#0EA5E9', '#CA8A04', '#DC2626'];
+const COLORS = ['#ff6b35', '#2d4a3e', '#0EA5E9', '#CA8A04', '#DC2626'];
 
 const REGIONS = [
   { value: 'all', label: 'All Regions' },

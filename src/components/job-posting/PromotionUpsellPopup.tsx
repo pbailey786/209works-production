@@ -13,7 +13,7 @@ import {
   Star,
   CreditCard,
   Loader2,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 
 interface PromotionUpsellPopupProps {

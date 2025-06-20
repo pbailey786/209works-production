@@ -1,10 +1,9 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { formatDistanceToNow } from 'date-fns';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
 import {
-  import {
   FileText,
   MapPin,
   DollarSign,
@@ -13,7 +12,7 @@ import {
   Building2,
   Bookmark,
   Archive,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 
 interface Application {
@@ -67,6 +66,8 @@ export default function ApplicationsClient({
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'date' | 'company' | 'title'>('date');
 
   const fetchApplications = async (
     pageNum: number = 1,
@@ -79,6 +80,14 @@ export default function ApplicationsClient({
         limit: '10',
         tab: tab,
       });
+
+      // Add search and sort parameters for saved jobs
+      if (tab === 'saved') {
+        if (searchQuery) {
+          params.append('search', searchQuery);
+        }
+        params.append('sortBy', sortBy);
+      }
 
       const response = await fetch(`/api/profile/applications?${params}`);
 
@@ -121,6 +130,27 @@ export default function ApplicationsClient({
     }
   };
 
+  const removeSavedJob = async (applicationId: string) => {
+    try {
+      const response = await fetch('/api/profile/saved-jobs', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ applicationId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove saved job');
+      }
+
+      // Refresh applications
+      await fetchApplications(page, activeTab);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to remove saved job'
+      );
+    }
+  };
+
   const formatSalary = (min?: number, max?: number) => {
     if (!min && !max) return 'Salary not specified';
     if (min && max)
@@ -144,6 +174,17 @@ export default function ApplicationsClient({
     fetchApplications(1, activeTab);
   }, [activeTab]);
 
+  // Handle search and sort changes for saved jobs
+  useEffect(() => {
+    if (activeTab === 'saved') {
+      const timeoutId = setTimeout(() => {
+        fetchApplications(1, activeTab);
+      }, 300); // Debounce search
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchQuery, sortBy, activeTab]);
+
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8">
@@ -166,7 +207,44 @@ export default function ApplicationsClient({
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">My jobs</h1>
+        <p className="mt-2 text-gray-600">
+          Track your job applications, saved jobs, and archived items
+        </p>
       </div>
+
+      {/* Search and Filter Bar */}
+      {activeTab === 'saved' && (
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex-1 max-w-md">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search saved jobs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 pl-10 pr-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Sort by:</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'date' | 'company' | 'title')}
+              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="date">Date Saved</option>
+              <option value="company">Company</option>
+              <option value="title">Job Title</option>
+            </select>
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="mb-8">
@@ -215,7 +293,9 @@ export default function ApplicationsClient({
           </h2>
           <p className="mb-6 text-gray-600">
             {activeTab === 'applied' && 'Start applying to jobs to track your applications here.'}
-            {activeTab === 'saved' && 'Save jobs you\'re interested in to view them later.'}
+            {activeTab === 'saved' && searchQuery
+              ? `No saved jobs match "${searchQuery}". Try adjusting your search.`
+              : 'Save jobs you\'re interested in to view them later. Click the heart icon on any job listing to save it.'}
             {activeTab === 'archived' && 'Archived applications will appear here.'}
           </p>
           {activeTab !== 'archived' && (
@@ -298,7 +378,7 @@ export default function ApplicationsClient({
                         </span>
 
                         <div className="flex items-center space-x-3">
-                          {/* Update Status Button (for employers to see) */}
+                          {/* Archive Button for Applied Jobs */}
                           {activeTab === 'applied' && (
                             <button
                               onClick={() => archiveApplication(application.id)}
@@ -307,6 +387,35 @@ export default function ApplicationsClient({
                               Archive
                             </button>
                           )}
+
+                          {/* Apply Now Button for Saved Jobs */}
+                          {activeTab === 'saved' && (
+                            <Link
+                              href={`/jobs/${application.job.id}?action=apply`}
+                              className="inline-flex items-center text-sm bg-orange-600 text-white px-3 py-1 rounded-md hover:bg-orange-700 transition-colors"
+                            >
+                              Apply Now
+                            </Link>
+                          )}
+
+                          {/* Remove from Saved Button */}
+                          {activeTab === 'saved' && (
+                            <button
+                              onClick={() => removeSavedJob(application.id)}
+                              className="text-sm text-red-600 hover:text-red-700 transition-colors"
+                            >
+                              Remove
+                            </button>
+                          )}
+
+                          {/* View Details Button */}
+                          <Link
+                            href={`/profile/applications/${application.id}`}
+                            className="inline-flex items-center text-sm text-green-600 hover:text-green-700 transition-colors"
+                          >
+                            View Details
+                            <ExternalLink className="ml-1 h-3 w-3" />
+                          </Link>
 
                           {/* View Job Button */}
                           <Link
@@ -322,8 +431,15 @@ export default function ApplicationsClient({
 
                     {/* Right side: Status indicator */}
                     <div className="ml-4">
-                      <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
-                        Applied
+                      <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                        application.status === 'saved'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : application.status === 'archived'
+                          ? 'bg-gray-100 text-gray-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {application.status === 'saved' ? 'Saved' :
+                         application.status === 'archived' ? 'Archived' : 'Applied'}
                       </span>
                     </div>
                   </div>

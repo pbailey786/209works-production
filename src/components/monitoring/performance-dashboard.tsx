@@ -20,7 +20,7 @@ import {
   SystemHealthMetric,
   UserExperienceMetric,
   PerformanceAlert,
-  APIPerformanceMetric
+  APIPerformanceMetric,
 } from '@/components/ui/card';
 import {
   import {
@@ -42,7 +42,7 @@ import {
   AlertCircle,
   Info,
   Download,
-  Eye
+  Eye,
 } from 'lucide-react';
 
 interface PerformanceData {

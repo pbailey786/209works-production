@@ -16,7 +16,7 @@ import {
   BarChart3,
   Target,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 
 const services = [

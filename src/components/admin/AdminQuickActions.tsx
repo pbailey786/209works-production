@@ -9,7 +9,7 @@ import {
   Settings,
   Download,
   AlertTriangle,
-  FileText
+  FileText,
 } from 'lucide-react';
 
 interface QuickAction {

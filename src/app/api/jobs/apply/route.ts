@@ -4,12 +4,14 @@ import { redirect } from '@/components/ui/card';
 import { prisma } from '@/components/ui/card';
 import { z } from '@/components/ui/card';
 import { EmailHelpers } from '@/lib/email/email-helpers';
+import { sendEmail } from '@/lib/email';
 
 const applySchema = z.object({
   jobId: z.string().uuid(),
   coverLetter: z.string().optional(),
   resumeUrl: z.string().url().optional(),
   additionalInfo: z.string().optional(),
+  questionResponses: z.record(z.string()).optional(), // question -> answer mapping
 });
 
 export async function POST(request: NextRequest) {
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Get job details
+    // Get job details including application preferences and questions
     const job = await prisma.job.findUnique({
       where: { id: validatedData.jobId },
       select: {
@@ -53,6 +55,12 @@ export async function POST(request: NextRequest) {
         url: true,
         status: true,
         employerId: true,
+        applicationMethod: true,
+        externalApplicationUrl: true,
+        applicationEmail: true,
+        applicationInstructions: true,
+        supplementalQuestions: true,
+        questionsRequired: true,
       },
     });
 
@@ -65,6 +73,105 @@ export async function POST(request: NextRequest) {
         { error: 'This job is no longer accepting applications' },
         { status: 400 }
       );
+    }
+
+    // Validate required questions if they exist
+    if (job.questionsRequired && job.supplementalQuestions && job.supplementalQuestions.length > 0) {
+      const questionResponses = validatedData.questionResponses || {};
+      const missingAnswers = [];
+
+      for (let i = 0; i < job.supplementalQuestions.length; i++) {
+        const question = job.supplementalQuestions[i];
+        const answer = questionResponses[i.toString()] || questionResponses[question];
+
+        if (!answer || answer.trim().length === 0) {
+          missingAnswers.push(`Question ${i + 1}: ${question}`);
+        }
+      }
+
+      if (missingAnswers.length > 0) {
+        return NextResponse.json({
+          error: 'Please answer all required questions',
+          missingQuestions: missingAnswers,
+        }, { status: 400 });
+      }
+    }
+
+    // Handle different application methods
+    if (job.applicationMethod === 'external_url') {
+      // For external applications, we still record the intent but redirect to external URL
+      const application = await prisma.jobApplication.create({
+        data: {
+          userId: user.id,
+          jobId: validatedData.jobId,
+          status: 'external_redirect',
+          coverLetter: validatedData.coverLetter,
+          resumeUrl: validatedData.resumeUrl || user.resumeUrl,
+          questionResponses: validatedData.questionResponses || {},
+          appliedAt: new Date(),
+          applicationData: {
+            method: 'external_url',
+            externalUrl: job.externalApplicationUrl,
+          },
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: 'Redirecting to company application page',
+        applicationId: application.id,
+        externalUrl: job.externalApplicationUrl,
+        requiresExternalApplication: true,
+        nextSteps: 'Please complete your application on the company website.',
+      }, { status: 201 });
+    }
+
+    if (job.applicationMethod === 'email') {
+      // For email applications, create application record and send email
+      const application = await prisma.jobApplication.create({
+        data: {
+          userId: user.id,
+          jobId: validatedData.jobId,
+          status: 'email_sent',
+          coverLetter: validatedData.coverLetter,
+          resumeUrl: validatedData.resumeUrl || user.resumeUrl,
+          questionResponses: validatedData.questionResponses || {},
+          appliedAt: new Date(),
+          applicationData: {
+            method: 'email',
+            applicationEmail: job.applicationEmail,
+          },
+        },
+      });
+
+      // Send email application (implement this based on your email system)
+      try {
+        await sendEmailApplication({
+          to: job.applicationEmail!,
+          jobTitle: job.title,
+          company: job.company,
+          applicantName: user.name || 'Job Applicant',
+          applicantEmail: user.email,
+          coverLetter: validatedData.coverLetter,
+          resumeUrl: validatedData.resumeUrl || user.resumeUrl,
+          questionResponses: validatedData.questionResponses,
+          applicationInstructions: job.applicationInstructions,
+        });
+      } catch (emailError) {
+        console.error('Failed to send email application:', emailError);
+        // Update application status to indicate email failure
+        await prisma.jobApplication.update({
+          where: { id: application.id },
+          data: { status: 'email_failed' },
+        });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Application sent via email',
+        applicationId: application.id,
+        nextSteps: `Your application has been emailed to ${job.applicationEmail}. ${job.applicationInstructions || ''}`,
+      }, { status: 201 });
     }
 
     // Check if user has already applied
@@ -84,7 +191,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create job application
+    // Create job application (internal method)
     const application = await prisma.jobApplication.create({
       data: {
         userId: user.id,
@@ -92,7 +199,11 @@ export async function POST(request: NextRequest) {
         status: 'applied',
         coverLetter: validatedData.coverLetter,
         resumeUrl: validatedData.resumeUrl || user.resumeUrl,
+        questionResponses: validatedData.questionResponses || {},
         appliedAt: new Date(),
+        applicationData: {
+          method: 'internal',
+        },
       },
     });
 
@@ -257,4 +368,70 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Helper function to send email applications
+async function sendEmailApplication({
+  to,
+  jobTitle,
+  company,
+  applicantName,
+  applicantEmail,
+  coverLetter,
+  resumeUrl,
+  questionResponses,
+  applicationInstructions,
+}: {
+  to: string;
+  jobTitle: string;
+  company: string;
+  applicantName: string;
+  applicantEmail: string;
+  coverLetter?: string;
+  resumeUrl?: string;
+  questionResponses?: Record<string, string>;
+  applicationInstructions?: string;
+}) {
+  const subject = `Job Application: ${jobTitle} - ${applicantName}`;
+
+  let emailBody = `
+Dear Hiring Manager,
+
+You have received a new job application through 209 Works for the position: ${jobTitle}
+
+Applicant Details:
+- Name: ${applicantName}
+- Email: ${applicantEmail}
+- Resume: ${resumeUrl || 'Not provided'}
+
+${coverLetter ? `Cover Letter:\n${coverLetter}\n\n` : ''}`;
+
+  // Add question responses if any
+  if (questionResponses && Object.keys(questionResponses).length > 0) {
+    emailBody += `Additional Questions:\n`;
+    Object.entries(questionResponses).forEach(([question, answer], index) => {
+      // Handle both index-based and question-based keys
+      const questionText = isNaN(Number(question)) ? question : `Question ${Number(question) + 1}`;
+      emailBody += `${questionText}: ${answer}\n`;
+    });
+    emailBody += '\n';
+  }
+
+  if (applicationInstructions) {
+    emailBody += `Special Instructions: ${applicationInstructions}\n\n`;
+  }
+
+  emailBody += `
+This application was submitted through 209 Works (209.works).
+
+Best regards,
+209 Works Team
+  `;
+
+  await sendEmail({
+    to,
+    subject,
+    text: emailBody,
+    priority: 'high',
+  });
 }

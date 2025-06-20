@@ -14,7 +14,7 @@ import {
   ClockIcon,
   UserIcon,
   AcademicCapIcon,
-  ChartBarIcon
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 
 interface ShouldIApplyCalculatorProps {

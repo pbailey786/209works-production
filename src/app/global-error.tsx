@@ -1,8 +1,8 @@
-import { useEffect } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-
 'use client';
+
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 
 export default function GlobalError({

@@ -22,7 +22,7 @@ import {
   Users,
   TrendingUp,
   MessageCircle,
-  X
+  X,
 } from 'lucide-react';
 
 interface ProcessedJob {

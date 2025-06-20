@@ -18,7 +18,7 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  Building
+  Building,
 } from 'lucide-react';
 
 interface Advertisement {

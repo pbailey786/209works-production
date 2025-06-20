@@ -1,9 +1,9 @@
-import { useEffect, useState } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-
 'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 import {
-  import {
   UserCircleIcon,
   BriefcaseIcon,
   DocumentTextIcon,
@@ -24,7 +24,7 @@ import {
   AcademicCapIcon,
   ShieldCheckIcon,
   CloudArrowUpIcon,
-  PaperAirplaneIcon
+  PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
 
 export default function ProfilePage() {
@@ -378,6 +378,19 @@ export default function ProfilePage() {
                       <ClockIcon className="mr-3 h-5 w-5 text-gray-600" />
                       <span className="font-medium text-gray-900">
                         Applications
+                      </span>
+                    </div>
+                    <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                  </Link>
+
+                  <Link
+                    href="/profile/resumes"
+                    className="group flex w-full items-center justify-between rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100"
+                  >
+                    <div className="flex items-center">
+                      <DocumentTextIcon className="mr-3 h-5 w-5 text-gray-600" />
+                      <span className="font-medium text-gray-900">
+                        Resume Manager
                       </span>
                     </div>
                     <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />

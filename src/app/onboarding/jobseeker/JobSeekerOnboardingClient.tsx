@@ -16,7 +16,7 @@ import {
   CheckCircle,
   FileText,
   Clock,
-  Star
+  Star,
 } from 'lucide-react';
 
 // Import step components

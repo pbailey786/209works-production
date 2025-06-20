@@ -1,513 +1,212 @@
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Suspense } from 'react';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
+import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
+import { AdvancedAnalyticsService, AnalyticsTimeRange } from '@/lib/analytics/advanced-analytics';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BarChart3, TrendingUp, Users, Brain } from 'lucide-react';
 
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/card';
-import {
-  import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Briefcase,
-  Mail,
-  Search,
-  Calendar,
-  Download,
-  RefreshCw
-} from 'lucide-react';
+export const metadata: Metadata = {
+  title: 'Advanced Analytics | 209 Works Admin',
+  description: 'Comprehensive analytics and business intelligence dashboard for 209 Works platform',
+};
 
-export default async function AnalyticsPage() {
-  const { userId } = await auth();
-    if (!userId) {
-      redirect('/signin');
-    }
-    
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
-    });
-
-  // Get date ranges for analytics
-  const now = new Date();
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
-
-  // Fetch analytics data with error handling
-  let totalUsers = 0;
-  let newUsersThisMonth = 0;
-  let newUsersLastMonth = 0;
-  let totalJobs = 0;
-  let newJobsThisMonth = 0;
-  let newJobsLastMonth = 0;
-  let totalApplications = 0;
-  let applicationsThisMonth = 0;
-  let applicationsLastMonth = 0;
-  let totalAlerts = 0;
-  let activeAlerts = 0;
-  let userGrowthData: any[] = [];
-  let jobPostingData: any[] = [];
-  let applicationData: any[] = [];
-
-  try {
-    const results = await Promise.all([
-    // User metrics
-    prisma.user.count(),
-    prisma.user.count({
-      where: { createdAt: { gte: thirtyDaysAgo } },
-    }),
-    prisma.user.count({
-      where: {
-        createdAt: {
-          gte: sixtyDaysAgo,
-          lt: thirtyDaysAgo,
-        },
-      },
-    }),
-
-    // Job metrics
-    prisma.job.count(),
-    prisma.job.count({
-      where: { createdAt: { gte: thirtyDaysAgo } },
-    }),
-    prisma.job.count({
-      where: {
-        createdAt: {
-          gte: sixtyDaysAgo,
-          lt: thirtyDaysAgo,
-        },
-      },
-    }),
-
-    // Application metrics
-    prisma.jobApplication.count(),
-    prisma.jobApplication.count({
-      where: { appliedAt: { gte: thirtyDaysAgo } },
-    }),
-    prisma.jobApplication.count({
-      where: {
-        appliedAt: {
-          gte: sixtyDaysAgo,
-          lt: thirtyDaysAgo,
-        },
-      },
-    }),
-
-    // Alert metrics
-    prisma.jobAlert.count(),
-    prisma.jobAlert.count({ where: { isActive: true } }),
-
-    // Growth data (real data - currently minimal)
-    Promise.resolve([]),
-
-    // Job posting trends (real data from database)
-    prisma.$queryRaw`
-      SELECT
-        UNNEST(categories) as category,
-        COUNT(*) as count
-      FROM Job
-      WHERE createdAt >= ${thirtyDaysAgo}
-      AND array_length(categories, 1) > 0
-      GROUP BY category
-      ORDER BY count DESC
-      LIMIT 5
-    `,
-
-    // Application data (real data from database)
-    prisma.jobApplication.groupBy({
-      by: ['status'],
-      _count: {
-        id: true,
-      },
-    }),
-    ]);
-
-    // Assign results to variables (cast to any[] to fix TypeScript error)
-    const typedResults = results as any[];
-    totalUsers = typedResults[0];
-    newUsersThisMonth = typedResults[1];
-    newUsersLastMonth = typedResults[2];
-    totalJobs = typedResults[3];
-    newJobsThisMonth = typedResults[4];
-    newJobsLastMonth = typedResults[5];
-    totalApplications = typedResults[6];
-    applicationsThisMonth = typedResults[7];
-    applicationsLastMonth = typedResults[8];
-    totalAlerts = typedResults[9];
-    activeAlerts = typedResults[10];
-    userGrowthData = typedResults[11];
-    jobPostingData = typedResults[12];
-    applicationData = typedResults[13];
-  } catch (error) {
-    console.error('Error fetching analytics data:', error);
-    // Use default values if database queries fail
-  }
-
-  // Calculate growth percentages
-  const userGrowth =
-    newUsersLastMonth > 0
-      ? ((newUsersThisMonth - newUsersLastMonth) / newUsersLastMonth) * 100
-      : 0;
-
-  const jobGrowth =
-    newJobsLastMonth > 0
-      ? ((newJobsThisMonth - newJobsLastMonth) / newJobsLastMonth) * 100
-      : 0;
-
-  const applicationGrowth =
-    applicationsLastMonth > 0
-      ? ((applicationsThisMonth - applicationsLastMonth) /
-          applicationsLastMonth) *
-        100
-      : 0;
-
+// Loading component for analytics dashboard
+function AnalyticsLoading() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Analytics Dashboard
-          </h1>
-          <p className="mt-1 text-gray-600">
-            Track platform performance and user engagement metrics
-          </p>
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-96" />
         </div>
-
-        <div className="flex space-x-3">
-          <Select defaultValue="30d">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select time range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-              <SelectItem value="1y">Last year</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button variant="outline" size="sm">
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
-
-          <AnalyticsExportButton type="overview" />
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-32" />
+          <Skeleton className="h-10 w-32" />
+          <Skeleton className="h-10 w-24" />
         </div>
       </div>
 
-      {/* Key Metrics Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {totalUsers.toLocaleString()}
-            </div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              {userGrowth >= 0 ? (
-                <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-              ) : (
-                <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
-              )}
-              <span
-                className={userGrowth >= 0 ? 'text-green-500' : 'text-red-500'}
-              >
-                {Math.abs(userGrowth).toFixed(1)}%
-              </span>
-              <span className="ml-1">from last month</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {totalJobs.toLocaleString()}
-            </div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              {jobGrowth >= 0 ? (
-                <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-              ) : (
-                <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
-              )}
-              <span
-                className={jobGrowth >= 0 ? 'text-green-500' : 'text-red-500'}
-              >
-                {Math.abs(jobGrowth).toFixed(1)}%
-              </span>
-              <span className="ml-1">from last month</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Applications</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {totalApplications.toLocaleString()}
-            </div>
-            <div className="flex items-center text-xs text-muted-foreground">
-              {applicationGrowth >= 0 ? (
-                <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-              ) : (
-                <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
-              )}
-              <span
-                className={
-                  applicationGrowth >= 0 ? 'text-green-500' : 'text-red-500'
-                }
-              >
-                {Math.abs(applicationGrowth).toFixed(1)}%
-              </span>
-              <span className="ml-1">from last month</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {activeAlerts.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {totalAlerts.toLocaleString()} total alerts
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Analytics Tabs */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="users">User Analytics</TabsTrigger>
-          <TabsTrigger value="jobs">Job Analytics</TabsTrigger>
-          <TabsTrigger value="engagement">Engagement</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {/* Growth Chart Placeholder */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Platform Growth</CardTitle>
-                <CardDescription>
-                  User and job posting trends over time
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex h-[300px] items-center justify-center rounded-lg bg-gray-50">
-                  <div className="text-center">
-                    <BarChart3 className="mx-auto mb-2 h-12 w-12 text-gray-400" />
-                    <p className="text-gray-500">Growth chart visualization</p>
-                    <p className="text-sm text-gray-400">
-                      Chart component would go here
-                    </p>
-                  </div>
+      {/* Key metrics cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-3 w-12" />
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Application Status Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Application Status Distribution</CardTitle>
-                <CardDescription>
-                  Current status of all job applications
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {Array.isArray(applicationData) && applicationData.length > 0 ? (
-                    applicationData.map((item: any) => {
-                      const total = applicationData.reduce((sum: number, app: any) => sum + app._count.id, 0);
-                      const percentage = total > 0 ? ((item._count.id / total) * 100).toFixed(1) : '0';
-
-                      return (
-                        <div
-                          key={item.status}
-                          className="flex items-center justify-between"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <div className="h-3 w-3 rounded-full bg-blue-500"></div>
-                            <span className="text-sm font-medium">
-                              {item.status || 'Applied'}
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-600">
-                              {item._count.id.toLocaleString()}
-                            </span>
-                            <Badge variant="outline">{percentage}%</Badge>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-gray-500">No application data available</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="users" className="space-y-4">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Registration Trends</CardTitle>
-                <CardDescription>New user signups over time</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex h-[300px] items-center justify-center rounded-lg bg-gray-50">
-                  <div className="text-center">
-                    <Users className="mx-auto mb-2 h-12 w-12 text-gray-400" />
-                    <p className="text-gray-500">User registration chart</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>User Demographics</CardTitle>
-                <CardDescription>
-                  Breakdown by user type and location
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Job Seekers</span>
-                    <Badge>{totalUsers > 0 ? Math.round((totalUsers - (totalUsers * 0.1)) / totalUsers * 100) : 0}%</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Employers</span>
-                    <Badge>{totalUsers > 0 ? Math.round((totalUsers * 0.1) / totalUsers * 100) : 0}%</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Admins</span>
-                    <Badge>1%</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="jobs" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Posting Trends by Category</CardTitle>
-              <CardDescription>
-                Most popular job categories and their growth
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {Array.isArray(jobPostingData) && jobPostingData.length > 0 ? (
-                  jobPostingData.map((category: any) => (
-                    <div
-                      key={category.category}
-                      className="flex items-center justify-between"
-                    >
-                      <div>
-                        <span className="font-medium">{category.category}</span>
-                        <p className="text-sm text-gray-500">
-                          {category.count} jobs
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-500">
-                          New category
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <Briefcase className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <p className="text-gray-500">No job categories data available</p>
-                    <p className="text-sm text-gray-400">Data will appear when jobs are posted</p>
-                  </div>
-                )}
+                <Skeleton className="h-8 w-8 rounded" />
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        ))}
+      </div>
 
-        <TabsContent value="engagement" className="space-y-4">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Search Analytics</CardTitle>
-                <CardDescription>
-                  Most popular search terms and filters
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex h-[300px] items-center justify-center rounded-lg bg-gray-50">
-                  <div className="text-center">
-                    <Search className="mx-auto mb-2 h-12 w-12 text-gray-400" />
-                    <p className="text-gray-500">
-                      Search analytics visualization
-                    </p>
+      {/* Tabs skeleton */}
+      <div className="space-y-4">
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+          {['Overview', 'Users', 'Jobs', 'Business', 'AI'].map((tab) => (
+            <Skeleton key={tab} className="h-8 w-20" />
+          ))}
+        </div>
+
+        {/* Content area */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-48" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-16" />
+                    </div>
+                    <Skeleton className="h-2 w-full" />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Email Performance</CardTitle>
-                <CardDescription>
-                  Alert emails and newsletter metrics
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Mail className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <p className="text-gray-500">No email campaigns active</p>
-                  <p className="text-sm text-gray-400">Email performance metrics will appear here</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-48" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                    <div className="text-right space-y-1">
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-3 w-12" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
+
+// Server component to fetch initial analytics data
+async function AnalyticsContent() {
+  // Get default time range (last 30 days)
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const timeRange: AnalyticsTimeRange = {
+    startDate: thirtyDaysAgo,
+    endDate: now,
+    period: 'day'
+  };
+
+  try {
+    // Fetch initial analytics data on the server
+    const analyticsData = await AdvancedAnalyticsService.generateComprehensiveReport(timeRange);
+
+    return (
+      <AdvancedAnalyticsDashboard
+        initialData={analyticsData}
+        userRole="admin"
+      />
+    );
+  } catch (error) {
+    console.error('Failed to fetch initial analytics data:', error);
+
+    // Fallback to client-side loading if server-side fails
+    return (
+      <AdvancedAnalyticsDashboard
+        userRole="admin"
+      />
+    );
+  }
+}
+
+export default async function AnalyticsPage() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect('/sign-in');
+  }
+
+  // TODO: Add proper admin role check
+  // For now, assume all authenticated users can access admin analytics
+  // In production, check if user has admin role
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <BarChart3 className="h-6 w-6 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Advanced Analytics</h1>
+            <p className="text-gray-600">
+              Comprehensive insights and business intelligence for 209 Works platform
+            </p>
+          </div>
+        </div>
+
+        {/* Quick stats banner */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              <span className="text-sm font-medium">User Analytics</span>
+            </div>
+            <p className="text-xs mt-1 opacity-90">Behavior, engagement, retention</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              <span className="text-sm font-medium">Business Intelligence</span>
+            </div>
+            <p className="text-xs mt-1 opacity-90">Revenue, growth, performance</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              <span className="text-sm font-medium">AI Analytics</span>
+            </div>
+            <p className="text-xs mt-1 opacity-90">JobsGPT, recommendations, insights</p>
+          </div>
+
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-lg">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              <span className="text-sm font-medium">Regional Performance</span>
+            </div>
+            <p className="text-xs mt-1 opacity-90">Multi-domain insights</p>
+          </div>
+        </div>
+      </div>
+
+      <Suspense fallback={<AnalyticsLoading />}>
+        <AnalyticsContent />
+      </Suspense>
+    </div>
+  );
+}
+
+

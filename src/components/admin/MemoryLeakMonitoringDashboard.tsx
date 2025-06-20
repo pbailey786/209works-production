@@ -21,7 +21,7 @@ import {
   Download,
   TrendingUp,
   TrendingDown,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 interface MemoryStats {

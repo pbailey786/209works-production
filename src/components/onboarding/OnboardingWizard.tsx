@@ -19,7 +19,7 @@ import {
   Building2,
   Users,
   Target,
-  Zap
+  Zap,
 } from 'lucide-react';
 
 interface OnboardingStep {

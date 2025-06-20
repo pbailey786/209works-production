@@ -4,7 +4,7 @@ import { ConfigManager } from '@/components/ui/card';
 import {
   import {
   TaskValidator,
-  TasksCollection
+  TasksCollection,
 } from '../lib/task-management/validation';
 
 /**

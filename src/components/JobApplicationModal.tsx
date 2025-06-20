@@ -10,7 +10,7 @@ import {
   DocumentTextIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
-  ArrowTopRightOnSquareIcon
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 
 interface JobApplicationModalProps {
@@ -20,6 +20,12 @@ interface JobApplicationModalProps {
   jobTitle: string;
   company: string;
   isAuthenticated: boolean;
+  applicationMethod?: 'internal' | 'external_url' | 'email';
+  externalApplicationUrl?: string;
+  applicationEmail?: string;
+  applicationInstructions?: string;
+  supplementalQuestions?: string[];
+  questionsRequired?: boolean;
 }
 
 export default function JobApplicationModal({
@@ -29,9 +35,16 @@ export default function JobApplicationModal({
   jobTitle,
   company,
   isAuthenticated,
+  applicationMethod = 'internal',
+  externalApplicationUrl,
+  applicationEmail,
+  applicationInstructions,
+  supplementalQuestions = [],
+  questionsRequired = false,
 }: JobApplicationModalProps) {
   const [coverLetter, setCoverLetter] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
+  const [questionResponses, setQuestionResponses] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState<
@@ -80,6 +93,7 @@ export default function JobApplicationModal({
           jobId,
           coverLetter: coverLetter.trim() || undefined,
           additionalInfo: additionalInfo.trim() || undefined,
+          questionResponses,
         }),
       });
 
@@ -112,6 +126,7 @@ export default function JobApplicationModal({
     setTimeout(() => {
       setCoverLetter('');
       setAdditionalInfo('');
+      setQuestionResponses({});
       setApplicationStatus('idle');
       setErrorMessage('');
       setExternalUrl(null);
@@ -260,6 +275,96 @@ export default function JobApplicationModal({
                       className="h-24 w-full resize-none rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
                     />
                   </div>
+
+                  {/* Supplemental Questions */}
+                  {supplementalQuestions.length > 0 && (
+                    <div className="space-y-4">
+                      <div className="border-t border-gray-200 pt-4">
+                        <h4 className="text-sm font-medium text-gray-900 mb-3">
+                          Additional Questions
+                          {questionsRequired && (
+                            <span className="text-red-500 ml-1">*</span>
+                          )}
+                        </h4>
+                        {questionsRequired && (
+                          <p className="text-xs text-gray-600 mb-4">
+                            All questions are required to submit your application.
+                          </p>
+                        )}
+                        <div className="space-y-4">
+                          {supplementalQuestions.map((question, index) => (
+                            <div key={index}>
+                              <label
+                                htmlFor={`question-${index}`}
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                              >
+                                {index + 1}. {question}
+                                {questionsRequired && (
+                                  <span className="text-red-500 ml-1">*</span>
+                                )}
+                              </label>
+                              <textarea
+                                id={`question-${index}`}
+                                value={questionResponses[index.toString()] || ''}
+                                onChange={e => setQuestionResponses(prev => ({
+                                  ...prev,
+                                  [index.toString()]: e.target.value
+                                }))}
+                                placeholder="Your answer..."
+                                className="w-full h-20 resize-none rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                                required={questionsRequired}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Application Instructions */}
+                  {applicationInstructions && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-blue-900 mb-2">
+                        Application Instructions
+                      </h4>
+                      <p className="text-sm text-blue-800">
+                        {applicationInstructions}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* External Application Notice */}
+                  {applicationMethod === 'external_url' && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="flex items-start">
+                        <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" />
+                        <div>
+                          <h4 className="text-sm font-medium text-yellow-900 mb-1">
+                            External Application Required
+                          </h4>
+                          <p className="text-sm text-yellow-800">
+                            After submitting this form, you'll be redirected to the company's website to complete your application.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {applicationMethod === 'email' && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-start">
+                        <CheckCircleIcon className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
+                        <div>
+                          <h4 className="text-sm font-medium text-blue-900 mb-1">
+                            Email Application
+                          </h4>
+                          <p className="text-sm text-blue-800">
+                            Your application will be emailed directly to the employer at {applicationEmail}.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Error Message */}
                   {applicationStatus === 'error' && (

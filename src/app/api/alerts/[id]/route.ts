@@ -14,7 +14,7 @@ import {
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags
+  invalidateCacheByTags,
 } from '@/lib/cache/redis';
 
 // GET /api/alerts/:id - Get specific alert details

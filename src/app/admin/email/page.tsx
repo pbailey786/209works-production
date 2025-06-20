@@ -1,17 +1,18 @@
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { hasPermission, Permission } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { prisma } from '@/lib/database/prisma';
-
-  Mail, 
-  Send, 
-  Users, 
-  TrendingUp, 
-  Settings, 
+import Link from 'next/link';
+import {
+  Mail,
+  Send,
+  Users,
+  TrendingUp,
+  Settings,
   TestTube,
   FileText,
   Zap,

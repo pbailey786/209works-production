@@ -26,6 +26,13 @@ const jobPostOptimizerSchema = z.object({
   salaryRangeMax: z.number().optional(),
   internalTags: z.array(z.string()).optional().default([]),
   supplementalQuestions: z.array(z.string().max(500)).max(10).optional().default([]),
+  questionsRequired: z.boolean().optional().default(false),
+
+  // Application Preferences
+  applicationMethod: z.enum(['internal', 'external_url', 'email']).optional().default('internal'),
+  externalApplicationUrl: z.string().url().optional(),
+  applicationEmail: z.string().email().optional(),
+  applicationInstructions: z.string().max(1000).optional(),
 
   // Upsells
   socialMediaShoutout: z.boolean().optional().default(false),
@@ -185,6 +192,11 @@ export async function POST(req: NextRequest) {
         applicationCTA: validatedData.applicationCTA,
         mediaUrls: validatedData.mediaUrls,
         supplementalQuestions: validatedData.supplementalQuestions || [],
+        questionsRequired: validatedData.questionsRequired || false,
+        applicationMethod: validatedData.applicationMethod || 'internal',
+        externalApplicationUrl: validatedData.externalApplicationUrl,
+        applicationEmail: validatedData.applicationEmail,
+        applicationInstructions: validatedData.applicationInstructions,
         rawInput: validatedData,
         aiGeneratedOutput,
         editedContent: validatedData.manualContent || null, // Store manual content as edited content

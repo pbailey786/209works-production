@@ -21,7 +21,7 @@ import {
   calculateOffsetPagination,
   generateCursorFromRecord,
   createPaginatedResponse,
-  generatePaginationCacheKey
+  generatePaginationCacheKey,
 } from './pagination';
 
 // Job service with caching and pagination

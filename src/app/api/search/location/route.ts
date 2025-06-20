@@ -14,7 +14,7 @@ import {
   import {
   GeolocationUtils,
   RelevanceScorer,
-  TextProcessor
+  TextProcessor,
 } from '@/lib/search/algorithms';
 
 // GET /api/search/location - Location-based job search

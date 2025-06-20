@@ -11,7 +11,7 @@ import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute
+  getCacheOrExecute,
 } from '@/lib/cache/redis';
 
 // GET /api/ads/stats - Get comprehensive ad analytics

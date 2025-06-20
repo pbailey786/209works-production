@@ -16,7 +16,7 @@ import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute
+  getCacheOrExecute,
 } from '@/lib/cache/redis';
 
 // POST /api/alerts/:id/test - Test alert to see matching jobs

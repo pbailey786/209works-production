@@ -14,7 +14,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -22,7 +22,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
@@ -31,7 +31,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from '@/components/ui/card';
 import {
   import {
@@ -40,7 +40,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/components/ui/card';
 import {
   import {
@@ -48,7 +48,7 @@ import {
   Permission,
   ROLE_PERMISSIONS,
   ROLE_DISPLAY_INFO,
-  getUserPermissions
+  getUserPermissions,
 } from '@/components/ui/card';
 import {
   import {
@@ -59,7 +59,7 @@ import {
   Edit,
   Plus,
   Check,
-  X
+  X,
 } from 'lucide-react';
 
 interface RoleManagementProps {

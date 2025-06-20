@@ -18,7 +18,7 @@ import {
   import {
   getAtomicCacheManager,
   AtomicCacheUtils,
-  AtomicCacheManager
+  AtomicCacheManager,
 } from './atomic-cache-manager';
 
 /**

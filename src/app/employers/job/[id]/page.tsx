@@ -28,7 +28,7 @@ import {
   TrendingDown,
   AlertCircle,
   CheckCircle,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 
 export default function EmployerJobDetailsPage() {

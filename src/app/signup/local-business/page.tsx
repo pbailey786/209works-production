@@ -14,7 +14,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -22,7 +22,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
@@ -33,7 +33,7 @@ import {
   Star,
   Users,
   Percent,
-  Award
+  Award,
 } from 'lucide-react';
 
 // Define pricing plans

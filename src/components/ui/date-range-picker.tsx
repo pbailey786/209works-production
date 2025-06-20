@@ -12,7 +12,7 @@ import {
   import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from '@/components/ui/popover';
 
 interface DatePickerWithRangeProps {

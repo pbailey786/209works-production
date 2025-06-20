@@ -1,18 +1,15 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { formatDistanceToNow } from 'date-fns';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { formatDistanceToNow } from 'date-fns';
 import {
-  import {
   Clock,
   MessageSquare,
   Trash2,
   ChevronRight,
   User,
-  Bot
+  Bot,
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -43,12 +40,12 @@ export default function ChatHistory({ onLoadConversation, className = '' }: Chat
   const [expandedConversation, setExpandedConversation] = useState<string | null>(null);
 
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       fetchChatHistory();
     } else {
       setIsLoading(false);
     }
-  }, [session]);
+  }, [user]);
 
   const fetchChatHistory = async () => {
     try {

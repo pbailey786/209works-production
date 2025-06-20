@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 
 const MAX_CONVERSATIONS_PER_USER = 10; // Limit to 10 conversations per user
@@ -13,20 +12,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const user = await prisma.user.findUnique({
+    const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
 
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get the current user
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
-
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -34,7 +24,7 @@ export async function GET(request: NextRequest) {
     let chatHistory: any[] = [];
     try {
       chatHistory = await prisma.chatHistory.findMany({
-        where: { userId: user.id },
+        where: { userId: userRecord.id },
         orderBy: { lastActivity: 'desc' },
         take: MAX_CONVERSATIONS_PER_USER,
       });
@@ -70,16 +60,7 @@ export async function POST(request: NextRequest) {
       where: { clerkId: userId! },
     });
 
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get the current user
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
-
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -98,7 +79,7 @@ export async function POST(request: NextRequest) {
     try {
       existingConversation = await prisma.chatHistory.findFirst({
         where: {
-          userId: user.id,
+          userId: userRecord.id,
           sessionId: sessionId,
         },
       });
@@ -126,13 +107,13 @@ export async function POST(request: NextRequest) {
     } else {
       // Check if user has reached the limit
       const userConversationCount = await prisma.chatHistory.count({
-        where: { userId: user.id },
+        where: { userId: userRecord.id },
       });
 
       if (userConversationCount >= MAX_CONVERSATIONS_PER_USER) {
         // Remove the oldest conversation
         const oldestConversation = await prisma.chatHistory.findFirst({
-          where: { userId: user.id },
+          where: { userId: userRecord.id },
           orderBy: { lastActivity: 'asc' },
         });
 
@@ -146,7 +127,7 @@ export async function POST(request: NextRequest) {
       // Create new conversation
       const newConversation = await prisma.chatHistory.create({
         data: {
-          userId: user.id,
+          userId: userRecord.id,
           sessionId: sessionId,
           messages: messages,
           title: title || generateConversationTitle(messages),
@@ -180,16 +161,7 @@ export async function DELETE(request: NextRequest) {
       where: { clerkId: userId! },
     });
 
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get the current user
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
-
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -207,7 +179,7 @@ export async function DELETE(request: NextRequest) {
     const conversation = await prisma.chatHistory.findFirst({
       where: {
         id: conversationId,
-        userId: user.id,
+        userId: userRecord.id,
       },
     });
 

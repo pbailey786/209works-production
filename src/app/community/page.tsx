@@ -20,7 +20,7 @@ import {
   TrendingUp,
   Clock,
   Star,
-  Building2
+  Building2,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

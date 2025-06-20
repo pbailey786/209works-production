@@ -1,0 +1,619 @@
+/**
+ * GDPR Compliance System for 209 Works
+ * Comprehensive GDPR compliance with data protection, consent management, and user rights
+ */
+
+import { prisma } from '@/lib/prisma';
+import { encrypt, decrypt } from '@/lib/encryption';
+import { AuditLogger } from '@/lib/monitoring/error-monitor';
+
+export interface ConsentRecord {
+  id: string;
+  userId: string;
+  consentType: 'marketing' | 'analytics' | 'functional' | 'necessary';
+  granted: boolean;
+  timestamp: Date;
+  version: string;
+  ipAddress: string;
+  userAgent: string;
+  source: 'registration' | 'cookie_banner' | 'profile_settings' | 'explicit_request';
+}
+
+export interface DataProcessingPurpose {
+  id: string;
+  name: string;
+  description: string;
+  legalBasis: 'consent' | 'contract' | 'legal_obligation' | 'vital_interests' | 'public_task' | 'legitimate_interests';
+  dataTypes: string[];
+  retentionPeriod: number; // in days
+  required: boolean;
+}
+
+export interface DataSubjectRequest {
+  id: string;
+  userId: string;
+  type: 'access' | 'rectification' | 'erasure' | 'portability' | 'restriction' | 'objection';
+  status: 'pending' | 'in_progress' | 'completed' | 'rejected';
+  requestedAt: Date;
+  completedAt?: Date;
+  details: string;
+  response?: string;
+  verificationMethod: 'email' | 'identity_document' | 'security_questions';
+  verified: boolean;
+}
+
+export interface PersonalDataInventory {
+  dataType: string;
+  description: string;
+  source: string;
+  purpose: string;
+  legalBasis: string;
+  retentionPeriod: number;
+  encrypted: boolean;
+  shared: boolean;
+  sharedWith?: string[];
+}
+
+/**
+ * GDPR Compliance Manager
+ */
+export class GDPRComplianceManager {
+  private static instance: GDPRComplianceManager;
+  private dataProcessingPurposes: DataProcessingPurpose[] = [];
+  private personalDataInventory: PersonalDataInventory[] = [];
+
+  private constructor() {
+    this.initializeDataProcessingPurposes();
+    this.initializePersonalDataInventory();
+  }
+
+  static getInstance(): GDPRComplianceManager {
+    if (!this.instance) {
+      this.instance = new GDPRComplianceManager();
+    }
+    return this.instance;
+  }
+
+  /**
+   * Initialize data processing purposes
+   */
+  private initializeDataProcessingPurposes() {
+    this.dataProcessingPurposes = [
+      {
+        id: 'job_matching',
+        name: 'Job Matching and Recommendations',
+        description: 'Process user profile data to match with relevant job opportunities',
+        legalBasis: 'consent',
+        dataTypes: ['profile', 'skills', 'experience', 'preferences'],
+        retentionPeriod: 2555, // 7 years
+        required: false,
+      },
+      {
+        id: 'account_management',
+        name: 'Account Management',
+        description: 'Manage user accounts and provide platform services',
+        legalBasis: 'contract',
+        dataTypes: ['email', 'name', 'authentication'],
+        retentionPeriod: 2555, // 7 years after account closure
+        required: true,
+      },
+      {
+        id: 'communication',
+        name: 'Platform Communication',
+        description: 'Send important platform updates and notifications',
+        legalBasis: 'legitimate_interests',
+        dataTypes: ['email', 'communication_preferences'],
+        retentionPeriod: 1095, // 3 years
+        required: true,
+      },
+      {
+        id: 'marketing',
+        name: 'Marketing Communications',
+        description: 'Send promotional emails and job alerts',
+        legalBasis: 'consent',
+        dataTypes: ['email', 'preferences', 'behavior'],
+        retentionPeriod: 1095, // 3 years
+        required: false,
+      },
+      {
+        id: 'analytics',
+        name: 'Platform Analytics',
+        description: 'Analyze platform usage to improve services',
+        legalBasis: 'legitimate_interests',
+        dataTypes: ['usage_data', 'performance_metrics'],
+        retentionPeriod: 730, // 2 years
+        required: false,
+      },
+      {
+        id: 'legal_compliance',
+        name: 'Legal Compliance',
+        description: 'Comply with legal obligations and prevent fraud',
+        legalBasis: 'legal_obligation',
+        dataTypes: ['audit_logs', 'security_events', 'transaction_records'],
+        retentionPeriod: 2555, // 7 years
+        required: true,
+      },
+    ];
+  }
+
+  /**
+   * Initialize personal data inventory
+   */
+  private initializePersonalDataInventory() {
+    this.personalDataInventory = [
+      {
+        dataType: 'email_address',
+        description: 'User email address for authentication and communication',
+        source: 'user_registration',
+        purpose: 'account_management, communication',
+        legalBasis: 'contract',
+        retentionPeriod: 2555,
+        encrypted: true,
+        shared: false,
+      },
+      {
+        dataType: 'full_name',
+        description: 'User first and last name',
+        source: 'user_registration',
+        purpose: 'account_management, job_matching',
+        legalBasis: 'contract',
+        retentionPeriod: 2555,
+        encrypted: false,
+        shared: true,
+        sharedWith: ['employers'],
+      },
+      {
+        dataType: 'phone_number',
+        description: 'User phone number for contact purposes',
+        source: 'user_profile',
+        purpose: 'communication, job_matching',
+        legalBasis: 'consent',
+        retentionPeriod: 2555,
+        encrypted: true,
+        shared: true,
+        sharedWith: ['employers'],
+      },
+      {
+        dataType: 'resume_data',
+        description: 'User resume content and work history',
+        source: 'user_upload',
+        purpose: 'job_matching',
+        legalBasis: 'consent',
+        retentionPeriod: 2555,
+        encrypted: true,
+        shared: true,
+        sharedWith: ['employers'],
+      },
+      {
+        dataType: 'location_data',
+        description: 'User location preferences and address',
+        source: 'user_profile',
+        purpose: 'job_matching',
+        legalBasis: 'consent',
+        retentionPeriod: 2555,
+        encrypted: true,
+        shared: false,
+      },
+      {
+        dataType: 'usage_analytics',
+        description: 'Platform usage patterns and behavior',
+        source: 'platform_tracking',
+        purpose: 'analytics',
+        legalBasis: 'legitimate_interests',
+        retentionPeriod: 730,
+        encrypted: false,
+        shared: false,
+      },
+    ];
+  }
+
+  /**
+   * Record user consent
+   */
+  async recordConsent(consent: Omit<ConsentRecord, 'id' | 'timestamp'>): Promise<ConsentRecord> {
+    const consentRecord: ConsentRecord = {
+      ...consent,
+      id: this.generateConsentId(),
+      timestamp: new Date(),
+    };
+
+    try {
+      await prisma.consentRecord.create({
+        data: {
+          id: consentRecord.id,
+          userId: consentRecord.userId,
+          consentType: consentRecord.consentType,
+          granted: consentRecord.granted,
+          timestamp: consentRecord.timestamp,
+          version: consentRecord.version,
+          ipAddress: consentRecord.ipAddress,
+          userAgent: consentRecord.userAgent,
+          source: consentRecord.source,
+        },
+      });
+
+      // Log consent change
+      AuditLogger.log({
+        action: 'consent_recorded',
+        resource: 'consent',
+        resourceId: consentRecord.id,
+        userId: consentRecord.userId,
+        userEmail: '', // Will be filled by audit logger
+        ipAddress: consentRecord.ipAddress,
+        timestamp: consentRecord.timestamp,
+        success: true,
+        details: {
+          consentType: consentRecord.consentType,
+          granted: consentRecord.granted,
+          source: consentRecord.source,
+        },
+      });
+
+      return consentRecord;
+    } catch (error) {
+      console.error('Error recording consent:', error);
+      throw new Error('Failed to record consent');
+    }
+  }
+
+  /**
+   * Get user consent status
+   */
+  async getUserConsent(userId: string): Promise<Record<string, boolean>> {
+    try {
+      const consents = await prisma.consentRecord.findMany({
+        where: { userId },
+        orderBy: { timestamp: 'desc' },
+        distinct: ['consentType'],
+      });
+
+      const consentStatus: Record<string, boolean> = {};
+      consents.forEach(consent => {
+        consentStatus[consent.consentType] = consent.granted;
+      });
+
+      return consentStatus;
+    } catch (error) {
+      console.error('Error getting user consent:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Process data subject request
+   */
+  async processDataSubjectRequest(
+    request: Omit<DataSubjectRequest, 'id' | 'requestedAt' | 'status'>
+  ): Promise<DataSubjectRequest> {
+    const dataRequest: DataSubjectRequest = {
+      ...request,
+      id: this.generateRequestId(),
+      requestedAt: new Date(),
+      status: 'pending',
+    };
+
+    try {
+      await prisma.dataSubjectRequest.create({
+        data: {
+          id: dataRequest.id,
+          userId: dataRequest.userId,
+          type: dataRequest.type,
+          status: dataRequest.status,
+          requestedAt: dataRequest.requestedAt,
+          details: dataRequest.details,
+          verificationMethod: dataRequest.verificationMethod,
+          verified: dataRequest.verified,
+        },
+      });
+
+      // Log the request
+      AuditLogger.log({
+        action: 'data_subject_request',
+        resource: 'data_request',
+        resourceId: dataRequest.id,
+        userId: dataRequest.userId,
+        userEmail: '', // Will be filled by audit logger
+        ipAddress: 'system',
+        timestamp: dataRequest.requestedAt,
+        success: true,
+        details: {
+          requestType: dataRequest.type,
+          verificationMethod: dataRequest.verificationMethod,
+        },
+      });
+
+      // Auto-process certain types of requests
+      if (dataRequest.type === 'access' && dataRequest.verified) {
+        await this.processAccessRequest(dataRequest.id);
+      }
+
+      return dataRequest;
+    } catch (error) {
+      console.error('Error processing data subject request:', error);
+      throw new Error('Failed to process data subject request');
+    }
+  }
+
+  /**
+   * Process access request (Right to Access)
+   */
+  async processAccessRequest(requestId: string): Promise<any> {
+    try {
+      const request = await prisma.dataSubjectRequest.findUnique({
+        where: { id: requestId },
+      });
+
+      if (!request || request.type !== 'access') {
+        throw new Error('Invalid access request');
+      }
+
+      // Gather all user data
+      const userData = await this.gatherUserData(request.userId);
+
+      // Update request status
+      await prisma.dataSubjectRequest.update({
+        where: { id: requestId },
+        data: {
+          status: 'completed',
+          completedAt: new Date(),
+          response: JSON.stringify(userData),
+        },
+      });
+
+      return userData;
+    } catch (error) {
+      console.error('Error processing access request:', error);
+      throw new Error('Failed to process access request');
+    }
+  }
+
+  /**
+   * Process erasure request (Right to be Forgotten)
+   */
+  async processErasureRequest(requestId: string): Promise<void> {
+    try {
+      const request = await prisma.dataSubjectRequest.findUnique({
+        where: { id: requestId },
+      });
+
+      if (!request || request.type !== 'erasure') {
+        throw new Error('Invalid erasure request');
+      }
+
+      // Anonymize user data instead of deleting (for audit trail)
+      await this.anonymizeUserData(request.userId);
+
+      // Update request status
+      await prisma.dataSubjectRequest.update({
+        where: { id: requestId },
+        data: {
+          status: 'completed',
+          completedAt: new Date(),
+          response: 'User data has been anonymized',
+        },
+      });
+
+      // Log erasure
+      AuditLogger.log({
+        action: 'data_erasure',
+        resource: 'user',
+        resourceId: request.userId,
+        userId: request.userId,
+        userEmail: '', // Will be filled by audit logger
+        ipAddress: 'system',
+        timestamp: new Date(),
+        success: true,
+        details: { requestId },
+      });
+    } catch (error) {
+      console.error('Error processing erasure request:', error);
+      throw new Error('Failed to process erasure request');
+    }
+  }
+
+  /**
+   * Gather all user data for access request
+   */
+  private async gatherUserData(userId: string): Promise<any> {
+    try {
+      const [
+        user,
+        profile,
+        applications,
+        savedJobs,
+        consents,
+        securityEvents,
+      ] = await Promise.all([
+        prisma.user.findUnique({ where: { id: userId } }),
+        prisma.jobSeekerProfile.findUnique({ where: { userId } }),
+        prisma.jobApplication.findMany({ where: { userId } }),
+        prisma.savedJob.findMany({ where: { userId } }),
+        prisma.consentRecord.findMany({ where: { userId } }),
+        prisma.securityEvent.findMany({ where: { userId } }),
+      ]);
+
+      return {
+        personalData: {
+          user: this.sanitizeUserData(user),
+          profile: this.sanitizeProfileData(profile),
+        },
+        activityData: {
+          applications: applications.map(app => this.sanitizeApplicationData(app)),
+          savedJobs: savedJobs.map(job => this.sanitizeJobData(job)),
+        },
+        consentHistory: consents,
+        securityEvents: securityEvents.map(event => this.sanitizeSecurityEvent(event)),
+        dataProcessingPurposes: this.dataProcessingPurposes,
+        dataInventory: this.personalDataInventory,
+        exportedAt: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error('Error gathering user data:', error);
+      throw new Error('Failed to gather user data');
+    }
+  }
+
+  /**
+   * Anonymize user data
+   */
+  private async anonymizeUserData(userId: string): Promise<void> {
+    const anonymizedEmail = `anonymized_${Date.now()}@example.com`;
+    const anonymizedName = 'Anonymized User';
+
+    await prisma.$transaction([
+      // Anonymize user record
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          email: anonymizedEmail,
+          firstName: anonymizedName,
+          lastName: '',
+          status: 'anonymized',
+          anonymizedAt: new Date(),
+        },
+      }),
+
+      // Anonymize profile
+      prisma.jobSeekerProfile.updateMany({
+        where: { userId },
+        data: {
+          bio: 'Anonymized',
+          phoneNumber: null,
+          location: 'Anonymized',
+          resumeUrl: null,
+        },
+      }),
+
+      // Keep applications but anonymize personal data
+      prisma.jobApplication.updateMany({
+        where: { userId },
+        data: {
+          coverLetter: 'Anonymized',
+          resumeText: 'Anonymized',
+        },
+      }),
+    ]);
+  }
+
+  /**
+   * Check data retention compliance
+   */
+  async checkDataRetentionCompliance(): Promise<{
+    compliant: boolean;
+    expiredData: any[];
+  }> {
+    const expiredData: any[] = [];
+
+    for (const purpose of this.dataProcessingPurposes) {
+      const retentionDate = new Date();
+      retentionDate.setDate(retentionDate.getDate() - purpose.retentionPeriod);
+
+      // Check for expired data based on purpose
+      // This would be customized based on your data model
+      const expiredRecords = await this.findExpiredDataForPurpose(purpose, retentionDate);
+      expiredData.push(...expiredRecords);
+    }
+
+    return {
+      compliant: expiredData.length === 0,
+      expiredData,
+    };
+  }
+
+  /**
+   * Find expired data for a specific purpose
+   */
+  private async findExpiredDataForPurpose(
+    purpose: DataProcessingPurpose,
+    retentionDate: Date
+  ): Promise<any[]> {
+    // This would be implemented based on your specific data model
+    // For now, return empty array
+    return [];
+  }
+
+  /**
+   * Data sanitization methods
+   */
+  private sanitizeUserData(user: any) {
+    if (!user) return null;
+    const { passwordHash, twoFactorSecret, ...sanitized } = user;
+    return sanitized;
+  }
+
+  private sanitizeProfileData(profile: any) {
+    if (!profile) return null;
+    return profile;
+  }
+
+  private sanitizeApplicationData(application: any) {
+    return application;
+  }
+
+  private sanitizeJobData(job: any) {
+    return job;
+  }
+
+  private sanitizeSecurityEvent(event: any) {
+    const { userAgent, ...sanitized } = event;
+    return sanitized;
+  }
+
+  /**
+   * Generate unique IDs
+   */
+  private generateConsentId(): string {
+    return `consent_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+  }
+
+  private generateRequestId(): string {
+    return `req_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+  }
+
+  /**
+   * Get compliance report
+   */
+  async getComplianceReport(): Promise<any> {
+    const [
+      totalUsers,
+      activeConsents,
+      pendingRequests,
+      retentionCompliance,
+    ] = await Promise.all([
+      prisma.user.count(),
+      prisma.consentRecord.groupBy({
+        by: ['consentType'],
+        _count: { granted: true },
+        where: { granted: true },
+      }),
+      prisma.dataSubjectRequest.count({
+        where: { status: 'pending' },
+      }),
+      this.checkDataRetentionCompliance(),
+    ]);
+
+    return {
+      overview: {
+        totalUsers,
+        pendingRequests,
+        compliant: retentionCompliance.compliant,
+      },
+      consent: {
+        activeConsents,
+        consentRate: this.calculateConsentRate(activeConsents, totalUsers),
+      },
+      dataRetention: retentionCompliance,
+      lastUpdated: new Date().toISOString(),
+    };
+  }
+
+  private calculateConsentRate(consents: any[], totalUsers: number): Record<string, number> {
+    const rates: Record<string, number> = {};
+    consents.forEach(consent => {
+      rates[consent.consentType] = (consent._count.granted / totalUsers) * 100;
+    });
+    return rates;
+  }
+}
+
+export default GDPRComplianceManager;

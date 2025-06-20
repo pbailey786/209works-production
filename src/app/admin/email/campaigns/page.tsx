@@ -1,13 +1,13 @@
-import { useState } from '@/components/ui/card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 'use client';
 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Link from 'next/link';
+
 import {
-  import {
   Send,
   Calendar,
   Users,
@@ -20,7 +20,7 @@ import {
   MoreHorizontal,
   CheckCircle,
   Clock,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 
 interface Campaign {

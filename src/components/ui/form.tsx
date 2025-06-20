@@ -1,13 +1,13 @@
-import { Slot } from '@/components/ui/card';
-import { cn } from '@/components/ui/card';
+import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
-
+import {
   Controller,
   FormProvider,
   useFormContext,
   type ControllerProps,
   type FieldPath,
-  import {
   type FieldValues,
 } from 'react-hook-form';
 

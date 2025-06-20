@@ -22,7 +22,7 @@ import {
   Handshake,
   Award,
   MapPin,
-  Star
+  Star,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

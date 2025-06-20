@@ -29,7 +29,7 @@ import {
   Clock,
   Eye,
   X,
-  Send
+  Send,
 } from 'lucide-react';
 
 interface CandidateSnapshot {

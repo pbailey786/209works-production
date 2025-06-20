@@ -13,7 +13,7 @@ import {
   ChatbotResponse,
   ConversationContext,
   JobContext,
-  Message
+  Message,
 } from './types';
 
 interface ChatContextualData {

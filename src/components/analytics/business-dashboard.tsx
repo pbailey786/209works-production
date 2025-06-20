@@ -17,14 +17,14 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
   useBusinessMetrics,
   DashboardData,
   BusinessInsight,
-  JobBoardKPIs
+  JobBoardKPIs,
 } from '@/components/ui/card';
 import {
   import {
@@ -50,7 +50,7 @@ import {
   MousePointer,
   Star,
   UserPlus,
-  Plus
+  Plus,
 } from 'lucide-react';
 
 interface KPICardProps {

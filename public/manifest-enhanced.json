@@ -1,0 +1,115 @@
+{
+  "name": "209 Works - Local Jobs for the 209",
+  "short_name": "209Works",
+  "description": "Find local jobs in the 209 area code. Built for the people who work here.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2d4a3e",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "lifestyle"],
+  "prefer_related_applications": false,
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "shortcuts": [
+    {
+      "name": "Search Jobs",
+      "short_name": "Search",
+      "description": "Search for local job opportunities",
+      "url": "/search",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "16x16",
+          "type": "image/x-icon"
+        }
+      ]
+    },
+    {
+      "name": "JobsGPT",
+      "short_name": "Chat",
+      "description": "Chat with JobsGPT for personalized job recommendations",
+      "url": "/jobsgpt",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "16x16",
+          "type": "image/x-icon"
+        }
+      ]
+    },
+    {
+      "name": "My Profile",
+      "short_name": "Profile",
+      "description": "View your profile and applications",
+      "url": "/profile",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "16x16",
+          "type": "image/x-icon"
+        }
+      ]
+    },
+    {
+      "name": "Post a Job",
+      "short_name": "Post Job",
+      "description": "Post a new job listing",
+      "url": "/post-job",
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "16x16",
+          "type": "image/x-icon"
+        }
+      ]
+    }
+  ],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+209works",
+      "url": "/jobs/%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/upload-resume",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]
+      }
+    }
+  ],
+  "id": "209works-app"
+}

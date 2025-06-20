@@ -15,7 +15,7 @@ import {
   MessageSquare,
   Sparkles,
   DollarSign,
-  CreditCard
+  CreditCard,
 } from 'lucide-react';
 
 interface JobUpsellModalProps {

@@ -10,7 +10,7 @@ import {
   Users,
   Target,
   CheckCircle,
-  Upload
+  Upload,
 } from 'lucide-react';
 
 interface User {

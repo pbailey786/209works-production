@@ -14,7 +14,7 @@ import {
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags
+  invalidateCacheByTags,
 } from '@/lib/cache/redis';
 
 // GET /api/ads/:id - Get specific advertisement details

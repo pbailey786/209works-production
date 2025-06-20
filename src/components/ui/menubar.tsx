@@ -8,7 +8,7 @@ import {
   import {
   CheckIcon,
   ChevronRightIcon,
-  DotFilledIcon
+  DotFilledIcon,
 } from '@radix-ui/react-icons';
 
 

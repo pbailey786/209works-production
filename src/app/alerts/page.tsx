@@ -25,7 +25,7 @@ import {
   Bell,
   Mail,
   Clock,
-  Target
+  Target,
 } from '@/components/ui/card';
 import {
   import {
@@ -33,7 +33,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -41,7 +41,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/components/ui/card';
 import {
   import {
@@ -49,7 +49,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select';
 
 interface JobAlert {

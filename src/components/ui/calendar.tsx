@@ -1,9 +1,9 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/card';
-import { DayPicker } from '@/components/ui/card';
-import { cn } from '@/components/ui/card';
-import { buttonVariants } from '@/components/ui/button';
-
 'use client';
+
+import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
+import { DayPicker } from 'react-day-picker';
+import { cn } from '@/lib/utils';
+import { buttonVariants } from '@/components/ui/button';
 
 
 

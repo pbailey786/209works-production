@@ -1,9 +1,9 @@
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { usePermissions } from '@/components/ui/card';
-import { Permission } from '@/lib/rbac/permissions';
-
 'use client';
+
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { usePermissions } from '@/hooks/usePermissions';
+import { Permission } from '@/lib/rbac/permissions';
 
 
 export default function DebugEmailPage() {
@@ -19,9 +19,9 @@ export default function DebugEmailPage() {
       
       <div className="space-y-4">
         <div className="bg-white p-4 rounded border">
-          <h2 className="font-semibold">Session Info</h2>
+          <h2 className="font-semibold">User Info</h2>
           <pre className="text-sm bg-gray-100 p-2 rounded mt-2">
-            {JSON.stringify(session, null, 2)}
+            {JSON.stringify(user, null, 2)}
           </pre>
         </div>
 

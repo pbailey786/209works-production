@@ -11,7 +11,7 @@ import {
   BarChart3,
   DollarSign,
   Eye,
-  MousePointer
+  MousePointer,
 } from 'lucide-react';
 
 interface AdManagementStatsProps {

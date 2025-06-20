@@ -8,7 +8,7 @@ import {
   MessageCircle,
   Send,
   Bookmark,
-  MoreHorizontal
+  MoreHorizontal,
 } from 'lucide-react';
 
 interface InstagramPostAdProps {

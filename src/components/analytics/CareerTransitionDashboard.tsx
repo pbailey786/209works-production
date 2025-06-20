@@ -1,0 +1,450 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  Users, 
+  Target, 
+  DollarSign,
+  ArrowRight,
+  BarChart3,
+  PieChart,
+  Activity,
+  Briefcase
+} from 'lucide-react';
+
+interface CareerTransitionInsight {
+  fromIndustry: string;
+  toIndustry: string;
+  transitionCount: number;
+  averageSalaryIncrease: number;
+  commonSkillGaps: string[];
+  timeToTransition: string;
+  successRate: number;
+  topReasons: string[];
+}
+
+interface IndustryDemandAnalysis {
+  industry: string;
+  incomingTalent: {
+    count: number;
+    fromIndustries: { industry: string; count: number; percentage: number }[];
+  };
+  outgoingTalent: {
+    count: number;
+    toIndustries: { industry: string; count: number; percentage: number }[];
+  };
+  netTalentFlow: number;
+  opportunityScore: number;
+}
+
+interface TalentPoolAnalysis {
+  currentPosition: string;
+  targetPosition: string;
+  poolSize: number;
+  averageExperience: number;
+  salaryExpectations: { min: number; max: number; average: number };
+  topSkills: string[];
+  missingSkills: string[];
+  geographicDistribution: { location: string; count: number }[];
+  motivations: string[];
+}
+
+export default function CareerTransitionDashboard() {
+  const [transitionData, setTransitionData] = useState<CareerTransitionInsight[]>([]);
+  const [industryData, setIndustryData] = useState<IndustryDemandAnalysis[]>([]);
+  const [talentPoolData, setTalentPoolData] = useState<TalentPoolAnalysis | null>(null);
+  const [selectedTransition, setSelectedTransition] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, []);
+
+  const fetchAnalyticsData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch career transition data
+      const transitionResponse = await fetch('/api/analytics/career-transitions');
+      const transitions = await transitionResponse.json();
+      setTransitionData(transitions.data || []);
+
+      // Fetch industry demand data
+      const industryResponse = await fetch('/api/analytics/industry-demand');
+      const industries = await industryResponse.json();
+      setIndustryData(industries.data || []);
+
+    } catch (error) {
+      console.error('Failed to fetch analytics data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTalentPool = async (currentPos: string, targetPos: string) => {
+    try {
+      const response = await fetch(`/api/analytics/talent-pool?current=${currentPos}&target=${targetPos}`);
+      const data = await response.json();
+      setTalentPoolData(data.data);
+    } catch (error) {
+      console.error('Failed to fetch talent pool data:', error);
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const getFlowIcon = (flow: number) => {
+    if (flow > 0) return <TrendingUp className="h-4 w-4 text-green-600" />;
+    if (flow < 0) return <TrendingDown className="h-4 w-4 text-red-600" />;
+    return <Activity className="h-4 w-4 text-gray-600" />;
+  };
+
+  const getOpportunityColor = (score: number) => {
+    if (score >= 70) return 'bg-green-100 text-green-800';
+    if (score >= 40) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-red-100 text-red-800';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Career Transition Analytics</h1>
+          <p className="text-gray-600 mt-2">
+            Understand talent flow and career transition patterns in the 209 area
+          </p>
+        </div>
+        <Button onClick={fetchAnalyticsData} variant="outline">
+          <Activity className="h-4 w-4 mr-2" />
+          Refresh Data
+        </Button>
+      </div>
+
+      <Tabs defaultValue="transitions" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="transitions">Career Transitions</TabsTrigger>
+          <TabsTrigger value="industry-flow">Industry Flow</TabsTrigger>
+          <TabsTrigger value="talent-pools">Talent Pools</TabsTrigger>
+          <TabsTrigger value="targeting">Employer Targeting</TabsTrigger>
+        </TabsList>
+
+        {/* Career Transitions Tab */}
+        <TabsContent value="transitions" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {transitionData.slice(0, 6).map((transition, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">
+                      {transition.fromIndustry}
+                    </CardTitle>
+                    <ArrowRight className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <CardDescription className="font-medium text-orange-600">
+                    {transition.toIndustry}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {transition.transitionCount}
+                      </div>
+                      <div className="text-sm text-gray-600">People transitioning</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-green-600">
+                        +{transition.averageSalaryIncrease.toFixed(1)}%
+                      </div>
+                      <div className="text-sm text-gray-600">Avg salary increase</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">Success Rate</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-green-600 h-2 rounded-full" 
+                        style={{ width: `${transition.successRate * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      {(transition.successRate * 100).toFixed(0)}% success rate
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">Top Reasons</div>
+                    <div className="flex flex-wrap gap-1">
+                      {transition.topReasons.slice(0, 2).map((reason, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {reason}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => fetchTalentPool(transition.fromIndustry, transition.toIndustry)}
+                  >
+                    <Target className="h-4 w-4 mr-2" />
+                    Analyze Talent Pool
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Industry Flow Tab */}
+        <TabsContent value="industry-flow" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {industryData.map((industry, index) => (
+              <Card key={index}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">{industry.industry}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      {getFlowIcon(industry.netTalentFlow)}
+                      <Badge className={getOpportunityColor(industry.opportunityScore)}>
+                        {industry.opportunityScore}/100 Opportunity
+                      </Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">
+                        {industry.incomingTalent.count}
+                      </div>
+                      <div className="text-sm text-green-700">Incoming Talent</div>
+                    </div>
+                    <div className="text-center p-4 bg-red-50 rounded-lg">
+                      <div className="text-2xl font-bold text-red-600">
+                        {industry.outgoingTalent.count}
+                      </div>
+                      <div className="text-sm text-red-700">Outgoing Talent</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">
+                      Net Talent Flow: 
+                      <span className={`ml-2 font-bold ${
+                        industry.netTalentFlow > 0 ? 'text-green-600' : 
+                        industry.netTalentFlow < 0 ? 'text-red-600' : 'text-gray-600'
+                      }`}>
+                        {industry.netTalentFlow > 0 ? '+' : ''}{industry.netTalentFlow}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">Top Source Industries</div>
+                    <div className="space-y-1">
+                      {industry.incomingTalent.fromIndustries.slice(0, 3).map((source, idx) => (
+                        <div key={idx} className="flex justify-between text-sm">
+                          <span>{source.industry}</span>
+                          <span className="font-medium">{source.count} people</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Talent Pools Tab */}
+        <TabsContent value="talent-pools" className="space-y-6">
+          {talentPoolData ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Talent Pool Overview</CardTitle>
+                  <CardDescription>
+                    {talentPoolData.currentPosition} → {talentPoolData.targetPosition}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-3xl font-bold text-orange-600">
+                        {talentPoolData.poolSize}
+                      </div>
+                      <div className="text-sm text-gray-600">Available candidates</div>
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-gray-900">
+                        {talentPoolData.averageExperience.toFixed(1)}
+                      </div>
+                      <div className="text-sm text-gray-600">Years experience</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">Salary Expectations</div>
+                    <div className="text-lg font-semibold text-gray-900">
+                      {formatCurrency(talentPoolData.salaryExpectations.min)} - {formatCurrency(talentPoolData.salaryExpectations.max)}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Average: {formatCurrency(talentPoolData.salaryExpectations.average)}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 mb-2">Top Skills</div>
+                    <div className="flex flex-wrap gap-1">
+                      {talentPoolData.topSkills.slice(0, 6).map((skill, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Geographic Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {talentPoolData.geographicDistribution.slice(0, 5).map((location, idx) => (
+                      <div key={idx} className="flex justify-between items-center">
+                        <span className="text-sm">{location.location}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-orange-600 h-2 rounded-full" 
+                              style={{ 
+                                width: `${(location.count / talentPoolData.poolSize) * 100}%` 
+                              }}
+                            ></div>
+                          </div>
+                          <span className="text-sm font-medium w-8">{location.count}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Select a Career Transition
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Choose a transition from the Career Transitions tab to analyze the talent pool
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Employer Targeting Tab */}
+        <TabsContent value="targeting" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Recruitment Opportunities
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {industryData
+                    .filter(industry => industry.opportunityScore >= 60)
+                    .slice(0, 5)
+                    .map((industry, idx) => (
+                    <div key={idx} className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium">{industry.industry}</h4>
+                        <Badge className={getOpportunityColor(industry.opportunityScore)}>
+                          High Opportunity
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {industry.incomingTalent.count} candidates looking to enter this industry
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Net talent flow: +{industry.netTalentFlow}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Briefcase className="h-5 w-5" />
+                  Talent Acquisition Insights
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-medium text-blue-900 mb-2">💡 Key Insight</h4>
+                    <p className="text-sm text-blue-800">
+                      Technology industry has the highest incoming talent flow (+{
+                        industryData.find(i => i.industry === 'Technology')?.netTalentFlow || 0
+                      }) with candidates primarily coming from Finance and Operations.
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <h4 className="font-medium text-green-900 mb-2">🎯 Recommendation</h4>
+                    <p className="text-sm text-green-800">
+                      Target candidates from traditional industries who are looking to transition into tech. 
+                      Offer training programs and mentorship to attract this talent pool.
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-orange-50 rounded-lg">
+                    <h4 className="font-medium text-orange-900 mb-2">⚠️ Competition Alert</h4>
+                    <p className="text-sm text-orange-800">
+                      Healthcare industry is experiencing talent outflow. Consider competitive 
+                      compensation packages to retain existing talent.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

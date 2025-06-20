@@ -26,7 +26,7 @@ import {
   Pie,
   Cell,
   Area,
-  AreaChart
+  AreaChart,
 } from '@/components/ui/card';
 import {
   import {
@@ -43,7 +43,7 @@ import {
   Calendar,
   Filter,
   Download,
-  RefreshCw
+  RefreshCw,
 } from '@/components/ui/card';
 import {
   import {
@@ -51,7 +51,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -59,7 +59,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select';
 
 interface EmailMetrics {

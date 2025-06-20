@@ -13,7 +13,7 @@ import {
   Clock,
   Building,
   FileText,
-  Tag
+  Tag,
 } from 'lucide-react';
 
 interface Job {

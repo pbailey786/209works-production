@@ -1,19 +1,18 @@
-import { useState } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-
 'use client';
 
+import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+
 import {
-  import {
   Rocket,
   Database,
   Trash2,
   CheckCircle,
   AlertCircle,
   Loader2,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 export default function AdminDeployPage() {
@@ -24,14 +23,14 @@ export default function AdminDeployPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Redirect if not admin
-  if (status === 'loading') {
+  if (!isLoaded) {
     return <div className="flex items-center justify-center min-h-screen">
       <Loader2 className="h-8 w-8 animate-spin" />
     </div>;
   }
 
-  if (status === 'unauthenticated') {
-    router.push('/admin/signin');
+  if (!user) {
+    router.push('/signin');
     return null;
   }
 

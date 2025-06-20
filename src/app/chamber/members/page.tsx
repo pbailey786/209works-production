@@ -21,7 +21,7 @@ import {
   Mail,
   Globe,
   Star,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

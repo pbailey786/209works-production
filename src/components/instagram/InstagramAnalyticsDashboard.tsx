@@ -14,7 +14,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -22,7 +22,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
@@ -37,7 +37,7 @@ import {
   BarChart3,
   AlertTriangle,
   Calendar,
-  Filter
+  Filter,
 } from 'lucide-react';
 
 interface AnalyticsData {

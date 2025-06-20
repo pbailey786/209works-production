@@ -11,7 +11,7 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
-  Eye
+  Eye,
 } from 'lucide-react';
 
 interface Activity {

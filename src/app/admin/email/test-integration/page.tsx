@@ -1,14 +1,14 @@
-import { useState } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/card';
-import { CheckCircle, XCircle, Mail, Send, Loader2 } from 'lucide-react';
-
 'use client';
+
+import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, XCircle, Mail, Send, Loader2 } from 'lucide-react';
 
 
 const emailTests = [

@@ -13,7 +13,7 @@ import {
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
-  DEFAULT_TTL
+  DEFAULT_TTL,
 } from '../cache/redis';
 
 // Enhanced alert criteria interface

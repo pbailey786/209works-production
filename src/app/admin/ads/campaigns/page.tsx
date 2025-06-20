@@ -1,16 +1,15 @@
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { hasPermission, Permission } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import {
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { prisma } from '@/lib/database/prisma';
-
-  PlayCircle, 
-  PauseCircle, 
-  DollarSign, 
+import {
+  PlayCircle,
+  PauseCircle,
+  DollarSign,
   Eye,
   BarChart3,
   Calendar,

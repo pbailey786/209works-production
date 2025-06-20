@@ -10,7 +10,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import {
   import {
   useJobBoardAnalytics,
-  UserEngagementEvent
+  UserEngagementEvent,
 } from './job-board-analytics';
 
 interface SessionData {

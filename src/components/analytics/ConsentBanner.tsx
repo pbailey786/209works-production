@@ -20,7 +20,7 @@ import {
   ChevronDown,
   ChevronUp,
   Info,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 
 interface ConsentBannerProps {

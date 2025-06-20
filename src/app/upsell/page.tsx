@@ -24,7 +24,7 @@ import {
   Users,
   FileText,
   Bell,
-  Eye
+  Eye,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

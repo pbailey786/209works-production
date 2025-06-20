@@ -1,11 +1,11 @@
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
+import {
   Card,
   CardContent,
   CardDescription,
@@ -13,24 +13,21 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from '@/components/ui/card';
+  SelectValue,
+} from '@/components/ui/select';
 import {
-  import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from '@/components/ui/card';
+  TableRow,
+} from '@/components/ui/table';
 import {
-  import {
   Search,
   Filter,
   MoreHorizontal,
@@ -38,14 +35,13 @@ import {
   Download,
   Eye,
   Edit,
-  Trash2
-} from '@/components/ui/card';
+  Trash2,
+} from 'lucide-react';
 import {
-  import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
 interface SearchParams {

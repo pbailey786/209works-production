@@ -16,7 +16,7 @@ import {
   import {
   CacheMigrationManager,
   CacheCompatibilityLayer,
-  MigrationUtils
+  MigrationUtils,
 } from '../lib/cache/cache-migration-utility';
 
 // Migration configuration

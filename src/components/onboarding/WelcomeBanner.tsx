@@ -16,7 +16,7 @@ import {
   Building2,
   Target,
   Star,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 
 interface WelcomeBannerProps {

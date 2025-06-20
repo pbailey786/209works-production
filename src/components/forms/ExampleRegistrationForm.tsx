@@ -17,21 +17,21 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from '@/components/ui/card';
 import {
   import {
   FormInput,
   PasswordInput,
   FormTextarea,
-  FileInput
+  FileInput,
 } from '@/components/ui/card';
 import {
   import {
   validationPatterns,
   handleFormSubmission,
   useFormDirtyState,
-  useDebounceValidation
+  useDebounceValidation,
 } from '@/lib/validations/form-utils';
 
 // Example registration schema using our validation patterns

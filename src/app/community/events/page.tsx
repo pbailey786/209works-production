@@ -19,7 +19,7 @@ import {
   Filter,
   Search,
   Plus,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

@@ -12,7 +12,7 @@ import {
   Briefcase,
   Heart,
   ExternalLink,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react';
 
 interface Employer {

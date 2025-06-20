@@ -1,18 +1,10 @@
-import { useUser, useAuth, SignInButton, UserButton } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { useState } from '@/components/ui/card';
-import { motion, AnimatePresence } from '@/components/ui/card';
-import {
-import Avatar from './Avatar';
-import ProfileIcon from './auth/ProfileIcon';
-import LoadingSpinner from './ui/LoadingSpinner';
-import ErrorDisplay from './ui/ErrorDisplay';
-import { Button } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-
 'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useUser, useAuth, SignInButton, UserButton } from '@clerk/nextjs';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  import {
   Search,
   Briefcase,
   User,
@@ -26,8 +18,11 @@ import {
   FileText,
   BarChart3,
   Users,
-  Building2
+  Building2,
 } from 'lucide-react';
+import LoadingSpinner from './ui/LoadingSpinner';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 // Removed NextAuth session hook
 
 export default function Header() {
@@ -42,6 +37,7 @@ export default function Header() {
 
   const navigation = [
     { name: 'Find Jobs', href: '/jobs', icon: Search },
+    { name: 'JobsGPT', href: '/chat', icon: Sparkles },
     { name: 'For Employers', href: '/employers', icon: Building2 },
     { name: 'About', href: '/about', icon: Heart },
     { name: 'Contact', href: '/contact', icon: FileText },
@@ -71,6 +67,7 @@ export default function Header() {
       // Job seeker navigation
       return [
         { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+        { name: 'JobsGPT', href: '/chat', icon: Sparkles },
         { name: 'Profile', href: '/profile', icon: User },
         { name: 'Applications', href: '/profile/applications', icon: FileText },
         { name: 'Saved Jobs', href: '/profile/saved', icon: Heart },

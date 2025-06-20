@@ -1,24 +1,24 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+
 import {
-  import {
   TestTube,
   Send,
   CheckCircle,
   AlertTriangle,
   Loader2,
   ArrowLeft,
-  Mail
+  Mail,
 } from 'lucide-react';
 
 interface TestType {

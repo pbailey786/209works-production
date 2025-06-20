@@ -1,10 +1,11 @@
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
-import { PermissionGate } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PermissionGate } from '@/components/auth/PermissionGate';
 import { Permission } from '@/lib/rbac/permissions';
-
+import { RoleManagement } from '@/components/admin/RoleManagement';
+import {
   Card,
   CardContent,
   CardDescription,
@@ -12,7 +13,6 @@ import { Permission } from '@/lib/rbac/permissions';
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Settings,
   Shield,
   Users,
@@ -20,7 +20,7 @@ import {
   Mail,
   Bell,
   Lock,
-  Globe
+  Globe,
 } from 'lucide-react';
 
 export default async function AdminSettingsPage() {

@@ -1,10 +1,9 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { formatDistanceToNow } from 'date-fns';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
 import {
-  import {
   Users,
   Search,
   Filter,
@@ -21,16 +20,50 @@ import {
   FileText,
   Mail,
   Phone,
-  ExternalLink
+  ExternalLink,
+  MoreHorizontal,
+  Download,
+  RefreshCw,
+  SortAsc,
+  SortDesc,
+  ChevronDown,
+  UserCheck,
+  UserX,
+  UserClock,
+  Briefcase,
+  Award,
+  TrendingUp,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 interface Application {
   id: string;
-  status: string;
+  status: 'pending' | 'reviewing' | 'interview' | 'offer' | 'hired' | 'rejected';
   appliedAt: string;
   coverLetter?: string;
   resumeUrl?: string;
   notes?: string;
+  rating?: number;
+  tags?: string[];
+  lastContactedAt?: string;
+  nextFollowUpAt?: string;
   job: {
     id: string;
     title: string;
@@ -43,12 +76,26 @@ interface Application {
     id: string;
     name: string;
     email: string;
+    phone?: string;
     resumeUrl?: string;
     bio?: string;
     skills?: string[];
     experience?: string;
     location?: string;
+    linkedinUrl?: string;
+    portfolioUrl?: string;
+    currentJobTitle?: string;
+    yearsOfExperience?: number;
   };
+  matchScore?: number;
+  interviewScheduled?: boolean;
+  communicationHistory?: Array<{
+    id: string;
+    type: 'email' | 'phone' | 'interview' | 'note';
+    subject?: string;
+    content: string;
+    createdAt: string;
+  }>;
 }
 
 const statusConfig = {

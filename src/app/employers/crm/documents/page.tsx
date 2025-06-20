@@ -9,7 +9,7 @@ import {
   Users,
   Calendar,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 
 export default function DocumentVaultPage() {

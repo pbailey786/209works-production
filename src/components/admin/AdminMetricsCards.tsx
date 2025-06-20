@@ -9,7 +9,7 @@ import {
   Shield,
   TrendingUp,
   PlayCircle,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 interface MetricsData {

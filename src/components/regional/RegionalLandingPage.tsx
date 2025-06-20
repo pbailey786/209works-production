@@ -17,7 +17,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
@@ -31,7 +31,7 @@ import {
   ArrowRight,
   Star,
   Clock,
-  Target
+  Target,
 } from 'lucide-react';
 
 interface RegionalConfig {

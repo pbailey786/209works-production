@@ -1,12 +1,10 @@
-import { useState, useEffect, Suspense } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { useRouter, useSearchParams } from 'next/navigation';
-
 'use client';
 
+import { useState, useEffect, Suspense } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import {
-  import {
   Search,
   Filter,
   Plus,
@@ -27,31 +25,50 @@ import {
   CheckCircle,
   Clock,
   Download,
-  RefreshCw
+  RefreshCw,
+  Star,
+  BarChart3,
+  Settings,
+  Upload,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface Job {
   id: string;
   title: string;
   company: string;
   location: string;
-  type: string;
+  jobType: string;
   salary?: string;
-  posted: string;
-  expires?: string;
-  status: string;
-  applications?: number;
-  views?: number;
-  shortlisted?: number;
-  interviewed?: number;
-  hired?: number;
-  performance?: string;
-  description?: string;
-  jobType?: string;
   salaryMin?: number;
   salaryMax?: number;
-  postedAt?: string;
-  createdAt?: string;
+  postedAt: string;
+  expiresAt?: string;
+  status: 'active' | 'paused' | 'expired' | 'draft';
+  featured: boolean;
+  urgent: boolean;
+  description: string;
+  requirements?: string;
+  benefits?: string;
+  categories: string[];
+  skills: string[];
+  _count: {
+    applications: number;
+  };
+  applications?: any[];
+  views?: number;
+  performance?: {
+    score: number;
+    trend: 'up' | 'down' | 'stable';
+  };
 }
 
 function MyJobsContent() {
@@ -65,6 +82,7 @@ function MyJobsContent() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [publishedJobId, setPublishedJobId] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // Check for published job ID in URL params
   useEffect(() => {
@@ -83,24 +101,22 @@ function MyJobsContent() {
 
   // Check authentication
   useEffect(() => {
-    if (status === 'loading') return;
+    if (!isLoaded) return;
 
-    if (!session || !session.user || (session!.user as any).role !== 'employer') {
-      router.push('/employers/signin');
+    if (!user) {
+      router.push('/sign-in');
       return;
     }
-  }, [session, status, router]);
+  }, [user, isLoaded, router]);
 
   // Fetch jobs for the current employer
   useEffect(() => {
-    if (!(session?.user as any)?.id) return;
+    if (!user?.id) return;
 
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `/api/employers/jobs?employerId=${(session!.user as any).id}`
-        );
+        const response = await fetch('/api/employers/my-jobs');
 
         if (response.ok) {
           const data = await response.json();
@@ -118,10 +134,10 @@ function MyJobsContent() {
     };
 
     fetchJobs();
-  }, [(session?.user as any)?.id]);
+  }, [user?.id]);
 
   // Show loading state
-  if (status === 'loading' || loading) {
+  if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
@@ -130,41 +146,87 @@ function MyJobsContent() {
   }
 
   // Show authentication error
-  if (!session || !session.user || (session!.user as any).role !== 'employer') {
+  if (!user) {
     return null;
   }
 
-  // Transform jobs to match the expected format
-  const transformedJobs: Job[] = jobs.map(job => ({
-    id: job.id,
-    title: job.title,
-    company: job.company,
-    location: job.location,
-    type: job.jobType || job.type || 'Full-time',
-    salary:
-      job.salary ||
-      (job.salaryMin && job.salaryMax
-        ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
-        : undefined),
-    posted: job.postedAt || job.createdAt || new Date().toISOString(),
-    expires: job.expires,
-    status: job.status || 'active',
-    applications: job.applications || 0,
-    views: job.views || 0,
-    shortlisted: job.shortlisted || 0,
-    interviewed: job.interviewed || 0,
-    hired: job.hired || 0,
-    performance: job.performance || 'good',
-  }));
+  // Job action handlers
+  const handleJobAction = async (jobId: string, action: string) => {
+    setActionLoading(jobId);
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-  const filteredJobs = transformedJobs.filter(job => {
+      if (response.ok) {
+        // Refresh jobs list
+        const jobsResponse = await fetch('/api/employers/my-jobs');
+        if (jobsResponse.ok) {
+          const data = await jobsResponse.json();
+          setJobs(data.jobs || []);
+        }
+      } else {
+        console.error(`Failed to ${action} job`);
+      }
+    } catch (error) {
+      console.error(`Error ${action} job:`, error);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const duplicateJob = async (jobId: string) => {
+    setActionLoading(jobId);
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/duplicate`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        router.push(`/employers/job/${data.jobId}/edit`);
+      } else {
+        console.error('Failed to duplicate job');
+      }
+    } catch (error) {
+      console.error('Error duplicating job:', error);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Filter and sort jobs
+  const filteredJobs = jobs.filter(job => {
     const matchesSearch =
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.location.toLowerCase().includes(searchTerm.toLowerCase());
+      job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.company.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
+  const sortedJobs = [...filteredJobs].sort((a, b) => {
+    switch (sortBy) {
+      case 'newest':
+        return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+      case 'oldest':
+        return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime();
+      case 'applications':
+        return (b._count?.applications || 0) - (a._count?.applications || 0);
+      case 'views':
+        return (b.views || 0) - (a.views || 0);
+      case 'expiring':
+        if (!a.expiresAt && !b.expiresAt) return 0;
+        if (!a.expiresAt) return 1;
+        if (!b.expiresAt) return -1;
+        return new Date(a.expiresAt).getTime() - new Date(b.expiresAt).getTime();
+      default:
+        return 0;
+    }
+  });
+
+  // Helper functions
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -180,33 +242,34 @@ function MyJobsContent() {
     }
   };
 
-  const getPerformanceColor = (performance: string) => {
-    switch (performance) {
-      case 'excellent':
-        return 'text-green-600';
-      case 'high':
-        return 'text-blue-600';
-      case 'good':
-        return 'text-yellow-600';
-      case 'low':
-        return 'text-red-600';
-      default:
-        return 'text-gray-600';
-    }
+  const getPerformanceScore = (job: Job) => {
+    const applications = job._count?.applications || 0;
+    const views = job.views || 0;
+
+    if (applications === 0 && views === 0) return { score: 0, label: 'No Data', color: 'text-gray-500' };
+    if (applications >= 10) return { score: 90, label: 'Excellent', color: 'text-green-600' };
+    if (applications >= 5) return { score: 75, label: 'Good', color: 'text-blue-600' };
+    if (applications >= 1) return { score: 50, label: 'Fair', color: 'text-yellow-600' };
+    return { score: 25, label: 'Low', color: 'text-red-600' };
   };
 
-  const getPerformanceIcon = (performance: string) => {
-    switch (performance) {
-      case 'excellent':
-      case 'high':
-        return <TrendingUp className="h-4 w-4" />;
-      case 'low':
-        return <TrendingDown className="h-4 w-4" />;
-      default:
-        return <div className="h-4 w-4" />;
+  const formatSalary = (job: Job) => {
+    if (job.salaryMin && job.salaryMax) {
+      return `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`;
     }
+    if (job.salaryMin) {
+      return `$${job.salaryMin.toLocaleString()}+`;
+    }
+    return 'Salary not specified';
   };
 
+  const getDaysUntilExpiry = (expiresAt?: string) => {
+    if (!expiresAt) return null;
+    const days = Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    return days;
+  };
+
+  // Selection handlers
   const handleSelectJob = (jobId: string) => {
     setSelectedJobs(prev =>
       prev.includes(jobId) ? prev.filter(id => id !== jobId) : [...prev, jobId]
@@ -215,28 +278,44 @@ function MyJobsContent() {
 
   const handleSelectAll = () => {
     setSelectedJobs(
-      selectedJobs.length === filteredJobs.length
+      selectedJobs.length === sortedJobs.length
         ? []
-        : filteredJobs.map(job => job.id)
+        : sortedJobs.map(job => job.id)
     );
   };
 
-  const handleBulkAction = (action: string) => {
-    console.log(`Performing ${action} on jobs:`, selectedJobs);
-    // Handle bulk actions here
-    setSelectedJobs([]);
+  const handleBulkAction = async (action: string) => {
+    if (selectedJobs.length === 0) return;
+
+    try {
+      const promises = selectedJobs.map(jobId =>
+        fetch(`/api/jobs/${jobId}/${action}`, { method: 'POST' })
+      );
+
+      await Promise.all(promises);
+
+      // Refresh jobs list
+      const response = await fetch('/api/employers/my-jobs');
+      if (response.ok) {
+        const data = await response.json();
+        setJobs(data.jobs || []);
+      }
+
+      setSelectedJobs([]);
+    } catch (error) {
+      console.error(`Error performing bulk ${action}:`, error);
+    }
   };
 
+  // Calculate stats
   const stats = {
-    total: transformedJobs.length,
-    active: transformedJobs.filter(j => j.status === 'active').length,
-    paused: transformedJobs.filter(j => j.status === 'paused').length,
-    expired: transformedJobs.filter(j => j.status === 'expired').length,
-    totalApplications: transformedJobs.reduce(
-      (sum, job) => sum + (job.applications || 0),
-      0
-    ),
-    totalViews: transformedJobs.reduce((sum, job) => sum + (job.views || 0), 0),
+    total: jobs.length,
+    active: jobs.filter(j => j.status === 'active').length,
+    paused: jobs.filter(j => j.status === 'paused').length,
+    expired: jobs.filter(j => j.status === 'expired').length,
+    featured: jobs.filter(j => j.featured).length,
+    totalApplications: jobs.reduce((sum, job) => sum + (job._count?.applications || 0), 0),
+    totalViews: jobs.reduce((sum, job) => sum + (job.views || 0), 0),
   };
 
   return (
@@ -272,57 +351,63 @@ function MyJobsContent() {
               My Job Listings
             </h1>
             <p className="text-gray-600">
-              Manage all your job postings, track performance, and review
-              applications
+              Manage all your job postings, track performance, and review applications
             </p>
           </div>
-          <Link
-            href="/employers/create-job-post"
-            className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Post New Job</span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" asChild>
+              <Link href="/employers/bulk-upload">
+                <Upload className="h-4 w-4 mr-2" />
+                Bulk Upload
+              </Link>
+            </Button>
+            <Button asChild className="bg-[#ff6b35] hover:bg-[#e55a2b]">
+              <Link href="/employers/create-job-post">
+                <Plus className="h-4 w-4 mr-2" />
+                Post New Job
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-6">
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-2xl font-bold text-gray-900">
-              {stats.total}
-            </div>
-            <div className="text-sm text-gray-600">Total Jobs</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-2xl font-bold text-green-600">
-              {stats.active}
-            </div>
-            <div className="text-sm text-gray-600">Active</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-2xl font-bold text-yellow-600">
-              {stats.paused}
-            </div>
-            <div className="text-sm text-gray-600">Paused</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-2xl font-bold text-red-600">
-              {stats.expired}
-            </div>
-            <div className="text-sm text-gray-600">Expired</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-2xl font-bold text-blue-600">
-              {stats.totalApplications}
-            </div>
-            <div className="text-sm text-gray-600">Applications</div>
-          </div>
-          <div className="rounded-lg border bg-white p-4">
-            <div className="text-2xl font-bold text-purple-600">
-              {stats.totalViews.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600">Total Views</div>
-          </div>
+        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-6">
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+              <div className="text-sm text-gray-600">Total Jobs</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+              <div className="text-sm text-gray-600">Active</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-yellow-600">{stats.paused}</div>
+              <div className="text-sm text-gray-600">Paused</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-orange-600">{stats.featured}</div>
+              <div className="text-sm text-gray-600">Featured</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-blue-600">{stats.totalApplications}</div>
+              <div className="text-sm text-gray-600">Applications</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold text-purple-600">{stats.totalViews.toLocaleString()}</div>
+              <div className="text-sm text-gray-600">Total Views</div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 

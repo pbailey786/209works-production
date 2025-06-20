@@ -22,7 +22,7 @@ import {
   capitalizeFirst,
   capitalizeWords,
   isNonEmptyString,
-  isValidURL
+  isValidURL,
 } from '@/lib/utils/safe-operations';
 
 // ===== JOB-RELATED INTERFACES =====

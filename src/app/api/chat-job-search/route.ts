@@ -1,20 +1,19 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { extractJobSearchFilters } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { generateJobSearchResponse } from '@/lib/ai';
-
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
+import {
+  generateJobSearchResponse,
   generateConversationalResponse,
+  extractJobSearchFilters,
   extractJobSearchFiltersWithContext,
-} from '@/components/ui/card';
+} from '@/lib/ai';
 import {
   withAISecurity,
   aiSecurityConfigs,
   type AISecurityContext,
-  import {
-  sanitizeUserData
+  sanitizeUserData,
 } from '@/lib/middleware/ai-security';
+import { conversationMemory } from '@/lib/conversation-memory';
 
 // Type definitions for conversation messages
 interface ConversationMessage {
@@ -86,9 +85,17 @@ function extractBasicFilters(
   ];
   let location = locationKeywords.find(loc => message.includes(loc));
 
+  // If no specific city mentioned, check for 209 area references
+  if (!location && (message.includes('209') || message.includes('central valley') || message.includes('area'))) {
+    location = '209 area';
+  }
+
   // If no location in current message but is follow-up, check previous context
   if (!location && isFollowUp) {
     location = locationKeywords.find(loc => lastUserMessage.includes(loc));
+    if (!location && (lastUserMessage.includes('209') || lastUserMessage.includes('central valley'))) {
+      location = '209 area';
+    }
   }
 
   // Extract job type keywords and normalize them
@@ -220,14 +227,30 @@ function buildJobQueryFromFilters(filters: any) {
     }
   }
 
-  // Location filter
+  // Location filter - improved to match 209 area cities
   if (filters.location) {
-    query.AND.push({
-      location: {
-        contains: filters.location,
-        mode: 'insensitive',
-      },
-    });
+    const location = filters.location.toLowerCase();
+
+    // If searching for "209 area" or similar, search for specific cities
+    if (location.includes('209') || location.includes('central valley')) {
+      const cities209 = ['stockton', 'modesto', 'tracy', 'manteca', 'lodi', 'turlock', 'merced'];
+      query.AND.push({
+        OR: cities209.map(city => ({
+          location: {
+            contains: city,
+            mode: 'insensitive',
+          },
+        })),
+      });
+    } else {
+      // Regular location search
+      query.AND.push({
+        location: {
+          contains: filters.location,
+          mode: 'insensitive',
+        },
+      });
+    }
   }
 
   // Job type filter (note: field is jobType in schema)
@@ -414,6 +437,27 @@ export const POST = withAISecurity(
       // Sanitize user profile data before processing
       const sanitizedUserProfile = sanitizeUserData(enhancedUserProfile);
 
+      // Load conversation context and memory
+      const conversationContext = await conversationMemory.loadContext(
+        sessionId || `session_${Date.now()}`,
+        authenticatedUserId
+      );
+
+      // Extract preferences from current message and update context
+      const newPreferences = conversationMemory.extractPreferencesFromMessage(
+        userMessage,
+        conversationContext.preferences
+      );
+
+      if (Object.keys(newPreferences).length > 0) {
+        await conversationMemory.updateContext(conversationContext.sessionId, {
+          preferences: { ...conversationContext.preferences, ...newPreferences }
+        });
+      }
+
+      // Add search to history
+      await conversationMemory.addSearchToHistory(conversationContext.sessionId, userMessage);
+
       // Check if AI API keys are available
       const hasValidOpenAIKey =
         process.env.OPENAI_API_KEY &&
@@ -519,15 +563,21 @@ export const POST = withAISecurity(
         );
       }
 
-      // Generate response based on context
+      // Generate response based on context with conversation memory
       let conversationalResponse: string;
 
       if (hasValidApiKey) {
         try {
+          // Get context summary for AI
+          const contextSummary = conversationMemory.getContextSummary(conversationContext);
+
           // Use the new AI utility with OpenAI + Anthropic fallback
           conversationalResponse = await generateJobSearchResponse(
             userMessage,
-            conversationHistory,
+            [
+              ...conversationHistory,
+              { role: 'system', content: contextSummary }
+            ],
             jobs,
             filters
           );
@@ -676,7 +726,7 @@ export const POST = withAISecurity(
           totalResults: jobs.length,
           hasUserProfile: !!sanitizedUserProfile,
           hasEnhancedProfile: !!enhancedUserProfile && !!authenticatedUserId,
-          sessionId,
+          sessionId: conversationContext.sessionId,
           timestamp: new Date().toISOString(),
           sortBy: filters.sortBy || 'relevance',
           hasValidApiKey,
@@ -685,6 +735,15 @@ export const POST = withAISecurity(
           userSkills: sanitizedUserProfile?.skills?.length || 0,
           userApplicationHistory:
             sanitizedUserProfile?.applicationHistory?.length || 0,
+          conversationMemory: {
+            preferences: conversationContext.preferences,
+            recentSearches: conversationContext.recentSearches.slice(0, 3),
+            jobInteractions: {
+              applied: conversationContext.jobInteractions.applied.length,
+              saved: conversationContext.jobInteractions.saved.length,
+              viewed: conversationContext.jobInteractions.viewed.length,
+            },
+          },
         },
       });
     } catch (error) {

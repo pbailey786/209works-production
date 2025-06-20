@@ -1,21 +1,19 @@
-import { useUser } from '@/components/ui/card';
-import { redirect } from 'next/navigation';
-
 'use client';
 
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import {
-  import {
   Permission,
   hasPermission,
   hasAnyPermission,
   hasAllPermissions,
   getUserPermissions,
-  canAccessRoute
+  canAccessRoute,
 } from '@/lib/rbac/permissions';
 
 export function usePermissions() {
   const { user, isLoaded } = useUser();
-  const userRole = (session?.user as any)?.role || '';
+  const userRole = (user as any)?.role || '';
 
   return {
     hasPermission: (permission: Permission) =>

@@ -1,22 +1,20 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
 import {
-  import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Search,
   TrendingUp,
   MessageSquare,
@@ -24,7 +22,7 @@ import {
   Calendar,
   Download,
   Eye,
-  Bot
+  Bot,
 } from 'lucide-react';
 
 interface ChatAnalytics {
@@ -60,15 +58,15 @@ export default function JobsGPTAnalyticsPage() {
 
   // Check if user is admin
   const isAdmin =
-    (session?.user as any)?.role === 'admin' ||
-    user?.email === 'admin@209jobs.com';
+    (user as any)?.role === 'admin' ||
+    user?.emailAddresses?.[0]?.emailAddress === 'admin@209jobs.com';
 
   useEffect(() => {
-    if (status === 'authenticated' && isAdmin) {
+    if (isLoaded && user && isAdmin) {
       fetchAnalytics();
       fetchStats();
     }
-  }, [status, isAdmin, page, dateFilter, searchTerm]);
+  }, [isLoaded, user, isAdmin, page, dateFilter, searchTerm]);
 
   const fetchAnalytics = async () => {
     try {
@@ -128,7 +126,7 @@ export default function JobsGPTAnalyticsPage() {
     }
   };
 
-  if (status === 'loading') {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>

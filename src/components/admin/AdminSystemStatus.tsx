@@ -11,7 +11,7 @@ import {
   CheckCircle,
   AlertTriangle,
   XCircle,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 interface SystemHealth {

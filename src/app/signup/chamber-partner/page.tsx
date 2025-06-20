@@ -18,7 +18,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
@@ -27,7 +27,7 @@ import {
   CheckCircle,
   Shield,
   TrendingUp,
-  Handshake
+  Handshake,
 } from 'lucide-react';
 
 export const metadata: Metadata = {

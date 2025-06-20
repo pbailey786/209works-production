@@ -14,7 +14,7 @@ import {
   CheckCircle,
   Sparkles,
   RefreshCw,
-  Lightbulb
+  Lightbulb,
 } from 'lucide-react';
 
 interface CreditSystemExplanationModalProps {

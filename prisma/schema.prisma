@@ -8,101 +8,104 @@ datasource db {
 }
 
 model User {
-  id                   String                     @id @default(uuid())
-  clerkId              String?                    @unique // Clerk user ID for authentication
-  email                String                     @unique
-  name                 String?
-  passwordHash         String?
-  createdAt            DateTime                   @default(now())
-  isEmailVerified      Boolean                    @default(false)
-  magicLinkExpires     DateTime?
-  magicLinkToken       String?
-  passwordResetExpires DateTime?
-  passwordResetToken   String?
-  updatedAt            DateTime                   @updatedAt
-  role                 UserRole                   @default(jobseeker)
-  onboardingCompleted  Boolean                    @default(false)
-  twoFactorEnabled     Boolean                    @default(false)
-  twoFactorSecret      String?
-  resumeUrl            String?
-  profilePictureUrl    String?
-  currentJobTitle      String?
-  experienceLevel      String?
-  educationExperience  String?
-  isProfilePublic      Boolean                    @default(false)
-  linkedinUrl          String?
-  location             String?
-  phoneNumber          String?
-  preferredJobTypes    String[]
-  skills               String[]
-  workAuthorization    String?
-  companyWebsite       String?
-  companyName          String?
-  industry             String?
-  companySize          String?
-
-  // Employer onboarding fields
-  companyLogo          String?     // Company logo URL
-  companyDescription   String?     // Brief company description
-  businessLocation     String?     // Business location (city)
-  contactName          String?     // Contact person name
-  contactEmail         String?     // Contact person email
-  contactPhone         String?     // Contact person phone (optional)
-  hiringGoals          String[]    @default([]) // Array of hiring goals: urgent, seasonal, always
-  hiringPlans          String?     // How many people planning to hire in next 3 months (legacy)
-  typicallyRequiresDegree Boolean? // Do you typically require a 4-year degree? (legacy)
-  offersRemoteWork     Boolean?    // Do you offer remote or hybrid positions? (legacy)
-  preferredExperienceLevel String? // Entry/Mid/Senior preference (legacy)
-  employerOnboardingCompleted Boolean @default(false) // Track employer onboarding completion
-  isOpenToRemote       Boolean                    @default(false)
-  expectedSalaryMin    Int?
-  expectedSalaryMax    Int?
-  companyId            String?
-  currentTier          PricingTier                @default(basic)
-  subscriptionEndsAt   DateTime?
-  trialEndsAt          DateTime?
-  bio                  String?
-  deletedAt            DateTime?
-  failedLoginAttempts  Int                        @default(0)
-  isActive             Boolean                    @default(true)
-  lastLoginAt          DateTime?
-  lockedUntil          DateTime?
-  mfaVerified          Boolean                    @default(false)
-  sessionVersion       Int                        @default(0)
-  passwordChangedAt    DateTime?
-  stripeCustomerId     String?                    @unique
-  alerts               Alert[]
-  auditLogs            AuditLog[]
-  emailAlerts          EmailAlert[]
-  emailLogs            EmailLog[]
-  emailUnsubscribes    EmailUnsubscribe[]
-  instagramAlerts      InstagramEngagementAlert[]
-  employerJobs         Job[]                      @relation("EmployerJobs")
-  jobApplications      JobApplication[]
-  savedJobs            SavedJob[]
-  jobPostOptimizers    JobPostOptimizer[]         @relation("EmployerJobPosts")
-  searchAnalytics      SearchAnalytics[]
-  searchHistory        SearchHistory[]
-  shouldIApplyUsage    ShouldIApplyUsage[]
-  subscriptions        Subscription?
-  company              Company?                   @relation(fields: [companyId], references: [id])
-  UserAddOn            UserAddOn[]
-  userSessions         UserSession[]
-  weeklyDigest         WeeklyDigest?
-  chatAnalytics        ChatAnalytics[]
-  chatHistory          ChatHistory[]
-  impersonationSessions ImpersonationSession[] @relation("ImpersonationTarget")
-  verificationTokens    VerificationToken[]
-  jobPostingPurchases   JobPostingPurchase[]
-  jobPostingCredits     JobPostingCredit[]
-  jobPostingPatterns    JobPostingPattern[]    @relation("EmployerPatterns")
-  jobUpsellPurchases    JobUpsellPurchase[]
-  jobSeekerProfile      JobSeekerProfile?
-  employerProfile       EmployerProfile?
-  resumeEmbedding       ResumeEmbedding?
-  jobMatches            JobMatch[]
-  securityLogs          SecurityLog[]
-  paymentFailures       PaymentFailure[]
+  id                          String                     @id @default(uuid())
+  clerkId                     String?                    @unique
+  email                       String                     @unique
+  name                        String?
+  passwordHash                String?
+  createdAt                   DateTime                   @default(now())
+  isEmailVerified             Boolean                    @default(false)
+  magicLinkExpires            DateTime?
+  magicLinkToken              String?
+  passwordResetExpires        DateTime?
+  passwordResetToken          String?
+  updatedAt                   DateTime                   @updatedAt
+  role                        UserRole                   @default(jobseeker)
+  onboardingCompleted         Boolean                    @default(false)
+  twoFactorEnabled            Boolean                    @default(false)
+  twoFactorSecret             String?
+  resumeUrl                   String?
+  profilePictureUrl           String?
+  currentJobTitle             String?
+  experienceLevel             String?
+  educationExperience         String?
+  isProfilePublic             Boolean                    @default(false)
+  linkedinUrl                 String?
+  location                    String?
+  phoneNumber                 String?
+  preferredJobTypes           String[]
+  skills                      String[]
+  workAuthorization           String?
+  companyWebsite              String?
+  companyName                 String?
+  industry                    String?
+  companySize                 String?
+  companyLogo                 String?
+  companyDescription          String?
+  businessLocation            String?
+  contactName                 String?
+  contactEmail                String?
+  contactPhone                String?
+  hiringGoals                 String[]                   @default([])
+  hiringPlans                 String?
+  typicallyRequiresDegree     Boolean?
+  offersRemoteWork            Boolean?
+  preferredExperienceLevel    String?
+  employerOnboardingCompleted Boolean                    @default(false)
+  isOpenToRemote              Boolean                    @default(false)
+  expectedSalaryMin           Int?
+  expectedSalaryMax           Int?
+  companyId                   String?
+  currentTier                 PricingTier                @default(basic)
+  subscriptionEndsAt          DateTime?
+  trialEndsAt                 DateTime?
+  bio                         String?
+  deletedAt                   DateTime?
+  failedLoginAttempts         Int                        @default(0)
+  isActive                    Boolean                    @default(true)
+  lastLoginAt                 DateTime?
+  lockedUntil                 DateTime?
+  mfaVerified                 Boolean                    @default(false)
+  sessionVersion              Int                        @default(0)
+  passwordChangedAt           DateTime?
+  stripeCustomerId            String?                    @unique
+  alerts                      Alert[]
+  auditLogs                   AuditLog[]
+  chatAnalytics               ChatAnalytics[]
+  chatHistory                 ChatHistory[]
+  emailAlerts                 EmailAlert[]
+  emailLogs                   EmailLog[]
+  emailUnsubscribes           EmailUnsubscribe[]
+  employerProfile             EmployerProfile?
+  impersonationSessions       ImpersonationSession[]     @relation("ImpersonationTarget")
+  instagramAlerts             InstagramEngagementAlert[]
+  employerJobs                Job[]                      @relation("EmployerJobs")
+  jobApplications             JobApplication[]
+  jobMatches                  JobMatch[]
+  jobPostOptimizers           JobPostOptimizer[]         @relation("EmployerJobPosts")
+  jobPostingCredits           JobPostingCredit[]
+  jobPostingPatterns          JobPostingPattern[]        @relation("EmployerPatterns")
+  jobPostingPurchases         JobPostingPurchase[]
+  jobSeekerProfile            JobSeekerProfile?
+  jobUpsellPurchases          JobUpsellPurchase[]
+  paymentFailures             PaymentFailure[]
+  resumeEmbedding             ResumeEmbedding?
+  savedJobs                   SavedJob[]
+  savedSearches               SavedSearch[]
+  searchAnalytics             SearchAnalytics[]
+  searchHistory               SearchHistory[]
+  notifications               Notification[]
+  notificationPreferences     NotificationPreference?
+  sentMessages                Message[]                  @relation("SentMessages")
+  receivedMessages            Message[]                  @relation("ReceivedMessages")
+  securityLogs                SecurityLog[]
+  shouldIApplyUsage           ShouldIApplyUsage[]
+  subscriptions               Subscription?
+  company                     Company?                   @relation(fields: [companyId], references: [id])
+  UserAddOn                   UserAddOn[]
+  userSessions                UserSession[]
+  verificationTokens          VerificationToken[]
+  weeklyDigest                WeeklyDigest?
 
   @@index([deletedAt])
 }
@@ -111,10 +114,10 @@ model VerificationToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      String   @default("email_verification") // email_verification, password_reset
+  type      String   @default("email_verification")
   createdAt DateTime @default(now())
   expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([token])
   @@index([userId])
@@ -183,80 +186,68 @@ model CompanyKnowledge {
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model Job {
-  id              String           @id @default(uuid())
-  title           String
-  company         String
-  description     String
-  location        String
-  source          String
-  url             String
-  postedAt        DateTime
-  createdAt       DateTime         @default(now())
-  categories      String[]
-  jobType         JobType          @map("type")
-  salaryMax       Int?
-  salaryMin       Int?
-  embedding       String?
-  companyId       String?
-  expiresAt       DateTime?
-  isPinned        Boolean          @default(false)
-  isRemote        Boolean          @default(false)
-  requirements    String?
-  status          String           @default("active")
-  updatedAt       DateTime         @updatedAt
-  viewCount       Int              @default(0)
-  benefits        String?
-  deletedAt       DateTime?
-  employerId      String?
-  region          String?
-  skills          String[]         @default([])
-
-  // Multi-area-code network fields
-  areaCodes       String[]         @default(["209"]) @map("area_codes")
-  city            String?
-  targetCities    String[]         @default([]) @map("target_cities")
-  lat             Float?
-  lng             Float?
-
-  // Duplicate detection fields
-  titleHash         String?
-  descriptionHash   String?
-  duplicateScore    Decimal?         @db.Decimal(3,2)
-  flaggedAsDuplicate Boolean         @default(false)
-  duplicateOfJobId  String?
-
-  // Upsells and Featured Post
-  socialMediaShoutout Boolean      @default(false)
-  placementBump       Boolean      @default(false)
-  upsellBundle        Boolean      @default(false)
-  featured            Boolean      @default(false) // Featured post upgrade (1 credit)
-
-  // New job post enhancements
-  degreeRequired      Boolean?     // Is a 4-year college degree required?
-  salaryRangeMin      Int?         // Salary range minimum (separate from salaryMin for display)
-  salaryRangeMax      Int?         // Salary range maximum (separate from salaryMax for display)
-  internalTags        String[]     @default([]) // Admin-only tags: "blue collar", "tech", "nonprofit", etc.
-  supplementalQuestions String[]   @default([]) // Custom questions for applicants (up to 10)
-
-  // Relations
-  instagramPosts  InstagramPost[]
-  companyRef      Company?         @relation(fields: [companyId], references: [id])
-  employer        User?            @relation("EmployerJobs", fields: [employerId], references: [id])
-  jobApplications   JobApplication[]
-  savedJobs         SavedJob[]
-  shouldIApplyUsage ShouldIApplyUsage[]
-  alerts            Alert[]          @relation("AlertToJob")
-  optimizedFrom     JobPostOptimizer[] @relation("OptimizedJob")
-  usedCredits       JobPostingCredit[]
-  upsellPurchases   JobUpsellPurchase[]
-  featuredAnalytics FeaturedJobAnalytics[]
-  jobMatches        JobMatch[]
-
-  // Duplicate tracking relations
-  duplicateOf       Job?             @relation("JobDuplicates", fields: [duplicateOfJobId], references: [id])
-  duplicates        Job[]            @relation("JobDuplicates")
-  originalAlerts    DuplicateJobAlert[] @relation("OriginalJob")
-  duplicateAlerts   DuplicateJobAlert[] @relation("DuplicateJob")
+  id                    String                 @id @default(uuid())
+  title                 String
+  company               String
+  description           String
+  location              String
+  source                String
+  url                   String
+  postedAt              DateTime
+  createdAt             DateTime               @default(now())
+  categories            String[]
+  jobType               JobType                @map("type")
+  salaryMax             Int?
+  salaryMin             Int?
+  embedding             String?
+  companyId             String?
+  expiresAt             DateTime?
+  isPinned              Boolean                @default(false)
+  isRemote              Boolean                @default(false)
+  requirements          String?
+  status                String                 @default("active")
+  updatedAt             DateTime               @updatedAt
+  viewCount             Int                    @default(0)
+  benefits              String?
+  deletedAt             DateTime?
+  employerId            String?
+  region                String?
+  skills                String[]               @default([])
+  areaCodes             String[]               @default(["209"]) @map("area_codes")
+  city                  String?
+  targetCities          String[]               @default([]) @map("target_cities")
+  lat                   Float?
+  lng                   Float?
+  titleHash             String?
+  descriptionHash       String?
+  duplicateScore        Decimal?               @db.Decimal(3, 2)
+  flaggedAsDuplicate    Boolean                @default(false)
+  duplicateOfJobId      String?
+  socialMediaShoutout   Boolean                @default(false)
+  placementBump         Boolean                @default(false)
+  upsellBundle          Boolean                @default(false)
+  featured              Boolean                @default(false)
+  degreeRequired        Boolean?
+  salaryRangeMin        Int?
+  salaryRangeMax        Int?
+  internalTags          String[]               @default([])
+  supplementalQuestions String[]               @default([])
+  duplicateAlerts       DuplicateJobAlert[]    @relation("DuplicateJob")
+  originalAlerts        DuplicateJobAlert[]    @relation("OriginalJob")
+  featuredAnalytics     FeaturedJobAnalytics[]
+  instagramPosts        InstagramPost[]
+  companyRef            Company?               @relation(fields: [companyId], references: [id])
+  duplicateOf           Job?                   @relation("JobDuplicates", fields: [duplicateOfJobId], references: [id])
+  duplicates            Job[]                  @relation("JobDuplicates")
+  employer              User?                  @relation("EmployerJobs", fields: [employerId], references: [id])
+  jobApplications       JobApplication[]
+  jobMatches            JobMatch[]
+  optimizedFrom         JobPostOptimizer[]     @relation("OptimizedJob")
+  usedCredits           JobPostingCredit[]
+  upsellPurchases       JobUpsellPurchase[]
+  savedJobs             SavedJob[]
+  shouldIApplyUsage     ShouldIApplyUsage[]
+  alerts                Alert[]                @relation("AlertToJob")
 
   @@index([postedAt])
   @@index([location])
@@ -277,15 +268,13 @@ model Job {
   @@index([flaggedAsDuplicate])
   @@index([duplicateOfJobId])
   @@index([featured])
-  @@index([featured, postedAt]) // For sorting featured posts by date
-  @@index([region, featured]) // For regional featured posts
-
-  // Multi-area-code network indexes
+  @@index([featured, postedAt])
+  @@index([region, featured])
   @@index([areaCodes])
   @@index([city])
   @@index([areaCodes, jobType])
   @@index([areaCodes, postedAt])
-  @@index([areaCodes, featured]) // For featured posts in area codes
+  @@index([areaCodes, featured])
   @@index([lat, lng])
 }
 
@@ -563,6 +552,102 @@ model SearchHistory {
   user      User     @relation(fields: [userId], references: [id])
 }
 
+model SavedSearch {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  query       String
+  filters     String?
+  isActive    Boolean  @default(true)
+  alertEnabled Boolean @default(false)
+  lastRun     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([alertEnabled])
+}
+
+model Notification {
+  id          String            @id @default(uuid())
+  userId      String
+  type        NotificationType
+  title       String
+  message     String
+  data        Json?
+  isRead      Boolean           @default(false)
+  priority    NotificationPriority @default(normal)
+  category    String?
+  actionUrl   String?
+  expiresAt   DateTime?
+  createdAt   DateTime          @default(now())
+  readAt      DateTime?
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+  @@index([priority])
+  @@index([createdAt])
+  @@index([expiresAt])
+}
+
+model NotificationPreference {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  emailEnabled      Boolean  @default(true)
+  pushEnabled       Boolean  @default(true)
+  smsEnabled        Boolean  @default(false)
+  jobMatchEmail     Boolean  @default(true)
+  jobMatchPush      Boolean  @default(true)
+  applicationEmail  Boolean  @default(true)
+  applicationPush   Boolean  @default(true)
+  messageEmail      Boolean  @default(true)
+  messagePush       Boolean  @default(true)
+  systemEmail       Boolean  @default(true)
+  systemPush        Boolean  @default(false)
+  marketingEmail    Boolean  @default(false)
+  marketingPush     Boolean  @default(false)
+  quietHoursStart   String?  @default("22:00")
+  quietHoursEnd     String?  @default("08:00")
+  timezone          String   @default("America/Los_Angeles")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  senderId    String
+  receiverId  String
+  subject     String?
+  content     String
+  isRead      Boolean     @default(false)
+  messageType MessageType @default(direct)
+  threadId    String?
+  parentId    String?
+  attachments Json?
+  createdAt   DateTime    @default(now())
+  readAt      DateTime?
+  deletedAt   DateTime?
+  sender      User        @relation("SentMessages", fields: [senderId], references: [id])
+  receiver    User        @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  parent      Message?    @relation("MessageReplies", fields: [parentId], references: [id])
+  replies     Message[]   @relation("MessageReplies")
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([threadId])
+  @@index([parentId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
 model ShouldIApplyUsage {
   id           String   @id @default(uuid())
   userId       String
@@ -570,8 +655,8 @@ model ShouldIApplyUsage {
   userTier     String   @default("free")
   analysisType String   @default("basic")
   usedAt       DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   job          Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([jobId])
@@ -594,8 +679,8 @@ model Subscription {
   tier                 PricingTier        @default(basic)
   updatedAt            DateTime           @updatedAt
   stripeSubscriptionId String?            @unique
-  user                 User               @relation(fields: [userId], references: [id])
   paymentFailures      PaymentFailure[]
+  user                 User               @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([tier])
@@ -834,19 +919,19 @@ model UserSession {
 }
 
 model AuditLog {
-  id           String   @id @default(uuid())
-  userId       String?
-  action       String
-  resource     String?
-  resourceId   String?
-  details      Json?
-  ipAddress    String?
-  userAgent    String?
-  createdAt    DateTime @default(now())
-  targetType   String?
-  targetId     String?
-  performedBy  String?
-  user         User?    @relation(fields: [userId], references: [id])
+  id          String   @id @default(uuid())
+  userId      String?
+  action      String
+  resource    String?
+  resourceId  String?
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  targetType  String?
+  targetId    String?
+  performedBy String?
+  user        User?    @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([action])
@@ -870,55 +955,36 @@ model SavedJob {
 }
 
 model JobPostOptimizer {
-  id                  String    @id @default(uuid())
-  employerId          String
-
-  // Basic Info
-  jobTitle            String
-  companyName         String
-  location            String
-  pay                 String?
-  schedule            String?
-
-  // Role + Culture Details
-  companyDescription  String?
-  idealFit            String?
-  culture             String?
-  growthPath          String?
-  perks               String?
-
-  // Call to Action
-  applicationCTA      String?
-
-  // Media
-  mediaUrls           String[]  @default([])
-
-  // Supplemental Questions
-  supplementalQuestions String[] @default([]) // Custom questions for applicants (up to 10)
-
-  // AI Processing
-  rawInput            Json?     // Store original form data
-  aiGeneratedOutput   String?   // Store AI-generated job listing
-  editedContent       String?   // Store user-edited content
-  optimizationPrompt  String?   // Store the prompt used for optimization
-
-  // Upsells
-  socialMediaShoutout Boolean   @default(false)
-  placementBump       Boolean   @default(false)
-  upsellBundle        Boolean   @default(false)
-  upsellTotal         Decimal?  @db.Decimal(10, 2)
-
-  // Status and Metadata
-  status              JobPostStatus @default(draft)
-  isPublished         Boolean   @default(false)
-  publishedJobId      String?   // Reference to published Job if converted
-
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-
-  // Relations
-  employer            User      @relation("EmployerJobPosts", fields: [employerId], references: [id])
-  publishedJob        Job?      @relation("OptimizedJob", fields: [publishedJobId], references: [id])
+  id                    String        @id @default(uuid())
+  employerId            String
+  jobTitle              String
+  companyName           String
+  location              String
+  pay                   String?
+  schedule              String?
+  companyDescription    String?
+  idealFit              String?
+  culture               String?
+  growthPath            String?
+  perks                 String?
+  applicationCTA        String?
+  mediaUrls             String[]      @default([])
+  supplementalQuestions String[]      @default([])
+  rawInput              Json?
+  aiGeneratedOutput     String?
+  editedContent         String?
+  optimizationPrompt    String?
+  socialMediaShoutout   Boolean       @default(false)
+  placementBump         Boolean       @default(false)
+  upsellBundle          Boolean       @default(false)
+  upsellTotal           Decimal?      @db.Decimal(10, 2)
+  status                JobPostStatus @default(draft)
+  isPublished           Boolean       @default(false)
+  publishedJobId        String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  employer              User          @relation("EmployerJobPosts", fields: [employerId], references: [id])
+  publishedJob          Job?          @relation("OptimizedJob", fields: [publishedJobId], references: [id])
 
   @@index([employerId])
   @@index([status])
@@ -933,11 +999,9 @@ model ChatAnalytics {
   response     String
   jobsFound    Int?     @default(0)
   responseTime Float?   @default(0)
-  metadata     Json?    // Store additional context like search filters, etc.
+  metadata     Json?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  // Relations
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -950,13 +1014,11 @@ model ChatHistory {
   id           String   @id @default(uuid())
   userId       String
   sessionId    String
-  title        String?  // Optional title for the conversation
-  messages     Json     // Array of messages in the conversation
+  title        String?
+  messages     Json
   lastActivity DateTime @default(now())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  // Relations
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -966,33 +1028,27 @@ model ChatHistory {
 }
 
 model JobPostingPurchase {
-  id                    String   @id @default(uuid())
+  id                    String             @id @default(uuid())
   userId                String
-  stripeSessionId       String   @unique
+  stripeSessionId       String             @unique
   stripePaymentIntentId String?
-  tier                  String   // starter, standard, pro
-  tierPrice             Decimal  @db.Decimal(10, 2)
-  addons                Json?    // Array of addon objects with name, price, stripePriceId
-  totalAmount           Decimal  @db.Decimal(10, 2)
-  currency              String   @default("usd")
-  status                String   @default("pending") // pending, completed, failed, refunded
-
-  // Credits granted
-  jobPostCredits        Int      @default(0)
-  featuredPostCredits   Int      @default(0)
-  socialGraphicCredits  Int      @default(0)
-  repostCredits         Int      @default(0)
-
-  // Metadata
+  tier                  String
+  tierPrice             Decimal            @db.Decimal(10, 2)
+  addons                Json?
+  totalAmount           Decimal            @db.Decimal(10, 2)
+  currency              String             @default("usd")
+  status                String             @default("pending")
+  jobPostCredits        Int                @default(0)
+  featuredPostCredits   Int                @default(0)
+  socialGraphicCredits  Int                @default(0)
+  repostCredits         Int                @default(0)
   metadata              Json?
-  purchasedAt           DateTime @default(now())
-  expiresAt             DateTime? // When credits expire
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  // Relations
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchasedAt           DateTime           @default(now())
+  expiresAt             DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
   credits               JobPostingCredit[]
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
@@ -1001,21 +1057,19 @@ model JobPostingPurchase {
 }
 
 model JobPostingCredit {
-  id          String    @id @default(uuid())
-  userId      String
-  purchaseId  String?   // Reference to the purchase that granted this credit
-  type        String    // job_post, featured_post, social_graphic, repost
-  isUsed      Boolean   @default(false)
-  usedAt      DateTime?
-  usedForJobId String?  // Which job this credit was used for
-  expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  // Relations
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  purchase    JobPostingPurchase? @relation(fields: [purchaseId], references: [id])
-  job         Job?      @relation(fields: [usedForJobId], references: [id])
+  id           String              @id @default(uuid())
+  userId       String
+  purchaseId   String?
+  type         String
+  isUsed       Boolean             @default(false)
+  usedAt       DateTime?
+  usedForJobId String?
+  expiresAt    DateTime?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  purchase     JobPostingPurchase? @relation(fields: [purchaseId], references: [id])
+  job          Job?                @relation(fields: [usedForJobId], references: [id])
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([type])
@@ -1030,25 +1084,18 @@ model JobUpsellPurchase {
   jobId                 String
   stripeSessionId       String   @unique
   stripePaymentIntentId String?
-
-  // Upsell options
   socialMediaShoutout   Boolean  @default(false)
   placementBump         Boolean  @default(false)
   upsellBundle          Boolean  @default(false)
-
   totalAmount           Decimal  @db.Decimal(10, 2)
   currency              String   @default("usd")
-  status                String   @default("pending") // pending, completed, failed, refunded
-
-  // Metadata
+  status                String   @default("pending")
   metadata              Json?
   purchasedAt           DateTime @default(now())
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-
-  // Relations
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   job                   Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([jobId])
@@ -1057,35 +1104,31 @@ model JobUpsellPurchase {
 }
 
 model FeaturedJobAnalytics {
-  id              String   @id @default(uuid())
-  jobId           String
-  impressions     Int      @default(0) // How many times the job was viewed
-  clicks          Int      @default(0) // How many times apply/view details was clicked
-  emailAlerts     Int      @default(0) // How many job seekers were alerted via email
-  emailClicks     Int      @default(0) // How many clicked from email alerts
-  conversionRate  Decimal? @db.Decimal(5,4) // Click-through rate
-  
-  // Time tracking
-  featuredAt      DateTime @default(now()) // When the job was made featured
-  lastUpdated     DateTime @updatedAt
-  
-  // Relations
-  job             Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  
+  id             String   @id @default(uuid())
+  jobId          String
+  impressions    Int      @default(0)
+  clicks         Int      @default(0)
+  emailAlerts    Int      @default(0)
+  emailClicks    Int      @default(0)
+  conversionRate Decimal? @db.Decimal(5, 4)
+  featuredAt     DateTime @default(now())
+  lastUpdated    DateTime @updatedAt
+  job            Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
   @@index([jobId])
   @@index([featuredAt])
 }
 
 model AnalyticsReport {
-  id          String   @id @default(uuid())
-  type        String   // daily, weekly, monthly, custom
+  id          String    @id @default(uuid())
+  type        String
   generatedBy String
   data        Json
-  recipients  String?  // comma-separated email list
-  status      String   @default("generated") // generated, sent, failed
+  recipients  String?
+  status      String    @default("generated")
   sentAt      DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([type])
   @@index([generatedBy])
@@ -1094,23 +1137,316 @@ model AnalyticsReport {
 }
 
 model ImpersonationSession {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   adminId      String
   targetUserId String
   reason       String
   token        String
-  isActive     Boolean  @default(true)
+  isActive     Boolean   @default(true)
   expiresAt    DateTime
   endedAt      DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  targetUser   User     @relation("ImpersonationTarget", fields: [targetUserId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  targetUser   User      @relation("ImpersonationTarget", fields: [targetUserId], references: [id])
 
   @@index([adminId])
   @@index([targetUserId])
   @@index([isActive])
   @@index([expiresAt])
+  @@index([createdAt])
+}
+
+model JobPostingPattern {
+  id                 String    @id @default(uuid())
+  employerId         String
+  companyName        String
+  titlePattern       String
+  descriptionPattern String?
+  locationPattern    String?
+  salaryPattern      String?
+  postingFrequency   Int       @default(1)
+  firstSeenAt        DateTime  @default(now())
+  lastSeenAt         DateTime  @default(now())
+  suspiciousScore    Decimal?  @default(0.0) @db.Decimal(3, 2)
+  flaggedForReview   Boolean   @default(false)
+  reviewedAt         DateTime?
+  reviewedBy         String?
+  reviewNotes        String?
+  isBlacklisted      Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  employer           User      @relation("EmployerPatterns", fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@index([employerId])
+  @@index([companyName])
+  @@index([suspiciousScore])
+  @@index([flaggedForReview])
+  @@index([postingFrequency])
+}
+
+model DuplicateJobAlert {
+  id              String    @id @default(uuid())
+  originalJobId   String
+  duplicateJobId  String
+  similarityScore Decimal   @db.Decimal(3, 2)
+  detectionMethod String
+  detectedAt      DateTime  @default(now())
+  reviewStatus    String    @default("pending")
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  actionTaken     String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  duplicateJob    Job       @relation("DuplicateJob", fields: [duplicateJobId], references: [id], onDelete: Cascade)
+  originalJob     Job       @relation("OriginalJob", fields: [originalJobId], references: [id], onDelete: Cascade)
+
+  @@index([originalJobId])
+  @@index([duplicateJobId])
+  @@index([similarityScore])
+  @@index([reviewStatus])
+  @@index([detectionMethod])
+  @@index([detectedAt])
+}
+
+model SystemBackup {
+  id        String   @id @default(uuid())
+  filename  String   @unique
+  size      Int      @default(0)
+  status    String   @default("pending")
+  type      String   @default("manual")
+  metadata  Json?
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+  @@index([createdBy])
+}
+
+model JobSeekerProfile {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  zipCode                 String?
+  distanceWillingToTravel Int?
+  availabilityDays        String[]
+  availabilityShifts      String[]
+  jobTypes                String[]
+  skills                  String[]
+  careerGoal              String?
+  optInEmailAlerts        Boolean  @default(false)
+  optInSmsAlerts          Boolean  @default(false)
+  allowEmployerMessages   Boolean  @default(false)
+  resumeData              Json?
+  whatAreYouGoodAt        String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([zipCode])
+  @@index([careerGoal])
+  @@index([optInEmailAlerts])
+}
+
+model EmployerProfile {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  companyName             String
+  industryType            String?
+  logoUrl                 String?
+  location                String?
+  hiresTeens              Boolean  @default(false)
+  hiresSeniors            Boolean  @default(false)
+  providesTraining        Boolean  @default(false)
+  requiresBackgroundCheck Boolean  @default(false)
+  jobRolesCommon          String[]
+  postingPrefersAi        Boolean  @default(false)
+  contactMethod           String?
+  hiringGoal              String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([companyName])
+  @@index([industryType])
+  @@index([hiringGoal])
+}
+
+model ResumeEmbedding {
+  id               String     @id @default(uuid())
+  userId           String     @unique
+  embedding        String
+  rawText          String
+  processedText    String?
+  skills           String[]
+  experience       String[]
+  education        String[]
+  jobTitles        String[]
+  industries       String[]
+  lastJobProcessed DateTime   @default(now())
+  embeddingModel   String     @default("text-embedding-3-small")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  jobMatches       JobMatch[]
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([lastJobProcessed])
+  @@index([skills])
+  @@index([jobTitles])
+  @@index([industries])
+}
+
+model JobMatch {
+  id               String          @id @default(uuid())
+  jobId            String
+  userId           String
+  score            Float
+  matchReason      String[]
+  emailSent        Boolean         @default(false)
+  emailSentAt      DateTime?
+  emailOpened      Boolean         @default(false)
+  emailOpenedAt    DateTime?
+  emailClicked     Boolean         @default(false)
+  emailClickedAt   DateTime?
+  applied          Boolean         @default(false)
+  appliedAt        DateTime?
+  matchType        String          @default("ai_featured")
+  notificationSent Boolean         @default(false)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  job              Job             @relation(fields: [jobId], references: [id], onDelete: Cascade, map: "JobMatch_jobId_fkey")
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade, map: "JobMatch_userId_fkey")
+  resumeEmbedding  ResumeEmbedding @relation(fields: [userId], references: [userId], map: "JobMatch_resumeEmbedding_fkey")
+
+  @@unique([jobId, userId])
+  @@index([jobId])
+  @@index([userId])
+  @@index([score])
+  @@index([emailSent])
+  @@index([matchType])
+  @@index([createdAt])
+  @@index([jobId, score])
+  @@index([userId, score])
+}
+
+model JobProcessingQueue {
+  id           String    @id @default(uuid())
+  jobType      String
+  jobId        String?
+  userId       String?
+  status       String    @default("pending")
+  priority     Int       @default(0)
+  payload      Json
+  retryCount   Int       @default(0)
+  maxRetries   Int       @default(3)
+  error        String?
+  processedAt  DateTime?
+  completedAt  DateTime?
+  scheduledFor DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status])
+  @@index([jobType])
+  @@index([priority])
+  @@index([scheduledFor])
+  @@index([createdAt])
+  @@index([jobType, status])
+  @@index([status, scheduledFor])
+}
+
+model MatchingConfig {
+  id               String    @id @default(uuid())
+  name             String    @unique
+  minMatchScore    Float     @default(80.0)
+  maxEmailsPerDay  Int       @default(50)
+  maxEmailsPerHour Int       @default(10)
+  batchSize        Int       @default(50)
+  emailTemplate    String    @default("featured_job_match")
+  isActive         Boolean   @default(true)
+  lastUsed         DateTime?
+  processedJobs    Int       @default(0)
+  sentEmails       Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([name])
+  @@index([isActive])
+  @@index([minMatchScore])
+}
+
+model SecurityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  event     String
+  ipAddress String   @default("")
+  userAgent String   @default("")
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([userId, event])
+}
+
+model WebhookEvent {
+  id            String   @id @default(uuid())
+  stripeEventId String   @unique
+  type          String
+  data          Json
+  processedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@index([stripeEventId])
+  @@index([type])
+  @@index([processedAt])
+}
+
+model WebhookError {
+  id            String   @id @default(uuid())
+  stripeEventId String?
+  eventType     String?
+  errorType     String
+  errorMessage  String
+  stackTrace    String?
+  createdAt     DateTime @default(now())
+
+  @@index([stripeEventId])
+  @@index([eventType])
+  @@index([errorType])
+  @@index([createdAt])
+}
+
+model PaymentFailure {
+  id              String        @id @default(uuid())
+  userId          String
+  subscriptionId  String?
+  invoiceId       String?
+  paymentIntentId String?
+  amount          Int
+  currency        String        @default("usd")
+  reason          String
+  attemptCount    Int           @default(1)
+  nextRetryAt     DateTime?
+  resolved        Boolean       @default(false)
+  resolvedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([invoiceId])
+  @@index([paymentIntentId])
+  @@index([resolved])
+  @@index([nextRetryAt])
   @@index([createdAt])
 }
 
@@ -1254,316 +1590,29 @@ enum JobPostStatus {
   archived
 }
 
-// Duplicate tracking models
-model JobPostingPattern {
-  id                String    @id @default(uuid())
-  employerId        String
-  companyName       String
-  titlePattern      String
-  descriptionPattern String?
-  locationPattern   String?
-  salaryPattern     String?
-  postingFrequency  Int       @default(1)
-  firstSeenAt       DateTime  @default(now())
-  lastSeenAt        DateTime  @default(now())
-  suspiciousScore   Decimal?  @db.Decimal(3,2) @default(0.0)
-  flaggedForReview  Boolean   @default(false)
-  reviewedAt        DateTime?
-  reviewedBy        String?
-  reviewNotes       String?
-  isBlacklisted     Boolean   @default(false)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  employer          User      @relation("EmployerPatterns", fields: [employerId], references: [id], onDelete: Cascade)
-
-  @@index([employerId])
-  @@index([companyName])
-  @@index([suspiciousScore])
-  @@index([flaggedForReview])
-  @@index([postingFrequency])
+enum NotificationType {
+  job_match
+  application_update
+  message_received
+  system_announcement
+  credit_alert
+  payment_reminder
+  security_alert
+  feature_update
+  marketing
 }
 
-model DuplicateJobAlert {
-  id               String    @id @default(uuid())
-  originalJobId    String
-  duplicateJobId   String
-  similarityScore  Decimal   @db.Decimal(3,2)
-  detectionMethod  String    // 'title_hash', 'description_hash', 'ai_analysis', 'manual'
-  detectedAt       DateTime  @default(now())
-  reviewStatus     String    @default("pending") // 'pending', 'confirmed', 'false_positive', 'ignored'
-  reviewedAt       DateTime?
-  reviewedBy       String?
-  actionTaken      String?   // 'removed', 'flagged', 'merged', 'none'
-  notes            String?
-  createdAt        DateTime  @default(now())
-
-  originalJob      Job       @relation("OriginalJob", fields: [originalJobId], references: [id], onDelete: Cascade)
-  duplicateJob     Job       @relation("DuplicateJob", fields: [duplicateJobId], references: [id], onDelete: Cascade)
-
-  @@index([originalJobId])
-  @@index([duplicateJobId])
-  @@index([similarityScore])
-  @@index([reviewStatus])
-  @@index([detectionMethod])
-  @@index([detectedAt])
+enum NotificationPriority {
+  low
+  normal
+  high
+  urgent
 }
 
-// Database backup system
-model SystemBackup {
-  id        String   @id @default(uuid())
-  filename  String   @unique
-  size      Int      @default(0)
-  status    String   @default("pending") // pending, completed, failed
-  type      String   @default("manual")  // manual, automated
-  metadata  Json?    // Store backup details, table counts, etc.
-  createdBy String?  // User ID who created the backup
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([status])
-  @@index([type])
-  @@index([createdAt])
-  @@index([createdBy])
-}
-
-// Job Seeker Profile for enhanced onboarding and matching
-model JobSeekerProfile {
-  id                        String   @id @default(uuid())
-  userId                    String   @unique
-  zipCode                   String?
-  distanceWillingToTravel   Int?     // in miles
-  availabilityDays          String[] // ["monday", "tuesday", etc.]
-  availabilityShifts        String[] // ["morning", "afternoon", "evening", "overnight"]
-  jobTypes                  String[] // types of jobs interested in
-  skills                    String[] // skills and certifications
-  careerGoal                String?  // "need_job_asap", "build_career", "exploring_fields"
-  optInEmailAlerts          Boolean  @default(false)
-  optInSmsAlerts            Boolean  @default(false)
-  allowEmployerMessages     Boolean  @default(false)
-  resumeData                Json?    // parsed resume data as JSON
-  whatAreYouGoodAt          String?  // freeform text field
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-
-  user                      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([zipCode])
-  @@index([careerGoal])
-  @@index([optInEmailAlerts])
-}
-
-// Employer Profile for enhanced onboarding and hiring preferences
-model EmployerProfile {
-  id                        String   @id @default(uuid())
-  userId                    String   @unique
-  companyName               String
-  industryType              String?
-  logoUrl                   String?
-  location                  String?
-  hiresTeens                Boolean  @default(false)
-  hiresSeniors              Boolean  @default(false)
-  providesTraining          Boolean  @default(false)
-  requiresBackgroundCheck   Boolean  @default(false)
-  jobRolesCommon            String[] // common roles they hire for
-  postingPrefersAi          Boolean  @default(false)
-  contactMethod             String?  // "email", "phone", "dashboard_only"
-  hiringGoal                String?  // "urgently_hiring", "seasonal", "always_hiring"
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-
-  user                      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([companyName])
-  @@index([industryType])
-  @@index([hiringGoal])
-}
-
-// Resume embeddings for AI job matching
-model ResumeEmbedding {
-  id                String   @id @default(uuid())
-  userId            String   @unique
-  embedding         String   // Vector embedding as JSON string
-  rawText           String   // Raw text content of resume
-  processedText     String?  // Cleaned and processed text
-  skills            String[] // Extracted skills
-  experience        String[] // Extracted experience
-  education         String[] // Extracted education
-  jobTitles         String[] // Previous job titles
-  industries        String[] // Previous industries
-  lastJobProcessed  DateTime @default(now()) // When this embedding was last generated
-  embeddingModel    String   @default("text-embedding-3-small") // Model used for embedding
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobMatches        JobMatch[]
-
-  @@index([userId])
-  @@index([lastJobProcessed])
-  @@index([skills])
-  @@index([jobTitles])
-  @@index([industries])
-}
-
-// Job matching scores and alerts
-model JobMatch {
-  id                String   @id @default(uuid())
-  jobId             String
-  userId            String
-  score             Float    // Cosine similarity score (0-100)
-  matchReason       String[] // Array of match reasons ["skills", "experience", "location"]
-  emailSent         Boolean  @default(false)
-  emailSentAt       DateTime?
-  emailOpened       Boolean  @default(false)
-  emailOpenedAt     DateTime?
-  emailClicked      Boolean  @default(false)
-  emailClickedAt    DateTime?
-  applied           Boolean  @default(false)
-  appliedAt         DateTime?
-  matchType         String   @default("ai_featured") // ai_featured, ai_alert, manual
-  notificationSent  Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  job               Job              @relation(fields: [jobId], references: [id], onDelete: Cascade, map: "JobMatch_jobId_fkey")
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade, map: "JobMatch_userId_fkey")
-  resumeEmbedding   ResumeEmbedding  @relation(fields: [userId], references: [userId], map: "JobMatch_resumeEmbedding_fkey")
-
-  @@unique([jobId, userId]) // Prevent duplicate matches for same job/user
-  @@index([jobId])
-  @@index([userId])
-  @@index([score])
-  @@index([emailSent])
-  @@index([matchType])
-  @@index([createdAt])
-  @@index([jobId, score]) // For finding top matches for a job
-  @@index([userId, score]) // For finding top matches for a user
-}
-
-// Background job processing queue
-model JobProcessingQueue {
-  id                String   @id @default(uuid())
-  jobType           String   // "featured_job_matching", "resume_embedding", "email_batch"
-  jobId             String?  // Related job ID if applicable
-  userId            String?  // Related user ID if applicable
-  status            String   @default("pending") // pending, processing, completed, failed, cancelled
-  priority          Int      @default(0) // Higher numbers = higher priority
-  payload           Json     // Job-specific data
-  retryCount        Int      @default(0)
-  maxRetries        Int      @default(3)
-  error             String?  // Error message if failed
-  processedAt       DateTime?
-  completedAt       DateTime?
-  scheduledFor      DateTime @default(now()) // When to process this job
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  @@index([status])
-  @@index([jobType])
-  @@index([priority])
-  @@index([scheduledFor])
-  @@index([createdAt])
-  @@index([jobType, status])
-  @@index([status, scheduledFor]) // For finding jobs ready to process
-}
-
-// AI matching configuration and settings
-model MatchingConfig {
-  id                    String   @id @default(uuid())
-  name                  String   @unique
-  minMatchScore         Float    @default(80.0) // Minimum score to send email
-  maxEmailsPerDay       Int      @default(50) // Rate limiting
-  maxEmailsPerHour      Int      @default(10) // Rate limiting
-  batchSize             Int      @default(50) // How many users to process at once
-  emailTemplate         String   @default("featured_job_match")
-  isActive              Boolean  @default(true)
-  lastUsed              DateTime?
-  processedJobs         Int      @default(0) // Total jobs processed with this config
-  sentEmails            Int      @default(0) // Total emails sent with this config
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  @@index([name])
-  @@index([isActive])
-  @@index([minMatchScore])
-}
-
-// Security audit logging
-model SecurityLog {
-  id        String   @id @default(uuid())
-  userId    String
-  event     String   // LOGIN_SUCCESS, LOGIN_FAILED, PASSWORD_RESET_REQUESTED, etc.
-  ipAddress String   @default("")
-  userAgent String   @default("")
-  metadata  Json     @default("{}") // Additional event-specific data
-  createdAt DateTime @default(now())
-  
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([event])
-  @@index([createdAt])
-  @@index([userId, event])
-}
-
-// Webhook event tracking for idempotency and audit
-model WebhookEvent {
-  id             String   @id @default(uuid())
-  stripeEventId  String   @unique
-  type           String   // Event type from Stripe
-  data           Json     // Full event data
-  processedAt    DateTime @default(now())
-  createdAt      DateTime @default(now())
-
-  @@index([stripeEventId])
-  @@index([type])
-  @@index([processedAt])
-}
-
-// Webhook error logging for monitoring
-model WebhookError {
-  id             String   @id @default(uuid())
-  stripeEventId  String?
-  eventType      String?
-  errorType      String   // SIGNATURE_VERIFICATION, MISSING_METADATA, etc.
-  errorMessage   String
-  stackTrace     String?
-  createdAt      DateTime @default(now())
-
-  @@index([stripeEventId])
-  @@index([eventType])
-  @@index([errorType])
-  @@index([createdAt])
-}
-
-// Payment failure tracking for retry logic and customer service
-model PaymentFailure {
-  id               String    @id @default(uuid())
-  userId           String
-  subscriptionId   String?
-  invoiceId        String?
-  paymentIntentId  String?
-  amount           Int       // Amount in cents
-  currency         String    @default("usd")
-  reason           String    // Failure reason from Stripe
-  attemptCount     Int       @default(1)
-  nextRetryAt      DateTime?
-  resolved         Boolean   @default(false)
-  resolvedAt       DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
-
-  @@index([userId])
-  @@index([subscriptionId])
-  @@index([invoiceId])
-  @@index([paymentIntentId])
-  @@index([resolved])
-  @@index([nextRetryAt])
-  @@index([createdAt])
+enum MessageType {
+  direct
+  application_inquiry
+  job_inquiry
+  system_message
+  support_ticket
 }

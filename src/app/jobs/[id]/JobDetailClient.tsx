@@ -22,12 +22,12 @@ import {
   SparklesIcon,
   PaperAirplaneIcon,
   MegaphoneIcon,
-  ArrowTrendingUpIcon
+  ArrowTrendingUpIcon,
 } from '@/components/ui/card';
 import {
   import {
   formatJobDescription,
-  extractJobHighlights
+  extractJobHighlights,
 } from '@/lib/utils/jobDescriptionFormatter';
 
 interface JobDetailClientProps {

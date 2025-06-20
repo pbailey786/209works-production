@@ -1,7 +1,9 @@
-import { CaretSortIcon, CheckIcon } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-
 'use client';
+
+import * as React from 'react';
+import * as SelectPrimitive from '@radix-ui/react-select';
+import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
+import { cn } from '@/lib/utils';
 
 
 

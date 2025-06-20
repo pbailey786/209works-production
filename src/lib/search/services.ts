@@ -17,7 +17,7 @@ import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute
+  getCacheOrExecute,
 } from '@/components/ui/card';
 import {
   import {
@@ -27,7 +27,7 @@ import {
   RelevanceScorer,
   GeolocationUtils,
   FacetedSearch,
-  SEARCH_CONFIG
+  SEARCH_CONFIG,
 } from './algorithms';
 
 // Enhanced search service for jobs

@@ -1,13 +1,12 @@
-import { useState } from '@/components/ui/card';
-import { usePathname } from '@/components/ui/card';
-import { cn } from '@/components/ui/card';
-import { Permission } from '@/components/ui/card';
-import { usePermissions } from '@/hooks/usePermissions';
-
 'use client';
 
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { Permission } from '@/lib/types/permissions';
+import { usePermissions } from '@/hooks/usePermissions';
 import {
-  import {
   LayoutDashboard,
   FileText,
   Users,
@@ -28,7 +27,7 @@ import {
   Mail,
   Send,
   TestTube,
-  CreditCard
+  CreditCard,
 } from 'lucide-react';
 
 interface NavItem {

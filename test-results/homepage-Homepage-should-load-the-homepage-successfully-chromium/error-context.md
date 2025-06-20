@@ -1,0 +1,118 @@
+# Page snapshot
+
+```yaml
+- link "Skip to Clerk keyless mode content":
+  - /url: "#--clerk-keyless-prompt-button"
+- main:
+  - link "209 209 Works Local jobs in the Central Valley":
+    - /url: /
+    - text: "209"
+    - heading "209 Works" [level=1]
+    - paragraph: Local jobs in the Central Valley
+  - text: Central Valley
+  - navigation:
+    - link "Jobs":
+      - /url: /jobs
+    - link "Employers":
+      - /url: /employers
+  - link "Sign In":
+    - /url: /sign-in
+  - link "Get Started":
+    - /url: /sign-up
+  - heading "209 WORKS" [level=1]
+  - paragraph: Built for the 209. Made for the people who work here. Find your next opportunity in Central Valley.
+  - link "Get Started":
+    - /url: /sign-up
+  - link "Sign In":
+    - /url: /sign-in
+  - heading "Why Choose 209 Works?" [level=2]
+  - paragraph: We're focused exclusively on Central Valley, connecting local talent with local opportunities in Stockton, Modesto, Tracy and surrounding areas.
+  - img
+  - heading "Local Focus" [level=3]
+  - paragraph: Every job is in the 209 area code. No remote work, no out-of-state positions. Just local opportunities for local people in Central Valley.
+  - img
+  - heading "JobsGPT" [level=3]
+  - paragraph: Chat with our AI assistant to find jobs that match your skills and preferences. It's like texting a friend who knows every job in Central Valley.
+  - img
+  - heading "Fast & Simple" [level=3]
+  - paragraph: No complicated forms or endless scrolling. Find what you're looking for quickly and apply with confidence.
+  - heading "Ready to Find Your Next Opportunity?" [level=2]
+  - paragraph: Join hundreds of job seekers and employers who are already using 209 Worksto connect with local opportunities in Central Valley.
+  - link "Get Started Today":
+    - /url: /sign-up
+  - text: "209"
+  - heading "209 Works" [level=3]
+  - paragraph: Local jobs in the Central Valley
+  - text: Serving Central Valley Stockton • Modesto • Tracy • Manteca • Lodi • Turlock • Merced Central Valley Focus
+  - heading "For Job Seekers" [level=4]
+  - list:
+    - listitem:
+      - link "Browse Jobs":
+        - /url: /jobs
+    - listitem:
+      - link "JobsGPT Chat":
+        - /url: /jobs?chat=true
+    - listitem:
+      - link "Career Resources":
+        - /url: /resources
+    - listitem:
+      - link "Resume Builder":
+        - /url: /resume
+  - heading "For Employers" [level=4]
+  - list:
+    - listitem:
+      - link "Post a Job":
+        - /url: /employers/post-job
+    - listitem:
+      - link "Employer Dashboard":
+        - /url: /employers/dashboard
+    - listitem:
+      - link "Pricing":
+        - /url: /employers/pricing
+    - listitem:
+      - link "Success Stories":
+        - /url: /employers/success
+  - heading "Company" [level=4]
+  - list:
+    - listitem:
+      - link "About Us":
+        - /url: /about
+    - listitem:
+      - link "Contact":
+        - /url: /contact
+    - listitem:
+      - link "Privacy Policy":
+        - /url: /privacy
+    - listitem:
+      - link "Terms of Service":
+        - /url: /terms
+  - heading "Other Regions" [level=5]
+  - list:
+    - listitem: 209 Works (Current)
+    - listitem:
+      - link "916 Works":
+        - /url: https://916.works
+    - listitem:
+      - link "510 Works":
+        - /url: https://510.works
+    - listitem:
+      - link "925 Works":
+        - /url: https://925.works
+    - listitem:
+      - link "559 Works":
+        - /url: https://559.works
+  - text: © 2025 209 Works. All rights reserved.Built for the 209. Made for the people who work here.
+  - link "Facebook":
+    - /url: "#"
+  - link "Twitter":
+    - /url: "#"
+  - link "Instagram":
+    - /url: "#"
+  - link "LinkedIn":
+    - /url: "#"
+- alert
+- button "Open Next.js Dev Tools":
+  - img
+- button "Clerk is in keyless mode":
+  - paragraph: Clerk is in keyless mode
+```

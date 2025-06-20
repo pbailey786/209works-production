@@ -12,7 +12,7 @@ import {
   import {
   createSuccessResponse,
   NotFoundError,
-  AuthorizationError
+  AuthorizationError,
 } from '@/components/ui/card';
 import {
   import {
@@ -20,12 +20,12 @@ import {
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags
+  invalidateCacheByTags,
 } from '@/components/ui/card';
 import {
   import {
   calculateOffsetPagination,
-  createPaginatedResponse
+  createPaginatedResponse,
 } from '@/lib/cache/pagination';
 
 // Validation schemas

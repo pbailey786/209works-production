@@ -10,7 +10,7 @@ import { getAtomicCacheManager } from './atomic-cache-manager';
   SearchCacheService as NewSearchCacheService,
 import {
   import {
-  CacheHealthMonitor
+  CacheHealthMonitor,
 } from './enhanced-cache-services';
 
 /**

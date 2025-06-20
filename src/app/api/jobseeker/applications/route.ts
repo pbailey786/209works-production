@@ -1,0 +1,88 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
+
+export async function GET(request: NextRequest) {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Get job seeker profile
+    const jobSeekerProfile = await prisma.jobSeekerProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!jobSeekerProfile) {
+      return NextResponse.json({
+        applications: []
+      });
+    }
+
+    // Get applications for this job seeker
+    const applications = await prisma.application.findMany({
+      where: {
+        jobSeekerId: jobSeekerProfile.id,
+      },
+      include: {
+        job: {
+          include: {
+            employer: true,
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 20 // Limit to recent applications
+    });
+
+    // Transform applications for frontend
+    const transformedApplications = applications.map(app => ({
+      id: app.id,
+      jobTitle: app.job.title,
+      company: app.job.employer?.companyName || 'Unknown Company',
+      appliedDate: app.createdAt.toISOString(),
+      status: mapApplicationStatus(app.status),
+      location: app.job.location,
+    }));
+
+    return NextResponse.json({
+      applications: transformedApplications
+    });
+
+  } catch (error) {
+    console.error('Error fetching job seeker applications:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+function mapApplicationStatus(status: string): 'pending' | 'viewed' | 'interview' | 'rejected' | 'offer' {
+  switch (status.toLowerCase()) {
+    case 'submitted':
+    case 'pending':
+      return 'pending';
+    case 'reviewed':
+    case 'viewed':
+      return 'viewed';
+    case 'interview':
+    case 'interviewing':
+      return 'interview';
+    case 'rejected':
+    case 'declined':
+      return 'rejected';
+    case 'offer':
+    case 'hired':
+      return 'offer';
+    default:
+      return 'pending';
+  }
+}

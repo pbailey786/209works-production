@@ -64,8 +64,8 @@ export const DOMAIN_CONFIGS: Record<string, DomainConfig> = {
     },
     branding: {
       logoPath: '/logos/209-works-logo.png',
-      primaryColor: '#2d4a3e',
-      accentColor: '#ff6b35',
+      primaryColor: '#ff6b35',
+      accentColor: '#2d4a3e',
     },
     social: {
       facebook: 'https://www.facebook.com/209works',
@@ -200,6 +200,58 @@ export const DOMAIN_CONFIGS: Record<string, DomainConfig> = {
       facebook: 'https://www.facebook.com/norcaljobs',
       instagram: 'https://www.instagram.com/norcaljobs',
       twitter: '@norcaljobs',
+    },
+  },
+  '925.works': {
+    domain: '925.works',
+    areaCode: '925',
+    region: 'East Bay & Tri-Valley',
+    displayName: '925 Works',
+    description: 'Local jobs in the East Bay, Tri-Valley, and Contra Costa County',
+    cities: [
+      'Concord',
+      'Walnut Creek',
+      'Antioch',
+      'Pittsburg',
+      'Pleasanton',
+      'Livermore',
+      'Dublin',
+      'San Ramon',
+      'Danville',
+      'Martinez',
+      'Brentwood',
+      'Clayton',
+      'Lafayette',
+      'Orinda',
+      'Moraga'
+    ],
+    coordinates: { lat: 37.9755, lng: -122.0310 },
+    radius: 35,
+    seo: {
+      title: '925 Works - Local Jobs in East Bay & Tri-Valley | Concord, Walnut Creek, Pleasanton',
+      description: 'Find local jobs in Concord, Walnut Creek, Pleasanton, Livermore, and throughout the 925 area. Connect with East Bay and Tri-Valley employers hiring now.',
+      keywords: [
+        '925 jobs',
+        'East Bay jobs',
+        'Tri-Valley jobs',
+        'Concord jobs',
+        'Walnut Creek jobs',
+        'Pleasanton jobs',
+        'Livermore jobs',
+        'Contra Costa jobs',
+        'local employment',
+        'California jobs'
+      ]
+    },
+    branding: {
+      logoPath: '/logos/925-works-logo.png',
+      primaryColor: '#7c3aed', // Purple
+      accentColor: '#06b6d4',  // Cyan
+    },
+    social: {
+      facebook: 'https://www.facebook.com/925jobs',
+      instagram: 'https://www.instagram.com/925jobs',
+      twitter: '@925jobs',
     },
   },
 };

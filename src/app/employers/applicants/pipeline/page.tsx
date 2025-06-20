@@ -13,7 +13,7 @@ import {
   Briefcase,
   UserCheck,
   UserX,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 
 interface Application {

@@ -13,7 +13,7 @@ import {
   Instagram,
   MessageSquare,
   Sparkles,
-  DollarSign
+  DollarSign,
 } from 'lucide-react';
 
 interface UpsellOption {

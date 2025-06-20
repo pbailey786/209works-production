@@ -1,16 +1,15 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { formatDistanceToNow } from 'date-fns';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
 import {
-  import {
   Heart,
   MapPin,
   DollarSign,
   Clock,
   Trash2,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 
 interface SavedJob {

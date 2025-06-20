@@ -1,10 +1,14 @@
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { hasPermission, Permission } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
+import { hasPermission, Permission } from '@/lib/rbac/permissions';
+import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-
+import Link from 'next/link';
+import AdManagementStats from '@/components/admin/AdManagementStats';
+import AdManagementFilters from '@/components/admin/AdManagementFilters';
+import AdManagementTable from '@/components/admin/AdManagementTable';
+import {
   Card,
   CardContent,
   CardDescription,

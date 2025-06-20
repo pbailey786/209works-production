@@ -14,7 +14,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -25,7 +25,7 @@ import {
   Star,
   Briefcase,
   GraduationCap,
-  Heart
+  Heart,
 } from 'lucide-react';
 
 interface RegionConfig {

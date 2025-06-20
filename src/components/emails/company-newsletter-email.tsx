@@ -12,7 +12,7 @@ import {
   Text,
   Hr,
   Link,
-  Img
+  Img,
 } from '@react-email/components';
 
 interface NewsletterItem {

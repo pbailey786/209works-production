@@ -11,7 +11,7 @@ import {
   Sparkles,
   TrendingUp,
   Shield,
-  Clock
+  Clock,
 } from 'lucide-react';
 
 interface CreditPackage {

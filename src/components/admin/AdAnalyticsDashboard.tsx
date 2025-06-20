@@ -11,7 +11,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -27,7 +27,7 @@ import {
   ArrowLeft,
   Download,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 
 interface AdAnalyticsProps {

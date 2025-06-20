@@ -54,6 +54,8 @@ export async function GET(req: NextRequest) {
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
     const tab = url.searchParams.get('tab') || 'applied';
+    const search = url.searchParams.get('search') || '';
+    const sortBy = url.searchParams.get('sortBy') || 'date';
     const offset = (page - 1) * limit;
 
     // Build where clause based on tab
@@ -67,12 +69,40 @@ export async function GET(req: NextRequest) {
         break;
       case 'saved':
         whereClause.status = 'saved';
+        // Add search functionality for saved jobs
+        if (search) {
+          whereClause.job = {
+            OR: [
+              { title: { contains: search, mode: 'insensitive' } },
+              { company: { contains: search, mode: 'insensitive' } },
+              { location: { contains: search, mode: 'insensitive' } },
+            ],
+          };
+        }
         break;
       case 'archived':
         whereClause.status = 'archived';
         break;
       default:
         whereClause.status = { notIn: ['saved', 'archived'] };
+    }
+
+    // Build order by clause
+    let orderBy: any = { appliedAt: 'desc' }; // default
+
+    if (tab === 'saved' && sortBy) {
+      switch (sortBy) {
+        case 'company':
+          orderBy = { job: { company: 'asc' } };
+          break;
+        case 'title':
+          orderBy = { job: { title: 'asc' } };
+          break;
+        case 'date':
+        default:
+          orderBy = { appliedAt: 'desc' };
+          break;
+      }
     }
 
     // Get applications with job details
@@ -99,7 +129,7 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        orderBy: { appliedAt: 'desc' },
+        orderBy,
         skip: offset,
         take: limit,
       }),
@@ -191,19 +221,9 @@ export async function PATCH(req: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const userRecord = await prisma.user.findUnique({
+
+    const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-    });
-
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user from database
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
     });
 
     if (!user) {
@@ -320,18 +340,9 @@ export async function DELETE(req: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const userRecord = await prisma.user.findUnique({
+
+    const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-    });
-    
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
     });
 
     if (!user || user.role !== 'jobseeker') {

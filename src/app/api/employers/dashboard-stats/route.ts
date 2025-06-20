@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { requireRole } from '@/components/ui/card';
-import { prisma } from '@/lib/database/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/prisma';
 
 
 export async function GET(request: NextRequest) {
@@ -9,14 +9,21 @@ export async function GET(request: NextRequest) {
   try {
     console.log('🔍 Dashboard stats API called');
 
-    // Check authentication using modern session validator
-    const { user: authUser } = await requireRole(['employer', 'admin']);
+    // Check authentication using Clerk
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const authUser = { id: userId };
 
     console.log('🔍 Session check:', {
       hasUser: !!authUser,
-      hasEmail: !!authUser?.email,
       hasId: !!authUser?.id,
-      userEmail: authUser?.email,
       userId: authUser?.id
     });
 
@@ -37,7 +44,6 @@ export async function GET(request: NextRequest) {
         prisma.job.count({
           where: {
             employerId: authUser.id,
-            deletedAt: null // Exclude soft-deleted jobs
           }
         }),
 
@@ -45,31 +51,26 @@ export async function GET(request: NextRequest) {
         prisma.job.count({
           where: {
             employerId: authUser.id,
-            status: {
-              in: ['active', 'published']
-            },
-            deletedAt: null
+            status: 'ACTIVE'
           }
         }),
 
         // Total applications to this employer's jobs
-        prisma.jobApplication.count({
+        prisma.application.count({
           where: {
             job: {
               employerId: authUser.id,
-              deletedAt: null
             }
           }
         }),
 
         // New applications in last 30 days
-        prisma.jobApplication.count({
+        prisma.application.count({
           where: {
             job: {
               employerId: authUser.id,
-              deletedAt: null
             },
-            appliedAt: {
+            createdAt: {
               gte: thirtyDaysAgo
             }
           }

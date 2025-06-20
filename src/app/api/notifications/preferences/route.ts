@@ -1,0 +1,135 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
+import { z } from 'zod';
+
+// Validation schema
+const updatePreferencesSchema = z.object({
+  emailEnabled: z.boolean().optional(),
+  pushEnabled: z.boolean().optional(),
+  smsEnabled: z.boolean().optional(),
+  jobMatchEmail: z.boolean().optional(),
+  jobMatchPush: z.boolean().optional(),
+  applicationEmail: z.boolean().optional(),
+  applicationPush: z.boolean().optional(),
+  messageEmail: z.boolean().optional(),
+  messagePush: z.boolean().optional(),
+  systemEmail: z.boolean().optional(),
+  systemPush: z.boolean().optional(),
+  marketingEmail: z.boolean().optional(),
+  marketingPush: z.boolean().optional(),
+  quietHoursStart: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/).optional(),
+  quietHoursEnd: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/).optional(),
+  timezone: z.string().optional(),
+});
+
+// GET /api/notifications/preferences - Get user's notification preferences
+export async function GET(req: NextRequest) {
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Get user from database
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Get or create notification preferences
+    let preferences = await prisma.notificationPreference.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!preferences) {
+      // Create default preferences
+      preferences = await prisma.notificationPreference.create({
+        data: {
+          userId: user.id,
+        },
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      preferences,
+    });
+  } catch (error) {
+    console.error('Error fetching notification preferences:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch notification preferences' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT /api/notifications/preferences - Update user's notification preferences
+export async function PUT(req: NextRequest) {
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Get user from database
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    const body = await req.json();
+    const updateData = updatePreferencesSchema.parse(body);
+
+    // Update or create notification preferences
+    const preferences = await prisma.notificationPreference.upsert({
+      where: { userId: user.id },
+      update: {
+        ...updateData,
+        updatedAt: new Date(),
+      },
+      create: {
+        userId: user.id,
+        ...updateData,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Notification preferences updated successfully',
+      preferences,
+    });
+  } catch (error) {
+    console.error('Error updating notification preferences:', error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request data', details: error.errors },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: 'Failed to update notification preferences' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
 
 /**
@@ -211,14 +211,14 @@ export function withAISecurity(
 
       if (config.requireAuthentication) {
         const { userId } = await auth();
-    if (!userId) {
-      redirect('/signin');
-    }
-    
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
-    });
-        if (!user?.email) {
+        if (!userId) {
+          redirect('/signin');
+        }
+
+        const clerkUser = await prisma.user.findUnique({
+          where: { clerkId: userId! },
+        });
+        if (!clerkUser?.email) {
           return NextResponse.json(
             { error: 'Authentication required for this AI service' },
             { status: 401 }
@@ -226,7 +226,7 @@ export function withAISecurity(
         }
 
         user = await prisma.user.findUnique({
-          where: { email: user?.email },
+          where: { email: clerkUser?.email },
           select: { id: true, email: true, role: true },
         });
 
@@ -256,20 +256,23 @@ export function withAISecurity(
         }
       } else {
         // Try to get user if available (optional auth)
-        const { userId } = await auth();
-    if (!userId) {
-      redirect('/signin');
-    }
-    
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: userId! },
-    });
-        if (user?.email) {
-          user = await prisma.user.findUnique({
-            where: { email: user?.email },
-            select: { id: true, email: true, role: true },
-          });
-          isAuthenticated = !!user;
+        try {
+          const { userId } = await auth();
+          if (userId) {
+            const dbUser = await prisma.user.findUnique({
+              where: { clerkId: userId },
+            });
+            if (dbUser?.email) {
+              user = await prisma.user.findUnique({
+                where: { email: dbUser.email },
+                select: { id: true, email: true, role: true },
+              });
+              isAuthenticated = !!user;
+            }
+          }
+        } catch (error) {
+          // Optional auth failed, continue without user
+          console.log('Optional auth failed:', error);
         }
       }
 

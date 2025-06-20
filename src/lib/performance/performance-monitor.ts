@@ -248,3 +248,188 @@ export function throttle<T extends (...args: any[]) => any>(
     }
   };
 }
+
+// Enhanced Performance Tracking for Database and API Operations
+export interface DatabaseMetric {
+  query: string;
+  duration: number;
+  rowsAffected: number;
+  cacheHit: boolean;
+  region: string;
+  timestamp: Date;
+}
+
+export interface APIMetric {
+  endpoint: string;
+  method: string;
+  duration: number;
+  statusCode: number;
+  region: string;
+  timestamp: Date;
+}
+
+export class EnhancedPerformanceTracker {
+  private static dbMetrics: DatabaseMetric[] = [];
+  private static apiMetrics: APIMetric[] = [];
+  private static readonly MAX_METRICS = 1000;
+  private static readonly SLOW_QUERY_THRESHOLD = 1000; // 1 second
+  private static readonly SLOW_API_THRESHOLD = 2000; // 2 seconds
+
+  /**
+   * Track database query performance
+   */
+  static trackDatabaseQuery(metric: Omit<DatabaseMetric, 'timestamp'>) {
+    const fullMetric: DatabaseMetric = {
+      ...metric,
+      timestamp: new Date(),
+    };
+
+    this.dbMetrics.push(fullMetric);
+    this.trimMetrics(this.dbMetrics);
+
+    // Log slow queries
+    if (metric.duration > this.SLOW_QUERY_THRESHOLD) {
+      console.warn(`🐌 Slow Query: ${metric.query.substring(0, 50)}... took ${metric.duration}ms in ${metric.region}`);
+    }
+
+    // Send to analytics in production
+    if (process.env.NODE_ENV === 'production') {
+      this.sendDatabaseMetricToAnalytics(fullMetric);
+    }
+  }
+
+  /**
+   * Track API endpoint performance
+   */
+  static trackAPICall(metric: Omit<APIMetric, 'timestamp'>) {
+    const fullMetric: APIMetric = {
+      ...metric,
+      timestamp: new Date(),
+    };
+
+    this.apiMetrics.push(fullMetric);
+    this.trimMetrics(this.apiMetrics);
+
+    // Log slow APIs
+    if (metric.duration > this.SLOW_API_THRESHOLD) {
+      console.warn(`🐌 Slow API: ${metric.method} ${metric.endpoint} took ${metric.duration}ms in ${metric.region}`);
+    }
+
+    // Send to analytics in production
+    if (process.env.NODE_ENV === 'production') {
+      this.sendAPIMetricToAnalytics(fullMetric);
+    }
+  }
+
+  /**
+   * Get performance summary
+   */
+  static getPerformanceSummary(region?: string) {
+    const now = new Date();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+    const recentDbMetrics = this.dbMetrics.filter(m =>
+      m.timestamp >= oneHourAgo && (!region || m.region === region)
+    );
+
+    const recentApiMetrics = this.apiMetrics.filter(m =>
+      m.timestamp >= oneHourAgo && (!region || m.region === region)
+    );
+
+    return {
+      database: {
+        totalQueries: recentDbMetrics.length,
+        averageDuration: this.calculateAverage(recentDbMetrics.map(m => m.duration)),
+        slowQueries: recentDbMetrics.filter(m => m.duration > this.SLOW_QUERY_THRESHOLD).length,
+        cacheHitRate: this.calculateCacheHitRate(recentDbMetrics),
+      },
+      api: {
+        totalCalls: recentApiMetrics.length,
+        averageDuration: this.calculateAverage(recentApiMetrics.map(m => m.duration)),
+        slowCalls: recentApiMetrics.filter(m => m.duration > this.SLOW_API_THRESHOLD).length,
+        errorRate: this.calculateErrorRate(recentApiMetrics),
+      },
+      region: region || 'all',
+      timestamp: now,
+    };
+  }
+
+  private static trimMetrics<T>(metrics: T[]) {
+    if (metrics.length > this.MAX_METRICS) {
+      metrics.splice(0, metrics.length - this.MAX_METRICS);
+    }
+  }
+
+  private static calculateAverage(values: number[]): number {
+    if (values.length === 0) return 0;
+    return Math.round(values.reduce((sum, val) => sum + val, 0) / values.length);
+  }
+
+  private static calculateCacheHitRate(metrics: DatabaseMetric[]): number {
+    if (metrics.length === 0) return 0;
+    const hits = metrics.filter(m => m.cacheHit).length;
+    return Math.round((hits / metrics.length) * 100);
+  }
+
+  private static calculateErrorRate(metrics: APIMetric[]): number {
+    if (metrics.length === 0) return 0;
+    const errors = metrics.filter(m => m.statusCode >= 400).length;
+    return Math.round((errors / metrics.length) * 100);
+  }
+
+  private static sendDatabaseMetricToAnalytics(metric: DatabaseMetric) {
+    // Send to your analytics service
+    fetch('/api/analytics/performance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'database', ...metric }),
+    }).catch(console.error);
+  }
+
+  private static sendAPIMetricToAnalytics(metric: APIMetric) {
+    // Send to your analytics service
+    fetch('/api/analytics/performance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'api', ...metric }),
+    }).catch(console.error);
+  }
+}
+
+/**
+ * Performance decorator for automatic tracking
+ */
+export function TrackPerformance(metricName?: string) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+    const name = metricName || `${target.constructor.name}.${propertyKey}`;
+
+    descriptor.value = async function (...args: any[]) {
+      const startTime = Date.now();
+
+      try {
+        const result = await originalMethod.apply(this, args);
+        const duration = Date.now() - startTime;
+
+        // Track as database query if it looks like a database operation
+        if (name.toLowerCase().includes('query') || name.toLowerCase().includes('find') || name.toLowerCase().includes('create')) {
+          EnhancedPerformanceTracker.trackDatabaseQuery({
+            query: name,
+            duration,
+            rowsAffected: Array.isArray(result) ? result.length : 1,
+            cacheHit: duration < 50, // Assume cache hit if very fast
+            region: '209', // Default region
+          });
+        }
+
+        return result;
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        console.error(`Performance tracking error in ${name}:`, error);
+        throw error;
+      }
+    };
+
+    return descriptor;
+  };
+}

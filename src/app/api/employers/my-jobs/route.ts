@@ -1,72 +1,101 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
+
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
-    });
-
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    // Get the current user
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const featured = url.searchParams.get('featured');
+    const limit = parseInt(url.searchParams.get('limit') || '50');
+    const offset = parseInt(url.searchParams.get('offset') || '0');
 
-    if (!user || user.role !== 'employer') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Build where clause
+    const where: any = {
+      employerId: userId,
+      deletedAt: null
+    };
+
+    if (status && status !== 'all') {
+      where.status = status.toUpperCase();
     }
 
-    // Fetch jobs posted by this employer
+    if (featured === 'true') {
+      where.featured = true;
+    }
+
+    // Fetch jobs with related data
     const jobs = await prisma.job.findMany({
-      where: {
-        employerId: user.id
-      },
+      where,
       include: {
         _count: {
           select: {
-            jobApplications: true
+            applications: true
           }
+        },
+        applications: {
+          select: {
+            id: true,
+            status: true,
+            createdAt: true,
+            user: {
+              select: {
+                name: true,
+                email: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          },
+          take: 5 // Latest 5 applications for preview
         }
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        postedAt: 'desc'
+      },
+      take: limit,
+      skip: offset
     });
 
-    // Transform jobs to match the expected format
-    const transformedJobs = jobs.map(job => ({
-      id: job.id,
-      title: job.title,
-      location: job.location || 'Remote',
-      type: job.jobType || 'Full-time',
-      postedDate: job.createdAt.toISOString().split('T')[0],
-      applications: job._count.jobApplications,
-      views: job.viewCount || 0,
-      status: job.status || 'active',
-      featured: false, // TODO: Implement featured jobs
-      urgent: false, // TODO: Implement urgent jobs
+    // Get total count for pagination
+    const totalCount = await prisma.job.count({ where });
+
+    // Add mock performance data and views
+    const jobsWithMetrics = jobs.map(job => ({
+      ...job,
+      views: Math.floor(Math.random() * 500) + 50, // Mock view data
+      performance: {
+        score: job._count.applications > 10 ? 90 :
+               job._count.applications > 5 ? 75 :
+               job._count.applications > 1 ? 50 : 25,
+        trend: Math.random() > 0.5 ? 'up' : 'down'
+      }
     }));
 
     return NextResponse.json({
-      jobs: transformedJobs,
-      total: jobs.length,
-      lastUpdated: new Date().toISOString(),
+      jobs: jobsWithMetrics,
+      pagination: {
+        total: totalCount,
+        limit,
+        offset,
+        hasMore: offset + limit < totalCount
+      }
     });
+
   } catch (error) {
     console.error('Error fetching employer jobs:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch employer jobs' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

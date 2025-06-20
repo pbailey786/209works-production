@@ -10,7 +10,7 @@ import {
   createAlertSchema,
   updateAlertSchema,
   testAlertSchema,
-  AlertCriteria
+  AlertCriteria,
 } from '@/components/ui/card';
 import {
   EnhancedJobMatchingService,

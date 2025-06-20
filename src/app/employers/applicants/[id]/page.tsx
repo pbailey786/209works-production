@@ -21,7 +21,7 @@ import {
   Gift,
   XCircle,
   AlertCircle,
-  Download
+  Download,
 } from 'lucide-react';
 
 interface ApplicationDetail {

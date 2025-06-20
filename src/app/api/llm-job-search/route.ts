@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { extractJobSearchFilters } from '@/components/ui/card';
-import { summarizeJobResults } from '@/components/ui/card';
-import { generateConversationalResponse } from '@/components/ui/card';
-import { analyzeJobMatches } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import {
+  extractJobSearchFilters,
+  generateConversationalResponse,
+  analyzeJobMatches
+} from '@/lib/ai';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   withAISecurity,
   aiSecurityConfigs,
   type AISecurityContext,

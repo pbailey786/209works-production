@@ -19,7 +19,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/card';
 import {
   import {
@@ -29,7 +29,7 @@ import {
   DropOffPoint,
   OptimizationRecommendation,
   JOB_SEEKER_FUNNEL,
-  EMPLOYER_FUNNEL
+  EMPLOYER_FUNNEL,
 } from '@/components/ui/card';
 import {
   import {
@@ -45,7 +45,7 @@ import {
   FunnelChart,
   Funnel,
   Cell,
-  LabelList
+  LabelList,
 } from '@/components/ui/card';
 import {
   import {
@@ -70,7 +70,7 @@ import {
   UserPlus,
   FileText,
   CreditCard,
-  Repeat
+  Repeat,
 } from 'lucide-react';
 
 interface FunnelDashboardProps {

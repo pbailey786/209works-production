@@ -18,7 +18,7 @@ import {
   AlertCircle,
   CheckCircle,
   Upload,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 
 interface CompanyProfile {

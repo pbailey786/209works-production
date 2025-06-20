@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from '@/components/ui/card';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 

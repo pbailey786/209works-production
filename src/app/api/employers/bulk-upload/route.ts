@@ -107,6 +107,29 @@ const bulkJobSchema = z.object({
     if (['enhanced', 'premium'].includes(normalized)) return normalized;
     return 'standard';
   }),
+  // Application preferences
+  applicationMethod: z.string().optional().transform((val) => {
+    if (!val) return 'internal';
+    const normalized = val.toLowerCase().trim();
+    if (['external_url', 'email'].includes(normalized)) return normalized;
+    return 'internal';
+  }),
+  externalApplicationUrl: z.string().url().optional(),
+  applicationEmail: z.string().email().optional(),
+  applicationInstructions: z.string().optional(),
+  // Supplemental questions
+  supplementalQuestions: z.string().optional().transform((val) => {
+    if (!val) return [];
+    // Split by semicolon or newline and filter empty strings
+    return val.split(/[;\n]/).map(q => q.trim()).filter(q => q.length > 0);
+  }),
+  questionsRequired: z.union([z.boolean(), z.string()]).optional().transform((val) => {
+    if (typeof val === 'string') {
+      const normalized = val.toLowerCase().trim();
+      return normalized === 'true' || normalized === 'yes' || normalized === '1' || normalized === 'required';
+    }
+    return val || false;
+  }),
 });
 
 const bulkUploadSchema = z.object({

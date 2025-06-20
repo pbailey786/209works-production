@@ -13,7 +13,7 @@ import {
   Clock,
   Send,
   ArrowLeft,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 
 interface SimpleJobForm {

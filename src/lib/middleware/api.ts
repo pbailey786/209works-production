@@ -15,7 +15,7 @@ import {
   import {
   startRequestLogging,
   endRequestLogging,
-  getPerformanceMetrics
+  getPerformanceMetrics,
 } from '@/components/ui/card';
 import {
   import {
@@ -23,13 +23,13 @@ import {
   createErrorResponse,
   createSuccessResponse,
   AuthenticationError,
-  AuthorizationError
+  AuthorizationError,
 } from '@/components/ui/card';
 import {
   import {
   errorMonitor,
   createErrorContext,
-  ErrorLogger
+  ErrorLogger,
 } from '../monitoring/error-monitor';
 
 // API middleware configuration interface

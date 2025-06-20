@@ -3,7 +3,7 @@
 import {
   import {
   ExclamationTriangleIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 
 export default function JobNotFound() {

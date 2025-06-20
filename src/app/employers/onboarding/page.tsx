@@ -19,7 +19,7 @@ import {
   GraduationCap,
   Home,
   TrendingUp,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 
 interface OnboardingData {

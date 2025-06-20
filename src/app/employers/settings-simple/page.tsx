@@ -16,7 +16,7 @@ import {
   Mail,
   Phone,
   Globe,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 
 interface CompanyProfile {

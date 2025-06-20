@@ -13,7 +13,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -32,7 +32,7 @@ import {
   Calendar,
   AlertTriangle,
   FileText,
-  Users
+  Users,
 } from 'lucide-react';
 
 interface JobModerationDetailProps {

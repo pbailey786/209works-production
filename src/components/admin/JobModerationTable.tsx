@@ -15,7 +15,7 @@ import {
   Building,
   DollarSign,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 
 interface Job {

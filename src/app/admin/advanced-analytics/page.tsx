@@ -1,12 +1,15 @@
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { prisma } from '@/lib/database/prisma';
-
-  BarChart3, 
-  FileText, 
-  UserCheck, 
+import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
+import AutomatedReportsPanel from '@/components/admin/AutomatedReportsPanel';
+import UserImpersonationPanel from '@/components/admin/UserImpersonationPanel';
+import {
+  BarChart3,
+  FileText,
+  UserCheck,
   Download,
   TrendingUp,
   Users,
@@ -24,8 +27,8 @@ export default async function AdvancedAnalyticsPage() {
       where: { clerkId: userId! },
     });
 
-  if (!session?.user || user?.role !== 'admin') {
-    redirect('/auth/signin');
+  if (!user || user?.role !== 'admin') {
+    redirect('/signin');
   }
 
   return (

@@ -10,7 +10,7 @@ import {
   Package,
   Loader2,
   X,
-  Check
+  Check,
 } from 'lucide-react';
 
 interface BuyCreditsModalProps {

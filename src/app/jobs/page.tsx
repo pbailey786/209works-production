@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback, Suspense } from '@/components/ui/card';
-import { useSearchParams, useRouter } from '@/components/ui/card';
-import { motion, AnimatePresence } from 'framer-motion';
-
 'use client';
 
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useDomain } from '@/lib/domain/context';
+import DomainAwareHeader from '@/components/layout/DomainAwareHeader';
+import DomainAwareFooter from '@/components/layout/DomainAwareFooter';
 import {
-  import {
   Search,
   Filter,
   MapPin,
@@ -14,16 +15,17 @@ import {
   Briefcase,
   X,
   ChevronDown,
-  SlidersHorizontal
+  SlidersHorizontal,
 } from 'lucide-react';
 
 
-const suggestions = [
-  'Full time warehouse jobs in Stockton',
-  'School janitor roles in Lodi',
-  'Delivery driver openings in Modesto',
-  'Part time retail cashier jobs in Tracy',
-  'Forklift operator in Manteca',
+// Dynamic suggestions based on domain - will be updated in component
+const getRegionalSuggestions = (config: any) => [
+  `Full time warehouse jobs in ${config.cities[0] || 'your area'}`,
+  `School janitor roles in ${config.cities[1] || 'local schools'}`,
+  `Delivery driver openings in ${config.cities[2] || 'the region'}`,
+  `Part time retail cashier jobs in ${config.cities[0] || 'your city'}`,
+  `Forklift operator in ${config.region}`,
 ];
 
 const jobTypes = [
@@ -72,6 +74,7 @@ interface SearchFilters {
 function JobsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { config, isLoading: isDomainLoading } = useDomain();
 
   // Search state
   const [filters, setFilters] = useState<SearchFilters>({
@@ -119,13 +122,18 @@ function JobsContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
 
+  // Get regional suggestions
+  const suggestions = config ? getRegionalSuggestions(config) : [];
+
   // Placeholder rotation
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIndex(prev => (prev + 1) % suggestions.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+    if (suggestions.length > 0) {
+      const interval = setInterval(() => {
+        setPlaceholderIndex(prev => (prev + 1) % suggestions.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [suggestions.length]);
 
   // Function to save search to history
   const saveSearchHistory = useCallback(async (query: string, filters: any) => {
@@ -187,6 +195,7 @@ function JobsContent() {
               : undefined,
             remote: searchFilters.remote,
             datePosted: searchFilters.datePosted,
+            region: config?.areaCode, // Add regional filtering
           },
         };
 
@@ -269,7 +278,7 @@ function JobsContent() {
 
             // Set a basic AI-style response for the fallback
             setAiResponse(
-              `I found ${jobItems.length} jobs matching "${searchFilters.query}" using enhanced search. While our AI analysis is temporarily unavailable, these results are ranked by relevance to help you find the best opportunities in the 209 area.`
+              `I found ${jobItems.length} jobs matching "${searchFilters.query}" using enhanced search. While our AI analysis is temporarily unavailable, these results are ranked by relevance to help you find the best opportunities in the ${config?.areaCode || '209'} area.`
             );
 
             // Update pagination info
@@ -408,15 +417,15 @@ function JobsContent() {
         const fallbackMessage = {
           id: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           type: 'assistant' as const,
-          content: "Hey there! I'm here to help you find work in the 209 area - Stockton, Modesto, Tracy, and all around the Central Valley. Been helping folks find good jobs around here for a while. What kind of work are you looking for?",
+          content: `Hey there! I'm here to help you find work in the ${config?.areaCode || '209'} area - ${config?.cities.slice(0, 3).join(', ') || 'Stockton, Modesto, Tracy'} and all around ${config?.region || 'the Central Valley'}. Been helping folks find good jobs around here for a while. What kind of work are you looking for?`,
           timestamp: new Date(),
         };
         setConversation(prev => [...prev, fallbackMessage]);
 
         // Add some helpful follow-up questions
         setFollowUpQuestions([
-          'What job opportunities are available in the 209 area?',
-          'Tell me about working in the Central Valley',
+          `What job opportunities are available in the ${config?.areaCode || '209'} area?`,
+          `Tell me about working in ${config?.region || 'the Central Valley'}`,
           'What career advice do you have?'
         ]);
       } finally {
@@ -484,8 +493,21 @@ function JobsContent() {
     return value !== '';
   }).length;
 
+  if (isDomainLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <DomainAwareHeader />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <DomainAwareHeader />
+
       {/* Header */}
       <div className="border-b bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 py-12">
@@ -494,7 +516,7 @@ function JobsContent() {
               JobsGPT: Smart Local Job Search
             </h1>
             <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600">
-              Powered by AI. Focused on Central California.
+              Powered by AI. Focused on {config.region}.
             </p>
 
             {hasSearched && (
@@ -1098,6 +1120,9 @@ function JobsContent() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <DomainAwareFooter />
     </div>
   );
 }

@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -25,7 +25,7 @@ import {
   Calendar,
   DollarSign,
   Target,
-  X
+  X,
 } from 'lucide-react';
 
 interface AdPreviewModalProps {

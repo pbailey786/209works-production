@@ -15,7 +15,7 @@ import {
   Sparkles,
   Building2,
   Users,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 
 // Component that uses search params - needs to be wrapped in Suspense

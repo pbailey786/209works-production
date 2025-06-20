@@ -1,10 +1,9 @@
-import { motion } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-
 'use client';
 
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
-  import {
   MapPin,
   Users,
   Briefcase,
@@ -19,7 +18,7 @@ import {
   Star,
   Building,
   Globe,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 
 const stats = [

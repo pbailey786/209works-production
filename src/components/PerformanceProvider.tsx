@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import {
   import {
   reportWebVitals,
-  PerformanceMonitor
+  PerformanceMonitor,
 } from '@/lib/performance/performance-monitor';
 
 export default function PerformanceProvider({

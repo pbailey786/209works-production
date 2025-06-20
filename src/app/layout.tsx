@@ -1,9 +1,13 @@
-import type { Metadata, Viewport } from '@/components/ui/card';
-import { Geist, Geist_Mono, Inter } from '@/components/ui/card';
-import { ClerkProvider } from '@/components/ui/card';
-import { Toaster } from '@/components/ui/card';
-import { headers } from '@/components/ui/card';
+import type { Metadata, Viewport } from 'next';
+import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import { ClerkProvider } from '@clerk/nextjs';
+// import { Toaster } from '@/components/ui/sonner';
+import { headers } from 'next/headers';
 import { getDomainConfig } from '@/lib/domain/config';
+import { DomainProvider } from '@/lib/domain/context';
+import PWAInstallPrompt from '@/components/pwa/PWAInstallPrompt';
+import { MobileLayout } from '@/components/mobile/MobileBottomNavigation';
+import './globals.css';
 
 
 const geistSans = Geist({
@@ -22,80 +26,37 @@ const inter = Inter({
   weight: ['400', '500', '600', '700', '800', '900'],
 });
 
+// Dynamic metadata based on domain
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
-  const hostname = headersList.get('host') || '209.works';
+  const hostname = headersList.get('host') || '';
   const domainConfig = getDomainConfig(hostname);
 
   return {
-    title: {
-      default: domainConfig.seo.title,
-      template: `%s | ${domainConfig.displayName}`,
-    },
+    title: domainConfig.seo.title,
     description: domainConfig.seo.description,
     keywords: domainConfig.seo.keywords.join(', '),
-    authors: [{ name: domainConfig.displayName }],
-    creator: domainConfig.displayName,
-    publisher: domainConfig.displayName,
-    metadataBase: new URL(`https://${domainConfig.domain}`),
-    alternates: {
-      canonical: `https://${domainConfig.domain}`,
+    manifest: '/manifest.json',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: domainConfig.displayName,
     },
     openGraph: {
-      type: 'website',
-      locale: 'en_US',
-      url: `https://${domainConfig.domain}`,
       title: domainConfig.seo.title,
       description: domainConfig.seo.description,
       siteName: domainConfig.displayName,
-      images: [
-        {
-          url: `https://${domainConfig.domain}/og-images/${domainConfig.areaCode}-og.jpg`,
-          width: 1200,
-          height: 630,
-          alt: `${domainConfig.displayName} - ${domainConfig.description}`,
-        },
-      ],
+      locale: 'en_US',
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: domainConfig.seo.title,
       description: domainConfig.seo.description,
-      creator: domainConfig.social.twitter || '@209jobs',
-      images: [
-        `https://${domainConfig.domain}/og-images/${domainConfig.areaCode}-og.jpg`,
-      ],
     },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
+    alternates: {
+      canonical: `https://${domainConfig.domain}`,
     },
-    formatDetection: {
-      email: false,
-      address: false,
-      telephone: false,
-    },
-    icons: {
-      icon: [
-        { url: '/favicon.ico', sizes: 'any' },
-        { url: '/favicon.svg', type: 'image/svg+xml' },
-      ],
-      apple: [
-        {
-          url: '/apple-touch-icon.svg',
-          sizes: '180x180',
-          type: 'image/svg+xml',
-        },
-      ],
-    },
-    manifest: '/manifest.json',
   };
 }
 
@@ -110,34 +71,55 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get domain context from headers
+  const headersList = await headers();
+  const hostname = headersList.get('host') || '';
+  const domainConfig = getDomainConfig(hostname);
+
   return (
     <html lang="en">
+      <head>
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            :root {
+              --domain-primary: ${domainConfig.branding.primaryColor};
+              --domain-accent: ${domainConfig.branding.accentColor};
+            }
+          `
+        }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                      console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                      console.log('SW registration failed: ', registrationError);
+                    });
+                });
+              }
+            `
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} min-h-screen antialiased`}
       >
-        <SecurityErrorHandler />
         <ClerkProvider>
-          <PerformanceProvider>
-            {/* Skip Navigation Link */}
-            <a
-              href="#main-content"
-              className="sr-only z-50 rounded-md bg-blue-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Skip to main content
-            </a>
-            <Header />
-            <main id="main-content" className="min-h-screen" role="main">
+          <DomainProvider initialHostname={hostname}>
+            <MobileLayout>
               {children}
-            </main>
-            {/* Removed NextAuth debug components */}
-            <TimeoutDetector />
-            <Toaster />
-          </PerformanceProvider>
+            </MobileLayout>
+            <PWAInstallPrompt />
+          </DomainProvider>
         </ClerkProvider>
       </body>
     </html>

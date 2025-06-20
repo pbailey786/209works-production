@@ -146,26 +146,15 @@ export async function GET(req: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const userRecord = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
     });
-    if (!session || !session.user || (session!.user as any).role !== 'jobseeker') {
+
+    if (!user || user.role !== 'jobseeker') {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
-      );
-    }
-
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email! },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
       );
     }
 
@@ -175,12 +164,82 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      profile,
+      profile: profile || null,
     });
   } catch (error) {
     console.error('Get job seeker profile error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch profile' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT /api/profile/jobseeker - Update job seeker profile
+export async function PUT(req: NextRequest) {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+
+    if (!user || user.role !== 'jobseeker') {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    const validatedData = jobSeekerProfileSchema.parse(body);
+
+    // Update existing profile
+    const updatedProfile = await prisma.jobSeekerProfile.update({
+      where: { userId: user.id },
+      data: {
+        zipCode: validatedData.zipCode,
+        distanceWillingToTravel: validatedData.distanceWillingToTravel,
+        availabilityDays: validatedData.availabilityDays,
+        availabilityShifts: validatedData.availabilityShifts,
+        jobTypes: validatedData.jobTypes,
+        skills: validatedData.skillsCertifications,
+        careerGoal: validatedData.careerGoal,
+        optInEmailAlerts: validatedData.optInEmailAlerts,
+        optInSmsAlerts: validatedData.optInSmsAlerts,
+        allowEmployerMessages: validatedData.allowEmployerMessages,
+        whatAreYouGoodAt: validatedData.whatAreYouGoodAt,
+        resumeData: {
+          workHistory: validatedData.workHistory,
+          education: validatedData.education,
+          skills: validatedData.skills,
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Profile updated successfully',
+      profile: updatedProfile,
+    });
+  } catch (error) {
+    console.error('Update job seeker profile error:', error);
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Invalid input data',
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+        },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: 'Failed to update profile' },
       { status: 500 }
     );
   }

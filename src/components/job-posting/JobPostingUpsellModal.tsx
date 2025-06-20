@@ -18,7 +18,7 @@ import {
   X,
   Sparkles,
   DollarSign,
-  ArrowRight
+  ArrowRight,
 } from 'lucide-react';
 
 interface JobPostingUpsellModalProps {

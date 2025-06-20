@@ -15,7 +15,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from '@/components/ui/card';
 import {
   import {
@@ -25,7 +25,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from '@/components/ui/card';
 import {
   import {
@@ -35,7 +35,7 @@ import {
   StopCircle,
   AlertTriangle,
   Clock,
-  User
+  User,
 } from 'lucide-react';
 
 interface User {

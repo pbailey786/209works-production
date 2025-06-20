@@ -12,7 +12,7 @@ import {
   Headphones,
   Search,
   HelpCircle,
-  MessageCircle
+  MessageCircle,
 } from 'lucide-react';
 
 interface FAQItem {

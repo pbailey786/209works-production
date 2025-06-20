@@ -22,7 +22,8 @@ import {
   Sparkles,
   ArrowRight,
   HelpCircle,
-  Check
+  Check,
+  ExternalLink,
 } from 'lucide-react';
 // Removed upsell and modal imports - Job Post Optimizer is now streamlined
 
@@ -55,6 +56,13 @@ interface JobPostForm {
 
   // Supplemental Questions
   supplementalQuestions: string[];
+  questionsRequired: boolean;
+
+  // Application Preferences
+  applicationMethod: 'internal' | 'external_url' | 'email';
+  externalApplicationUrl: string;
+  applicationEmail: string;
+  applicationInstructions: string;
 
   // Upsells
   socialMediaShoutout: boolean;
@@ -85,6 +93,11 @@ export default function CreateJobPostPage() {
     salaryRangeMax: '',
     internalTags: [],
     supplementalQuestions: [],
+    questionsRequired: false,
+    applicationMethod: 'internal',
+    externalApplicationUrl: '',
+    applicationEmail: '',
+    applicationInstructions: '',
     socialMediaShoutout: false,
     placementBump: false,
     upsellBundle: false,
@@ -931,6 +944,162 @@ export default function CreateJobPostPage() {
                         <p>Good questions help you find the right fit faster. Ask about experience, availability, motivations, or specific skills relevant to your role.</p>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* Questions Required Checkbox */}
+                {form.supplementalQuestions.length > 0 && (
+                  <div className="mt-4">
+                    <label className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={form.questionsRequired}
+                        onChange={e => setForm(prev => ({ ...prev, questionsRequired: e.target.checked }))}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        Require applicants to answer all questions before applying
+                      </span>
+                    </label>
+                    <p className="mt-1 text-xs text-gray-500 ml-7">
+                      When checked, applicants must answer all questions to submit their application
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Application Preferences Section */}
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-6 flex items-center">
+                <ExternalLink className="mr-3 h-6 w-6 text-purple-600" />
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Application Preferences
+                </h2>
+                <div className="ml-auto">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <span className="mr-1">🔗</span>
+                    How should people apply?
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="mb-3 block text-sm font-medium text-gray-700">
+                    Application Method
+                  </label>
+                  <div className="space-y-3">
+                    <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="applicationMethod"
+                        value="internal"
+                        checked={form.applicationMethod === 'internal'}
+                        onChange={e => setForm(prev => ({ ...prev, applicationMethod: e.target.value as any }))}
+                        className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">209 Works Application System</div>
+                        <div className="text-sm text-gray-600">
+                          Applicants apply through our platform. You'll receive applications in your employer dashboard.
+                        </div>
+                        <div className="mt-2 text-xs text-green-600 font-medium">
+                          ✓ Recommended - Full applicant tracking and management
+                        </div>
+                      </div>
+                    </label>
+
+                    <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="applicationMethod"
+                        value="external_url"
+                        checked={form.applicationMethod === 'external_url'}
+                        onChange={e => setForm(prev => ({ ...prev, applicationMethod: e.target.value as any }))}
+                        className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">Apply on Company Website</div>
+                        <div className="text-sm text-gray-600">
+                          Redirect applicants to your company's application page or careers site.
+                        </div>
+                      </div>
+                    </label>
+
+                    <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="applicationMethod"
+                        value="email"
+                        checked={form.applicationMethod === 'email'}
+                        onChange={e => setForm(prev => ({ ...prev, applicationMethod: e.target.value as any }))}
+                        className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">Email Applications</div>
+                        <div className="text-sm text-gray-600">
+                          Applicants email their resume and cover letter directly to you.
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* External URL Field */}
+                {form.applicationMethod === 'external_url' && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Application URL *
+                    </label>
+                    <input
+                      type="url"
+                      value={form.externalApplicationUrl}
+                      onChange={e => setForm(prev => ({ ...prev, externalApplicationUrl: e.target.value }))}
+                      placeholder="https://yourcompany.com/careers/apply"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Enter the full URL where applicants should apply
+                    </p>
+                  </div>
+                )}
+
+                {/* Email Field */}
+                {form.applicationMethod === 'email' && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Application Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={form.applicationEmail}
+                      onChange={e => setForm(prev => ({ ...prev, applicationEmail: e.target.value }))}
+                      placeholder="careers@yourcompany.com"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Applicants will email their applications to this address
+                    </p>
+                  </div>
+                )}
+
+                {/* Application Instructions */}
+                {(form.applicationMethod === 'external_url' || form.applicationMethod === 'email') && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Application Instructions (Optional)
+                    </label>
+                    <textarea
+                      value={form.applicationInstructions}
+                      onChange={e => setForm(prev => ({ ...prev, applicationInstructions: e.target.value }))}
+                      placeholder="e.g., Please include your portfolio, mention this job posting in your email subject line, etc."
+                      rows={3}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Additional instructions for applicants (optional)
+                    </p>
                   </div>
                 )}
               </div>

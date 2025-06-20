@@ -10,7 +10,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 import {
   import {
@@ -27,7 +27,7 @@ import {
   TrendingUp,
   Users,
   Zap,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 
 interface SystemMetrics {

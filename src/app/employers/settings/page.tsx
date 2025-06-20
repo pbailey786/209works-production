@@ -19,7 +19,7 @@ import {
   Camera,
   MapPin,
   Phone,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 
 export default function EmployerSettingsPage() {
