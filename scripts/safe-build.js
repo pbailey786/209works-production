@@ -10,11 +10,16 @@ const { execSync } = require('child_process');
 function runCommand(command, description) {
   console.log(`🔧 ${description}...`);
   try {
-    execSync(command, { stdio: 'inherit' });
+    const result = execSync(command, { stdio: 'inherit', encoding: 'utf8' });
     console.log(`✅ ${description} completed successfully`);
     return true;
   } catch (error) {
     console.error(`❌ ${description} failed:`, error.message);
+    console.error(`❌ Exit code:`, error.status);
+    console.error(`❌ Command:`, command);
+    if (error.stderr) {
+      console.error(`❌ Stderr:`, error.stderr);
+    }
     return false;
   }
 }
@@ -39,9 +44,15 @@ function safeBuild() {
 
   // Step 3: Build the application (force build with warnings)
   console.log('⚠️ Using force build to deploy NextAuth v5 upgrade with compatibility warnings');
+  console.log('🔧 Environment variables check:');
+  console.log('  - NODE_ENV:', process.env.NODE_ENV);
+  console.log('  - DATABASE_URL exists:', !!process.env.DATABASE_URL);
+  console.log('  - NEXTAUTH_SECRET exists:', !!process.env.NEXTAUTH_SECRET);
+  
   if (!runCommand('npm run build:force', 'Building application (force mode)')) {
     console.error('❌ Build failed');
-    process.exit(1);
+    console.error('❌ This is likely due to TypeScript errors or missing environment variables');
+    process.exit(2);
   }
 
   console.log('🎉 Safe build completed successfully!');

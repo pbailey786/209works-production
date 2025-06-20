@@ -90,7 +90,7 @@ const authConfig = {
   ],
 
   callbacks: {
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account, profile }: any) {
       console.log('🔧 NextAuth v5 JWT callback triggered:', { 
         hasToken: !!token, 
         hasUser: !!user, 
@@ -121,7 +121,7 @@ const authConfig = {
       return token
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       console.log('🔧 NextAuth v5 Session callback triggered:', { 
         hasSession: !!session, 
         hasToken: !!token,

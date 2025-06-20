@@ -1,4 +1,4 @@
-import { getIronSession, IronSessionOptions, SessionOptions } from 'iron-session';
+import { getIronSession, SessionOptions } from 'iron-session';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
@@ -36,7 +36,7 @@ export async function getSession() {
  * Get session from request (API Routes)
  */
 export async function getSessionFromRequest(req: NextRequest) {
-  const session = await getIronSession<SessionData>(req, sessionOptions as IronSessionOptions);
+  const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
   return session;
 }
 
