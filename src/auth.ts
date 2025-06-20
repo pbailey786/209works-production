@@ -254,3 +254,5 @@ export const signOut = authInstance.signOut
 
 // Export the configuration for compatibility
 export { authConfig }
+
+console.log('✅ NextAuth v5 configuration loaded successfully')
