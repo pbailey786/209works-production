@@ -10,6 +10,7 @@ interface SessionValidationResult {
 
 /**
  * Validates a session for protected requests
+ * Enhanced for NextAuth v5 beta compatibility
  */
 export async function validateSession(): Promise<SessionValidationResult> {
   const errors: string[] = [];
@@ -17,55 +18,83 @@ export async function validateSession(): Promise<SessionValidationResult> {
   try {
     const session = await auth() as Session | null;
 
+    console.log('🔍 Session validation debug:', {
+      hasSession: !!session,
+      sessionType: typeof session,
+      sessionKeys: session ? Object.keys(session) : [],
+      hasUser: !!session?.user,
+      userKeys: session?.user ? Object.keys(session.user) : [],
+      rawUser: session?.user
+    });
+
     // No session
     if (!session) {
+      console.log('❌ No session found');
       errors.push('No active session');
       return { isValid: false, session: null, user: null, errors };
     }
 
     // No user in session
     if (!session.user) {
+      console.log('❌ No user in session');
       errors.push('Session missing user data');
       return { isValid: false, session, user: null, errors };
     }
 
     const user = session.user as any;
 
+    // Enhanced debugging for user data
+    console.log('🔍 User data debug:', {
+      hasId: !!user.id,
+      hasEmail: !!user.email,
+      hasRole: !!user.role,
+      userId: user.id,
+      userEmail: user.email,
+      userRole: user.role,
+      allUserProps: Object.keys(user)
+    });
+
+    // Create a normalized user object with fallbacks
+    const normalizedUser = {
+      id: user.id || user.sub || '', // NextAuth v5 might use 'sub' instead of 'id'
+      email: user.email || '',
+      name: user.name || user.email || '',
+      role: user.role || 'jobseeker', // Always provide a default role
+      onboardingCompleted: user.onboardingCompleted || false,
+      twoFactorEnabled: user.twoFactorEnabled || false,
+      isEmailVerified: user.isEmailVerified || false
+    };
+
+    console.log('🔧 Normalized user:', normalizedUser);
+
     // Validate critical user fields (ID and email are required)
-    if (!user.id) {
+    if (!normalizedUser.id) {
+      console.error('❌ User missing ID (checked both id and sub fields)');
       errors.push('User missing ID');
     }
 
-    if (!user.email) {
+    if (!normalizedUser.email) {
+      console.error('❌ User missing email');
       errors.push('User missing email');
     }
 
-    // Role is important but not critical - provide default if missing
-    if (!user.role) {
-      console.warn('⚠️ User missing role, defaulting to jobseeker:', {
-        userId: user.id,
-        email: user.email
-      });
-      user.role = 'jobseeker'; // Default role for users without role
-    }
-
     // Only fail validation for critical missing fields (ID, email)
-    const criticalErrors = errors.filter(error =>
-      error.includes('missing ID') || error.includes('missing email')
-    );
-
-    if (criticalErrors.length > 0) {
-      console.error('🚨 Session validation failed (critical errors):', criticalErrors, { session, user });
-      return { isValid: false, session, user, errors: criticalErrors };
+    if (errors.length > 0) {
+      console.error('🚨 Session validation failed (critical errors):', errors, {
+        session,
+        originalUser: user,
+        normalizedUser
+      });
+      return { isValid: false, session, user: normalizedUser, errors };
     }
 
     console.log('✅ Session validation passed:', {
-      userId: user.id,
-      email: user.email,
-      role: user.role
+      userId: normalizedUser.id,
+      email: normalizedUser.email,
+      role: normalizedUser.role
     });
 
-    return { isValid: true, session, user, errors: [] };
+    return { isValid: true, session, user: normalizedUser, errors: [] };
 
   } catch (error) {
     console.error('❌ Session validation error:', error);

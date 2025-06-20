@@ -147,53 +147,37 @@ const authConfig = {
     },
 
     async session({ session, token }: any) {
-      console.log('🔧 NextAuth v5 JWT Session callback triggered:', {
+      console.log('🔧 NextAuth v5 Session callback triggered:', {
         hasSession: !!session,
         hasToken: !!token,
-        sessionExpires: session?.expires,
+        tokenId: token?.id,
         tokenSub: token?.sub,
-        tokenEmail: token?.email
+        tokenEmail: token?.email,
+        tokenRole: token?.role
       })
 
-      // Return early if no session
-      if (!session) {
-        console.warn('🔧 Session callback: No session provided')
-        return null
-      }
+      // NextAuth v5 beta: Modify session.user directly instead of returning new object
+      if (token && session?.user) {
+        // Populate session.user with data from JWT token
+        session.user.id = token.id || token.sub
+        session.user.email = token.email
+        session.user.name = token.name
+        session.user.role = token.role || 'jobseeker'
+        session.user.onboardingCompleted = token.onboardingCompleted || false
+        session.user.twoFactorEnabled = token.twoFactorEnabled || false
+        session.user.isEmailVerified = token.isEmailVerified || false
 
-      // Return early if no token
-      if (!token) {
-        console.warn('🔧 Session callback: No token provided')
-        return session
-      }
-
-      // Build the session with explicit typing for NextAuth v5 beta
-      try {
-        const userSession = {
-          expires: session.expires,
-          user: {
-            id: token.id || token.sub,
-            email: token.email,
-            name: token.name,
-            role: token.role || 'jobseeker',
-            onboardingCompleted: token.onboardingCompleted || false,
-            twoFactorEnabled: token.twoFactorEnabled || false,
-            isEmailVerified: token.isEmailVerified || false
-          }
-        }
-
-        console.log('🔧 JWT Session created successfully:', {
-          expires: userSession.expires,
-          userId: userSession.user.id,
-          userEmail: userSession.user.email,
-          userRole: userSession.user.role
+        console.log('✅ Session populated successfully:', {
+          userId: session.user.id,
+          userEmail: session.user.email,
+          userRole: session.user.role,
+          sessionExpires: session.expires
         })
-
-        return userSession
-      } catch (error) {
-        console.error('🔧 Error creating session:', error)
-        return session
+      } else {
+        console.warn('⚠️ Session callback: Missing token or session.user')
       }
+
+      return session
     },
 
     async signIn({ user, account, profile }: any) {
