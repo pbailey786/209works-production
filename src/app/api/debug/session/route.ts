@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       userImage: session?.user?.image,
       // Additional debugging info
       fullUser: session?.user,
-      sessionExpires: session?.expires
+      sessionExpires: (session as any)?.expires // Type assertion for NextAuth v5 beta
     };
     
     // Database user lookup if we have an email
