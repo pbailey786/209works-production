@@ -43,21 +43,7 @@ export async function GET(request: NextRequest) {
 // Credits can only be added through proper payment processing via Stripe
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user and verify they're an employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user || user.role !== 'employer') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const { user } = await requireRole(['employer', 'admin']);
 
     // SECURITY: Direct credit addition is disabled to prevent bypass of payment processing
     // Credits can only be added through:
