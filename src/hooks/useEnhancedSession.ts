@@ -41,8 +41,8 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Validate and enhance session data
-  const validateSession = useCallback((sessionData: Session | null): EnhancedSession | null => {
+  // Validate and enhance session data - use any to handle NextAuth v5 beta type differences
+  const validateSession = useCallback((sessionData: any): EnhancedSession | null => {
     if (!sessionData?.user) {
       return null;
     }
@@ -122,18 +122,8 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
     }
 
     if (status === 'authenticated' && session) {
-      // Type assertion to handle NextAuth v5 beta type differences
-      const sessionWithUser = session as Session & {
-        user: {
-          id: string;
-          email: string;
-          name?: string | null;
-          image?: string | null;
-          role: 'jobseeker' | 'employer' | 'admin';
-        }
-      };
-
-      const validated = validateSession(sessionWithUser);
+      // Handle NextAuth v5 beta type compatibility with any assertion
+      const validated = validateSession(session as any);
       if (validated) {
         setEnhancedSession(validated);
         setError(null);

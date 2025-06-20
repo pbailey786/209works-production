@@ -254,16 +254,13 @@ const authConfig = {
   trustHost: true, // Important for production
 }
 
-// For NextAuth v5 beta, create instance and export components
-const nextAuthInstance = NextAuth(authConfig)
+// NextAuth v5 beta - use type assertion to handle callable issue
+const authInstance = (NextAuth as any)(authConfig)
 
-export const handlers = nextAuthInstance.handlers
-export const auth = nextAuthInstance.auth
-export const signIn = nextAuthInstance.signIn
-export const signOut = nextAuthInstance.signOut
-
-// Default export for compatibility
-export default nextAuthInstance
+export const handlers = authInstance.handlers
+export const auth = authInstance.auth
+export const signIn = authInstance.signIn
+export const signOut = authInstance.signOut
 
 // Export the configuration for compatibility
 export { authConfig }
