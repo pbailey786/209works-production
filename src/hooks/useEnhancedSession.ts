@@ -15,9 +15,10 @@ interface EnhancedUser {
   isEmailVerified?: boolean;
 }
 
-// Use the Session type directly since our auth.d.ts already defines the correct user type
-interface EnhancedSession extends Session {
+// Enhanced session interface that ensures user is fully populated
+interface EnhancedSession {
   user: EnhancedUser;
+  expires: string;
 }
 
 interface UseEnhancedSessionReturn {
@@ -75,9 +76,9 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
 
     // Return properly typed enhanced session
     return {
-      ...sessionData,
-      user: enhancedUser
-    } as EnhancedSession;
+      user: enhancedUser,
+      expires: sessionData.expires
+    };
   }, []);
 
   // Refresh session data
@@ -120,7 +121,7 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
       return;
     }
 
-    if (status === 'authenticated') {
+    if (status === 'authenticated' && session) {
       const validated = validateSession(session);
       if (validated) {
         setEnhancedSession(validated);

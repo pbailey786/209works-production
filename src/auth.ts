@@ -5,15 +5,15 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/database/prisma'
 import { compare } from 'bcryptjs'
 import { normalizeEmail } from '@/lib/utils/email-utils'
-// Type imports for NextAuth v5
+import type { NextAuthConfig } from 'next-auth'
 
 console.log('🔧 Auth.js v5 configuration loading...')
 
-const authConfig = {
+const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   
