@@ -61,11 +61,31 @@ export default function SessionProviderWrapper({ children }: SessionProviderWrap
     };
   }, []);
 
+  // Session validation and refresh
+  useEffect(() => {
+    if (isMounted) {
+      // Immediately check session on mount
+      const checkSession = async () => {
+        try {
+          const response = await fetch('/api/auth/session');
+          if (response.ok) {
+            const sessionData = await response.json();
+            console.log('🔄 Session validated on mount:', !!sessionData?.user);
+          }
+        } catch (error) {
+          console.warn('⚠️ Session validation failed on mount:', error);
+        }
+      };
+      
+      checkSession();
+    }
+  }, [isMounted]);
+
   // Always render SessionProvider but handle hydration gracefully
   return (
     <SessionProvider 
-      // v5 has better default session handling, reduce refetch frequency
-      refetchInterval={process.env.NODE_ENV === 'development' ? 300 : 0} // 5 min dev, disabled prod
+      // Enhanced session configuration for better persistence
+      refetchInterval={60} // Check every minute for session changes
       refetchOnWindowFocus={true}
       refetchWhenOffline={false}
     >

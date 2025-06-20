@@ -121,14 +121,16 @@ const authConfig = {
       return token
     },
 
-    async session({ session, token }: any) {
+    async session({ session, token, trigger, newSession }: any) {
       console.log('🔧 NextAuth v5 Session callback triggered:', { 
         hasSession: !!session, 
         hasToken: !!token,
         hasSessionUser: !!session?.user,
         tokenId: token?.id,
         tokenEmail: token?.email,
-        tokenRole: token?.role
+        tokenRole: token?.role,
+        trigger,
+        newSession
       })
 
       if (token && session?.user) {
@@ -138,6 +140,33 @@ const authConfig = {
         session.user.id = token.id as string || token.sub as string
         session.user.email = token.email as string || session.user.email
         ;(session.user as any).role = token.role || 'jobseeker'
+
+        // If this is an update trigger, fetch fresh user data from database
+        if (trigger === 'update' && session.user.id) {
+          try {
+            console.log('🔧 Session update triggered, fetching fresh user data...')
+            const dbUser = await prisma.user.findUnique({
+              where: { id: session.user.id },
+              select: { id: true, email: true, name: true, role: true, isEmailVerified: true }
+            })
+            
+            if (dbUser) {
+              session.user.id = dbUser.id
+              session.user.email = dbUser.email
+              session.user.name = dbUser.name
+              ;(session.user as any).role = dbUser.role
+              ;(session.user as any).isEmailVerified = dbUser.isEmailVerified
+              
+              console.log('✅ Session updated with fresh database data:', {
+                id: dbUser.id,
+                email: dbUser.email,
+                role: dbUser.role
+              })
+            }
+          } catch (error) {
+            console.error('❌ Failed to fetch fresh user data:', error)
+          }
+        }
 
         console.log('🔧 Session user updated:', {
           id: session.user.id,

@@ -100,7 +100,7 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   starter: {
     name: 'Starter',
     monthlyPrice: 89,
-    stripePriceId: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
+    stripePriceId: process.env.STRIPE_PRICE_STARTER,
     features: {
       credits: 3, // Updated to use unified credit system
       duration: 30, // days
@@ -113,7 +113,7 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   standard: {
     name: 'Standard',
     monthlyPrice: 199,
-    stripePriceId: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
+    stripePriceId: process.env.STRIPE_PRICE_STANDARD,
     features: {
       credits: 5, // Updated to use unified credit system
       duration: 30,
@@ -127,7 +127,7 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   pro: {
     name: 'Pro',
     monthlyPrice: 349,
-    stripePriceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+    stripePriceId: process.env.STRIPE_PRICE_PID, // Using STRIPE_PRICE_PID for Pro tier
     features: {
       credits: 12, // Updated to use unified credit system (10 + 2 featured = 12 total)
       duration: 60,
@@ -207,29 +207,29 @@ export const JOB_POSTING_CONFIG = {
 // Subscription price IDs for job posting plans
 export const STRIPE_PRICE_IDS = {
   starter: {
-    monthly: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
-    yearly: process.env.STRIPE_STARTER_YEARLY_PRICE_ID,
+    monthly: process.env.STRIPE_PRICE_STARTER,
+    yearly: process.env.STRIPE_PRICE_STARTER, // Using same for now, add yearly variant if needed
   },
   standard: {
-    monthly: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
-    yearly: process.env.STRIPE_STANDARD_YEARLY_PRICE_ID,
+    monthly: process.env.STRIPE_PRICE_STANDARD,
+    yearly: process.env.STRIPE_PRICE_STANDARD, // Using same for now, add yearly variant if needed
   },
   pro: {
-    monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
-    yearly: process.env.STRIPE_PRO_YEARLY_PRICE_ID,
+    monthly: process.env.STRIPE_PRICE_PID, // Using STRIPE_PRICE_PID for Pro tier
+    yearly: process.env.STRIPE_PRICE_PID, // Using same for now, add yearly variant if needed
   },
   // Legacy mappings for backward compatibility
   professional: {
-    monthly: process.env.STRIPE_PROFESSIONAL_MONTHLY_PRICE_ID,
-    yearly: process.env.STRIPE_PROFESSIONAL_YEARLY_PRICE_ID,
+    monthly: process.env.STRIPE_PRICE_PID, // Map to pro
+    yearly: process.env.STRIPE_PRICE_PID,
   },
   enterprise: {
-    monthly: process.env.STRIPE_ENTERPRISE_MONTHLY_PRICE_ID,
-    yearly: process.env.STRIPE_ENTERPRISE_YEARLY_PRICE_ID,
+    monthly: process.env.STRIPE_PRICE_PID, // Map to pro
+    yearly: process.env.STRIPE_PRICE_PID,
   },
   premium: {
-    monthly: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID,
-    yearly: process.env.STRIPE_PREMIUM_YEARLY_PRICE_ID,
+    monthly: process.env.STRIPE_PRICE_PID, // Map to pro
+    yearly: process.env.STRIPE_PRICE_PID,
   },
 };
 
@@ -248,3 +248,48 @@ export const STRIPE_WEBHOOK_EVENTS = [
 ] as const;
 
 export type StripeWebhookEvent = (typeof STRIPE_WEBHOOK_EVENTS)[number];
+
+// Helper function to get price ID with validation
+export function getStripePriceId(tier: string, billingInterval: 'monthly' | 'yearly' = 'monthly'): string | null {
+  const tierConfig = STRIPE_PRICE_IDS[tier as keyof typeof STRIPE_PRICE_IDS];
+  if (!tierConfig) {
+    console.error(`Unknown tier: ${tier}. Available tiers:`, Object.keys(STRIPE_PRICE_IDS));
+    return null;
+  }
+  
+  const priceId = tierConfig[billingInterval];
+  if (!priceId) {
+    console.error(`No price ID configured for tier: ${tier}, interval: ${billingInterval}`);
+    return null;
+  }
+  
+  console.log(`Found price ID for ${tier} (${billingInterval}):`, priceId);
+  return priceId;
+}
+
+// Helper function to validate all Stripe environment variables
+export function validateStripeConfig(): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (!process.env.STRIPE_SECRET_KEY) {
+    errors.push('STRIPE_SECRET_KEY is missing');
+  }
+  
+  if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+    errors.push('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing');
+  }
+  
+  // Check tier price IDs
+  const tiers = ['starter', 'standard', 'pro'];
+  tiers.forEach(tier => {
+    const priceId = getStripePriceId(tier);
+    if (!priceId) {
+      errors.push(`Price ID missing for ${tier} tier`);
+    }
+  });
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}

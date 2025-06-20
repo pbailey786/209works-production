@@ -1,29 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { requireRole } from '@/lib/auth/session-validator';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
 
 // GET /api/employers/credits - Get user's credit balance
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession() as Session | null;
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user and verify they're an employer
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: {
-        id: true,
-        role: true,
-      },
-    });
-
-    if (!user || user.role !== 'employer') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const { user } = await requireRole(['employer', 'admin']);
 
     // Get available credits (unified system - all credits are universal)
     const totalCredits = await prisma.jobPostingCredit.count({

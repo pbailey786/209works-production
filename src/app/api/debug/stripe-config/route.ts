@@ -1,29 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
-import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
-import type { Session } from 'next-auth';
+import { requireRole } from '@/lib/auth/session-validator';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG, STRIPE_PRICE_IDS, validateStripeConfig, getStripePriceId } from '@/lib/stripe';
 
 export async function GET(req: NextRequest) {
   try {
     // Check authentication - only allow admins to see this debug info
-    const session = (await getServerSession()) as Session | null;
-    if (!session?.user || (session.user as any).role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
-      );
-    }
+    await requireRole('admin');
 
+    // Use the new validation function
+    const validation = validateStripeConfig();
+    
     // Check if all required environment variables are set
     const envCheck = {
       STRIPE_PUBLISHABLE_KEY: !!process.env.STRIPE_PUBLISHABLE_KEY,
       STRIPE_SECRET_KEY: !!process.env.STRIPE_SECRET_KEY,
       STRIPE_WEBHOOK_SECRET: !!process.env.STRIPE_WEBHOOK_SECRET,
       
-      // Subscription tier price IDs (monthly)
-      STRIPE_STARTER_MONTHLY_PRICE_ID: !!process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
-      STRIPE_STANDARD_MONTHLY_PRICE_ID: !!process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
-      STRIPE_PRO_MONTHLY_PRICE_ID: !!process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+      // NEW: Updated environment variables that actually exist
+      STRIPE_PRICE_STARTER: !!process.env.STRIPE_PRICE_STARTER,
+      STRIPE_PRICE_STANDARD: !!process.env.STRIPE_PRICE_STANDARD, 
+      STRIPE_PRICE_PID: !!process.env.STRIPE_PRICE_PID,
       
       // Addon price IDs
       STRIPE_PRICE_FEATURED: !!process.env.STRIPE_PRICE_FEATURED,
@@ -35,14 +31,14 @@ export async function GET(req: NextRequest) {
       STRIPE_PRICE_CREDIT_5: !!process.env.STRIPE_PRICE_CREDIT_5,
     };
 
-    // Get the actual price IDs (masked for security)
+    // Get the actual price IDs (masked for security) using the NEW environment variables
     const priceIds = {
-      starter: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID ?
-        `${process.env.STRIPE_STARTER_MONTHLY_PRICE_ID.substring(0, 10)}...` : 'NOT SET',
-      standard: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID ?
-        `${process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID.substring(0, 10)}...` : 'NOT SET',
-      pro: process.env.STRIPE_PRO_MONTHLY_PRICE_ID ?
-        `${process.env.STRIPE_PRO_MONTHLY_PRICE_ID.substring(0, 10)}...` : 'NOT SET',
+      starter: getStripePriceId('starter') ? 
+        `${getStripePriceId('starter')!.substring(0, 10)}...` : 'NOT SET',
+      standard: getStripePriceId('standard') ?
+        `${getStripePriceId('standard')!.substring(0, 10)}...` : 'NOT SET', 
+      pro: getStripePriceId('pro') ?
+        `${getStripePriceId('pro')!.substring(0, 10)}...` : 'NOT SET',
       featured: process.env.STRIPE_PRICE_FEATURED ?
         `${process.env.STRIPE_PRICE_FEATURED.substring(0, 10)}...` : 'NOT SET',
       graphic: process.env.STRIPE_PRICE_GRAPHIC ?
@@ -65,7 +61,8 @@ export async function GET(req: NextRequest) {
     const allEnvVarsSet = Object.values(envCheck).every(Boolean);
 
     return NextResponse.json({
-      status: allEnvVarsSet ? 'OK' : 'INCOMPLETE',
+      status: validation.isValid ? 'OK' : 'INCOMPLETE',
+      validation,
       environmentVariables: envCheck,
       priceIds,
       configuration: configCheck,

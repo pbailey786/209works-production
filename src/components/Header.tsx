@@ -21,6 +21,7 @@ import {
   Building2,
 } from 'lucide-react';
 import Avatar from './Avatar';
+import ProfileIcon from './auth/ProfileIcon';
 import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
@@ -236,10 +237,9 @@ export default function Header() {
                       aria-haspopup="true"
                       aria-label={`User menu for ${session.user.name || session.user?.email}`}
                     >
-                      <Avatar
-                        src={session.user.image || undefined}
-                        alt={session.user.name || session.user?.email || 'User'}
-                        size={32}
+                      <ProfileIcon 
+                        size={32} 
+                        showLoadingState={true}
                       />
                       <span className="hidden max-w-[120px] truncate text-sm font-medium text-gray-700 sm:block">
                         {session.user.name || session.user?.email}

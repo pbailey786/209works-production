@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth as getServerSession } from "@/auth";
-import { stripe, STRIPE_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
+import { stripe, STRIPE_CONFIG, getStripePriceId, validateStripeConfig } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { PricingTier, BillingInterval } from '@prisma/client';
 import type { Session } from 'next-auth';
@@ -31,17 +31,32 @@ export async function POST(request: NextRequest) {
       cancelUrl?: string;
     } = body;
 
+    // Validate Stripe configuration first
+    const configValidation = validateStripeConfig();
+    if (!configValidation.isValid) {
+      console.error('Stripe configuration errors:', configValidation.errors);
+      return NextResponse.json(
+        {
+          error: 'Stripe configuration error',
+          details: configValidation.errors
+        },
+        { status: 500 }
+      );
+    }
+
     // Resolve the plan ID to the actual Stripe price ID
-    const actualPriceId =
-      STRIPE_PRICE_IDS[tier as keyof typeof STRIPE_PRICE_IDS]?.[
-        billingInterval === BillingInterval.yearly ? 'yearly' : 'monthly'
-      ];
+    const actualPriceId = getStripePriceId(
+      tier, 
+      billingInterval === BillingInterval.yearly ? 'yearly' : 'monthly'
+    );
 
     if (!actualPriceId) {
       return NextResponse.json(
         {
-          error: `Invalid plan: ${tier} with billing interval: ${billingInterval}`,
-          availablePlans: Object.keys(STRIPE_PRICE_IDS)
+          error: `Stripe price not configured for tier: ${tier}`,
+          tier,
+          billingInterval,
+          details: 'Check environment variables for Stripe price IDs'
         },
         { status: 400 }
       );
