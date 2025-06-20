@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { createDatabaseBackup } from '@/lib/backup/database-backup';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 interface BackupResult {
   success: boolean;
@@ -18,7 +18,14 @@ interface BackupResult {
 // GET - List all backups
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -55,7 +62,14 @@ export async function GET(req: NextRequest) {
 // POST - Create new backup
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -83,7 +97,14 @@ export async function POST(req: NextRequest) {
 // DELETE - Delete backup
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

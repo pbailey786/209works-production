@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { prisma } from '@/app/api/auth/prisma';
-import { ActionResult } from './auth';
+import { ActionResult } from '@/types/actions';
 
 // Validation schemas
 const createJobSchema = z.object({

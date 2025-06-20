@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { TemplateManager } from '@/lib/email/template-manager';
 import { emailAgent } from '@/lib/agents/email-agent';
 
@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth() as any;
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth() as any;
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

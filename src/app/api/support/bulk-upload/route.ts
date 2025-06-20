@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { Resend } from 'resend';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Lazy-load Resend client to avoid build-time errors
 function getResendClient() {
@@ -23,9 +23,16 @@ const supportSchema = z.object({
 // POST /api/support/bulk-upload - Send support message for bulk upload issues
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -114,9 +121,16 @@ Please respond to the user at: ${userEmail}
 // GET /api/support/bulk-upload - Get support information (for future use)
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

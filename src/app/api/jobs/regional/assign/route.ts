@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { RegionalJobService } from '@/lib/services/regional-job-service';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },
         { status: 401 }
@@ -18,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     // Get user from database to check role
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
       select: { id: true, role: true },
     });
 

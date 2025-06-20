@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { emailService } from '@/lib/email/email-service';
 import { EmailHelpers } from '@/lib/email/email-helpers';
 import { SecurityLogger } from '@/lib/security/security-monitor';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -242,8 +249,15 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

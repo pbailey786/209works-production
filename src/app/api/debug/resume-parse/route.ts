@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { openai } from '@/lib/openai';
 import { isValidResumeFile } from '@/lib/fileUpload';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,15 +14,22 @@ export async function POST(request: NextRequest) {
       nodeEnv: process.env.NODE_ENV,
     });
 
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({
         error: 'Unauthorized',
         debug: {
           step: 'authentication',
           details: {
             hasSession: !!session,
-            hasUserEmail: !!session?.user?.email
+            hasUserEmail: !!user?.emailAddresses?.[0]?.emailAddress
           }
         }
       }, { status: 401 });

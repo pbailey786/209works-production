@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { formatDistanceToNow } from 'date-fns';
 import {
   Clock,
@@ -33,7 +33,7 @@ interface ChatHistoryProps {
 }
 
 export default function ChatHistory({ onLoadConversation, className = '' }: ChatHistoryProps) {
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +95,7 @@ export default function ChatHistory({ onLoadConversation, className = '' }: Chat
     );
   };
 
-  if (!session?.user) {
+  if (!user) {
     return (
       <div className={`rounded-lg border border-gray-200 bg-white p-6 ${className}`}>
         <div className="text-center">

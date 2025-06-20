@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
 import { extractTextFromFile, validateExtractedText } from '@/lib/enhanced-text-extraction';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Schema for parsed resume data
 const ParsedResumeSchema = z.object({
@@ -44,8 +44,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -80,7 +87,7 @@ export async function POST(request: NextRequest) {
     // Get user ID for file naming
     console.log('🔍 Looking up user:', session.user.email);
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
       select: { id: true },
     });
 

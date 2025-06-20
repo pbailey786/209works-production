@@ -1,4 +1,4 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +17,7 @@ import {
   Send,
   Download
 } from 'lucide-react';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export const metadata = {
   title: 'Email Analytics | Admin Dashboard',
@@ -25,14 +25,21 @@ export const metadata = {
 };
 
 export default async function EmailAnalyticsPage() {
-  const session = await getServerSession() as Session | null;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
   // Check authentication and permissions
-  if (!session) {
+  if (!user) {
     redirect('/signin?redirect=/admin/analytics/email');
   }
 
-  const userRole = session!.user?.role || 'guest';
+  const userRole = user?.publicMetadata?.role || 'guest';
   if (!hasPermission(userRole, Permission.VIEW_EMAIL_ANALYTICS)) {
     redirect('/admin');
   }

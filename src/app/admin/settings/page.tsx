@@ -1,4 +1,4 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../../api/auth/prisma';
 import {
   Card,

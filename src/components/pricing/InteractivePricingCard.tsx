@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { Check, Star, CreditCard, Zap, Shield, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,7 @@ export default function InteractivePricingCard({
   className = '',
 }: InteractivePricingCardProps) {
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   const basePrice =
@@ -57,7 +57,7 @@ export default function InteractivePricingCard({
       : 0;
 
   const handleSelect = async () => {
-    if (!session) {
+    if (!user) {
       router.push('/signin');
       return;
     }

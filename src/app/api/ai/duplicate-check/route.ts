@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { DuplicateDetectionService } from '@/lib/services/duplicate-detection';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // POST /api/ai/duplicate-check - Check for job duplicates (AI assistant endpoint)
 export async function POST(req: NextRequest) {
   try {
     // Check authentication (admin or system)
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     const apiKey = req.headers.get('x-api-key');
     
     // Allow admin users or valid API key
@@ -222,7 +229,14 @@ function generateRecommendations(riskAssessment: any, duplicates: any) {
 export async function GET(req: NextRequest) {
   try {
     // Check authentication
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     const apiKey = req.headers.get('x-api-key');
     
     const isAuthorized = (session?.user && (session.user as any).role === 'admin') || 

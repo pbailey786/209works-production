@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 const updateSchema = z.object({
@@ -14,7 +14,14 @@ export async function PATCH(
 ) {
   try {
     // Check authentication
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         {

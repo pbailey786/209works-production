@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 const checkoutSchema = z.object({
   tier: z.enum(['starter', 'standard', 'pro']).optional(),
@@ -71,9 +71,9 @@ export async function POST(req: NextRequest) {
 
     // Check authentication
     const session = (await auth()) as Session | null;
-    console.log('🔐 Session check:', !!session, session?.user?.email);
+    console.log('🔐 Session check:', !!session, user?.emailAddresses?.[0]?.emailAddress);
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       console.log('❌ No session or email found');
       return NextResponse.json(
         { error: 'Authentication required' },

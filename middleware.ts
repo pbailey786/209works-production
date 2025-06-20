@@ -34,9 +34,9 @@ const isJobSeekerRoute = createRouteMatcher([
   '/job-alerts(.*)',
 ]);
 
-export default clerkMiddleware((auth, req) => {
+export default clerkMiddleware(async (auth, req) => {
   const { pathname } = req.nextUrl;
-  const { userId, sessionClaims } = auth();
+  const { userId, sessionClaims } = await auth();
 
   console.log('🛡️ Clerk Middleware processing:', pathname);
   console.log('🛡️ User ID:', userId);
@@ -44,12 +44,15 @@ export default clerkMiddleware((auth, req) => {
 
   // Protect routes that require authentication
   if (isProtectedRoute(req)) {
-    auth().protect();
+    const authResult = await auth();
+    if (!authResult.userId) {
+      return authResult.redirectToSignIn();
+    }
   }
 
   // Role-based access control
   if (userId && sessionClaims) {
-    const userRole = sessionClaims.metadata?.role || sessionClaims.publicMetadata?.role;
+    const userRole = (sessionClaims as any)?.metadata?.role || (sessionClaims as any)?.publicMetadata?.role;
     console.log('🛡️ User role:', userRole);
 
     // If user is authenticated and visiting root, redirect based on role

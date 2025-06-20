@@ -1,11 +1,11 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Permission } from '@/lib/rbac/permissions';
 
 export default function DebugEmailPage() {
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const { hasPermission, userRole, getUserPermissions } = usePermissions();
 
   const emailPermission = hasPermission(Permission.MANAGE_EMAIL_TEMPLATES);

@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { emailService } from '@/lib/email/email-service';
 import { templateManager } from '@/lib/email/template-manager';
 import { emailAgent } from '@/lib/agents/email-agent';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin permissions
-    const session = await auth() as Session | null;
-    if (!session?.user?.email || session.user.role !== 'admin') {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
@@ -90,8 +97,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin permissions
-    const session = await auth() as Session | null;
-    if (!session?.user?.email || session.user.role !== 'admin') {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

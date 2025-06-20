@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -38,7 +38,7 @@ interface NotificationSettings {
 }
 
 export default function SimpleSettingsPage() {
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState('profile');

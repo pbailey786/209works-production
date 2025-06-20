@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/lib/fileUpload';
 import { extractTextFromFile, validateExtractedText, type TextExtractionResult } from '@/lib/enhanced-text-extraction';
 import { parseResumeWithEnhancedAI, sanitizeResumeData, type ParsedResumeResult } from '@/lib/enhanced-ai-parsing';
 import { isResumeParsingAvailable, logEnvironmentStatus } from '@/lib/env-validation';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Request options schema
 const ParseOptionsSchema = z.object({

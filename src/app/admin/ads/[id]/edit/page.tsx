@@ -1,10 +1,10 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { notFound } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { prisma } from '@/lib/database/prisma';
 import AdEditForm from '@/components/admin/AdEditForm';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 interface PageProps {
   params: Promise<{
@@ -14,14 +14,21 @@ interface PageProps {
 
 export default async function EditAdPage({ params }: PageProps) {
   const { id } = await params;
-  const session = await getServerSession() as Session | null;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
   // Check authentication and permissions
-  if (!session) {
+  if (!user) {
     redirect('/signin?redirect=/admin/ads');
   }
 
-  const userRole = session!.user?.role || 'guest';
+  const userRole = user?.publicMetadata?.role || 'guest';
   if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
     redirect('/admin');
   }

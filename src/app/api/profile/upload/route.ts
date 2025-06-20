@@ -1,21 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../../auth/prisma';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get current user by email
     const currentUser = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
     });
 
     if (!currentUser) {

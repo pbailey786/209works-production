@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import { InstagramAlertType } from '@prisma/client';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 const createAlertSchema = z.object({
   alertType: z.nativeEnum(InstagramAlertType),
@@ -22,14 +22,21 @@ const updateAlertSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
     });
 
     if (!user) {
@@ -54,14 +61,21 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
     });
 
     if (!user) {
@@ -120,14 +134,21 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
     });
 
     if (!user) {
@@ -182,14 +203,21 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
-    if (!session!.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
     });
 
     if (!user) {

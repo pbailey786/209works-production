@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
-import { ActionResult } from './auth';
+import { ActionResult } from '@/types/actions';
 
 // Import validation schemas from existing files
 import {

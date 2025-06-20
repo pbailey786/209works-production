@@ -1,14 +1,21 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { getUserPermissions, hasPermission } from '@/lib/rbac/permissions';
 import { Permission } from '@/lib/rbac/permissions';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DebugPermissions() {
-  const session = await getServerSession() as Session | null;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-  if (!session) {
+  if (!user) {
     return <div>Not authenticated</div>;
   }
 

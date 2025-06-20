@@ -1,19 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../../../auth/prisma';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
     // Check if user is authenticated and has moderation permissions
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session!.user?.role || 'guest';
+    const userRole = user?.publicMetadata?.role || 'guest';
     if (!hasPermission(userRole, Permission.MODERATE_JOBS)) {
       return NextResponse.json(
         { error: 'Insufficient permissions' },
@@ -93,7 +100,7 @@ export async function PATCH(req: NextRequest) {
         company: job.company,
         action: action,
         moderatedAt: new Date(),
-        moderatedBy: session!.user?.email,
+        moderatedBy: user?.emailAddresses?.[0]?.emailAddress,
       })),
     });
   } catch (error) {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import {
   Briefcase,
@@ -77,7 +77,7 @@ export default function SimplePostJobPage() {
 
   // Auto-fill user email
   useEffect(() => {
-    if (session?.user?.email) {
+    if (user?.emailAddresses?.[0]?.emailAddress) {
       setForm(prev => ({
         ...prev,
         contactEmail: session.user?.email || '',

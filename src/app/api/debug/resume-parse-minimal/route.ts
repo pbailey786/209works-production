@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { isResumeParsingAvailable, getEnvironmentConfig } from '@/lib/env-validation';
 import { isValidResumeFile } from '@/lib/fileUpload';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,14 +27,21 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Test authentication
     console.log('🔍 STEP 2: Testing authentication...');
-    const session = await auth() as Session | null;
-    if (!session?.user?.email) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({
         error: 'Authentication failed',
         debug: {
           step: 'authentication',
           hasSession: !!session,
-          hasEmail: !!session?.user?.email
+          hasEmail: !!user?.emailAddresses?.[0]?.emailAddress
         }
       }, { status: 401 });
     }

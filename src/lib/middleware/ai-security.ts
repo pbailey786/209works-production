@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 /**
  * AI Security Middleware
@@ -210,8 +210,15 @@ export function withAISecurity(
       let isAuthenticated = false;
 
       if (config.requireAuthentication) {
-        const session = await getServerSession() as Session | null;
-        if (!session?.user?.email) {
+        const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+        if (!user?.emailAddresses?.[0]?.emailAddress) {
           return NextResponse.json(
             { error: 'Authentication required for this AI service' },
             { status: 401 }
@@ -249,8 +256,15 @@ export function withAISecurity(
         }
       } else {
         // Try to get user if available (optional auth)
-        const session = await getServerSession() as Session | null;
-        if (session?.user?.email) {
+        const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+        if (user?.emailAddresses?.[0]?.emailAddress) {
           user = await prisma.user.findUnique({
             where: { email: session.user.email },
             select: { id: true, email: true, role: true },

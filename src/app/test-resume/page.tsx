@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 
 export default function TestResumePage() {
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -139,7 +139,7 @@ export default function TestResumePage() {
     }
   };
 
-  if (!session) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

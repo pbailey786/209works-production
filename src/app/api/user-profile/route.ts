@@ -1,20 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../auth/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // GET /api/user-profile - Get user profile for job matching
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     // Get user profile from database
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
       select: {
         id: true,
         name: true,
@@ -61,9 +68,16 @@ export async function GET(req: NextRequest) {
 // POST /api/user-profile - Update user profile
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
@@ -105,7 +119,7 @@ export async function POST(req: NextRequest) {
     // For now, just return success without saving to database
     // In a real implementation, you would save to a UserProfile table
     const updatedUser = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
       select: {
         id: true,
         name: true,
@@ -138,9 +152,16 @@ export async function POST(req: NextRequest) {
 // PUT /api/user-profile/quick-setup - Quick profile setup for job matching
 export async function PUT(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
@@ -197,9 +218,16 @@ export async function PUT(req: NextRequest) {
 // DELETE /api/user-profile - Clear user profile
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 

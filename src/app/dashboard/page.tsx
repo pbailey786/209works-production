@@ -1,9 +1,9 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '@/lib/database/prisma';
 import DashboardClient from './DashboardClient';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Type definitions for dashboard data
 interface DashboardStats {
@@ -198,9 +198,16 @@ async function getDashboardData(userId: string): Promise<DashboardData> {
 }
 
 export default async function DashboardPage() {
-  const session = await getServerSession() as Session | null;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-  if (!session?.user?.email) {
+  if (!user?.emailAddresses?.[0]?.emailAddress) {
     redirect('/signin');
   }
 

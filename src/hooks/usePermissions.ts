@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import {
   Permission,
   hasPermission,
@@ -11,7 +11,7 @@ import {
 } from '@/lib/rbac/permissions';
 
 export function usePermissions() {
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const userRole = (session?.user as any)?.role || '';
 
   return {

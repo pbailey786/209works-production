@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Validation schema for onboarding data
 const onboardingSchema = z.object({
@@ -38,9 +38,16 @@ const onboardingSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     console.log('🚀 Onboarding API called');
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       console.log('❌ No session or email found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -188,14 +195,21 @@ export async function POST(req: NextRequest) {
 // GET endpoint to check onboarding status
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
       select: {
         id: true,
         name: true,

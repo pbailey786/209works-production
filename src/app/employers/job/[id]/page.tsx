@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import {
   Eye,
   Users,
@@ -32,7 +32,7 @@ import {
 
 export default function EmployerJobDetailsPage() {
   const params = useParams();
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const [activeTab, setActiveTab] = useState('overview');
   const [jobData, setJobData] = useState<any>(null);
   const [jobStats, setJobStats] = useState<any>(null);

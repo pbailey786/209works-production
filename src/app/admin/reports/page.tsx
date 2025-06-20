@@ -1,18 +1,25 @@
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import ReportsExportDashboard from '@/components/admin/ReportsExportDashboard';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export default async function ReportsPage() {
-  const session = await getServerSession() as Session | null;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
   // Check authentication and permissions
-  if (!session) {
+  if (!user) {
     redirect('/signin?redirect=/admin/reports');
   }
 
-  const userRole = session!.user?.role || 'guest';
+  const userRole = user?.publicMetadata?.role || 'guest';
   if (!hasPermission(userRole, Permission.EXPORT_REPORTS)) {
     redirect('/admin');
   }

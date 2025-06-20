@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // GET /api/company-profile - Get company profile for authenticated user
 export async function GET() {
   try {
     console.log('🏢 Company profile API - GET request started');
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     console.log('🏢 Session check:', {
       hasSession: !!session,
-      userEmail: session?.user?.email,
+      userEmail: user?.emailAddresses?.[0]?.emailAddress,
       userId: (session?.user as any)?.id,
     });
 
@@ -58,7 +65,14 @@ export async function GET() {
 // POST /api/company-profile - Create or update company profile
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
     if (!(session?.user as any)?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

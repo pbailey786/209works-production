@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 import { prisma } from '@/lib/database/prisma';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import CreditManagementDashboard from '@/components/admin/CreditManagementDashboard';
@@ -119,9 +119,16 @@ async function getCreditData() {
 }
 
 export default async function AdminCreditsPage() {
-  const session = await getServerSession() as Session | null;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-  if (!session?.user?.email) {
+  if (!user?.emailAddresses?.[0]?.emailAddress) {
     redirect('/signin');
   }
 

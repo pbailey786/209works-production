@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import Avatar from '../Avatar';
 import { User } from 'lucide-react';
@@ -33,9 +33,9 @@ export default function ProfileIcon({
       hasSession: !!session,
       hasUser: !!session?.user,
       hasUserId: !!(session?.user as any)?.id,
-      hasUserEmail: !!session?.user?.email,
-      userName: session?.user?.name,
-      userEmail: session?.user?.email
+      hasUserEmail: !!user?.emailAddresses?.[0]?.emailAddress,
+      userName: user?.fullName,
+      userEmail: user?.emailAddresses?.[0]?.emailAddress
     });
   }, [session, status]);
 

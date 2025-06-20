@@ -12,7 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
 import { PricingTier, BillingInterval } from '@prisma/client';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 
 interface PricingCardProps {
@@ -63,11 +63,11 @@ export default function PricingCard({
   disabled = false,
 }: PricingCardProps) {
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
 
   const handleSubscribe = async () => {
-    if (!session) {
+    if (!user) {
       router.push('/signin');
       return;
     }

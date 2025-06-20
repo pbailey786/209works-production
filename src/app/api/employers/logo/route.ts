@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required. Only employers can upload logos.' },
@@ -87,7 +94,14 @@ export async function POST(req: NextRequest) {
 // GET /api/employers/logo - Get current logo
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -128,7 +142,14 @@ export async function GET(req: NextRequest) {
 // DELETE /api/employers/logo - Remove logo
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },

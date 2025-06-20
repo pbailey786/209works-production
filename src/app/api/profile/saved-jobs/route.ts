@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 import { validateSession, safeDBQuery } from '@/lib/utils/safe-fetch';
 
 // Schema for saving/unsaving jobs
@@ -14,7 +14,14 @@ const saveJobSchema = z.object({
 // GET /api/profile/saved-jobs - Get user's saved jobs
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     
     // Safely validate session
     const sessionValidation = validateSession(session);
@@ -144,7 +151,14 @@ export async function GET(req: NextRequest) {
 // POST /api/profile/saved-jobs - Save or unsave a job
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     
     // Safely validate session
     const sessionValidation = validateSession(session);
@@ -269,14 +283,21 @@ export async function POST(req: NextRequest) {
 // DELETE /api/profile/saved-jobs - Remove a saved job by application ID
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
       select: { id: true, role: true },
     });
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,9 +44,9 @@ const emailTests = [
 ];
 
 export default function EmailTestIntegrationPage() {
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const [selectedTest, setSelectedTest] = useState('');
-  const [recipientEmail, setRecipientEmail] = useState(session?.user?.email || '');
+  const [recipientEmail, setRecipientEmail] = useState(user?.emailAddresses?.[0]?.emailAddress || '');
   const [isLoading, setIsLoading] = useState(false);
   const [testResults, setTestResults] = useState<Array<{
     success: boolean;

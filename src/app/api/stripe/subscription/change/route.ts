@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { stripe, STRIPE_PRICE_IDS } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 import type { PricingTier, BillingInterval } from '@prisma/client';
 
 const changeSubscriptionSchema = z.object({
@@ -15,9 +15,16 @@ const changeSubscriptionSchema = z.object({
 // POST /api/stripe/subscription/change - Upgrade or downgrade subscription
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -202,9 +209,16 @@ export async function POST(request: NextRequest) {
 // GET /api/stripe/subscription/change - Get change preview
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session?.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }

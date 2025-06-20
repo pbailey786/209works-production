@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/lib/openai';
 import { prisma } from '@/lib/database/prisma';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 import {
   enhancedIdSchema,

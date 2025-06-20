@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Rate limiting store (in production, use Redis)
 const exportRateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -282,13 +282,20 @@ async function generateReportData(
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userRole = session!.user?.role || 'guest';
+    const userRole = user?.publicMetadata?.role || 'guest';
     if (!hasPermission(userRole, Permission.EXPORT_REPORTS)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }

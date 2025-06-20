@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { stripe, STRIPE_CONFIG, getStripePriceId, validateStripeConfig } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { PricingTier, BillingInterval } from '@prisma/client';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session!.user?.email) {
+    if (!user?.emailAddresses?.[0]?.emailAddress) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     // Get or create Stripe customer
     let customer;
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: user?.emailAddresses?.[0]?.emailAddress },
       select: { id: true, stripeCustomerId: true, name: true, email: true },
     });
 

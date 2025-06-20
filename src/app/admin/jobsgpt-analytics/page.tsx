@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import {
   Card,
   CardContent,
@@ -57,7 +57,7 @@ export default function JobsGPTAnalyticsPage() {
   // Check if user is admin
   const isAdmin =
     (session?.user as any)?.role === 'admin' ||
-    session?.user?.email === 'admin@209jobs.com';
+    user?.emailAddresses?.[0]?.emailAddress === 'admin@209jobs.com';
 
   useEffect(() => {
     if (status === 'authenticated' && isAdmin) {

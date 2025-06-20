@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import {
   Building2,
@@ -118,7 +118,7 @@ export default function EmployerProfileSettingsPage() {
           console.error('Error loading company profile:', error);
           setProfile(prev => ({
             ...prev,
-            contactEmail: session?.user?.email || '',
+            contactEmail: user?.emailAddresses?.[0]?.emailAddress || '',
           }));
           setIsFirstTime(true);
         }

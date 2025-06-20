@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '../api/auth/prisma';
 import {
   Card,
@@ -30,7 +30,7 @@ import {
   Search,
 } from 'lucide-react';
 import Link from 'next/link';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard | 209 Works',
@@ -45,7 +45,14 @@ export const revalidate = 0;
 export default async function AdminDashboard() {
   try {
     // Get session for user info
-    const session = await getServerSession() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
     // Check if we're in build mode or if database is not available
     if (!process.env.DATABASE_URL) {
@@ -242,7 +249,7 @@ export default async function AdminDashboard() {
             Overview of 209 Works platform performance and key metrics
           </p>
           <p className="text-sm text-gray-500">
-            Welcome back, {session?.user?.name || session?.user?.email}
+            Welcome back, {user?.fullName || user?.emailAddresses?.[0]?.emailAddress}
           </p>
         </div>
 

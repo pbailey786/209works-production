@@ -1,19 +1,26 @@
 import { redirect } from 'next/navigation';
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import ApplicationsClient from './ApplicationsClient';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 export default async function ApplicationsPage() {
-  const session = await getServerSession() as Session | null;
+  const { userId } = await auth();
+    if (!userId) {
+      redirect('/signin');
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
 
-  if (!session!.user?.email) {
+  if (!user?.emailAddresses?.[0]?.emailAddress) {
     redirect('/signin?callbackUrl=/profile/applications');
   }
 
   // Get user data
   const user = await prisma.user.findUnique({
-    where: { email: session!.user?.email },
+    where: { email: user?.emailAddresses?.[0]?.emailAddress },
     select: { id: true, role: true },
   });
 

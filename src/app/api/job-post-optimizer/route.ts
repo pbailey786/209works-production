@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 
 // Validation schema for job post optimizer
 const jobPostOptimizerSchema = z.object({
@@ -94,7 +94,14 @@ Make this job posting compelling and authentic. Focus on attracting the right pe
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         {
@@ -254,7 +261,14 @@ ${data.applicationCTA || `Interested in this position? We'd love to hear from yo
 // GET endpoint to retrieve job post optimizers for an employer
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth() as Session | null;
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },

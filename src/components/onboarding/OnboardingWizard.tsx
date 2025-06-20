@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import {
   CheckCircle,
   ArrowRight,
@@ -37,7 +37,7 @@ export default function OnboardingWizard({
   userRole,
   onComplete,
 }: OnboardingWizardProps) {
-  const { data: session } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());

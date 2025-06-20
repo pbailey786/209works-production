@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { auth as getServerSession } from "@/auth";
+import { auth } from '@clerk/nextjs/server';
 import { cache } from 'react';
 import { prisma } from '@/app/api/auth/prisma';
 import JobDetailClient from './JobDetailClient';
 import { Job, JobType } from '@prisma/client';
-import type { Session } from 'next-auth';
+import { prisma } from '@/lib/database/prisma';
 import { safeDBQuery, validateSession } from '@/lib/utils/safe-fetch';
 
 interface JobDetailPageProps {
@@ -288,7 +288,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     let userRole: string | undefined;
     let isJobOwner = false;
     
-    if (isAuthenticated && session?.user?.email) {
+    if (isAuthenticated && user?.emailAddresses?.[0]?.emailAddress) {
       const userEmail = session.user.email; // Already checked it exists
       const userQuery = await safeDBQuery(() => 
         prisma.user.findUnique({
