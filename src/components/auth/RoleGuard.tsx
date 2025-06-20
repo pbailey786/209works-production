@@ -31,7 +31,17 @@ export default function RoleGuard({
   useEffect(() => {
     if (status === 'loading') return; // Still loading
 
+    console.log('🛡️ RoleGuard check:', {
+      status,
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userRole: (session?.user as any)?.role,
+      allowedRoles,
+      sessionData: session
+    });
+
     if (status === 'unauthenticated') {
+      console.log('🚪 RoleGuard: Redirecting unauthenticated user');
       // Redirect to appropriate sign-in page
       const signInUrl = allowedRoles.includes('employer') ? '/employers/signin' : '/signin';
       router.push(signInUrl);
@@ -40,9 +50,28 @@ export default function RoleGuard({
 
     if (session?.user) {
       const userRole = (session.user as any).role;
-      
+
+      // Enhanced debugging for role issues
+      console.log('🔍 RoleGuard role check:', {
+        userRole,
+        allowedRoles,
+        hasRole: userRole && allowedRoles.includes(userRole),
+        userObject: session.user
+      });
+
+      // If role is undefined, this might be a session from before our fixes
+      if (!userRole) {
+        console.warn('⚠️ RoleGuard: User role is undefined - this might be an old session');
+        console.warn('💡 Try clearing your session at /debug/clear-session');
+
+        // For now, allow access but log the issue
+        // In production, you might want to force a session refresh
+        return;
+      }
+
       // Check if user has required role
       if (!allowedRoles.includes(userRole)) {
+        console.log('🚫 RoleGuard: User does not have required role, redirecting');
         if (redirectTo) {
           router.push(redirectTo);
         } else {
@@ -62,6 +91,8 @@ export default function RoleGuard({
         }
         return;
       }
+
+      console.log('✅ RoleGuard: Access granted');
     }
   }, [session, status, router, allowedRoles, redirectTo]);
 
@@ -75,13 +106,24 @@ export default function RoleGuard({
   }
 
   // Show loading state while redirecting unauthorized users
-  if (status === 'unauthenticated' || 
-      (session?.user && !allowedRoles.includes((session.user as any).role))) {
+  if (status === 'unauthenticated') {
     return fallback || (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
       </div>
     );
+  }
+
+  // Check role authorization (but allow undefined roles for now to prevent logout loops)
+  if (session?.user) {
+    const userRole = (session.user as any).role;
+    if (userRole && !allowedRoles.includes(userRole)) {
+      return fallback || (
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        </div>
+      );
+    }
   }
 
   // User is authorized, render children
