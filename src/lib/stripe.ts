@@ -249,47 +249,121 @@ export const STRIPE_WEBHOOK_EVENTS = [
 
 export type StripeWebhookEvent = (typeof STRIPE_WEBHOOK_EVENTS)[number];
 
-// Helper function to get price ID with validation
+// Helper function to get price ID with validation and fallbacks
 export function getStripePriceId(tier: string, billingInterval: 'monthly' | 'yearly' = 'monthly'): string | null {
+  console.log(`🔍 Looking up price ID for tier: ${tier}, interval: ${billingInterval}`);
+
   const tierConfig = STRIPE_PRICE_IDS[tier as keyof typeof STRIPE_PRICE_IDS];
   if (!tierConfig) {
-    console.error(`Unknown tier: ${tier}. Available tiers:`, Object.keys(STRIPE_PRICE_IDS));
+    console.error(`❌ Unknown tier: ${tier}. Available tiers:`, Object.keys(STRIPE_PRICE_IDS));
     return null;
   }
-  
+
   const priceId = tierConfig[billingInterval];
   if (!priceId) {
-    console.error(`No price ID configured for tier: ${tier}, interval: ${billingInterval}`);
+    console.error(`❌ No price ID configured for tier: ${tier}, interval: ${billingInterval}`);
+    console.log('Available price IDs for tier:', tierConfig);
     return null;
   }
-  
-  console.log(`Found price ID for ${tier} (${billingInterval}):`, priceId);
+
+  console.log(`✅ Found price ID for ${tier} (${billingInterval}):`, priceId);
   return priceId;
 }
 
+// Helper function to get subscription tier config with validation
+export function getSubscriptionTierConfig(tier: string): SubscriptionTier | null {
+  console.log(`🔍 Looking up subscription tier config for: ${tier}`);
+
+  const config = SUBSCRIPTION_TIERS_CONFIG[tier as keyof typeof SUBSCRIPTION_TIERS_CONFIG];
+  if (!config) {
+    console.error(`❌ Unknown subscription tier: ${tier}. Available tiers:`, Object.keys(SUBSCRIPTION_TIERS_CONFIG));
+    return null;
+  }
+
+  if (!config.stripePriceId) {
+    console.error(`❌ No Stripe price ID configured for tier: ${tier}`);
+    console.log('Tier config:', config);
+    return null;
+  }
+
+  console.log(`✅ Found subscription tier config for ${tier}:`, {
+    name: config.name,
+    price: config.monthlyPrice,
+    hasPriceId: !!config.stripePriceId
+  });
+
+  return config;
+}
+
 // Helper function to validate all Stripe environment variables
-export function validateStripeConfig(): { isValid: boolean; errors: string[] } {
+export function validateStripeConfig(): { isValid: boolean; errors: string[]; warnings: string[] } {
   const errors: string[] = [];
-  
+  const warnings: string[] = [];
+
+  console.log('🔍 Validating Stripe configuration...');
+
+  // Check core Stripe keys
   if (!process.env.STRIPE_SECRET_KEY) {
     errors.push('STRIPE_SECRET_KEY is missing');
+  } else if (!process.env.STRIPE_SECRET_KEY.startsWith('sk_')) {
+    errors.push('STRIPE_SECRET_KEY appears to be invalid (should start with sk_)');
   }
-  
+
   if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
     errors.push('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing');
+  } else if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.startsWith('pk_')) {
+    errors.push('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY appears to be invalid (should start with pk_)');
   }
-  
-  // Check tier price IDs
+
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    warnings.push('STRIPE_WEBHOOK_SECRET is missing (webhooks will not work)');
+  }
+
+  // Check subscription tier price IDs
   const tiers = ['starter', 'standard', 'pro'];
   tiers.forEach(tier => {
-    const priceId = getStripePriceId(tier);
-    if (!priceId) {
-      errors.push(`Price ID missing for ${tier} tier`);
+    const config = getSubscriptionTierConfig(tier);
+    if (!config) {
+      errors.push(`Subscription tier configuration missing for ${tier}`);
+    } else if (!config.stripePriceId) {
+      errors.push(`Stripe price ID missing for ${tier} tier`);
     }
   });
-  
+
+  // Check environment variables directly
+  const envVars = {
+    STRIPE_PRICE_STARTER: process.env.STRIPE_PRICE_STARTER,
+    STRIPE_PRICE_STANDARD: process.env.STRIPE_PRICE_STANDARD,
+    STRIPE_PRICE_PID: process.env.STRIPE_PRICE_PID, // Pro tier
+  };
+
+  Object.entries(envVars).forEach(([key, value]) => {
+    if (!value) {
+      errors.push(`${key} environment variable is missing`);
+    } else if (!value.startsWith('price_')) {
+      warnings.push(`${key} does not appear to be a valid Stripe price ID (should start with price_)`);
+    }
+  });
+
+  const isValid = errors.length === 0;
+
+  console.log(`🔍 Stripe config validation result:`, {
+    isValid,
+    errorCount: errors.length,
+    warningCount: warnings.length
+  });
+
+  if (errors.length > 0) {
+    console.error('❌ Stripe configuration errors:', errors);
+  }
+
+  if (warnings.length > 0) {
+    console.warn('⚠️ Stripe configuration warnings:', warnings);
+  }
+
   return {
-    isValid: errors.length === 0,
-    errors
+    isValid,
+    errors,
+    warnings
   };
 }

@@ -91,9 +91,9 @@ const authConfig = {
 
   callbacks: {
     async jwt({ token, user, account, profile }: any) {
-      console.log('🔧 NextAuth v5 JWT callback triggered:', { 
-        hasToken: !!token, 
-        hasUser: !!user, 
+      console.log('🔧 NextAuth v5 JWT callback triggered:', {
+        hasToken: !!token,
+        hasUser: !!user,
         hasAccount: !!account,
         tokenSub: token?.sub,
         userEmail: user?.email
@@ -101,14 +101,46 @@ const authConfig = {
 
       // On initial sign in, user object will be available
       if (user) {
-        console.log('🔧 Initial sign in - adding user data to token:', { 
-          id: user.id, 
+        console.log('🔧 Initial sign in - adding user data to token:', {
+          id: user.id,
           email: user.email,
-          role: user.role 
+          role: user.role
         })
         token.id = user.id
         token.role = user.role || 'jobseeker'
         token.email = user.email
+        token.name = user.name
+      }
+
+      // If we don't have user ID but have email, fetch from database
+      if (!token.id && token.email) {
+        try {
+          console.log('🔧 Fetching user ID from database for email:', token.email)
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email as string },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              onboardingCompleted: true,
+              twoFactorEnabled: true,
+              isEmailVerified: true,
+            }
+          })
+
+          if (dbUser) {
+            console.log('🔧 Found user in database, updating token:', { id: dbUser.id, role: dbUser.role })
+            token.id = dbUser.id
+            token.role = dbUser.role
+            token.name = dbUser.name
+            token.onboardingCompleted = dbUser.onboardingCompleted
+            token.twoFactorEnabled = dbUser.twoFactorEnabled
+            token.isEmailVerified = dbUser.isEmailVerified
+          }
+        } catch (error) {
+          console.error('❌ Failed to fetch user data in JWT callback:', error)
+        }
       }
 
       console.log('🔧 JWT callback returning token:', {
@@ -122,8 +154,8 @@ const authConfig = {
     },
 
     async session({ session, token, trigger, newSession }: any) {
-      console.log('🔧 NextAuth v5 Session callback triggered:', { 
-        hasSession: !!session, 
+      console.log('🔧 NextAuth v5 Session callback triggered:', {
+        hasSession: !!session,
         hasToken: !!token,
         hasSessionUser: !!session?.user,
         tokenId: token?.id,
@@ -135,43 +167,22 @@ const authConfig = {
 
       if (token && session?.user) {
         console.log('🔧 Adding token data to session user...')
-        
-        // Ensure user object has all required fields
+
+        // Ensure user object has all required fields from token
         session.user.id = token.id as string || token.sub as string
         session.user.email = token.email as string || session.user.email
+        session.user.name = token.name as string || session.user.name
         ;(session.user as any).role = token.role || 'jobseeker'
-
-        // If this is an update trigger, fetch fresh user data from database
-        if (trigger === 'update' && session.user.id) {
-          try {
-            console.log('🔧 Session update triggered, fetching fresh user data...')
-            const dbUser = await prisma.user.findUnique({
-              where: { id: session.user.id },
-              select: { id: true, email: true, name: true, role: true, isEmailVerified: true }
-            })
-            
-            if (dbUser) {
-              session.user.id = dbUser.id
-              session.user.email = dbUser.email
-              session.user.name = dbUser.name
-              ;(session.user as any).role = dbUser.role
-              ;(session.user as any).isEmailVerified = dbUser.isEmailVerified
-              
-              console.log('✅ Session updated with fresh database data:', {
-                id: dbUser.id,
-                email: dbUser.email,
-                role: dbUser.role
-              })
-            }
-          } catch (error) {
-            console.error('❌ Failed to fetch fresh user data:', error)
-          }
-        }
+        ;(session.user as any).onboardingCompleted = token.onboardingCompleted || false
+        ;(session.user as any).twoFactorEnabled = token.twoFactorEnabled || false
+        ;(session.user as any).isEmailVerified = token.isEmailVerified || false
 
         console.log('🔧 Session user updated:', {
           id: session.user.id,
           email: session.user.email,
-          role: (session.user as any).role
+          name: session.user.name,
+          role: (session.user as any).role,
+          onboardingCompleted: (session.user as any).onboardingCompleted
         })
       } else {
         console.warn('🔧 Session callback: Missing token or session.user')

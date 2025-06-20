@@ -1,5 +1,5 @@
 'use client';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -26,21 +26,18 @@ import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { useSessionDebug } from '@/hooks/useSessionDebug';
+import { useEnhancedSession } from '@/hooks/useEnhancedSession';
 
 export default function Header() {
-  const { data: session, status } = useSession();
+  const { session, status, isLoading, isAuthenticated, user, error } = useEnhancedSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // Enhanced session debugging
-  const sessionDebug = useSessionDebug();
-  
-  // Log critical session issues
-  if (sessionDebug.isIncomplete) {
-    console.error('🚨 HEADER: Incomplete session detected', sessionDebug);
+  // Log session errors
+  if (error) {
+    console.error('🚨 HEADER: Session error detected', error);
   }
 
   const navigation = [
@@ -52,9 +49,9 @@ export default function Header() {
 
   // Role-based navigation
   const getUserNavigation = () => {
-    if (!session?.user) return [];
+    if (!user) return [];
 
-    const userRole = (session.user as any).role;
+    const userRole = user.role;
 
     if (userRole === 'employer') {
       return [
@@ -192,7 +189,7 @@ export default function Header() {
             role="region"
             aria-label="User account actions"
           >
-            {status === 'loading' && (
+            {isLoading && (
               <div className="flex items-center space-x-2" aria-live="polite">
                 <LoadingSpinner size="sm" variant="spinner" color="gray" />
                 <span className="hidden text-sm text-gray-500 sm:block">
@@ -201,7 +198,7 @@ export default function Header() {
               </div>
             )}
 
-            {status === 'unauthenticated' && (
+            {!isLoading && !isAuthenticated && (
               <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
@@ -219,7 +216,7 @@ export default function Header() {
               </div>
             )}
 
-            {status === 'authenticated' && session?.user && (
+            {isAuthenticated && user && (
               <div className="relative">
                 <div className="flex items-center space-x-3">
                   {/* User Menu Dropdown */}
@@ -235,14 +232,14 @@ export default function Header() {
                       )}
                       aria-expanded={isUserMenuOpen}
                       aria-haspopup="true"
-                      aria-label={`User menu for ${session.user.name || session.user?.email}`}
+                      aria-label={`User menu for ${user.name || user.email}`}
                     >
-                      <ProfileIcon 
-                        size={32} 
+                      <ProfileIcon
+                        size={32}
                         showLoadingState={true}
                       />
                       <span className="hidden max-w-[120px] truncate text-sm font-medium text-gray-700 sm:block">
-                        {session.user.name || session.user?.email}
+                        {user.name || user.email}
                       </span>
                       <ChevronDown
                         className={cn(
@@ -267,10 +264,13 @@ export default function Header() {
                           {/* User Info */}
                           <div className="border-b border-gray-100 px-4 py-3">
                             <p className="truncate text-sm font-medium text-gray-900">
-                              {session.user.name || 'User'}
+                              {user.name || 'User'}
                             </p>
                             <p className="truncate text-xs text-gray-500">
-                              {session.user?.email}
+                              {user.email}
+                            </p>
+                            <p className="truncate text-xs text-gray-400 capitalize">
+                              {user.role}
                             </p>
                           </div>
 
@@ -377,7 +377,7 @@ export default function Header() {
                   );
                 })}
 
-                {session?.user && (
+                {user && (
                   <>
                     <hr className="my-3 border-gray-200" role="separator" />
                     {userNavigation.map(item => {
