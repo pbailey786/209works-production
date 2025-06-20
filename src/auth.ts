@@ -14,6 +14,19 @@ const authConfig = {
   session: {
     strategy: 'jwt' as const,
     maxAge: 7 * 24 * 60 * 60, // 7 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
+
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
   },
   
   providers: [
@@ -164,7 +177,19 @@ const authConfig = {
         newSession
       })
 
-      if (token && session?.user) {
+      // Ensure session object exists
+      if (!session) {
+        console.warn('🔧 Session callback: No session object provided')
+        return session
+      }
+
+      // Ensure user object exists in session
+      if (!session.user) {
+        console.log('🔧 Creating user object in session')
+        session.user = {}
+      }
+
+      if (token) {
         console.log('🔧 Adding token data to session user...')
 
         // Ensure user object has all required fields from token
@@ -184,7 +209,7 @@ const authConfig = {
           onboardingCompleted: (session.user as any).onboardingCompleted
         })
       } else {
-        console.warn('🔧 Session callback: Missing token or session.user')
+        console.warn('🔧 Session callback: No token provided')
       }
 
       console.log('🔧 Final session being returned:', {
@@ -250,8 +275,14 @@ const authConfig = {
   },
   
   debug: process.env.NODE_ENV === 'development',
-  
+
   trustHost: true, // Important for production
+
+  // NextAuth v5 beta specific configuration
+  secret: process.env.NEXTAUTH_SECRET,
+
+  // Ensure proper URL configuration
+  basePath: '/api/auth',
 }
 
 // NextAuth v5 beta - use type assertion to handle callable issue

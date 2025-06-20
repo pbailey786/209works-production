@@ -43,7 +43,17 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
 
   // Validate and enhance session data - use any to handle NextAuth v5 beta type differences
   const validateSession = useCallback((sessionData: any): EnhancedSession | null => {
+    console.log('🔧 validateSession called with:', {
+      hasSessionData: !!sessionData,
+      hasUser: !!sessionData?.user,
+      userId: sessionData?.user?.id,
+      userEmail: sessionData?.user?.email,
+      userRole: sessionData?.user?.role
+    });
+
     if (!sessionData?.user) {
+      console.warn('❌ validateSession: No user data in session');
+      setError('No user data found in session');
       return null;
     }
 
@@ -122,6 +132,14 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
     }
 
     if (status === 'authenticated' && session) {
+      console.log('🔧 useEnhancedSession: Processing authenticated session:', {
+        hasSession: !!session,
+        hasUser: !!session.user,
+        userId: session.user?.id,
+        userEmail: session.user?.email,
+        userRole: (session.user as any)?.role
+      });
+
       // Handle NextAuth v5 beta type compatibility with any assertion
       const validated = validateSession(session as any);
       if (validated) {
@@ -133,6 +151,7 @@ export function useEnhancedSession(): UseEnhancedSessionReturn {
           userRole: validated.user.role
         });
       } else {
+        console.warn('❌ Session validation failed');
         setEnhancedSession(null);
         // Error is set by validateSession
       }
