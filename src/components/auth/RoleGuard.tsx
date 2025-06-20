@@ -59,13 +59,13 @@ export default function RoleGuard({
         userObject: session.user
       });
 
-      // If role is undefined, this might be a session from before our fixes
+      // If role is undefined, this is definitely a broken session from before our fixes
       if (!userRole) {
-        console.warn('⚠️ RoleGuard: User role is undefined - this might be an old session');
-        console.warn('💡 Try clearing your session at /debug/clear-session');
+        console.error('🚨 RoleGuard: User role is undefined - forcing session clear');
+        console.error('🔄 Redirecting to session clear page...');
 
-        // For now, allow access but log the issue
-        // In production, you might want to force a session refresh
+        // Force session clear for broken sessions
+        router.push('/debug/clear-session');
         return;
       }
 
