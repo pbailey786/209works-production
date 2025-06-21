@@ -1,8 +1,8 @@
 'use client';
 
-import { useUser, useAuth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { useRouter } from '@/components/ui/card';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, ReactNode } from 'react';
 
 interface RoleGuardProps {

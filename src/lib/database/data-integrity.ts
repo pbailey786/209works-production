@@ -1,4 +1,4 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { getCache, setCache, invalidateCache } from '@/components/ui/card';
 import { DEFAULT_TTL } from '@/lib/cache/config';
 

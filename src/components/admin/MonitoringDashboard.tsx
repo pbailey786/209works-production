@@ -1,25 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Activity,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Database,
-  Globe,
-  MemoryStick,
-  RefreshCw,
-  Server,
-  TrendingUp,
-  Users,
-  Zap,
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'lucide-react';
 
 interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -123,7 +109,7 @@ export default function MonitoringDashboard() {
     const variants = {
       healthy: { variant: 'default' as const, icon: CheckCircle, color: 'text-green-600' },
       degraded: { variant: 'secondary' as const, icon: AlertTriangle, color: 'text-yellow-600' },
-      unhealthy: { variant: 'destructive' as const, icon: AlertTriangle, color: 'text-red-600' },
+      unhealthy: { variant: 'destructive' as const, icon: AlertTriangle, color: 'text-red-600' }
     };
 
     const { variant, icon: Icon, color } = variants[status];

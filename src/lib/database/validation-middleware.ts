@@ -1,5 +1,6 @@
 import { Prisma } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 /**
@@ -17,7 +18,7 @@ export class DatabaseValidationError extends Error {
   public errors: ValidationError[];
 
   constructor(errors: ValidationError[]) {
-    super(`Validation failed: ${errors.map(e => e.message).join(', ')}`);
+    super(`Validation failed: ${errors.map(e => e.message).path.join(', ')}`);
     this.name = 'DatabaseValidationError';
     this.errors = errors;
   }

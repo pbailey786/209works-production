@@ -1,21 +1,6 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Button } from './ui/button';
-import {
-  MapPin,
-  Mail,
-  Phone,
-  Twitter,
-  Facebook,
-  Instagram,
-  Linkedin,
-  Heart,
-  ArrowUp,
-  Sparkles,
-  Briefcase,
-  Users,
-  Building2,
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -29,7 +14,7 @@ const Footer = () => {
         { name: 'AI Job Search', href: '/jobs?ai=true' },
         { name: 'Resume Builder', href: '/tools/resume-ai' },
         { name: 'Cover Letter AI', href: '/tools/coverletter-ai' },
-      ],
+      ]
     },
     {
       title: 'For Employers',
@@ -42,7 +27,7 @@ const Footer = () => {
         { name: 'Pricing Plans', href: '/employers/pricing' },
         { name: 'Bulk Upload', href: '/employers/bulk-upload' },
         { name: 'Contact Support', href: '/contact' },
-      ],
+      ]
     },
     {
       title: 'Company',
@@ -54,7 +39,7 @@ const Footer = () => {
         { name: 'Privacy Policy', href: '/privacy' },
         { name: 'Terms of Service', href: '/terms' },
         { name: 'Testimonials', href: '/testimonials' },
-      ],
+      ]
     },
   ];
 
@@ -64,12 +49,12 @@ const Footer = () => {
     {
       name: 'Instagram',
       href: 'https://instagram.com/209works',
-      icon: Instagram,
+      icon: Instagram
     },
     {
       name: 'LinkedIn',
       href: 'https://linkedin.com/company/209works',
-      icon: Linkedin,
+      icon: Linkedin
     },
   ];
 
@@ -85,7 +70,7 @@ const Footer = () => {
         <div
           className="absolute left-0 top-0 h-full w-full"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}
         ></div>
       </div>

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import path from "path";
 
 
 export const PAGINATION_CONFIG = {
@@ -227,11 +228,11 @@ export function generatePaginationCacheKey(
     const filterString = Object.entries(filters)
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([key, value]) => `${key}:${value}`)
-      .join(',');
+      .path.join(',');
     keyParts.push(`filters:${filterString}`);
   }
 
-  return keyParts.join(':');
+  return keyParts.path.join(':');
 }
 
 // Validate pagination parameters

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 export async function GET(request: NextRequest) {
   try {
@@ -175,7 +176,7 @@ export async function GET(request: NextRequest) {
 
       const headers = Object.keys(data[0]);
       const csvContent = [
-        headers.join(','),
+        headers.path.join(','),
         ...data.map(row => 
           headers.map(header => {
             const value = row[header];
@@ -186,9 +187,9 @@ export async function GET(request: NextRequest) {
               return `"${value.replace(/"/g, '""')}"`;
             }
             return value;
-          }).join(',')
+          }).path.join(',')
         ),
-      ].join('\n');
+      ].path.join('\n');
 
       return new NextResponse(csvContent, {
         headers: {

@@ -213,7 +213,7 @@ async function extractPdfRawText(
     const extractedText = textMatches
       .map(match => match.slice(1, -1))
       .filter(text => text.length > 2 && /[a-zA-Z]/.test(text))
-      .join(' ');
+      .path.join(' ');
 
     if (extractedText.length < 50) {
       throw new Error('Insufficient text extracted from PDF');

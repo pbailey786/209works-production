@@ -1,7 +1,8 @@
-import { useState, useEffect } from '@/components/ui/card';
+import { useState } from 'react';
 import { Building, ExternalLink, MapPin } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import path from "path";
 
 'use client';
 
@@ -178,7 +179,7 @@ export default function AdDisplay({
           {ad.targeting?.zipCodes && (
             <div className="flex items-center text-sm text-gray-500">
               <MapPin className="mr-1 h-4 w-4" />
-              <span>Serving {ad.targeting.zipCodes.join(', ')}</span>
+              <span>Serving {ad.targeting.zipCodes.path.join(', ')}</span>
             </div>
           )}
         </div>
@@ -295,7 +296,7 @@ export default function AdDisplay({
               {ad.targeting?.zipCodes && (
                 <div className="flex items-center text-xs text-gray-500">
                   <MapPin className="mr-1 h-3 w-3" />
-                  <span>{ad.targeting.zipCodes.join(', ')}</span>
+                  <span>{ad.targeting.zipCodes.path.join(', ')}</span>
                 </div>
               )}
               <Button
@@ -361,7 +362,7 @@ export default function AdDisplay({
           {ad.targeting?.zipCodes && (
             <div className="mt-2 flex items-center text-sm text-gray-500">
               <MapPin className="mr-1 h-4 w-4" />
-              <span>Serving {ad.targeting.zipCodes.join(', ')}</span>
+              <span>Serving {ad.targeting.zipCodes.path.join(', ')}</span>
             </div>
           )}
         </div>
@@ -412,7 +413,7 @@ export default function AdDisplay({
             {ad.targeting?.zipCodes && (
               <div className="flex items-center text-sm text-gray-500">
                 <MapPin className="mr-1 h-4 w-4" />
-                <span>Serving {ad.targeting.zipCodes.join(', ')}</span>
+                <span>Serving {ad.targeting.zipCodes.path.join(', ')}</span>
               </div>
             )}
             <Button

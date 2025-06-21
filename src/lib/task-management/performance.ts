@@ -1,4 +1,6 @@
 import { Task, TasksCollection, TaskValidator } from './validation';
+import fs from "fs";
+import path from "path";
 
 
 /**
@@ -115,7 +117,7 @@ export class TaskPerformanceOptimizer {
     const chunkFiles: string[] = [];
     for (let i = 0; i < chunks.length; i++) {
       const chunkFileName = `tasks-chunk-${i + 1}.json`;
-      const chunkFilePath = path.join(outputDir, chunkFileName);
+      const chunkFilePath = path.path.join(outputDir, chunkFileName);
 
       await fs.writeFile(chunkFilePath, JSON.stringify(chunks[i], null, 2));
       chunkFiles.push(chunkFilePath);

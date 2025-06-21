@@ -4,7 +4,7 @@ import React, {
   useEffect,
   Children,
   cloneElement,
-  isValidElement,
+  isValidElement
 } from 'react';
 import { useRovingTabIndex } from '@/hooks/useKeyboardNavigation';
 
@@ -27,7 +27,7 @@ export function KeyboardNavigationList({
   ariaLabel,
   onSelectionChange,
   defaultSelectedIndex = 0,
-  wrap = true,
+  wrap = true
 }: KeyboardNavigationListProps) {
   const [activeIndex, setActiveIndex] = useState(defaultSelectedIndex);
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
@@ -97,7 +97,7 @@ export function KeyboardNavigationList({
         if (childProps?.onClick && typeof childProps.onClick === 'function') {
           childProps.onClick();
         }
-      },
+      }
     });
   });
 
@@ -120,7 +120,7 @@ export function KeyboardNavigationMenu({
   className = '',
   ariaLabel = 'Navigation menu',
   onSelectionChange,
-  defaultSelectedIndex = 0,
+  defaultSelectedIndex = 0
 }: Omit<KeyboardNavigationListProps, 'role' | 'orientation'>) {
   return (
     <KeyboardNavigationList
@@ -143,7 +143,7 @@ export function KeyboardNavigationRadioGroup({
   ariaLabel,
   onSelectionChange,
   defaultSelectedIndex = 0,
-  name,
+  name
 }: Omit<KeyboardNavigationListProps, 'role'> & { name?: string }) {
   return (
     <KeyboardNavigationList
@@ -162,7 +162,7 @@ export function KeyboardNavigationRadioGroup({
           ...(childProps || {}),
           role: 'radio',
           'aria-checked': index === defaultSelectedIndex,
-          name: name,
+          name: name
         });
       })}
     </KeyboardNavigationList>

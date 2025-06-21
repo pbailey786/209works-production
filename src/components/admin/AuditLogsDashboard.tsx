@@ -1,6 +1,6 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/card';
 import { Label } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/card';
@@ -8,39 +8,10 @@ import { format } from 'date-fns';
 
 'use client';
 
-  import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/card';
-  import {
+  import { Card } from '@/components/ui/card';
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/card';
-  import {
-  Activity,
-  AlertTriangle,
-  CalendarIcon,
-  CheckCircle,
-  Clock,
-  Download,
-  Eye,
-  Filter,
-  RefreshCw,
-  Search,
-  Shield,
-  User,
-  XCircle,
+  PopoverTrigger
 } from 'lucide-react';
 
 interface AuditLog {
@@ -81,7 +52,7 @@ export default function AuditLogsDashboard() {
     dateFrom: null,
     dateTo: null,
     userId: '',
-    event: '',
+    event: ''
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -99,7 +70,7 @@ export default function AuditLogsDashboard() {
       // Build query parameters
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: logsPerPage.toString(),
+        limit: logsPerPage.toString()
       });
 
       if (filters.search) params.append('search', filters.search);
@@ -124,7 +95,7 @@ export default function AuditLogsDashboard() {
       // Convert timestamp strings back to Date objects
       const logsWithDates = data.logs.map((log: any) => ({
         ...log,
-        timestamp: new Date(log.timestamp),
+        timestamp: new Date(log.timestamp)
       }));
 
       setLogs(logsWithDates);
@@ -205,7 +176,7 @@ export default function AuditLogsDashboard() {
         'Category',
         'Success',
         'Details',
-      ].join(','),
+      ].path.join(','),
       ...filteredLogs.map(log =>
         [
           log.timestamp.toISOString(),
@@ -216,9 +187,9 @@ export default function AuditLogsDashboard() {
           log.category,
           log.success?.toString() || '',
           JSON.stringify(log.details || {}),
-        ].join(',')
+        ].path.join(',')
       ),
-    ].join('\n');
+    ].path.join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -321,7 +292,7 @@ export default function AuditLogsDashboard() {
                       onSelect={date =>
                         setFilters(prev => ({
                           ...prev,
-                          dateFrom: date || null,
+                          dateFrom: date || null
                         }))
                       }
                       initialFocus

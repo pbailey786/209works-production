@@ -13,38 +13,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { useToast } from '@/hooks/use-toast';
-import {
-  Plus,
-  Edit3,
-  Trash2,
-  Play,
-  Pause,
-  Bell,
-  Mail,
-  Clock,
-  Target,
-} from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
+import { useToast } from 'lucide-react';
+import { Card } from '@/components/ui/dialog';
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select';
 
 interface JobAlert {
@@ -104,18 +79,18 @@ const FREQUENCY_OPTIONS = [
   {
     value: 'immediate',
     label: 'Immediate',
-    description: 'Get notified as soon as new jobs match',
+    description: 'Get notified as soon as new jobs match'
   },
   { value: 'daily', label: 'Daily', description: 'Daily digest at 9 AM' },
   {
     value: 'weekly',
     label: 'Weekly',
-    description: 'Weekly summary every Monday',
+    description: 'Weekly summary every Monday'
   },
   {
     value: 'monthly',
     label: 'Monthly',
-    description: 'Monthly report on the 1st',
+    description: 'Monthly report on the 1st'
   },
 ];
 
@@ -136,7 +111,7 @@ export default function AlertsPage() {
     companies: [] as string[],
     salaryMin: undefined as number | undefined,
     salaryMax: undefined as number | undefined,
-    frequency: 'daily' as const,
+    frequency: 'daily' as const
   });
 
   // Load alerts on component mount
@@ -160,7 +135,7 @@ export default function AlertsPage() {
       toast({
         title: 'Error',
         description: 'Failed to load alerts. Please try again.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -181,20 +156,20 @@ export default function AlertsPage() {
         companies: newAlert.companies,
         salaryMin: newAlert.salaryMin,
         salaryMax: newAlert.salaryMax,
-        emailEnabled: true,
+        emailEnabled: true
       };
 
       const response = await fetch('/api/alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(alertData),
+        body: JSON.stringify(alertData)
       });
 
       if (!response.ok) throw new Error('Failed to create alert');
 
       toast({
         title: 'Success',
-        description: 'Alert created successfully!',
+        description: 'Alert created successfully!'
       });
 
       setIsCreateDialogOpen(false);
@@ -205,7 +180,7 @@ export default function AlertsPage() {
       toast({
         title: 'Error',
         description: 'Failed to create alert. Please try again.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -215,14 +190,14 @@ export default function AlertsPage() {
       const response = await fetch(`/api/alerts/${alertId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(updates)
       });
 
       if (!response.ok) throw new Error('Failed to update alert');
 
       toast({
         title: 'Success',
-        description: 'Alert updated successfully!',
+        description: 'Alert updated successfully!'
       });
 
       loadAlerts();
@@ -231,7 +206,7 @@ export default function AlertsPage() {
       toast({
         title: 'Error',
         description: 'Failed to update alert. Please try again.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -241,14 +216,14 @@ export default function AlertsPage() {
 
     try {
       const response = await fetch(`/api/alerts/${alertId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (!response.ok) throw new Error('Failed to delete alert');
 
       toast({
         title: 'Success',
-        description: 'Alert deleted successfully!',
+        description: 'Alert deleted successfully!'
       });
 
       loadAlerts();
@@ -257,7 +232,7 @@ export default function AlertsPage() {
       toast({
         title: 'Error',
         description: 'Failed to delete alert. Please try again.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -276,7 +251,7 @@ export default function AlertsPage() {
       companies: [],
       salaryMin: undefined,
       salaryMax: undefined,
-      frequency: 'daily',
+      frequency: 'daily'
     });
   };
 
@@ -284,7 +259,7 @@ export default function AlertsPage() {
     if (keyword && !newAlert.keywords.includes(keyword)) {
       setNewAlert(prev => ({
         ...prev,
-        keywords: [...prev.keywords, keyword],
+        keywords: [...prev.keywords, keyword]
       }));
     }
   };
@@ -292,7 +267,7 @@ export default function AlertsPage() {
   const removeKeyword = (keyword: string) => {
     setNewAlert(prev => ({
       ...prev,
-      keywords: prev.keywords.filter(k => k !== keyword),
+      keywords: prev.keywords.filter(k => k !== keyword)
     }));
   };
 
@@ -363,7 +338,7 @@ export default function AlertsPage() {
                       onChange={e =>
                         setNewAlert(prev => ({
                           ...prev,
-                          jobTitle: e.target.value,
+                          jobTitle: e.target.value
                         }))
                       }
                     />
@@ -438,7 +413,7 @@ export default function AlertsPage() {
                       onChange={e =>
                         setNewAlert(prev => ({
                           ...prev,
-                          location: e.target.value,
+                          location: e.target.value
                         }))
                       }
                     />
@@ -460,14 +435,14 @@ export default function AlertsPage() {
                               if (checked) {
                                 setNewAlert(prev => ({
                                   ...prev,
-                                  jobTypes: [...prev.jobTypes, type.value],
+                                  jobTypes: [...prev.jobTypes, type.value]
                                 }));
                               } else {
                                 setNewAlert(prev => ({
                                   ...prev,
                                   jobTypes: prev.jobTypes.filter(
                                     t => t !== type.value
-                                  ),
+                                  )
                                 }));
                               }
                             }}
@@ -494,7 +469,7 @@ export default function AlertsPage() {
                             ...prev,
                             salaryMin: e.target.value
                               ? parseInt(e.target.value)
-                              : undefined,
+                              : undefined
                           }))
                         }
                       />
@@ -511,7 +486,7 @@ export default function AlertsPage() {
                             ...prev,
                             salaryMax: e.target.value
                               ? parseInt(e.target.value)
-                              : undefined,
+                              : undefined
                           }))
                         }
                       />

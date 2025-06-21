@@ -1,25 +1,13 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { prisma } from '@/lib/database/prisma';
-import {
-  Search,
-  TrendingUp,
-  TrendingDown,
-  MessageSquare,
-  Target,
-  Users,
-  Clock,
-  BarChart3,
-  Filter,
-  Eye,
-} from 'lucide-react';
+import { prisma } from 'lucide-react';
 
 export const metadata = {
   title: 'Search Analytics | Admin Dashboard',
-  description: 'Track search behavior and JobsGPT usage analytics',
+  description: 'Track search behavior and JobsGPT usage analytics'
 };
 
 export default async function SearchAnalyticsPage() {
@@ -29,7 +17,7 @@ export default async function SearchAnalyticsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Check authentication and permissions
@@ -315,7 +303,7 @@ export default async function SearchAnalyticsPage() {
                     <span className="text-sm text-muted-foreground">{query.count} searches</span>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    <span className="font-medium">Suggestions:</span> {query.suggestions.join(', ')}
+                    <span className="font-medium">Suggestions:</span> {query.suggestions.path.join(', ')}
                   </div>
                 </div>
               ))}

@@ -2,33 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Brain, 
-  Target, 
-  TrendingUp, 
-  Star, 
-  MapPin, 
-  DollarSign, 
-  Clock, 
-  Briefcase,
-  ThumbsUp,
-  ThumbsDown,
-  RefreshCw,
-  Sparkles,
-  Eye,
-  Heart,
-  Share2,
-  ExternalLink,
-  ChevronRight,
-  Zap,
-  Award,
-  Users
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'lucide-react';
 
 interface JobRecommendation {
   job: {
@@ -68,7 +46,7 @@ export default function SmartJobRecommendations({
   limit = 10,
   onJobClick,
   onFeedback,
-  className = '',
+  className = ''
 }: SmartJobRecommendationsProps) {
   const [recommendations, setRecommendations] = useState<JobRecommendation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,9 +104,9 @@ export default function SmartJobRecommendations({
             jobId,
             type: feedback,
             reasons,
-            timestamp: new Date().toISOString(),
-          },
-        }),
+            timestamp: new Date().toISOString()
+          }
+        })
       });
 
       if (response.ok) {

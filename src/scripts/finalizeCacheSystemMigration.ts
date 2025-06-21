@@ -1,22 +1,7 @@
 #!/usr/bin/env node
-import { getRedisClient, isRedisAvailable } from '@/components/ui/card';
-import { getAtomicCacheManager } from '@/components/ui/card';
-import { CacheHealthMonitor } from '../lib/cache/enhanced-cache-services';
-
-
-
-/**
- * Cache System Migration Finalization Script
- *
- * This script finalizes the migration from the old cache system to the new atomic cache system,
- * addressing all critical race conditions and data consistency issues identified in subtask 29.
- */
-
-  import {
-  CacheMigrationManager,
-  CacheCompatibilityLayer,
-  MigrationUtils,
-} from '../lib/cache/cache-migration-utility';
+import { getRedisClient, isRedisAvailable } from '@/lib/cache/redis';
+import { getAtomicCacheManager } from '@/lib/cache/atomic-cache-manager';
+import { CacheHealthMonitor } from '../lib/cache/cache-migration-utility';
 
 // Migration configuration
 interface FinalizationConfig {
@@ -37,7 +22,7 @@ const DEFAULT_CONFIG: FinalizationConfig = {
   startMonitoring: true,
   generateReport: true,
   cleanupOldSystem: false, // Keep old system as backup initially
-  dryRun: false,
+  dryRun: false
 };
 
 /**
@@ -159,7 +144,7 @@ class CacheSystemFinalizer {
         validateData: true,
         preserveOldCache: true, // Keep old cache as backup
         dryRun: this.config.dryRun,
-        enableRollback: true,
+        enableRollback: true
       };
 
       const status = await MigrationUtils.runMigration(migrationConfig);
@@ -247,14 +232,14 @@ class CacheSystemFinalizer {
       const testKey = 'test:finalization:' + Date.now();
       const testValue = {
         message: 'Cache system validation test',
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
 
       // Test atomic set
       const setResult = await atomicManager.atomicSet(testKey, testValue, {
         ttl: 60,
         tags: ['test'],
-        dependencies: ['test:all'],
+        dependencies: ['test:all']
       });
 
       if (!setResult) {
@@ -263,7 +248,7 @@ class CacheSystemFinalizer {
 
       // Test atomic get
       const getValue = await atomicManager.atomicGet(testKey, {
-        validateIntegrity: true,
+        validateIntegrity: true
       });
 
       if (!getValue || JSON.stringify(getValue) !== JSON.stringify(testValue)) {
@@ -342,7 +327,7 @@ Critical Issues Addressed:
 ✅ Performance Issues - Added batch operations and comprehensive monitoring
 
 Migration Logs:
-${this.logs.join('\n')}
+${this.logs.path.join('\n')}
 
 Next Steps:
 1. Monitor cache performance for 24-48 hours
@@ -357,13 +342,13 @@ Report generated at: ${new Date().toISOString()}
       // Write report to file
       const fs = require('fs');
       const path = require('path');
-      const reportPath = path.join(
+      const reportPath = path.path.join(
         process.cwd(),
         'cache-migration-finalization-report.txt'
       );
 
       if (!this.config.dryRun) {
-        fs.writeFileSync(reportPath, report);
+        fs.fs.writeFileSync(reportPath, report);
         this.log(`Final report written to: ${reportPath}`);
       } else {
         this.log('[DRY RUN] Would write final report to: ' + reportPath);

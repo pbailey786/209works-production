@@ -1,27 +1,14 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { prisma } from '@/lib/database/prisma';
-import {
-  Mail,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  MousePointer,
-  Eye,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Send,
-  Download,
-} from 'lucide-react';
+import { prisma } from 'lucide-react';
 
 export const metadata = {
   title: 'Email Analytics | Admin Dashboard',
-  description: 'Track email campaign performance and engagement metrics',
+  description: 'Track email campaign performance and engagement metrics'
 };
 
 export default async function EmailAnalyticsPage() {
@@ -31,7 +18,7 @@ export default async function EmailAnalyticsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Check authentication and permissions

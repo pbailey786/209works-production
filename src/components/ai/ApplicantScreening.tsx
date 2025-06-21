@@ -1,34 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Brain,
-  Target,
-  Star,
-  TrendingUp,
-  TrendingDown,
-  CheckCircle,
-  AlertTriangle,
-  User,
-  FileText,
-  Award,
-  MapPin,
-  Clock,
-  Briefcase,
-  GraduationCap,
-  Zap,
-  Eye,
-  ThumbsUp,
-  ThumbsDown,
-  MessageSquare,
-  BarChart3,
-  Filter,
-  SortAsc,
-  RefreshCw,
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 interface ApplicantScore {
   overall: number;
@@ -111,7 +86,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
               experienceMatch: 88,
               locationFit: 100,
               culturalFit: 85,
-              salaryExpectations: 90,
+              salaryExpectations: 90
             },
             insights: [
               {
@@ -120,7 +95,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
                 title: 'Excellent React Expertise',
                 description: 'Demonstrates advanced React skills with 5+ years of experience and contributions to open source projects.',
                 confidence: 95,
-                evidence: ['5 years React experience', 'Open source contributions', 'Advanced patterns knowledge'],
+                evidence: ['5 years React experience', 'Open source contributions', 'Advanced patterns knowledge']
               },
               {
                 type: 'strength',
@@ -128,7 +103,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
                 title: 'Strong Leadership Background',
                 description: 'Has led multiple teams and projects, showing progression from developer to senior roles.',
                 confidence: 88,
-                evidence: ['Led team of 6 developers', 'Managed 3 major projects', 'Mentored junior developers'],
+                evidence: ['Led team of 6 developers', 'Managed 3 major projects', 'Mentored junior developers']
               },
               {
                 type: 'concern',
@@ -136,7 +111,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
                 title: 'Limited Backend Experience',
                 description: 'Primarily frontend focused with minimal backend development experience.',
                 confidence: 75,
-                evidence: ['No Node.js experience mentioned', 'Limited API development', 'Frontend-only projects'],
+                evidence: ['No Node.js experience mentioned', 'Limited API development', 'Frontend-only projects']
               },
             ],
             recommendation: 'strong_match',
@@ -153,8 +128,8 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
               experienceYears: 6,
               educationLevel: 'Bachelor\'s Degree',
               careerProgression: 'ascending',
-              gapAnalysis: ['Backend development', 'DevOps experience'],
-            },
+              gapAnalysis: ['Backend development', 'DevOps experience']
+            }
           },
           {
             applicantId: '2',
@@ -167,7 +142,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
               experienceMatch: 75,
               locationFit: 60,
               culturalFit: 90,
-              salaryExpectations: 85,
+              salaryExpectations: 85
             },
             insights: [
               {
@@ -176,7 +151,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
                 title: 'Full-Stack Capabilities',
                 description: 'Strong both frontend and backend skills with modern tech stack experience.',
                 confidence: 85,
-                evidence: ['React + Node.js experience', 'Database design', 'API development'],
+                evidence: ['React + Node.js experience', 'Database design', 'API development']
               },
               {
                 type: 'concern',
@@ -184,7 +159,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
                 title: 'Remote Location',
                 description: 'Currently based in another state, may require relocation or remote work arrangement.',
                 confidence: 80,
-                evidence: ['Based in Austin, TX', 'No local address', 'Remote work preference'],
+                evidence: ['Based in Austin, TX', 'No local address', 'Remote work preference']
               },
             ],
             recommendation: 'good_match',
@@ -201,8 +176,8 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
               experienceYears: 4,
               educationLevel: 'Master\'s Degree',
               careerProgression: 'ascending',
-              gapAnalysis: ['Team leadership', 'Local market knowledge'],
-            },
+              gapAnalysis: ['Team leadership', 'Local market knowledge']
+            }
           },
         ]);
       }
@@ -219,7 +194,7 @@ export function ApplicantScreening({ jobId, applicantId, onScreeningComplete }: 
       const response = await fetch(`/api/ai/applicant-screening/${jobId}/screen`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ applicantId }),
+        body: JSON.stringify({ applicantId })
       });
 
       if (response.ok) {

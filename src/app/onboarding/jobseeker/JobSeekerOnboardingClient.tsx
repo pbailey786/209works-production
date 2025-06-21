@@ -1,22 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-
-import {
-  Upload,
-  User,
-  MapPin,
-  Briefcase,
-  Target,
-  Bell,
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle,
-  FileText,
-  Clock,
-  Star,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 // Import step components
 
@@ -104,7 +89,7 @@ export default function JobSeekerOnboardingClient({ user }: JobSeekerOnboardingC
     
     optInEmailAlerts: false,
     optInSmsAlerts: false,
-    allowEmployerMessages: false,
+    allowEmployerMessages: false
   });
 
   const steps: OnboardingStep[] = [
@@ -113,42 +98,42 @@ export default function JobSeekerOnboardingClient({ user }: JobSeekerOnboardingC
       title: 'Upload Your Resume',
       description: 'Let us extract your information automatically',
       icon: Upload,
-      component: ResumeUploadStep,
+      component: ResumeUploadStep
     },
     {
       id: 'review',
       title: 'Review & Edit',
       description: 'Verify and update your information',
       icon: User,
-      component: ReviewEditStep,
+      component: ReviewEditStep
     },
     {
       id: 'availability',
       title: 'Availability',
       description: 'When can you work?',
       icon: Clock,
-      component: AvailabilityStep,
+      component: AvailabilityStep
     },
     {
       id: 'preferences',
       title: 'Job Preferences',
       description: 'What kind of work interests you?',
       icon: Briefcase,
-      component: JobPreferencesStep,
+      component: JobPreferencesStep
     },
     {
       id: 'goals',
       title: 'Career Goals',
       description: 'What are you looking for?',
       icon: Target,
-      component: CareerGoalsStep,
+      component: CareerGoalsStep
     },
     {
       id: 'optin',
       title: 'Stay Connected',
       description: 'Get job alerts and updates',
       icon: Bell,
-      component: OptInStep,
+      component: OptInStep
     },
   ];
 
@@ -171,7 +156,7 @@ export default function JobSeekerOnboardingClient({ user }: JobSeekerOnboardingC
       const response = await fetch('/api/profile/jobseeker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -179,7 +164,7 @@ export default function JobSeekerOnboardingClient({ user }: JobSeekerOnboardingC
         await fetch('/api/profile/onboarding', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ onboardingCompleted: true }),
+          body: JSON.stringify({ onboardingCompleted: true })
         });
         
         router.push('/dashboard');

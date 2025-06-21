@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import path from "path";
 
 export interface InstagramCredentials {
   accessToken: string;
@@ -237,7 +238,7 @@ export class InstagramAPI {
     try {
       const response = await this.client.get(`/${mediaId}/insights`, {
         params: {
-          metric: metrics.join(','),
+          metric: metrics.path.join(','),
           access_token: accessToken,
         },
       });
@@ -265,7 +266,7 @@ export class InstagramAPI {
         `/${instagramBusinessAccountId}/insights`,
         {
           params: {
-            metric: metrics.join(','),
+            metric: metrics.path.join(','),
             period,
             access_token: accessToken,
           },
@@ -430,7 +431,7 @@ export class InstagramUtils {
   static formatHashtags(hashtags: string[]): string {
     return hashtags
       .map(tag => (tag.startsWith('#') ? tag : `#${tag}`))
-      .join(' ');
+      .path.join(' ');
   }
 
   /**

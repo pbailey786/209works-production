@@ -1,32 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Target,
-  Eye,
-  Users,
-  Clock,
-  Star,
-  AlertTriangle,
-  CheckCircle,
-  Lightbulb,
-  Zap,
-  RefreshCw,
-  Download,
-  Calendar,
-  MapPin,
-  DollarSign,
-  Award,
-  Activity,
-  ArrowRight,
-  Info,
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 interface PerformanceMetric {
   name: string;
@@ -117,7 +94,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
               previous: 298,
               target: 400,
               trend: 'up',
-              status: 'good',
+              status: 'good'
             },
             {
               name: 'Applications',
@@ -125,7 +102,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
               previous: 35,
               target: 40,
               trend: 'down',
-              status: 'needs_improvement',
+              status: 'needs_improvement'
             },
             {
               name: 'Application Rate',
@@ -133,7 +110,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
               previous: 11.7,
               target: 10.0,
               trend: 'down',
-              status: 'needs_improvement',
+              status: 'needs_improvement'
             },
             {
               name: 'Quality Score',
@@ -141,7 +118,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
               previous: 7.2,
               target: 8.0,
               trend: 'up',
-              status: 'good',
+              status: 'good'
             },
           ],
           insights: [
@@ -159,7 +136,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
                 'Improve job title for better searchability',
               ],
               confidence: 87,
-              category: 'applications',
+              category: 'applications'
             },
             {
               id: '2',
@@ -175,7 +152,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
                 'Clarify remote work options',
               ],
               confidence: 73,
-              category: 'conversion',
+              category: 'conversion'
             },
             {
               id: '3',
@@ -190,7 +167,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
                 'Consider expanding to similar channels',
               ],
               confidence: 91,
-              category: 'quality',
+              category: 'quality'
             },
             {
               id: '4',
@@ -206,7 +183,7 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
                 'Add one-click apply options',
               ],
               confidence: 82,
-              category: 'engagement',
+              category: 'engagement'
             },
           ],
           benchmarks: [
@@ -215,35 +192,35 @@ export function JobPerformanceInsights({ jobId, className }: JobPerformanceInsig
               yourValue: 23,
               industryAverage: 28,
               topPerformers: 18,
-              percentile: 72,
+              percentile: 72
             },
             {
               metric: 'Application Rate',
               yourValue: 8.2,
               industryAverage: 9.5,
               topPerformers: 15.2,
-              percentile: 45,
+              percentile: 45
             },
             {
               metric: 'Quality of Hire',
               yourValue: 85,
               industryAverage: 78,
               topPerformers: 92,
-              percentile: 68,
+              percentile: 68
             },
             {
               metric: 'Cost per Hire',
               yourValue: 3200,
               industryAverage: 4100,
               topPerformers: 2800,
-              percentile: 75,
+              percentile: 75
             },
           ],
           predictions: {
             expectedApplications: 45,
             timeToFillEstimate: 26,
-            successProbability: 78,
-          },
+            successProbability: 78
+          }
         });
       }
     } catch (error) {

@@ -5,16 +5,7 @@ import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { useDomain } from '@/lib/domain/context';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { 
+import { Badge } from '@/components/ui/dropdown-menu';
   User, 
   Settings, 
   LogOut, 
@@ -25,6 +16,7 @@ import {
   X
 } from 'lucide-react';
 import { useState } from 'react';
+import path from "path";
 
 interface DomainAwareHeaderProps {
   className?: string;
@@ -224,7 +216,7 @@ export default function DomainAwareHeader({ className = '' }: DomainAwareHeaderP
                   <span>Serving {config.region}</span>
                 </div>
                 <div className="text-xs text-gray-500 mt-1">
-                  {config.cities.slice(0, 3).join(', ')}
+                  {config.cities.slice(0, 3).path.join(', ')}
                   {config.cities.length > 3 && ` +${config.cities.length - 3} more`}
                 </div>
               </div>

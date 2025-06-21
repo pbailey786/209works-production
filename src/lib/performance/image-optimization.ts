@@ -5,6 +5,7 @@
 
 import { headers } from 'next/headers';
 import { getDomainConfig } from '@/lib/domain/config';
+import path from "path";
 
 export interface ImageOptimizationOptions {
   width?: number;
@@ -113,7 +114,7 @@ export class ImageOptimizationService {
     transformations.push('fl_progressive');
     transformations.push('fl_immutable_cache');
 
-    const transformationString = transformations.join(',');
+    const transformationString = transformations.path.join(',');
     
     // Handle different source types
     if (src.startsWith('http')) {
@@ -164,7 +165,7 @@ export class ImageOptimizationService {
         return `${url} ${width}w`;
       });
 
-    return srcSetEntries.join(', ');
+    return srcSetEntries.path.join(', ');
   }
 
   /**
@@ -189,7 +190,7 @@ export class ImageOptimizationService {
       sizeEntries.push(sizes.default);
     }
 
-    return sizeEntries.join(', ');
+    return sizeEntries.path.join(', ');
   }
 
   /**

@@ -10,7 +10,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface WelcomeJobSeekerEmailProps {
@@ -22,7 +22,7 @@ interface WelcomeJobSeekerEmailProps {
 export default function WelcomeJobSeekerEmail({
   userName = 'Job Seeker',
   loginUrl = 'https://209.works/signin',
-  unsubscribeUrl = 'https://209.works/unsubscribe',
+  unsubscribeUrl = 'https://209.works/unsubscribe'
 }: WelcomeJobSeekerEmailProps) {
   const previewText = `🎉 Welcome to 209 Works, ${userName}! Your Central Valley career journey starts here.`;
 
@@ -198,7 +198,7 @@ const main = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   WebkitFontSmoothing: 'antialiased' as const,
   MozOsxFontSmoothing: 'grayscale' as const,
-  textRendering: 'optimizeLegibility' as const,
+  textRendering: 'optimizeLegibility' as const
 };
 
 const container = {
@@ -208,14 +208,14 @@ const container = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const header = {
   backgroundColor: '#2d4a3e',
   backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
   padding: '40px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const logo = {
@@ -223,18 +223,18 @@ const logo = {
   fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 8px 0',
-  letterSpacing: '-0.5px',
+  letterSpacing: '-0.5px'
 };
 
 const tagline = {
   color: '#ffffff',
   fontSize: '18px',
   margin: '0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const content = {
-  padding: '32px 24px',
+  padding: '32px 24px'
 };
 
 const greeting = {
@@ -242,14 +242,14 @@ const greeting = {
   fontWeight: 'bold',
   color: '#2d4a3e',
   margin: '0 0 24px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const paragraph = {
   fontSize: '16px',
   lineHeight: '1.6',
   color: '#374151',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const heroSection = {
@@ -258,14 +258,14 @@ const heroSection = {
   borderRadius: '12px',
   padding: '32px 24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const heroText = {
   fontSize: '20px',
   fontWeight: 'bold',
   color: '#1e3329',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const primaryButton = {
@@ -280,11 +280,11 @@ const primaryButton = {
   display: 'inline-block',
   padding: '16px 32px',
   border: 'none',
-  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)',
+  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)'
 };
 
 const featuresContainer = {
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const featureCard = {
@@ -293,27 +293,27 @@ const featureCard = {
   borderRadius: '8px',
   padding: '20px',
   margin: '16px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const featureIcon = {
   fontSize: '32px',
   margin: '0 0 12px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const featureTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#2d4a3e',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const featureDescription = {
   fontSize: '14px',
   color: '#64748b',
   lineHeight: '1.5',
-  margin: '0',
+  margin: '0'
 };
 
 const stepsSection = {
@@ -321,7 +321,7 @@ const stepsSection = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  border: '2px solid #fed7aa',
+  border: '2px solid #fed7aa'
 };
 
 const stepsTitle = {
@@ -329,11 +329,11 @@ const stepsTitle = {
   fontWeight: 'bold',
   color: '#ea580c',
   margin: '0 0 16px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const stepsList = {
-  margin: '24px 0 0 0',
+  margin: '24px 0 0 0'
 };
 
 const stepCard = {
@@ -343,7 +343,7 @@ const stepCard = {
   padding: '16px',
   backgroundColor: '#ffffff',
   borderRadius: '8px',
-  border: '1px solid #fed7aa',
+  border: '1px solid #fed7aa'
 };
 
 const stepNumber = {
@@ -358,21 +358,21 @@ const stepNumber = {
   alignItems: 'center',
   justifyContent: 'center',
   marginRight: '16px',
-  flexShrink: 0,
+  flexShrink: 0
 };
 
 const stepTitle = {
   fontSize: '16px',
   fontWeight: '600',
   color: '#1e293b',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const stepDescription = {
   fontSize: '14px',
   color: '#64748b',
   margin: '0',
-  lineHeight: '1.4',
+  lineHeight: '1.4'
 };
 
 const actionsSection = {
@@ -380,21 +380,21 @@ const actionsSection = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const actionsTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#2d4a3e',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const buttonRow = {
   display: 'flex',
   justifyContent: 'center',
   gap: '16px',
-  flexWrap: 'wrap' as const,
+  flexWrap: 'wrap' as const
 };
 
 const secondaryButton = {
@@ -408,7 +408,7 @@ const secondaryButton = {
   display: 'inline-block',
   padding: '12px 24px',
   border: 'none',
-  margin: '4px',
+  margin: '4px'
 };
 
 const supportSection = {
@@ -416,27 +416,27 @@ const supportSection = {
   borderRadius: '8px',
   padding: '20px',
   margin: '24px 0',
-  border: '1px solid #e2e8f0',
+  border: '1px solid #e2e8f0'
 };
 
 const supportTitle = {
   fontSize: '16px',
   fontWeight: '600',
   color: '#2d4a3e',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const supportText = {
   fontSize: '14px',
   color: '#64748b',
   lineHeight: '1.5',
-  margin: '0',
+  margin: '0'
 };
 
 const link = {
   color: '#ff6b35',
   textDecoration: 'underline',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const footer = {
@@ -444,52 +444,52 @@ const footer = {
   color: '#64748b',
   margin: '32px 0 0 0',
   textAlign: 'center' as const,
-  lineHeight: '1.6',
+  lineHeight: '1.6'
 };
 
 const divider = {
   borderColor: '#e2e8f0',
-  margin: '0',
+  margin: '0'
 };
 
 const footerSection = {
   backgroundColor: '#f8fafc',
   padding: '24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const footerTitle = {
   color: '#2d4a3e',
   fontSize: '18px',
   fontWeight: 'bold',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const footerSubtitle = {
   color: '#64748b',
   fontSize: '14px',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const footerLinks = {
   fontSize: '14px',
   color: '#64748b',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const footerLink = {
   color: '#64748b',
-  textDecoration: 'underline',
+  textDecoration: 'underline'
 };
 
 const unsubscribeLink = {
   color: '#94a3b8',
-  textDecoration: 'underline',
+  textDecoration: 'underline'
 };
 
 const copyrightText = {
   fontSize: '12px',
   color: '#94a3b8',
   margin: '0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };

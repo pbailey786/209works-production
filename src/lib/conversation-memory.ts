@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 export interface UserPreferences {
   preferredLocation?: string;
@@ -278,11 +279,11 @@ export class ConversationMemory {
     }
     
     if (preferences.preferredJobTypes?.length) {
-      summary += `- Interested in: ${preferences.preferredJobTypes.join(', ')}\n`;
+      summary += `- Interested in: ${preferences.preferredJobTypes.path.join(', ')}\n`;
     }
     
     if (preferences.preferredIndustries?.length) {
-      summary += `- Industries: ${preferences.preferredIndustries.join(', ')}\n`;
+      summary += `- Industries: ${preferences.preferredIndustries.path.join(', ')}\n`;
     }
     
     if (preferences.salaryRange) {
@@ -299,7 +300,7 @@ export class ConversationMemory {
     }
     
     if (recentSearches.length) {
-      summary += `- Recent searches: ${recentSearches.slice(0, 3).join(', ')}\n`;
+      summary += `- Recent searches: ${recentSearches.slice(0, 3).path.join(', ')}\n`;
     }
     
     if (jobInteractions.applied.length) {

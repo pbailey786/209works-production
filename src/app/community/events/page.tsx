@@ -3,29 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Calendar,
-  MapPin,
-  Clock,
-  Users,
-  Star,
-  Filter,
-  Search,
-  Plus,
-  ExternalLink,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Community Events | 209jobs',
   description:
-    'Discover networking events, workshops, and career development opportunities in the Central Valley',
+    'Discover networking events, workshops, and career development opportunities in the Central Valley'
 };
 
 export default function CommunityEventsPage() {
@@ -46,7 +29,7 @@ export default function CommunityEventsPage() {
       price: 'Free',
       category: 'Networking',
       featured: true,
-      tags: ['Technology', 'Networking', 'Innovation'],
+      tags: ['Technology', 'Networking', 'Innovation']
     },
     {
       id: 2,
@@ -64,7 +47,7 @@ export default function CommunityEventsPage() {
       price: 'Members Only',
       category: 'Industry Meetup',
       featured: false,
-      tags: ['Healthcare', 'Professional Development', 'Networking'],
+      tags: ['Healthcare', 'Professional Development', 'Networking']
     },
     {
       id: 3,
@@ -82,7 +65,7 @@ export default function CommunityEventsPage() {
       price: '$15',
       category: 'Social',
       featured: true,
-      tags: ['Young Professionals', 'Networking', 'Social'],
+      tags: ['Young Professionals', 'Networking', 'Social']
     },
     {
       id: 4,
@@ -100,7 +83,7 @@ export default function CommunityEventsPage() {
       price: '$25',
       category: 'Workshop',
       featured: false,
-      tags: ['Career Development', 'Resume', 'Skills'],
+      tags: ['Career Development', 'Resume', 'Skills']
     },
     {
       id: 5,
@@ -118,7 +101,7 @@ export default function CommunityEventsPage() {
       price: '$75',
       category: 'Conference',
       featured: true,
-      tags: ['Agriculture', 'Innovation', 'Technology', 'Sustainability'],
+      tags: ['Agriculture', 'Innovation', 'Technology', 'Sustainability']
     },
     {
       id: 6,
@@ -136,7 +119,7 @@ export default function CommunityEventsPage() {
       price: '$50',
       category: 'Workshop',
       featured: false,
-      tags: ['Interview Skills', 'Career Development', 'Professional Skills'],
+      tags: ['Interview Skills', 'Career Development', 'Professional Skills']
     },
   ];
 

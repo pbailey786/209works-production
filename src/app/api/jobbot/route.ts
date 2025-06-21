@@ -1,14 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { z } from 'zod';
-import {
-  enhancedIdSchema,
-  messageSchema,
-  enhancedArraySchema,
-  validateInput,
-} from '@/lib/validations/input-validation';
+import { prisma } from '@/lib/database/prisma';
+import { auth } from '@clerk/nextjs/server';
+import { z } from '@/lib/validations/input-validation';
 
 // Rate limiting - simple in-memory store (in production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -34,7 +28,7 @@ const jobBotRequestSchema = z.object({
   messages: enhancedArraySchema(messageSchema, 50).min(
     1,
     'At least one message is required'
-  ),
+  )
 });
 
 type JobBotRequest = z.infer<typeof jobBotRequestSchema>;
@@ -62,7 +56,7 @@ function checkRateLimit(identifier: string): {
       allowed: true,
       remaining: RATE_LIMIT_MAX_REQUESTS - 1,
       resetTime,
-      limit: RATE_LIMIT_MAX_REQUESTS,
+      limit: RATE_LIMIT_MAX_REQUESTS
     };
   }
 
@@ -71,7 +65,7 @@ function checkRateLimit(identifier: string): {
       allowed: false,
       remaining: 0,
       resetTime: userLimit.resetTime,
-      limit: RATE_LIMIT_MAX_REQUESTS,
+      limit: RATE_LIMIT_MAX_REQUESTS
     };
   }
 
@@ -80,7 +74,7 @@ function checkRateLimit(identifier: string): {
     allowed: true,
     remaining: RATE_LIMIT_MAX_REQUESTS - userLimit.count,
     resetTime: userLimit.resetTime,
-    limit: RATE_LIMIT_MAX_REQUESTS,
+    limit: RATE_LIMIT_MAX_REQUESTS
   };
 }
 
@@ -181,7 +175,7 @@ function validateMessages(
 
     validatedMessages.push({
       role: role as 'user' | 'assistant' | 'system',
-      content: sanitizedContent,
+      content: sanitizedContent
     });
   }
 
@@ -245,11 +239,11 @@ async function loadJobContext(jobId: string): Promise<JobContextData | null> {
           include: {
             knowledgeBase: {
               where: { verified: true },
-              orderBy: { priority: 'desc' },
-            },
-          },
-        },
-      },
+              orderBy: { priority: 'desc' }
+            }
+          }
+        }
+      }
     });
 
     if (!job) {
@@ -263,14 +257,14 @@ async function loadJobContext(jobId: string): Promise<JobContextData | null> {
     if (!company && job.company) {
       company = await prisma.company.findFirst({
         where: {
-          name: { contains: job.company, mode: 'insensitive' },
+          name: { contains: job.company, mode: 'insensitive' }
         },
         include: {
           knowledgeBase: {
             where: { verified: true },
-            orderBy: { priority: 'desc' },
-          },
-        },
+            orderBy: { priority: 'desc' }
+          }
+        }
       });
 
       if (company) {
@@ -283,7 +277,7 @@ async function loadJobContext(jobId: string): Promise<JobContextData | null> {
     const contextData: JobContextData = {
       job,
       company,
-      companyKnowledge,
+      companyKnowledge
     };
 
     // Cache the result
@@ -308,7 +302,7 @@ function buildSystemPrompt(context: JobContextData): string {
 - Location: ${job.location}
 - Job Type: ${job.type}
 - Posted: ${new Date(job.postedAt).toLocaleDateString()}
-- Categories: ${job.categories?.join(', ') || 'Not specified'}
+- Categories: ${job.categories?.path.join(', ') || 'Not specified'}
 
 **Job Description:**
 ${job.description}
@@ -416,7 +410,7 @@ export async function POST(req: NextRequest) {
         NextResponse.json(
           {
             error:
-              'Rate limit exceeded. Please wait before sending more messages.',
+              'Rate limit exceeded. Please wait before sending more messages.'
           },
           { status: 429 }
         ),
@@ -458,7 +452,7 @@ export async function POST(req: NextRequest) {
               validationError instanceof Error
                 ? validationError.message
                 : 'Validation failed',
-            type: 'validation_error',
+            type: 'validation_error'
           },
           { status: 400 }
         ),
@@ -520,8 +514,8 @@ export async function POST(req: NextRequest) {
           hasKnowledgeBase: jobContext.companyKnowledge.length > 0,
           knowledgeCategories: [
             ...new Set(jobContext.companyKnowledge.map(k => k.category)),
-          ],
-        },
+          ]
+        }
       }),
       rateLimitInfo
     );
@@ -535,7 +529,7 @@ export async function POST(req: NextRequest) {
           NextResponse.json(
             {
               error:
-                'AI service temporarily unavailable. Please try again in a moment.',
+                'AI service temporarily unavailable. Please try again in a moment.'
             },
             { status: 429 }
           ),
@@ -548,7 +542,7 @@ export async function POST(req: NextRequest) {
           NextResponse.json(
             {
               error:
-                'Message violates content policy. Please keep questions professional and job-related.',
+                'Message violates content policy. Please keep questions professional and job-related.'
             },
             { status: 400 }
           ),
@@ -560,7 +554,7 @@ export async function POST(req: NextRequest) {
     return addRateLimitHeaders(
       NextResponse.json(
         {
-          error: 'JobGenie is temporarily unavailable. Please try again later.',
+          error: 'JobGenie is temporarily unavailable. Please try again later.'
         },
         { status: 500 }
       ),

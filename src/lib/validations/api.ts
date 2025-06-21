@@ -1,4 +1,4 @@
-import { z } from '@/components/ui/card';
+import { z } from 'zod';
 import { JobType, UserRole } from '@/components/ui/card';
 import { validationPatterns } from './form-utils';
 

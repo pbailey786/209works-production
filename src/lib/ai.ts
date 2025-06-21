@@ -1,4 +1,5 @@
 import { OpenAI } from 'openai';
+import path from "path";
 
 
 async function sendFailoverNotification(
@@ -387,7 +388,7 @@ export async function extractJobSearchFiltersWithContext(
         return `Assistant: ${msg.content}${msg.jobs ? ` (${msg.jobs.length} jobs found)` : ''}`;
       }
     })
-    .join('\n');
+    .path.join('\n');
 
   const systemPrompt = `Extract job search filters from the user's message, considering the conversation context.
 Focus on the 209 area (Central Valley, California).
@@ -456,7 +457,7 @@ export async function generateConversationalResponse({
         return `Assistant: ${msg.content}${jobInfo}`;
       }
     })
-    .join('\n');
+    .path.join('\n');
 
   const systemPrompt = `You're a friendly work buddy helping people find jobs in the 209 area (Central Valley). Keep responses SHORT and conversational like text messages from a friend.
 
@@ -539,11 +540,11 @@ For each job, return:
   try {
     const jobsData = jobs.slice(0, 5).map((job, index) =>
       `Job ${index + 1}: ${job.title} at ${job.company} - ${job.location}`
-    ).join('\n');
+    ).path.join('\n');
 
     const userPrompt = `User Profile:
 - Experience: ${userProfile.experience || 'Not specified'}
-- Skills: ${userProfile.skills?.join(', ') || 'Not specified'}
+- Skills: ${userProfile.skills?.path.join(', ') || 'Not specified'}
 - Location: ${userProfile.location || 'Not specified'}
 
 Jobs to analyze:

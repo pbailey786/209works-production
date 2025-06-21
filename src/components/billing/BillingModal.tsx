@@ -2,18 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import {
-  X,
-  Check,
-  Star,
-  CreditCard,
-  Building2,
-  Users,
-  Zap,
-  Shield,
-  ArrowRight,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface BillingModalProps {
   isOpen: boolean;
@@ -30,7 +19,7 @@ export default function BillingModal({
   onSuccess,
   trigger = 'job-posting',
   title,
-  description,
+  description
 }: BillingModalProps) {
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState('standard');
@@ -50,7 +39,7 @@ export default function BillingModal({
         '📊 Basic analytics',
         '💬 Email support',
       ],
-      badge: 'Great for Local Business',
+      badge: 'Great for Local Business'
     },
     {
       id: 'standard',
@@ -65,7 +54,7 @@ export default function BillingModal({
         '💬 Priority support',
       ],
       badge: 'Most Popular',
-      popular: true,
+      popular: true
     },
     {
       id: 'pro',
@@ -80,7 +69,7 @@ export default function BillingModal({
         '💬 Phone support',
         '🚀 2 featured posts',
       ],
-      badge: 'Best Value',
+      badge: 'Best Value'
     },
   ];
 
@@ -89,22 +78,22 @@ export default function BillingModal({
       case 'job-posting':
         return {
           title: title || 'Choose Your Plan to Post Jobs',
-          description: description || 'Select a subscription plan to start posting jobs and finding great candidates.',
+          description: description || 'Select a subscription plan to start posting jobs and finding great candidates.'
         };
       case 'upgrade':
         return {
           title: title || 'Upgrade Your Plan',
-          description: description || 'Unlock more features and capabilities for your hiring needs.',
+          description: description || 'Unlock more features and capabilities for your hiring needs.'
         };
       case 'feature-access':
         return {
           title: title || 'Premium Feature Access',
-          description: description || 'This feature requires a premium subscription plan.',
+          description: description || 'This feature requires a premium subscription plan.'
         };
       default:
         return {
           title: 'Choose Your Plan',
-          description: 'Select the plan that best fits your hiring needs.',
+          description: 'Select the plan that best fits your hiring needs.'
         };
     }
   };
@@ -115,15 +104,15 @@ export default function BillingModal({
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           priceId: `${planId}_monthly`, // This would map to actual Stripe price IDs
           tier: planId,
           billingInterval: 'monthly',
           successUrl: `${window.location.origin}/employers/dashboard?success=true&plan=${planId}`,
-          cancelUrl: `${window.location.origin}/employers/dashboard`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/dashboard`
+        })
       });
 
       const data = await response.json();

@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-import { config } from '@/components/ui/card';
-import { writeFileSync, existsSync, mkdirSync } from '@/components/ui/card';
-import { join } from '@/components/ui/card';
+import "dotenv/config";
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 import { upsertAdzunaJobsToDb } from '../app/services/adzunaToDb';
+import fs from "fs";
+import path from "path";
+import cron from "node-cron";
 
 
 
@@ -76,7 +79,7 @@ class ConfigValidator {
     const validLevels = ['debug', 'info', 'warn', 'error'];
     if (!validLevels.includes(level)) {
       throw new Error(
-        `Invalid log level: ${level}. Must be one of: ${validLevels.join(', ')}`
+        `Invalid log level: ${level}. Must be one of: ${validLevels.path.join(', ')}`
       );
     }
     return level as 'debug' | 'info' | 'warn' | 'error';
@@ -93,7 +96,7 @@ class Logger {
     this.logLevel = config.logLevel;
     this.logRotation = config.logRotation;
     this.maxLogFiles = config.maxLogFiles;
-    this.logDir = join(process.cwd(), 'logs');
+    this.logDir = path.join(process.cwd(), 'logs');
 
     if (this.logRotation) {
       this.ensureLogDirectory();
@@ -101,8 +104,8 @@ class Logger {
   }
 
   private ensureLogDirectory(): void {
-    if (!existsSync(this.logDir)) {
-      mkdirSync(this.logDir, { recursive: true });
+    if (!fs.existsSync(this.logDir)) {
+      fs.mkdirSync(this.logDir, { recursive: true });
     }
   }
 
@@ -127,7 +130,7 @@ class Logger {
                 ? JSON.stringify(arg, null, 2)
                 : String(arg)
             )
-            .join(' ')
+            .path.join(' ')
         : '';
 
     return `[${timestamp}] [${pid}] [${level.toUpperCase()}] ${message}${formattedArgs}`;
@@ -137,11 +140,11 @@ class Logger {
     if (!this.logRotation) return;
 
     try {
-      const logFile = join(
+      const logFile = path.join(
         this.logDir,
         `adzuna-cron-${new Date().toISOString().split('T')[0]}.log`
       );
-      writeFileSync(logFile, message + '\n', { flag: 'a' });
+      fs.writeFileSync(logFile, message + '\n', { flag: 'a' });
       this.rotateLogsIfNeeded();
     } catch (error) {
       console.error('Failed to write to log file:', error);
@@ -227,7 +230,7 @@ class ProcessManager {
 
   private createPidFile(): void {
     try {
-      writeFileSync(this.config.pidFile, process.pid.toString());
+      fs.writeFileSync(this.config.pidFile, process.pid.toString());
       this.logger.debug(`PID file created: ${this.config.pidFile}`);
     } catch (error) {
       this.logger.error('Failed to create PID file:', error);
@@ -319,13 +322,13 @@ class ProcessManager {
   private cleanup(): void {
     try {
       // Remove PID file
-      if (existsSync(this.config.pidFile)) {
+      if (fs.existsSync(this.config.pidFile)) {
         require('fs').unlinkSync(this.config.pidFile);
         this.logger.debug('PID file removed');
       }
 
       // Remove lock file
-      if (existsSync(this.config.lockFile)) {
+      if (fs.existsSync(this.config.lockFile)) {
         require('fs').unlinkSync(this.config.lockFile);
         this.logger.debug('Lock file removed');
       }
@@ -393,10 +396,10 @@ class AdzunaCronService {
           process.env.ADZUNA_CRON_PROCESS_TITLE || 'adzuna-cron-service',
         pidFile:
           process.env.ADZUNA_CRON_PID_FILE ||
-          join(process.cwd(), 'adzuna-cron.pid'),
+          path.join(process.cwd(), 'adzuna-cron.pid'),
         lockFile:
           process.env.ADZUNA_CRON_LOCK_FILE ||
-          join(process.cwd(), 'adzuna-cron.lock'),
+          path.join(process.cwd(), 'adzuna-cron.lock'),
       };
 
       // Validate configuration
@@ -416,13 +419,13 @@ class AdzunaCronService {
   }
 
   private async checkLock(): Promise<boolean> {
-    if (existsSync(this.config.lockFile)) {
+    if (fs.existsSync(this.config.lockFile)) {
       this.logger.warn('Lock file exists, another instance may be running');
       return false;
     }
 
     try {
-      writeFileSync(this.config.lockFile, process.pid.toString());
+      fs.writeFileSync(this.config.lockFile, process.pid.toString());
       return true;
     } catch (error) {
       this.logger.error('Failed to create lock file:', error);
@@ -432,7 +435,7 @@ class AdzunaCronService {
 
   private removeLock(): void {
     try {
-      if (existsSync(this.config.lockFile)) {
+      if (fs.existsSync(this.config.lockFile)) {
         require('fs').unlinkSync(this.config.lockFile);
       }
     } catch (error) {

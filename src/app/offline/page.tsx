@@ -2,22 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  WifiOff, 
-  RefreshCw, 
-  Home, 
-  Search, 
-  Bookmark,
-  MessageSquare,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Smartphone,
-  Globe
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 export default function OfflinePage() {
   const [isOnline, setIsOnline] = useState(true);
@@ -72,25 +59,25 @@ export default function OfflinePage() {
       icon: Bookmark,
       title: 'Saved Jobs',
       description: 'View your previously saved job listings',
-      available: true,
+      available: true
     },
     {
       icon: Search,
       title: 'Search History',
       description: 'Access your recent search queries',
-      available: true,
+      available: true
     },
     {
       icon: MessageSquare,
       title: 'JobsGPT Cache',
       description: 'View cached conversation history',
-      available: true,
+      available: true
     },
     {
       icon: Clock,
       title: 'Application History',
       description: 'Review your job application status',
-      available: false,
+      available: false
     },
   ];
 

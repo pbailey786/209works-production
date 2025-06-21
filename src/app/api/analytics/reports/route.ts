@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 // Validation schema
 const reportRequestSchema = z.object({
@@ -402,8 +403,8 @@ async function generateCustomReport(user: any, startDate: Date, endDate: Date, m
 function convertToCSV(data: any): string {
   // Simple CSV conversion - would need more sophisticated implementation
   const headers = Object.keys(data);
-  const csvHeaders = headers.join(',');
+  const csvHeaders = headers.path.join(',');
   
   // For now, just return a basic CSV structure
-  return `${csvHeaders}\n${headers.map(h => JSON.stringify(data[h])).join(',')}`;
+  return `${csvHeaders}\n${headers.map(h => JSON.stringify(data[h])).path.join(',')}`;
 }

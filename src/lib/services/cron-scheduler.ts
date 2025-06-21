@@ -1,6 +1,7 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { EnhancedJobMatchingService } from '@/components/ui/card';
 import { emailQueue } from '@/lib/services/email-queue';
+import cron from "node-cron";
 
 
 export class CronSchedulerService {

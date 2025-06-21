@@ -4,21 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  Filter, 
-  X, 
-  MapPin, 
-  DollarSign,
-  Briefcase,
-  Clock,
-  Sliders,
-  ChevronDown,
-  ChevronUp,
-  Mic,
-  MicOff
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SearchFilters {
@@ -44,7 +30,7 @@ export default function MobileSearchInterface({
   initialQuery = '',
   initialFilters = {},
   isLoading = false,
-  className = '',
+  className = ''
 }: MobileSearchInterfaceProps) {
   const [query, setQuery] = useState(initialQuery);
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
@@ -76,7 +62,7 @@ export default function MobileSearchInterface({
         toast({
           title: 'Voice search error',
           description: 'Could not process voice input. Please try again.',
-          variant: 'destructive',
+          variant: 'destructive'
         });
       };
       
@@ -103,7 +89,7 @@ export default function MobileSearchInterface({
       toast({
         title: 'Voice search not supported',
         description: 'Your browser does not support voice search.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
       return;
     }

@@ -3,17 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useDomain } from '@/lib/domain/context';
-import { Badge } from '@/components/ui/badge';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Globe,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 interface DomainAwareFooterProps {
   className?: string;
@@ -98,7 +88,7 @@ export default function DomainAwareFooter({ className = '' }: DomainAwareFooterP
                 <span>Serving {config.region}</span>
               </div>
               <div className="text-xs text-gray-500">
-                {config.cities.join(' • ')}
+                {config.cities.path.join(' • ')}
               </div>
             </div>
 

@@ -4,7 +4,7 @@ import React, {
   useReducer,
   useCallback,
   useRef,
-  useEffect,
+  useEffect
 } from 'react';
 
 // Types for UI state management
@@ -71,7 +71,7 @@ const initialState: UIState = {
   modals: [],
   focusStack: [],
   maxToasts: 5,
-  maxLoadingStates: 10,
+  maxLoadingStates: 10
 };
 
 // Utility functions for ID generation
@@ -87,7 +87,7 @@ function uiReducer(state: UIState, action: UIAction): UIState {
         const newToast: ToastState = {
           ...action.payload,
           id: generateId(),
-          timestamp: Date.now(),
+          timestamp: Date.now()
         };
 
         // Limit number of toasts to prevent memory issues
@@ -98,21 +98,21 @@ function uiReducer(state: UIState, action: UIAction): UIState {
 
         return {
           ...state,
-          toasts: updatedToasts,
+          toasts: updatedToasts
         };
       }
 
       case 'REMOVE_TOAST': {
         return {
           ...state,
-          toasts: state.toasts.filter(toast => toast.id !== action.payload.id),
+          toasts: state.toasts.filter(toast => toast.id !== action.payload.id)
         };
       }
 
       case 'CLEAR_TOASTS': {
         return {
           ...state,
-          toasts: [],
+          toasts: []
         };
       }
 
@@ -120,7 +120,7 @@ function uiReducer(state: UIState, action: UIAction): UIState {
         const newLoading: LoadingState = {
           ...action.payload,
           id: generateId(),
-          timestamp: Date.now(),
+          timestamp: Date.now()
         };
 
         // Limit number of loading states
@@ -131,7 +131,7 @@ function uiReducer(state: UIState, action: UIAction): UIState {
 
         return {
           ...state,
-          loadingStates: updatedLoadingStates,
+          loadingStates: updatedLoadingStates
         };
       }
 
@@ -142,7 +142,7 @@ function uiReducer(state: UIState, action: UIAction): UIState {
             loading.id === action.payload.id
               ? { ...loading, ...action.payload }
               : loading
-          ),
+          )
         };
       }
 
@@ -151,14 +151,14 @@ function uiReducer(state: UIState, action: UIAction): UIState {
           ...state,
           loadingStates: state.loadingStates.filter(
             loading => loading.id !== action.payload.id
-          ),
+          )
         };
       }
 
       case 'CLEAR_LOADING': {
         return {
           ...state,
-          loadingStates: [],
+          loadingStates: []
         };
       }
 
@@ -166,12 +166,12 @@ function uiReducer(state: UIState, action: UIAction): UIState {
         const newModal: ModalState = {
           ...action.payload,
           id: generateId(),
-          timestamp: Date.now(),
+          timestamp: Date.now()
         };
 
         return {
           ...state,
-          modals: [...state.modals, newModal],
+          modals: [...state.modals, newModal]
         };
       }
 
@@ -182,42 +182,42 @@ function uiReducer(state: UIState, action: UIAction): UIState {
             modal.id === action.payload.id
               ? { ...modal, ...action.payload }
               : modal
-          ),
+          )
         };
       }
 
       case 'REMOVE_MODAL': {
         return {
           ...state,
-          modals: state.modals.filter(modal => modal.id !== action.payload.id),
+          modals: state.modals.filter(modal => modal.id !== action.payload.id)
         };
       }
 
       case 'CLEAR_MODALS': {
         return {
           ...state,
-          modals: [],
+          modals: []
         };
       }
 
       case 'PUSH_FOCUS': {
         return {
           ...state,
-          focusStack: [...state.focusStack, action.payload.id],
+          focusStack: [...state.focusStack, action.payload.id]
         };
       }
 
       case 'POP_FOCUS': {
         return {
           ...state,
-          focusStack: state.focusStack.slice(0, -1),
+          focusStack: state.focusStack.slice(0, -1)
         };
       }
 
       case 'CLEAR_FOCUS_STACK': {
         return {
           ...state,
-          focusStack: [],
+          focusStack: []
         };
       }
 
@@ -290,7 +290,7 @@ export function UIStateProvider({ children }: { children: React.ReactNode }) {
   const value = React.useMemo(
     () => ({
       state,
-      dispatch,
+      dispatch
     }),
     [state]
   );
@@ -335,7 +335,7 @@ export function useToast() {
     toasts: state.toasts,
     addToast,
     removeToast,
-    clearToasts,
+    clearToasts
   };
 }
 
@@ -384,7 +384,7 @@ export function useLoading() {
     updateLoading,
     removeLoading,
     clearLoading,
-    isLoading,
+    isLoading
   };
 }
 
@@ -423,7 +423,7 @@ export function useModal() {
     addModal,
     updateModal,
     removeModal,
-    clearModals,
+    clearModals
   };
 }
 
@@ -454,7 +454,7 @@ export function useFocusManagement() {
     pushFocus,
     popFocus,
     clearFocusStack,
-    getCurrentFocus,
+    getCurrentFocus
   };
 }
 

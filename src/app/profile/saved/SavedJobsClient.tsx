@@ -2,15 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
-import {
-  Heart,
-  MapPin,
-  DollarSign,
-  Clock,
-  Trash2,
-  ExternalLink,
-} from 'lucide-react';
+import { formatDistanceToNow } from 'lucide-react';
 
 interface SavedJob {
   id: string;
@@ -72,7 +64,7 @@ export default function SavedJobsClient({ userId }: SavedJobsClientProps) {
       const response = await fetch('/api/profile/saved-jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId, action: 'unsave' }),
+        body: JSON.stringify({ jobId, action: 'unsave' })
       });
 
       if (!response.ok) {
@@ -227,13 +219,13 @@ export default function SavedJobsClient({ userId }: SavedJobsClientProps) {
                           <Clock className="mr-1 h-4 w-4" />
                           Saved{' '}
                           {formatDistanceToNow(new Date(job.savedAt), {
-                            addSuffix: true,
+                            addSuffix: true
                           })}
                         </span>
                         <span>
                           Posted{' '}
                           {formatDistanceToNow(new Date(job.postedAt), {
-                            addSuffix: true,
+                            addSuffix: true
                           })}
                         </span>
                       </div>

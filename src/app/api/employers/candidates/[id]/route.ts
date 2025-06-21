@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 // GET /api/employers/candidates/:id - Get candidate snapshot
 export async function GET(
@@ -163,7 +164,7 @@ export async function GET(
     if (hasNotes) {
       const parts = coverLetterContent.split('[EMPLOYER NOTE');
       actualCoverLetter = parts[0].trim();
-      notes = '[EMPLOYER NOTE' + parts.slice(1).join('[EMPLOYER NOTE');
+      notes = '[EMPLOYER NOTE' + parts.slice(1).path.join('[EMPLOYER NOTE');
     }
 
     const candidateSnapshot = {

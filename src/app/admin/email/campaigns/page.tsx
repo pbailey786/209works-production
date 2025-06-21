@@ -1,27 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Link from 'next/link';
-
-import {
-  Send,
-  Calendar,
-  Users,
-  TrendingUp,
-  ArrowLeft,
-  Plus,
-  Eye,
-  Play,
-  Pause,
-  MoreHorizontal,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'lucide-react';
 
 interface Campaign {
   id: string;
@@ -56,7 +39,7 @@ export default function EmailCampaignsPage() {
       clicked: 89,
       createdAt: '2024-01-15T08:00:00Z',
       sentAt: '2024-01-15T10:00:00Z',
-      completedAt: '2024-01-15T10:15:00Z',
+      completedAt: '2024-01-15T10:15:00Z'
     },
     {
       id: '2',
@@ -69,7 +52,7 @@ export default function EmailCampaignsPage() {
       opened: 23,
       clicked: 4,
       createdAt: '2024-01-16T14:00:00Z',
-      sentAt: '2024-01-16T14:30:00Z',
+      sentAt: '2024-01-16T14:30:00Z'
     },
     {
       id: '3',
@@ -82,7 +65,7 @@ export default function EmailCampaignsPage() {
       opened: 0,
       clicked: 0,
       createdAt: '2024-01-16T16:00:00Z',
-      scheduledAt: '2024-01-17T09:00:00Z',
+      scheduledAt: '2024-01-17T09:00:00Z'
     },
     {
       id: '4',
@@ -94,7 +77,7 @@ export default function EmailCampaignsPage() {
       delivered: 0,
       opened: 0,
       clicked: 0,
-      createdAt: '2024-01-16T18:00:00Z',
+      createdAt: '2024-01-16T18:00:00Z'
     },
     {
       id: '5',
@@ -107,7 +90,7 @@ export default function EmailCampaignsPage() {
       opened: 45,
       clicked: 8,
       createdAt: '2024-12-28T10:00:00Z',
-      sentAt: '2024-12-28T12:00:00Z',
+      sentAt: '2024-12-28T12:00:00Z'
     },
   ];
 

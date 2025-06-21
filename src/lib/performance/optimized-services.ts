@@ -3,14 +3,7 @@
  * High-performance service layer with regional caching and sub-2-second response times
  */
 
-import { prisma } from '@/lib/prisma';
-import { 
-  EnhancedCacheManager, 
-  CACHE_DURATIONS, 
-  CACHE_TAGS, 
-  CacheUtils,
-  Cached 
-} from './enhanced-cache-manager';
+import { prisma } from './enhanced-cache-manager';
 import { getDomainConfig } from '@/lib/domain/config';
 
 /**
@@ -24,7 +17,7 @@ export class OptimizedJobService {
     keyPrefix: 'jobs.getRegionalJobs',
     ttl: CACHE_DURATIONS.MEDIUM,
     tags: [CACHE_TAGS.JOBS],
-    regional: true,
+    regional: true
   })
   static async getRegionalJobs(params: {
     region: string;
@@ -106,8 +99,8 @@ export class OptimizedJobService {
           applicationCount: true,
           categories: true,
           remote: true,
-          featured: true,
-        },
+          featured: true
+        }
       }),
       prisma.job.count({ where: whereClause }),
     ]);
@@ -116,7 +109,7 @@ export class OptimizedJobService {
       jobs,
       totalCount,
       hasMore: offset + limit < totalCount,
-      region: domainConfig.region,
+      region: domainConfig.region
     };
   }
 
@@ -127,7 +120,7 @@ export class OptimizedJobService {
     keyPrefix: 'jobs.getFeaturedJobs',
     ttl: CACHE_DURATIONS.LONG,
     tags: [CACHE_TAGS.JOBS],
-    regional: true,
+    regional: true
   })
   static async getFeaturedJobs(region: string, limit: number = 6) {
     const domainConfig = getDomainConfig(`${region}.works`);
@@ -139,7 +132,7 @@ export class OptimizedJobService {
         OR: [
           { region: region },
           { location: { contains: domainConfig.region, mode: 'insensitive' } },
-        ],
+        ]
       },
       orderBy: [
         { priority: 'desc' },
@@ -156,8 +149,8 @@ export class OptimizedJobService {
         jobType: true,
         createdAt: true,
         viewCount: true,
-        applicationCount: true,
-      },
+        applicationCount: true
+      }
     });
   }
 
@@ -168,7 +161,7 @@ export class OptimizedJobService {
     keyPrefix: 'jobs.getJobStats',
     ttl: CACHE_DURATIONS.LONG,
     tags: [CACHE_TAGS.JOBS, CACHE_TAGS.ANALYTICS],
-    regional: true,
+    regional: true
   })
   static async getJobStats(region: string) {
     const domainConfig = getDomainConfig(`${region}.works`);
@@ -186,8 +179,8 @@ export class OptimizedJobService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
-        },
+          ]
+        }
       }),
 
       // Active jobs
@@ -197,8 +190,8 @@ export class OptimizedJobService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
-        },
+          ]
+        }
       }),
 
       // Jobs this week
@@ -209,8 +202,8 @@ export class OptimizedJobService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
-        },
+          ]
+        }
       }),
 
       // Top categories
@@ -221,11 +214,11 @@ export class OptimizedJobService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
+          ]
         },
         _count: { categories: true },
         orderBy: { _count: { categories: 'desc' } },
-        take: 5,
+        take: 5
       }),
 
       // Top locations
@@ -236,11 +229,11 @@ export class OptimizedJobService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
+          ]
         },
         _count: { location: true },
         orderBy: { _count: { location: 'desc' } },
-        take: 5,
+        take: 5
       }),
     ]);
 
@@ -250,13 +243,13 @@ export class OptimizedJobService {
       jobsThisWeek,
       topCategories: topCategories.map(cat => ({
         category: cat.categories?.[0] || 'Other',
-        count: cat._count.categories,
+        count: cat._count.categories
       })),
       topLocations: topLocations.map(loc => ({
         location: loc.location,
-        count: loc._count.location,
+        count: loc._count.location
       })),
-      region: domainConfig.region,
+      region: domainConfig.region
     };
   }
 }
@@ -283,7 +276,7 @@ export class OptimizedSearchService {
           region,
           limit,
           offset: (page - 1) * limit,
-          filters: { query, ...filters },
+          filters: { query, ...filters }
         });
       },
       query,
@@ -298,7 +291,7 @@ export class OptimizedSearchService {
     keyPrefix: 'search.getSuggestions',
     ttl: CACHE_DURATIONS.VERY_LONG,
     tags: [CACHE_TAGS.SEARCH],
-    regional: true,
+    regional: true
   })
   static async getSearchSuggestions(region: string, limit: number = 10) {
     const domainConfig = getDomainConfig(`${region}.works`);
@@ -312,11 +305,11 @@ export class OptimizedSearchService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
+          ]
         },
         _count: { title: true },
         orderBy: { _count: { title: 'desc' } },
-        take: limit / 2,
+        take: limit / 2
       }),
 
       prisma.job.groupBy({
@@ -326,11 +319,11 @@ export class OptimizedSearchService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
+          ]
         },
         _count: { categories: true },
         orderBy: { _count: { categories: 'desc' } },
-        take: limit / 2,
+        take: limit / 2
       }),
     ]);
 
@@ -338,13 +331,13 @@ export class OptimizedSearchService {
       ...popularTitles.map(item => ({
         text: item.title,
         type: 'job_title' as const,
-        count: item._count.title,
+        count: item._count.title
       })),
       ...popularCategories.flatMap(item => 
         (item.categories || []).map(category => ({
           text: category,
           type: 'category' as const,
-          count: item._count.categories,
+          count: item._count.categories
         }))
       ),
     ];
@@ -366,7 +359,7 @@ export class OptimizedAnalyticsService {
     keyPrefix: 'analytics.getRealTimeMetrics',
     ttl: CACHE_DURATIONS.SHORT,
     tags: [CACHE_TAGS.ANALYTICS],
-    regional: true,
+    regional: true
   })
   static async getRealTimeMetrics(region: string) {
     const now = new Date();
@@ -386,23 +379,23 @@ export class OptimizedAnalyticsService {
           OR: [
             { region: region },
             { location: { contains: domainConfig.region, mode: 'insensitive' } },
-          ],
-        },
+          ]
+        }
       }),
 
       // Applications today
       prisma.jobApplication.count({
         where: {
-          appliedAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()) },
-        },
+          appliedAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()) }
+        }
       }),
 
       // AI sessions in last hour
       prisma.chatAnalytics.count({
         where: {
-          createdAt: { gte: lastHour },
+          createdAt: { gte: lastHour }
         },
-        distinct: ['sessionId'],
+        distinct: ['sessionId']
       }),
 
       // Active users (users with activity in last hour)
@@ -411,8 +404,8 @@ export class OptimizedAnalyticsService {
           OR: [
             { lastLoginAt: { gte: lastHour } },
             { updatedAt: { gte: lastHour } },
-          ],
-        },
+          ]
+        }
       }),
     ]);
 
@@ -422,7 +415,7 @@ export class OptimizedAnalyticsService {
       aiSessions,
       activeUsers,
       region: domainConfig.region,
-      lastUpdated: now.toISOString(),
+      lastUpdated: now.toISOString()
     };
   }
 

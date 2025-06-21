@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { AdzunaImportService } from '@/lib/services/adzuna-import';
 
 // Priority 209 area code cities for automated imports

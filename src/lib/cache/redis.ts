@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import { getMockRedis } from '../redis-mock';
+import path from "path";
 
 // Redis client singleton with proper locking
 let redis: Redis | null = null;
@@ -200,7 +201,7 @@ export function generateCacheKey(
   if (!prefix || parts.some(part => part === null || part === undefined)) {
     throw new Error('Invalid cache key parameters');
   }
-  return `${prefix}:${parts.join(':')}`;
+  return `${prefix}:${parts.path.join(':')}`;
 }
 
 // Serialize data for caching with error handling

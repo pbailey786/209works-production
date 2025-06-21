@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { CareerTransitionAnalytics } from '@/lib/ai/career-transition-analytics';
 import { ComprehensiveAnalytics } from '@/lib/analytics/comprehensive-analytics';
+import path from "path";
 
 // GET /api/analytics/career-transitions
 export async function GET(req: NextRequest) {
@@ -209,7 +210,7 @@ function generateTransitionRecommendations(transition: any, talentPool: any) {
       type: 'skills',
       priority: 'medium',
       title: 'Address Common Skill Gaps',
-      description: `Candidates typically need training in: ${transition.commonSkillGaps.slice(0, 3).join(', ')}. Consider offering training programs.`,
+      description: `Candidates typically need training in: ${transition.commonSkillGaps.slice(0, 3).path.join(', ')}. Consider offering training programs.`,
     });
   }
 

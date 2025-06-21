@@ -1,12 +1,5 @@
 import { Resend } from 'resend';
-import { SecurityLogger } from './security/security-monitor';
-import {
-  emailSecurityValidator,
-  emailAddressSchema,
-  emailSubjectSchema,
-  emailRecipientsSchema,
-  EMAIL_SECURITY_CONFIG,
-} from './email/security';
+import { SecurityLogger } from './email/security';
 
 // Validate environment variables (but allow build-time flexibility)
 if (
@@ -27,7 +20,7 @@ if (
       );
       if (!fromEmailValidation.isValid) {
         console.warn(
-          `FROM email address may be invalid: ${fromEmailValidation.errors.join(', ')}`
+          `FROM email address may be invalid: ${fromEmailValidation.errors.path.join(', ')}`
         );
       }
     } catch (error) {
@@ -61,7 +54,7 @@ export const emailConfig = {
   from: process.env.RESEND_EMAIL_FROM,
   apiKey: process.env.RESEND_API_KEY,
   isDevelopment: process.env.NODE_ENV === 'development',
-  domain: process.env.DOMAIN || 'localhost',
+  domain: process.env.DOMAIN || 'localhost'
 };
 
 // Enhanced email sending interface
@@ -89,7 +82,7 @@ export async function sendEmail(options: SecureEmailOptions) {
     userId,
     priority = 'normal',
     skipValidation = false,
-    metadata,
+    metadata
   } = options;
 
   try {
@@ -108,7 +101,7 @@ export async function sendEmail(options: SecureEmailOptions) {
     );
     if (!fromEmailValidation.isValid) {
       throw new Error(
-        `Invalid FROM email address: ${fromEmailValidation.errors.join(', ')}`
+        `Invalid FROM email address: ${fromEmailValidation.errors.path.join(', ')}`
       );
     }
 
@@ -137,7 +130,7 @@ export async function sendEmail(options: SecureEmailOptions) {
       const subjectValidation = emailSecurityValidator.validateSubject(subject);
       if (!subjectValidation.isValid) {
         const error = new Error(
-          `Invalid subject: ${subjectValidation.errors.join(', ')}`
+          `Invalid subject: ${subjectValidation.errors.path.join(', ')}`
         );
         SecurityLogger.suspiciousRequest(
           clientIp,
@@ -168,7 +161,7 @@ export async function sendEmail(options: SecureEmailOptions) {
             'Email HTML content sanitized',
             {
               originalLength: html.length,
-              sanitizedLength: sanitizedHtml.length,
+              sanitizedLength: sanitizedHtml.length
             },
             userId
           );
@@ -203,7 +196,7 @@ export async function sendEmail(options: SecureEmailOptions) {
         { name: 'priority', value: priority },
         { name: 'environment', value: process.env.NODE_ENV || 'development' },
         { name: 'source', value: '209jobs' },
-      ],
+      ]
     };
 
     // Send email
@@ -213,7 +206,7 @@ export async function sendEmail(options: SecureEmailOptions) {
     const processingTime = Date.now() - startTime;
     if (emailConfig.isDevelopment) {
       console.log(
-        `[EMAIL] Successfully sent to ${recipients.join(', ')} in ${processingTime}ms:`,
+        `[EMAIL] Successfully sent to ${recipients.path.join(', ')} in ${processingTime}ms:`,
         result
       );
     }
@@ -230,7 +223,7 @@ export async function sendEmail(options: SecureEmailOptions) {
       data: result,
       processingTime,
       recipients: recipients.length,
-      messageId: result.data?.id || 'unknown',
+      messageId: result.data?.id || 'unknown'
     };
   } catch (error) {
     const processingTime = Date.now() - startTime;
@@ -242,7 +235,7 @@ export async function sendEmail(options: SecureEmailOptions) {
       to: Array.isArray(to) ? to : [to],
       subject,
       userId,
-      metadata,
+      metadata
     });
 
     // Security logging for failed sends
@@ -252,7 +245,7 @@ export async function sendEmail(options: SecureEmailOptions) {
       {
         error: errorMessage,
         subject,
-        recipients: Array.isArray(to) ? to : [to],
+        recipients: Array.isArray(to) ? to : [to]
       },
       userId
     );
@@ -261,7 +254,7 @@ export async function sendEmail(options: SecureEmailOptions) {
       success: false,
       error: errorMessage,
       processingTime,
-      code: getErrorCode(error),
+      code: getErrorCode(error)
     };
   }
 }
@@ -272,7 +265,7 @@ export async function sendEmailLegacy({
   subject,
   react,
   html,
-  text,
+  text
 }: {
   to: string | string[];
   subject: string;
@@ -291,7 +284,7 @@ export async function sendEmailLegacy({
     html,
     text,
     skipValidation: true, // Legacy mode skips validation for compatibility
-    metadata: { source: 'legacy' },
+    metadata: { source: 'legacy' }
   });
 }
 

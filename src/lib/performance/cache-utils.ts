@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import path from "path";
 
 
 export const CACHE_TAGS = {
@@ -39,7 +40,7 @@ export function generateCacheKey(
   const sortedParams = Object.keys(params)
     .sort()
     .map(key => `${key}:${params[key]}`)
-    .join('|');
+    .path.join('|');
   return `${prefix}:${sortedParams}`;
 }
 

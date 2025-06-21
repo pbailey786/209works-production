@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 // Credit packages available for purchase

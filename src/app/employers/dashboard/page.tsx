@@ -3,56 +3,18 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardLayout';
-import {
-  MetricCard,
-  WidgetCard,
-  UsageMeter,
-  ActivityItem,
-  QuickAction,
-  StatsGrid,
-  UsageMeter
-} from '@/components/dashboard/DashboardCards';
-import {
+import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardCards';
   AIMatchingWidget,
   JobPerformanceWidget,
   CreditUsageWidget,
   RecentApplicationsWidget,
   HiringPipelineWidget,
   EmployerQuickActionsWidget,
-  CreditAlertsWidget,
+  CreditAlertsWidget
 } from '@/components/dashboard/EmployerWidgets';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  BarChart3,
-  Users,
-  Briefcase,
-  TrendingUp,
-  Eye,
-  MessageSquare,
-  Calendar,
-  Plus,
-  Filter,
-  Download,
-  Star,
-  MapPin,
-  Clock,
-  DollarSign,
-  CheckCircle,
-  AlertCircle,
-  ArrowRight,
-  Search,
-  Settings,
-  Sparkles,
-  Upload,
-  CreditCard,
-  HelpCircle,
-  Share2,
-  FileText,
-  UserCheck,
-} from 'lucide-react';
+import { Skeleton } from 'lucide-react';
 // Lazy load heavy components
 const BillingModal = React.lazy(() => import('@/components/billing/BillingModal'));
 const JobPostingCheckout = React.lazy(() => import('@/components/job-posting/JobPostingCheckout'));
@@ -64,37 +26,37 @@ const employerNavigation: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/employers/dashboard',
-    icon: BarChart3,
+    icon: BarChart3
   },
   {
     name: 'Post a Job',
     href: '/employers/create-job-post',
-    icon: Plus,
+    icon: Plus
   },
   {
     name: 'My Job Listings',
     href: '/employers/my-jobs',
-    icon: Briefcase,
+    icon: Briefcase
   },
   {
     name: 'Applicants',
     href: '/employers/applicants',
-    icon: Users,
+    icon: Users
   },
   {
     name: 'Credits & Upgrades',
     href: '/employers/credits',
-    icon: CreditCard,
+    icon: CreditCard
   },
   {
     name: 'Social Graphics',
     href: '/employers/social-graphics',
-    icon: Share2,
+    icon: Share2
   },
   {
     name: 'Help / Support',
     href: '/employers/help',
-    icon: HelpCircle,
+    icon: HelpCircle
   },
 ];
 
@@ -146,7 +108,7 @@ function DashboardContent() {
     totalApplications: 0,
     newApplications: 0,
     profileViews: 0,
-    responseRate: 0,
+    responseRate: 0
   });
 
   const [jobs, setJobs] = useState<JobListing[]>([]);
@@ -156,7 +118,7 @@ function DashboardContent() {
     total: 0,
     jobPost: 0,
     featuredPost: 0,
-    socialGraphic: 0,
+    socialGraphic: 0
   });
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
@@ -183,7 +145,7 @@ function DashboardContent() {
             totalApplications: 0,
             newApplications: 0,
             profileViews: 0,
-            responseRate: 0,
+            responseRate: 0
           });
         }
 
@@ -218,7 +180,7 @@ function DashboardContent() {
             total: 0,
             jobPost: 0,
             featuredPost: 0,
-            socialGraphic: 0,
+            socialGraphic: 0
           });
         }
 
@@ -242,7 +204,7 @@ function DashboardContent() {
           totalApplications: 0,
           newApplications: 0,
           profileViews: 0,
-          responseRate: 0,
+          responseRate: 0
         });
         setJobs([]);
         setApplicants([]);
@@ -307,7 +269,7 @@ function DashboardContent() {
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 
@@ -372,7 +334,7 @@ function DashboardContent() {
       user={{
         name: user?.fullName || '',
         email: user?.primaryEmailAddress?.emailAddress || '',
-        initials: user?.firstName?.[0] + user?.lastName?.[0] || 'U',
+        initials: user?.firstName?.[0] + user?.lastName?.[0] || 'U'
       }}
       headerActions={
         <Button onClick={handlePostJobClick} className="bg-[#ff6b35] hover:bg-[#e55a2b]">

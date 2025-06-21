@@ -4,18 +4,12 @@ import { testAlertSchema } from '@/lib/validations/alerts';
 import { routeParamsSchemas } from '@/lib/validations/api';
 import { createSuccessResponse, NotFoundError } from '@/lib/utils/api-response';
 import { EnhancedJobSearchService } from '@/lib/search/enhanced-job-search';
-import { prisma } from '@/lib/database/prisma';
-import {
-  EnhancedJobMatchingService,
-  findMatchingJobs,
-  calculateMatchQuality,
-  generateOptimizationRecommendations,
-} from '@/lib/search/job-matching';
-import {
+import { prisma } from '@/lib/search/job-matching';
+import path from "path";
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute,
+  getCacheOrExecute
 } from '@/lib/cache/redis';
 
 // POST /api/alerts/:id/test - Test alert to see matching jobs
@@ -30,7 +24,7 @@ export const POST = withAPIMiddleware(
     const alert = await prisma.jobAlert.findFirst({
       where: {
         id: alertId,
-        userId: user!.id,
+        userId: user!.id
       },
       select: {
         id: true,
@@ -39,8 +33,8 @@ export const POST = withAPIMiddleware(
         location: true,
         salaryMin: true,
         salaryMax: true,
-        frequency: true,
-      },
+        frequency: true
+      }
     });
 
     if (!alert) {
@@ -56,7 +50,7 @@ export const POST = withAPIMiddleware(
         keywords: alert.keywords,
         location: alert.location,
         salaryMin: alert.salaryMin,
-        salaryMax: alert.salaryMax,
+        salaryMax: alert.salaryMax
       })
     );
 
@@ -68,7 +62,7 @@ export const POST = withAPIMiddleware(
           keywords: alert.keywords,
           location: alert.location || undefined,
           salaryMin: alert.salaryMin || undefined,
-          salaryMax: alert.salaryMax || undefined,
+          salaryMax: alert.salaryMax || undefined
         };
         const matchingJobs = await findMatchingJobs(alertCriteria, 50);
 
@@ -81,7 +75,7 @@ export const POST = withAPIMiddleware(
           notificationPreview = generateNotificationPreview(
             {
               ...alert,
-              name: alert.title || 'Unnamed Alert',
+              name: alert.title || 'Unnamed Alert'
             },
             matchingJobs
           );
@@ -96,7 +90,7 @@ export const POST = withAPIMiddleware(
           alert: {
             id: alert.id,
             name: alert.title || 'Unnamed Alert',
-            frequency: alert.frequency,
+            frequency: alert.frequency
           },
           testResults: {
             totalMatches: matchingJobs.length,
@@ -105,15 +99,15 @@ export const POST = withAPIMiddleware(
             recommendations: generateOptimizationRecommendations(
               alertCriteria,
               matchingJobs
-            ),
+            )
           },
           notificationPreview,
-          dryRun: body?.dryRun || false,
+          dryRun: body?.dryRun || false
         });
       },
       {
         ttl: DEFAULT_TTL.short,
-        tags: ['alerts', `alert:${alertId}`],
+        tags: ['alerts', `alert:${alertId}`]
       }
     );
   },
@@ -123,7 +117,7 @@ export const POST = withAPIMiddleware(
     bodySchema: testAlertSchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -136,7 +130,7 @@ function generateNotificationPreview(alert: any, jobs: any[]): any {
 
   return {
     subject: `${jobs.length} new job${jobs.length !== 1 ? 's' : ''} matching "${alert.name}"`,
-    preview: `Found ${jobs.length} new opportunities including ${topJobs.map(job => job.title).join(', ')}`,
+    preview: `Found ${jobs.length} new opportunities including ${topJobs.map(job => job.title).path.join(', ')}`,
     emailBody: {
       heading: `New Job Matches for "${alert.name}"`,
       summary: `We found ${jobs.length} new job${jobs.length !== 1 ? 's' : ''} that match your alert criteria.`,
@@ -149,12 +143,12 @@ function generateNotificationPreview(alert: any, jobs: any[]): any {
             ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
             : 'Salary not specified',
         snippet: job.snippet || 'No description available',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`
       })),
       footerText:
         jobs.length > 3
           ? `View all ${jobs.length} matches on 209jobs`
-          : undefined,
+          : undefined
     },
     estimatedDelivery: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // 5 minutes from now
   };

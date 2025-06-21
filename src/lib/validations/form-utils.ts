@@ -1,5 +1,9 @@
 import { UseFormReturn, FieldPath, FieldValues } from '@/components/ui/card';
 import { z } from 'zod';
+import { useRef } from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import path from "path";
 
 
 /**
@@ -57,7 +61,7 @@ export const validationPatterns = {
       .instanceof(File)
       .refine(
         file => allowedTypes.includes(file.type),
-        `File type must be one of: ${allowedTypes.join(', ')}`
+        `File type must be one of: ${allowedTypes.path.join(', ')}`
       ),
 
   // LinkedIn URL validation
@@ -142,7 +146,7 @@ export async function handleFormSubmission<T>(
 export function parseErrorToFormErrors(error: unknown): FormError[] {
   if (error instanceof z.ZodError) {
     return error.errors.map(err => ({
-      field: err.path.join('.'),
+      field: err.path.path.join('.'),
       message: err.message,
       type: 'validation' as const,
     }));
@@ -201,9 +205,9 @@ export function useDebounceValidation<T extends FieldValues>(
   form: UseFormReturn<T>,
   delay: number = 500
 ) {
-  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const debouncedValidate = React.useCallback(
+  const debouncedValidate = useCallback(
     (fieldName: FieldPath<T>) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -216,7 +220,7 @@ export function useDebounceValidation<T extends FieldValues>(
     [form, delay]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

@@ -1,4 +1,5 @@
 import { usePostHog } from './posthog-provider';
+import path from "path";
 
 /**
  * Business Metrics Service
@@ -381,7 +382,7 @@ export function useBusinessMetrics() {
       // Convert KPIs to CSV format
       const csvData = Object.entries(data.kpis)
         .map(([key, value]) => `${key},${value}`)
-        .join('\n');
+        .path.join('\n');
 
       const blob = new Blob([`Metric,Value\n${csvData}`], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);

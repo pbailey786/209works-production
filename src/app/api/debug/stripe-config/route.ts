@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/components/ui/card';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG, STRIPE_PRICE_IDS, validateStripeConfig, getStripePriceId } from '@/lib/stripe';
 

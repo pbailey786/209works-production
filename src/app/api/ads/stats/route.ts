@@ -1,16 +1,12 @@
 import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { adAnalyticsSchema } from '@/lib/validations/ads';
-import { prisma } from '@/lib/database/prisma';
-import {
-  createSuccessResponse,
-  AuthorizationError,
-} from '@/lib/utils/api-response';
-import {
+import { prisma } from '@/lib/utils/api-response';
+import path from "path";
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute,
+  getCacheOrExecute
 } from '@/lib/cache/redis';
 
 // GET /api/ads/stats - Get comprehensive ad analytics
@@ -59,7 +55,7 @@ export const GET = withAPIMiddleware(
       JSON.stringify(whereCondition),
       `${dateFrom || 'all'}-${dateTo || 'all'}`,
       groupBy || 'all',
-      (metrics || []).join(',')
+      (metrics || []).path.join(',')
     );
 
     return getCacheOrExecute(
@@ -76,7 +72,7 @@ export const GET = withAPIMiddleware(
             bidding: true,
             createdAt: true,
             // Note: employer relation might not exist, using employerId instead
-          },
+          }
         });
 
         if (ads.length === 0) {
@@ -84,7 +80,7 @@ export const GET = withAPIMiddleware(
             summary: {},
             breakdown: [],
             insights: [],
-            message: 'No ads found matching criteria',
+            message: 'No ads found matching criteria'
           });
         }
 
@@ -113,9 +109,9 @@ export const GET = withAPIMiddleware(
           period: {
             from: dateFrom || 'All time',
             to: dateTo || 'Present',
-            groupBy,
+            groupBy
           },
-          queryTime: Date.now(),
+          queryTime: Date.now()
         });
       },
       {
@@ -124,7 +120,7 @@ export const GET = withAPIMiddleware(
           'analytics',
           'ads',
           user!.role === 'admin' ? 'admin' : `advertiser:${user!.id}`,
-        ],
+        ]
       }
     );
   },
@@ -133,7 +129,7 @@ export const GET = withAPIMiddleware(
     querySchema: adAnalyticsSchema,
     rateLimit: { enabled: true, type: 'premium' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -147,7 +143,7 @@ async function generateAnalyticsData(
 ) {
   const whereCondition = {
     adId: { in: adIds },
-    ...(Object.keys(dateFilter).length > 0 ? { timestamp: dateFilter } : {}),
+    ...(Object.keys(dateFilter).length > 0 ? { timestamp: dateFilter } : {})
   };
 
   // Get raw data
@@ -160,8 +156,8 @@ async function generateAnalyticsData(
         timestamp: true,
         userId: true,
         sessionId: true,
-        page: true,
-      },
+        page: true
+      }
     }),
     prisma.adClick.findMany({
       where: whereCondition,
@@ -169,8 +165,8 @@ async function generateAnalyticsData(
         adId: true,
         timestamp: true,
         userId: true,
-        sessionId: true,
-      },
+        sessionId: true
+      }
     }),
     prisma.adConversion.findMany({
       where: whereCondition,
@@ -178,8 +174,8 @@ async function generateAnalyticsData(
         adId: true,
         conversionType: true,
         createdAt: true,
-        userId: true,
-      },
+        userId: true
+      }
     }),
   ]);
 
@@ -239,7 +235,7 @@ function groupAnalyticsData(
         cost: 0,
         revenue: 0,
         uniqueUsers: new Set(),
-        uniqueSessions: new Set(),
+        uniqueSessions: new Set()
       };
     }
 
@@ -340,7 +336,7 @@ function generateTrendData(
     clicks: trend.clicks || 0,
     conversions: trend.conversions || 0,
     ctr: trend.ctr || 0,
-    conversionRate: trend.conversionRate || 0,
+    conversionRate: trend.conversionRate || 0
   }));
 }
 
@@ -400,7 +396,7 @@ function calculateSummaryMetrics(analyticsData: any, ads: any[]) {
     overallConversionRate: Math.round(overallConversionRate * 100) / 100,
     averageCpc: Math.round(averageCpc * 100) / 100,
     overallRoas: Math.round(overallRoas * 100) / 100,
-    estimatedReach: allUniqueUsers.size,
+    estimatedReach: allUniqueUsers.size
   };
 }
 

@@ -2,30 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import {
-  UserCircleIcon,
-  BriefcaseIcon,
-  DocumentTextIcon,
-  BookmarkIcon,
-  ClockIcon,
-  BellIcon,
-  CogIcon,
-  PencilIcon,
-  TrashIcon,
-  EyeIcon,
-  PlusIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  ArrowTopRightOnSquareIcon,
-  MapPinIcon,
-  PhoneIcon,
-  LinkIcon,
-  AcademicCapIcon,
-  ShieldCheckIcon,
-  CloudArrowUpIcon,
-  PaperAirplaneIcon,
-} from '@heroicons/react/24/outline';
+import { motion } from '@heroicons/react/24/outline';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -82,7 +59,7 @@ export default function ProfilePage() {
           setLinkedinUrl(data.user.linkedinUrl || '');
           setCurrentJobTitle(data.user.currentJobTitle || '');
           setPreferredJobTypes(data.user.preferredJobTypes || []);
-          setSkills((data.user.skills || []).join(', '));
+          setSkills((data.user.skills || []).path.join(', '));
           setWorkAuthorization(data.user.workAuthorization || '');
           setEducationExperience(data.user.educationExperience || '');
           setIsProfilePublic(!!data.user.isProfilePublic);
@@ -114,8 +91,8 @@ export default function ProfilePage() {
             .filter(Boolean),
           workAuthorization,
           educationExperience,
-          isProfilePublic,
-        }),
+          isProfilePublic
+        })
       });
       const data = await res.json();
       if (data.success) {
@@ -148,7 +125,7 @@ export default function ProfilePage() {
     try {
       const res = await fetch('/api/profile/upload', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
       const data = await res.json();
       if (res.ok && data.url) {
@@ -171,7 +148,7 @@ export default function ProfilePage() {
     try {
       const res = await fetch('/api/profile', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       });
       const data = await res.json();
       if (data.success) {
@@ -210,7 +187,7 @@ export default function ProfilePage() {
       formData.append('type', 'profile');
       const res = await fetch('/api/profile/upload', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
       const data = await res.json();
       if (res.ok && data.url) {
@@ -1041,7 +1018,7 @@ export default function ProfilePage() {
                                 (resumeUrl ? 1 : 0)) /
                                 5) *
                                 100
-                            )}%`,
+                            )}%`
                           }}
                         ></div>
                       </div>

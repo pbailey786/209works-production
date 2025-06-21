@@ -1,12 +1,8 @@
-import { NextRequest } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { paginatedQuerySchema } from '@/components/ui/card';
 import { routeParamsSchemas } from '@/components/ui/card';
-import { UserCacheService } from '@/lib/cache/services';
-import {
-  createSuccessResponse,
-  AuthorizationError,
-} from '@/lib/errors/api-errors';
+import { UserCacheService } from '@/lib/errors/api-errors';
 
 // GET /api/users/:id/applications - Get user's job applications with pagination
 export const GET = withAPIMiddleware(
@@ -31,19 +27,19 @@ export const GET = withAPIMiddleware(
         direction:
           'direction' in queryParams
             ? queryParams.direction || 'forward'
-            : 'forward',
+            : 'forward'
       };
     } else if ('page' in queryParams && queryParams.page) {
       // Page-based pagination
       paginationParams = {
         page: queryParams.page,
-        limit: queryParams.limit || 20,
+        limit: queryParams.limit || 20
       };
     } else {
       // Default pagination
       paginationParams = {
         page: 1,
-        limit: queryParams.limit || 20,
+        limit: queryParams.limit || 20
       };
     }
 
@@ -61,6 +57,6 @@ export const GET = withAPIMiddleware(
     querySchema: paginatedQuerySchema,
     rateLimit: { enabled: true, type: 'authenticated' },
     logging: { enabled: true, includeQuery: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );

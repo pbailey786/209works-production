@@ -1,6 +1,7 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { ResumeEmbeddingService } from '@/components/ui/card';
 import { FeaturedJobAnalyticsService } from './featured-job-analytics';
+import path from "path";
 
 export interface JobMatchResult {
   userId: string;
@@ -61,7 +62,7 @@ export class JobMatchingService {
 
       // Generate job embedding
       const jobEmbedding = await ResumeEmbeddingService.generateJobEmbedding(
-        `${job.title} ${job.description} ${job.skills.join(' ')}`
+        `${job.title} ${job.description} ${job.skills.path.join(' ')}`
       );
 
       // Get eligible candidates (opted in, active in last 30 days, have embeddings)

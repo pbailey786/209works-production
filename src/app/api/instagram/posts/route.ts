@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import InstagramScheduler from '@/lib/services/instagram-scheduler';
 import { InstagramUtils } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 const createPostSchema = z.object({

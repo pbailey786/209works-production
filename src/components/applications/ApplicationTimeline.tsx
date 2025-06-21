@@ -1,22 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Eye,
-  MessageSquare,
-  Calendar,
-  User,
-  Building2,
-  Mail,
-  Phone,
-  FileText,
-  ExternalLink,
-} from 'lucide-react';
+import { motion } from 'lucide-react';
 
 interface TimelineEvent {
   id: string;
@@ -51,38 +36,38 @@ const STATUS_CONFIG = {
     icon: Clock,
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-100',
-    label: 'Application Submitted',
+    label: 'Application Submitted'
   },
   reviewing: {
     icon: Eye,
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
-    label: 'Under Review',
+    label: 'Under Review'
   },
   interview: {
     icon: Calendar,
     color: 'text-purple-600',
     bgColor: 'bg-purple-100',
-    label: 'Interview Scheduled',
+    label: 'Interview Scheduled'
   },
   offer: {
     icon: CheckCircle,
     color: 'text-green-600',
     bgColor: 'bg-green-100',
-    label: 'Offer Extended',
+    label: 'Offer Extended'
   },
   rejected: {
     icon: XCircle,
     color: 'text-red-600',
     bgColor: 'bg-red-100',
-    label: 'Not Selected',
+    label: 'Not Selected'
   },
   withdrawn: {
     icon: AlertCircle,
     color: 'text-gray-600',
     bgColor: 'bg-gray-100',
-    label: 'Application Withdrawn',
-  },
+    label: 'Application Withdrawn'
+  }
 };
 
 export default function ApplicationTimeline({
@@ -90,7 +75,7 @@ export default function ApplicationTimeline({
   currentStatus,
   jobTitle,
   company,
-  appliedAt,
+  appliedAt
 }: ApplicationTimelineProps) {
   const [timeline, setTimeline] = useState<TimelineEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -163,20 +148,20 @@ export default function ApplicationTimeline({
       return date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true,
+        hour12: true
       });
     } else if (diffInHours < 168) { // 7 days
       return date.toLocaleDateString('en-US', {
         weekday: 'short',
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true,
+        hour12: true
       });
     } else {
       return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
-        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
       });
     }
   };
@@ -308,7 +293,7 @@ export default function ApplicationTimeline({
                                 month: 'long',
                                 day: 'numeric',
                                 hour: 'numeric',
-                                minute: '2-digit',
+                                minute: '2-digit'
                               })}
                             </span>
                           </div>

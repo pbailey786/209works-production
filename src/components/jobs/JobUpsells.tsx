@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/card';
-import { CheckCircle, Star, TrendingUp, Users, Zap } from '@/components/ui/card';
+import { Check } from 'lucide-react';
 import { useUnifiedToast } from '@/components/ui/unified-toast-system';
 
 interface Addon {

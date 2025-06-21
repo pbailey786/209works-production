@@ -7,6 +7,7 @@ import { prisma } from '@/lib/database/prisma';
 import { encrypt, decrypt } from '@/lib/encryption';
 import { AuditLogger } from '@/lib/monitoring/error-monitor';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';
+import path from "path";
 
 export interface APIKey {
   id: string;
@@ -480,7 +481,7 @@ export class APIPlatformManager {
     const data = encoder.encode(key);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).path.join('');
   }
 
   private getRequiredScope(endpoint: string, method: string): string | null {

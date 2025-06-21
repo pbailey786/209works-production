@@ -3,78 +3,45 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardLayout';
-import {
-  MetricCard,
-  WidgetCard,
-  ActivityItem,
-  QuickAction,
-  StatsGrid
-} from '@/components/dashboard/DashboardCards';
-import {
+import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardCards';
   RecentChatsWidget,
   SavedSearchesWidget,
-  JobsGPTStatsWidget,
-} from '@/components/dashboard/JobsGPTWidgets';
-import {
-  ApplicationStatsWidget,
-  JobRecommendationsWidget,
-  ProfileCompletionWidget,
+  JobsGPTStatsWidget
 } from '@/components/dashboard/JobSeekerWidgets';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  BarChart3,
-  Search,
-  Bookmark,
-  FileText,
-  User,
-  Settings,
-  Heart,
-  Send,
-  Target,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  MapPin,
-  Building,
-  DollarSign,
-  Sparkles,
-  MessageSquare,
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 // Navigation configuration for job seeker dashboard
 const jobSeekerNavigation: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/dashboard',
-    icon: BarChart3,
+    icon: BarChart3
   },
   {
     name: 'Search Jobs',
     href: '/jobs',
-    icon: Search,
+    icon: Search
   },
   {
     name: 'Saved Jobs',
     href: '/saved-jobs',
-    icon: Bookmark,
+    icon: Bookmark
   },
   {
     name: 'Applied Jobs',
     href: '/applications',
-    icon: Send,
+    icon: Send
   },
   {
     name: 'Resume & Profile',
     href: '/profile',
-    icon: User,
+    icon: User
   },
   {
     name: 'Settings',
     href: '/settings',
-    icon: Settings,
+    icon: Settings
   },
 ];
 
@@ -114,7 +81,7 @@ export default function Dashboard() {
     appliedJobs: 0,
     matchesSuggested: 0,
     profileViews: 0,
-    interviewRequests: 0,
+    interviewRequests: 0
   });
 
   const [applications, setApplications] = useState<Application[]>([]);
@@ -141,7 +108,7 @@ export default function Dashboard() {
             appliedJobs: 12,
             matchesSuggested: 8,
             profileViews: 23,
-            interviewRequests: 2,
+            interviewRequests: 2
           });
         }
 
@@ -275,7 +242,7 @@ export default function Dashboard() {
       user={{
         name: user?.fullName || '',
         email: user?.primaryEmailAddress?.emailAddress || '',
-        initials: user?.firstName?.[0] + user?.lastName?.[0] || 'U',
+        initials: user?.firstName?.[0] + user?.lastName?.[0] || 'U'
       }}
       headerActions={
         <Button onClick={() => router.push('/jobs')} className="bg-[#ff6b35] hover:bg-[#e55a2b]">

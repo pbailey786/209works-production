@@ -2,35 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Users,
-  Briefcase,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Clock,
-  MapPin,
-  Building,
-  BarChart3,
-  PieChart,
-  Activity,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  RefreshCw,
-  Star,
-  Target,
-  Globe,
-  MessageSquare,
-  Search,
-  Eye,
-  CreditCard
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AdminAnalytics {
@@ -87,7 +62,7 @@ export default function AdminAnalyticsDashboard({ className = '' }: AdminAnalyti
       setLoading(true);
       const params = new URLSearchParams({
         timeRange,
-        ...(region !== 'all' && { region }),
+        ...(region !== 'all' && { region })
       });
 
       const response = await fetch(`/api/analytics/dashboard?${params}`);
@@ -102,7 +77,7 @@ export default function AdminAnalyticsDashboard({ className = '' }: AdminAnalyti
       toast({
         title: 'Error',
         description: 'Failed to load analytics data',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -114,7 +89,7 @@ export default function AdminAnalyticsDashboard({ className = '' }: AdminAnalyti
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount);
   };
 

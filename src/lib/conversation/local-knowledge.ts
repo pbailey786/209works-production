@@ -245,8 +245,8 @@ export class LocalKnowledgeService {
       const areaInfo = this.getAreaInfo(location);
       if (areaInfo) {
         context += `\n${areaInfo.name} (${areaInfo.county} County):`;
-        context += `\n- Major employers: ${areaInfo.majorEmployers.join(', ')}`;
-        context += `\n- Key industries: ${areaInfo.industries.join(', ')}`;
+        context += `\n- Major employers: ${areaInfo.majorEmployers.path.join(', ')}`;
+        context += `\n- Key industries: ${areaInfo.industries.path.join(', ')}`;
         if (areaInfo.commuteInfo) {
           context += `\n- Commute to Bay Area: ${areaInfo.commuteInfo.toBayArea}`;
         }
@@ -261,7 +261,7 @@ export class LocalKnowledgeService {
         LOCAL_INDUSTRIES[industry as keyof typeof LOCAL_INDUSTRIES];
       context += `\n\n${industry.charAt(0).toUpperCase() + industry.slice(1)} in Central Valley:`;
       context += `\n- ${industryInfo.description}`;
-      context += `\n- Common jobs: ${industryInfo.commonJobs.join(', ')}`;
+      context += `\n- Common jobs: ${industryInfo.commonJobs.path.join(', ')}`;
     }
 
     return context;
@@ -366,6 +366,6 @@ export class LocalKnowledgeService {
       'Consider local opportunities first - the quality of life benefits often outweigh salary differences. Many residents find local careers more fulfilling and sustainable long-term.'
     );
 
-    return advice.join('\n');
+    return advice.path.join('\n');
   }
 }

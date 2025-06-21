@@ -2,21 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
-  MessageCircle,
-  Send,
-  CheckCircle,
-  AlertCircle,
-  Users,
-  Building,
-  Headphones,
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -24,7 +10,7 @@ export default function ContactPage() {
     email: '',
     subject: '',
     category: '',
-    message: '',
+    message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
@@ -38,7 +24,7 @@ export default function ContactPage() {
       description: 'Get help via email',
       contact: 'admin@209.works',
       response: '24-48 hours',
-      color: 'blue',
+      color: 'blue'
     },
     {
       icon: MessageCircle,
@@ -46,7 +32,7 @@ export default function ContactPage() {
       description: 'Chat with our team',
       contact: 'Available on website',
       response: 'Instant during business hours',
-      color: 'green',
+      color: 'green'
     },
     {
       icon: Phone,
@@ -54,7 +40,7 @@ export default function ContactPage() {
       description: 'Speak with our team',
       contact: '(209) 555-WORK',
       response: 'Mon-Fri 9AM-6PM PST',
-      color: 'purple',
+      color: 'purple'
     },
   ];
 
@@ -77,9 +63,9 @@ export default function ContactPage() {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -89,7 +75,7 @@ export default function ContactPage() {
           email: '',
           subject: '',
           category: '',
-          message: '',
+          message: ''
         });
       } else {
         setSubmitStatus('error');
@@ -108,7 +94,7 @@ export default function ContactPage() {
   ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
 

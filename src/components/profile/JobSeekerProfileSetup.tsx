@@ -1,22 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
-  User,
-  MapPin,
-  Phone,
-  Briefcase,
-  GraduationCap,
-  FileText,
-  Settings,
-  Bell,
-  Globe,
-  Upload,
-  X,
-  Plus,
-  Check,
-} from 'lucide-react';
+import { motion } from 'lucide-react';
 
 interface JobSeekerProfile {
   id?: string;
@@ -66,7 +51,7 @@ const COMMON_SKILLS = [
 export default function JobSeekerProfileSetup({
   initialProfile,
   onSave,
-  onCancel,
+  onCancel
 }: JobSeekerProfileSetupProps) {
   const [profile, setProfile] = useState<JobSeekerProfile>(
     initialProfile || {
@@ -84,8 +69,8 @@ export default function JobSeekerProfileSetup({
       resumeData: {
         workHistory: [],
         education: '',
-        skills: [],
-      },
+        skills: []
+      }
     }
   );
 
@@ -126,7 +111,7 @@ export default function JobSeekerProfileSetup({
       const response = await fetch('/api/profile/jobseeker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile),
+        body: JSON.stringify(profile)
       });
 
       if (!response.ok) {

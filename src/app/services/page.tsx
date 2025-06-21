@@ -1,22 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-
-import {
-  Search,
-  Building,
-  MapPin,
-  Sparkles,
-  Users,
-  TrendingUp,
-  Briefcase,
-  Bell,
-  BarChart3,
-  Target,
-  CheckCircle,
-  ArrowRight,
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 const services = [
   {
@@ -36,7 +21,7 @@ const services = [
         ],
         cta: 'Search Jobs Now',
         href: '/jobs',
-        icon: Sparkles,
+        icon: Sparkles
       },
       {
         name: 'Job Alerts & Notifications',
@@ -50,7 +35,7 @@ const services = [
         ],
         cta: 'Set Up Alerts',
         href: '/alerts',
-        icon: Bell,
+        icon: Bell
       },
       {
         name: 'Local Market Intelligence',
@@ -64,9 +49,9 @@ const services = [
         ],
         cta: 'Explore Market Data',
         href: '/jobs',
-        icon: BarChart3,
+        icon: BarChart3
       },
-    ],
+    ]
   },
   {
     category: 'For Employers',
@@ -85,7 +70,7 @@ const services = [
         ],
         cta: 'Post a Job',
         href: '/employers/create-job-post',
-        icon: Briefcase,
+        icon: Briefcase
       },
       {
         name: 'Local Talent Pipeline',
@@ -99,7 +84,7 @@ const services = [
         ],
         cta: 'Find Talent',
         href: '/employers/signup',
-        icon: Target,
+        icon: Target
       },
       {
         name: 'Hiring Analytics',
@@ -113,9 +98,9 @@ const services = [
         ],
         cta: 'View Analytics',
         href: '/employers/dashboard',
-        icon: TrendingUp,
+        icon: TrendingUp
       },
-    ],
+    ]
   },
   {
     category: 'For Local Businesses',
@@ -134,7 +119,7 @@ const services = [
         ],
         cta: 'Advertise Your Business',
         href: '/contact',
-        icon: Building,
+        icon: Building
       },
       {
         name: 'Community Partnerships',
@@ -148,9 +133,9 @@ const services = [
         ],
         cta: 'Partner With Us',
         href: '/contact',
-        icon: Users,
+        icon: Users
       },
-    ],
+    ]
   },
 ];
 
@@ -159,25 +144,25 @@ const benefits = [
     icon: Sparkles,
     title: 'AI-Powered Technology',
     description:
-      'Our ChatGPT-style search understands natural language, making job hunting as easy as having a conversation.',
+      'Our ChatGPT-style search understands natural language, making job hunting as easy as having a conversation.'
   },
   {
     icon: MapPin,
     title: 'Hyperlocal Focus',
     description:
-      'Exclusively serving the Central Valley (209 area code) with deep local market knowledge and connections.',
+      'Exclusively serving the Central Valley (209 area code) with deep local market knowledge and connections.'
   },
   {
     icon: TrendingUp,
     title: 'Real Results',
     description:
-      'Connecting thousands of Central Valley workers with local employers who understand the community.',
+      'Connecting thousands of Central Valley workers with local employers who understand the community.'
   },
   {
     icon: CheckCircle,
     title: 'Community First',
     description:
-      'Built by locals, for locals. We understand the unique needs of Central Valley workers and employers.',
+      'Built by locals, for locals. We understand the unique needs of Central Valley workers and employers.'
   },
 ];
 

@@ -6,13 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/database/prisma';
 import Link from 'next/link';
 import AdCreationForm from '@/components/admin/AdCreationForm';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 export default async function CreateAdPage() {
   const { userId } = await auth();

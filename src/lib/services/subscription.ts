@@ -1,9 +1,4 @@
-import { prisma } from '@/lib/database/prisma';
-import {
-  PricingTier,
-  SubscriptionStatus,
-  BillingInterval,
-} from '@prisma/client';
+import { prisma } from '@prisma/client';
 
 // Updated pricing configuration with 209 Works pricing
 export const PRICING_CONFIG = {
@@ -19,8 +14,8 @@ export const PRICING_CONFIG = {
       prioritySupport: false,
       analytics: 'basic',
       teamMembers: 1,
-      apiAccess: false,
-    },
+      apiAccess: false
+    }
   },
   basic: {
     name: 'Basic',
@@ -33,8 +28,8 @@ export const PRICING_CONFIG = {
       prioritySupport: false,
       analytics: 'basic',
       teamMembers: 1,
-      apiAccess: false,
-    },
+      apiAccess: false
+    }
   },
   essential: {
     name: 'Essential',
@@ -47,8 +42,8 @@ export const PRICING_CONFIG = {
       prioritySupport: false,
       analytics: 'basic',
       teamMembers: 2,
-      apiAccess: false,
-    },
+      apiAccess: false
+    }
   },
   professional: {
     name: 'Professional',
@@ -62,8 +57,8 @@ export const PRICING_CONFIG = {
       prioritySupport: true,
       analytics: 'advanced',
       teamMembers: 5,
-      apiAccess: false,
-    },
+      apiAccess: false
+    }
   },
   enterprise: {
     name: 'Enterprise',
@@ -79,8 +74,8 @@ export const PRICING_CONFIG = {
       teamMembers: -1, // unlimited
       apiAccess: true,
       whiteLabel: false,
-      customIntegrations: false,
-    },
+      customIntegrations: false
+    }
   },
   premium: {
     name: 'Premium (Job Seekers)',
@@ -92,9 +87,9 @@ export const PRICING_CONFIG = {
       advancedSearch: true,
       resumeReviews: 4, // per year
       coverLetterTemplates: true,
-      applicationTracking: 'unlimited',
-    },
-  },
+      applicationTracking: 'unlimited'
+    }
+  }
 } as const;
 
 export interface SubscriptionFeatures {
@@ -126,11 +121,11 @@ export class SubscriptionService {
     return await prisma.subscription.findFirst({
       where: {
         userId,
-        status: 'active',
+        status: 'active'
       },
       orderBy: {
-        createdAt: 'desc',
-      },
+        createdAt: 'desc'
+      }
     });
   }
 
@@ -162,7 +157,7 @@ export class SubscriptionService {
         profileVisibility: false,
         priorityApplications: false,
         advancedSearch: false,
-        applicationTracking: 'limited',
+        applicationTracking: 'limited'
       };
       return !!freeFeatures[feature];
     }
@@ -186,7 +181,7 @@ export class SubscriptionService {
         jobListings: 1,
         listingDuration: 14,
         teamMembers: 1,
-        resumeReviews: 0,
+        resumeReviews: 0
       };
       return freeLimits[feature] || 0;
     }
@@ -217,7 +212,7 @@ export class SubscriptionService {
     // Get user email for subscription
     const user = await prisma.user.findUnique({
       where: { id: data.userId },
-      select: { email: true },
+      select: { email: true }
     });
 
     if (!user) {
@@ -234,7 +229,7 @@ export class SubscriptionService {
         status: 'trial', // Start with trial
         startDate: data.startDate || new Date(),
         endDate: null, // Set when subscription ends
-      },
+      }
     });
   }
 
@@ -251,8 +246,8 @@ export class SubscriptionService {
       data: {
         status,
         endDate,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     });
   }
 
@@ -279,11 +274,11 @@ export class SubscriptionService {
       where: {
         companyRef: {
           users: {
-            some: { id: userId },
-          },
+            some: { id: userId }
+          }
         },
-        status: 'active',
-      },
+        status: 'active'
+      }
     });
 
     return activeJobs < limit;
@@ -296,11 +291,11 @@ export class SubscriptionService {
     const analytics = await prisma.subscription.groupBy({
       by: ['tier', 'status'],
       _count: {
-        id: true,
+        id: true
       },
       _sum: {
-        price: true,
-      },
+        price: true
+      }
     });
 
     return analytics;
@@ -315,7 +310,7 @@ export class SubscriptionService {
       name: config.name,
       monthlyPrice: config.price,
       yearlyPrice: config.yearlyPrice,
-      features: config.features,
+      features: config.features
     }));
   }
 }

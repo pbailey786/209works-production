@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,28 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Code, 
-  Key, 
-  Activity, 
-  Webhook, 
-  Copy, 
-  Eye, 
-  EyeOff, 
-  Plus,
-  Trash2,
-  RefreshCw,
-  ExternalLink,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  TrendingUp,
-  BarChart3,
-  Settings,
-  Book,
-  Zap
-} from 'lucide-react';
+import { Alert, AlertDescription } from 'lucide-react';
 
 interface APIKey {
   id: string;
@@ -119,7 +98,7 @@ export default function DeveloperDashboard({ className = '' }: DeveloperDashboar
       const response = await fetch('/api/platform/keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -139,7 +118,7 @@ export default function DeveloperDashboard({ className = '' }: DeveloperDashboar
   const revokeAPIKey = async (keyId: string) => {
     try {
       const response = await fetch(`/api/platform/keys/${keyId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {
@@ -158,7 +137,7 @@ export default function DeveloperDashboard({ className = '' }: DeveloperDashboar
       const response = await fetch('/api/platform/webhooks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -364,7 +343,7 @@ export default function DeveloperDashboard({ className = '' }: DeveloperDashboar
                       </div>
                       
                       <div className="text-sm text-gray-600 space-y-1">
-                        <p>Scopes: {key.scopes.join(', ')}</p>
+                        <p>Scopes: {key.scopes.path.join(', ')}</p>
                         <p>Rate Limit: {key.rateLimit.requestsPerMinute}/min, {key.rateLimit.requestsPerHour}/hour</p>
                         <p>Created: {formatDate(key.createdAt)}</p>
                         {key.lastUsedAt && <p>Last Used: {formatDate(key.lastUsedAt)}</p>}
@@ -431,7 +410,7 @@ export default function DeveloperDashboard({ className = '' }: DeveloperDashboar
                       </div>
                       
                       <div className="text-sm text-gray-600 space-y-1">
-                        <p>Events: {webhook.events.join(', ')}</p>
+                        <p>Events: {webhook.events.path.join(', ')}</p>
                         <p>Created: {formatDate(webhook.createdAt)}</p>
                         {webhook.lastDeliveryAt && <p>Last Delivery: {formatDate(webhook.lastDeliveryAt)}</p>}
                         {webhook.failureCount > 0 && (

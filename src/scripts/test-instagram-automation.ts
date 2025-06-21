@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import InstagramImageGenerator from '../lib/services/instagram-image-generator';
 import InstagramScheduler from '../lib/services/instagram-scheduler';
-import { writeFileSync } from '@/components/ui/card';
-import { join } from '@/components/ui/card';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 import { prisma } from '@/lib/database/prisma';
+import fs from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
 
@@ -35,8 +37,8 @@ async function testInstagramAutomation() {
 
       // Save test image
       const filename = `test-instagram-${template}.png`;
-      const filepath = join(process.cwd(), 'public', 'test-images', filename);
-      writeFileSync(filepath, imageBuffer);
+      const filepath = path.join(process.cwd(), 'public', 'test-images', filename);
+      fs.writeFileSync(filepath, imageBuffer);
       console.log(
         `  ✅ ${template} template generated (${imageBuffer.length} bytes)`
       );

@@ -1,20 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import {
-  TrendingUp,
-  TrendingDown,
-  ArrowRight,
-  MoreHorizontal,
-  ExternalLink,
-  Loader2
-} from 'lucide-react';
+import { cn } from 'lucide-react';
 
 // Metric Card Component (like the top cards in Digesto)
 interface MetricCardProps {
@@ -45,7 +37,7 @@ export function MetricCard({
     green: 'bg-green-50 border-green-200',
     orange: 'bg-orange-50 border-orange-200',
     purple: 'bg-purple-50 border-purple-200',
-    red: 'bg-red-50 border-red-200',
+    red: 'bg-red-50 border-red-200'
   };
 
   const iconColorClasses = {
@@ -53,7 +45,7 @@ export function MetricCard({
     green: 'text-green-600',
     orange: 'text-orange-600',
     purple: 'text-purple-600',
-    red: 'text-red-600',
+    red: 'text-red-600'
   };
 
   return (
@@ -171,7 +163,7 @@ export function UsageMeter({
     blue: 'text-blue-600',
     green: 'text-green-600',
     orange: 'text-orange-600',
-    purple: 'text-purple-600',
+    purple: 'text-purple-600'
   };
 
   return (
@@ -287,7 +279,7 @@ export function QuickAction({
   const variantClasses = {
     default: 'border-gray-200 hover:border-gray-300 hover:bg-gray-50',
     primary: 'border-[#ff6b35] bg-[#ff6b35]/5 hover:bg-[#ff6b35]/10',
-    secondary: 'border-[#2d4a3e] bg-[#2d4a3e]/5 hover:bg-[#2d4a3e]/10',
+    secondary: 'border-[#2d4a3e] bg-[#2d4a3e]/5 hover:bg-[#2d4a3e]/10'
   };
 
   return (

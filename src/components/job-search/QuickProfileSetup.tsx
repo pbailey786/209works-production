@@ -1,6 +1,6 @@
 import React, { useState } from '@/components/ui/card';
 import { motion, AnimatePresence } from '@/components/ui/card';
-import { X, User, MapPin, DollarSign, Briefcase, Star } from '@/components/ui/card';
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 

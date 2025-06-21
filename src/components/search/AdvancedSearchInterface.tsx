@@ -1,17 +1,11 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import {
-  Search,
-  Sparkles,
-  Brain,
-  RefreshCw,
-} from 'lucide-react';
+import { useToast } from 'lucide-react';
 
 interface SearchFilters {
   jobType?: string;
@@ -42,14 +36,14 @@ export default function AdvancedSearchInterface({
   onSearch,
   onResults,
   loading = false,
-  className = '',
+  className = ''
 }: AdvancedSearchInterfaceProps) {
   const [query, setQuery] = useState('');
   const [searchType, setSearchType] = useState<'traditional' | 'semantic'>('semantic');
   const [filters, setFilters] = useState<SearchFilters>({
     salaryMin: 40000,
     salaryMax: 200000,
-    skills: [],
+    skills: []
   });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -78,8 +72,8 @@ export default function AdvancedSearchInterface({
           query,
           filters,
           limit: 20,
-          threshold: 0.7,
-        }),
+          threshold: 0.7
+        })
       });
 
       if (response.ok) {
@@ -98,9 +92,9 @@ export default function AdvancedSearchInterface({
         ...Object.fromEntries(
           Object.entries(filters).map(([key, value]) => [
             key,
-            Array.isArray(value) ? value.join(',') : String(value)
+            Array.isArray(value) ? value.path.join(',') : String(value)
           ])
-        ),
+        )
       });
 
       const response = await fetch(`/api/jobs/search?${params}`);
@@ -113,7 +107,7 @@ export default function AdvancedSearchInterface({
           semanticScore: 0,
           relevanceScore: 1,
           matchedConcepts: [],
-          explanation: 'Traditional keyword match',
+          explanation: 'Traditional keyword match'
         }));
         onResults(formattedResults);
       }

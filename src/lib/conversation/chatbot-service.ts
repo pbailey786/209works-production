@@ -1,19 +1,14 @@
 import { openai } from '@/components/ui/card';
 import { ConversationManager } from '@/components/ui/card';
 import { ChatbotPrompts } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { LocalKnowledgeService } from './local-knowledge';
-
-import {
-  CompanyKnowledgeService,
-  CompanyInfo,
-} from '@/lib/knowledge/company-knowledge';
-import {
+import { prisma } from '@/lib/database/prisma';
+import { LocalKnowledgeService } from '@/lib/knowledge/company-knowledge';
+import path from "path";
   ConversationIntent,
   ChatbotResponse,
   ConversationContext,
   JobContext,
-  Message,
+  Message
 } from './types';
 
 interface ChatContextualData {
@@ -50,7 +45,7 @@ export class ChatbotService {
     ConversationManager.addMessage(session.sessionId, {
       role: 'user',
       content: userMessage,
-      metadata: { userId, searchQuery: userMessage },
+      metadata: { userId, searchQuery: userMessage }
     });
 
     // Classify intent
@@ -75,7 +70,7 @@ export class ChatbotService {
     const responseTime = Date.now() - startTime;
     response.metadata = {
       ...response.metadata,
-      responseTime,
+      responseTime
     };
 
     return response;
@@ -194,7 +189,7 @@ export class ChatbotService {
       suggestions,
       jobRecommendations: contextualData.jobRecommendations,
       companyInfo: contextualData.companyInfo as any,
-      followUpActions: contextualData.followUpActions,
+      followUpActions: contextualData.followUpActions
     };
   }
 
@@ -225,7 +220,7 @@ export class ChatbotService {
         salaryMin: job.salaryMin,
         salaryMax: job.salaryMax,
         requirements: job.requirements,
-        benefits: job.benefits,
+        benefits: job.benefits
       }));
 
       // Update conversation context
@@ -241,9 +236,9 @@ export class ChatbotService {
         followUpActions: [
           {
             type: 'search_jobs',
-            data: { query: searchParams.query, totalResults: jobs.length },
+            data: { query: searchParams.query, totalResults: jobs.length }
           },
-        ],
+        ]
       };
     } catch (error) {
       console.error('Job search error:', error);
@@ -276,7 +271,7 @@ export class ChatbotService {
       location: job.location,
       description: job.description,
       salaryMin: job.salaryMin,
-      salaryMax: job.salaryMax,
+      salaryMax: job.salaryMax
     }));
 
     if (companyInfoData) {
@@ -319,12 +314,12 @@ export class ChatbotService {
       } = {
         ...companyInfoData,
         knowledgeEntries: relevantKnowledge.slice(0, 5),
-        hasKnowledgeBase: companyInfoData.knowledgeEntries.length > 0,
+        hasKnowledgeBase: companyInfoData.knowledgeEntries.length > 0
       };
 
       return {
         companyInfo: fullCompanyInfo,
-        jobRecommendations,
+        jobRecommendations
       };
     } else {
       // Fallback when companyInfoData is null, but companyName is valid
@@ -332,9 +327,9 @@ export class ChatbotService {
         companyInfo: {
           name: companyName, // companyName is not null here
           description: `${companyName} posts job opportunities on 209jobs. We can help you learn more about their current openings.`,
-          hasKnowledgeBase: false,
+          hasKnowledgeBase: false
         },
-        jobRecommendations,
+        jobRecommendations
       };
     }
   }
@@ -354,9 +349,9 @@ export class ChatbotService {
       followUpActions: [
         {
           type: 'learn_more',
-          data: { action: 'compare', jobCount: currentJobs.length },
+          data: { action: 'compare', jobCount: currentJobs.length }
         },
-      ],
+      ]
     };
   }
 
@@ -381,7 +376,7 @@ export class ChatbotService {
         localReferences.forEach(ref => {
           const areaInfo = LocalKnowledgeService.getAreaInfo(ref);
           if (areaInfo) {
-            localContext += `- ${ref}: Major employers include ${areaInfo.majorEmployers.slice(0, 3).join(', ')}\n`;
+            localContext += `- ${ref}: Major employers include ${areaInfo.majorEmployers.slice(0, 3).path.join(', ')}\n`;
           }
         });
       }
@@ -410,11 +405,11 @@ export class ChatbotService {
       const messages = [
         {
           role: 'system',
-          content: systemPrompt + localContext + jobContext + companyContext,
+          content: systemPrompt + localContext + jobContext + companyContext
         },
         ...conversationHistory.map(msg => ({
           role: msg.role,
-          content: msg.content,
+          content: msg.content
         })),
         { role: 'user', content: userMessage },
       ];
@@ -525,7 +520,7 @@ export class ChatbotService {
     // Simple keyword extraction (enhanced with local knowledge)
     const params: any = {
       query: userMessage,
-      limit: 10,
+      limit: 10
     };
 
     // Extract location if mentioned
@@ -626,7 +621,7 @@ export class ChatbotService {
     } else if (params.location) {
       whereClause.location = {
         contains: params.location,
-        mode: 'insensitive',
+        mode: 'insensitive'
       };
     }
 
@@ -687,7 +682,7 @@ export class ChatbotService {
     const jobs = await prisma.job.findMany({
       where: whereClause,
       take: params.limit || 10,
-      orderBy: { postedAt: 'desc' },
+      orderBy: { postedAt: 'desc' }
     });
 
     return jobs;
@@ -722,11 +717,11 @@ export class ChatbotService {
       where: {
         company: {
           contains: companyName,
-          mode: 'insensitive',
-        },
+          mode: 'insensitive'
+        }
       },
       take: 5,
-      orderBy: { postedAt: 'desc' },
+      orderBy: { postedAt: 'desc' }
     });
   }
 
@@ -737,7 +732,7 @@ export class ChatbotService {
     return messages.map(msg => ({
       ...msg,
       role: msg.role,
-      content: msg.content,
+      content: msg.content
     }));
   }
 
@@ -780,7 +775,7 @@ export class ChatbotService {
         'Help me search for jobs',
         'Tell me about companies',
         'Give me career advice',
-      ],
+      ]
     };
 
     return suggestions[intent] || suggestions.general_chat;

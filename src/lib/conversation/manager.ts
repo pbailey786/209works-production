@@ -5,7 +5,7 @@
   ConversationSession,
   Message,
   ConversationIntent,
-  UserProfile,
+  UserProfile
 } from './types';
 
 // In-memory storage for conversation sessions (in production, use Redis or database)
@@ -30,8 +30,8 @@ export class ConversationManager {
       metadata: {
         startedAt: now,
         lastActivity: now,
-        messageCount: 0,
-      },
+        messageCount: 0
+      }
     };
 
     const session: ConversationSession = {
@@ -39,7 +39,7 @@ export class ConversationManager {
       userId,
       context,
       isActive: true,
-      expiresAt: new Date(now.getTime() + this.SESSION_TIMEOUT),
+      expiresAt: new Date(now.getTime() + this.SESSION_TIMEOUT)
     };
 
     conversationSessions.set(sessionId, session);
@@ -81,7 +81,7 @@ export class ConversationManager {
     const newMessage: Message = {
       ...message,
       id: this.generateMessageId(),
-      timestamp: new Date(),
+      timestamp: new Date()
     };
 
     // Add message to context
@@ -120,7 +120,7 @@ export class ConversationManager {
     if (session) {
       session.context.context.userProfile = {
         ...session.context.context.userProfile,
-        ...profile,
+        ...profile
       };
       conversationSessions.set(sessionId, session);
     }
@@ -154,7 +154,7 @@ export class ConversationManager {
         query,
         filters,
         results: resultCount,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
       session.context.context.searchQuery = query;
       conversationSessions.set(sessionId, session);
@@ -225,7 +225,7 @@ export class ConversationManager {
   static getSessionStats() {
     return {
       activeSessions: conversationSessions.size,
-      totalSessions: conversationSessions.size,
+      totalSessions: conversationSessions.size
     };
   }
 }

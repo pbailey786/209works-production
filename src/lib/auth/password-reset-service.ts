@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { EmailHelpers } from '@/components/ui/card';
-import { normalizeEmail } from '@/components/ui/card';
+import { z } from 'zod';
 import { hash } from 'bcryptjs';
 
 // Security constants

@@ -2,19 +2,7 @@
 
 import { useUser, useAuth } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import {
-  Mail,
-  Settings,
-  Users,
-  BarChart3,
-  FileText,
-  Shield,
-  Activity,
-  Database,
-  Download,
-} from 'lucide-react';
+import { useEffect, useState } from 'lucide-react';
 
 export default function SimpleAdminPage() {
   const { user, isLoaded } = useUser();

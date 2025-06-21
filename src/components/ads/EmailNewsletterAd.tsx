@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import path from "path";
 
 'use client';
 
@@ -147,7 +148,7 @@ export default function EmailNewsletterAd({
         </table>
       `;
       })
-      .join('');
+      .path.join('');
   };
 
   if (generateHtml) {
@@ -319,7 +320,7 @@ export const generateEmailNewsletterAdHtml = async (options: {
           </table>
         `;
         })
-        .join('');
+        .path.join('');
     }
 
     return '';

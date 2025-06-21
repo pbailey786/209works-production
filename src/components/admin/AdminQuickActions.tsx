@@ -8,7 +8,7 @@ import {
   Settings,
   Download,
   AlertTriangle,
-  FileText,
+  FileText
 } from 'lucide-react';
 
 interface QuickAction {
@@ -27,7 +27,7 @@ const quickActions: QuickAction[] = [
     href: '/admin/moderation/jobs',
     icon: Shield,
     color: 'bg-red-500 hover:bg-red-600',
-    badge: '12',
+    badge: '12'
   },
   {
     title: 'User Reports',
@@ -35,35 +35,35 @@ const quickActions: QuickAction[] = [
     href: '/admin/moderation/reports',
     icon: AlertTriangle,
     color: 'bg-orange-500 hover:bg-orange-600',
-    badge: '3',
+    badge: '3'
   },
   {
     title: 'Manage Users',
     description: 'View and edit user accounts',
     href: '/admin/users',
     icon: Users,
-    color: 'bg-blue-500 hover:bg-blue-600',
+    color: 'bg-blue-500 hover:bg-blue-600'
   },
   {
     title: 'Analytics',
     description: 'View platform performance',
     href: '/admin/analytics',
     icon: BarChart3,
-    color: 'bg-green-500 hover:bg-green-600',
+    color: 'bg-green-500 hover:bg-green-600'
   },
   {
     title: 'Ad Campaigns',
     description: 'Manage advertisements',
     href: '/admin/ads/campaigns',
     icon: PlayCircle,
-    color: 'bg-purple-500 hover:bg-purple-600',
+    color: 'bg-purple-500 hover:bg-purple-600'
   },
   {
     title: 'Export Reports',
     description: 'Generate system reports',
     href: '/admin/reports',
     icon: Download,
-    color: 'bg-indigo-500 hover:bg-indigo-600',
+    color: 'bg-indigo-500 hover:bg-indigo-600'
   },
 ];
 

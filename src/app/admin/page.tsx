@@ -3,90 +3,62 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardLayout';
-import {
-  MetricCard,
-  WidgetCard,
-  ActivityItem,
-  QuickAction,
-  StatsGrid
-} from '@/components/dashboard/DashboardCards';
+import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardCards';
 import RealTimeAnalyticsWidget from '@/components/analytics/RealTimeAnalyticsWidget';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  BarChart3,
-  Users,
-  Briefcase,
-  Flag,
-  CreditCard,
-  FileText,
-  Settings,
-  Shield,
-  TrendingUp,
-  AlertTriangle,
-  DollarSign,
-  Activity,
-  Database,
-  Globe,
-  Zap,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Gauge,
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 // Navigation configuration for admin dashboard
 const adminNavigation: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/admin',
-    icon: BarChart3,
+    icon: BarChart3
   },
   {
     name: 'Analytics',
     href: '/admin/analytics',
-    icon: TrendingUp,
+    icon: TrendingUp
   },
   {
     name: 'Performance',
     href: '/admin/performance',
-    icon: Gauge,
+    icon: Gauge
   },
   {
     name: 'Security',
     href: '/admin/security',
-    icon: Shield,
+    icon: Shield
   },
   {
     name: 'User Management',
     href: '/admin/users',
-    icon: Users,
+    icon: Users
   },
   {
     name: 'Jobs Overview',
     href: '/admin/moderation/jobs',
-    icon: Briefcase,
+    icon: Briefcase
   },
   {
     name: 'Reports/Abuse',
     href: '/admin/moderation/reports',
-    icon: Flag,
+    icon: Flag
   },
   {
     name: 'Credits & Plans',
     href: '/admin/credits',
-    icon: CreditCard,
+    icon: CreditCard
   },
   {
     name: 'System Logs',
     href: '/admin/audit',
-    icon: FileText,
+    icon: FileText
   },
   {
     name: 'Settings',
     href: '/admin/settings',
-    icon: Settings,
+    icon: Settings
   },
 ];
 
@@ -117,7 +89,7 @@ export default function AdminDashboard() {
     flagsReports: 0,
     apiLlmUsage: 0,
     activeJobs: 0,
-    totalRevenue: 0,
+    totalRevenue: 0
   });
 
   const [systemActivity, setSystemActivity] = useState<SystemActivity[]>([]);
@@ -147,7 +119,7 @@ export default function AdminDashboard() {
             flagsReports: 5,
             apiLlmUsage: 1850,
             activeJobs: 156,
-            totalRevenue: 12450,
+            totalRevenue: 12450
           });
         }
 
@@ -301,7 +273,7 @@ export default function AdminDashboard() {
       user={{
         name: user?.fullName || '',
         email: user?.primaryEmailAddress?.emailAddress || '',
-        initials: user?.firstName?.[0] + user?.lastName?.[0] || 'A',
+        initials: user?.firstName?.[0] + user?.lastName?.[0] || 'A'
       }}
       headerActions={
         <Button onClick={() => router.push('/admin/settings')} variant="outline">

@@ -1,27 +1,10 @@
 import React, { useState, useEffect, useCallback } from '@/components/ui/card';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
 import { Progress } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
-
-
-  /**
- * Performance Monitoring Dashboard
- * Real-time performance tracking and system health monitoring
- */
-'use client';
-  import {
-  usePerformanceMonitor,
-  CoreWebVitals,
-  SystemHealthMetric,
-  UserExperienceMetric,
-  PerformanceAlert,
-  APIPerformanceMetric,
-} from '@/components/ui/card';
-  import {
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/card';
   Activity,
   AlertTriangle,
   CheckCircle,
@@ -40,7 +23,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
   AlertCircle,
   Info,
   Download,
-  Eye,
+  Eye
 } from 'lucide-react';
 
 interface PerformanceData {
@@ -67,7 +50,7 @@ function MetricCard({
   unit,
   status,
   icon,
-  description,
+  description
 }: MetricCardProps) {
   const getStatusColor = () => {
     switch (status) {
@@ -235,7 +218,7 @@ export function PerformanceDashboard() {
     systemHealth: null,
     userExperience: null,
     alerts: [],
-    apiMetrics: [],
+    apiMetrics: []
   });
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
@@ -283,7 +266,7 @@ export function PerformanceDashboard() {
   const handleResolveAlert = (alertId: string) => {
     setPerformanceData(prev => ({
       ...prev,
-      alerts: prev.alerts.filter(alert => alert.id !== alertId),
+      alerts: prev.alerts.filter(alert => alert.id !== alertId)
     }));
   };
 
@@ -297,7 +280,7 @@ export function PerformanceDashboard() {
       fid: { good: 100, poor: 300 },
       cls: { good: 0.1, poor: 0.25 },
       fcp: { good: 1800, poor: 3000 },
-      ttfb: { good: 800, poor: 1800 },
+      ttfb: { good: 800, poor: 1800 }
     };
 
     const threshold = thresholds[metric as keyof typeof thresholds];
@@ -544,7 +527,7 @@ export function PerformanceDashboard() {
                   effectiveType: systemHealth.networkInfo.effectiveType,
                   downlink: `${systemHealth.networkInfo.downlink} Mbps`,
                   rtt: `${systemHealth.networkInfo.rtt} ms`,
-                  saveData: systemHealth.networkInfo.saveData,
+                  saveData: systemHealth.networkInfo.saveData
                 }}
               />
 
@@ -558,7 +541,7 @@ export function PerformanceDashboard() {
                   cookieEnabled: systemHealth.deviceInfo.cookieEnabled,
                   onLine: systemHealth.deviceInfo.onLine,
                   hardwareConcurrency:
-                    systemHealth.deviceInfo.hardwareConcurrency,
+                    systemHealth.deviceInfo.hardwareConcurrency
                 }}
               />
 
@@ -569,7 +552,7 @@ export function PerformanceDashboard() {
                 data={{
                   jsHeapSizeLimit: `${(systemHealth.browserPerformance.jsHeapSizeLimit / 1024 / 1024).toFixed(1)} MB`,
                   totalJSHeapSize: `${(systemHealth.browserPerformance.totalJSHeapSize / 1024 / 1024).toFixed(1)} MB`,
-                  usedJSHeapSize: `${(systemHealth.browserPerformance.usedJSHeapSize / 1024 / 1024).toFixed(1)} MB`,
+                  usedJSHeapSize: `${(systemHealth.browserPerformance.usedJSHeapSize / 1024 / 1024).toFixed(1)} MB`
                 }}
               />
             </div>

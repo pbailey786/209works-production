@@ -149,7 +149,7 @@ test.describe('Critical User Journeys', () => {
       await expect(page.locator('[data-testid="job-card"]').first()).toBeVisible();
       
       // 6. View job details
-      await page.click('[data-testid="job-card"]').first();
+      await page.locator('[data-testid="job-card"]').first().click();
       await expect(page.locator('[data-testid="job-title"]')).toBeVisible();
       await expect(page.locator('[data-testid="apply-button"]')).toBeVisible();
       
@@ -194,7 +194,7 @@ test.describe('Critical User Journeys', () => {
       await expect(page.locator('[data-testid="ai-message"]')).toHaveCount(2);
       
       // 7. Apply to recommended job
-      await page.click('[data-testid="recommended-job-apply"]').first();
+      await page.locator('[data-testid="recommended-job-apply"]').first().click();
       await expect(page.locator('[data-testid="quick-apply-modal"]')).toBeVisible();
     });
 
@@ -242,7 +242,7 @@ test.describe('Critical User Journeys', () => {
       await expect(page.locator('[data-testid="job-item"]').first()).toContainText(testJob.title);
       
       // 6. View job applications
-      await page.click('[data-testid="view-applications"]').first();
+      await page.locator('[data-testid="view-applications"]').first().click();
       await expect(page.locator('[data-testid="applications-list"]')).toBeVisible();
       
       // 7. Purchase credits for job promotion
@@ -266,7 +266,7 @@ test.describe('Critical User Journeys', () => {
       await page.fill('[data-testid="search-applicants"]', 'software');
       
       // 4. Review application
-      await page.click('[data-testid="application-item"]').first();
+      await page.locator('[data-testid="application-item"]').first().click();
       await expect(page.locator('[data-testid="applicant-profile"]')).toBeVisible();
       await expect(page.locator('[data-testid="resume-viewer"]')).toBeVisible();
       
@@ -295,13 +295,13 @@ test.describe('Critical User Journeys', () => {
       await page.goto('/network');
       
       // 3. Send connection request
-      await page.click('[data-testid="suggested-connection"]').first();
+      await page.locator('[data-testid="suggested-connection"]').first().click();
       await page.fill('[data-testid="connection-message"]', 'I\'d like to connect with you...');
       await page.click('[data-testid="send-request"]');
       
       // 4. Navigate to company reviews
       await page.goto('/companies');
-      await page.click('[data-testid="company-card"]').first();
+      await page.locator('[data-testid="company-card"]').first().click();
       
       // 5. Write company review
       await page.click('[data-testid="write-review"]');
@@ -340,7 +340,7 @@ test.describe('Critical User Journeys', () => {
       await expect(page.locator('[data-testid="mobile-job-card"]').first()).toBeVisible();
       
       // 6. Test mobile job application
-      await page.click('[data-testid="mobile-job-card"]').first();
+      await page.locator('[data-testid="mobile-job-card"]').first().click();
       await page.click('[data-testid="mobile-apply-button"]');
       await expect(page.locator('[data-testid="mobile-apply-modal"]')).toBeVisible();
     });
@@ -382,9 +382,9 @@ test.describe('Critical User Journeys', () => {
         return new Promise((resolve) => {
           new PerformanceObserver((list) => {
             const entries = list.getEntries();
-            const vitals = {};
-            
-            entries.forEach((entry) => {
+            const vitals: any = {};
+
+            entries.forEach((entry: any) => {
               if (entry.name === 'largest-contentful-paint') {
                 vitals.lcp = entry.value;
               }
@@ -395,16 +395,16 @@ test.describe('Critical User Journeys', () => {
                 vitals.cls = entry.value;
               }
             });
-            
+
             resolve(vitals);
           }).observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] });
         });
       });
       
       // Assert Core Web Vitals thresholds
-      expect(metrics.lcp).toBeLessThan(2500); // LCP < 2.5s
-      expect(metrics.fid).toBeLessThan(100);  // FID < 100ms
-      expect(metrics.cls).toBeLessThan(0.1);  // CLS < 0.1
+      expect((metrics as any).lcp).toBeLessThan(2500); // LCP < 2.5s
+      expect((metrics as any).fid).toBeLessThan(100);  // FID < 100ms
+      expect((metrics as any).cls).toBeLessThan(0.1);  // CLS < 0.1
     });
 
     test('Accessibility compliance', async ({ page }) => {

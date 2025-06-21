@@ -1,22 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Upload,
-  FileText,
-  Download,
-  Edit,
-  Trash2,
-  Eye,
-  Star,
-  AlertCircle,
-  CheckCircle,
-  Sparkles,
-  RefreshCw,
-  Plus,
-  X,
-} from 'lucide-react';
+import { motion } from 'lucide-react';
 
 interface Resume {
   id: string;
@@ -107,7 +92,7 @@ export default function ResumeManager({ userId }: ResumeManagerProps) {
 
       const response = await fetch('/api/profile/resumes/upload', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       if (!response.ok) {
@@ -136,7 +121,7 @@ export default function ResumeManager({ userId }: ResumeManagerProps) {
     setAnalyzing(resumeId);
     try {
       const response = await fetch(`/api/profile/resumes/${resumeId}/analyze`, {
-        method: 'POST',
+        method: 'POST'
       });
 
       if (response.ok) {
@@ -157,13 +142,13 @@ export default function ResumeManager({ userId }: ResumeManagerProps) {
   const setDefaultResume = async (resumeId: string) => {
     try {
       const response = await fetch(`/api/profile/resumes/${resumeId}/default`, {
-        method: 'PATCH',
+        method: 'PATCH'
       });
 
       if (response.ok) {
         setResumes(prev => prev.map(resume => ({
           ...resume,
-          isDefault: resume.id === resumeId,
+          isDefault: resume.id === resumeId
         })));
       }
     } catch (error) {
@@ -176,7 +161,7 @@ export default function ResumeManager({ userId }: ResumeManagerProps) {
 
     try {
       const response = await fetch(`/api/profile/resumes/${resumeId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {

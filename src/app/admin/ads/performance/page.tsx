@@ -1,26 +1,14 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { prisma } from '@/lib/database/prisma';
-import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Eye,
-  MousePointer,
-  Target,
-  Calendar,
-  Download,
-  Filter,
-} from 'lucide-react';
+import { prisma } from 'lucide-react';
 
 export const metadata = {
   title: 'Ad Performance | Admin Dashboard',
-  description: 'View advertising performance metrics and analytics',
+  description: 'View advertising performance metrics and analytics'
 };
 
 export default async function AdPerformancePage() {
@@ -30,7 +18,7 @@ export default async function AdPerformancePage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Check authentication and permissions

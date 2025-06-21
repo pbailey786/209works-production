@@ -1,31 +1,15 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { prisma } from '@/lib/database/prisma';
-import Link from 'next/link';
-import {
-  Mail,
-  Send,
-  Users,
-  TrendingUp,
-  Settings,
-  TestTube,
-  FileText,
-  Zap,
-  CheckCircle,
-  AlertTriangle,
-  Clock,
-  Eye,
-  MousePointer,
-} from 'lucide-react';
+import { prisma } from 'lucide-react';
 
 export const metadata = {
   title: 'Email Management | Admin Dashboard',
-  description: 'Manage email templates, campaigns, and delivery settings',
+  description: 'Manage email templates, campaigns, and delivery settings'
 };
 
 export default async function EmailManagementPage() {
@@ -35,7 +19,7 @@ export default async function EmailManagementPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Check authentication and permissions
@@ -58,7 +42,7 @@ export default async function EmailManagementPage() {
     activeTemplates: 8,
     activeCampaigns: 3,
     queuedEmails: 127,
-    failedEmails: 23,
+    failedEmails: 23
   };
 
   const recentCampaigns = [
@@ -71,7 +55,7 @@ export default async function EmailManagementPage() {
       delivered: 2398,
       opened: 612,
       clicked: 89,
-      sentAt: '2024-01-15T10:00:00Z',
+      sentAt: '2024-01-15T10:00:00Z'
     },
     {
       id: '2',
@@ -82,7 +66,7 @@ export default async function EmailManagementPage() {
       delivered: 152,
       opened: 0,
       clicked: 0,
-      sentAt: '2024-01-16T14:30:00Z',
+      sentAt: '2024-01-16T14:30:00Z'
     },
     {
       id: '3',
@@ -93,7 +77,7 @@ export default async function EmailManagementPage() {
       delivered: 0,
       opened: 0,
       clicked: 0,
-      sentAt: '2024-01-17T09:00:00Z',
+      sentAt: '2024-01-17T09:00:00Z'
     },
   ];
 

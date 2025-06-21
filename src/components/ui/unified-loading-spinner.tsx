@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from '@/components/ui/card';
 import { cn } from '@/components/ui/card';
 import { useLoading } from '@/lib/ui/component-state-manager';
+import { useCallback } from "react";
 
 interface UnifiedLoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -251,7 +252,7 @@ export function GlobalLoadingOverlay() {
 export function useLoadingSpinner() {
   const { addLoading, removeLoading, updateLoading } = useLoading();
 
-  const startLoading = React.useCallback(
+  const startLoading = useCallback(
     (
       options: {
         message?: string;
@@ -268,14 +269,14 @@ export function useLoadingSpinner() {
     [addLoading]
   );
 
-  const stopLoading = React.useCallback(
+  const stopLoading = useCallback(
     (id: string) => {
       removeLoading(id);
     },
     [removeLoading]
   );
 
-  const updateLoadingProgress = React.useCallback(
+  const updateLoadingProgress = useCallback(
     (id: string, progress: number, message?: string) => {
       updateLoading(id, { progress, message });
     },

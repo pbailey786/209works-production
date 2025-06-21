@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/database/prisma';
 import { processWithAI } from '@/lib/ai';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';
+import path from "path";
 
 export interface NetworkConnection {
   id: string;
@@ -626,7 +627,7 @@ export class ProfessionalNetworkingService {
     }
     
     if (commonInterests.length > 0) {
-      return `Common interests: ${commonInterests.slice(0, 2).join(', ')}`;
+      return `Common interests: ${commonInterests.slice(0, 2).path.join(', ')}`;
     }
     
     if (score.factors.location > 0) {

@@ -1,4 +1,4 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { Job } from '@prisma/client';
 
 

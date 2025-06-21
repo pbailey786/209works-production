@@ -1,6 +1,8 @@
 import { execSync } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
+import fs from "fs";
+import path from "path";
 
 // Types for vulnerability data
 export interface VulnerabilityInfo {
@@ -268,7 +270,7 @@ export class DependencyScanner {
   ): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const fileName = `security-scan-${timestamp}.${format}`;
-    const filePath = path.join(this.projectRoot, 'security-reports', fileName);
+    const filePath = path.path.join(this.projectRoot, 'security-reports', fileName);
 
     // Ensure directory exists
     await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -318,7 +320,7 @@ export class DependencyScanner {
         report += `Recommendation: ${vuln.recommendation}\n`;
         report += `Overview: ${vuln.overview}\n`;
         if (vuln.references) {
-          report += `References: ${vuln.references.join(', ')}\n`;
+          report += `References: ${vuln.references.path.join(', ')}\n`;
         }
         report += `\n`;
       }

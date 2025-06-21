@@ -3,22 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-
-import {
-  Building2,
-  Globe,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Users,
-  Save,
-  AlertCircle,
-  CheckCircle,
-  Upload,
-  ArrowRight,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface CompanyProfile {
   name: string;
@@ -47,7 +32,7 @@ export default function EmployerProfileSettingsPage() {
     headquarters: '',
     contactEmail: '',
     contactPhone: '',
-    logo: '',
+    logo: ''
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -105,13 +90,13 @@ export default function EmployerProfileSettingsPage() {
                 contactEmail:
                   data.company.contactEmail || user?.email || '',
                 contactPhone: data.company.contactPhone || '',
-                logo: data.company.logo || '',
+                logo: data.company.logo || ''
               });
             } else {
               // New company profile - pre-fill with user email
               setProfile(prev => ({
                 ...prev,
-                contactEmail: user?.email || '',
+                contactEmail: user?.email || ''
               }));
               setIsFirstTime(true);
             }
@@ -120,7 +105,7 @@ export default function EmployerProfileSettingsPage() {
           console.error('Error loading company profile:', error);
           setProfile(prev => ({
             ...prev,
-            contactEmail: user?.email || '',
+            contactEmail: user?.email || ''
           }));
           setIsFirstTime(true);
         }
@@ -140,22 +125,22 @@ export default function EmployerProfileSettingsPage() {
       const response = await fetch('/api/company-profile', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(profile),
+        body: JSON.stringify(profile)
       });
 
       if (response.ok) {
         setMessage({
           type: 'success',
-          text: 'Company profile saved successfully!',
+          text: 'Company profile saved successfully!'
         });
         setIsFirstTime(false);
       } else {
         const errorData = await response.json();
         setMessage({
           type: 'error',
-          text: errorData.error || 'Failed to save profile',
+          text: errorData.error || 'Failed to save profile'
         });
       }
     } catch (error) {

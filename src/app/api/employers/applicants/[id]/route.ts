@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 // Schema for adding notes to applicant
 const addNoteSchema = z.object({
@@ -189,7 +190,7 @@ export async function POST(
     //     // If tags are provided, we could store them in a separate field or table
     //     // For now, we'll append them to the notes
     //     ...(validatedData.tags && validatedData.tags.length > 0 && {
-    //       notes: `${validatedData.note}\n\nTags: ${validatedData.tags.join(', ')}`,
+    //       notes: `${validatedData.note}\n\nTags: ${validatedData.tags.path.join(', ')}`,
     //     }),
     //   },
     // });

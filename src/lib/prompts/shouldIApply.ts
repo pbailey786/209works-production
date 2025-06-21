@@ -96,16 +96,16 @@ Description: ${job.description}
 ${job.requirements ? `Requirements: ${job.requirements}` : ''}
 ${job.benefits ? `Benefits: ${job.benefits}` : ''}
 ${job.salaryMin && job.salaryMax ? `Salary Range: $${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}` : ''}
-Required Skills: ${job.skills.join(', ')}
+Required Skills: ${job.skills.path.join(', ')}
 
 CANDIDATE PROFILE:
-Skills: ${profile.skills.join(', ')}
+Skills: ${profile.skills.path.join(', ')}
 Experience Level: ${profile.experience || 'Not specified'}
 Career Goal: ${profile.careerGoal || 'Not specified'}
-Preferred Job Types: ${profile.jobTypes.join(', ')}
+Preferred Job Types: ${profile.jobTypes.path.join(', ')}
 Location: ${profile.location || 'Not specified'}
-Availability Days: ${profile.availabilityDays.join(', ')}
-Availability Shifts: ${profile.availabilityShifts.join(', ')}
+Availability Days: ${profile.availabilityDays.path.join(', ')}
+Availability Shifts: ${profile.availabilityShifts.path.join(', ')}
 
 Provide a comprehensive analysis with:
 1. Match score (0-100)
@@ -142,7 +142,7 @@ Format as JSON matching the JobAnalysisResult interface.`;
 
     if (matchingSkills.length > 0) {
       matchScore += 20;
-      strengths.push(`You have relevant skills: ${matchingSkills.join(', ')}`);
+      strengths.push(`You have relevant skills: ${matchingSkills.path.join(', ')}`);
     }
 
     // Job type matching

@@ -1,17 +1,4 @@
-import { useState, useEffect } from 'react';
-
-'use client';
-
-  import {
-  Activity,
-  Server,
-  Database,
-  Wifi,
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
-  RefreshCw,
-} from 'lucide-react';
+import { useState, useEffect } from 'lucide-react';
 
 interface SystemHealth {
   status: string;
@@ -31,7 +18,7 @@ interface AdminSystemStatusProps {
 }
 
 export default function AdminSystemStatus({
-  systemHealth,
+  systemHealth
 }: AdminSystemStatusProps) {
   const [services, setServices] = useState<ServiceStatus[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,31 +35,31 @@ export default function AdminSystemStatus({
             name: 'API Server',
             status: 'online',
             responseTime: `${data.performance?.apiResponseTime || 0}ms`,
-            lastCheck: new Date(),
+            lastCheck: new Date()
           },
           {
             name: 'Database',
             status: data.healthChecks?.database ? 'online' : 'offline',
             responseTime: `${data.performance?.dbResponseTime || 0}ms`,
-            lastCheck: new Date(),
+            lastCheck: new Date()
           },
           {
             name: 'Redis Cache',
             status: data.healthChecks?.redis ? 'online' : 'offline',
             responseTime: `${data.performance?.redisResponseTime || 0}ms`,
-            lastCheck: new Date(),
+            lastCheck: new Date()
           },
           {
             name: 'Email Service',
             status: data.healthChecks?.email ? 'online' : 'warning',
             responseTime: `${data.performance?.emailResponseTime || 0}ms`,
-            lastCheck: new Date(),
+            lastCheck: new Date()
           },
           {
             name: 'File Storage',
             status: data.healthChecks?.fileSystem ? 'online' : 'offline',
             responseTime: `${data.performance?.fileSystemResponseTime || 0}ms`,
-            lastCheck: new Date(),
+            lastCheck: new Date()
           },
         ];
       }
@@ -86,7 +73,7 @@ export default function AdminSystemStatus({
         name: 'System',
         status: 'online',
         responseTime: 'Unknown',
-        lastCheck: new Date(),
+        lastCheck: new Date()
       },
     ];
   };

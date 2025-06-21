@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 
 

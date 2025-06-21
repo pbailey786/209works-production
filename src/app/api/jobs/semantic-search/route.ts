@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { getEmbedding, getChatCompletion } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { getEmbedding } from '@/lib/ai/embeddings';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 class SemanticSearchValidator {
@@ -245,7 +246,7 @@ export async function POST(req: NextRequest) {
     // Determine embedding input
     const embeddingInput =
       extracted && extracted.keywords && extracted.keywords.length > 0
-        ? extracted.keywords.join(' ')
+        ? extracted.keywords.path.join(' ')
         : sanitizedQuery;
 
     // Generate embedding using secure wrapper
@@ -264,7 +265,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Convert embedding to string format for database
-    const embedding = `[${embeddingArr.join(',')}]`;
+    const embedding = `[${embeddingArr.path.join(',')}]`;
 
     // Build safe database query
     const { query: dbQuery, params } = buildSemanticSearchQuery(

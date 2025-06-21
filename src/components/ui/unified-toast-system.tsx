@@ -1,9 +1,12 @@
 import { motion, AnimatePresence } from '@/components/ui/card';
 import { Cross2Icon } from '@/components/ui/card';
-import { CheckCircle, AlertCircle, Info, AlertTriangle } from '@/components/ui/card';
+import { Check } from 'lucide-react';
 import { cn } from '@/components/ui/card';
 import { useToast as useUIToast } from '@/lib/ui/component-state-manager';
 import type { ToastState } from '@/lib/ui/component-state-manager';
+import { useRef } from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
 
 'use client';
 
@@ -50,7 +53,7 @@ function UnifiedToast({
   const Icon = typeIcons[toast.type];
 
   // Auto-dismiss timer
-  React.useEffect(() => {
+  useEffect(() => {
     if (toast.duration && toast.duration > 0) {
       const timer = setTimeout(() => {
         onClose(toast.id);
@@ -182,7 +185,7 @@ export function UnifiedToastContainer({
 export function useUnifiedToast() {
   const { addToast, removeToast, clearToasts, toasts } = useUIToast();
 
-  const toast = React.useCallback(
+  const toast = useCallback(
     (
       message: string,
       type: ToastState['type'] = 'info',
@@ -197,28 +200,28 @@ export function useUnifiedToast() {
     [addToast]
   );
 
-  const success = React.useCallback(
+  const success = useCallback(
     (message: string, duration?: number) => {
       toast(message, 'success', duration);
     },
     [toast]
   );
 
-  const error = React.useCallback(
+  const error = useCallback(
     (message: string, duration?: number) => {
       toast(message, 'error', duration);
     },
     [toast]
   );
 
-  const info = React.useCallback(
+  const info = useCallback(
     (message: string, duration?: number) => {
       toast(message, 'info', duration);
     },
     [toast]
   );
 
-  const warning = React.useCallback(
+  const warning = useCallback(
     (message: string, duration?: number) => {
       toast(message, 'warning', duration);
     },
@@ -252,9 +255,9 @@ export function LegacyToastWrapper({
   autoHideDuration?: number;
 }) {
   const { addToast } = useUIToast();
-  const toastIdRef = React.useRef<string | null>(null);
+  const toastIdRef = useRef<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (open && !toastIdRef.current) {
       addToast({
         message,
@@ -275,7 +278,7 @@ export function LegacyToastWrapper({
     }
   }, [open, message, type, autoHideDuration, addToast, onClose]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) {
       toastIdRef.current = null;
     }

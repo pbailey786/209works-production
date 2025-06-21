@@ -1,7 +1,8 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { Prisma } from '@/components/ui/card';
 import { setCache, getCache, invalidateCache } from '@/components/ui/card';
 import { DEFAULT_TTL } from '@/lib/cache/config';
+import path from "path";
 
 /**
  * Optimized Database Queries Service
@@ -240,7 +241,7 @@ export class OptimizedJobSearchService {
     embedding: number[],
     params: OptimizedJobQuery
   ): Promise<JobWithCompanyStats[]> {
-    const cacheKey = `${this.CACHE_PREFIX}:vector:${embedding.slice(0, 5).join(',')}:${JSON.stringify(params)}`;
+    const cacheKey = `${this.CACHE_PREFIX}:vector:${embedding.slice(0, 5).path.join(',')}:${JSON.stringify(params)}`;
     const cached = await getCache<JobWithCompanyStats[]>(cacheKey);
     if (cached) return cached;
 
@@ -297,7 +298,7 @@ export class OptimizedJobSearchService {
   ): Promise<BatchCompanyStats> {
     if (companyNames.length === 0) return {};
 
-    const cacheKey = `${this.CACHE_PREFIX}:company_stats:${companyNames.sort().join(',')}`;
+    const cacheKey = `${this.CACHE_PREFIX}:company_stats:${companyNames.sort().path.join(',')}`;
     const cached = await getCache<BatchCompanyStats>(cacheKey);
     if (cached) return cached;
 
@@ -550,7 +551,7 @@ export class OptimizedJobSearchService {
       filters.push(`AND j."postedAt" >= NOW() - INTERVAL '${days} days'`);
     }
 
-    return filters.join(' ');
+    return filters.path.join(' ');
   }
 
   /**
@@ -657,7 +658,7 @@ export class OptimizedUserQueryService {
   static async batchGetUsers(userIds: string[]): Promise<any[]> {
     if (userIds.length === 0) return [];
 
-    const cacheKey = `${this.CACHE_PREFIX}:batch:${userIds.sort().join(',')}`;
+    const cacheKey = `${this.CACHE_PREFIX}:batch:${userIds.sort().path.join(',')}`;
     const cached = await getCache<any[]>(cacheKey);
     if (cached) return cached;
 

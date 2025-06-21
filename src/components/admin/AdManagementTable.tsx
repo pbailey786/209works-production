@@ -1,22 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-
-import {
-  MoreVertical,
-  Edit,
-  Eye,
-  Play,
-  Pause,
-  Trash2,
-  ExternalLink,
-  Calendar,
-  DollarSign,
-  BarChart3,
-  ChevronLeft,
-  ChevronRight,
-  Building,
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 import Link from 'next/link';
 import { AdPreviewModal } from './AdPreviewModal';
@@ -50,7 +34,7 @@ export default function AdManagementTable({
   totalPages,
   hasNextPage,
   hasPrevPage,
-  limit,
+  limit
 }: AdManagementTableProps) {
   const [selectedAds, setSelectedAds] = useState<string[]>([]);
   const [actionsOpen, setActionsOpen] = useState<string | null>(null);
@@ -78,19 +62,19 @@ export default function AdManagementTable({
       return {
         status: 'scheduled',
         label: 'Scheduled',
-        color: 'bg-blue-100 text-blue-800',
+        color: 'bg-blue-100 text-blue-800'
       };
     } else if (endDate < now) {
       return {
         status: 'expired',
         label: 'Expired',
-        color: 'bg-gray-100 text-gray-800',
+        color: 'bg-gray-100 text-gray-800'
       };
     } else {
       return {
         status: 'active',
         label: 'Active',
-        color: 'bg-green-100 text-green-800',
+        color: 'bg-green-100 text-green-800'
       };
     }
   };
@@ -99,7 +83,7 @@ export default function AdManagementTable({
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 
@@ -145,14 +129,14 @@ export default function AdManagementTable({
       const response = await fetch(`/api/ads/${adId}`, {
         method: action === 'delete' ? 'DELETE' : 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body:
           action !== 'delete'
             ? JSON.stringify({
-                action: action === 'activate' ? 'activate' : 'pause',
+                action: action === 'activate' ? 'activate' : 'pause'
               })
-            : undefined,
+            : undefined
       });
 
       if (!response.ok) {
@@ -183,14 +167,14 @@ export default function AdManagementTable({
         fetch(`/api/ads/${adId}`, {
           method: action === 'delete' ? 'DELETE' : 'PATCH',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body:
             action !== 'delete'
               ? JSON.stringify({
-                  action: action === 'activate' ? 'activate' : 'pause',
+                  action: action === 'activate' ? 'activate' : 'pause'
                 })
-              : undefined,
+              : undefined
         })
       );
 

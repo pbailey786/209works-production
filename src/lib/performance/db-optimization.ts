@@ -1,11 +1,5 @@
-import { PrismaClient } from '@/components/ui/card';
-import { prisma } from '@/lib/database/prisma';
-import {
-
-  createCachedFunction,
-  CACHE_TAGS,
-  CACHE_DURATIONS,
-} from './cache-utils';
+import { PrismaClient } from '@prisma/client';
+import { prisma } from './cache-utils';
 
 // Optimized job queries with caching
 export const getCachedJobs = createCachedFunction(
@@ -33,7 +27,7 @@ export const getCachedJobs = createCachedFunction(
                   { title: { contains: query, mode: 'insensitive' } },
                   { description: { contains: query, mode: 'insensitive' } },
                   { company: { contains: query, mode: 'insensitive' } },
-                ],
+                ]
               },
             ]
           : []),
@@ -41,7 +35,7 @@ export const getCachedJobs = createCachedFunction(
           ? [{ location: { contains: location, mode: 'insensitive' } }]
           : []),
         ...(type ? [{ type }] : []),
-      ],
+      ]
     };
 
     // Use parallel queries for better performance
@@ -62,8 +56,8 @@ export const getCachedJobs = createCachedFunction(
           description: true,
           url: true,
           createdAt: true,
-          updatedAt: true,
-        },
+          updatedAt: true
+        }
       }),
       prisma.job.count({ where }),
     ]);
@@ -72,13 +66,13 @@ export const getCachedJobs = createCachedFunction(
       jobs,
       totalCount,
       totalPages: Math.ceil(totalCount / limit),
-      currentPage: page,
+      currentPage: page
     };
   },
   {
     keyPrefix: 'jobs-search',
     tags: [CACHE_TAGS.JOBS, CACHE_TAGS.SEARCH],
-    revalidate: CACHE_DURATIONS.MEDIUM,
+    revalidate: CACHE_DURATIONS.MEDIUM
   }
 );
 
@@ -93,15 +87,15 @@ export const getCachedUserAlerts = createCachedFunction(
         location: true,
         frequency: true,
         isActive: true,
-        createdAt: true,
+        createdAt: true
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
     });
   },
   {
     keyPrefix: 'user-alerts',
     tags: [CACHE_TAGS.ALERTS, CACHE_TAGS.USER],
-    revalidate: CACHE_DURATIONS.LONG,
+    revalidate: CACHE_DURATIONS.LONG
   }
 );
 
@@ -113,7 +107,7 @@ export const getCachedActiveAds = createCachedFunction(
         isActive: true,
         startDate: { lte: new Date() },
         endDate: { gte: new Date() },
-        placement: { has: placement },
+        placement: { has: placement }
       },
       select: {
         id: true,
@@ -122,19 +116,19 @@ export const getCachedActiveAds = createCachedFunction(
         impressions: true,
         clicks: true,
         isActive: true,
-        createdAt: true,
+        createdAt: true
       },
       orderBy: [
         { priority: 'desc' },
         { clickCount: 'asc' }, // Rotate ads with fewer clicks
       ],
-      take: limit,
+      take: limit
     });
   },
   {
     keyPrefix: 'active-ads',
     tags: [CACHE_TAGS.ADS],
-    revalidate: CACHE_DURATIONS.SHORT,
+    revalidate: CACHE_DURATIONS.SHORT
   }
 );
 
@@ -195,7 +189,7 @@ export class QueryPerformanceMonitor {
       average: avg,
       min,
       max,
-      p95: times.sort((a, b) => a - b)[Math.floor(times.length * 0.95)] || 0,
+      p95: times.sort((a, b) => a - b)[Math.floor(times.length * 0.95)] || 0
     };
   }
 
@@ -234,7 +228,7 @@ export async function batchUpdateJobViews(
       jobViews.map(({ jobId, views }) =>
         prisma.job.update({
           where: { id: jobId },
-          data: { viewCount: { increment: views } },
+          data: { viewCount: { increment: views } }
         })
       )
     );
@@ -268,7 +262,7 @@ export async function performOptimizedJobSearch(
       salaryMax,
       isRemote,
       page = 1,
-      limit = 20,
+      limit = 20
     } = searchParams;
 
     const skip = (page - 1) * limit;

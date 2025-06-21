@@ -6,27 +6,7 @@ import { safeFetchAPI } from '@/lib/utils/safe-fetch';
 
 'use client';
 
-  import {
-  BookmarkIcon,
-  ShareIcon,
-  ExclamationTriangleIcon,
-  MapPinIcon,
-  CalendarIcon,
-  BriefcaseIcon,
-  CurrencyDollarIcon,
-  BuildingOfficeIcon,
-  ChevronRightIcon,
-  CheckIcon,
-  XMarkIcon,
-  SparklesIcon,
-  PaperAirplaneIcon,
-  MegaphoneIcon,
-  ArrowTrendingUpIcon,
-} from '@/components/ui/card';
-  import {
-  formatJobDescription,
-  extractJobHighlights,
-} from '@/lib/utils/jobDescriptionFormatter';
+  import { Check } from '@/lib/utils/jobDescriptionFormatter';
 
 interface JobDetailClientProps {
   job: Job;
@@ -43,7 +23,7 @@ const formatJobType = (type: string): string => {
   return type
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .path.join(' ');
 };
 
 // Memoized helper function to format date
@@ -69,7 +49,7 @@ export default function JobDetailClient({
   isSaved,
   userId,
   userRole,
-  isJobOwner,
+  isJobOwner
 }: JobDetailClientProps) {
   // Debug upsell features
   console.log('🔍 Job upsell features:', {
@@ -78,7 +58,7 @@ export default function JobDetailClient({
     socialMediaShoutout: job.socialMediaShoutout,
     placementBump: job.placementBump,
     upsellBundle: job.upsellBundle,
-    featured: job.featured,
+    featured: job.featured
   });
 
   const [saved, setSaved] = useState(isSaved);
@@ -113,7 +93,7 @@ export default function JobDetailClient({
       try {
         const result = await safeFetchAPI(`/api/jobs/${job.id}/analytics/impression`, {
           method: 'POST',
-          signal: controller.signal,
+          signal: controller.signal
         });
         
         if (!result.success && result.error !== 'Request timeout') {
@@ -219,9 +199,9 @@ export default function JobDetailClient({
         method: 'POST',
         body: JSON.stringify({
           jobId: job.id,
-          action: saved ? 'unsave' : 'save',
+          action: saved ? 'unsave' : 'save'
         }),
-        timeout: 10000,
+        timeout: 10000
       });
 
       if (!result.success) {
@@ -250,7 +230,7 @@ export default function JobDetailClient({
     const shareData = {
       title: `${job.title} at ${job.company}`,
       text: `Check out this job opportunity: ${job.title} at ${job.company}`,
-      url: window.location.href,
+      url: window.location.href
     };
 
     try {
@@ -290,13 +270,13 @@ export default function JobDetailClient({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
+          Accept: 'application/json'
         },
         body: JSON.stringify({
           jobId: job.id,
           reason: reportReason.trim(),
-          reporterUserId: userId,
-        }),
+          reporterUserId: userId
+        })
       });
 
       if (!response.ok) {
@@ -631,7 +611,7 @@ export default function JobDetailClient({
                   <div
                     className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
                     dangerouslySetInnerHTML={{
-                      __html: formatJobDescription(job.description),
+                      __html: formatJobDescription(job.description)
                     }}
                   />
                 </div>

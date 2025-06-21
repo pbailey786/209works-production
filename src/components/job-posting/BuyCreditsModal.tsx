@@ -1,16 +1,5 @@
 import React, { useState } from '@/components/ui/card';
-import { JOB_POSTING_CONFIG } from '@/lib/stripe';
-
-'use client';
-
-  import {
-  CreditCard,
-  Zap,
-  Package,
-  Loader2,
-  X,
-  Check,
-} from 'lucide-react';
+import { JOB_POSTING_CONFIG } from 'lucide-react';
 
 interface BuyCreditsModalProps {
   isOpen: boolean;
@@ -46,13 +35,13 @@ export default function BuyCreditsModal({
       const response = await fetch('/api/job-posting/buy-credits', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           creditPack: selectedPack,
           successUrl: `${window.location.origin}/employers/dashboard?credit_purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/dashboard?credit_purchase_cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/dashboard?credit_purchase_cancelled=true`
+        })
       });
 
       const data = await response.json();

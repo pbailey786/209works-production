@@ -3,20 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-
-import {
-  User,
-  Building,
-  CreditCard,
-  Bell,
-  Save,
-  ArrowLeft,
-  Mail,
-  Phone,
-  Globe,
-  MapPin,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface CompanyProfile {
   name: string;
@@ -50,7 +37,7 @@ export default function SimpleSettingsPage() {
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: '',
     email: '',
-    phone: '',
+    phone: ''
   });
 
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile>({
@@ -59,13 +46,13 @@ export default function SimpleSettingsPage() {
     website: '',
     phone: '',
     address: '',
-    contactEmail: '',
+    contactEmail: ''
   });
 
   const [notifications, setNotifications] = useState<NotificationSettings>({
     emailApplications: true,
     emailWeeklyDigest: true,
-    emailMarketing: false,
+    emailMarketing: false
   });
 
   // Load user data
@@ -74,11 +61,11 @@ export default function SimpleSettingsPage() {
       setUserProfile({
         name: user?.name || '',
         email: user?.email || '',
-        phone: '',
+        phone: ''
       });
       setCompanyProfile(prev => ({
         ...prev,
-        contactEmail: user?.email || '',
+        contactEmail: user?.email || ''
       }));
     }
   }, [session]);
@@ -93,7 +80,7 @@ export default function SimpleSettingsPage() {
         const response = await fetch('/api/user/profile', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(userProfile),
+          body: JSON.stringify(userProfile)
         });
         if (!response.ok) throw new Error('Failed to save profile');
       }
@@ -103,7 +90,7 @@ export default function SimpleSettingsPage() {
         const response = await fetch('/api/company-profile', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(companyProfile),
+          body: JSON.stringify(companyProfile)
         });
         if (!response.ok) throw new Error('Failed to save company profile');
       }
@@ -113,7 +100,7 @@ export default function SimpleSettingsPage() {
         const response = await fetch('/api/user/notifications', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(notifications),
+          body: JSON.stringify(notifications)
         });
         if (!response.ok) throw new Error('Failed to save notifications');
       }
@@ -229,7 +216,7 @@ export default function SimpleSettingsPage() {
                         onChange={e =>
                           setUserProfile({
                             ...userProfile,
-                            name: e.target.value,
+                            name: e.target.value
                           })
                         }
                         className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -247,7 +234,7 @@ export default function SimpleSettingsPage() {
                         onChange={e =>
                           setUserProfile({
                             ...userProfile,
-                            email: e.target.value,
+                            email: e.target.value
                           })
                         }
                         className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -265,7 +252,7 @@ export default function SimpleSettingsPage() {
                         onChange={e =>
                           setUserProfile({
                             ...userProfile,
-                            phone: e.target.value,
+                            phone: e.target.value
                           })
                         }
                         className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -293,7 +280,7 @@ export default function SimpleSettingsPage() {
                         onChange={e =>
                           setCompanyProfile({
                             ...companyProfile,
-                            name: e.target.value,
+                            name: e.target.value
                           })
                         }
                         className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -310,7 +297,7 @@ export default function SimpleSettingsPage() {
                         onChange={e =>
                           setCompanyProfile({
                             ...companyProfile,
-                            description: e.target.value,
+                            description: e.target.value
                           })
                         }
                         rows={4}
@@ -330,7 +317,7 @@ export default function SimpleSettingsPage() {
                           onChange={e =>
                             setCompanyProfile({
                               ...companyProfile,
-                              website: e.target.value,
+                              website: e.target.value
                             })
                           }
                           className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -348,7 +335,7 @@ export default function SimpleSettingsPage() {
                           onChange={e =>
                             setCompanyProfile({
                               ...companyProfile,
-                              phone: e.target.value,
+                              phone: e.target.value
                             })
                           }
                           className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -367,7 +354,7 @@ export default function SimpleSettingsPage() {
                         onChange={e =>
                           setCompanyProfile({
                             ...companyProfile,
-                            address: e.target.value,
+                            address: e.target.value
                           })
                         }
                         className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -401,7 +388,7 @@ export default function SimpleSettingsPage() {
                           onChange={e =>
                             setNotifications({
                               ...notifications,
-                              emailApplications: e.target.checked,
+                              emailApplications: e.target.checked
                             })
                           }
                           className="peer sr-only"
@@ -426,7 +413,7 @@ export default function SimpleSettingsPage() {
                           onChange={e =>
                             setNotifications({
                               ...notifications,
-                              emailWeeklyDigest: e.target.checked,
+                              emailWeeklyDigest: e.target.checked
                             })
                           }
                           className="peer sr-only"
@@ -451,7 +438,7 @@ export default function SimpleSettingsPage() {
                           onChange={e =>
                             setNotifications({
                               ...notifications,
-                              emailMarketing: e.target.checked,
+                              emailMarketing: e.target.checked
                             })
                           }
                           className="peer sr-only"

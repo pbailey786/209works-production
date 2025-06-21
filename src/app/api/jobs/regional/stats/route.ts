@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { RegionalJobService } from '@/lib/services/regional-job-service';
 
 export async function GET(request: NextRequest) {

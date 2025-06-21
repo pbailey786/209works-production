@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 // Schema for updating application status
 const updateApplicationSchema = z.object({
@@ -320,7 +321,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

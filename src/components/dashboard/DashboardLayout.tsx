@@ -6,16 +6,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/dropdown-menu';
   Search,
   Bell,
   Settings,
@@ -23,7 +14,7 @@ import {
   Menu,
   X,
   ChevronDown,
-  User,
+  User
 } from 'lucide-react';
 import { UserButton } from '@clerk/nextjs';
 
@@ -61,7 +52,7 @@ export function DashboardLayout({
   headerActions,
   showSearch = true,
   searchPlaceholder = "Search...",
-  onSearch,
+  onSearch
 }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

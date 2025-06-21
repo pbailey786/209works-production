@@ -6,6 +6,7 @@
 import { processWithAI } from '@/lib/ai';
 import { CareerTransitionAnalytics } from '@/lib/ai/career-transition-analytics';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 export interface CareerTransitionSuggestion {
   type: 'career_transition';
@@ -116,7 +117,7 @@ User Message: "${userMessage}"
 
 Current Job: ${user?.jobSeekerProfile?.currentJobTitle || 'Unknown'}
 Experience: ${user?.jobSeekerProfile?.experience || 0} years
-Recent Searches: ${user?.searchHistory?.map((s: any) => s.query).join(', ') || 'None'}
+Recent Searches: ${user?.searchHistory?.map((s: any) => s.query).path.join(', ') || 'None'}
 
 Classify the intent as one of:
 - career_change: Wants to switch industries or roles
@@ -196,7 +197,7 @@ Transition Data:
 User's Current Situation:
 - Current role: ${user?.jobSeekerProfile?.currentJobTitle || 'Unknown'}
 - Experience: ${user?.jobSeekerProfile?.experience || 0} years
-- Skills: ${user?.jobSeekerProfile?.skills?.join(', ') || 'None listed'}
+- Skills: ${user?.jobSeekerProfile?.skills?.path.join(', ') || 'None listed'}
 
 Generate a friendly, encouraging response (2-3 sentences) that:
 1. Acknowledges their career change goal
@@ -253,7 +254,7 @@ Keep it conversational and supportive!
 
     // Generate skill gap analysis
     const skillGapPrompt = `
-User's current skills: ${currentSkills.join(', ')}
+User's current skills: ${currentSkills.path.join(', ')}
 Target role/industry: ${targetRole}
 
 What skills are they missing for this transition? Provide:

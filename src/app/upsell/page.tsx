@@ -3,34 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Check,
-  Star,
-  Zap,
-  Crown,
-  Target,
-  MessageSquare,
-  BarChart3,
-  Shield,
-  Sparkles,
-  ArrowRight,
-  Users,
-  FileText,
-  Bell,
-  Eye,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Upgrade to Premium | 209jobs',
   description:
-    'Unlock premium features and get noticed by top employers in the Central Valley. Premium membership for just $19/month.',
+    'Unlock premium features and get noticed by top employers in the Central Valley. Premium membership for just $19/month.'
 };
 
 export default function UpsellPage() {

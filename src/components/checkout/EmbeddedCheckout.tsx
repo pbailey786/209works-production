@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from '@/components/ui/card';
 import { loadStripe } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 
 'use client';

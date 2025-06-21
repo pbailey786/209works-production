@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
 import { DatePickerWithRange } from '@/components/ui/card';
 import { DateRange } from '@/components/ui/card';
@@ -8,21 +8,7 @@ import { addDays, format } from 'date-fns';
 
 'use client';
 
-  import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/card';
-  import {
+  import { Card } from '@/components/ui/card';
   TrendingUp,
   TrendingDown,
   Eye,
@@ -34,7 +20,7 @@ import { addDays, format } from 'date-fns';
   BarChart3,
   AlertTriangle,
   Calendar,
-  Filter,
+  Filter
 } from 'lucide-react';
 
 interface AnalyticsData {
@@ -96,7 +82,7 @@ interface InstagramAnalyticsDashboardProps {
 }
 
 export default function InstagramAnalyticsDashboard({
-  className,
+  className
 }: InstagramAnalyticsDashboardProps) {
   const [analytics, setAnalytics] = useState<AnalyticsData[]>([]);
   const [insights, setInsights] = useState<PerformanceInsights | null>(null);
@@ -104,7 +90,7 @@ export default function InstagramAnalyticsDashboard({
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), -30),
-    to: new Date(),
+    to: new Date()
   });
   const [postTypeFilter, setPostTypeFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState('overview');

@@ -21,7 +21,7 @@ import {
   capitalizeFirst,
   capitalizeWords,
   isNonEmptyString,
-  isValidURL,
+  isValidURL
 } from '@/lib/utils/safe-operations';
 
 // ===== JOB-RELATED INTERFACES =====
@@ -343,19 +343,19 @@ export const defaultJobCardProps: Partial<JobCardProps> = {
   isSelected: false,
   salary: undefined,
   location: undefined,
-  categories: [],
+  categories: []
 };
 
 export const defaultEnhancedJobModalProps: Partial<EnhancedJobModalProps> = {
   saved: false,
-  isAuthenticated: false,
+  isAuthenticated: false
 };
 
 export const defaultPlaceholderPageProps: Partial<PlaceholderPageProps> = {
   icon: '📄',
   sections: [],
   quickActions: [],
-  comingSoon: false,
+  comingSoon: false
 };
 
 // ===== RUNTIME VALIDATION UTILITIES =====
@@ -505,7 +505,7 @@ export const createAsyncOperationState = (
   canRetry: true,
   attemptCount: 0,
   maxRetries: 3,
-  ...initialState,
+  ...initialState
 });
 
 export const handleAsyncError = (
@@ -523,7 +523,7 @@ export const handleAsyncError = (
     errorCode: (error as any).code || 'UNKNOWN_ERROR',
     lastAttempt: new Date(),
     attemptCount: (state.attemptCount || 0) + 1,
-    canRetry: (state.attemptCount || 0) < (state.maxRetries || 3),
+    canRetry: (state.attemptCount || 0) < (state.maxRetries || 3)
   };
 };
 
@@ -536,7 +536,7 @@ export const startAsyncOperation = (
   hasError: false,
   errorMessage: undefined,
   errorCode: undefined,
-  loadingMessage,
+  loadingMessage
 });
 
 export const completeAsyncOperation = (
@@ -548,7 +548,7 @@ export const completeAsyncOperation = (
   errorMessage: undefined,
   errorCode: undefined,
   loadingMessage: undefined,
-  attemptCount: 0,
+  attemptCount: 0
 });
 
 // ===== RETRY UTILITIES =====

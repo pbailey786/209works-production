@@ -1,11 +1,5 @@
 import { NextRequest } from 'next/server';
-import { z } from 'zod';
-import {
-  validateRequestData,
-  generateRequestId,
-  createErrorResponse,
-  ValidationError,
-} from '../errors/api-errors';
+import { z } from '../errors/api-errors';
 
 // Middleware wrapper for API routes with validation and error handling
 export function withValidation<TBody = any, TQuery = any>(
@@ -77,7 +71,7 @@ export function withValidation<TBody = any, TQuery = any>(
         params: validatedParams,
         body,
         query,
-        requestId,
+        requestId
       });
     } catch (error) {
       return createErrorResponse(error, requestId);
@@ -88,14 +82,14 @@ export function withValidation<TBody = any, TQuery = any>(
 // Specific validation schemas for route parameters
 export const routeParamsSchemas = {
   userId: z.object({
-    id: z.string().uuid('Invalid user ID format'),
+    id: z.string().uuid('Invalid user ID format')
   }),
   jobId: z.object({
-    id: z.string().uuid('Invalid job ID format'),
+    id: z.string().uuid('Invalid job ID format')
   }),
   uuid: z.object({
-    id: z.string().uuid('Invalid ID format'),
-  }),
+    id: z.string().uuid('Invalid ID format')
+  })
 };
 
 // Helper function to extract and validate pagination from URL
@@ -119,7 +113,7 @@ export function extractSorting(url: string, allowedFields: string[] = []) {
 
   if (allowedFields.length > 0 && !allowedFields.includes(sortBy)) {
     throw new ValidationError(
-      `Invalid sort field. Allowed fields: ${allowedFields.join(', ')}`
+      `Invalid sort field. Allowed fields: ${allowedFields.path.join(', ')}`
     );
   }
 

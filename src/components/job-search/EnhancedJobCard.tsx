@@ -1,10 +1,8 @@
 import React, { useState } from '@/components/ui/card';
 import { motion } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';import {
-
-
   MapPin,
   Clock,
   DollarSign,
@@ -15,7 +13,7 @@ import { cn } from '@/lib/utils';import {
   Star,
   Eye,
   ChevronRight,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
 
 interface EnhancedJobCardProps {
@@ -59,7 +57,7 @@ export default function EnhancedJobCard({
   appliedAt,
   onSave,
   onViewDetails,
-  className,
+  className
 }: EnhancedJobCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -257,7 +255,7 @@ export default function EnhancedJobCard({
         initial={{ opacity: 0, x: -10 }}
         animate={{
           opacity: isHovered ? 1 : 0,
-          x: isHovered ? 0 : -10,
+          x: isHovered ? 0 : -10
         }}
         transition={{ duration: 0.2 }}
         className="absolute right-4 top-1/2 -translate-y-1/2 transform text-[#2d4a3e]"

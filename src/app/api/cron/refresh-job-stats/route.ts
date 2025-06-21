@@ -6,8 +6,8 @@
  * aggregated job statistics by company to prevent N+1 queries
  */
 
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { OptimizedJobSearchService } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { headers } from 'next/headers';
 
 export const runtime = 'nodejs';

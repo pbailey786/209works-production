@@ -1,25 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import {
-  MapPin,
-  Users,
-  Briefcase,
-  Heart,
-  Target,
-  Zap,
-  Shield,
-  Award,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  Star,
-  Building,
-  Globe,
-  Sparkles,
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 const stats = [
   { number: '50,000+', label: 'Jobs Posted', icon: Briefcase },
@@ -33,37 +15,37 @@ const features = [
     icon: Sparkles,
     title: 'AI-Powered Search',
     description:
-      'Our ChatGPT-style search understands natural language, making job hunting as easy as having a conversation.',
+      'Our ChatGPT-style search understands natural language, making job hunting as easy as having a conversation.'
   },
   {
     icon: MapPin,
     title: 'Central Valley Focus',
     description:
-      'Dedicated exclusively to the Central Valley region, ensuring relevant local opportunities.',
+      'Dedicated exclusively to the Central Valley region, ensuring relevant local opportunities.'
   },
   {
     icon: Zap,
     title: 'Real-Time Updates',
     description:
-      'Jobs are updated in real-time, so you never miss out on the latest opportunities.',
+      'Jobs are updated in real-time, so you never miss out on the latest opportunities.'
   },
   {
     icon: Shield,
     title: 'Verified Employers',
     description:
-      'All employers are verified to ensure legitimate job postings and protect job seekers.',
+      'All employers are verified to ensure legitimate job postings and protect job seekers.'
   },
   {
     icon: Clock,
     title: 'Quick Applications',
     description:
-      'Apply to multiple jobs with one click using our streamlined application process.',
+      'Apply to multiple jobs with one click using our streamlined application process.'
   },
   {
     icon: Heart,
     title: 'Community First',
     description:
-      'Built by locals, for locals. We understand the unique needs of Central Valley workers.',
+      'Built by locals, for locals. We understand the unique needs of Central Valley workers.'
   },
 ];
 
@@ -72,25 +54,25 @@ const milestones = [
     year: '2023',
     title: 'Founded',
     description:
-      'Started with a simple mission: connect Central Valley workers with local opportunities.',
+      'Started with a simple mission: connect Central Valley workers with local opportunities.'
   },
   {
     year: '2024',
     title: 'AI Integration',
     description:
-      'Launched our revolutionary ChatGPT-style job search, making job hunting conversational.',
+      'Launched our revolutionary ChatGPT-style job search, making job hunting conversational.'
   },
   {
     year: 'Late 2024',
     title: '50K+ Jobs',
     description:
-      'Reached 50,000+ job postings across Stockton, Modesto, Tracy, Lodi, and Manteca.',
+      'Reached 50,000+ job postings across Stockton, Modesto, Tracy, Lodi, and Manteca.'
   },
   {
     year: '2025',
     title: 'Regional Leader',
     description:
-      'Became the #1 job platform in the Central Valley with 95% user satisfaction.',
+      'Became the #1 job platform in the Central Valley with 95% user satisfaction.'
   },
 ];
 

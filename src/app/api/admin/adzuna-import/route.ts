@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { AdzunaImportService } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 
 // 209 Area Code Cities - Hyper-local focus for 209.works

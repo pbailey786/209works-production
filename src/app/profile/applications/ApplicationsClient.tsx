@@ -2,18 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
-import {
-  FileText,
-  MapPin,
-  DollarSign,
-  Clock,
-  ExternalLink,
-  Building2,
-  Bookmark,
-  Archive,
-  CheckCircle,
-} from 'lucide-react';
+import { formatDistanceToNow } from 'lucide-react';
 
 interface Application {
   id: string;
@@ -53,7 +42,7 @@ const tabs = [
 ];
 
 export default function ApplicationsClient({
-  userId,
+  userId
 }: ApplicationsClientProps) {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +51,7 @@ export default function ApplicationsClient({
   const [tabCounts, setTabCounts] = useState<Record<string, number>>({
     applied: 0,
     saved: 0,
-    archived: 0,
+    archived: 0
   });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -78,7 +67,7 @@ export default function ApplicationsClient({
       const params = new URLSearchParams({
         page: pageNum.toString(),
         limit: '10',
-        tab: tab,
+        tab: tab
       });
 
       // Add search and sort parameters for saved jobs
@@ -114,7 +103,7 @@ export default function ApplicationsClient({
       const response = await fetch('/api/profile/applications/archive', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ applicationId }),
+        body: JSON.stringify({ applicationId })
       });
 
       if (!response.ok) {
@@ -135,7 +124,7 @@ export default function ApplicationsClient({
       const response = await fetch('/api/profile/saved-jobs', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ applicationId }),
+        body: JSON.stringify({ applicationId })
       });
 
       if (!response.ok) {

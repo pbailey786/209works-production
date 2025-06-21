@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 // Validation schema for onboarding data
 const onboardingSchema = z.object({
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+          details: validationResult.error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );
@@ -161,7 +162,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

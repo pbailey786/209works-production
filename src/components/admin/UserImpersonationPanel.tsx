@@ -1,37 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
+import { Textarea } from '@/components/ui/table';
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  UserCheck,
-  Search,
-  Eye,
-  StopCircle,
-  AlertTriangle,
-  Clock,
-  User,
+  DialogTrigger
 } from 'lucide-react';
 
 interface User {
@@ -103,12 +85,12 @@ export default function UserImpersonationPanel() {
       const response = await fetch('/api/admin/impersonate', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           userId: selectedUser.id,
-          reason: reason.trim(),
-        }),
+          reason: reason.trim()
+        })
       });
 
       if (response.ok) {
@@ -138,7 +120,7 @@ export default function UserImpersonationPanel() {
   const endImpersonation = async (sessionId: string) => {
     try {
       const response = await fetch(`/api/admin/impersonate?sessionId=${sessionId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {

@@ -1,6 +1,7 @@
-import { Prisma, PrismaClient } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { PrismaClient } from '@prisma/client';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 /**
@@ -373,7 +374,7 @@ export class TypeSafePrisma {
     }
 
     if (conflicts.length > 0) {
-      throw new Error(conflicts.join('; '));
+      throw new Error(conflicts.path.join('; '));
     }
 
     return this.prisma.company.update({

@@ -1,5 +1,6 @@
-import { PrismaClient, Prisma } from '@/components/ui/card';
+import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 /**
@@ -536,7 +537,7 @@ export async function createJobsBatchSafe(
       if (existingJobs.length > 0) {
         const existingUrls = existingJobs.map(job => job.url);
         throw new TransactionError(
-          `Jobs with these URLs already exist: ${existingUrls.join(', ')}`,
+          `Jobs with these URLs already exist: ${existingUrls.path.join(', ')}`,
           'DUPLICATE_URLS_EXIST'
         );
       }
@@ -562,7 +563,7 @@ export async function createJobsBatchSafe(
 
         if (missingCompanyIds.length > 0) {
           throw new TransactionError(
-            `Invalid or inactive companies: ${missingCompanyIds.join(', ')}`,
+            `Invalid or inactive companies: ${missingCompanyIds.path.join(', ')}`,
             'INVALID_COMPANIES'
           );
         }

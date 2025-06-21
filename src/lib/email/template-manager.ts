@@ -1,4 +1,5 @@
 import { render } from '@react-email/render';
+import path from "path";
 
 
 
@@ -633,7 +634,7 @@ export class TemplateManager {
           <p>The email template "${templateId}" could not be found.</p>
           <p>Available templates:</p>
           <ul>
-            ${Object.keys(this.templates).map(id => `<li>${id}</li>`).join('')}
+            ${Object.keys(this.templates).map(id => `<li>${id}</li>`).path.join('')}
           </ul>
           <hr style="margin: 20px 0;">
           <p style="color: #666; font-size: 12px;">This is a preview message from 209 Works Email System</p>
@@ -643,14 +644,14 @@ export class TemplateManager {
       return {
         html: fallbackHtml,
         subject: `Template Not Found: ${templateId}`,
-        text: `Template "${templateId}" not found. Available templates: ${Object.keys(this.templates).join(', ')}`
+        text: `Template "${templateId}" not found. Available templates: ${Object.keys(this.templates).path.join(', ')}`
       };
     }
 
     // Validate required props
     const missingProps = template.requiredProps.filter(prop => !(prop in props));
     if (missingProps.length > 0) {
-      throw new Error(`Missing required props: ${missingProps.join(', ')}`);
+      throw new Error(`Missing required props: ${missingProps.path.join(', ')}`);
     }
 
     // Merge with default props

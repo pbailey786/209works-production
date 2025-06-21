@@ -3,18 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-// import { EnhancedJobCard } from '@/components/jobs/enhanced-job-card';
-
-import {
-  MapPin,
-  Globe,
-  Calendar,
-  Users,
-  Briefcase,
-  Heart,
-  ExternalLink,
-  ArrowLeft,
-} from 'lucide-react';
+// import { EnhancedJobCard } from 'lucide-react';
 
 interface Employer {
   id: string;
@@ -49,7 +38,7 @@ interface EmployerProfileClientProps {
 }
 
 export default function EmployerProfileClient({
-  employer,
+  employer
 }: EmployerProfileClientProps) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);

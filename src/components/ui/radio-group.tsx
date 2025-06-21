@@ -1,4 +1,4 @@
-import { CheckIcon } from '@/components/ui/card';
+import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 'use client';

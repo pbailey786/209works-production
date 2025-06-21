@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';import {
-
-
   useFocusIndicator,
   useDynamicFocus,
-  useRouteFocus,
+  useRouteFocus
 } from '@/hooks/useFocusManagement';
 
 interface FocusManagerProps {
@@ -16,7 +14,7 @@ interface FocusManagerProps {
 export function FocusManager({
   children,
   enableRouteAnnouncements = true,
-  className = '',
+  className = ''
 }: FocusManagerProps) {
   const { isKeyboardUser } = useFocusIndicator();
   const { focusMainContent, announcePageChange } = useRouteFocus();
@@ -76,12 +74,12 @@ export function DynamicContentFocus({
   announceChanges = false,
   trapFocus = false,
   autoFocus = true,
-  className = '',
+  className = ''
 }: DynamicContentFocusProps) {
   const containerRef = useDynamicFocus(isVisible, {
     announceToScreenReader: announceChanges,
     trapFocus,
-    autoFocus,
+    autoFocus
   });
 
   if (!isVisible) return null;
@@ -113,7 +111,7 @@ export function ModalFocus({
   isOpen,
   ariaLabel,
   onClose,
-  className = '',
+  className = ''
 }: ModalFocusProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -240,7 +238,7 @@ interface FocusAnnouncementProps {
 export function FocusAnnouncement({
   message,
   priority = 'polite',
-  id = 'focus-announcement',
+  id = 'focus-announcement'
 }: FocusAnnouncementProps) {
   return (
     <div id={id} aria-live={priority} aria-atomic="true" className="sr-only">

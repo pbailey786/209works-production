@@ -1,17 +1,4 @@
-import { useState, useEffect } from 'react';
-
-'use client';
-
-  import {
-  Clock,
-  User,
-  FileText,
-  Shield,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Eye,
-} from 'lucide-react';
+import { useState, useEffect } from 'lucide-react';
 
 interface Activity {
   id: string;
@@ -37,7 +24,7 @@ const mockActivities: Activity[] = [
     description: 'John Smith registered as a jobseeker',
     timestamp: new Date(Date.now() - 1000 * 60 * 10), // 10 minutes ago
     status: 'success',
-    actor: 'john.smith@email.com',
+    actor: 'john.smith@email.com'
   },
   {
     id: '2',
@@ -46,7 +33,7 @@ const mockActivities: Activity[] = [
     description: 'TechCorp posted Senior Software Engineer position',
     timestamp: new Date(Date.now() - 1000 * 60 * 25), // 25 minutes ago
     status: 'success',
-    actor: 'TechCorp',
+    actor: 'TechCorp'
   },
   {
     id: '3',
@@ -55,7 +42,7 @@ const mockActivities: Activity[] = [
     description: 'Job listing flagged for inappropriate content',
     timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 minutes ago
     status: 'warning',
-    actor: 'Auto-Moderation System',
+    actor: 'Auto-Moderation System'
   },
   {
     id: '4',
@@ -64,7 +51,7 @@ const mockActivities: Activity[] = [
     description: 'Sarah Johnson applied to Marketing Manager position',
     timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
     status: 'success',
-    actor: 'sarah.johnson@email.com',
+    actor: 'sarah.johnson@email.com'
   },
   {
     id: '5',
@@ -73,7 +60,7 @@ const mockActivities: Activity[] = [
     description: 'High API usage detected - possible rate limiting',
     timestamp: new Date(Date.now() - 1000 * 60 * 90), // 1.5 hours ago
     status: 'warning',
-    actor: 'System Monitor',
+    actor: 'System Monitor'
   },
 ];
 

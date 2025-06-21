@@ -7,21 +7,10 @@ import AdvancedSearchInterface from './AdvancedSearchInterface';
 import SemanticSearchResults from './SemanticSearchResults';
 import SmartJobRecommendations from '../recommendations/SmartJobRecommendations';
 import SavedSearchManager from './SavedSearchManager';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  Brain, 
-  Target, 
-  TrendingUp, 
-  Sparkles,
-  Clock,
-  Star,
-  Filter,
-  RefreshCw
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 interface SearchFilters {
   jobType?: string;
@@ -52,7 +41,7 @@ export default function EnhancedSearchPageClient({
   initialQuery,
   initialFilters,
   region,
-  domainConfig,
+  domainConfig
 }: EnhancedSearchPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -103,7 +92,7 @@ export default function EnhancedSearchPageClient({
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         if (Array.isArray(value)) {
-          if (value.length > 0) params.set(key, value.join(','));
+          if (value.length > 0) params.set(key, value.path.join(','));
         } else {
           params.set(key, String(value));
         }
@@ -138,8 +127,8 @@ export default function EnhancedSearchPageClient({
         query,
         filters: { ...filters, region },
         limit: 20,
-        threshold: 0.6,
-      }),
+        threshold: 0.6
+      })
     });
 
     if (response.ok) {
@@ -159,9 +148,9 @@ export default function EnhancedSearchPageClient({
       ...Object.fromEntries(
         Object.entries(filters).map(([key, value]) => [
           key,
-          Array.isArray(value) ? value.join(',') : String(value)
+          Array.isArray(value) ? value.path.join(',') : String(value)
         ])
-      ),
+      )
     });
 
     const response = await fetch(`/api/jobs/search?${params}`);
@@ -175,7 +164,7 @@ export default function EnhancedSearchPageClient({
           semanticScore: 0,
           relevanceScore: 1,
           matchedConcepts: [],
-          explanation: 'Traditional keyword match',
+          explanation: 'Traditional keyword match'
         }));
         setSearchResults(formattedResults);
       }
@@ -198,7 +187,7 @@ export default function EnhancedSearchPageClient({
       const response = await fetch('/api/jobs/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId }),
+        body: JSON.stringify({ jobId })
       });
 
       if (response.ok) {
@@ -224,9 +213,9 @@ export default function EnhancedSearchPageClient({
             jobId,
             type: feedback,
             reasons,
-            timestamp: new Date().toISOString(),
-          },
-        }),
+            timestamp: new Date().toISOString()
+          }
+        })
       });
     } catch (error) {
       console.error('Error submitting feedback:', error);

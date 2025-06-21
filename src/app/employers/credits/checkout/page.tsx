@@ -1,17 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-
-import {
-  CreditCard,
-  ArrowLeft,
-  Check,
-  Sparkles,
-  TrendingUp,
-  Shield,
-  Clock,
-} from 'lucide-react';
+import { useSearchParams, useRouter } from 'lucide-react';
 
 interface CreditPackage {
   id: string;
@@ -30,7 +20,7 @@ const CREDIT_PACKAGES: Record<string, CreditPackage> = {
     jobCredits: 5,
     featuredCredits: 1,
     price: 2500,
-    description: 'Perfect for small businesses',
+    description: 'Perfect for small businesses'
   },
   professional: {
     id: 'professional',
@@ -39,7 +29,7 @@ const CREDIT_PACKAGES: Record<string, CreditPackage> = {
     featuredCredits: 3,
     price: 5000,
     description: 'Great for growing companies',
-    popular: true,
+    popular: true
   },
   enterprise: {
     id: 'enterprise',
@@ -47,7 +37,7 @@ const CREDIT_PACKAGES: Record<string, CreditPackage> = {
     jobCredits: 50,
     featuredCredits: 10,
     price: 15000,
-    description: 'For large organizations',
+    description: 'For large organizations'
   },
   bulk: {
     id: 'bulk',
@@ -55,8 +45,8 @@ const CREDIT_PACKAGES: Record<string, CreditPackage> = {
     jobCredits: 100,
     featuredCredits: 20,
     price: 25000,
-    description: 'Maximum value pack',
-  },
+    description: 'Maximum value pack'
+  }
 };
 
 export default function CreditsCheckoutPage() {
@@ -129,13 +119,13 @@ export default function CreditsCheckoutPage() {
       const response = await fetch('/api/job-posting/buy-credits', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           creditPack: selectedPackage.id,
           successUrl: `${window.location.origin}/employers/dashboard?credit_purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/credits/checkout?cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/credits/checkout?cancelled=true`
+        })
       });
 
       const data = await response.json();

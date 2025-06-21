@@ -11,6 +11,7 @@ import { DomainProvider } from '@/lib/domain/context';
 import { faker } from '@faker-js/faker';
 import { PrismaClient } from '@prisma/client';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import path from "path";
 
 // Mock Prisma client
 export const prismaMock = mockDeep<PrismaClient>() as unknown as DeepMockProxy<PrismaClient>;
@@ -403,7 +404,7 @@ expect.extend({
     const pass = missingFields.length === 0;
     
     return {
-      message: () => `expected job to have all required fields${pass ? '' : `, missing: ${missingFields.join(', ')}`}`,
+      message: () => `expected job to have all required fields${pass ? '' : `, missing: ${missingFields.path.join(', ')}`}`,
       pass,
     };
   },

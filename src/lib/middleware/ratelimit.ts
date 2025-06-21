@@ -1,6 +1,6 @@
 import { Ratelimit } from '@/components/ui/card';
 import { Redis } from '@/components/ui/card';
-import { NextRequest } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
 import { RateLimitError } from '../errors/api-errors';
 
 // Check if Redis is configured

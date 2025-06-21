@@ -2,27 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Bell, 
-  BellOff, 
-  Check, 
-  CheckCheck, 
-  Trash2, 
-  Filter,
-  AlertCircle,
-  MessageSquare,
-  Briefcase,
-  CreditCard,
-  Shield,
-  Megaphone,
-  Star,
-  Clock,
-  ExternalLink
-} from 'lucide-react';
+import { ScrollArea } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -60,7 +43,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
     try {
       const params = new URLSearchParams({
         limit: '50',
-        offset: '0',
+        offset: '0'
       });
 
       if (filter !== 'all') {
@@ -84,7 +67,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
       toast({
         title: 'Error',
         description: 'Failed to load notifications',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -96,7 +79,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
       const response = await fetch(`/api/notifications/${notificationId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isRead: true }),
+        body: JSON.stringify({ isRead: true })
       });
 
       if (response.ok) {
@@ -119,7 +102,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
       const response = await fetch('/api/notifications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'mark_all_read' }),
+        body: JSON.stringify({ action: 'mark_all_read' })
       });
 
       if (response.ok) {
@@ -133,7 +116,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
         setUnreadCount(0);
         toast({
           title: 'Success',
-          description: 'All notifications marked as read',
+          description: 'All notifications marked as read'
         });
       }
     } catch (error) {
@@ -141,7 +124,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
       toast({
         title: 'Error',
         description: 'Failed to mark notifications as read',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -149,14 +132,14 @@ export default function NotificationCenter({ className = '' }: NotificationCente
   const deleteNotification = async (notificationId: string) => {
     try {
       const response = await fetch(`/api/notifications/${notificationId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {
         setNotifications(prev => prev.filter(n => n.id !== notificationId));
         toast({
           title: 'Success',
-          description: 'Notification deleted',
+          description: 'Notification deleted'
         });
       }
     } catch (error) {
@@ -164,7 +147,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
       toast({
         title: 'Error',
         description: 'Failed to delete notification',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };

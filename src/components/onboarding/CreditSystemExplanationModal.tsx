@@ -1,20 +1,4 @@
-import React, { useState } from 'react';
-
-'use client';
-
-  import {
-  X,
-  CreditCard,
-  Star,
-  Megaphone,
-  TrendingUp,
-  Clock,
-  ArrowRight,
-  CheckCircle,
-  Sparkles,
-  RefreshCw,
-  Lightbulb,
-} from 'lucide-react';
+import React, { useState } from 'lucide-react';
 
 interface CreditSystemExplanationModalProps {
   isOpen: boolean;
@@ -25,7 +9,7 @@ interface CreditSystemExplanationModalProps {
 export default function CreditSystemExplanationModal({
   isOpen,
   onClose,
-  onGetStarted,
+  onGetStarted
 }: CreditSystemExplanationModalProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
 

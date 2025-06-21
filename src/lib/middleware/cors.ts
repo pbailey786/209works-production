@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import path from "path";
 
 // CORS configuration interface
 export interface CORSConfig {
@@ -87,20 +88,20 @@ export function applyCORS(
   // Set allowed methods
   res.headers.set(
     'Access-Control-Allow-Methods',
-    corsConfig.methods.join(', ')
+    corsConfig.methods.path.join(', ')
   );
 
   // Set allowed headers
   res.headers.set(
     'Access-Control-Allow-Headers',
-    corsConfig.allowedHeaders.join(', ')
+    corsConfig.allowedHeaders.path.join(', ')
   );
 
   // Set exposed headers
   if (corsConfig.exposedHeaders.length > 0) {
     res.headers.set(
       'Access-Control-Expose-Headers',
-      corsConfig.exposedHeaders.join(', ')
+      corsConfig.exposedHeaders.path.join(', ')
     );
   }
 

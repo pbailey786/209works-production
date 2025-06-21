@@ -1,6 +1,7 @@
-import { NextResponse } from '@/components/ui/card';
+import { NextResponse } from 'next/server';
 import { ZodError } from '@/components/ui/card';
 import { Prisma } from '@prisma/client';
+import path from "path";
 
 
 export interface ApiErrorResponse {
@@ -114,7 +115,7 @@ export function createErrorResponse(
       message: 'Invalid input data',
       code: ErrorCode.VALIDATION_ERROR,
       details: error.errors.map(err => ({
-        field: err.path.join('.'),
+        field: err.path.path.join('.'),
         message: err.message,
         code: err.code,
       })),

@@ -7,23 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Search,
-  TrendingUp,
-  MessageSquare,
-  Users,
-  Calendar,
-  Download,
-  Eye,
-  Bot,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 interface ChatAnalytics {
   id: string;
@@ -75,7 +59,7 @@ export default function JobsGPTAnalyticsPage() {
         page: page.toString(),
         limit: '20',
         dateFilter,
-        search: searchTerm,
+        search: searchTerm
       });
 
       const response = await fetch(`/api/admin/jobsgpt-analytics?${params}`);

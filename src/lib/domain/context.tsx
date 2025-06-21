@@ -1,13 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-
-import {
-  DomainConfig,
-  getDomainConfig,
-  DEFAULT_DOMAIN,
-  DOMAIN_CONFIGS,
-} from './config';
+import React, { createContext, useContext, useEffect, useState } from './config';
 
 interface DomainContextType {
   config: DomainConfig;
@@ -24,7 +17,7 @@ interface DomainProviderProps {
 
 export function DomainProvider({
   children,
-  initialHostname,
+  initialHostname
 }: DomainProviderProps) {
   const [hostname, setHostname] = useState(initialHostname || '');
   const [isLoading, setIsLoading] = useState(!initialHostname);
@@ -67,7 +60,7 @@ export function useDomainUrls() {
     apiUrl: (endpoint: string) => `https://${config.domain}/api${endpoint}`,
     unsubscribeUrl: (token: string) =>
       `https://${config.domain}/api/email-alerts/unsubscribe?token=${token}`,
-    manageAlertsUrl: () => `https://${config.domain}/dashboard/alerts`,
+    manageAlertsUrl: () => `https://${config.domain}/dashboard/alerts`
   };
 }
 
@@ -85,7 +78,7 @@ export function getDomainMetadata(hostname: string, path: string = '') {
   return {
     title: config.seo.title,
     description: config.seo.description,
-    keywords: config.seo.keywords.join(', '),
+    keywords: config.seo.keywords.path.join(', '),
     canonical: `${baseUrl}${path}`,
     ogImage: `${baseUrl}/og-images/${config.areaCode}-og.jpg`,
     siteName: config.displayName,
@@ -101,9 +94,9 @@ export function getDomainMetadata(hostname: string, path: string = '') {
         '@type': 'SearchAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: `${baseUrl}/jobs?q={search_term_string}`,
+          urlTemplate: `${baseUrl}/jobs?q={search_term_string}`
         },
-        'query-input': 'required name=search_term_string',
+        'query-input': 'required name=search_term_string'
       },
       sameAs: Object.values(config.social).filter(Boolean),
       publisher: {
@@ -112,8 +105,8 @@ export function getDomainMetadata(hostname: string, path: string = '') {
         url: baseUrl,
         logo: {
           '@type': 'ImageObject',
-          url: `${baseUrl}${config.branding.logoPath}`,
-        },
+          url: `${baseUrl}${config.branding.logoPath}`
+        }
       },
       audience: {
         '@type': 'Audience',
@@ -122,10 +115,10 @@ export function getDomainMetadata(hostname: string, path: string = '') {
           name: config.region,
           containedInPlace: {
             '@type': 'Place',
-            name: 'California, United States',
-          },
-        },
-      },
-    },
+            name: 'California, United States'
+          }
+        }
+      }
+    }
   };
 }

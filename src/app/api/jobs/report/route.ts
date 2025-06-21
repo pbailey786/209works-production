@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
+import fs from "fs";
+import path from "path";
 
 interface JobReport {
   id: string;
@@ -103,7 +105,7 @@ export async function POST(req: NextRequest) {
       // Optional: Store in a simple log file for demonstration
       const fs = require('fs').promises;
       const path = require('path');
-      const logPath = path.join(process.cwd(), 'job-reports.log');
+      const logPath = path.path.join(process.cwd(), 'job-reports.log');
 
       const logEntry = `${new Date().toISOString()} - Report ID: ${report.id} - Job: ${job.title} at ${job.company} (${jobId}) - Reason: ${report.reason} - Reporter: ${report.reporterUserId || 'anonymous'}\n`;
 

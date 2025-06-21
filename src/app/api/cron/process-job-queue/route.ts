@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { JobQueueService } from '@/components/ui/card';
 import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
 

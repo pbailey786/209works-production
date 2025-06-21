@@ -1,73 +1,12 @@
 import React, { useState, useEffect, useCallback } from '@/components/ui/card';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
 import { Progress } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
-/**
- * Funnel Analytics Dashboard
- * Comprehensive visualization of conversion funnels and optimization insights
- */
-
-'use client';
-
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/card';
-  import {
-  useFunnelAnalysis,
-  FunnelAnalysis,
-  FunnelStep,
-  DropOffPoint,
-  OptimizationRecommendation,
-  JOB_SEEKER_FUNNEL,
-  EMPLOYER_FUNNEL,
-} from '@/components/ui/card';
-  import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  FunnelChart,
-  Funnel,
-  Cell,
-  LabelList,
-} from '@/components/ui/card';
-  import {
-  TrendingDown,
-  TrendingUp,
-  Users,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Target,
-  Lightbulb,
-  ArrowDown,
-  ArrowRight,
-  Filter,
-  Download,
-  RefreshCw,
-  Zap,
-  AlertCircle,
-  Info,
-  Eye,
-  MousePointer,
-  UserPlus,
-  FileText,
-  CreditCard,
-  Repeat,
-} from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/card';
+  import { z } from 'zod';
+  import { X } from 'lucide-react';
 
 interface FunnelDashboardProps {
   className?: string;
@@ -78,14 +17,14 @@ const FUNNEL_COLORS = {
   interest: '#10B981',
   consideration: '#F59E0B',
   conversion: '#EF4444',
-  retention: '#8B5CF6',
+  retention: '#8B5CF6'
 };
 
 const SEVERITY_COLORS = {
   low: '#10B981',
   medium: '#F59E0B',
   high: '#EF4444',
-  critical: '#DC2626',
+  critical: '#DC2626'
 };
 
 const STEP_ICONS = {
@@ -102,11 +41,11 @@ const STEP_ICONS = {
   job_post_start: FileText,
   payment: CreditCard,
   job_published: CheckCircle,
-  repeat_posting: Repeat,
+  repeat_posting: Repeat
 };
 
 export function FunnelAnalyticsDashboard({
-  className = '',
+  className = ''
 }: FunnelDashboardProps) {
   const funnelAnalysis = useFunnelAnalysis();
   const [selectedFunnel, setSelectedFunnel] = useState<
@@ -173,7 +112,7 @@ export function FunnelAnalyticsDashboard({
       completionRate: step.completionRate,
       dropOffRate: step.dropOffRate,
       fill: FUNNEL_COLORS[step.step.category],
-      order: index + 1,
+      order: index + 1
     }));
   };
 
@@ -186,7 +125,7 @@ export function FunnelAnalyticsDashboard({
       dropOffRate: dropOff.dropOffRate,
       usersLost: dropOff.usersLost,
       severity: dropOff.severity,
-      fill: getSeverityColor(dropOff.severity),
+      fill: getSeverityColor(dropOff.severity)
     }));
   };
 
@@ -361,7 +300,7 @@ export function FunnelAnalyticsDashboard({
                           className="flex items-center justify-between rounded-lg border-l-4 bg-gray-50 p-6"
                           style={{
                             borderLeftColor:
-                              FUNNEL_COLORS[stepData.step.category],
+                              FUNNEL_COLORS[stepData.step.category]
                           }}
                         >
                           <div className="flex items-center gap-4">
@@ -369,7 +308,7 @@ export function FunnelAnalyticsDashboard({
                               className="flex h-12 w-12 items-center justify-center rounded-full"
                               style={{
                                 backgroundColor:
-                                  FUNNEL_COLORS[stepData.step.category],
+                                  FUNNEL_COLORS[stepData.step.category]
                               }}
                             >
                               <IconComponent className="h-6 w-6 text-white" />
@@ -483,7 +422,7 @@ export function FunnelAnalyticsDashboard({
                             variant="outline"
                             style={{
                               borderColor: getSeverityColor(dropOff.severity),
-                              color: getSeverityColor(dropOff.severity),
+                              color: getSeverityColor(dropOff.severity)
                             }}
                           >
                             {dropOff.severity}
@@ -507,7 +446,7 @@ export function FunnelAnalyticsDashboard({
                           value={dropOff.dropOffRate}
                           className="h-2"
                           style={{
-                            backgroundColor: `${getSeverityColor(dropOff.severity)}20`,
+                            backgroundColor: `${getSeverityColor(dropOff.severity)}20`
                           }}
                         />
                       </div>
@@ -632,7 +571,7 @@ export function FunnelAnalyticsDashboard({
 
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-600">
-                        Affects: {recommendation.affectedSteps.join(', ')}
+                        Affects: {recommendation.affectedSteps.path.join(', ')}
                       </div>
                       <Button size="sm">Implement Recommendation</Button>
                     </div>

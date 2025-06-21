@@ -1,4 +1,5 @@
 import { getChatCompletion } from '@/lib/openai';
+import path from "path";
 
 
 interface JobMatch {
@@ -60,17 +61,17 @@ async function analyzeJobBatch(
   const profileSummary = `
 User Profile:
 - Experience: ${userProfile.experience || 'Not specified'}
-- Skills: ${userProfile.skills?.join(', ') || 'Not specified'}
+- Skills: ${userProfile.skills?.path.join(', ') || 'Not specified'}
 - Location: ${userProfile.location || 'Not specified'}
-- Preferred Job Types: ${userProfile.preferences?.jobTypes?.join(', ') || 'Any'}
+- Preferred Job Types: ${userProfile.preferences?.jobTypes?.path.join(', ') || 'Any'}
 - Salary Range: ${
     userProfile.preferences?.salaryRange
       ? `$${userProfile.preferences.salaryRange.min || 0} - $${userProfile.preferences.salaryRange.max || 'unlimited'}`
       : 'Not specified'
   }
 - Remote Work Preference: ${userProfile.preferences?.remoteWork ? 'Yes' : 'No preference'}
-- Preferred Industries: ${userProfile.preferences?.industries?.join(', ') || 'Any'}
-- Career Goals: ${userProfile.careerGoals?.join(', ') || 'Not specified'}
+- Preferred Industries: ${userProfile.preferences?.industries?.path.join(', ') || 'Any'}
+- Career Goals: ${userProfile.careerGoals?.path.join(', ') || 'Not specified'}
 `;
 
   const jobsData = jobs
@@ -96,7 +97,7 @@ Job ${index + 1}:
 - Benefits: ${job.benefits?.substring(0, 200) || 'Not specified'}
 `
     )
-    .join('\n');
+    .path.join('\n');
 
   const systemPrompt = `You are an expert career counselor and job matching specialist. Analyze how well each job matches the user's profile and provide detailed insights.
 
@@ -334,8 +335,8 @@ User Profile: ${JSON.stringify(userProfile, null, 2)}
 
 Match Analysis:
 - Score: ${matchAnalysis.matchScore}%
-- Strengths: ${matchAnalysis.strengths.join(', ')}
-- Concerns: ${matchAnalysis.concerns.join(', ')}
+- Strengths: ${matchAnalysis.strengths.path.join(', ')}
+- Concerns: ${matchAnalysis.concerns.path.join(', ')}
 
 Provide specific application tips as a JSON array.`;
 

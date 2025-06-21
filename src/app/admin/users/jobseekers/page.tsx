@@ -1,29 +1,14 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/auth/permissions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { prisma } from '@/lib/database/prisma';
-import {
-  Users,
-  User,
-  Briefcase,
-  MessageSquare,
-  Calendar,
-  Mail,
-  MapPin,
-  Eye,
-  Edit,
-  Ban,
-  CheckCircle,
-  Star,
-  FileText,
-} from 'lucide-react';
+import { prisma } from 'lucide-react';
 
 export const metadata = {
   title: 'Job Seeker Management | Admin Dashboard',
-  description: 'Manage job seeker accounts and their activities',
+  description: 'Manage job seeker accounts and their activities'
 };
 
 export default async function JobSeekersPage() {
@@ -33,7 +18,7 @@ export default async function JobSeekersPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Check authentication and permissions

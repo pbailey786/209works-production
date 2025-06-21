@@ -1,7 +1,7 @@
-import { prisma } from '@/components/ui/card';
-import { revalidatePath } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import { ActionResult } from '@/types/actions';
 
 'use server';

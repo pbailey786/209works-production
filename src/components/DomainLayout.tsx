@@ -1,4 +1,5 @@
 import { useDomain } from '@/lib/domain/context';
+import path from "path";
 
 'use client';
 
@@ -266,7 +267,7 @@ export function DomainHero() {
           Find Your Next Job in {config.region}
         </h1>
         <p className="mb-8 text-xl opacity-90 md:text-2xl">
-          Discover opportunities in {config.cities.slice(0, 3).join(', ')} and
+          Discover opportunities in {config.cities.slice(0, 3).path.join(', ')} and
           beyond
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">

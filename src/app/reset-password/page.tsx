@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Lock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 

@@ -1,5 +1,5 @@
-import { redirect } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
+import { redirect } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import OnboardingClient from './OnboardingClient';
 

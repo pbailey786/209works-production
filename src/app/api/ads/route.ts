@@ -1,21 +1,12 @@
 import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { adQuerySchema, createAdSchema } from '@/lib/validations/ads';
-import { prisma } from '@/lib/database/prisma';
-import {
-  createSuccessResponse,
-  AuthorizationError,
-} from '@/lib/utils/api-response';
-import {
+import { prisma } from '@/lib/utils/api-response';
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags,
-} from '@/lib/cache/redis';
-import {
-  calculateOffsetPagination,
-  createPaginatedResponse,
+  invalidateCacheByTags
 } from '@/lib/cache/pagination';
 
 // GET /api/ads - List advertisements (admins see all, employers see their own)
@@ -34,7 +25,7 @@ export const GET = withAPIMiddleware(
       sortBy,
       sortOrder,
       dateFrom,
-      dateTo,
+      dateTo
     } = query!;
 
     // Build where condition based on user role
@@ -68,7 +59,7 @@ export const GET = withAPIMiddleware(
         whereCondition.status = 'active';
         whereCondition.schedule = {
           startDate: { lte: now },
-          OR: [{ endDate: null }, { endDate: { gte: now } }],
+          OR: [{ endDate: null }, { endDate: { gte: now } }]
         };
       } else {
         whereCondition.OR = [
@@ -104,7 +95,7 @@ export const GET = withAPIMiddleware(
         // Count total ads
         performance.trackDatabaseQuery();
         const totalCount = await prisma.advertisement.count({
-          where: whereCondition,
+          where: whereCondition
         });
 
         // Get paginated ads
@@ -129,8 +120,8 @@ export const GET = withAPIMiddleware(
             // Use direct fields instead of _count
             impressions: true,
             clicks: true,
-            conversions: true,
-          },
+            conversions: true
+          }
         });
 
         // Add performance metrics for each ad
@@ -163,9 +154,9 @@ export const GET = withAPIMiddleware(
                 ctr: Math.round(ctr * 100) / 100,
                 conversionRate: Math.round(conversionRate * 100) / 100,
                 estimatedSpend: Math.round(estimatedSpend * 100) / 100,
-                costPerClick: clicks > 0 ? estimatedSpend / clicks : 0,
+                costPerClick: clicks > 0 ? estimatedSpend / clicks : 0
               },
-              isCurrentlyActive: isAdCurrentlyActive(ad.status, ad.schedule),
+              isCurrentlyActive: isAdCurrentlyActive(ad.status, ad.schedule)
             };
           })
         );
@@ -178,7 +169,7 @@ export const GET = withAPIMiddleware(
 
         return createPaginatedResponse(adsWithMetrics, meta, {
           queryTime: Date.now(),
-          cached: false,
+          cached: false
         });
       },
       {
@@ -186,7 +177,7 @@ export const GET = withAPIMiddleware(
         tags: [
           'ads',
           user!.role === 'admin' ? 'admin' : `advertiser:${user!.id}`,
-        ],
+        ]
       }
     );
 
@@ -197,7 +188,7 @@ export const GET = withAPIMiddleware(
     querySchema: adQuerySchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -214,7 +205,7 @@ export const POST = withAPIMiddleware(
     // Check if user has reached their ad limit
     performance.trackDatabaseQuery();
     const existingAdsCount = await prisma.advertisement.count({
-      where: { employerId: user!.id },
+      where: { employerId: user!.id }
     });
 
     const maxAdsPerEmployer = 50; // Configurable limit
@@ -252,7 +243,7 @@ export const POST = withAPIMiddleware(
         businessName: body.content?.companyLogo || 'Unknown Business',
         imageUrl: body.content?.imageUrl || '',
         targetUrl: body.content?.ctaUrl || '',
-        zipCodes: (body.targeting?.cities || []).join(','),
+        zipCodes: (body.targeting?.cities || []).path.join(','),
         startDate: new Date(body.schedule?.startDate || Date.now()),
         endDate: body.schedule?.endDate
           ? new Date(body.schedule.endDate)
@@ -261,7 +252,7 @@ export const POST = withAPIMiddleware(
         clicks: 0,
         conversions: 0,
         createdAt: new Date(),
-        updatedAt: new Date(),
+        updatedAt: new Date()
       },
       select: {
         id: true,
@@ -273,8 +264,8 @@ export const POST = withAPIMiddleware(
         status: true,
         priority: true,
         createdAt: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
 
     // Invalidate relevant caches
@@ -287,7 +278,7 @@ export const POST = withAPIMiddleware(
       ...ad,
       estimatedReach,
       message: `Advertisement created successfully. Status: ${initialStatus}`,
-      nextSteps: getNextSteps(initialStatus),
+      nextSteps: getNextSteps(initialStatus)
     });
   },
   {
@@ -295,7 +286,7 @@ export const POST = withAPIMiddleware(
     bodySchema: createAdSchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 

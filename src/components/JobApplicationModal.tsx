@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { motion, AnimatePresence } from 'framer-motion';
-
-'use client';
-
-  import {
-  XMarkIcon,
-  PaperAirplaneIcon,
-  DocumentTextIcon,
-  ExclamationTriangleIcon,
-  CheckCircleIcon,
-  ArrowTopRightOnSquareIcon,
-} from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from '@heroicons/react/24/outline';
 
 interface JobApplicationModalProps {
   isOpen: boolean;
@@ -39,7 +28,7 @@ export default function JobApplicationModal({
   applicationEmail,
   applicationInstructions,
   supplementalQuestions = [],
-  questionsRequired = false,
+  questionsRequired = false
 }: JobApplicationModalProps) {
   const [coverLetter, setCoverLetter] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
@@ -86,14 +75,14 @@ export default function JobApplicationModal({
       const response = await fetch('/api/jobs/apply', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           jobId,
           coverLetter: coverLetter.trim() || undefined,
           additionalInfo: additionalInfo.trim() || undefined,
-          questionResponses,
-        }),
+          questionResponses
+        })
       });
 
       const data = await response.json();

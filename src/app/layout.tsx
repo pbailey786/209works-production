@@ -8,6 +8,7 @@ import { DomainProvider } from '@/lib/domain/context';
 import PWAInstallPrompt from '@/components/pwa/PWAInstallPrompt';
 import { MobileLayout } from '@/components/mobile/MobileBottomNavigation';
 import './globals.css';
+import path from "path";
 
 
 const geistSans = Geist({
@@ -35,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: domainConfig.seo.title,
     description: domainConfig.seo.description,
-    keywords: domainConfig.seo.keywords.join(', '),
+    keywords: domainConfig.seo.keywords.path.join(', '),
     manifest: '/manifest.json',
     appleWebApp: {
       capable: true,

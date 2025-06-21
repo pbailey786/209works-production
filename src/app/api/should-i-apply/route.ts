@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { getJobMatchScore } from '@/components/ui/card';
 import { ShouldIApplyAnalysisService } from '@/components/ui/card';
 import { JobAnalysisInput } from '@/components/ui/card';
 import { z } from 'zod';
+import path from "path";
 
 const shouldIApplySchema = z.object({
   jobId: z.string().min(1, 'Job ID is required'),
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input',
-          details: validationResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+          details: validationResult.error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

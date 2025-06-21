@@ -1,25 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-
-import {
-  TestTube,
-  Send,
-  CheckCircle,
-  AlertTriangle,
-  Loader2,
-  ArrowLeft,
-  Mail,
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 interface TestType {
   id: string;
@@ -95,15 +84,15 @@ export default function TestEmailPage() {
         testType: selectedTestType,
         recipientEmail,
         templateProps,
-        ...(selectedTestType === 'template' && { templateId: selectedTemplate }),
+        ...(selectedTestType === 'template' && { templateId: selectedTemplate })
       };
 
       const response = await fetch('/api/admin/email/test', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();

@@ -1,14 +1,7 @@
-import { useEffect } from 'react';
-
-'use client';
-
-  import {
-  reportWebVitals,
-  PerformanceMonitor,
-} from '@/lib/performance/performance-monitor';
+import { useEffect } from '@/lib/performance/performance-monitor';
 
 export default function PerformanceProvider({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }) {

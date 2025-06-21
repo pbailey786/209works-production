@@ -2,18 +2,10 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { geolocationSearchSchema } from '@/lib/validations/api';
 import { createSuccessResponse } from '@/lib/utils/api-response';
-import { prisma } from '@/lib/database/prisma';
-import {
-  getCache,
-  setCache,
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL,
-} from '@/lib/cache/redis';
-import {
+import { prisma } from '@/lib/cache/redis';
   GeolocationUtils,
   RelevanceScorer,
-  TextProcessor,
+  TextProcessor
 } from '@/lib/search/algorithms';
 
 // GET /api/search/location - Location-based job search
@@ -40,7 +32,7 @@ export const GET = withAPIMiddleware(
       performance.trackCacheHit();
       return createSuccessResponse({
         ...results,
-        cached: true,
+        cached: true
       });
     }
 
@@ -64,7 +56,7 @@ export const GET = withAPIMiddleware(
             { title: { contains: term, mode: 'insensitive' } },
             { description: { contains: term, mode: 'insensitive' } },
             { company: { contains: term, mode: 'insensitive' } },
-          ],
+          ]
         })),
       ];
     }
@@ -88,9 +80,9 @@ export const GET = withAPIMiddleware(
         employer: {
           select: {
             id: true,
-            name: true,
-          },
-        },
+            name: true
+          }
+        }
       },
       take: 100, // Get more results to filter by actual distance
     });
@@ -125,7 +117,7 @@ export const GET = withAPIMiddleware(
           distance,
           withinRadius,
           relevanceScore,
-          coordinates: jobCoords,
+          coordinates: jobCoords
         };
       })
     );
@@ -165,25 +157,25 @@ export const GET = withAPIMiddleware(
         coordinates: undefined, // Don't expose raw coordinates
       })),
       insights,
-      boundingBox,
+      boundingBox
     };
 
     // Cache results
     await setCache(cacheKey, response, {
       ttl: DEFAULT_TTL.medium,
-      tags: ['search', 'geolocation'],
+      tags: ['search', 'geolocation']
     });
 
     return createSuccessResponse({
       ...response,
-      cached: false,
+      cached: false
     });
   },
   {
     querySchema: geolocationSearchSchema,
     rateLimit: { enabled: true, type: 'search' },
     logging: { enabled: true, includeQuery: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -200,7 +192,7 @@ function generateLocationInsights(
       jobTypes: [],
       salaryRange: null,
       topCompanies: [],
-      remotePercentage: 0,
+      remotePercentage: 0
     };
   }
 
@@ -234,7 +226,7 @@ function generateLocationInsights(
       type,
       count,
       percentage:
-        jobs.length > 0 ? Math.round((count / jobs.length) * 100 * 10) / 10 : 0,
+        jobs.length > 0 ? Math.round((count / jobs.length) * 100 * 10) / 10 : 0
     }));
 
   // Salary range with comprehensive validation
@@ -261,7 +253,7 @@ function generateLocationInsights(
               (validSalaries.reduce((sum, salary) => sum + salary, 0) /
                 validSalaries.length) *
                 100
-            ) / 100,
+            ) / 100
         }
       : null;
 
@@ -298,6 +290,6 @@ function generateLocationInsights(
     jobTypes,
     salaryRange,
     topCompanies,
-    remotePercentage: Math.round(remotePercentage * 10) / 10,
+    remotePercentage: Math.round(remotePercentage * 10) / 10
   };
 }

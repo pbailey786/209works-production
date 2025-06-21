@@ -1,16 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
-
-/**
- * Session Tracker
- * Automatically tracks user session engagement and behavior patterns
- */
-
-'use client';
-
-  import {
-  useJobBoardAnalytics,
-  UserEngagementEvent,
-} from './job-board-analytics';
+import { useEffect, useRef, useCallback } from './job-board-analytics';
 
 interface SessionData {
   sessionId: string;
@@ -136,9 +124,9 @@ export function useSessionTracker(userId?: string) {
       events: [
         {
           type: 'session_start',
-          timestamp: now,
+          timestamp: now
         },
-      ],
+      ]
     };
 
     // Store session ID in sessionStorage for persistence across page reloads
@@ -178,7 +166,7 @@ export function useSessionTracker(userId?: string) {
       sessionDataRef.current.events.push({
         type: 'page_view',
         timestamp: Date.now(),
-        data: { path },
+        data: { path }
       });
 
       updateActivity();
@@ -195,7 +183,7 @@ export function useSessionTracker(userId?: string) {
       sessionDataRef.current.events.push({
         type: 'job_view',
         timestamp: Date.now(),
-        data: { jobId },
+        data: { jobId }
       });
 
       updateActivity();
@@ -212,7 +200,7 @@ export function useSessionTracker(userId?: string) {
       sessionDataRef.current.events.push({
         type: 'job_search',
         timestamp: Date.now(),
-        data: { searchQuery },
+        data: { searchQuery }
       });
 
       updateActivity();
@@ -229,7 +217,7 @@ export function useSessionTracker(userId?: string) {
       sessionDataRef.current.events.push({
         type: 'application_start',
         timestamp: Date.now(),
-        data: { jobId },
+        data: { jobId }
       });
 
       updateActivity();
@@ -246,7 +234,7 @@ export function useSessionTracker(userId?: string) {
       sessionDataRef.current.events.push({
         type: 'application_complete',
         timestamp: Date.now(),
-        data: { jobId },
+        data: { jobId }
       });
 
       updateActivity();
@@ -278,7 +266,7 @@ export function useSessionTracker(userId?: string) {
         applicationsCompleted: sessionData.applicationsCompleted,
         bounceRate,
         deviceType: sessionData.deviceType,
-        trafficSource: sessionData.trafficSource,
+        trafficSource: sessionData.trafficSource
       };
 
       // Send session data to analytics
@@ -342,7 +330,7 @@ export function useSessionTracker(userId?: string) {
           'job_board_session_data',
           JSON.stringify({
             ...sessionDataRef.current,
-            lastActivity: Date.now(),
+            lastActivity: Date.now()
           })
         );
       }
@@ -394,6 +382,6 @@ export function useSessionTracker(userId?: string) {
 
     // Session state
     sessionId: sessionDataRef.current?.sessionId,
-    isActive: !!sessionDataRef.current,
+    isActive: !!sessionDataRef.current
   };
 }

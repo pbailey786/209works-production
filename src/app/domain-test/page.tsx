@@ -4,19 +4,9 @@ import React from 'react';
 import { useDomain } from '@/lib/domain/context';
 import DomainAwareHeader from '@/components/layout/DomainAwareHeader';
 import DomainAwareFooter from '@/components/layout/DomainAwareFooter';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  Globe, 
-  MapPin, 
-  Users, 
-  Briefcase, 
-  Palette,
-  Code,
-  CheckCircle,
-  ExternalLink
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 export default function DomainTestPage() {
   const { config, isLoading } = useDomain();
@@ -146,7 +136,7 @@ export default function DomainTestPage() {
               <div className="p-4 bg-gray-50 rounded-lg">
                 <h4 className="font-semibold mb-2">AI Assistant Context</h4>
                 <p className="text-sm text-gray-600">
-                  "I'm here to help you find work in the {config.areaCode} area - {config.cities.slice(0, 3).join(', ')} 
+                  "I'm here to help you find work in the {config.areaCode} area - {config.cities.slice(0, 3).path.join(', ')} 
                   and all around {config.region}."
                 </p>
               </div>

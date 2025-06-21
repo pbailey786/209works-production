@@ -1,18 +1,7 @@
 import React, { useState, useRef, useEffect } from '@/components/ui/card';
 import { motion, AnimatePresence } from '@/components/ui/card';
 import { ChatBubbleLeftRightIcon as ChatSolidIcon } from '@/components/ui/card';
-import { JobGenieProps } from '@/lib/types/component-props';
-
-'use client';
-
-  import {
-  ChatBubbleLeftRightIcon,
-  PaperAirplaneIcon,
-  XMarkIcon,
-  SparklesIcon,
-  ExclamationTriangleIcon,
-  ArrowPathIcon,
-} from '@heroicons/react/24/outline';
+import { JobGenieProps } from '@heroicons/react/24/outline';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -50,7 +39,7 @@ const createAsyncState = (): AsyncOperationState => ({
   canRetry: true,
   attemptCount: 0,
   maxRetries: 3,
-  lastAttemptTime: null,
+  lastAttemptTime: null
 });
 
 const withTimeout = <T,>(
@@ -70,7 +59,7 @@ export default function JobGenie({
   jobId,
   jobTitle,
   company,
-  className = '',
+  className = ''
 }: JobGenieProps) {
   // Validate required props
   if (!jobId || typeof jobId !== 'string' || jobId.trim().length === 0) {
@@ -135,7 +124,7 @@ export default function JobGenie({
         {
           role: 'assistant',
           content: `👋 Hi! I'm JobGenie, your AI assistant for this ${jobTitle} position at ${company}. I can help answer questions about the job requirements, company culture, benefits, and more. What would you like to know?`,
-          timestamp: new Date(),
+          timestamp: new Date()
         },
       ]);
     }
@@ -155,7 +144,7 @@ export default function JobGenie({
     const userMessage: Message = {
       role: 'user',
       content: content.trim(),
-      timestamp: new Date(),
+      timestamp: new Date()
     };
 
     // Only add user message if not retrying
@@ -171,7 +160,7 @@ export default function JobGenie({
       hasError: false,
       errorMessage: null,
       attemptCount: isRetry ? prev.attemptCount + 1 : 1,
-      lastAttemptTime: Date.now(),
+      lastAttemptTime: Date.now()
     }));
 
     try {
@@ -179,20 +168,20 @@ export default function JobGenie({
         isRetry ? messages : messages.concat(userMessage)
       ).map(msg => ({
         role: msg.role,
-        content: msg.content,
+        content: msg.content
       }));
 
       const response = await withTimeout(
         fetch('/api/jobbot', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             jobId,
-            messages: messagesForAPI,
+            messages: messagesForAPI
           }),
-          signal: controller.signal,
+          signal: controller.signal
         }),
         30000, // 30 second timeout
         'Request timed out. Please try again.'
@@ -221,7 +210,7 @@ export default function JobGenie({
       const assistantMessage: Message = {
         role: 'assistant',
         content: data.reply,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -267,14 +256,14 @@ export default function JobGenie({
         hasError: true,
         errorMessage,
         errorType,
-        canRetry: prev.attemptCount < prev.maxRetries,
+        canRetry: prev.attemptCount < prev.maxRetries
       }));
 
       // Add error message to chat for user feedback
       const errorChatMessage: Message = {
         role: 'assistant',
         content: `😅 Sorry, I encountered an issue: ${errorMessage}${apiState.attemptCount < apiState.maxRetries ? ' You can try again or use the retry button.' : ''}`,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
       setMessages(prev => [...prev, errorChatMessage]);
     }
@@ -308,7 +297,7 @@ export default function JobGenie({
     try {
       return date.toLocaleTimeString([], {
         hour: '2-digit',
-        minute: '2-digit',
+        minute: '2-digit'
       });
     } catch (error) {
       return 'Invalid time';

@@ -3,19 +3,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
+import { Label } from '@/components/ui/select';
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from '@/components/ui/popover';
 
 
@@ -28,7 +19,7 @@ export default function AdManagementFilters() {
     type: searchParams.get('type') || '',
     advertiser: searchParams.get('advertiser') || '',
     dateFrom: searchParams.get('dateFrom') || '',
-    dateTo: searchParams.get('dateTo') || '',
+    dateTo: searchParams.get('dateTo') || ''
   });
 
   const [dateFromOpen, setDateFromOpen] = useState(false);
@@ -59,7 +50,7 @@ export default function AdManagementFilters() {
       type: '',
       advertiser: '',
       dateFrom: '',
-      dateTo: '',
+      dateTo: ''
     });
     router.push('/admin/ads');
   };

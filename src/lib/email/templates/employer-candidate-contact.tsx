@@ -9,7 +9,7 @@
   Text,
   Link,
   Hr,
-  Img,
+  Img
 } from '@react-email/components';
 
 interface EmployerCandidateContactProps {
@@ -33,7 +33,7 @@ export default function EmployerCandidateContact({
   nextSteps,
   interviewLink,
   employerEmail,
-  applicationUrl,
+  applicationUrl
 }: EmployerCandidateContactProps) {
   return (
     <Html>
@@ -116,7 +116,7 @@ export default function EmployerCandidateContact({
 // Styles
 const main = {
   backgroundColor: '#f6f9fc',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif'
 };
 
 const container = {
@@ -124,45 +124,45 @@ const container = {
   margin: '0 auto',
   padding: '20px 0 48px',
   marginBottom: '64px',
-  maxWidth: '600px',
+  maxWidth: '600px'
 };
 
 const header = {
   padding: '32px 24px',
   backgroundColor: '#2d4a3e',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const headerText = {
   color: '#ffffff',
   fontSize: '24px',
   fontWeight: 'bold',
-  margin: '0',
+  margin: '0'
 };
 
 const subHeaderText = {
   color: '#ffffff',
   fontSize: '16px',
   margin: '8px 0 0 0',
-  opacity: 0.9,
+  opacity: 0.9
 };
 
 const content = {
-  padding: '24px',
+  padding: '24px'
 };
 
 const greeting = {
   fontSize: '18px',
   fontWeight: '600',
   color: '#1a1a1a',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const paragraph = {
   fontSize: '16px',
   lineHeight: '1.6',
   color: '#4a4a4a',
-  margin: '16px 0',
+  margin: '16px 0'
 };
 
 const messageBox = {
@@ -170,7 +170,7 @@ const messageBox = {
   border: '1px solid #e9ecef',
   borderRadius: '8px',
   padding: '20px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const messageHeader = {
@@ -179,7 +179,7 @@ const messageHeader = {
   color: '#2d4a3e',
   margin: '0 0 12px 0',
   textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
+  letterSpacing: '0.5px'
 };
 
 const messageText = {
@@ -187,7 +187,7 @@ const messageText = {
   lineHeight: '1.6',
   color: '#1a1a1a',
   margin: '0',
-  whiteSpace: 'pre-wrap' as const,
+  whiteSpace: 'pre-wrap' as const
 };
 
 const nextStepsBox = {
@@ -195,7 +195,7 @@ const nextStepsBox = {
   border: '1px solid #bee5eb',
   borderRadius: '8px',
   padding: '20px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const nextStepsHeader = {
@@ -204,7 +204,7 @@ const nextStepsHeader = {
   color: '#0c5460',
   margin: '0 0 12px 0',
   textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
+  letterSpacing: '0.5px'
 };
 
 const nextStepsText = {
@@ -212,12 +212,12 @@ const nextStepsText = {
   lineHeight: '1.6',
   color: '#0c5460',
   margin: '0',
-  whiteSpace: 'pre-wrap' as const,
+  whiteSpace: 'pre-wrap' as const
 };
 
 const buttonContainer = {
   textAlign: 'center' as const,
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const button = {
@@ -230,7 +230,7 @@ const button = {
   textAlign: 'center' as const,
   display: 'inline-block',
   padding: '12px 24px',
-  margin: '0 8px',
+  margin: '0 8px'
 };
 
 const primaryButton = {
@@ -243,12 +243,12 @@ const primaryButton = {
   textAlign: 'center' as const,
   display: 'inline-block',
   padding: '12px 24px',
-  margin: '0 8px',
+  margin: '0 8px'
 };
 
 const hr = {
   borderColor: '#e6ebf1',
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const footer = {
@@ -256,10 +256,10 @@ const footer = {
   fontSize: '12px',
   lineHeight: '1.6',
   margin: '16px 0 0 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const link = {
   color: '#2d4a3e',
-  textDecoration: 'underline',
+  textDecoration: 'underline'
 };

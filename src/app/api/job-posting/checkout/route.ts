@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { stripe } from '@/components/ui/card';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 
 const checkoutSchema = z.object({
@@ -267,7 +268,7 @@ export async function POST(req: NextRequest) {
           userId: user.id,
           tier: validatedData.tier?.toUpperCase() || '',
           creditPack: validatedData.creditPack?.toUpperCase() || '',
-          addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
+          addons: selectedAddons.map(a => a.key.toUpperCase()).path.join(','),
           type: 'job_posting_purchase',
           totalAmount: totalAmount.toString(),
           jobCredits: jobCredits.toString(),
@@ -380,7 +381,7 @@ export async function POST(req: NextRequest) {
             userId: user.id,
             tier: validatedData.tier?.toUpperCase() || '',
             creditPack: validatedData.creditPack?.toUpperCase() || '',
-            addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
+            addons: selectedAddons.map(a => a.key.toUpperCase()).path.join(','),
             type: 'job_posting_purchase',
             totalAmount: totalAmount.toString(),
             jobCredits: jobCredits.toString(),
@@ -452,7 +453,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid request data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`)
         },
         { status: 400 }
       );

@@ -3,16 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/dialog';
   Monitor,
   Smartphone,
   Tablet,
@@ -47,7 +38,7 @@ interface AdPreviewModalProps {
 export default function AdPreviewModal({
   isOpen,
   onClose,
-  ad,
+  ad
 }: AdPreviewModalProps) {
   const [selectedDevice, setSelectedDevice] = useState<
     'desktop' | 'tablet' | 'mobile'
@@ -71,14 +62,14 @@ export default function AdPreviewModal({
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'USD'
     }).format(amount);
   };
 
@@ -91,19 +82,19 @@ export default function AdPreviewModal({
       return {
         status: 'scheduled',
         label: 'Scheduled',
-        color: 'bg-blue-100 text-blue-800',
+        color: 'bg-blue-100 text-blue-800'
       };
     } else if (end < now) {
       return {
         status: 'expired',
         label: 'Expired',
-        color: 'bg-gray-100 text-gray-800',
+        color: 'bg-gray-100 text-gray-800'
       };
     } else {
       return {
         status: 'active',
         label: 'Active',
-        color: 'bg-green-100 text-green-800',
+        color: 'bg-green-100 text-green-800'
       };
     }
   };

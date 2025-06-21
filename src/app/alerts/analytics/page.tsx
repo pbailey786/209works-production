@@ -9,24 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { useToast } from '@/hooks/use-toast';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  Area,
-  AreaChart,
-} from 'recharts';
-import {
+import { useToast } from 'recharts';
   Mail,
   TrendingUp,
   Users,
@@ -40,22 +23,9 @@ import {
   Calendar,
   Filter,
   Download,
-  RefreshCw,
+  RefreshCw
 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Card } from '@/components/ui/select';
 
 interface EmailMetrics {
   totalSent: number;
@@ -159,7 +129,7 @@ export default function AlertAnalytics() {
       deliveryRate: 96.6,
       openRate: 60.0,
       clickRate: 24.0,
-      bounceRate: 3.4,
+      bounceRate: 3.4
     });
 
     // Mock time series data
@@ -170,7 +140,7 @@ export default function AlertAnalytics() {
       sent: Math.floor(Math.random() * 500) + 300,
       delivered: Math.floor(Math.random() * 450) + 280,
       opened: Math.floor(Math.random() * 300) + 150,
-      clicked: Math.floor(Math.random() * 100) + 50,
+      clicked: Math.floor(Math.random() * 100) + 50
     }));
     setTimeSeriesData(mockTimeData);
 
@@ -184,7 +154,7 @@ export default function AlertAnalytics() {
         userEngagement: 85.2,
         successfulPlacements: 23,
         isActive: true,
-        lastTriggered: '2024-01-15T10:00:00Z',
+        lastTriggered: '2024-01-15T10:00:00Z'
       },
       {
         alertId: '2',
@@ -194,7 +164,7 @@ export default function AlertAnalytics() {
         userEngagement: 78.9,
         successfulPlacements: 18,
         isActive: true,
-        lastTriggered: '2024-01-15T09:30:00Z',
+        lastTriggered: '2024-01-15T09:30:00Z'
       },
       {
         alertId: '3',
@@ -204,7 +174,7 @@ export default function AlertAnalytics() {
         userEngagement: 92.1,
         successfulPlacements: 41,
         isActive: true,
-        lastTriggered: '2024-01-15T11:15:00Z',
+        lastTriggered: '2024-01-15T11:15:00Z'
       },
     ];
     setAlertPerformance(mockAlerts);
@@ -219,7 +189,7 @@ export default function AlertAnalytics() {
         emailsReceived: 45,
         engagementScore: 89.2,
         lastActive: '2024-01-15T08:30:00Z',
-        status: 'active',
+        status: 'active'
       },
       {
         userId: '2',
@@ -228,7 +198,7 @@ export default function AlertAnalytics() {
         emailsReceived: 28,
         engagementScore: 76.5,
         lastActive: '2024-01-14T16:45:00Z',
-        status: 'active',
+        status: 'active'
       },
     ]);
   };
@@ -250,13 +220,13 @@ export default function AlertAnalytics() {
 
       toast({
         title: 'Success',
-        description: 'Analytics data exported successfully!',
+        description: 'Analytics data exported successfully!'
       });
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to export data. Please try again.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };

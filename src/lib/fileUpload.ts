@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from './supabase';
+import path from "path";
 
 export async function saveResumeFile(
   file: File,
@@ -118,7 +119,7 @@ export function isValidResumeFile(file: File): FileValidationResult {
     if (!isValidExtension) {
       return {
         valid: false,
-        error: `Unsupported file type. Please use: ${allowedExtensions.map(ext => ext.toUpperCase()).join(', ')}`,
+        error: `Unsupported file type. Please use: ${allowedExtensions.map(ext => ext.toUpperCase()).path.join(', ')}`,
       };
     }
     warnings.push('File type detected by extension - please ensure file is not corrupted');

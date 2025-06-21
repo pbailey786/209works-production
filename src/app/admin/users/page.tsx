@@ -5,43 +5,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
+import { Card } from '@/components/ui/select';
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Search,
-  Filter,
-  MoreHorizontal,
-  UserPlus,
-  Download,
-  Eye,
-  Edit,
-  Trash2,
+  TableRow
 } from 'lucide-react';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 
 interface SearchParams {
@@ -54,7 +29,7 @@ interface SearchParams {
 }
 
 export default async function UsersPage({
-  searchParams,
+  searchParams
 }: {
   searchParams: Promise<SearchParams>;
 }) {
@@ -64,7 +39,7 @@ export default async function UsersPage({
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Await searchParams in Next.js 15
@@ -110,17 +85,17 @@ export default async function UsersPage({
           _count: {
             select: {
               jobApplications: true,
-              alerts: true,
-            },
-          },
-        },
+              alerts: true
+            }
+          }
+        }
       }),
       prisma.user.count({ where: whereConditions }),
       prisma.user.groupBy({
         by: ['role'],
         _count: {
-          id: true,
-        },
+          id: true
+        }
       }),
     ]);
   } catch (error) {
@@ -138,7 +113,7 @@ export default async function UsersPage({
     total: totalCount,
     jobseekers: userStats.find(s => s.role === 'jobseeker')?._count.id || 0,
     employers: userStats.find(s => s.role === 'employer')?._count.id || 0,
-    admins: userStats.find(s => s.role === 'admin')?._count.id || 0,
+    admins: userStats.find(s => s.role === 'admin')?._count.id || 0
   };
 
   return (

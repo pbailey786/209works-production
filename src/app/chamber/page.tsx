@@ -2,33 +2,12 @@ import { Metadata } from 'next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Users,
-  TrendingUp,
-  Building2,
-  BarChart3,
-  UserPlus,
-  Calendar,
-  DollarSign,
-  Target,
-  CheckCircle,
-  Handshake,
-  Award,
-  MapPin,
-  Star,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Chamber Partnership | 209jobs',
   description:
-    'Partner with 209jobs to support local businesses and drive regional economic growth in the Central Valley',
+    'Partner with 209jobs to support local businesses and drive regional economic growth in the Central Valley'
 };
 
 export default function ChamberLandingPage() {

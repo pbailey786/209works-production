@@ -10,7 +10,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface PasswordResetEmailProps {
@@ -20,7 +20,7 @@ interface PasswordResetEmailProps {
 
 export default function PasswordResetEmail({
   userName = 'User',
-  resetUrl = '#',
+  resetUrl = '#'
 }: PasswordResetEmailProps) {
   const previewText = '🔒 Reset your 209 Works password - secure link inside';
 
@@ -143,7 +143,7 @@ const main = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   WebkitFontSmoothing: 'antialiased' as const,
   MozOsxFontSmoothing: 'grayscale' as const,
-  textRendering: 'optimizeLegibility' as const,
+  textRendering: 'optimizeLegibility' as const
 };
 
 const container = {
@@ -153,14 +153,14 @@ const container = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const header = {
   backgroundColor: '#2d4a3e',
   backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
   padding: '40px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const logo = {
@@ -168,32 +168,32 @@ const logo = {
   fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 8px 0',
-  letterSpacing: '-0.5px',
+  letterSpacing: '-0.5px'
 };
 
 const tagline = {
   color: '#ffffff',
   fontSize: '18px',
   margin: '0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const content = {
-  padding: '32px 24px',
+  padding: '32px 24px'
 };
 
 const greeting = {
   fontSize: '20px',
   fontWeight: '600',
   color: '#1e293b',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const intro = {
   fontSize: '16px',
   color: '#475569',
   lineHeight: '1.6',
-  margin: '0 0 28px 0',
+  margin: '0 0 28px 0'
 };
 
 const alertBox = {
@@ -204,37 +204,37 @@ const alertBox = {
   borderLeft: '4px solid #ff6b35',
   borderRadius: '8px',
   padding: '20px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const alertIcon = {
   fontSize: '24px',
   margin: '0 16px 0 0',
   lineHeight: '1',
-  flexShrink: 0,
+  flexShrink: 0
 };
 
 const alertContent = {
-  flex: '1',
+  flex: '1'
 };
 
 const alertTitle = {
   fontSize: '16px',
   fontWeight: '600',
   color: '#dc2626',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const alertText = {
   fontSize: '14px',
   color: '#7f1d1d',
   lineHeight: '1.5',
-  margin: '0',
+  margin: '0'
 };
 
 const buttonSection = {
   textAlign: 'center' as const,
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const resetButton = {
@@ -249,14 +249,14 @@ const resetButton = {
   display: 'inline-block',
   padding: '16px 32px',
   border: 'none',
-  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)',
+  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)'
 };
 
 const alternativeText = {
   fontSize: '14px',
   color: '#64748b',
   margin: '32px 0 12px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const linkContainer = {
@@ -265,18 +265,18 @@ const linkContainer = {
   borderRadius: '6px',
   padding: '12px',
   margin: '0 0 32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const linkText = {
-  margin: '0',
+  margin: '0'
 };
 
 const linkStyle = {
   color: '#ff6b35',
   fontSize: '12px',
   wordBreak: 'break-all' as const,
-  textDecoration: 'underline',
+  textDecoration: 'underline'
 };
 
 const tipsSection = {
@@ -284,18 +284,18 @@ const tipsSection = {
   borderRadius: '8px',
   padding: '20px',
   margin: '32px 0',
-  border: '2px solid #fed7aa',
+  border: '2px solid #fed7aa'
 };
 
 const tipsTitle = {
   fontSize: '16px',
   fontWeight: '600',
   color: '#ea580c',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const tipsList = {
-  margin: '0',
+  margin: '0'
 };
 
 const tipItem = {
@@ -303,7 +303,7 @@ const tipItem = {
   color: '#7c2d12',
   margin: '8px 0',
   lineHeight: '1.5',
-  display: 'block',
+  display: 'block'
 };
 
 const helpSection = {
@@ -311,27 +311,27 @@ const helpSection = {
   borderRadius: '8px',
   padding: '20px',
   margin: '32px 0',
-  border: '1px solid #bbf7d0',
+  border: '1px solid #bbf7d0'
 };
 
 const helpTitle = {
   fontSize: '16px',
   fontWeight: '600',
   color: '#2d4a3e',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const helpText = {
   fontSize: '14px',
   color: '#166534',
   lineHeight: '1.6',
-  margin: '0',
+  margin: '0'
 };
 
 const helpLink = {
   color: '#ff6b35',
   textDecoration: 'underline',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const footer = {
@@ -339,43 +339,43 @@ const footer = {
   color: '#64748b',
   margin: '32px 0 0 0',
   textAlign: 'center' as const,
-  lineHeight: '1.6',
+  lineHeight: '1.6'
 };
 
 const divider = {
   borderColor: '#e2e8f0',
-  margin: '0',
+  margin: '0'
 };
 
 const footerSection = {
   backgroundColor: '#f8fafc',
   padding: '24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const footerTitle = {
   color: '#2d4a3e',
   fontSize: '18px',
   fontWeight: 'bold',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const footerSubtitle = {
   color: '#64748b',
   fontSize: '14px',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const footerText = {
   fontSize: '12px',
   color: '#64748b',
   margin: '0 0 16px 0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };
 
 const copyrightText = {
   fontSize: '12px',
   color: '#94a3b8',
   margin: '0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };

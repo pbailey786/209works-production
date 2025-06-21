@@ -1,19 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  Activity, 
-  Users, 
-  Briefcase, 
-  Brain, 
-  TrendingUp, 
-  TrendingDown,
-  RefreshCw,
-  Zap
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 interface RealTimeMetrics {
   activeUsers: number;

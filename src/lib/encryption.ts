@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import path from "path";
 
 // Encryption configuration
 const ENCRYPTION_CONFIG = {
@@ -381,7 +382,7 @@ export function validateEncryptionEnvironment(): void {
   }
 
   if (errors.length > 0) {
-    throw new Error(`Encryption configuration errors:\n${errors.join('\n')}`);
+    throw new Error(`Encryption configuration errors:\n${errors.path.join('\n')}`);
   }
 }
 

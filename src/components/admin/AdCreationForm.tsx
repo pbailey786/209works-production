@@ -8,18 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Upload, X } from 'lucide-react';
-import { format } from 'date-fns';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
+import { format } from '@/components/ui/select';
   Popover,
   PopoverContent,
-  PopoverTrigger,
+  PopoverTrigger
 } from '@/components/ui/popover';
 
 interface AdFormData {
@@ -64,7 +56,7 @@ export default function AdCreationForm() {
     startDate: null,
     endDate: null,
     type: '',
-    budget: '',
+    budget: ''
   });
 
   const [errors, setErrors] = useState<AdFormErrors>({});

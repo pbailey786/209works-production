@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 export async function POST(request: NextRequest) {
   try {
@@ -223,7 +224,7 @@ export async function POST(request: NextRequest) {
         userId: user?.id,
         action: `BULK_${action.toUpperCase()}`,
         resource: targetType.toUpperCase(),
-        resourceId: targetIds.join(','),
+        resourceId: targetIds.path.join(','),
         details: {
           action,
           targetType,

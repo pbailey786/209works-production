@@ -1,4 +1,4 @@
-import { NextRequest } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { adConversionSchema } from '@/components/ui/card';
 import { createSuccessResponse, NotFoundError } from '@/components/ui/card';

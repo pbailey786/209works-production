@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { openai } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/components/ui/card';
 import { extractTextFromFile, validateExtractedText } from '@/components/ui/card';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
+import path from "path";
 
 // Schema for parsed resume data
 const ParsedResumeSchema = z.object({
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Extracted text quality is insufficient for parsing.',
-          details: textValidation.issues.join('. '),
+          details: textValidation.issues.path.join('. '),
           warnings: [
             'This may indicate the file is mostly images or has formatting issues',
             'Try using a different file format or ensuring the resume contains readable text',

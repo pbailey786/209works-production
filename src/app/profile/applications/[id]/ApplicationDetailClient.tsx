@@ -2,19 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import {
-  ArrowLeft,
-  Building2,
-  MapPin,
-  DollarSign,
-  Calendar,
-  ExternalLink,
-  FileText,
-  MessageSquare,
-  Edit,
-  Trash2,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 import ApplicationTimeline from '@/components/applications/ApplicationTimeline';
 
 interface Job {
@@ -49,7 +37,7 @@ interface ApplicationDetailClientProps {
 }
 
 export default function ApplicationDetailClient({
-  application,
+  application
 }: ApplicationDetailClientProps) {
   const router = useRouter();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
@@ -69,7 +57,7 @@ export default function ApplicationDetailClient({
     setIsWithdrawing(true);
     try {
       const response = await fetch(`/api/profile/applications?id=${application.id}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (!response.ok) {

@@ -1,20 +1,6 @@
 import React, { useState } from '@/components/ui/card';
 import { motion, AnimatePresence } from '@/components/ui/card';
-import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
-
-'use client';
-
-  import {
-  XMarkIcon,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  QuestionMarkCircleIcon,
-  SparklesIcon,
-  ClockIcon,
-  UserIcon,
-  AcademicCapIcon,
-  ChartBarIcon,
-} from '@heroicons/react/24/outline';
+import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/outline';
 
 interface ShouldIApplyCalculatorProps {
   isOpen: boolean;
@@ -72,7 +58,7 @@ export default function ShouldIApplyCalculator({
   jobTitle,
   company,
   isAuthenticated,
-  userId,
+  userId
 }: ShouldIApplyCalculatorProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<CalculatorResult | null>(null);
@@ -96,11 +82,11 @@ export default function ShouldIApplyCalculator({
       const response = await fetch('/api/should-i-apply', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          jobId,
-        }),
+          jobId
+        })
       });
 
       if (!response.ok) {
@@ -353,7 +339,7 @@ export default function ShouldIApplyCalculator({
                       transition={{
                         duration: 2,
                         repeat: Infinity,
-                        ease: 'linear',
+                        ease: 'linear'
                       }}
                     >
                       <SparklesIcon className="h-8 w-8 text-purple-600" />

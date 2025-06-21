@@ -1,53 +1,12 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-
-
-  /**
- * Business Metrics Dashboard
- * Comprehensive analytics dashboard for job board business intelligence
- */
-'use client';
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/card';
-  import {
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
   useBusinessMetrics,
   DashboardData,
   BusinessInsight,
-  JobBoardKPIs,
-} from '@/components/ui/card';
-  import {
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Briefcase,
-  Send,
-  Search,
-  DollarSign,
-  Clock,
-  Target,
-  AlertTriangle,
-  CheckCircle,
-  Info,
-  Lightbulb,
-  Download,
-  RefreshCw,
-  BarChart3,
-  PieChart,
-  Activity,
-  Eye,
-  MousePointer,
-  Star,
-  UserPlus,
-  Plus,
+  JobBoardKPIs
 } from 'lucide-react';
 
 interface KPICardProps {
@@ -69,7 +28,7 @@ function KPICard({
   trend,
   icon,
   format = 'number',
-  onClick,
+  onClick
 }: KPICardProps) {
   const formatValue = (val: string | number) => {
     if (typeof val === 'string') return val;
@@ -240,7 +199,7 @@ function TrendChart({ data, title, color = '#3b82f6' }: TrendChartProps) {
               style={{
                 height: `${Math.max(height, 5)}%`,
                 backgroundColor: color,
-                opacity: 0.7,
+                opacity: 0.7
               }}
               title={`${point.period}: ${point.value.toLocaleString()}`}
             />
@@ -258,7 +217,7 @@ export function BusinessDashboard() {
     trackInsightInteraction,
     trackKPIDrillDown,
     exportDashboardData,
-    isInitialized,
+    isInitialized
   } = useBusinessMetrics();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null
@@ -304,7 +263,7 @@ export function BusinessDashboard() {
         prev
           ? {
               ...prev,
-              insights: prev.insights.filter(i => i.id !== insight.id),
+              insights: prev.insights.filter(i => i.id !== insight.id)
             }
           : null
       );

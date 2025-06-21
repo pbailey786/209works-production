@@ -1,25 +1,15 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { prisma } from '@/lib/database/prisma';
-import {
-  Shield,
-  FileText,
-  AlertTriangle,
-  Users,
-  CheckCircle,
-  Clock,
-  Eye,
-  Flag,
-} from 'lucide-react';
+import { prisma } from 'lucide-react';
 
 export const metadata = {
   title: 'Content Moderation | Admin Dashboard',
-  description: 'Manage content moderation for jobs, users, and reports',
+  description: 'Manage content moderation for jobs, users, and reports'
 };
 
 export default async function ModerationPage() {
@@ -29,7 +19,7 @@ export default async function ModerationPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Check authentication and permissions

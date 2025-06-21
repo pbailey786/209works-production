@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { Resend } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 function getResendClient() {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
         type: reportType,
         generatedBy: user?.id,
         data: JSON.stringify(report),
-        recipients: recipients.join(','),
+        recipients: recipients.path.join(','),
         status: 'generated',
       },
     });
@@ -459,7 +460,7 @@ function generateReportHTML(report: any, includeCharts: boolean): string {
               <strong>${insight.title}</strong><br>
               ${insight.description}
             </div>
-          `).join('')}
+          `).path.join('')}
         </div>
 
         <div class="section">
@@ -475,7 +476,7 @@ function generateReportHTML(report: any, includeCharts: boolean): string {
             <tbody>
               ${report.userMetrics.byRole.map((role: any) => `
                 <tr><td>${role.role}</td><td>${role._count.role}</td></tr>
-              `).join('')}
+              `).path.join('')}
             </tbody>
           </table>
         </div>
@@ -493,7 +494,7 @@ function generateReportHTML(report: any, includeCharts: boolean): string {
             <tbody>
               ${report.jobMetrics.byCategory.slice(0, 5).map((cat: any) => `
                 <tr><td>${cat.category}</td><td>${cat._count.category}</td></tr>
-              `).join('')}
+              `).path.join('')}
             </tbody>
           </table>
         </div>
@@ -511,7 +512,7 @@ function generateReportHTML(report: any, includeCharts: boolean): string {
             <tbody>
               ${report.aiMetrics.topQuestions.slice(0, 5).map((q: any) => `
                 <tr><td>${q.question}</td><td>${q._count.question}</td></tr>
-              `).join('')}
+              `).path.join('')}
             </tbody>
           </table>
         </div>
@@ -527,7 +528,7 @@ function generateReportHTML(report: any, includeCharts: boolean): string {
             <tbody>
               ${report.topPerformers.topJobs.slice(0, 5).map((job: any) => `
                 <tr><td>${job.title}</td><td>${job.company}</td><td>${job._count.applications}</td></tr>
-              `).join('')}
+              `).path.join('')}
             </tbody>
           </table>
         </div>

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { randomBytes } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 

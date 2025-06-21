@@ -10,7 +10,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface ApplicationStatusEmailProps {
@@ -44,7 +44,7 @@ export default function ApplicationStatusEmail({
   futureOpportunities = true,
   interviewDetails,
   contactEmail = 'hr@company.com',
-  hrName = 'Hiring Team',
+  hrName = 'Hiring Team'
 }: ApplicationStatusEmailProps) {
   const getPreviewText = () => {
     switch (status) {
@@ -298,7 +298,7 @@ const main = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   WebkitFontSmoothing: 'antialiased' as const,
   MozOsxFontSmoothing: 'grayscale' as const,
-  textRendering: 'optimizeLegibility' as const,
+  textRendering: 'optimizeLegibility' as const
 };
 
 const container = {
@@ -308,14 +308,14 @@ const container = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const header = {
   backgroundColor: '#2d4a3e',
   backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
   padding: '32px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const logo = {
@@ -323,25 +323,25 @@ const logo = {
   fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 8px 0',
-  letterSpacing: '-0.5px',
+  letterSpacing: '-0.5px'
 };
 
 const tagline = {
   color: '#ffffff',
   fontSize: '14px',
   margin: '0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const content = {
-  padding: '32px 24px',
+  padding: '32px 24px'
 };
 
 const greeting = {
   fontSize: '18px',
   color: '#1e293b',
   margin: '0 0 24px 0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const statusCard = {
@@ -350,27 +350,27 @@ const statusCard = {
   padding: '32px 24px',
   margin: '24px 0',
   backgroundColor: '#fafafa',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const statusIcon = {
   fontSize: '56px',
   margin: '0 0 16px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const statusTitle = {
   fontSize: '24px',
   fontWeight: 'bold',
   margin: '0 0 12px 0',
-  lineHeight: '1.2',
+  lineHeight: '1.2'
 };
 
 const jobInfo = {
   fontSize: '16px',
   color: '#64748b',
   margin: '0',
-  lineHeight: '1.4',
+  lineHeight: '1.4'
 };
 
 const messageCard = {
@@ -378,21 +378,21 @@ const messageCard = {
   margin: '24px 0',
   backgroundColor: '#f8fafc',
   borderRadius: '12px',
-  border: '1px solid #e2e8f0',
+  border: '1px solid #e2e8f0'
 };
 
 const messageText = {
   fontSize: '16px',
   color: '#374151',
   lineHeight: '1.6',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const sectionTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#1e293b',
-  margin: '24px 0 16px 0',
+  margin: '24px 0 16px 0'
 };
 
 const nextStepsCard = {
@@ -400,7 +400,7 @@ const nextStepsCard = {
   border: '2px solid #bbf7d0',
   borderRadius: '8px',
   padding: '20px',
-  margin: '16px 0',
+  margin: '16px 0'
 };
 
 const celebrationCard = {
@@ -409,21 +409,21 @@ const celebrationCard = {
   borderRadius: '8px',
   padding: '20px',
   margin: '20px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const celebrationTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const celebrationText = {
   fontSize: '15px',
   color: '#7c2d12',
   lineHeight: '1.5',
-  margin: '0',
+  margin: '0'
 };
 
 const feedbackCard = {
@@ -431,7 +431,7 @@ const feedbackCard = {
   border: '1px solid #cbd5e1',
   borderRadius: '8px',
   padding: '16px',
-  margin: '16px 0',
+  margin: '16px 0'
 };
 
 const feedbackText = {
@@ -439,7 +439,7 @@ const feedbackText = {
   color: '#475569',
   lineHeight: '1.5',
   margin: '0',
-  fontStyle: 'italic',
+  fontStyle: 'italic'
 };
 
 const encouragementCard = {
@@ -447,21 +447,21 @@ const encouragementCard = {
   border: '2px solid #bbf7d0',
   borderRadius: '8px',
   padding: '20px',
-  margin: '20px 0',
+  margin: '20px 0'
 };
 
 const encouragementTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#166534',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const encouragementText = {
   fontSize: '15px',
   color: '#166534',
   lineHeight: '1.5',
-  margin: '0',
+  margin: '0'
 };
 
 const interviewCard = {
@@ -470,20 +470,20 @@ const interviewCard = {
   borderLeft: '4px solid #2d4a3e',
   borderRadius: '8px',
   padding: '20px',
-  margin: '16px 0',
+  margin: '16px 0'
 };
 
 const detailItem = {
   fontSize: '15px',
   color: '#1e293b',
   margin: '8px 0',
-  lineHeight: '1.4',
+  lineHeight: '1.4'
 };
 
 const linkStyle = {
   color: '#ff6b35',
   textDecoration: 'underline',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const preparationCard = {
@@ -491,14 +491,14 @@ const preparationCard = {
   border: '1px solid #fed7aa',
   borderRadius: '8px',
   padding: '16px',
-  margin: '16px 0',
+  margin: '16px 0'
 };
 
 const preparationTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const preparationItem = {
@@ -506,7 +506,7 @@ const preparationItem = {
   color: '#7c2d12',
   margin: '6px 0',
   lineHeight: '1.4',
-  display: 'block',
+  display: 'block'
 };
 
 const timelineCard = {
@@ -514,7 +514,7 @@ const timelineCard = {
   border: '2px solid #bbf7d0',
   borderRadius: '8px',
   padding: '20px',
-  margin: '16px 0',
+  margin: '16px 0'
 };
 
 const timelineItem = {
@@ -522,7 +522,7 @@ const timelineItem = {
   color: '#166534',
   margin: '8px 0',
   lineHeight: '1.4',
-  display: 'block',
+  display: 'block'
 };
 
 const contactSection = {
@@ -531,21 +531,21 @@ const contactSection = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const contactTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const contactText = {
   fontSize: '15px',
   color: '#7c2d12',
   margin: '0 0 16px 0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };
 
 const contactInfo = {
@@ -553,7 +553,7 @@ const contactInfo = {
   color: '#7c2d12',
   fontWeight: '500',
   lineHeight: '1.6',
-  margin: '0',
+  margin: '0'
 };
 
 const closingText = {
@@ -565,49 +565,49 @@ const closingText = {
   padding: '16px',
   backgroundColor: '#f0fdf4',
   borderRadius: '8px',
-  border: '1px solid #bbf7d0',
+  border: '1px solid #bbf7d0'
 };
 
 const signature = {
   fontSize: '15px',
   color: '#374151',
   margin: '24px 0 0 0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };
 
 const divider = {
   borderColor: '#e2e8f0',
-  margin: '0',
+  margin: '0'
 };
 
 const footerSection = {
   backgroundColor: '#f8fafc',
   padding: '24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const footerTitle = {
   color: '#2d4a3e',
   fontSize: '16px',
   fontWeight: 'bold',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const footerSubtitle = {
   color: '#64748b',
   fontSize: '12px',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const footerText = {
   fontSize: '12px',
   color: '#64748b',
   margin: '0 0 8px 0',
-  lineHeight: '1.4',
+  lineHeight: '1.4'
 };
 
 const copyrightText = {
   fontSize: '12px',
   color: '#94a3b8',
-  margin: '0',
+  margin: '0'
 }; 

@@ -1,6 +1,6 @@
-import { useState } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/card';
 import { Label } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/card';
@@ -8,39 +8,10 @@ import { format } from 'date-fns';
 
 'use client';
 
-  import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/card';
-  import {
+  import { Card } from '@/components/ui/card';
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/card';
-  import {
-  BarChart3,
-  CalendarIcon,
-  Download,
-  FileText,
-  Loader2,
-  TrendingUp,
-  Users,
-  Briefcase,
-  DollarSign,
-  Activity,
-  AlertCircle,
-  CheckCircle,
-  Clock,
+  PopoverTrigger
 } from 'lucide-react';
 
 interface ReportConfig {
@@ -82,7 +53,7 @@ export default function ReportsExportDashboard() {
       category: 'Users',
       estimatedRows: 15420,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 2),
-      status: 'available',
+      status: 'available'
     },
     {
       id: 'job_listings',
@@ -93,7 +64,7 @@ export default function ReportsExportDashboard() {
       category: 'Jobs',
       estimatedRows: 8934,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 6),
-      status: 'available',
+      status: 'available'
     },
     {
       id: 'revenue_analytics',
@@ -104,7 +75,7 @@ export default function ReportsExportDashboard() {
       category: 'Finance',
       estimatedRows: 2156,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 12),
-      status: 'available',
+      status: 'available'
     },
     {
       id: 'system_performance',
@@ -115,7 +86,7 @@ export default function ReportsExportDashboard() {
       category: 'System',
       estimatedRows: 50000,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 30),
-      status: 'available',
+      status: 'available'
     },
     {
       id: 'application_analytics',
@@ -126,7 +97,7 @@ export default function ReportsExportDashboard() {
       category: 'Analytics',
       estimatedRows: 12678,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 4),
-      status: 'available',
+      status: 'available'
     },
     {
       id: 'moderation_log',
@@ -137,7 +108,7 @@ export default function ReportsExportDashboard() {
       category: 'Moderation',
       estimatedRows: 3421,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 8),
-      status: 'available',
+      status: 'available'
     },
     {
       id: 'advertisement_performance',
@@ -148,7 +119,7 @@ export default function ReportsExportDashboard() {
       category: 'Marketing',
       estimatedRows: 1876,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 24),
-      status: 'generating',
+      status: 'generating'
     },
     {
       id: 'security_audit',
@@ -159,7 +130,7 @@ export default function ReportsExportDashboard() {
       category: 'Security',
       estimatedRows: 8765,
       lastGenerated: new Date(Date.now() - 1000 * 60 * 60 * 1),
-      status: 'available',
+      status: 'available'
     },
   ];
 
@@ -202,15 +173,15 @@ export default function ReportsExportDashboard() {
         reportType: selectedReport,
         format: exportFormat,
         dateFrom,
-        dateTo,
+        dateTo
       };
 
       const response = await fetch('/api/admin/reports/export', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(exportRequest),
+        body: JSON.stringify(exportRequest)
       });
 
       if (!response.ok) {

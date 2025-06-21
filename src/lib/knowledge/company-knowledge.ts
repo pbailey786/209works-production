@@ -1,10 +1,4 @@
-import { prisma } from '@/lib/database/prisma';
-import {
-
-  CompanyKnowledgeCategory,
-  CompanyKnowledgeSource,
-  Prisma,
-} from '@prisma/client';
+import { prisma } from '@prisma/client';
 
 export interface CompanyInfo {
   id: string;
@@ -64,7 +58,7 @@ export class CompanyKnowledgeService {
             { name: { equals: identifier, mode: 'insensitive' } },
             { slug: identifier.toLowerCase() },
           ],
-          isActive: true,
+          isActive: true
         },
         include: {
           knowledgeBase: {
@@ -73,9 +67,9 @@ export class CompanyKnowledgeService {
               { priority: 'desc' },
               { views: 'desc' },
               { updatedAt: 'desc' },
-            ],
-          },
-        },
+            ]
+          }
+        }
       });
 
       if (!company) {
@@ -104,8 +98,8 @@ export class CompanyKnowledgeService {
           priority: entry.priority,
           views: entry.views,
           createdAt: entry.createdAt,
-          updatedAt: entry.updatedAt,
-        })),
+          updatedAt: entry.updatedAt
+        }))
       };
     } catch (error) {
       console.error('Error fetching company info:', error);
@@ -128,8 +122,8 @@ export class CompanyKnowledgeService {
             { name: { equals: companyIdentifier, mode: 'insensitive' } },
             { slug: companyIdentifier.toLowerCase() },
           ],
-          isActive: true,
-        },
+          isActive: true
+        }
       });
 
       if (!company) {
@@ -163,7 +157,7 @@ export class CompanyKnowledgeService {
           { views: 'desc' },
           { updatedAt: 'desc' },
         ],
-        take: params.limit || 10,
+        take: params.limit || 10
       });
 
       // Update view counts for retrieved entries
@@ -182,7 +176,7 @@ export class CompanyKnowledgeService {
         priority: entry.priority,
         views: entry.views + 1, // Reflect the increment
         createdAt: entry.createdAt,
-        updatedAt: entry.updatedAt,
+        updatedAt: entry.updatedAt
       }));
     } catch (error) {
       console.error('Error searching company knowledge:', error);
@@ -199,7 +193,7 @@ export class CompanyKnowledgeService {
   ): Promise<CompanyKnowledgeEntry[]> {
     return this.searchCompanyKnowledge(companyIdentifier, {
       category,
-      verified: true,
+      verified: true
     });
   }
 
@@ -220,8 +214,8 @@ export class CompanyKnowledgeService {
           source: input.source || 'company_provided',
           priority: input.priority || 0,
           verified:
-            input.source === 'hr_verified' || input.source === 'admin_created',
-        },
+            input.source === 'hr_verified' || input.source === 'admin_created'
+        }
       });
 
       return {
@@ -235,7 +229,7 @@ export class CompanyKnowledgeService {
         priority: entry.priority,
         views: entry.views,
         createdAt: entry.createdAt,
-        updatedAt: entry.updatedAt,
+        updatedAt: entry.updatedAt
       };
     } catch (error) {
       console.error('Error adding company knowledge:', error);
@@ -255,8 +249,8 @@ export class CompanyKnowledgeService {
         where: { id: entryId },
         data: {
           ...updates,
-          updatedAt: new Date(),
-        },
+          updatedAt: new Date()
+        }
       });
 
       return {
@@ -270,7 +264,7 @@ export class CompanyKnowledgeService {
         priority: entry.priority,
         views: entry.views,
         createdAt: entry.createdAt,
-        updatedAt: entry.updatedAt,
+        updatedAt: entry.updatedAt
       };
     } catch (error) {
       console.error('Error updating company knowledge:', error);
@@ -286,7 +280,7 @@ export class CompanyKnowledgeService {
       // Use soft delete instead of hard delete to preserve audit trail
       await prisma.companyKnowledge.update({
         where: { id: entryId },
-        data: { deletedAt: new Date() },
+        data: { deletedAt: new Date() }
       });
       return true;
     } catch (error) {
@@ -305,19 +299,19 @@ export class CompanyKnowledgeService {
       const companies = await prisma.job.groupBy({
         by: ['company'],
         _count: {
-          company: true,
+          company: true
         },
         orderBy: {
           _count: {
-            company: 'desc',
-          },
+            company: 'desc'
+          }
         },
         take: 100, // Top 100 companies by job count
       });
 
       return companies.map(company => ({
         name: company.company,
-        count: company._count.company,
+        count: company._count.company
       }));
     } catch (error) {
       console.error('Error getting companies from jobs:', error);
@@ -344,7 +338,7 @@ export class CompanyKnowledgeService {
           slug: slug,
           isActive: true,
           subscriptionTier: 'basic', // Default tier for companies with jobs
-        },
+        }
       });
 
       return company.id;
@@ -365,11 +359,11 @@ export class CompanyKnowledgeService {
       const result = await prisma.job.updateMany({
         where: {
           company: companyName,
-          companyId: null,
+          companyId: null
         },
         data: {
-          companyId: companyId,
-        },
+          companyId: companyId
+        }
       });
 
       return result.count;
@@ -393,7 +387,7 @@ export class CompanyKnowledgeService {
         content: `${companyName} is actively hiring and posting job opportunities on 209jobs. We're committed to finding great talent in the Central Valley region.`,
         keywords: ['company', 'about', 'overview'],
         source: 'admin_created' as CompanyKnowledgeSource,
-        priority: 10,
+        priority: 10
       },
       {
         category: 'hiring_process' as CompanyKnowledgeCategory,
@@ -401,14 +395,14 @@ export class CompanyKnowledgeService {
         content: `To apply for positions at ${companyName}, you can submit your application through our job postings on 209jobs. We review all applications carefully and will contact qualified candidates.`,
         keywords: ['application', 'hiring', 'process', 'apply'],
         source: 'admin_created' as CompanyKnowledgeSource,
-        priority: 8,
+        priority: 8
       },
     ];
 
     for (const entry of defaultEntries) {
       await this.addCompanyKnowledge({
         companyId,
-        ...entry,
+        ...entry
       });
     }
   }
@@ -420,12 +414,12 @@ export class CompanyKnowledgeService {
     try {
       await prisma.companyKnowledge.updateMany({
         where: {
-          id: { in: entryIds },
+          id: { in: entryIds }
         },
         data: {
           views: { increment: 1 },
-          lastViewed: new Date(),
-        },
+          lastViewed: new Date()
+        }
       });
     } catch (error) {
       console.error('Error incrementing view counts:', error);
@@ -463,16 +457,16 @@ export class CompanyKnowledgeService {
         where: { companyId },
         _count: { id: true },
         _sum: { views: true },
-        _avg: { views: true },
+        _avg: { views: true }
       });
 
       const totalEntries = await prisma.companyKnowledge.count({
-        where: { companyId },
+        where: { companyId }
       });
 
       const totalViews = await prisma.companyKnowledge.aggregate({
         where: { companyId },
-        _sum: { views: true },
+        _sum: { views: true }
       });
 
       return {
@@ -482,8 +476,8 @@ export class CompanyKnowledgeService {
           category: cat.category,
           entryCount: cat._count.id,
           totalViews: cat._sum.views || 0,
-          avgViews: Math.round(cat._avg.views || 0),
-        })),
+          avgViews: Math.round(cat._avg.views || 0)
+        }))
       };
     } catch (error) {
       console.error('Error getting analytics:', error);

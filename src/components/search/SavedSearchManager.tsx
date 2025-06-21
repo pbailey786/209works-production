@@ -2,26 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { 
-  Search, 
-  Star, 
-  Play, 
-  Edit, 
-  Trash2, 
-  Bell, 
-  BellOff,
-  Plus,
-  Clock,
-  Filter,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react';
+import { Label } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SavedSearch {
@@ -43,7 +29,7 @@ interface SavedSearchManagerProps {
 
 export default function SavedSearchManager({
   onRunSearch,
-  className = '',
+  className = ''
 }: SavedSearchManagerProps) {
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +56,7 @@ export default function SavedSearchManager({
       toast({
         title: 'Error',
         description: 'Failed to load saved searches',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -80,7 +66,7 @@ export default function SavedSearchManager({
   const runSavedSearch = async (savedSearch: SavedSearch) => {
     try {
       const response = await fetch(`/api/saved-searches/${savedSearch.id}/run`, {
-        method: 'POST',
+        method: 'POST'
       });
 
       if (response.ok) {
@@ -102,7 +88,7 @@ export default function SavedSearchManager({
 
         toast({
           title: 'Search Executed',
-          description: `Found ${data.totalCount} jobs matching "${savedSearch.name}"`,
+          description: `Found ${data.totalCount} jobs matching "${savedSearch.name}"`
         });
       } else {
         throw new Error('Failed to run search');
@@ -112,7 +98,7 @@ export default function SavedSearchManager({
       toast({
         title: 'Error',
         description: 'Failed to run saved search',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -123,8 +109,8 @@ export default function SavedSearchManager({
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          alertEnabled: !savedSearch.alertEnabled,
-        }),
+          alertEnabled: !savedSearch.alertEnabled
+        })
       });
 
       if (response.ok) {
@@ -140,7 +126,7 @@ export default function SavedSearchManager({
           title: savedSearch.alertEnabled ? 'Alert Disabled' : 'Alert Enabled',
           description: savedSearch.alertEnabled 
             ? 'You will no longer receive alerts for this search'
-            : 'You will receive alerts when new jobs match this search',
+            : 'You will receive alerts when new jobs match this search'
         });
       } else {
         throw new Error('Failed to update alert setting');
@@ -150,7 +136,7 @@ export default function SavedSearchManager({
       toast({
         title: 'Error',
         description: 'Failed to update alert setting',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -168,8 +154,8 @@ export default function SavedSearchManager({
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: editName.trim(),
-        }),
+          name: editName.trim()
+        })
       });
 
       if (response.ok) {
@@ -186,7 +172,7 @@ export default function SavedSearchManager({
 
         toast({
           title: 'Search Updated',
-          description: 'Saved search name updated successfully',
+          description: 'Saved search name updated successfully'
         });
       } else {
         const errorData = await response.json();
@@ -197,7 +183,7 @@ export default function SavedSearchManager({
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to update search',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };
@@ -209,7 +195,7 @@ export default function SavedSearchManager({
 
     try {
       const response = await fetch(`/api/saved-searches/${savedSearch.id}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {
@@ -217,7 +203,7 @@ export default function SavedSearchManager({
 
         toast({
           title: 'Search Deleted',
-          description: 'Saved search deleted successfully',
+          description: 'Saved search deleted successfully'
         });
       } else {
         throw new Error('Failed to delete search');
@@ -227,7 +213,7 @@ export default function SavedSearchManager({
       toast({
         title: 'Error',
         description: 'Failed to delete saved search',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     }
   };

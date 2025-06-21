@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { EnhancedJobMatchingService } from '@/components/ui/card';
 import { emailQueue } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 
 

@@ -1,6 +1,6 @@
-import { useState } from '@/components/ui/card';
-import { useRouter } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/card';
 import { Label } from '@/components/ui/card';
@@ -8,23 +8,7 @@ import { Badge } from '@/components/ui/badge';
 
 'use client';
 
-  import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-  import {
-  ArrowLeft,
-  Save,
-  Loader2,
-  Calendar,
-  DollarSign,
-  Building,
-  ExternalLink,
-  MapPin,
-} from 'lucide-react';
+  import { Card } from 'lucide-react';
 
 interface Advertisement {
   id: string;
@@ -52,7 +36,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
     targetUrl: ad.targetUrl,
     zipCodes: ad.zipCodes,
     startDate: ad.startDate.toISOString().split('T')[0],
-    endDate: ad.endDate.toISOString().split('T')[0],
+    endDate: ad.endDate.toISOString().split('T')[0]
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -127,7 +111,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
       const response = await fetch(`/api/ads/${ad.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           title: formData.title.trim(),
@@ -136,8 +120,8 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
           targetUrl: formData.targetUrl.trim(),
           zipCodes: formData.zipCodes.trim(),
           startDate: new Date(formData.startDate).toISOString(),
-          endDate: new Date(formData.endDate).toISOString(),
-        }),
+          endDate: new Date(formData.endDate).toISOString()
+        })
       });
 
       if (!response.ok) {
@@ -153,7 +137,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
         submit:
           error instanceof Error
             ? error.message
-            : 'An error occurred while updating the advertisement',
+            : 'An error occurred while updating the advertisement'
       });
     } finally {
       setLoading(false);
@@ -164,7 +148,7 @@ export default function AdEditForm({ ad }: AdEditFormProps) {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 

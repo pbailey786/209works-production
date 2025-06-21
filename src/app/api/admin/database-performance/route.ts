@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { OptimizedJobSearchService } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 /**
  * Admin API: Database Performance Monitoring
@@ -156,7 +157,7 @@ function generateRecommendations(
       `Found ${unusedIndexes.length} unused indexes. Consider dropping: ${unusedIndexes
         .slice(0, 3)
         .map(idx => idx.indexname)
-        .join(', ')}`
+        .path.join(', ')}`
     );
   }
 
@@ -179,7 +180,7 @@ function generateRecommendations(
       `Large tables detected: ${largeTables
         .slice(0, 2)
         .map(t => t.tablename)
-        .join(', ')}. Consider partitioning or archiving old data.`
+        .path.join(', ')}. Consider partitioning or archiving old data.`
     );
   }
 

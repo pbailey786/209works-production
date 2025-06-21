@@ -2,18 +2,12 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { updateAdSchema } from '@/lib/validations/ads';
 import { routeParamsSchemas } from '@/lib/validations/api';
-import { prisma } from '@/lib/database/prisma';
-import {
-  createSuccessResponse,
-  NotFoundError,
-  AuthorizationError,
-} from '@/lib/utils/api-response';
-import {
+import { prisma } from '@/lib/utils/api-response';
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags,
+  invalidateCacheByTags
 } from '@/lib/cache/redis';
 
 // GET /api/ads/:id - Get specific advertisement details
@@ -61,8 +55,8 @@ export const GET = withAPIMiddleware(
             // Use direct fields instead of _count
             impressions: true,
             clicks: true,
-            conversions: true,
-          },
+            conversions: true
+          }
         });
 
         if (!ad) {
@@ -78,20 +72,20 @@ export const GET = withAPIMiddleware(
             prisma.adImpression.count({
               where: {
                 adId,
-                timestamp: { gte: thirtyDaysAgo },
-              },
+                timestamp: { gte: thirtyDaysAgo }
+              }
             }),
             prisma.adClick.count({
               where: {
                 adId,
-                timestamp: { gte: thirtyDaysAgo },
-              },
+                timestamp: { gte: thirtyDaysAgo }
+              }
             }),
             prisma.adConversion.count({
               where: {
                 adId,
-                createdAt: { gte: thirtyDaysAgo },
-              },
+                createdAt: { gte: thirtyDaysAgo }
+              }
             }),
           ]);
 
@@ -139,7 +133,7 @@ export const GET = withAPIMiddleware(
           {
             impressions: totalImpressions,
             clicks: totalClicks,
-            conversions: totalConversions,
+            conversions: totalConversions
           }
         );
 
@@ -155,14 +149,14 @@ export const GET = withAPIMiddleware(
               estimatedSpend: Math.round(estimatedSpend * 100) / 100,
               costPerClick: totalClicks > 0 ? estimatedSpend / totalClicks : 0,
               costPerConversion:
-                totalConversions > 0 ? estimatedSpend / totalConversions : 0,
+                totalConversions > 0 ? estimatedSpend / totalConversions : 0
             },
             recent: {
               impressions: recentImpressions,
               clicks: recentClicks,
               conversions: recentConversions,
-              period: '30 days',
-            },
+              period: '30 days'
+            }
           },
           budgetUtilization,
           targetingEffectiveness,
@@ -172,8 +166,8 @@ export const GET = withAPIMiddleware(
             totalClicks,
             totalConversions,
             ctr,
-            conversionRate,
-          }),
+            conversionRate
+          })
         };
       },
       {
@@ -182,7 +176,7 @@ export const GET = withAPIMiddleware(
           'ads',
           `ad:${adId}`,
           user!.role === 'admin' ? 'admin' : `advertiser:${user!.id}`,
-        ],
+        ]
       }
     );
 
@@ -193,7 +187,7 @@ export const GET = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.uuid,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -213,8 +207,8 @@ export const PATCH = withAPIMiddleware(
     const existingAd = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        ...(user!.role === 'employer' ? { advertiserId: user!.id } : {}),
-      },
+        ...(user!.role === 'employer' ? { advertiserId: user!.id } : {})
+      }
     });
 
     if (!existingAd) {
@@ -230,13 +224,13 @@ export const PATCH = withAPIMiddleware(
       where: { id: adId },
       data: {
         status: newStatus,
-        updatedAt: new Date(),
+        updatedAt: new Date()
       },
       select: {
         id: true,
         status: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
 
     // Invalidate cache
@@ -244,7 +238,7 @@ export const PATCH = withAPIMiddleware(
 
     return createSuccessResponse({
       message: `Advertisement ${action}d successfully`,
-      ad: updatedAd,
+      ad: updatedAd
     });
   },
   {
@@ -252,7 +246,7 @@ export const PATCH = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.uuid,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -267,8 +261,8 @@ export const PUT = withAPIMiddleware(
     const existingAd = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        ...(user!.role === 'employer' ? { advertiserId: user!.id } : {}),
-      },
+        ...(user!.role === 'employer' ? { advertiserId: user!.id } : {})
+      }
     });
 
     if (!existingAd) {
@@ -314,7 +308,7 @@ export const PUT = withAPIMiddleware(
       data: {
         ...(body || {}),
         id: undefined, // Remove id from update data
-        updatedAt: new Date(),
+        updatedAt: new Date()
       },
       select: {
         id: true,
@@ -328,8 +322,8 @@ export const PUT = withAPIMiddleware(
         priority: true,
         notes: true,
         createdAt: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
 
     // Invalidate relevant caches
@@ -351,7 +345,7 @@ export const PUT = withAPIMiddleware(
     bodySchema: updateAdSchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -366,8 +360,8 @@ export const DELETE = withAPIMiddleware(
     const existingAd = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        ...(user!.role === 'employer' ? { advertiserId: user!.id } : {}),
-      },
+        ...(user!.role === 'employer' ? { advertiserId: user!.id } : {})
+      }
     });
 
     if (!existingAd) {
@@ -379,7 +373,7 @@ export const DELETE = withAPIMiddleware(
       performance.trackDatabaseQuery();
       const hasSpend =
         (await prisma.adClick.count({
-          where: { adId },
+          where: { adId }
         })) > 0;
 
       if (hasSpend) {
@@ -392,7 +386,7 @@ export const DELETE = withAPIMiddleware(
     // Delete the advertisement (this will cascade delete related tracking data)
     performance.trackDatabaseQuery();
     await prisma.advertisement.delete({
-      where: { id: adId },
+      where: { id: adId }
     });
 
     // Invalidate relevant caches
@@ -404,7 +398,7 @@ export const DELETE = withAPIMiddleware(
 
     return createSuccessResponse({
       message: 'Advertisement deleted successfully',
-      deletedId: adId,
+      deletedId: adId
     });
   },
   {
@@ -412,7 +406,7 @@ export const DELETE = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.uuid,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -451,7 +445,7 @@ function calculateBudgetUtilization(bidding: any, estimatedSpend: number): any {
   const totalBudget = bidding.totalBudget;
 
   const utilization: any = {
-    estimatedSpend,
+    estimatedSpend
   };
 
   if (dailyBudget) {
@@ -511,7 +505,7 @@ function calculateTargetingEffectiveness(
           : score >= 40
             ? 'fair'
             : 'poor',
-    recommendations: generateTargetingRecommendations(targeting, performance),
+    recommendations: generateTargetingRecommendations(targeting, performance)
   };
 }
 

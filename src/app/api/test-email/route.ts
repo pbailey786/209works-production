@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { emailAgent } from '@/lib/agents/email-agent';
 
 export async function POST(request: NextRequest) {

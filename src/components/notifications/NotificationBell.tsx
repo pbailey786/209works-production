@@ -4,29 +4,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Bell, 
-  BellOff, 
-  Check, 
-  CheckCheck, 
-  ExternalLink,
-  Clock,
-  Briefcase,
-  MessageSquare,
-  Star,
-  CreditCard,
-  Shield,
-  Megaphone
-} from 'lucide-react';
+import { ScrollArea } from 'lucide-react';
 import { useRealTimeNotifications } from '@/hooks/useRealTimeNotifications';
-import { formatDistanceToNow } from 'date-fns';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuHeader,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { formatDistanceToNow } from '@/components/ui/dropdown-menu';
 
 interface NotificationBellProps {
   className?: string;

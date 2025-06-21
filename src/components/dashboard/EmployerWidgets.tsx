@@ -2,16 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import {
-  WidgetCard,
-  MetricCard,
-  QuickAction,
-  StatsGrid,
-  LoadingState,
-  ErrorState,
-} from './DashboardCards';
-import {
+import { motion } from './DashboardCards';
   TrendingUp,
   Target,
   Clock,
@@ -38,7 +29,7 @@ import {
   Activity,
   Upload,
   CreditCard,
-  X,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -186,7 +177,7 @@ export function JobPerformanceWidget() {
             views: Math.floor(Math.random() * 200) + 50, // Mock data
             conversionRate: Math.random() * 10 + 2,
             status: job.status.toLowerCase(),
-            postedAt: job.postedAt,
+            postedAt: job.postedAt
           }));
           setJobs(performanceData);
         }
@@ -426,7 +417,7 @@ export function HiringPipelineWidget() {
             screening: Math.floor(Math.random() * 20) + 5,
             interview: Math.floor(Math.random() * 10) + 2,
             offer: Math.floor(Math.random() * 5) + 1,
-            hired: Math.floor(Math.random() * 3) + 1,
+            hired: Math.floor(Math.random() * 3) + 1
           });
         }
       } catch (err) {
@@ -436,7 +427,7 @@ export function HiringPipelineWidget() {
           screening: Math.floor(Math.random() * 20) + 5,
           interview: Math.floor(Math.random() * 10) + 2,
           offer: Math.floor(Math.random() * 5) + 1,
-          hired: Math.floor(Math.random() * 3) + 1,
+          hired: Math.floor(Math.random() * 3) + 1
         });
       } finally {
         setIsLoading(false);

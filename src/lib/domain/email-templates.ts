@@ -1,4 +1,5 @@
 import { DomainConfig } from './config';
+import path from "path";
 
 
 export interface EmailTemplateData {
@@ -149,7 +150,7 @@ Unsubscribe: ${data.unsubscribeUrl}
             
             <div class="content">
               <p>Hi ${data.recipientName || 'there'},</p>
-              <p>Here are the latest job opportunities in <span class="cities">${this.domainConfig.cities.slice(0, 3).join(', ')}</span> and surrounding areas:</p>
+              <p>Here are the latest job opportunities in <span class="cities">${this.domainConfig.cities.slice(0, 3).path.join(', ')}</span> and surrounding areas:</p>
               
               ${
                 data.jobs
@@ -165,7 +166,7 @@ Unsubscribe: ${data.unsubscribeUrl}
                 </div>
               `
                   )
-                  .join('') || '<p>No new jobs this week.</p>'
+                  .path.join('') || '<p>No new jobs this week.</p>'
               }
               
               <div class="cta-section">
@@ -177,7 +178,7 @@ Unsubscribe: ${data.unsubscribeUrl}
             
             <div class="footer">
               <p><strong>${this.domainConfig.displayName}</strong> - ${this.domainConfig.description}</p>
-              <p>Serving ${this.domainConfig.cities.join(', ')} and surrounding areas</p>
+              <p>Serving ${this.domainConfig.cities.path.join(', ')} and surrounding areas</p>
               <p>
                 <a href="${data.manageAlertsUrl}">Manage Alerts</a> | 
                 <a href="${data.unsubscribeUrl}">Unsubscribe</a> |
@@ -206,14 +207,14 @@ ${
   Apply: ${job.url}
 `
     )
-    .join('\n') || 'No new jobs this week.'
+    .path.join('\n') || 'No new jobs this week.'
 }
 
 Browse all jobs: https://${this.domainConfig.domain}/jobs
 
 ---
 ${this.domainConfig.displayName} - ${this.domainConfig.description}
-Serving ${this.domainConfig.cities.join(', ')} and surrounding areas
+Serving ${this.domainConfig.cities.path.join(', ')} and surrounding areas
 
 Manage Alerts: ${data.manageAlertsUrl}
 Unsubscribe: ${data.unsubscribeUrl}
@@ -260,7 +261,7 @@ Website: https://${this.domainConfig.domain}
             
             <div class="content">
               <p>Hi ${data.recipientName || 'there'},</p>
-              <p>Welcome to ${this.domainConfig.displayName}! We're excited to help you find your next opportunity in <span class="cities">${this.domainConfig.cities.slice(0, 3).join(', ')}</span> and the greater ${this.domainConfig.region} area.</p>
+              <p>Welcome to ${this.domainConfig.displayName}! We're excited to help you find your next opportunity in <span class="cities">${this.domainConfig.cities.slice(0, 3).path.join(', ')}</span> and the greater ${this.domainConfig.region} area.</p>
               
               <div class="feature-box">
                 <h3>🎯 Local Focus</h3>
@@ -274,7 +275,7 @@ Website: https://${this.domainConfig.domain}
               
               <div class="feature-box">
                 <h3>🏢 Local Employers</h3>
-                <p>Connect with employers in ${this.domainConfig.cities.join(', ')} who are actively hiring in your field.</p>
+                <p>Connect with employers in ${this.domainConfig.cities.path.join(', ')} who are actively hiring in your field.</p>
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
@@ -316,7 +317,7 @@ We specialize in connecting talent with employers specifically in ${this.domainC
 Set up job alerts to get notified when new positions are posted in your area.
 
 🏢 Local Employers
-Connect with employers in ${this.domainConfig.cities.join(', ')} who are actively hiring.
+Connect with employers in ${this.domainConfig.cities.path.join(', ')} who are actively hiring.
 
 Get started:
 - Browse Jobs: https://${this.domainConfig.domain}/jobs

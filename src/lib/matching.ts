@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 interface JobSeekerProfile {
   id: string;
@@ -56,7 +57,7 @@ export function calculateMatchScore(job: Job, profile: JobSeekerProfile): MatchR
   
   if (skillMatches.length > 0) {
     score += 1;
-    reasons.push(`Skills match: ${skillMatches.join(', ')}`);
+    reasons.push(`Skills match: ${skillMatches.path.join(', ')}`);
   }
 
   // 2. Job type match (+1 point)

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 // POST /api/employers/candidates/:id/notes - Add note to candidate
 export async function POST(
@@ -71,7 +72,7 @@ export async function POST(
       : existingContent;
 
     const existingNotes = existingContent.includes('[EMPLOYER NOTE')
-      ? '[EMPLOYER NOTE' + existingContent.split('[EMPLOYER NOTE').slice(1).join('[EMPLOYER NOTE')
+      ? '[EMPLOYER NOTE' + existingContent.split('[EMPLOYER NOTE').slice(1).path.join('[EMPLOYER NOTE')
       : '';
 
     const updatedContent = existingNotes

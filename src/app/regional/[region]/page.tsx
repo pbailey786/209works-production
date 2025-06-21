@@ -1,6 +1,6 @@
 import { Metadata } from '@/components/ui/card';
 import { notFound } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 /**
@@ -8,23 +8,7 @@ import { Badge } from '@/components/ui/badge';
  * Handles routes for /regional/209, /regional/916, /regional/510, /regional/norcal
  */
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  MapPin,
-  Building2,
-  Users,
-  TrendingUp,
-  Star,
-  Briefcase,
-  GraduationCap,
-  Heart,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 interface RegionConfig {
   name: string;
@@ -68,7 +52,7 @@ const regionConfigs: Record<string, RegionConfig> = {
       activeJobs: 1247,
       companies: 450,
       avgSalary: '$58,000',
-      unemploymentRate: '4.2%',
+      unemploymentRate: '4.2%'
     },
     highlights: [
       'Major transportation hub with access to Bay Area and Sacramento',
@@ -81,7 +65,7 @@ const regionConfigs: Record<string, RegionConfig> = {
       'Modesto Chamber',
       'Tracy Chamber',
       'Greater Merced Chamber',
-    ],
+    ]
   },
   sacramento: {
     name: 'Sacramento Region',
@@ -100,7 +84,7 @@ const regionConfigs: Record<string, RegionConfig> = {
       activeJobs: 2156,
       companies: 780,
       avgSalary: '$72,000',
-      unemploymentRate: '3.8%',
+      unemploymentRate: '3.8%'
     },
     highlights: [
       'State government employment opportunities',
@@ -112,7 +96,7 @@ const regionConfigs: Record<string, RegionConfig> = {
       'Sacramento Metro Chamber',
       'Roseville Chamber',
       'Folsom Chamber',
-    ],
+    ]
   },
   'east-bay': {
     name: 'East Bay',
@@ -131,7 +115,7 @@ const regionConfigs: Record<string, RegionConfig> = {
       activeJobs: 3421,
       companies: 1200,
       avgSalary: '$89,000',
-      unemploymentRate: '3.2%',
+      unemploymentRate: '3.2%'
     },
     highlights: [
       'Major port and logistics hub at Oakland',
@@ -143,8 +127,8 @@ const regionConfigs: Record<string, RegionConfig> = {
       'Oakland Chamber',
       'Fremont Chamber',
       'Tri-Valley Chamber',
-    ],
-  },
+    ]
+  }
 };
 
 interface PageProps {
@@ -154,20 +138,20 @@ interface PageProps {
 }
 
 export async function generateMetadata({
-  params,
+  params
 }: PageProps): Promise<Metadata> {
   const { region } = await params;
   const config = regionConfigs[region];
 
   if (!config) {
     return {
-      title: 'Region Not Found | 209jobs',
+      title: 'Region Not Found | 209jobs'
     };
   }
 
   return {
     title: `${config.name} Jobs | ${config.areaCode}jobs`,
-    description: `Find jobs in ${config.name}. ${config.description}`,
+    description: `Find jobs in ${config.name}. ${config.description}`
   };
 }
 
@@ -431,6 +415,6 @@ export default async function RegionalPage({ params }: PageProps) {
 
 export async function generateStaticParams() {
   return Object.keys(regionConfigs).map(region => ({
-    region,
+    region
   }));
 }

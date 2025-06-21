@@ -1,21 +1,5 @@
 import React, { useState } from '@/components/ui/card';
-import { motion, AnimatePresence } from 'framer-motion';
-
-'use client';
-
-  import {
-  X,
-  Megaphone,
-  TrendingUp,
-  Package,
-  Check,
-  Star,
-  Instagram,
-  MessageSquare,
-  Sparkles,
-  DollarSign,
-  CreditCard,
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'lucide-react';
 
 interface JobUpsellModalProps {
   isOpen: boolean;
@@ -40,9 +24,9 @@ export default function JobUpsellModal({
   currentUpsells = {
     socialMediaShoutout: false,
     placementBump: false,
-    upsellBundle: false,
+    upsellBundle: false
   },
-  onSuccess,
+  onSuccess
 }: JobUpsellModalProps) {
   const [selectedOptions, setSelectedOptions] = useState<Set<string>>(
     new Set()
@@ -65,7 +49,7 @@ export default function JobUpsellModal({
       ],
       icon: <Instagram className="h-6 w-6" />,
       disabled:
-        currentUpsells.socialMediaShoutout || currentUpsells.upsellBundle,
+        currentUpsells.socialMediaShoutout || currentUpsells.upsellBundle
     },
     {
       id: 'placement-bump',
@@ -80,7 +64,7 @@ export default function JobUpsellModal({
       ],
       icon: <TrendingUp className="h-6 w-6" />,
       popular: true,
-      disabled: currentUpsells.placementBump || currentUpsells.upsellBundle,
+      disabled: currentUpsells.placementBump || currentUpsells.upsellBundle
     },
     {
       id: 'bundle',
@@ -96,7 +80,7 @@ export default function JobUpsellModal({
       ],
       icon: <Package className="h-6 w-6" />,
       badge: 'BEST VALUE',
-      disabled: currentUpsells.upsellBundle,
+      disabled: currentUpsells.upsellBundle
     },
   ];
 
@@ -143,7 +127,7 @@ export default function JobUpsellModal({
       const response = await fetch('/api/jobs/upsells', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           jobId,
@@ -153,8 +137,8 @@ export default function JobUpsellModal({
           placementBump:
             selectedOptions.has('placement-bump') ||
             selectedOptions.has('bundle'),
-          upsellBundle: selectedOptions.has('bundle'),
-        }),
+          upsellBundle: selectedOptions.has('bundle')
+        })
       });
 
       if (!response.ok) {

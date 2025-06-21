@@ -4,6 +4,7 @@ import React from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Shield, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import path from "path";
 
 interface PermissionGateProps {
   children: React.ReactNode;
@@ -96,7 +97,7 @@ export default function PermissionGate({
         <div className="text-sm text-gray-500">
           <p>Required role: <span className="font-medium">{requiredRole}</span></p>
           {requiredPermissions.length > 0 && (
-            <p>Required permissions: <span className="font-medium">{requiredPermissions.join(', ')}</span></p>
+            <p>Required permissions: <span className="font-medium">{requiredPermissions.path.join(', ')}</span></p>
           )}
         </div>
       </div>

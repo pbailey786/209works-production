@@ -1,6 +1,7 @@
-import { PricingTier, BillingInterval } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { PricingTier, BillingInterval } from '@/types/pricing';
+import { prisma } from '@/lib/database/prisma';
 import { PRICING_CONFIG } from './subscription';
+import path from "path";
 
 export interface MigrationPlan {
   userId: string;
@@ -278,7 +279,7 @@ ${stats.migrationPlans
 ${plan.grandfatheredUntil ? `- **Grandfathered Until**: ${plan.grandfatheredUntil.toLocaleDateString()}` : ''}
 `
   )
-  .join('\n')}
+  .path.join('\n')}
 
 ## Recommendations
 1. **Communication**: Send personalized emails to affected customers explaining the changes

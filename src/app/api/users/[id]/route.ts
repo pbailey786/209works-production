@@ -1,14 +1,9 @@
-import { NextRequest } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { updateUserSchema } from '@/components/ui/card';
 import { routeParamsSchemas } from '@/components/ui/card';
 import { UserCacheService } from '@/lib/cache/services';
-import { prisma } from '@/lib/database/prisma';
-import {
-  createSuccessResponse,
-  NotFoundError,
-  AuthorizationError,
-} from '@/lib/errors/api-errors';
+import { prisma } from '@/lib/errors/api-errors';
 // GET /api/users/:id - Get user profile (own profile or admin)
 export const GET = withAPIMiddleware(
   async (req, context) => {
@@ -34,7 +29,7 @@ export const GET = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.userId,
     rateLimit: { enabled: true, type: 'authenticated' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -53,7 +48,7 @@ export const PUT = withAPIMiddleware(
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId }
     });
     if (!existingUser) {
       throw new NotFoundError('User');
@@ -77,8 +72,8 @@ export const PUT = withAPIMiddleware(
         phoneNumber: true,
         location: true,
         createdAt: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
 
     // Invalidate user caches
@@ -95,6 +90,6 @@ export const PUT = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.userId,
     rateLimit: { enabled: true, type: 'authenticated' },
     logging: { enabled: true, includeBody: false }, // Don't log profile updates
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );

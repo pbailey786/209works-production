@@ -3,19 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-import {
-  Crown,
-  Zap,
-  Shield,
-  ArrowRight,
-  CheckCircle,
-  Sparkles,
-  Building2,
-  Users,
-  TrendingUp,
-} from 'lucide-react';
+import { useRouter, useSearchParams } from 'lucide-react';
 
 // Component that uses search params - needs to be wrapped in Suspense
 function UpgradeContent() {
@@ -68,13 +56,13 @@ function UpgradeContent() {
         return {
           title: 'Subscription Required to Post Jobs',
           description: 'To post jobs and find great candidates in the 209 area, you need an active subscription plan.',
-          ctaText: 'Choose Your Plan to Post Jobs',
+          ctaText: 'Choose Your Plan to Post Jobs'
         };
       default:
         return {
           title: 'Upgrade Your 209 Works Account',
           description: 'Unlock powerful hiring tools and find the best local talent in the Central Valley.',
-          ctaText: 'Upgrade Now',
+          ctaText: 'Upgrade Now'
         };
     }
   };
@@ -85,22 +73,22 @@ function UpgradeContent() {
     {
       icon: <Sparkles className="h-6 w-6" />,
       title: 'AI-Powered Job Optimization',
-      description: 'Transform basic job info into compelling listings that attract quality candidates',
+      description: 'Transform basic job info into compelling listings that attract quality candidates'
     },
     {
       icon: <Users className="h-6 w-6" />,
       title: 'Local Talent Pool',
-      description: 'Access to job seekers specifically in the 209 area code region',
+      description: 'Access to job seekers specifically in the 209 area code region'
     },
     {
       icon: <TrendingUp className="h-6 w-6" />,
       title: 'Advanced Analytics',
-      description: 'Track job performance, views, and application rates',
+      description: 'Track job performance, views, and application rates'
     },
     {
       icon: <Shield className="h-6 w-6" />,
       title: 'Priority Support',
-      description: 'Get help when you need it with dedicated customer support',
+      description: 'Get help when you need it with dedicated customer support'
     },
   ];
 

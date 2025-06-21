@@ -1,11 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
-import {
-  checkDatabaseHealth,
-  getDatabaseMetrics,
-  optimizeDatabase,
-  checkIndexUsage,
-  getTableSizes,
-} from '@/lib/database/health';
+import { NextRequest, NextResponse } from '@/lib/database/health';
 
 /**
  * GET /api/debug/database-health

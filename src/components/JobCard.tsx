@@ -1,14 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion'; // For animations
-import { BookmarkIcon, StarIcon, EyeIcon, CheckCircleIcon } from '@heroicons/react/24/outline'; // For icons
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { ACCESSIBLE_ICONS } from '@/utils/accessibility';
-import {
-  JobCardProps,
-  validateJobCardProps,
-  defaultJobCardProps,
-  safeFormatDate,
-} from '@/lib/types/component-props';
+import { ACCESSIBLE_ICONS } from '@/lib/types/component-props';
 
 export default function JobCard(props: JobCardProps) {
   // Validate props and apply defaults
@@ -28,7 +20,7 @@ export default function JobCard(props: JobCardProps) {
     onViewDetails,
     applied = false,
     applicationStatus,
-    appliedAt,
+    appliedAt
   } = validatedProps;
 
   // Local state for save operation

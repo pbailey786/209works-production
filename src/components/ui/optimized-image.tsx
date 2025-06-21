@@ -1,5 +1,5 @@
 import Image, { ImageProps } from '@/components/ui/card';
-import { useState } from '@/components/ui/card';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 'use client';

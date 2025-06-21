@@ -1,5 +1,6 @@
-import { getEmbedding } from '@/components/ui/card';
+import { getEmbedding } from '@/lib/ai/embeddings';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 interface BackfillConfig {
@@ -122,7 +123,7 @@ class BackfillValidator {
     }
 
     if (errors.length > 0) {
-      throw new Error(`Configuration validation failed: ${errors.join(', ')}`);
+      throw new Error(`Configuration validation failed: ${errors.path.join(', ')}`);
     }
   }
 }

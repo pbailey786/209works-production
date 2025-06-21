@@ -1,11 +1,12 @@
 import { Metadata } from '@/components/ui/card';
 import { notFound } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { cache } from '@/components/ui/card';
 import { Job, JobType } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { safeDBQuery, validateSession } from '@/lib/utils/safe-fetch';
+import path from "path";
 
 
 interface JobDetailPageProps {
@@ -211,7 +212,7 @@ export async function generateMetadata({
       'job search',
       'employment',
       'career opportunities',
-    ].filter(Boolean).join(', '),
+    ].filter(Boolean).path.join(', '),
     openGraph: {
       title,
       description,
@@ -334,7 +335,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
     },
     employmentType: job.jobType.toUpperCase().replace('_', '_'),
     jobBenefits: 'Competitive salary and benefits package',
-    skills: job.categories.join(', '),
+    skills: job.categories.path.join(', '),
     identifier: {
       '@type': 'PropertyValue',
       name: '209Jobs Job ID',
@@ -358,7 +359,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           },
         },
       }),
-    industry: job.categories.slice(0, 3).join(', '), // Limit for performance
+    industry: job.categories.slice(0, 3).path.join(', '), // Limit for performance
   };
 
   return (

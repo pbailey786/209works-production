@@ -4,30 +4,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Search,
-  Filter,
-  MapPin,
-  Users,
-  Building2,
-  Phone,
-  Mail,
-  Globe,
-  Star,
-  TrendingUp,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Chamber Members Directory | 209jobs',
   description:
-    'Browse and connect with chamber of commerce members in the Central Valley',
+    'Browse and connect with chamber of commerce members in the Central Valley'
 };
 
 export default function ChamberMembersPage() {
@@ -46,7 +28,7 @@ export default function ChamberMembersPage() {
       logo: '/placeholder-logo.png',
       verified: true,
       activeJobs: 23,
-      successfulHires: 89,
+      successfulHires: 89
     },
     {
       id: 2,
@@ -61,7 +43,7 @@ export default function ChamberMembersPage() {
       logo: '/placeholder-logo.png',
       verified: true,
       activeJobs: 15,
-      successfulHires: 34,
+      successfulHires: 34
     },
     {
       id: 3,
@@ -76,7 +58,7 @@ export default function ChamberMembersPage() {
       logo: '/placeholder-logo.png',
       verified: true,
       activeJobs: 8,
-      successfulHires: 12,
+      successfulHires: 12
     },
     {
       id: 4,
@@ -91,7 +73,7 @@ export default function ChamberMembersPage() {
       logo: '/placeholder-logo.png',
       verified: true,
       activeJobs: 12,
-      successfulHires: 28,
+      successfulHires: 28
     },
     {
       id: 5,
@@ -106,7 +88,7 @@ export default function ChamberMembersPage() {
       logo: '/placeholder-logo.png',
       verified: true,
       activeJobs: 6,
-      successfulHires: 15,
+      successfulHires: 15
     },
     {
       id: 6,
@@ -121,7 +103,7 @@ export default function ChamberMembersPage() {
       logo: '/placeholder-logo.png',
       verified: true,
       activeJobs: 9,
-      successfulHires: 21,
+      successfulHires: 21
     },
   ];
 
@@ -235,7 +217,7 @@ export default function ChamberMembersPage() {
                       {member.name
                         .split(' ')
                         .map(word => word[0])
-                        .join('')
+                        .path.join('')
                         .slice(0, 2)}
                     </AvatarFallback>
                   </Avatar>

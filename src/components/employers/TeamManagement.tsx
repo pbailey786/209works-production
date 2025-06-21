@@ -1,39 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import {
-  Users,
-  UserPlus,
-  Mail,
-  Shield,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Send,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Crown,
-  User,
-  Settings,
-} from 'lucide-react';
-import {
+import { Badge } from 'lucide-react';
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DropdownMenuSeparator
 } from '@/components/ui/dialog';
 
 interface TeamMember {
@@ -72,29 +48,29 @@ export function TeamManagement() {
       description: 'Full access to all features and settings',
       color: 'bg-red-100 text-red-800',
       icon: Crown,
-      permissions: ['manage_team', 'manage_billing', 'manage_jobs', 'view_analytics', 'manage_settings'],
+      permissions: ['manage_team', 'manage_billing', 'manage_jobs', 'view_analytics', 'manage_settings']
     },
     manager: {
       label: 'Manager',
       description: 'Manage jobs and view analytics',
       color: 'bg-blue-100 text-blue-800',
       icon: Shield,
-      permissions: ['manage_jobs', 'view_analytics', 'manage_applicants'],
+      permissions: ['manage_jobs', 'view_analytics', 'manage_applicants']
     },
     recruiter: {
       label: 'Recruiter',
       description: 'Post jobs and manage applicants',
       color: 'bg-green-100 text-green-800',
       icon: User,
-      permissions: ['manage_jobs', 'manage_applicants'],
+      permissions: ['manage_jobs', 'manage_applicants']
     },
     viewer: {
       label: 'Viewer',
       description: 'View-only access to jobs and analytics',
       color: 'bg-gray-100 text-gray-800',
       icon: Settings,
-      permissions: ['view_jobs', 'view_analytics'],
-    },
+      permissions: ['view_jobs', 'view_analytics']
+    }
   };
 
   useEffect(() => {
@@ -135,8 +111,8 @@ export function TeamManagement() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: inviteEmail,
-          role: inviteRole,
-        }),
+          role: inviteRole
+        })
       });
 
       if (response.ok) {
@@ -160,7 +136,7 @@ export function TeamManagement() {
       const response = await fetch(`/api/employers/team/members/${memberId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: newRole }),
+        body: JSON.stringify({ role: newRole })
       });
 
       if (response.ok) {
@@ -179,7 +155,7 @@ export function TeamManagement() {
 
     try {
       const response = await fetch(`/api/employers/team/members/${memberId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {
@@ -196,7 +172,7 @@ export function TeamManagement() {
   const handleCancelInvitation = async (invitationId: string) => {
     try {
       const response = await fetch(`/api/employers/team/invitations/${invitationId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {
@@ -213,7 +189,7 @@ export function TeamManagement() {
   const handleResendInvitation = async (invitationId: string) => {
     try {
       const response = await fetch(`/api/employers/team/invitations/${invitationId}/resend`, {
-        method: 'POST',
+        method: 'POST'
       });
 
       if (response.ok) {

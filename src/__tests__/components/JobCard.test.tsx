@@ -3,11 +3,15 @@
  * Tests the JobCard component functionality, accessibility, and user interactions
  */
 
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithProviders, mockFactories, a11yHelpers, performanceHelpers } from '@/__tests__/utils/test-helpers';
-import JobCard from '@/components/jobs/JobCard';
 import { axe, toHaveNoViolations } from 'jest-axe';
+import '@testing-library/jest-dom';
+import { renderWithProviders, mockFactories, a11yHelpers, performanceHelpers } from '@/__tests__/utils/test-helpers';
+import JobCard from '@/components/JobCard';
+
+// Extend Jest matchers
+expect.extend(toHaveNoViolations);
 
 // Extend Jest matchers
 expect.extend(toHaveNoViolations);
@@ -31,28 +35,20 @@ jest.mock('@clerk/nextjs', () => ({
 }));
 
 describe('JobCard Component', () => {
-  const mockJob = mockFactories.job({
+  const mockProps = {
     title: 'Senior Software Engineer',
     company: 'Tech Corp',
-    location: 'Stockton, CA',
-    salaryMin: 80000,
-    salaryMax: 120000,
-    jobType: 'Full-time',
-    experienceLevel: 'Senior Level',
-    skills: ['JavaScript', 'React', 'Node.js'],
-    benefits: ['Health Insurance', '401k', 'Remote Work'],
-    isRemote: false,
+    type: 'Full-time',
+    postedAt: '2024-01-15T10:00:00Z',
+    description: 'We are looking for a senior software engineer to join our team...',
+    applyUrl: 'https://example.com/apply',
     isFeatured: true,
-    isUrgent: false,
-  });
-
-  const mockProps = {
-    job: mockJob,
     onSave: jest.fn(),
-    onUnsave: jest.fn(),
-    onApply: jest.fn(),
-    isSaved: false,
-    showFullDescription: false,
+    saved: false,
+    onClick: jest.fn(),
+    isSelected: false,
+    onViewDetails: jest.fn(),
+    applied: false,
   };
 
   beforeEach(() => {
@@ -65,20 +61,8 @@ describe('JobCard Component', () => {
 
       expect(screen.getByText('Senior Software Engineer')).toBeInTheDocument();
       expect(screen.getByText('Tech Corp')).toBeInTheDocument();
-      expect(screen.getByText('Stockton, CA')).toBeInTheDocument();
-      expect(screen.getByText('$80,000 - $120,000')).toBeInTheDocument();
       expect(screen.getByText('Full-time')).toBeInTheDocument();
-      expect(screen.getByText('Senior Level')).toBeInTheDocument();
-    });
-
-    it('displays skills and benefits', () => {
-      renderWithProviders(<JobCard {...mockProps} />);
-
-      expect(screen.getByText('JavaScript')).toBeInTheDocument();
-      expect(screen.getByText('React')).toBeInTheDocument();
-      expect(screen.getByText('Node.js')).toBeInTheDocument();
-      expect(screen.getByText('Health Insurance')).toBeInTheDocument();
-      expect(screen.getByText('401k')).toBeInTheDocument();
+      expect(screen.getByText(/We are looking for a senior software engineer/)).toBeInTheDocument();
     });
 
     it('shows featured badge for featured jobs', () => {
@@ -86,48 +70,18 @@ describe('JobCard Component', () => {
       expect(screen.getByText('Featured')).toBeInTheDocument();
     });
 
-    it('shows urgent badge for urgent jobs', () => {
-      const urgentJob = { ...mockJob, isUrgent: true };
-      renderWithProviders(<JobCard {...mockProps} job={urgentJob} />);
-      expect(screen.getByText('Urgent')).toBeInTheDocument();
+    it('shows applied badge for applied jobs', () => {
+      renderWithProviders(<JobCard {...mockProps} applied={true} />);
+      expect(screen.getByText('Applied')).toBeInTheDocument();
     });
 
-    it('shows remote badge for remote jobs', () => {
-      const remoteJob = { ...mockJob, isRemote: true };
-      renderWithProviders(<JobCard {...mockProps} job={remoteJob} />);
-      expect(screen.getByText('Remote')).toBeInTheDocument();
-    });
-
-    it('handles missing salary information', () => {
-      const jobWithoutSalary = { ...mockJob, salaryMin: null, salaryMax: null };
-      renderWithProviders(<JobCard {...mockProps} job={jobWithoutSalary} />);
-      expect(screen.queryByText(/\$/)).not.toBeInTheDocument();
-    });
-
-    it('truncates long descriptions when showFullDescription is false', () => {
+    it('displays description with line clamp', () => {
       const longDescription = 'A'.repeat(500);
-      const jobWithLongDescription = { ...mockJob, description: longDescription };
-      
-      renderWithProviders(
-        <JobCard {...mockProps} job={jobWithLongDescription} showFullDescription={false} />
-      );
+      renderWithProviders(<JobCard {...mockProps} description={longDescription} />);
 
       const description = screen.getByText(/A+/);
-      expect(description.textContent?.length).toBeLessThan(longDescription.length);
-      expect(screen.getByText('Read more')).toBeInTheDocument();
-    });
-
-    it('shows full description when showFullDescription is true', () => {
-      const longDescription = 'A'.repeat(500);
-      const jobWithLongDescription = { ...mockJob, description: longDescription };
-      
-      renderWithProviders(
-        <JobCard {...mockProps} job={jobWithLongDescription} showFullDescription={true} />
-      );
-
-      const description = screen.getByText(/A+/);
-      expect(description.textContent?.length).toBe(longDescription.length);
-      expect(screen.queryByText('Read more')).not.toBeInTheDocument();
+      expect(description).toBeInTheDocument();
+      expect(description).toHaveClass('line-clamp-3');
     });
   });
 
@@ -139,84 +93,49 @@ describe('JobCard Component', () => {
       const saveButton = screen.getByRole('button', { name: /save/i });
       await user.click(saveButton);
 
-      expect(mockProps.onSave).toHaveBeenCalledWith(mockJob.id);
+      expect(mockProps.onSave).toHaveBeenCalled();
     });
 
-    it('calls onUnsave when unsave button is clicked', async () => {
-      const user = userEvent.setup();
-      renderWithProviders(<JobCard {...mockProps} isSaved={true} />);
-
-      const unsaveButton = screen.getByRole('button', { name: /unsave/i });
-      await user.click(unsaveButton);
-
-      expect(mockProps.onUnsave).toHaveBeenCalledWith(mockJob.id);
-    });
-
-    it('calls onApply when apply button is clicked', async () => {
+    it('calls onClick when card is clicked', async () => {
       const user = userEvent.setup();
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const applyButton = screen.getByRole('button', { name: /apply/i });
-      await user.click(applyButton);
+      const card = screen.getByRole('article');
+      await user.click(card);
 
-      expect(mockProps.onApply).toHaveBeenCalledWith(mockJob.id);
+      expect(mockProps.onClick).toHaveBeenCalled();
     });
 
-    it('expands description when "Read more" is clicked', async () => {
-      const user = userEvent.setup();
-      const longDescription = 'A'.repeat(500);
-      const jobWithLongDescription = { ...mockJob, description: longDescription };
-      
-      renderWithProviders(
-        <JobCard {...mockProps} job={jobWithLongDescription} showFullDescription={false} />
-      );
-
-      const readMoreButton = screen.getByText('Read more');
-      await user.click(readMoreButton);
-
-      await waitFor(() => {
-        const description = screen.getByText(/A+/);
-        expect(description.textContent?.length).toBe(longDescription.length);
-      });
-    });
-
-    it('collapses description when "Show less" is clicked', async () => {
-      const user = userEvent.setup();
-      const longDescription = 'A'.repeat(500);
-      const jobWithLongDescription = { ...mockJob, description: longDescription };
-      
-      renderWithProviders(
-        <JobCard {...mockProps} job={jobWithLongDescription} showFullDescription={true} />
-      );
-
-      const showLessButton = screen.getByText('Show less');
-      await user.click(showLessButton);
-
-      await waitFor(() => {
-        const description = screen.getByText(/A+/);
-        expect(description.textContent?.length).toBeLessThan(longDescription.length);
-      });
-    });
-
-    it('navigates to job details when title is clicked', async () => {
+    it('calls onViewDetails when view details button is clicked', async () => {
       const user = userEvent.setup();
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const titleLink = screen.getByRole('link', { name: mockJob.title });
-      expect(titleLink).toHaveAttribute('href', `/jobs/${mockJob.id}`);
+      const viewDetailsButton = screen.getByRole('button', { name: /view details/i });
+      await user.click(viewDetailsButton);
+
+      expect(mockProps.onViewDetails).toHaveBeenCalled();
+    });
+
+    it('has apply link with correct URL', () => {
+      renderWithProviders(<JobCard {...mockProps} />);
+
+      const applyLink = screen.getByRole('link', { name: /apply/i });
+      expect(applyLink).toHaveAttribute('href', mockProps.applyUrl);
+      expect(applyLink).toHaveAttribute('target', '_blank');
     });
 
     it('shows loading state during save operation', async () => {
       const user = userEvent.setup();
       const slowOnSave = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
-      
+
       renderWithProviders(<JobCard {...mockProps} onSave={slowOnSave} />);
 
       const saveButton = screen.getByRole('button', { name: /save/i });
       await user.click(saveButton);
 
+      expect(screen.getByText('Saving...')).toBeInTheDocument();
       expect(saveButton).toBeDisabled();
-      
+
       await waitFor(() => {
         expect(saveButton).not.toBeDisabled();
       });
@@ -233,63 +152,64 @@ describe('JobCard Component', () => {
     it('has proper ARIA labels', () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const saveButton = screen.getByRole('button', { name: /save/i });
-      a11yHelpers.expectAriaLabel(saveButton, 'Save job');
+      const card = screen.getByRole('article');
+      expect(card).toHaveAttribute('aria-label', `Job listing for ${mockProps.title} at ${mockProps.company}`);
 
-      const applyButton = screen.getByRole('button', { name: /apply/i });
-      a11yHelpers.expectAriaLabel(applyButton, 'Apply to job');
+      const saveButton = screen.getByRole('button', { name: /save/i });
+      expect(saveButton).toHaveAttribute('aria-label', `Save ${mockProps.title}`);
     });
 
     it('supports keyboard navigation', async () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const titleLink = screen.getByRole('link', { name: mockJob.title });
+      const card = screen.getByRole('article');
+      const viewDetailsButton = screen.getByRole('button', { name: /view details/i });
       const saveButton = screen.getByRole('button', { name: /save/i });
-      const applyButton = screen.getByRole('button', { name: /apply/i });
 
       // Test tab navigation
-      titleLink.focus();
-      expect(titleLink).toHaveFocus();
+      card.focus();
+      expect(card).toHaveFocus();
 
-      fireEvent.keyDown(titleLink, { key: 'Tab' });
-      await waitFor(() => expect(saveButton).toHaveFocus());
+      // Test that buttons are focusable
+      viewDetailsButton.focus();
+      expect(viewDetailsButton).toHaveFocus();
 
-      fireEvent.keyDown(saveButton, { key: 'Tab' });
-      await waitFor(() => expect(applyButton).toHaveFocus());
-    });
-
-    it('supports Enter key activation', async () => {
-      renderWithProviders(<JobCard {...mockProps} />);
-
-      const saveButton = screen.getByRole('button', { name: /save/i });
       saveButton.focus();
-
-      fireEvent.keyDown(saveButton, { key: 'Enter' });
-      expect(mockProps.onSave).toHaveBeenCalledWith(mockJob.id);
+      expect(saveButton).toHaveFocus();
     });
 
-    it('supports Space key activation', async () => {
+    it('supports Enter key activation on card', async () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const applyButton = screen.getByRole('button', { name: /apply/i });
-      applyButton.focus();
+      const card = screen.getByRole('article');
+      card.focus();
 
-      fireEvent.keyDown(applyButton, { key: ' ' });
-      expect(mockProps.onApply).toHaveBeenCalledWith(mockJob.id);
+      fireEvent.keyDown(card, { key: 'Enter' });
+      expect(mockProps.onClick).toHaveBeenCalled();
+    });
+
+    it('supports Space key activation on card', async () => {
+      renderWithProviders(<JobCard {...mockProps} />);
+
+      const card = screen.getByRole('article');
+      card.focus();
+
+      fireEvent.keyDown(card, { key: ' ' });
+      expect(mockProps.onClick).toHaveBeenCalled();
     });
 
     it('has proper heading hierarchy', () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const jobTitle = screen.getByRole('heading', { level: 3 });
-      expect(jobTitle).toHaveTextContent(mockJob.title);
+      const jobTitle = screen.getByRole('heading', { level: 2 });
+      expect(jobTitle).toHaveTextContent(mockProps.title);
     });
 
     it('provides screen reader friendly content', () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const salaryInfo = screen.getByText('$80,000 - $120,000');
-      expect(salaryInfo).toHaveAttribute('aria-label', 'Salary range 80,000 to 120,000 dollars');
+      const postedTime = screen.getByText(/Posted/);
+      expect(postedTime).toBeInTheDocument();
     });
   });
 
@@ -302,14 +222,11 @@ describe('JobCard Component', () => {
       performanceHelpers.expectPerformance(renderTime, 50); // Should render within 50ms
     });
 
-    it('handles large skill lists efficiently', async () => {
-      const jobWithManySkills = {
-        ...mockJob,
-        skills: Array.from({ length: 50 }, (_, i) => `Skill ${i + 1}`),
-      };
+    it('handles long descriptions efficiently', async () => {
+      const longDescription = 'A'.repeat(1000);
 
       const renderTime = await performanceHelpers.measureRenderTime(() => {
-        renderWithProviders(<JobCard {...mockProps} job={jobWithManySkills} />);
+        renderWithProviders(<JobCard {...mockProps} description={longDescription} />);
       });
 
       performanceHelpers.expectPerformance(renderTime, 100); // Should still render within 100ms
@@ -317,25 +234,28 @@ describe('JobCard Component', () => {
 
     it('memoizes expensive calculations', () => {
       const { rerender } = renderWithProviders(<JobCard {...mockProps} />);
-      
+
       // Re-render with same props
       rerender(<JobCard {...mockProps} />);
-      
+
       // Component should not re-render unnecessarily
-      expect(screen.getByText(mockJob.title)).toBeInTheDocument();
+      expect(screen.getByText(mockProps.title)).toBeInTheDocument();
     });
   });
 
   describe('Error Handling', () => {
-    it('handles missing job data gracefully', () => {
-      const incompleteJob = {
-        id: mockJob.id,
-        title: mockJob.title,
-        // Missing other required fields
+    it('handles missing optional props gracefully', () => {
+      const minimalProps = {
+        title: 'Test Job',
+        company: 'Test Company',
+        type: 'Full-time',
+        postedAt: '2024-01-15T10:00:00Z',
+        description: 'Test description',
+        applyUrl: 'https://example.com/apply',
       };
 
       expect(() => {
-        renderWithProviders(<JobCard {...mockProps} job={incompleteJob as any} />);
+        renderWithProviders(<JobCard {...minimalProps} />);
       }).not.toThrow();
     });
 
@@ -348,68 +268,39 @@ describe('JobCard Component', () => {
       renderWithProviders(<JobCard {...mockProps} onSave={errorOnSave} />);
 
       const saveButton = screen.getByRole('button', { name: /save/i });
-      
+
       // Should not crash the component
-      expect(() => user.click(saveButton)).not.toThrow();
-    });
+      await user.click(saveButton);
 
-    it('displays fallback content for missing images', () => {
-      const jobWithoutLogo = { ...mockJob, companyLogo: null };
-      renderWithProviders(<JobCard {...mockProps} job={jobWithoutLogo} />);
-
-      const fallbackIcon = screen.getByTestId('company-logo-fallback');
-      expect(fallbackIcon).toBeInTheDocument();
+      // Should show error message
+      expect(screen.getByText('Save failed')).toBeInTheDocument();
     });
   });
 
   describe('Responsive Design', () => {
-    it('adapts layout for mobile screens', () => {
-      // Mock mobile viewport
-      Object.defineProperty(window, 'innerWidth', {
-        writable: true,
-        configurable: true,
-        value: 375,
-      });
-
+    it('has responsive classes', () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const card = screen.getByTestId('job-card');
-      expect(card).toHaveClass('mobile-layout');
+      const card = screen.getByRole('article');
+      expect(card).toHaveClass('p-4', 'sm:p-6');
     });
 
-    it('shows desktop layout for larger screens', () => {
-      // Mock desktop viewport
-      Object.defineProperty(window, 'innerWidth', {
-        writable: true,
-        configurable: true,
-        value: 1024,
-      });
-
+    it('has responsive text sizing', () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const card = screen.getByTestId('job-card');
-      expect(card).toHaveClass('desktop-layout');
+      const title = screen.getByRole('heading', { level: 2 });
+      expect(title).toHaveClass('text-lg', 'sm:text-xl');
     });
   });
 
   describe('Integration with External Services', () => {
-    it('tracks analytics events on interactions', async () => {
-      const user = userEvent.setup();
-      const mockAnalytics = jest.fn();
-      
-      // Mock analytics
-      (global as any).gtag = mockAnalytics;
-
+    it('has external apply link', () => {
       renderWithProviders(<JobCard {...mockProps} />);
 
-      const applyButton = screen.getByRole('button', { name: /apply/i });
-      await user.click(applyButton);
-
-      expect(mockAnalytics).toHaveBeenCalledWith('event', 'job_apply_click', {
-        job_id: mockJob.id,
-        job_title: mockJob.title,
-        company: mockJob.company,
-      });
+      const applyLink = screen.getByRole('link', { name: /apply/i });
+      expect(applyLink).toHaveAttribute('href', mockProps.applyUrl);
+      expect(applyLink).toHaveAttribute('target', '_blank');
+      expect(applyLink).toHaveAttribute('rel', 'noopener noreferrer');
     });
   });
 });

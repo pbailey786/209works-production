@@ -4,19 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Home, 
-  Search, 
-  Briefcase, 
-  MessageSquare, 
-  User,
-  Bell,
-  Bookmark,
-  BarChart3
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useRealTimeNotifications } from '@/hooks/useRealTimeNotifications';
+import { useEffect } from "react";
+import { useState } from "react";
 
 interface NavigationItem {
   name: string;
@@ -45,17 +37,17 @@ export default function MobileBottomNavigation({ className = '' }: MobileBottomN
       {
         name: 'Home',
         href: '/',
-        icon: Home,
+        icon: Home
       },
       {
         name: 'Jobs',
         href: '/jobs',
-        icon: Briefcase,
+        icon: Briefcase
       },
       {
         name: 'Search',
         href: '/search',
-        icon: Search,
+        icon: Search
       },
     ];
 
@@ -67,14 +59,14 @@ export default function MobileBottomNavigation({ className = '' }: MobileBottomN
             name: 'JobsGPT',
             href: '/jobsgpt',
             icon: MessageSquare,
-            requiresAuth: true,
+            requiresAuth: true
           },
           {
             name: 'Profile',
             href: '/profile',
             icon: User,
             badge: unreadCount > 0 ? unreadCount : undefined,
-            requiresAuth: true,
+            requiresAuth: true
           },
         ];
       } else if (userRole === 'employer') {
@@ -84,32 +76,32 @@ export default function MobileBottomNavigation({ className = '' }: MobileBottomN
             href: '/dashboard',
             icon: BarChart3,
             requiresAuth: true,
-            roles: ['employer'],
+            roles: ['employer']
           },
           {
             name: 'Jobs',
             href: '/jobs',
-            icon: Briefcase,
+            icon: Briefcase
           },
           {
             name: 'Post Job',
             href: '/post-job',
             icon: Search,
             requiresAuth: true,
-            roles: ['employer'],
+            roles: ['employer']
           },
           {
             name: 'Messages',
             href: '/messages',
             icon: MessageSquare,
             badge: unreadCount > 0 ? unreadCount : undefined,
-            requiresAuth: true,
+            requiresAuth: true
           },
           {
             name: 'Profile',
             href: '/profile',
             icon: User,
-            requiresAuth: true,
+            requiresAuth: true
           },
         ];
       } else if (userRole === 'admin') {
@@ -119,32 +111,32 @@ export default function MobileBottomNavigation({ className = '' }: MobileBottomN
             href: '/admin',
             icon: BarChart3,
             requiresAuth: true,
-            roles: ['admin'],
+            roles: ['admin']
           },
           {
             name: 'Jobs',
             href: '/jobs',
-            icon: Briefcase,
+            icon: Briefcase
           },
           {
             name: 'Analytics',
             href: '/analytics',
             icon: Search,
             requiresAuth: true,
-            roles: ['admin'],
+            roles: ['admin']
           },
           {
             name: 'Messages',
             href: '/messages',
             icon: MessageSquare,
             badge: unreadCount > 0 ? unreadCount : undefined,
-            requiresAuth: true,
+            requiresAuth: true
           },
           {
             name: 'Profile',
             href: '/profile',
             icon: User,
-            requiresAuth: true,
+            requiresAuth: true
           },
         ];
       }
@@ -156,12 +148,12 @@ export default function MobileBottomNavigation({ className = '' }: MobileBottomN
       {
         name: 'JobsGPT',
         href: '/jobsgpt',
-        icon: MessageSquare,
+        icon: MessageSquare
       },
       {
         name: 'Sign In',
         href: '/sign-in',
-        icon: User,
+        icon: User
       },
     ];
   };
@@ -269,9 +261,9 @@ export default function MobileBottomNavigation({ className = '' }: MobileBottomN
 
 // Hook to detect if user is on mobile
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };

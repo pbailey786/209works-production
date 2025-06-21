@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 export async function GET(request: NextRequest) {
   try {
     const session = await auth() as any;
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
     
     if (invalidEmails.length > 0) {
       return NextResponse.json({ 
-        error: `Invalid email addresses: ${invalidEmails.join(', ')}` 
+        error: `Invalid email addresses: ${invalidEmails.path.join(', ')}` 
       }, { status: 400 });
     }
 

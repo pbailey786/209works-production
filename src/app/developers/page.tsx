@@ -3,26 +3,13 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Metadata } from 'next/head';
 import DeveloperDashboard from '@/components/developer/DeveloperDashboard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Code, 
-  Key, 
-  Webhook, 
-  Book, 
-  Zap, 
-  Shield, 
-  Globe, 
-  Users,
-  ExternalLink,
-  CheckCircle,
-  ArrowRight
-} from 'lucide-react';
+import { Skeleton } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Developer Portal | 209 Works',
-  description: 'Build powerful integrations with the 209 Works API. Access comprehensive documentation, manage API keys, and create webhooks.',
+  description: 'Build powerful integrations with the 209 Works API. Access comprehensive documentation, manage API keys, and create webhooks.'
 };
 
 // Loading component for developer dashboard

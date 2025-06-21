@@ -1,37 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
+import { Badge } from '@/components/ui/select';
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Mail,
-  Calendar,
-  FileText,
-  Send,
-  Trash2,
-  Plus,
-  Clock,
-  CheckCircle,
-  AlertCircle,
+  TableRow
 } from 'lucide-react';
 
 interface ReportSchedule {
@@ -51,7 +32,7 @@ export default function AutomatedReportsPanel() {
   const [newSchedule, setNewSchedule] = useState({
     type: 'weekly',
     recipients: '',
-    frequency: 'weekly',
+    frequency: 'weekly'
   });
 
   useEffect(() => {
@@ -78,13 +59,13 @@ export default function AutomatedReportsPanel() {
       const response = await fetch('/api/admin/reports/generate', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           reportType: newSchedule.type,
           recipients: newSchedule.recipients.split(',').map(email => email.trim()),
-          includeCharts: true,
-        }),
+          includeCharts: true
+        })
       });
 
       if (response.ok) {
@@ -107,12 +88,12 @@ export default function AutomatedReportsPanel() {
       const response = await fetch('/api/admin/reports/schedules', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           ...newSchedule,
-          recipients: newSchedule.recipients.split(',').map(email => email.trim()),
-        }),
+          recipients: newSchedule.recipients.split(',').map(email => email.trim())
+        })
       });
 
       if (response.ok) {
@@ -133,7 +114,7 @@ export default function AutomatedReportsPanel() {
 
     try {
       const response = await fetch(`/api/admin/reports/schedules/${scheduleId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {

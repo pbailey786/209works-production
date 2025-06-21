@@ -1,25 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-
-import {
-  User,
-  Building,
-  CreditCard,
-  Bell,
-  Users,
-  Shield,
-  Mail,
-  Globe,
-  Settings,
-  ChevronRight,
-  Edit,
-  Save,
-  Camera,
-  MapPin,
-  Phone,
-  ExternalLink,
-} from 'lucide-react';
+import { useState } from 'lucide-react';
 
 export default function EmployerSettingsPage() {
   const [activeSection, setActiveSection] = useState('profile');
@@ -34,7 +15,7 @@ export default function EmployerSettingsPage() {
     location: 'Stockton, CA',
     phone: '(209) 555-0123',
     email: 'hr@techcorp.com',
-    logo: null,
+    logo: null
   });
 
   const settingsCategories = [
@@ -43,35 +24,35 @@ export default function EmployerSettingsPage() {
       title: 'Company Profile',
       description: 'Manage your company information and branding',
       icon: Building,
-      href: '/employers/settings/profile',
+      href: '/employers/settings/profile'
     },
     {
       id: 'team',
       title: 'Team Management',
       description: 'Add team members and manage permissions',
       icon: Users,
-      href: '/employers/settings/team',
+      href: '/employers/settings/team'
     },
     {
       id: 'billing',
       title: 'Billing & Subscription',
       description: 'Manage your subscription and payment methods',
       icon: CreditCard,
-      href: '/employers/settings/billing',
+      href: '/employers/settings/billing'
     },
     {
       id: 'notifications',
       title: 'Notifications',
       description: 'Configure email and alert preferences',
       icon: Bell,
-      href: '/employers/settings/alerts',
+      href: '/employers/settings/alerts'
     },
     {
       id: 'security',
       title: 'Security & Privacy',
       description: 'Two-factor authentication and privacy settings',
       icon: Shield,
-      href: '/employers/settings/security',
+      href: '/employers/settings/security'
     },
     // Temporarily hidden - will add back later
     // {
@@ -207,7 +188,7 @@ export default function EmployerSettingsPage() {
                       onChange={e =>
                         setCompanyData({
                           ...companyData,
-                          industry: e.target.value,
+                          industry: e.target.value
                         })
                       }
                       className="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -256,7 +237,7 @@ export default function EmployerSettingsPage() {
                         onChange={e =>
                           setCompanyData({
                             ...companyData,
-                            location: e.target.value,
+                            location: e.target.value
                           })
                         }
                         className="block w-full rounded-lg border border-gray-300 py-2 pl-10 pr-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -279,7 +260,7 @@ export default function EmployerSettingsPage() {
                         onChange={e =>
                           setCompanyData({
                             ...companyData,
-                            website: e.target.value,
+                            website: e.target.value
                           })
                         }
                         className="block w-full rounded-lg border border-gray-300 py-2 pl-10 pr-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -302,7 +283,7 @@ export default function EmployerSettingsPage() {
                         onChange={e =>
                           setCompanyData({
                             ...companyData,
-                            phone: e.target.value,
+                            phone: e.target.value
                           })
                         }
                         className="block w-full rounded-lg border border-gray-300 py-2 pl-10 pr-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -325,7 +306,7 @@ export default function EmployerSettingsPage() {
                         onChange={e =>
                           setCompanyData({
                             ...companyData,
-                            email: e.target.value,
+                            email: e.target.value
                           })
                         }
                         className="block w-full rounded-lg border border-gray-300 py-2 pl-10 pr-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -344,7 +325,7 @@ export default function EmployerSettingsPage() {
                       onChange={e =>
                         setCompanyData({
                           ...companyData,
-                          description: e.target.value,
+                          description: e.target.value
                         })
                       }
                       className="block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"

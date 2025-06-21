@@ -2,17 +2,8 @@ import { CalendarIcon } from '@/components/ui/card';
 import { format } from '@/components/ui/card';
 import { DateRange } from '@/components/ui/card';
 import { cn } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-
-'use client';
-
-
-  import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/popover';
 
 interface DatePickerWithRangeProps {
   className?: string;
@@ -23,7 +14,7 @@ interface DatePickerWithRangeProps {
 export function DatePickerWithRange({
   className,
   date,
-  onDateChange,
+  onDateChange
 }: DatePickerWithRangeProps) {
   return (
     <div className={cn('grid gap-2', className)}>

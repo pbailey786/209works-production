@@ -1,17 +1,11 @@
-import React, { useState } from 'react';
-import {
-  checkContrast,
-  validateColorCombination,
-  accessibleCombinations,
-  accessibleColors,
-} from '@/utils/colorContrast';
+import React, { useState } from '@/utils/colorContrast';
 
 interface ColorContrastTesterProps {
   isDevelopment?: boolean;
 }
 
 export default function ColorContrastTester({
-  isDevelopment = process.env.NODE_ENV === 'development',
+  isDevelopment = process.env.NODE_ENV === 'development'
 }: ColorContrastTesterProps) {
   const [foreground, setForeground] = useState('#000000');
   const [background, setBackground] = useState('#ffffff');
@@ -39,42 +33,42 @@ export default function ColorContrastTester({
     {
       name: 'Primary Text',
       fg: accessibleCombinations.textOnWhite.primary,
-      bg: '#ffffff',
+      bg: '#ffffff'
     },
     {
       name: 'Secondary Text',
       fg: accessibleCombinations.textOnWhite.secondary,
-      bg: '#ffffff',
+      bg: '#ffffff'
     },
     {
       name: 'Muted Text',
       fg: accessibleCombinations.textOnWhite.muted,
-      bg: '#ffffff',
+      bg: '#ffffff'
     },
     {
       name: 'Primary Button',
       fg: '#ffffff',
-      bg: accessibleColors.primary[600],
+      bg: accessibleColors.primary[600]
     },
     {
       name: 'Success Text',
       fg: accessibleCombinations.textOnWhite.success,
-      bg: '#ffffff',
+      bg: '#ffffff'
     },
     {
       name: 'Warning Text',
       fg: accessibleCombinations.textOnWhite.warning,
-      bg: '#ffffff',
+      bg: '#ffffff'
     },
     {
       name: 'Error Text',
       fg: accessibleCombinations.textOnWhite.error,
-      bg: '#ffffff',
+      bg: '#ffffff'
     },
     {
       name: 'Link Default',
       fg: accessibleCombinations.links.default,
-      bg: '#ffffff',
+      bg: '#ffffff'
     },
   ];
 
@@ -148,7 +142,7 @@ export default function ColorContrastTester({
         style={{
           color: foreground,
           backgroundColor: background,
-          borderColor: '#d1d5db',
+          borderColor: '#d1d5db'
         }}
       >
         <p className={textSize === 'large' ? 'text-lg font-bold' : 'text-sm'}>

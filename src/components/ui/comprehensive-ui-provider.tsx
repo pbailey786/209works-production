@@ -1,21 +1,8 @@
-import { UnifiedToastContainer } from '@/components/ui/card';
-import { UnifiedModalContainer } from '@/components/ui/card';
-import { GlobalLoadingOverlay } from './unified-loading-spinner';
-
-'use client';
-
-  import {
-  UIStateProvider,
-  UIStateErrorBoundary,
-} from '@/components/ui/card';
-  import {
-  componentRegistry,
-  withRegistry,
-  createFeedbackComponent,
-  createOverlayComponent,
-  createUtilityComponent,
-  ComponentInfo,
-} from '@/lib/ui/component-registry';
+import { UnifiedToastContainer } from '@/components/ui/unified-toast-system';
+import { UnifiedModalContainer } from '@/components/ui/unified-modal-system';
+import { GlobalLoadingOverlay } from '@/components/ui/card';
+  import { useRef } from 'react';
+import { useState } from '@/lib/ui/component-registry';
 
 // Comprehensive UI provider props
 interface ComprehensiveUIProviderProps {
@@ -47,20 +34,20 @@ const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 // Theme provider component
 function ThemeProvider({
   children,
-  initialTheme = 'auto',
+  initialTheme = 'auto'
 }: {
   children: React.ReactNode;
   initialTheme?: 'light' | 'dark' | 'auto';
 }) {
-  const [theme, setTheme] = React.useState<'light' | 'dark' | 'auto'>(
+  const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>(
     initialTheme
   );
-  const [resolvedTheme, setResolvedTheme] = React.useState<'light' | 'dark'>(
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(
     'light'
   );
 
   // Resolve auto theme based on system preference
-  React.useEffect(() => {
+  useEffect(() => {
     if (theme === 'auto') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const updateTheme = () => {
@@ -77,7 +64,7 @@ function ThemeProvider({
   }, [theme]);
 
   // Apply theme to document
-  React.useEffect(() => {
+  useEffect(() => {
     document.documentElement.classList.toggle('dark', resolvedTheme === 'dark');
   }, [resolvedTheme]);
 
@@ -85,7 +72,7 @@ function ThemeProvider({
     () => ({
       theme,
       setTheme,
-      resolvedTheme,
+      resolvedTheme
     }),
     [theme, resolvedTheme]
   );
@@ -108,10 +95,10 @@ export function useTheme() {
 
 // Performance monitoring component
 function PerformanceMonitor({ children }: { children: React.ReactNode }) {
-  const renderCount = React.useRef(0);
-  const lastRenderTime = React.useRef(Date.now());
+  const renderCount = useRef(0);
+  const lastRenderTime = useRef(Date.now());
 
-  React.useEffect(() => {
+  useEffect(() => {
     renderCount.current += 1;
     const now = Date.now();
     const timeSinceLastRender = now - lastRenderTime.current;
@@ -133,7 +120,7 @@ function PerformanceMonitor({ children }: { children: React.ReactNode }) {
 
 // Development tools component
 function DevTools({ enabled }: { enabled: boolean }) {
-  React.useEffect(() => {
+  useEffect(() => {
     if (!enabled || process.env.NODE_ENV !== 'development') return;
 
     // Add global dev tools to window
@@ -149,7 +136,7 @@ function DevTools({ enabled }: { enabled: boolean }) {
           console.log(`${component.name} (${component.version})`, {
             category: component.category,
             deprecated: component.deprecated,
-            conflicts: componentRegistry.getConflicts(component.name),
+            conflicts: componentRegistry.getConflicts(component.name)
           });
         });
         console.groupEnd();
@@ -163,11 +150,11 @@ function DevTools({ enabled }: { enabled: boolean }) {
         } else {
           console.group('⚠️ Component Conflicts');
           conflicts.forEach(([name, versions]: [string, string[]]) => {
-            console.warn(`${name}: ${versions.join(', ')}`);
+            console.warn(`${name}: ${versions.path.join(', ')}`);
           });
           console.groupEnd();
         }
-      },
+      }
     };
 
     console.log('🔧 UI Dev Tools available at window.__UI_DEV_TOOLS__');
@@ -185,10 +172,10 @@ function ComprehensiveUIProviderCore({
   enableErrorBoundary = true,
   enableDevTools = false,
   theme = 'auto',
-  className = '',
+  className = ''
 }: ComprehensiveUIProviderProps) {
   // Register core UI components
-  React.useEffect(() => {
+  useEffect(() => {
     // Register toast system
     componentRegistry.register({
       name: 'UnifiedToastContainer',
@@ -196,7 +183,7 @@ function ComprehensiveUIProviderCore({
       version: '1.0.0',
       category: 'feedback',
       description:
-        'Unified toast notification system with centralized state management',
+        'Unified toast notification system with centralized state management'
     });
 
     // Register modal system
@@ -206,7 +193,7 @@ function ComprehensiveUIProviderCore({
       version: '1.0.0',
       category: 'overlay',
       description:
-        'Unified modal system with focus management and accessibility',
+        'Unified modal system with focus management and accessibility'
     });
 
     // Register loading system
@@ -215,7 +202,7 @@ function ComprehensiveUIProviderCore({
       component: GlobalLoadingOverlay,
       version: '1.0.0',
       category: 'feedback',
-      description: 'Global loading overlay with progress tracking',
+      description: 'Global loading overlay with progress tracking'
     });
 
     // Create aliases for backward compatibility
@@ -285,15 +272,15 @@ export const ComprehensiveUIProvider = React.memo(ComprehensiveUIProviderCore);
 
 // Hook to access all UI systems
 export function useUI() {
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
   }, []);
 
   return {
     mounted,
-    registry: componentRegistry,
+    registry: componentRegistry
   };
 }
 
@@ -319,7 +306,7 @@ export const UIComponents = {
   ErrorBoundary: React.memo(
     ({
       children,
-      fallback,
+      fallback
     }: {
       children: React.ReactNode;
       fallback?: React.ReactNode;
@@ -335,7 +322,7 @@ export const UIComponents = {
     ({
       loading,
       children,
-      fallback,
+      fallback
     }: {
       loading: boolean;
       children: React.ReactNode;
@@ -353,7 +340,7 @@ export const UIComponents = {
     ({
       condition,
       children,
-      fallback,
+      fallback
     }: {
       condition: boolean;
       children: React.ReactNode;
@@ -361,7 +348,7 @@ export const UIComponents = {
     }) => {
       return condition ? <>{children}</> : <>{fallback}</>;
     }
-  ),
+  )
 };
 
 // Register utility components
@@ -369,21 +356,21 @@ withRegistry(UIComponents.ErrorBoundary, {
   name: 'UIErrorBoundary',
   version: '1.0.0',
   category: 'utility',
-  description: 'Error boundary for individual UI components',
+  description: 'Error boundary for individual UI components'
 });
 
 withRegistry(UIComponents.LoadingWrapper, {
   name: 'UILoadingWrapper',
   version: '1.0.0',
   category: 'utility',
-  description: 'Loading state wrapper component',
+  description: 'Loading state wrapper component'
 });
 
 withRegistry(UIComponents.ConditionalRender, {
   name: 'UIConditionalRender',
   version: '1.0.0',
   category: 'utility',
-  description: 'Conditional rendering utility component',
+  description: 'Conditional rendering utility component'
 });
 
 // Export performance optimized versions

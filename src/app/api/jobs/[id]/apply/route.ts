@@ -2,12 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { withAPIMiddleware, apiConfigs } from '@/lib/middleware/api-middleware';
 import { createJobApplicationSchema } from '@/lib/validations/api';
-import { routeParamsSchemas } from '@/lib/middleware/validation';
-import {
-  createSuccessResponse,
-  NotFoundError,
-  ConflictError,
-} from '@/lib/errors/api-errors';
+import { routeParamsSchemas } from '@/lib/errors/api-errors';
 
 // POST /api/jobs/:id/apply - Apply for a job (jobseeker only)
 export const POST = withAPIMiddleware(
@@ -32,9 +27,9 @@ export const POST = withAPIMiddleware(
       where: {
         userId_jobId: {
           userId,
-          jobId,
-        },
-      },
+          jobId
+        }
+      }
     });
 
     if (existingApplication) {
@@ -51,8 +46,8 @@ export const POST = withAPIMiddleware(
         coverLetter: body?.coverLetter || null,
         resumeUrl: body?.resumeUrl || null,
         appliedAt: new Date(),
-        status: 'pending',
-      },
+        status: 'pending'
+      }
     });
 
     return createSuccessResponse(
@@ -67,7 +62,7 @@ export const POST = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.jobId,
     rateLimit: { enabled: true, type: 'authenticated' },
     logging: { enabled: true, includeBody: false }, // Don't log cover letters
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -84,9 +79,9 @@ export const GET = withAPIMiddleware(
       where: {
         userId_jobId: {
           userId,
-          jobId,
-        },
-      },
+          jobId
+        }
+      }
     });
 
     return createSuccessResponse({
@@ -99,6 +94,6 @@ export const GET = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.jobId,
     rateLimit: { enabled: true, type: 'authenticated' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );

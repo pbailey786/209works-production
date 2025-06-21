@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 const enhancedOnboardingSchema = z.object({
   // Company Information
@@ -242,7 +243,7 @@ export async function POST(request: NextRequest) {
         { 
           error: 'Validation failed',
           details: error.errors.map(err => ({
-            field: err.path.join('.'),
+            field: err.path.path.join('.'),
             message: err.message
           }))
         },

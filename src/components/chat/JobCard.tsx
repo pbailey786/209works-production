@@ -1,17 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import {
-  MapPinIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-  BuildingOfficeIcon,
-  HeartIcon,
-  EyeIcon,
-  ShareIcon,
-  CheckCircleIcon,
-} from '@heroicons/react/24/outline';
+import { motion } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 interface JobCardProps {

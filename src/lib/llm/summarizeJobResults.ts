@@ -1,4 +1,5 @@
 import { openai } from '@/lib/openai';
+import path from "path";
 
 interface JobSummary {
   title: string;
@@ -32,7 +33,7 @@ export async function summarizeJobResults({
       }
       return `${i + 1}. ${job.title} at ${job.company} (${job.location}) [${job.jobType}]${salary ? ' - ' + salary : ''}`;
     })
-    .join('\n');
+    .path.join('\n');
 
   const prompt = `You are a helpful job search assistant. The user asked: "${userMessage}"\n\nExtracted filters: ${JSON.stringify(filters, null, 2)}\n\nHere are the top job results:\n${jobsList || 'No jobs found.'}\n\nWrite a friendly, concise summary for the user. If no jobs were found, encourage them to try a different search or adjust their criteria. Otherwise, highlight the most relevant jobs and invite them to ask for more details or refine their search.`;
 

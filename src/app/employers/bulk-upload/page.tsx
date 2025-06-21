@@ -1,28 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-import {
-  Upload,
-  FileText,
-  CheckCircle,
-  AlertCircle,
-  Download,
-  Sparkles,
-  CreditCard,
-  Eye,
-  Edit,
-  Trash2,
-  RefreshCw,
-  DollarSign,
-  MapPin,
-  Clock,
-  Building,
-  Users,
-  TrendingUp,
-  MessageCircle,
-  X,
-} from 'lucide-react';
+import { useState, useEffect } from 'lucide-react';
 
 interface ProcessedJob {
   id?: number;
@@ -91,7 +69,7 @@ export default function EmployerBulkUploadPage() {
     generateGraphics: false,
     createFeatured: false,
     optimizationLevel: 'standard' as 'standard' | 'enhanced' | 'premium',
-    targetAudience: 'general',
+    targetAudience: 'general'
   });
 
   // New state for subscription and support
@@ -200,8 +178,8 @@ export default function EmployerBulkUploadPage() {
         body: JSON.stringify({
           creditPack: 'fiveCredits', // Default to 5 credits pack
           successUrl: `${window.location.origin}/employers/bulk-upload?credit_purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/bulk-upload?credit_purchase_cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/bulk-upload?credit_purchase_cancelled=true`
+        })
       });
 
       const data = await response.json();
@@ -233,9 +211,9 @@ export default function EmployerBulkUploadPage() {
           message: supportMessage.trim(),
           context: {
             page: 'bulk-upload',
-            userAgent: navigator.userAgent,
-          },
-        }),
+            userAgent: navigator.userAgent
+          }
+        })
       });
 
       if (response.ok) {
@@ -269,8 +247,8 @@ export default function EmployerBulkUploadPage() {
           message: supportMessage.trim(),
           page: 'bulk-upload',
           userAgent: navigator.userAgent,
-          timestamp: new Date().toISOString(),
-        }),
+          timestamp: new Date().toISOString()
+        })
       });
 
       if (response.ok) {
@@ -352,7 +330,7 @@ export default function EmployerBulkUploadPage() {
       // Send file to API for processing
       const response = await fetch('/api/employers/bulk-upload/process', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       console.log('Processing API response status:', response.status);
@@ -433,7 +411,7 @@ export default function EmployerBulkUploadPage() {
         benefits: job.benefits || '',
         jobType: job.jobType || 'full_time',
         experienceLevel: job.experienceLevel || 'entry',
-        remote: job.remote || false,
+        remote: job.remote || false
       }));
 
       console.log('Sending jobs to AI optimization API...', {
@@ -455,7 +433,7 @@ export default function EmployerBulkUploadPage() {
         const response = await fetch('/api/employers/bulk-upload/optimize', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobs: batch }),
+          body: JSON.stringify({ jobs: batch })
         });
 
         console.log(`AI optimization API response status for batch ${Math.floor(i/batchSize) + 1}:`, response.status);
@@ -478,8 +456,8 @@ export default function EmployerBulkUploadPage() {
               salary: job.salary,
               jobType: job.jobType,
               experienceLevel: job.experienceLevel,
-              remote: job.remote,
-            },
+              remote: job.remote
+            }
           }));
           
           optimizedJobs.push(...fallbackBatch);
@@ -490,7 +468,7 @@ export default function EmployerBulkUploadPage() {
         console.log(`AI optimization result for batch ${Math.floor(i/batchSize) + 1}:`, {
           success: result.success,
           hasAI: result.hasAI,
-          jobCount: result.optimizedJobs?.length || 0,
+          jobCount: result.optimizedJobs?.length || 0
         });
 
         if (result.success && result.optimizedJobs && result.optimizedJobs.length > 0) {
@@ -510,8 +488,8 @@ export default function EmployerBulkUploadPage() {
               salary: job.salary,
               jobType: job.jobType,
               experienceLevel: job.experienceLevel,
-              remote: job.remote,
-            },
+              remote: job.remote
+            }
           }));
           
           optimizedJobs.push(...fallbackBatch);
@@ -568,8 +546,8 @@ export default function EmployerBulkUploadPage() {
             salary: job.salary,
             jobType: job.jobType,
             experienceLevel: job.experienceLevel,
-            remote: job.remote,
-          },
+            remote: job.remote
+          }
         }));
 
         setOptimizedJobs(fallbackOptimizedJobs);
@@ -592,7 +570,7 @@ export default function EmployerBulkUploadPage() {
       const response = await fetch('/api/employers/bulk-upload/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jobData),
+        body: JSON.stringify(jobData)
       });
 
       if (!response.ok) {
@@ -612,7 +590,7 @@ export default function EmployerBulkUploadPage() {
         // Update credits
         setUserCredits(prev => ({
           universal: Math.max(0, prev.universal - 1),
-          total: Math.max(0, prev.total - 1),
+          total: Math.max(0, prev.total - 1)
         }));
 
         showSuccess(`Job "${jobData.title}" published successfully! 1 credit used.`);
@@ -744,7 +722,7 @@ export default function EmployerBulkUploadPage() {
         experienceLevel: job.experienceLevel,
         remote: job.remote,
         featured: job.featured,
-        optimizationLevel: optimizationSettings.optimizationLevel,
+        optimizationLevel: optimizationSettings.optimizationLevel
       }));
 
       console.log('Publishing jobs:', jobsToPublish);
@@ -754,8 +732,8 @@ export default function EmployerBulkUploadPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           jobs: jobsToPublish,
-          optimizationSettings,
-        }),
+          optimizationSettings
+        })
       });
 
       console.log('Bulk publish response status:', response.status);
@@ -773,7 +751,7 @@ export default function EmployerBulkUploadPage() {
         // Update user credits (unified system)
         setUserCredits(prev => ({
           universal: Math.max(0, prev.universal - totalCreditsNeeded),
-          total: Math.max(0, prev.total - totalCreditsNeeded),
+          total: Math.max(0, prev.total - totalCreditsNeeded)
         }));
 
         showSuccess(`Successfully published ${result.createdJobs} out of ${result.totalJobs} jobs! ${totalCreditsNeeded} credits used.`);
@@ -835,8 +813,8 @@ export default function EmployerBulkUploadPage() {
           growthPath: '',
           perks: '',
           applicationCTA: '',
-          mediaUrls: [],
-        }),
+          mediaUrls: []
+        })
       });
 
       if (!response.ok) {
@@ -854,7 +832,7 @@ export default function EmployerBulkUploadPage() {
         const optimizedJob = {
           ...job,
           description: result.aiGeneratedOutput,
-          optimized: true,
+          optimized: true
         };
 
         setProcessedJobs(prev =>
@@ -864,7 +842,7 @@ export default function EmployerBulkUploadPage() {
         // Update user credits since optimization used one (unified credit system)
         setUserCredits(prev => ({
           universal: Math.max(0, prev.universal - 1),
-          total: Math.max(0, prev.total - 1),
+          total: Math.max(0, prev.total - 1)
         }));
 
         showSuccess('Job optimized successfully! 1 credit used.');

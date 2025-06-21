@@ -1,15 +1,7 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import {
-  Permission,
-  hasPermission,
-  hasAnyPermission,
-  hasAllPermissions,
-  getUserPermissions,
-  canAccessRoute,
-} from '@/lib/rbac/permissions';
+import { redirect } from '@/lib/rbac/permissions';
 
 export function usePermissions() {
   const { user, isLoaded } = useUser();
@@ -25,7 +17,7 @@ export function usePermissions() {
     getUserPermissions: () => getUserPermissions(userRole),
     canAccessRoute: (route: string) => canAccessRoute(userRole, route),
     userRole,
-    isAdmin: userRole === 'admin' || userRole.includes('admin'),
+    isAdmin: userRole === 'admin' || userRole.includes('admin')
   };
 }
 

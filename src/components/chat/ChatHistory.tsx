@@ -2,15 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { formatDistanceToNow } from 'date-fns';
-import {
-  Clock,
-  MessageSquare,
-  Trash2,
-  ChevronRight,
-  User,
-  Bot,
-} from 'lucide-react';
+import { formatDistanceToNow } from 'lucide-react';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -69,7 +61,7 @@ export default function ChatHistory({ onLoadConversation, className = '' }: Chat
   const deleteConversation = async (conversationId: string) => {
     try {
       const response = await fetch(`/api/chat-history?id=${conversationId}`, {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       if (response.ok) {

@@ -3,6 +3,9 @@ import { Cross2Icon } from '@/components/ui/card';
 import { cn } from '@/components/ui/card';
 import { useModal, useFocusManagement } from '@/lib/ui/component-state-manager';
 import type { ModalState } from '@/lib/ui/component-state-manager';
+import { useRef } from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
 
 'use client';
 
@@ -38,11 +41,11 @@ function UnifiedModal({
   showCloseButton = true,
 }: UnifiedModalProps) {
   const { pushFocus, popFocus } = useFocusManagement();
-  const modalRef = React.useRef<HTMLDivElement>(null);
-  const previousActiveElement = React.useRef<HTMLElement | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
 
   // Focus management
-  React.useEffect(() => {
+  useEffect(() => {
     if (modal.isOpen) {
       // Store the currently focused element
       previousActiveElement.current = document.activeElement as HTMLElement;
@@ -68,7 +71,7 @@ function UnifiedModal({
   }, [modal.isOpen, modal.id, pushFocus, popFocus]);
 
   // Escape key handler
-  React.useEffect(() => {
+  useEffect(() => {
     if (!modal.isOpen || !closeOnEscape) return;
 
     const handleEscape = (event: KeyboardEvent) => {
@@ -83,7 +86,7 @@ function UnifiedModal({
   }, [modal.isOpen, modal.id, onClose, closeOnEscape]);
 
   // Prevent body scroll when modal is open
-  React.useEffect(() => {
+  useEffect(() => {
     if (modal.isOpen) {
       const originalStyle = window.getComputedStyle(document.body).overflow;
       document.body.style.overflow = 'hidden';
@@ -187,7 +190,7 @@ export function useUnifiedModal() {
   const { addModal, updateModal, removeModal, clearModals, modals } =
     useModal();
 
-  const openModal = React.useCallback(
+  const openModal = useCallback(
     (
       content: React.ReactNode,
       options: {
@@ -217,21 +220,21 @@ export function useUnifiedModal() {
     [addModal]
   );
 
-  const closeModal = React.useCallback(
+  const closeModal = useCallback(
     (id: string) => {
       removeModal(id);
     },
     [removeModal]
   );
 
-  const updateModalData = React.useCallback(
+  const updateModalData = useCallback(
     (id: string, data: any) => {
       updateModal(id, { data });
     },
     [updateModal]
   );
 
-  const closeAllModals = React.useCallback(() => {
+  const closeAllModals = useCallback(() => {
     clearModals();
   }, [clearModals]);
 

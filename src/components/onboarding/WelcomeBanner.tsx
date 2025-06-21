@@ -1,22 +1,5 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-
-'use client';
-
-  import {
-  CheckCircle,
-  ArrowRight,
-  X,
-  User,
-  MapPin,
-  Briefcase,
-  FileText,
-  Bell,
-  Building2,
-  Target,
-  Star,
-  TrendingUp,
-} from 'lucide-react';
+import { useState } from 'react';
+import { useRouter } from 'lucide-react';
 
 interface WelcomeBannerProps {
   userRole: 'jobseeker' | 'employer';
@@ -41,7 +24,7 @@ export default function WelcomeBanner({
   userName,
   profileCompleteness,
   completedSteps,
-  onDismiss,
+  onDismiss
 }: WelcomeBannerProps) {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(true);
@@ -55,7 +38,7 @@ export default function WelcomeBanner({
       icon: User,
       href: '/profile/settings',
       completed: completedSteps.includes('profile'),
-      priority: 'high',
+      priority: 'high'
     },
     {
       id: 'resume',
@@ -64,7 +47,7 @@ export default function WelcomeBanner({
       icon: FileText,
       href: '/profile/resume',
       completed: completedSteps.includes('resume'),
-      priority: 'high',
+      priority: 'high'
     },
     {
       id: 'skills',
@@ -73,7 +56,7 @@ export default function WelcomeBanner({
       icon: Briefcase,
       href: '/profile/settings',
       completed: completedSteps.includes('skills'),
-      priority: 'medium',
+      priority: 'medium'
     },
     {
       id: 'alerts',
@@ -82,7 +65,7 @@ export default function WelcomeBanner({
       icon: Bell,
       href: '/alerts',
       completed: completedSteps.includes('alerts'),
-      priority: 'medium',
+      priority: 'medium'
     },
   ];
 
@@ -94,7 +77,7 @@ export default function WelcomeBanner({
       icon: Building2,
       href: '/employers/settings/profile',
       completed: completedSteps.includes('company'),
-      priority: 'high',
+      priority: 'high'
     },
     {
       id: 'first-job',
@@ -103,7 +86,7 @@ export default function WelcomeBanner({
       icon: Target,
       href: '/employers/create-job-post',
       completed: completedSteps.includes('first-job'),
-      priority: 'high',
+      priority: 'high'
     },
     {
       id: 'billing',
@@ -112,7 +95,7 @@ export default function WelcomeBanner({
       icon: Star,
       href: '/employers/billing',
       completed: completedSteps.includes('billing'),
-      priority: 'medium',
+      priority: 'medium'
     },
   ];
 

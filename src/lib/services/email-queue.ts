@@ -1,14 +1,9 @@
 import { Queue, Worker, Job, QueueEvents } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { emailSecurityValidator } from '@/components/ui/card';
 import { SecurityLogger } from '@/components/ui/card';
 import { emailService } from '@/lib/email';
-import { EmailHelpers } from '@/lib/email/email-helpers';
-import {
-  sendEmail,
-  validateEmailAddress,
-  EMAIL_SECURITY_CONFIG,
-} from '@/lib/email';
+import { EmailHelpers } from '@/lib/email';
 
 // Email job types for queue system
 export interface QueueEmailJobData {
@@ -52,7 +47,7 @@ const QUEUE_CONFIG = {
   limiter: {
     max: 10, // Max 10 emails per minute
     duration: 60 * 1000, // 1 minute
-  },
+  }
 };
 
 // Worker configuration
@@ -61,7 +56,7 @@ const WORKER_CONFIG = {
   limiter: {
     max: 10, // Max 10 emails per minute
     duration: 60 * 1000, // 1 minute
-  },
+  }
 };
 
 // Add missing type definitions
@@ -116,7 +111,7 @@ export class EmailQueueService {
           maxRetriesPerRequest: 1,
           enableReadyCheck: false,
           lazyConnect: true,
-          connectTimeout: 5000,
+          connectTimeout: 5000
         });
       } else {
         // Fallback to local Redis
@@ -128,7 +123,7 @@ export class EmailQueueService {
           maxRetriesPerRequest: 1,
           enableReadyCheck: false,
           lazyConnect: true,
-          connectTimeout: 5000,
+          connectTimeout: 5000
         });
       }
 
@@ -136,7 +131,7 @@ export class EmailQueueService {
       if (this.redis) {
         this.queue = new Queue(QUEUE_CONFIG.name, {
           connection: this.redis,
-          defaultJobOptions: QUEUE_CONFIG.defaultJobOptions,
+          defaultJobOptions: QUEUE_CONFIG.defaultJobOptions
         });
       }
     } catch (error) {
@@ -186,13 +181,13 @@ export class EmailQueueService {
         {
           connection: this.redis,
           concurrency: WORKER_CONFIG.concurrency,
-          limiter: WORKER_CONFIG.limiter,
+          limiter: WORKER_CONFIG.limiter
         }
       );
 
       // Initialize queue events
       this.queueEvents = new QueueEvents(QUEUE_CONFIG.name, {
-        connection: this.redis,
+        connection: this.redis
       });
 
       // Set up event listeners
@@ -231,7 +226,7 @@ export class EmailQueueService {
     const emailValidation = validateEmailAddress(jobData.to);
     if (!emailValidation.isValid) {
       const error = new Error(
-        `Invalid email address: ${emailValidation.errors.join(', ')}`
+        `Invalid email address: ${emailValidation.errors.path.join(', ')}`
       );
       SecurityLogger.suspiciousRequest(
         'queue-system',
@@ -248,7 +243,7 @@ export class EmailQueueService {
     );
     if (!subjectValidation.isValid) {
       const error = new Error(
-        `Invalid email subject: ${subjectValidation.errors.join(', ')}`
+        `Invalid email subject: ${subjectValidation.errors.path.join(', ')}`
       );
       SecurityLogger.suspiciousRequest(
         'queue-system',
@@ -276,7 +271,7 @@ export class EmailQueueService {
 
     const emailJobData: QueueEmailJobData = {
       ...jobData,
-      id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `email_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
     const jobOptions = {
@@ -284,7 +279,7 @@ export class EmailQueueService {
       delay: options?.delay || jobData.delay || 0,
       attempts: options?.attempts || jobData.retryLimit || 3,
       removeOnComplete: 100,
-      removeOnFail: 50,
+      removeOnFail: 50
     };
 
     const job = await this.queue.add('send-email', emailJobData, jobOptions);
@@ -328,15 +323,15 @@ export class EmailQueueService {
       name: 'send-email',
       data: {
         ...job.data,
-        id: `email_bulk_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `email_bulk_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`
       } as QueueEmailJobData,
       opts: {
         priority: this.getPriorityScore(job.data.priority || 'normal'),
         delay: job.options?.delay || job.data.delay || 0,
         attempts: job.options?.attempts || job.data.retryLimit || 3,
         removeOnComplete: 100,
-        removeOnFail: 50,
-      },
+        removeOnFail: 50
+      }
     }));
 
     const addedJobs = await this.queue.addBulk(bulkJobs);
@@ -386,8 +381,8 @@ export class EmailQueueService {
           template: data.template,
           source: 'email-queue',
           clientIp: 'queue-system',
-          ...data.metadata,
-        },
+          ...data.metadata
+        }
       });
 
       // Log email
@@ -438,7 +433,7 @@ export class EmailQueueService {
           totalJobs: weeklyDigestData.totalJobs || weeklyDigestData.jobs?.length || 0,
           location: weeklyDigestData.location || '209 Area',
           unsubscribeUrl: weeklyDigestData.unsubscribeUrl || '#',
-          viewAllJobsUrl: weeklyDigestData.viewAllJobsUrl || 'https://209.works/jobs',
+          viewAllJobsUrl: weeklyDigestData.viewAllJobsUrl || 'https://209.works/jobs'
         });
 
       // Add more templates as needed
@@ -456,7 +451,7 @@ export class EmailQueueService {
   ): Promise<boolean> {
     try {
       const unsubscribe = await prisma.emailUnsubscribe.findUnique({
-        where: { email },
+        where: { email }
       });
 
       if (!unsubscribe) return false;
@@ -505,9 +500,9 @@ export class EmailQueueService {
             jobId: data.id,
             template: data.template,
             priority: data.priority,
-            ...data.metadata,
-          },
-        },
+            ...data.metadata
+          }
+        }
       });
     } catch (error) {
       console.error('[EMAIL-QUEUE] Failed to log email:', error);
@@ -522,7 +517,7 @@ export class EmailQueueService {
       critical: 100,
       high: 75,
       normal: 50,
-      low: 25,
+      low: 25
     };
     return priorityMap[priority as keyof typeof priorityMap] || 50;
   }
@@ -585,7 +580,7 @@ export class EmailQueueService {
         completed: 0,
         failed: 0,
         delayed: 0,
-        paused: 0,
+        paused: 0
       };
     }
 
@@ -724,7 +719,7 @@ export class EmailQueueService {
       jobUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${topJob.id}`,
       unsubscribeUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/email-alerts/unsubscribe?email=${encodeURIComponent(userEmail)}&type=job_alert`,
       additionalJobsCount: jobs.length - 1,
-      totalMatchingJobs: jobs.length,
+      totalMatchingJobs: jobs.length
     };
 
     const subject =
@@ -742,8 +737,8 @@ export class EmailQueueService {
       alertId,
       priority,
       metadata: {
-        jobCount: jobs.length,
-      },
+        jobCount: jobs.length
+      }
     });
   }
 
@@ -764,7 +759,7 @@ export class EmailQueueService {
       totalJobs: jobs.length,
       location: location || '209 Area',
       unsubscribeUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/email-alerts/unsubscribe?email=${encodeURIComponent(userEmail)}&type=weekly_digest`,
-      viewAllJobsUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs`,
+      viewAllJobsUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs`
     };
 
     const subject =
@@ -782,8 +777,8 @@ export class EmailQueueService {
       priority,
       metadata: {
         jobCount: jobs.length,
-        location,
-      },
+        location
+      }
     });
   }
 
@@ -814,8 +809,8 @@ export class EmailQueueService {
       priority,
       metadata: {
         creditAmount: emailData.creditAmount,
-        planType: emailData.planType,
-      },
+        planType: emailData.planType
+      }
     });
   }
 }

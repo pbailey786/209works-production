@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { openai } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 const bulkOptimizeSchema = z.object({
@@ -237,7 +238,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

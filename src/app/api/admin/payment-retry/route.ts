@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { PaymentRetryService } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { PaymentRetryService } from '@/lib/services/payment-retry';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 const manualRetrySchema = z.object({

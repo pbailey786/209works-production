@@ -1,29 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Lightbulb,
-  TrendingUp,
-  Target,
-  Users,
-  DollarSign,
-  MapPin,
-  Clock,
-  Star,
-  CheckCircle,
-  AlertTriangle,
-  Zap,
-  BarChart3,
-  RefreshCw,
-  Wand2,
-  ArrowRight,
-  ThumbsUp,
-  ThumbsDown,
-  X,
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 interface OptimizationSuggestion {
   id: string;
@@ -86,10 +66,10 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
             impact: {
               metric: 'Search Visibility',
               expectedChange: '+35% more views',
-              confidence: 85,
+              confidence: 85
             },
             reasoning: 'Specific titles with technology keywords perform 35% better in search results. Adding seniority level and tech stack helps candidates self-select.',
-            examples: ['Senior Full-Stack Developer - React & Node.js', 'Frontend Developer - React/TypeScript', 'Backend Engineer - Python/Django'],
+            examples: ['Senior Full-Stack Developer - React & Node.js', 'Frontend Developer - React/TypeScript', 'Backend Engineer - Python/Django']
           },
           {
             id: '2',
@@ -103,9 +83,9 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
             impact: {
               metric: 'Application Rate',
               expectedChange: '+200% more applications',
-              confidence: 92,
+              confidence: 92
             },
-            reasoning: 'Based on market data for similar roles in your area, this salary range is competitive and will attract quality candidates while filtering out those with mismatched expectations.',
+            reasoning: 'Based on market data for similar roles in your area, this salary range is competitive and will attract quality candidates while filtering out those with mismatched expectations.'
           },
           {
             id: '3',
@@ -119,10 +99,10 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
             impact: {
               metric: 'Read Completion',
               expectedChange: '+45% more complete reads',
-              confidence: 78,
+              confidence: 78
             },
             reasoning: 'Structured descriptions with bullet points and clear sections are easier to scan and lead to higher engagement rates.',
-            examples: ['Use bullet points for responsibilities', 'Add "What You\'ll Do" section', 'Include "What We Offer" section'],
+            examples: ['Use bullet points for responsibilities', 'Add "What You\'ll Do" section', 'Include "What We Offer" section']
           },
           {
             id: '4',
@@ -136,9 +116,9 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
             impact: {
               metric: 'Application Volume',
               expectedChange: '+60% more applications',
-              confidence: 71,
+              confidence: 71
             },
-            reasoning: 'Studies show that women and underrepresented groups are less likely to apply when they don\'t meet 100% of requirements. Using "preferred" instead of "required" increases diversity.',
+            reasoning: 'Studies show that women and underrepresented groups are less likely to apply when they don\'t meet 100% of requirements. Using "preferred" instead of "required" increases diversity.'
           },
           {
             id: '5',
@@ -152,9 +132,9 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
             impact: {
               metric: 'Application Quality',
               expectedChange: '+25% higher quality applications',
-              confidence: 68,
+              confidence: 68
             },
-            reasoning: 'Even partial remote work options significantly increase candidate interest and can help you compete with fully remote positions.',
+            reasoning: 'Even partial remote work options significantly increase candidate interest and can help you compete with fully remote positions.'
           },
         ]);
       }
@@ -169,7 +149,7 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
     setIsGenerating(true);
     try {
       const response = await fetch(`/api/ai/job-optimization/${jobId}/generate`, {
-        method: 'POST',
+        method: 'POST'
       });
       
       if (response.ok) {
@@ -189,7 +169,7 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
       const response = await fetch(`/api/ai/job-optimization/${jobId}/implement`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suggestionId: suggestion.id }),
+        body: JSON.stringify({ suggestionId: suggestion.id })
       });
 
       if (response.ok) {
@@ -224,7 +204,7 @@ export function JobOptimizationSuggestions({ jobId, jobData, onOptimizationAppli
       await fetch(`/api/ai/job-optimization/${jobId}/dismiss`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suggestionId }),
+        body: JSON.stringify({ suggestionId })
       });
 
       setSuggestions(prev => prev.filter(s => s.id !== suggestionId));

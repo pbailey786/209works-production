@@ -1,20 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-import {
-  Database,
-  Download,
-  Trash2,
-  RefreshCw,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Calendar,
-  HardDrive,
-  Settings,
-} from 'lucide-react';
+import { useState, useEffect } from 'lucide-react';
 
 interface Backup {
   id: string;

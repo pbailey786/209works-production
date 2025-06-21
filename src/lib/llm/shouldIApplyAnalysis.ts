@@ -1,10 +1,4 @@
-import { getChatCompletion } from '@/lib/openai';
-import {
-
-  ShouldIApplyPrompts, 
-  JobAnalysisInput, 
-  JobAnalysisResult,
-} from '@/lib/prompts/shouldIApply';
+import { getChatCompletion } from '@/lib/prompts/shouldIApply';
 
 /**
  * AI-powered job match analysis service

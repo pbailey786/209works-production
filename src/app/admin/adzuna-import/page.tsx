@@ -1,14 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-  CloudArrowDownIcon,
-  TrashIcon,
-  ChartBarIcon,
-  ExclamationTriangleIcon,
-  CheckCircleIcon,
-  ClockIcon,
-} from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from '@heroicons/react/24/outline';
 
 interface ImportStats {
   totalAdzunaJobs: number;
@@ -43,7 +35,7 @@ export default function AdzunaImportPage() {
     resultsPerCity: 25,
     maxJobs: 500,
     filterQuality: true,
-    cleanupOld: false,
+    cleanupOld: false
   });
 
   // Load initial data
@@ -76,9 +68,9 @@ export default function AdzunaImportPage() {
       const response = await fetch('/api/admin/adzuna-import', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(importOptions),
+        body: JSON.stringify(importOptions)
       });
 
       const result = await response.json();
@@ -94,7 +86,7 @@ export default function AdzunaImportPage() {
         success: false,
         message: 'Import failed due to network error',
         stats: { imported: 0, skipped: 0, duplicates: 0, errors: 1 },
-        details: ['Network error occurred'],
+        details: ['Network error occurred']
       });
     } finally {
       setImporting(false);
@@ -106,7 +98,7 @@ export default function AdzunaImportPage() {
 
     try {
       const response = await fetch('/api/admin/adzuna-import', {
-        method: 'DELETE',
+        method: 'DELETE'
       });
 
       const result = await response.json();
@@ -290,7 +282,7 @@ export default function AdzunaImportPage() {
                     onChange={e =>
                       setImportOptions(prev => ({
                         ...prev,
-                        resultsPerCity: parseInt(e.target.value) || 25,
+                        resultsPerCity: parseInt(e.target.value) || 25
                       }))
                     }
                     className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
@@ -309,7 +301,7 @@ export default function AdzunaImportPage() {
                     onChange={e =>
                       setImportOptions(prev => ({
                         ...prev,
-                        maxJobs: parseInt(e.target.value) || 500,
+                        maxJobs: parseInt(e.target.value) || 500
                       }))
                     }
                     className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
@@ -324,7 +316,7 @@ export default function AdzunaImportPage() {
                       onChange={e =>
                         setImportOptions(prev => ({
                           ...prev,
-                          filterQuality: e.target.checked,
+                          filterQuality: e.target.checked
                         }))
                       }
                       className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -341,7 +333,7 @@ export default function AdzunaImportPage() {
                       onChange={e =>
                         setImportOptions(prev => ({
                           ...prev,
-                          cleanupOld: e.target.checked,
+                          cleanupOld: e.target.checked
                         }))
                       }
                       className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"

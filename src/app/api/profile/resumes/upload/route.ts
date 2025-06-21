@@ -4,6 +4,7 @@ import { prisma } from '@/lib/database/prisma';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import path from "path";
 
 // POST /api/profile/resumes/upload - Upload a resume
 export async function POST(req: NextRequest) {
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
     const uniqueFilename = `${uuidv4()}.${fileExtension}`;
     
     // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'resumes');
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'resumes');
     try {
       await mkdir(uploadsDir, { recursive: true });
     } catch (error) {
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Save file to disk
-    const filePath = join(uploadsDir, uniqueFilename);
+    const filePath = path.join(uploadsDir, uniqueFilename);
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     await writeFile(filePath, buffer);

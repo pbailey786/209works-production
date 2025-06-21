@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import { validateSession, safeDBQuery } from '@/lib/utils/safe-fetch';
+import path from "path";
 
 
 const saveJobSchema = z.object({
@@ -246,7 +247,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

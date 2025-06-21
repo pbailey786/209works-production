@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/components/ui/card';
 import { emailService } from '@/components/ui/card';
 import { EmailHelpers } from '@/components/ui/card';
 import { SecurityLogger } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 
 export async function POST(request: NextRequest) {
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
     const invalidEmails = recipients.filter(email => !emailRegex.test(email));
     if (invalidEmails.length > 0) {
       return NextResponse.json({ 
-        error: `Invalid email addresses: ${invalidEmails.join(', ')}` 
+        error: `Invalid email addresses: ${invalidEmails.path.join(', ')}` 
       }, { status: 400 });
     }
 

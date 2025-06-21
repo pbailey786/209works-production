@@ -1,4 +1,4 @@
-import { useState } from '@/components/ui/card';
+import { useState } from 'react';
 import { X, Star, TrendingUp, Crown, Loader2 } from 'lucide-react';
 
 'use client';

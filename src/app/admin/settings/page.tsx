@@ -5,23 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { Permission } from '@/lib/rbac/permissions';
 import { RoleManagement } from '@/components/admin/RoleManagement';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Settings,
-  Shield,
-  Users,
-  Database,
-  Mail,
-  Bell,
-  Lock,
-  Globe,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 export default async function AdminSettingsPage() {
   const { userId } = await auth();
@@ -30,24 +14,24 @@ export default async function AdminSettingsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   // Fetch admin users for role management
   const adminUsers = await prisma.user.findMany({
     where: {
-      OR: [{ role: 'admin' }, { role: 'admin' }],
+      OR: [{ role: 'admin' }, { role: 'admin' }]
     },
     select: {
       id: true,
       name: true,
       email: true,
       role: true,
-      createdAt: true,
+      createdAt: true
     },
     orderBy: {
-      createdAt: 'desc',
-    },
+      createdAt: 'desc'
+    }
   });
 
   return (
@@ -112,7 +96,7 @@ export default async function AdminSettingsPage() {
               users={adminUsers.map(user => ({
                 ...user,
                 name: user.name || 'Unknown User',
-                role: user.role as string,
+                role: user.role as string
               }))}
             />
           </PermissionGate>

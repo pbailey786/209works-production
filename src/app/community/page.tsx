@@ -3,30 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Users,
-  Calendar,
-  MapPin,
-  BookOpen,
-  Award,
-  MessageCircle,
-  TrendingUp,
-  Clock,
-  Star,
-  Building2,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Community Hub | 209 Works',
   description:
-    'Connect with local professionals, attend networking events, and access career resources in the Central Valley',
+    'Connect with local professionals, attend networking events, and access career resources in the Central Valley'
 };
 
 export default function CommunityHubPage() {

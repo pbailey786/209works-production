@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { AdRotationService } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { AdRotationService } from '@/lib/services/ad-rotation';
 import { z } from 'zod';
 
 const impressionSchema = z.object({

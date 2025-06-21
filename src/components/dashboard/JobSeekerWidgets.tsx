@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import {
-  WidgetCard,
-  MetricCard,
-  QuickAction,
-  StatsGrid,
-} from './DashboardCards';
-import {
+import { motion } from './DashboardCards';
   TrendingUp,
   Target,
   Clock,
@@ -26,7 +19,7 @@ import {
   DollarSign,
   ArrowRight,
   Plus,
-  Filter,
+  Filter
 } from 'lucide-react';
 
 interface ApplicationStats {
@@ -70,7 +63,7 @@ export function ApplicationStatsWidget() {
     offersReceived: 0,
     savedJobs: 0,
     profileViews: 0,
-    responseRate: 0,
+    responseRate: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -283,8 +276,8 @@ export function ProfileCompletionWidget() {
       resume: false,
       skills: false,
       preferences: false,
-      availability: false,
-    },
+      availability: false
+    }
   });
   const [loading, setLoading] = useState(true);
 

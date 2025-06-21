@@ -2,18 +2,12 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { updateAlertSchema } from '@/lib/validations/alerts';
 import { routeParamsSchemas } from '@/lib/validations/api';
-import { prisma } from '@/lib/database/prisma';
-import {
-  createSuccessResponse,
-  NotFoundError,
-  AuthorizationError,
-} from '@/lib/utils/api-response';
-import {
+import { prisma } from '@/lib/utils/api-response';
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-  invalidateCacheByTags,
+  invalidateCacheByTags
 } from '@/lib/cache/redis';
 
 // GET /api/alerts/:id - Get specific alert details
@@ -50,8 +44,8 @@ export const GET = withAPIMiddleware(
             salaryMax: true,
             lastTriggered: true,
             createdAt: true,
-            updatedAt: true,
-          },
+            updatedAt: true
+          }
         });
 
         if (!alert) {
@@ -70,7 +64,7 @@ export const GET = withAPIMiddleware(
             postedAt: new Date(
               Date.now() - i * 24 * 60 * 60 * 1000
             ).toISOString(),
-            matchScore: Math.random() * 100,
+            matchScore: Math.random() * 100
           })
         );
 
@@ -83,18 +77,18 @@ export const GET = withAPIMiddleware(
           estimatedNextRun: calculateNextRun(
             alert.frequency,
             alert.lastTriggered
-          ),
+          )
         };
 
         return createSuccessResponse({
           ...alert,
           recentMatches,
-          stats,
+          stats
         });
       },
       {
         ttl: DEFAULT_TTL.short,
-        tags: ['alerts', `alert:${alertId}`, `user:${user!.id}`],
+        tags: ['alerts', `alert:${alertId}`, `user:${user!.id}`]
       }
     );
   },
@@ -103,7 +97,7 @@ export const GET = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.uuid,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -118,8 +112,8 @@ export const PUT = withAPIMiddleware(
     const existingAlert = await prisma.jobAlert.findFirst({
       where: {
         id: alertId,
-        userId: user!.id,
-      },
+        userId: user!.id
+      }
     });
 
     if (!existingAlert) {
@@ -133,7 +127,7 @@ export const PUT = withAPIMiddleware(
       data: {
         ...body,
         id: undefined, // Remove id from update data
-        updatedAt: new Date(),
+        updatedAt: new Date()
       },
       select: {
         id: true,
@@ -146,8 +140,8 @@ export const PUT = withAPIMiddleware(
         salaryMax: true,
         lastTriggered: true,
         createdAt: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
 
     // Invalidate relevant caches
@@ -163,7 +157,7 @@ export const PUT = withAPIMiddleware(
     return createSuccessResponse({
       ...updatedAlert,
       estimatedMatches,
-      message: 'Alert updated successfully',
+      message: 'Alert updated successfully'
     });
   },
   {
@@ -172,7 +166,7 @@ export const PUT = withAPIMiddleware(
     bodySchema: updateAlertSchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -187,8 +181,8 @@ export const DELETE = withAPIMiddleware(
     const existingAlert = await prisma.jobAlert.findFirst({
       where: {
         id: alertId,
-        userId: user!.id,
-      },
+        userId: user!.id
+      }
     });
 
     if (!existingAlert) {
@@ -198,7 +192,7 @@ export const DELETE = withAPIMiddleware(
     // Delete the alert (this will cascade delete related notifications)
     performance.trackDatabaseQuery();
     await prisma.jobAlert.delete({
-      where: { id: alertId },
+      where: { id: alertId }
     });
 
     // Invalidate relevant caches
@@ -210,7 +204,7 @@ export const DELETE = withAPIMiddleware(
 
     return createSuccessResponse({
       message: 'Alert deleted successfully',
-      deletedId: alertId,
+      deletedId: alertId
     });
   },
   {
@@ -218,7 +212,7 @@ export const DELETE = withAPIMiddleware(
     paramsSchema: routeParamsSchemas.uuid,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 

@@ -10,16 +10,7 @@ declare global {
   }
 }
 import { useUser } from '@clerk/nextjs';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  PlusIcon,
-  Bars3Icon,
-  XMarkIcon,
-  SparklesIcon,
-  PaperAirplaneIcon,
-  MicrophoneIcon,
-  StopIcon,
-} from '@heroicons/react/24/outline';
+import { motion, AnimatePresence } from '@heroicons/react/24/outline';
 import ChatHistory from '@/components/chat/ChatHistory';
 import JobCard from '@/components/chat/JobCard';
 
@@ -113,7 +104,7 @@ export default function ChatPage() {
 I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy, Manteca, and throughout the Central Valley.
 
 **How can I help you today?**`,
-          timestamp: new Date(),
+          timestamp: new Date()
         },
       ]);
     }
@@ -126,7 +117,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
       id: Date.now().toString(),
       role: 'user',
       content: content.trim(),
-      timestamp: new Date(),
+      timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -139,7 +130,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
       role: 'assistant',
       content: '',
       timestamp: new Date(),
-      typing: true,
+      typing: true
     };
     setMessages(prev => [...prev, typingMessage]);
 
@@ -147,16 +138,16 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
       const response = await fetch('/api/chat-job-search', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           userMessage: content.trim(),
           conversationHistory: messages.map(m => ({
             role: m.role,
-            content: m.content,
+            content: m.content
           })),
-          sessionId: currentSessionId,
-        }),
+          sessionId: currentSessionId
+        })
       });
 
       if (!response.ok) {
@@ -176,7 +167,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
             content: data.response || 'Sorry, I encountered an error. Please try again.',
             timestamp: new Date(),
             jobs: data.jobs || [],
-            metadata: data.metadata || {},
+            metadata: data.metadata || {}
           },
         ];
       });
@@ -194,7 +185,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
             id: Date.now().toString(),
             role: 'assistant',
             content: 'Sorry, I encountered an error. Please try again.',
-            timestamp: new Date(),
+            timestamp: new Date()
           },
         ];
       });
@@ -220,7 +211,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
 I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy, Manteca, and throughout the Central Valley.
 
 **How can I help you today?**`,
-        timestamp: new Date(),
+        timestamp: new Date()
       },
     ]);
     setCurrentSessionId(null);
@@ -248,13 +239,13 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
       await fetch('/api/job-interactions', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           sessionId: currentSessionId || `session_${Date.now()}`,
           jobId,
-          action,
-        }),
+          action
+        })
       });
     } catch (error) {
       console.error('Failed to track job interaction:', error);
@@ -446,7 +437,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
                                 requirements: job.requirements ? [job.requirements] : [],
                                 benefits: job.benefits ? [job.benefits] : [],
                                 remote: job.isRemote,
-                                urgent: false,
+                                urgent: false
                               }}
                               compact={true}
                               onApply={handleApplyToJob}

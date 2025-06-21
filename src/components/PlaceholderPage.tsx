@@ -1,11 +1,4 @@
-import { ReactNode } from 'react';
-import {
-  PlaceholderPageProps,
-  type WireframeSection,
-  QuickAction,
-  validatePlaceholderPageProps,
-  defaultPlaceholderPageProps,
-} from '@/lib/types/component-props';
+import { ReactNode } from '@/lib/types/component-props';
 
 // Wireframe components would be imported here when the module is available
 // For now, we use the built-in WireframeSection component below
@@ -13,7 +6,7 @@ import {
 const WireframeSection = ({
   wireframeType,
   title,
-  items = [],
+  items = []
 }: {
   wireframeType: WireframeSection['wireframeType'];
   title: string;
@@ -185,7 +178,7 @@ export default function PlaceholderPage(props: PlaceholderPageProps) {
     icon = defaultPlaceholderPageProps.icon!,
     sections = defaultPlaceholderPageProps.sections!,
     quickActions = defaultPlaceholderPageProps.quickActions!,
-    comingSoon = defaultPlaceholderPageProps.comingSoon!,
+    comingSoon = defaultPlaceholderPageProps.comingSoon!
   } = validatedProps;
   return (
     <main className="mx-auto max-w-7xl">

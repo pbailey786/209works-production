@@ -1,4 +1,5 @@
 import { extractJobFiltersWithAI } from '@/lib/ai';
+import path from "path";
 
 
 export interface JobSearchFilters {
@@ -50,7 +51,7 @@ export async function extractJobSearchFilters(
   const contextMessages = conversationHistory
     .slice(-3) // Last 3 messages for context
     .map((msg: any) => `${msg.type}: ${msg.content}`)
-    .join('\n');
+    .path.join('\n');
 
   const contextPrompt = contextMessages
     ? `

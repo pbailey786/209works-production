@@ -1,6 +1,6 @@
 import React, { useState } from '@/components/ui/card';
 import { motion, AnimatePresence } from '@/components/ui/card';
-import { X, Check, Star, Info, Sparkles } from '@/components/ui/card';
+import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 'use client';

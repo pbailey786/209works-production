@@ -7,7 +7,7 @@ import {
   Shield,
   TrendingUp,
   PlayCircle,
-  Activity,
+  Activity
 } from 'lucide-react';
 
 interface MetricsData {
@@ -37,7 +37,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Users,
       color: 'bg-blue-500',
       trend: `+${metrics.monthlySignups} this month`,
-      trendColor: 'text-green-600',
+      trendColor: 'text-green-600'
     },
     {
       title: 'Job Listings',
@@ -45,7 +45,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: FileText,
       color: 'bg-green-500',
       trend: `${metrics.pendingModerations} pending review`,
-      trendColor: 'text-orange-600',
+      trendColor: 'text-orange-600'
     },
     {
       title: 'Applications',
@@ -53,7 +53,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Send,
       color: 'bg-purple-500',
       trend: 'Total submissions',
-      trendColor: 'text-gray-600',
+      trendColor: 'text-gray-600'
     },
     {
       title: 'Active Alerts',
@@ -61,7 +61,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Bell,
       color: 'bg-yellow-500',
       trend: 'Email notifications',
-      trendColor: 'text-gray-600',
+      trendColor: 'text-gray-600'
     },
     {
       title: 'Moderation Queue',
@@ -70,7 +70,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       color: 'bg-red-500',
       trend: 'Needs attention',
       trendColor:
-        metrics.pendingModerations > 0 ? 'text-red-600' : 'text-green-600',
+        metrics.pendingModerations > 0 ? 'text-red-600' : 'text-green-600'
     },
     {
       title: 'Advertisements',
@@ -78,7 +78,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: PlayCircle,
       color: 'bg-indigo-500',
       trend: 'Active campaigns',
-      trendColor: 'text-gray-600',
+      trendColor: 'text-gray-600'
     },
     {
       title: 'System Health',
@@ -86,7 +86,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: Activity,
       color: 'bg-emerald-500',
       trend: `${metrics.systemHealth.responseTime} avg response`,
-      trendColor: 'text-gray-600',
+      trendColor: 'text-gray-600'
     },
     {
       title: 'Monthly Growth',
@@ -94,7 +94,7 @@ export default function AdminMetricsCards({ metrics }: AdminMetricsCardsProps) {
       icon: TrendingUp,
       color: 'bg-teal-500',
       trend: 'New users this month',
-      trendColor: 'text-green-600',
+      trendColor: 'text-green-600'
     },
   ];
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { checkOpenAIHealth } from '@/lib/openai';
 
 export async function GET(req: NextRequest) {

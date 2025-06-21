@@ -2,33 +2,10 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Brain, 
-  Target, 
-  TrendingUp, 
-  Star, 
-  MapPin, 
-  DollarSign, 
-  Clock, 
-  Briefcase,
-  Eye,
-  Heart,
-  Share2,
-  ExternalLink,
-  ChevronRight,
-  Zap,
-  Award,
-  Users,
-  Sparkles,
-  Info,
-  Filter,
-  SortAsc,
-  SortDesc
-} from 'lucide-react';
+import { Progress } from 'lucide-react';
 
 interface SemanticSearchResult {
   job: {
@@ -71,7 +48,7 @@ export default function SemanticSearchResults({
   searchType,
   onJobClick,
   onSaveJob,
-  className = '',
+  className = ''
 }: SemanticSearchResultsProps) {
   const [sortBy, setSortBy] = useState<'relevance' | 'semantic' | 'salary' | 'date'>('relevance');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');

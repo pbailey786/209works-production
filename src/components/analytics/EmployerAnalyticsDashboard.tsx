@@ -2,32 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Briefcase, 
-  Users, 
-  Eye, 
-  CreditCard, 
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Clock,
-  MapPin,
-  Building,
-  BarChart3,
-  PieChart,
-  Activity,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  RefreshCw,
-  Star,
-  Target,
-  DollarSign
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface EmployerAnalytics {
@@ -89,7 +67,7 @@ export default function EmployerAnalyticsDashboard({ className = '' }: EmployerA
       toast({
         title: 'Error',
         description: 'Failed to load analytics data',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -133,7 +111,7 @@ export default function EmployerAnalyticsDashboard({ className = '' }: EmployerA
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'USD'
     }).format(amount);
   };
 
@@ -141,7 +119,7 @@ export default function EmployerAnalyticsDashboard({ className = '' }: EmployerA
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 

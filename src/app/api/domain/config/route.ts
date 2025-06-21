@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { getDomainConfig } from '@/lib/domain/config';
 
 export async function GET(request: NextRequest) {

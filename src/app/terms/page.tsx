@@ -1,19 +1,9 @@
-import { Metadata } from 'next';
-import {
-  Scale,
-  FileText,
-  Users,
-  Shield,
-  AlertTriangle,
-  Mail,
-  Calendar,
-  CheckCircle,
-} from 'lucide-react';
+import { Metadata } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - 209 Works',
   description:
-    'Read the terms and conditions for using 209 Works. Understand your rights and responsibilities when using our job platform.',
+    'Read the terms and conditions for using 209 Works. Understand your rights and responsibilities when using our job platform.'
 };
 
 export default function TermsPage() {
@@ -27,12 +17,12 @@ export default function TermsPage() {
       icon: CheckCircle,
       content: [
         {
-          text: 'By accessing or using 209 Works, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.',
+          text: 'By accessing or using 209 Works, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.'
         },
         {
-          text: 'These terms apply to all users of the platform, including job seekers, employers, and visitors. Your continued use of the platform constitutes acceptance of any updates to these terms.',
+          text: 'These terms apply to all users of the platform, including job seekers, employers, and visitors. Your continued use of the platform constitutes acceptance of any updates to these terms.'
         },
-      ],
+      ]
     },
     {
       id: 'platform-description',
@@ -40,12 +30,12 @@ export default function TermsPage() {
       icon: FileText,
       content: [
         {
-          text: '209 Works is an online job platform that connects job seekers with employers in the Central Valley region of California. We provide AI-powered job search, application management, and recruitment tools.',
+          text: '209 Works is an online job platform that connects job seekers with employers in the Central Valley region of California. We provide AI-powered job search, application management, and recruitment tools.'
         },
         {
-          text: 'Our services include job posting, candidate matching, application tracking, resume management, and related career development tools. We reserve the right to modify, suspend, or discontinue any aspect of our services at any time.',
+          text: 'Our services include job posting, candidate matching, application tracking, resume management, and related career development tools. We reserve the right to modify, suspend, or discontinue any aspect of our services at any time.'
         },
-      ],
+      ]
     },
     {
       id: 'user-accounts',
@@ -54,17 +44,17 @@ export default function TermsPage() {
       content: [
         {
           subtitle: 'Account Creation',
-          text: 'You must create an account to access most features of our platform. You agree to provide accurate, current, and complete information during registration and to update such information to keep it accurate, current, and complete.',
+          text: 'You must create an account to access most features of our platform. You agree to provide accurate, current, and complete information during registration and to update such information to keep it accurate, current, and complete.'
         },
         {
           subtitle: 'Account Security',
-          text: 'You are responsible for safeguarding your account credentials and for all activities that occur under your account. You must immediately notify us of any unauthorized use of your account.',
+          text: 'You are responsible for safeguarding your account credentials and for all activities that occur under your account. You must immediately notify us of any unauthorized use of your account.'
         },
         {
           subtitle: 'Account Termination',
-          text: 'We reserve the right to suspend or terminate your account at any time for violation of these terms, fraudulent activity, or any other reason we deem appropriate.',
+          text: 'We reserve the right to suspend or terminate your account at any time for violation of these terms, fraudulent activity, or any other reason we deem appropriate.'
         },
-      ],
+      ]
     },
     {
       id: 'user-responsibilities',
@@ -73,17 +63,17 @@ export default function TermsPage() {
       content: [
         {
           subtitle: 'Job Seekers',
-          text: 'Job seekers must provide truthful and accurate information in their profiles and applications. You may not misrepresent your qualifications, experience, or eligibility to work.',
+          text: 'Job seekers must provide truthful and accurate information in their profiles and applications. You may not misrepresent your qualifications, experience, or eligibility to work.'
         },
         {
           subtitle: 'Employers',
-          text: 'Employers must post legitimate job opportunities and comply with all applicable employment laws. Job postings must be accurate and not discriminatory.',
+          text: 'Employers must post legitimate job opportunities and comply with all applicable employment laws. Job postings must be accurate and not discriminatory.'
         },
         {
           subtitle: 'All Users',
-          text: 'All users must treat others with respect, not engage in harassment or discriminatory behavior, and comply with all applicable laws and regulations.',
+          text: 'All users must treat others with respect, not engage in harassment or discriminatory behavior, and comply with all applicable laws and regulations.'
         },
-      ],
+      ]
     },
     {
       id: 'prohibited-conduct',
@@ -91,15 +81,15 @@ export default function TermsPage() {
       icon: AlertTriangle,
       content: [
         {
-          text: 'Users are prohibited from: posting false, misleading, or fraudulent information; engaging in harassment, discrimination, or abusive behavior; attempting to circumvent our security measures; using automated tools to scrape or collect data; posting spam or unsolicited communications.',
+          text: 'Users are prohibited from: posting false, misleading, or fraudulent information; engaging in harassment, discrimination, or abusive behavior; attempting to circumvent our security measures; using automated tools to scrape or collect data; posting spam or unsolicited communications.'
         },
         {
-          text: 'Employers may not post fake job listings, pyramid schemes, or opportunities that require upfront payments. Job seekers may not create multiple accounts or misrepresent their identity or qualifications.',
+          text: 'Employers may not post fake job listings, pyramid schemes, or opportunities that require upfront payments. Job seekers may not create multiple accounts or misrepresent their identity or qualifications.'
         },
         {
-          text: 'Any violation of these prohibitions may result in immediate account suspension or termination, and we may report illegal activities to appropriate authorities.',
+          text: 'Any violation of these prohibitions may result in immediate account suspension or termination, and we may report illegal activities to appropriate authorities.'
         },
-      ],
+      ]
     },
     {
       id: 'payment-terms',
@@ -108,21 +98,21 @@ export default function TermsPage() {
       content: [
         {
           subtitle: 'Subscription Services',
-          text: 'Premium subscriptions are billed monthly or annually as selected. All fees are non-refundable except as specifically stated in our refund policy.',
+          text: 'Premium subscriptions are billed monthly or annually as selected. All fees are non-refundable except as specifically stated in our refund policy.'
         },
         {
           subtitle: 'Job Posting Fees',
-          text: 'Employers pay fees for job postings as outlined in our pricing page. Payment is due upon posting, and jobs remain active for the purchased duration.',
+          text: 'Employers pay fees for job postings as outlined in our pricing page. Payment is due upon posting, and jobs remain active for the purchased duration.'
         },
         {
           subtitle: 'Automatic Renewal',
-          text: 'Subscriptions automatically renew unless cancelled before the renewal date. You can cancel your subscription at any time through your account settings.',
+          text: 'Subscriptions automatically renew unless cancelled before the renewal date. You can cancel your subscription at any time through your account settings.'
         },
         {
           subtitle: 'Refunds',
-          text: 'We offer refunds for job postings within 7 days if no applications are received. Subscription refunds are provided on a case-by-case basis for technical issues or billing errors.',
+          text: 'We offer refunds for job postings within 7 days if no applications are received. Subscription refunds are provided on a case-by-case basis for technical issues or billing errors.'
         },
-      ],
+      ]
     },
     {
       id: 'intellectual-property',
@@ -131,17 +121,17 @@ export default function TermsPage() {
       content: [
         {
           subtitle: 'Platform Content',
-          text: 'All content on 209.works, including text, graphics, logos, and software, is owned by us or our licensors and is protected by copyright and other intellectual property laws.',
+          text: 'All content on 209.works, including text, graphics, logos, and software, is owned by us or our licensors and is protected by copyright and other intellectual property laws.'
         },
         {
           subtitle: 'User Content',
-          text: 'You retain ownership of content you submit (resumes, profiles, etc.) but grant us a license to use, display, and distribute such content as necessary to provide our services.',
+          text: 'You retain ownership of content you submit (resumes, profiles, etc.) but grant us a license to use, display, and distribute such content as necessary to provide our services.'
         },
         {
           subtitle: 'Trademark',
-          text: '209.works and related marks are trademarks of our company. You may not use our trademarks without our prior written consent.',
+          text: '209.works and related marks are trademarks of our company. You may not use our trademarks without our prior written consent.'
         },
-      ],
+      ]
     },
     {
       id: 'privacy-data',
@@ -149,31 +139,31 @@ export default function TermsPage() {
       icon: Shield,
       content: [
         {
-          text: 'Your privacy is important to us. Our Privacy Policy, which is incorporated into these terms by reference, explains how we collect, use, and protect your personal information.',
+          text: 'Your privacy is important to us. Our Privacy Policy, which is incorporated into these terms by reference, explains how we collect, use, and protect your personal information.'
         },
         {
-          text: 'By using our platform, you consent to the collection and use of your information as described in our Privacy Policy. You have the right to access, correct, or delete your personal data as outlined in our Privacy Policy.',
+          text: 'By using our platform, you consent to the collection and use of your information as described in our Privacy Policy. You have the right to access, correct, or delete your personal data as outlined in our Privacy Policy.'
         },
-      ],
+      ]
     },
   ];
 
   const disclaimers = [
     {
       title: 'Service Availability',
-      text: 'We strive to maintain continuous service availability but do not guarantee uninterrupted access. We may perform maintenance, updates, or experience technical issues that temporarily affect service.',
+      text: 'We strive to maintain continuous service availability but do not guarantee uninterrupted access. We may perform maintenance, updates, or experience technical issues that temporarily affect service.'
     },
     {
       title: 'Job Opportunities',
-      text: 'We do not guarantee that job seekers will find employment or that employers will find suitable candidates. Success depends on many factors beyond our control.',
+      text: 'We do not guarantee that job seekers will find employment or that employers will find suitable candidates. Success depends on many factors beyond our control.'
     },
     {
       title: 'Third-Party Content',
-      text: 'Our platform may contain links to third-party websites or services. We are not responsible for the content, privacy practices, or terms of service of third-party sites.',
+      text: 'Our platform may contain links to third-party websites or services. We are not responsible for the content, privacy practices, or terms of service of third-party sites.'
     },
     {
       title: 'User Interactions',
-      text: 'We are not responsible for interactions between users, including employment relationships, contracts, or disputes that may arise from connections made through our platform.',
+      text: 'We are not responsible for interactions between users, including employment relationships, contracts, or disputes that may arise from connections made through our platform.'
     },
   ];
 

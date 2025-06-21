@@ -1,32 +1,10 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 'use client';
 
-  import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-  import {
-  Activity,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Database,
-  Globe,
-  HardDrive,
-  MemoryStick,
-  RefreshCw,
-  Server,
-  TrendingUp,
-  Users,
-  Zap,
-  XCircle,
-} from 'lucide-react';
+  import { Card } from 'lucide-react';
 
 interface SystemMetrics {
   status: 'healthy' | 'warning' | 'critical';
@@ -59,7 +37,7 @@ export default function SystemHealthDashboard() {
     memoryUsage: 68,
     diskUsage: 42,
     cpuUsage: 23,
-    lastUpdated: new Date(),
+    lastUpdated: new Date()
   });
 
   const [services, setServices] = useState<ServiceStatus[]>([
@@ -67,37 +45,37 @@ export default function SystemHealthDashboard() {
       name: 'Web Server',
       status: 'online',
       responseTime: 120,
-      lastCheck: new Date(),
+      lastCheck: new Date()
     },
     {
       name: 'Database',
       status: 'online',
       responseTime: 45,
-      lastCheck: new Date(),
+      lastCheck: new Date()
     },
     {
       name: 'Redis Cache',
       status: 'online',
       responseTime: 12,
-      lastCheck: new Date(),
+      lastCheck: new Date()
     },
     {
       name: 'Email Service',
       status: 'online',
       responseTime: 89,
-      lastCheck: new Date(),
+      lastCheck: new Date()
     },
     {
       name: 'File Storage',
       status: 'online',
       responseTime: 156,
-      lastCheck: new Date(),
+      lastCheck: new Date()
     },
     {
       name: 'Search Engine',
       status: 'degraded',
       responseTime: 890,
-      lastCheck: new Date(),
+      lastCheck: new Date()
     },
   ]);
 
@@ -120,7 +98,7 @@ export default function SystemHealthDashboard() {
           memoryUsage: Math.round((data.application.memory.heapUsed / data.application.memory.heapTotal) * 100),
           diskUsage: data.system?.diskUsage || 0,
           cpuUsage: data.system?.cpuUsage || 0,
-          lastUpdated: new Date(data.timestamp),
+          lastUpdated: new Date(data.timestamp)
         });
 
         // Update services based on health checks
@@ -129,25 +107,25 @@ export default function SystemHealthDashboard() {
             name: 'Web Server',
             status: data.healthChecks.responseTime ? 'online' : 'degraded',
             responseTime: data.performance.apiResponseTime,
-            lastCheck: new Date(data.timestamp),
+            lastCheck: new Date(data.timestamp)
           },
           {
             name: 'Database',
             status: data.healthChecks.database ? 'online' : 'offline',
             responseTime: data.performance.dbResponseTime,
-            lastCheck: new Date(data.timestamp),
+            lastCheck: new Date(data.timestamp)
           },
           {
             name: 'Memory',
             status: data.healthChecks.memory ? 'online' : 'degraded',
             responseTime: data.application.memory.heapUsed,
-            lastCheck: new Date(data.timestamp),
+            lastCheck: new Date(data.timestamp)
           },
           {
             name: 'User Activity',
             status: data.healthChecks.userActivity ? 'online' : 'degraded',
             responseTime: data.users.activeLastHour,
-            lastCheck: new Date(data.timestamp),
+            lastCheck: new Date(data.timestamp)
           },
         ]);
       } else {

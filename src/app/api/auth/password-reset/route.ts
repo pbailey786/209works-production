@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { EmailHelpers } from '@/components/ui/card';
 import { normalizeEmail } from '@/lib/utils/email-utils';
 

@@ -3,15 +3,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { cn } from '@/lib/utils';
-
-import {
-  useModalAccessibility,
-  createDialogAriaProps,
-  createModalId,
-  validateModalAccessibility,
-  type ModalAccessibilityOptions,
-} from '@/utils/modal-accessibility';
+import { cn } from '@/utils/modal-accessibility';
 
 export interface AccessibleModalProps
   extends Omit<ModalAccessibilityOptions, 'isOpen' | 'onClose'> {
@@ -37,7 +29,7 @@ const sizeClasses = {
   md: 'max-w-lg',
   lg: 'max-w-2xl',
   xl: 'max-w-4xl',
-  full: 'max-w-full mx-4',
+  full: 'max-w-full mx-4'
 };
 
 export function AccessibleModal({
@@ -81,7 +73,7 @@ export function AccessibleModal({
     trapFocus,
     closeOnEscape,
     closeOnOverlayClick,
-    preventScroll,
+    preventScroll
   });
 
   // Create ARIA props
@@ -90,7 +82,7 @@ export function AccessibleModal({
       createDialogAriaProps(type, {
         titleId: title ? titleId : undefined,
         descriptionId: description ? descriptionId : undefined,
-        isModal: true,
+        isModal: true
       }),
     [type, title, titleId, description, descriptionId]
   );
@@ -239,7 +231,7 @@ export function ConfirmationModal({
   const variantStyles = {
     default: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
     danger: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
-    warning: 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500',
+    warning: 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500'
   };
 
   return (

@@ -3,26 +3,13 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { prisma } from '@/lib/database/prisma';
-import {
-  alertQuerySchema,
-  createAlertSchema as createAlertValidationSchema,
-} from '@/lib/validations/alerts';
-import {
+import { prisma } from '@/lib/validations/alerts';
   createSuccessResponse,
   NotFoundError,
-  AuthorizationError,
-} from '@/lib/utils/api-response';
-import {
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL,
-  getCacheOrExecute,
-  invalidateCacheByTags,
+  AuthorizationError
 } from '@/lib/cache/redis';
-import {
   calculateOffsetPagination,
-  createPaginatedResponse,
+  createPaginatedResponse
 } from '@/lib/cache/pagination';
 
 // Validation schemas
@@ -57,7 +44,7 @@ const createAlertSchema = z.object({
   companies: z.array(z.string()).default([]),
   salaryMin: z.number().optional(),
   salaryMax: z.number().optional(),
-  emailEnabled: z.boolean().default(true),
+  emailEnabled: z.boolean().default(true)
 });
 
 // GET /api/alerts - List user's alerts
@@ -69,7 +56,7 @@ export async function GET(req: NextRequest) {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
     
     if (!user?.email) {
@@ -77,7 +64,7 @@ export async function GET(req: NextRequest) {
     }
     
     const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
+      where: { email: user?.email }
     });
 
     if (!user) {
@@ -89,9 +76,9 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
-          select: { jobs: true },
-        },
-      },
+          select: { jobs: true }
+        }
+      }
     });
 
     return NextResponse.json({ alerts });
@@ -113,7 +100,7 @@ export async function POST(req: NextRequest) {
     }
     
     const userRecord = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
     if (!userRecord?.email) {
@@ -129,7 +116,7 @@ export async function POST(req: NextRequest) {
 
     // Check if user already has maximum alerts (optional business rule)
     const alertCount = await prisma.alert.count({
-      where: { userId: userRecord.id, isActive: true },
+      where: { userId: userRecord.id, isActive: true }
     });
 
     if (alertCount >= 10) {
@@ -143,8 +130,8 @@ export async function POST(req: NextRequest) {
     const alert = await prisma.alert.create({
       data: {
         userId: userRecord.id,
-        ...validatedData,
-      },
+        ...validatedData
+      }
     });
 
     return NextResponse.json({ alert }, { status: 201 });
@@ -201,7 +188,7 @@ const GET_API = withAPIMiddleware(
         // Count total alerts
         performance.trackDatabaseQuery();
         const totalCount = await prisma.jobAlert.count({
-          where: whereCondition,
+          where: whereCondition
         });
 
         // Get paginated alerts
@@ -222,8 +209,8 @@ const GET_API = withAPIMiddleware(
             salaryMax: true,
             lastTriggered: true,
             createdAt: true,
-            updatedAt: true,
-          },
+            updatedAt: true
+          }
         });
 
         // Add statistics for each alert (optimized to avoid N+1 queries)
@@ -237,11 +224,11 @@ const GET_API = withAPIMiddleware(
             alertId: { in: alertIds },
             createdAt: {
               gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-            },
+            }
           },
           _count: {
-            id: true,
-          },
+            id: true
+          }
         });
 
         // Create lookup map for O(1) access
@@ -255,8 +242,8 @@ const GET_API = withAPIMiddleware(
           stats: {
             totalNotifications: 0, // TODO: Count from notifications table
             recentMatches: recentMatchesMap.get(alert.id) || 0,
-            lastMatchDate: alert.lastTriggered,
-          },
+            lastMatchDate: alert.lastTriggered
+          }
         }));
 
         const { meta } = calculateOffsetPagination(
@@ -270,7 +257,7 @@ const GET_API = withAPIMiddleware(
           meta,
           {
             queryTime: Date.now(),
-            cached: false,
+            cached: false
           }
         );
 
@@ -278,7 +265,7 @@ const GET_API = withAPIMiddleware(
       },
       {
         ttl: DEFAULT_TTL.short,
-        tags: ['alerts', `user:${user!.id}`],
+        tags: ['alerts', `user:${user!.id}`]
       }
     );
   },
@@ -287,7 +274,7 @@ const GET_API = withAPIMiddleware(
     querySchema: alertQuerySchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -299,7 +286,7 @@ const POST_API = withAPIMiddleware(
     // Check if user already has too many alerts (prevent spam)
     performance.trackDatabaseQuery();
     const existingAlertsCount = await prisma.jobAlert.count({
-      where: { userId: user!.id },
+      where: { userId: user!.id }
     });
 
     const maxAlertsPerUser = user!.role === 'admin' ? 100 : 20;
@@ -316,7 +303,7 @@ const POST_API = withAPIMiddleware(
         ...body!,
         userId: user!.id,
         title: body!.name || 'Untitled Alert',
-        lastTriggered: null,
+        lastTriggered: null
       },
       select: {
         id: true,
@@ -328,8 +315,8 @@ const POST_API = withAPIMiddleware(
         salaryMin: true,
         salaryMax: true,
         createdAt: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
 
     // Invalidate user's alerts cache
@@ -342,7 +329,7 @@ const POST_API = withAPIMiddleware(
     return createSuccessResponse({
       ...alert,
       estimatedMatches,
-      message: 'Alert created successfully',
+      message: 'Alert created successfully'
     });
   },
   {
@@ -350,6 +337,6 @@ const POST_API = withAPIMiddleware(
     bodySchema: createAlertValidationSchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );

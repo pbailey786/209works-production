@@ -1,15 +1,10 @@
 import { getRedisClient, isRedisAvailable } from '@/lib/redis';
-import { getAtomicCacheManager } from './atomic-cache-manager';
-import {
-  JobCacheService as OldJobCacheService,
-  UserCacheService as OldUserCacheService,
-  SearchCacheService as OldSearchCacheService,
-} from './services';
-import {
+import { getAtomicCacheManager } from './services';
+import path from "path";
   JobCacheService as NewJobCacheService,
   UserCacheService as NewUserCacheService,
   SearchCacheService as NewSearchCacheService,
-  CacheHealthMonitor,
+  CacheHealthMonitor
 } from './enhanced-cache-services';
 
 /**
@@ -60,7 +55,7 @@ const DEFAULT_MIGRATION_CONFIG: MigrationConfig = {
   validateData: true,
   preserveOldCache: true,
   dryRun: false,
-  enableRollback: true,
+  enableRollback: true
 };
 
 /**
@@ -85,8 +80,8 @@ export class CacheMigrationManager {
         totalKeys: 0,
         migratedKeys: 0,
         failedKeys: 0,
-        skippedKeys: 0,
-      },
+        skippedKeys: 0
+      }
     };
   }
 
@@ -310,7 +305,7 @@ export class CacheMigrationManager {
     await this.atomicManager.atomicSet(key, value, {
       ttl: ttl > 0 ? ttl : 3600, // Default to 1 hour if no TTL
       tags,
-      dependencies: ['jobs:all'],
+      dependencies: ['jobs:all']
     });
   }
 
@@ -336,7 +331,7 @@ export class CacheMigrationManager {
     await this.atomicManager.atomicSet(key, value, {
       ttl: ttl > 0 ? ttl : 7200, // Default to 2 hours
       tags,
-      dependencies: ['users:all'],
+      dependencies: ['users:all']
     });
   }
 
@@ -355,7 +350,7 @@ export class CacheMigrationManager {
     await this.atomicManager.atomicSet(key, value, {
       ttl: ttl > 0 ? ttl : 300, // Default to 5 minutes for search
       tags,
-      dependencies: ['search:all'],
+      dependencies: ['search:all']
     });
   }
 
@@ -717,7 +712,7 @@ export const MigrationUtils = {
       return {
         ready: issues.length === 0,
         issues,
-        recommendations,
+        recommendations
       };
     } catch (error) {
       issues.push(`Readiness check failed: ${error}`);
@@ -748,10 +743,10 @@ Statistics:
 - Skipped: ${status.stats.skippedKeys}
 
 Errors (${status.errors.length}):
-${status.errors.map(error => `- ${error}`).join('\n')}
+${status.errors.map(error => `- ${error}`).path.join('\n')}
 
 Warnings (${status.warnings.length}):
-${status.warnings.map(warning => `- ${warning}`).join('\n')}
+${status.warnings.map(warning => `- ${warning}`).path.join('\n')}
     `.trim();
-  },
+  }
 };

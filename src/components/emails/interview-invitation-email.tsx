@@ -10,7 +10,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface InterviewInvitationEmailProps {
@@ -46,7 +46,7 @@ export default function InterviewInvitationEmail({
   specialInstructions,
   contactEmail = 'hr@company.com',
   confirmationRequired = true,
-  confirmationDeadline,
+  confirmationDeadline
 }: InterviewInvitationEmailProps) {
   const previewText = `🎉 Interview invitation for ${jobTitle} at ${companyName} - ${interviewDate}`;
 
@@ -255,7 +255,7 @@ const main = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   WebkitFontSmoothing: 'antialiased' as const,
   MozOsxFontSmoothing: 'grayscale' as const,
-  textRendering: 'optimizeLegibility' as const,
+  textRendering: 'optimizeLegibility' as const
 };
 
 const container = {
@@ -265,14 +265,14 @@ const container = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const header = {
   backgroundColor: '#2d4a3e',
   backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
   padding: '32px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const logo = {
@@ -280,32 +280,32 @@ const logo = {
   fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 8px 0',
-  letterSpacing: '-0.5px',
+  letterSpacing: '-0.5px'
 };
 
 const tagline = {
   color: '#ffffff',
   fontSize: '18px',
   margin: '0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const content = {
-  padding: '32px 24px',
+  padding: '32px 24px'
 };
 
 const greeting = {
   fontSize: '18px',
   color: '#1e293b',
   margin: '0 0 20px 0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const intro = {
   fontSize: '16px',
   color: '#374151',
   lineHeight: '1.6',
-  margin: '0 0 32px 0',
+  margin: '0 0 32px 0'
 };
 
 const heroCard = {
@@ -314,27 +314,27 @@ const heroCard = {
   borderRadius: '16px',
   padding: '32px 24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const heroIcon = {
   fontSize: '48px',
   margin: '0 0 16px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const heroTitle = {
   fontSize: '24px',
   fontWeight: 'bold',
   color: '#1e3329',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const heroSubtitle = {
   fontSize: '16px',
   color: '#1e3329',
   margin: '0',
-  opacity: 0.8,
+  opacity: 0.8
 };
 
 const detailsCard = {
@@ -343,23 +343,23 @@ const detailsCard = {
   borderLeft: '4px solid #ff6b35',
   borderRadius: '12px',
   padding: '24px',
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const detailsTitle = {
   fontSize: '20px',
   fontWeight: 'bold',
   color: '#1e293b',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const detailGrid = {
-  margin: '0',
+  margin: '0'
 };
 
 const detailItem = {
   margin: '12px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const detailLabel = {
@@ -367,7 +367,7 @@ const detailLabel = {
   fontWeight: '600',
   color: '#64748b',
   margin: '0 0 4px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const detailValue = {
@@ -375,20 +375,20 @@ const detailValue = {
   fontWeight: '500',
   color: '#1e293b',
   margin: '0',
-  display: 'block',
+  display: 'block'
 };
 
 const detailSubValue = {
   fontSize: '14px',
   color: '#64748b',
   margin: '2px 0 0 0',
-  display: 'block',
+  display: 'block'
 };
 
 const linkStyle = {
   color: '#ff6b35',
   textDecoration: 'underline',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const confirmationCard = {
@@ -397,26 +397,26 @@ const confirmationCard = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const confirmationTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const confirmationText = {
   fontSize: '15px',
   color: '#7c2d12',
   lineHeight: '1.5',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const buttonContainer = {
   textAlign: 'center' as const,
-  margin: '20px 0',
+  margin: '20px 0'
 };
 
 const confirmButton = {
@@ -431,7 +431,7 @@ const confirmButton = {
   display: 'inline-block',
   padding: '14px 28px',
   border: 'none',
-  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)',
+  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)'
 };
 
 const preparationCard = {
@@ -439,24 +439,24 @@ const preparationCard = {
   border: '2px solid #bbf7d0',
   borderRadius: '12px',
   padding: '24px',
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const preparationTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#166534',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const preparationText = {
   fontSize: '15px',
   color: '#166534',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const tipsList = {
-  margin: '0',
+  margin: '0'
 };
 
 const tipItem = {
@@ -464,7 +464,7 @@ const tipItem = {
   color: '#166534',
   margin: '8px 0',
   lineHeight: '1.4',
-  display: 'block',
+  display: 'block'
 };
 
 const instructionsCard = {
@@ -472,21 +472,21 @@ const instructionsCard = {
   border: '2px solid #cbd5e1',
   borderRadius: '12px',
   padding: '24px',
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const instructionsTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#334155',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const instructionsText = {
   fontSize: '15px',
   color: '#475569',
   lineHeight: '1.5',
-  margin: '0',
+  margin: '0'
 };
 
 const expectationCard = {
@@ -494,21 +494,21 @@ const expectationCard = {
   border: '1px solid #e2e8f0',
   borderRadius: '8px',
   padding: '20px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const expectationTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#2d4a3e',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const expectationText = {
   fontSize: '14px',
   color: '#64748b',
   lineHeight: '1.5',
-  margin: '0',
+  margin: '0'
 };
 
 const contactCard = {
@@ -517,21 +517,21 @@ const contactCard = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const contactTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const contactText = {
   fontSize: '15px',
   color: '#7c2d12',
   lineHeight: '1.5',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const contactInfo = {
@@ -539,7 +539,7 @@ const contactInfo = {
   color: '#7c2d12',
   fontWeight: '500',
   lineHeight: '1.6',
-  margin: '0',
+  margin: '0'
 };
 
 const closingText = {
@@ -551,49 +551,49 @@ const closingText = {
   padding: '16px',
   backgroundColor: '#f0fdf4',
   borderRadius: '8px',
-  border: '1px solid #bbf7d0',
+  border: '1px solid #bbf7d0'
 };
 
 const signature = {
   fontSize: '15px',
   color: '#374151',
   margin: '24px 0 0 0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };
 
 const divider = {
   borderColor: '#e2e8f0',
-  margin: '0',
+  margin: '0'
 };
 
 const footerSection = {
   backgroundColor: '#f8fafc',
   padding: '24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const footerTitle = {
   color: '#2d4a3e',
   fontSize: '16px',
   fontWeight: 'bold',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const footerSubtitle = {
   color: '#64748b',
   fontSize: '12px',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const footerText = {
   fontSize: '12px',
   color: '#64748b',
   margin: '0 0 8px 0',
-  lineHeight: '1.4',
+  lineHeight: '1.4'
 };
 
 const copyrightText = {
   fontSize: '12px',
   color: '#94a3b8',
-  margin: '0',
+  margin: '0'
 }; 

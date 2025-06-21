@@ -1,36 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  FileText,
-  ExternalLink,
-  Star,
-  MessageSquare,
-  Clock,
-  Award,
-  Briefcase,
-  GraduationCap,
-  Link as LinkIcon,
-  Download,
-  Edit,
-  Save,
-  X,
-  Plus,
-  Tag,
-  History,
-  CheckCircle,
-  AlertCircle,
-} from 'lucide-react';
+import { Input } from 'lucide-react';
 
 interface ApplicantDetailProps {
   applicationId: string;
@@ -129,7 +104,7 @@ export function ApplicantDetailView({ applicationId, onStatusUpdate, onClose }: 
       const response = await fetch(`/api/employers/applicants/${applicationId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(updates)
       });
 
       if (response.ok) {
@@ -190,7 +165,7 @@ export function ApplicantDetailView({ applicationId, onStatusUpdate, onClose }: 
         const response = await fetch(`/api/employers/applicants/${applicationId}/notes`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: newNote, type: 'note' }),
+          body: JSON.stringify({ content: newNote, type: 'note' })
         });
 
         if (response.ok) {
@@ -214,8 +189,8 @@ export function ApplicantDetailView({ applicationId, onStatusUpdate, onClose }: 
           applicationId,
           template,
           subject: `Regarding your application for ${data?.application.job.title}`,
-          message: 'Thank you for your interest in this position.',
-        }),
+          message: 'Thank you for your interest in this position.'
+        })
       });
 
       if (response.ok) {

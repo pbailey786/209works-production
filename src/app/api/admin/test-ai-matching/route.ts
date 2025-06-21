@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { createSuccessResponse, createErrorResponse } from '@/components/ui/card';
 import { JobMatchingService } from '@/components/ui/card';
 import { ResumeEmbeddingService } from '@/components/ui/card';
 import { JobQueueService } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
 

@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/database/prisma';
 import { processWithAI } from '@/lib/ai';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';
+import path from "path";
 
 export interface HiringSuccessPrediction {
   jobId: string;
@@ -302,11 +303,11 @@ Salary: $${job.salaryMin}-${job.salaryMax}
 
 Candidate Profile:
 - Experience: ${candidate.jobSeekerProfile?.experience || 'Not specified'}
-- Skills: ${candidate.jobSeekerProfile?.skills?.join(', ') || 'Not specified'}
+- Skills: ${candidate.jobSeekerProfile?.skills?.path.join(', ') || 'Not specified'}
 - Location: ${candidate.jobSeekerProfile?.location || 'Not specified'}
 
 Success Factors:
-${factors.map(f => `- ${f.factor}: ${f.description} (Impact: ${f.impact})`).join('\n')}
+${factors.map(f => `- ${f.factor}: ${f.description} (Impact: ${f.impact})`).path.join('\n')}
 
 Provide a detailed analysis including:
 1. Success probability (0-100%)

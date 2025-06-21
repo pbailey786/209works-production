@@ -4,33 +4,10 @@ import { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Card } from '@/components/ui/select';
 
 import Link from 'next/link';
-import { PricingSection } from '@/components/pricing/PricingSection';
-import {
-  Building2,
-  MapPin,
-  CheckCircle,
-  Shield,
-  Star,
-  Users,
-  Percent,
-  Award,
-} from 'lucide-react';
+import { PricingSection } from 'lucide-react';
 
 // Define pricing plans
 const pricingPlans = [
@@ -48,7 +25,7 @@ const pricingPlans = [
       'Email support',
       'Local 209 targeting',
     ],
-    chamberDiscount: 25,
+    chamberDiscount: 25
   },
   {
     id: 'professional',
@@ -67,7 +44,7 @@ const pricingPlans = [
     ],
     popular: true,
     badge: 'Most Popular',
-    chamberDiscount: 25,
+    chamberDiscount: 25
   },
   {
     id: 'enterprise',
@@ -84,7 +61,7 @@ const pricingPlans = [
       'Custom branding options',
       'API access',
     ],
-    chamberDiscount: 25,
+    chamberDiscount: 25
   },
 ];
 

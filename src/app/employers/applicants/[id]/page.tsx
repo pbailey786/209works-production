@@ -2,26 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { formatDistanceToNow } from 'date-fns';
-
-import {
-  ArrowLeft,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  FileText,
-  ExternalLink,
-  MessageSquare,
-  Star,
-  Clock,
-  Eye,
-  Gift,
-  XCircle,
-  AlertCircle,
-  Download,
-} from 'lucide-react';
+import { formatDistanceToNow } from 'lucide-react';
 
 interface ApplicationDetail {
   id: string;
@@ -60,38 +41,38 @@ const statusConfig = {
     icon: Clock,
     color: 'text-yellow-600',
     bg: 'bg-yellow-100',
-    label: 'Pending',
+    label: 'Pending'
   },
   reviewing: {
     icon: Eye,
     color: 'text-blue-600',
     bg: 'bg-blue-100',
-    label: 'Under Review',
+    label: 'Under Review'
   },
   interview: {
     icon: Calendar,
     color: 'text-purple-600',
     bg: 'bg-purple-100',
-    label: 'Interview',
+    label: 'Interview'
   },
   offer: {
     icon: Gift,
     color: 'text-green-600',
     bg: 'bg-green-100',
-    label: 'Offer',
+    label: 'Offer'
   },
   rejected: {
     icon: XCircle,
     color: 'text-red-600',
     bg: 'bg-red-100',
-    label: 'Rejected',
+    label: 'Rejected'
   },
   withdrawn: {
     icon: AlertCircle,
     color: 'text-gray-600',
     bg: 'bg-gray-100',
-    label: 'Withdrawn',
-  },
+    label: 'Withdrawn'
+  }
 };
 
 export default function ApplicantProfilePage() {
@@ -111,7 +92,7 @@ export default function ApplicantProfilePage() {
     message: '',
     nextSteps: '',
     interviewLink: '',
-    template: 'custom',
+    template: 'custom'
   });
   const [sendingMessage, setSendingMessage] = useState(false);
 
@@ -147,7 +128,7 @@ export default function ApplicantProfilePage() {
       const response = await fetch('/api/employers/applications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ applicationId: application.id, status: newStatus }),
+        body: JSON.stringify({ applicationId: application.id, status: newStatus })
       });
 
       if (!response.ok) {
@@ -170,7 +151,7 @@ export default function ApplicantProfilePage() {
       const response = await fetch(`/api/employers/applicants/${applicationId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note: newNote.trim() }),
+        body: JSON.stringify({ note: newNote.trim() })
       });
 
       if (!response.ok) {
@@ -201,8 +182,8 @@ export default function ApplicantProfilePage() {
           message: contactForm.message.trim(),
           nextSteps: contactForm.nextSteps.trim() || undefined,
           interviewLink: contactForm.interviewLink.trim() || undefined,
-          template: contactForm.template,
-        }),
+          template: contactForm.template
+        })
       });
 
       if (!response.ok) {
@@ -215,7 +196,7 @@ export default function ApplicantProfilePage() {
         message: '',
         nextSteps: '',
         interviewLink: '',
-        template: 'custom',
+        template: 'custom'
       });
       setShowContactModal(false);
 
@@ -319,7 +300,7 @@ export default function ApplicantProfilePage() {
                 <h3 className="font-medium text-gray-900">Applied:</h3>
                 <p className="text-gray-700">
                   {formatDistanceToNow(new Date(application.appliedAt), {
-                    addSuffix: true,
+                    addSuffix: true
                   })}
                 </p>
               </div>

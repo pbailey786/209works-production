@@ -3,6 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
+import path from "path";
 
 // DELETE /api/profile/resumes/[id] - Delete a resume
 export async function DELETE(
@@ -39,7 +40,7 @@ export async function DELETE(
 
     // Delete the file from disk
     try {
-      const filePath = join(process.cwd(), 'public', resume.url);
+      const filePath = path.join(process.cwd(), 'public', resume.url);
       await unlink(filePath);
     } catch (fileError) {
       console.error('Error deleting file:', fileError);

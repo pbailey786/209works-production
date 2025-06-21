@@ -1,27 +1,10 @@
 import React, { useState, useEffect, useRef } from '@/components/ui/card';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/card';
-import { memoryLeakDetector } from '@/lib/monitoring/memory-leak-detector';
-
-/**
- * Memory Leak Monitoring Dashboard
- *
- * Admin dashboard component for monitoring memory leaks in real-time
- */
-
-  import {
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  Download,
-  TrendingUp,
-  TrendingDown,
-  Activity,
-} from 'lucide-react';
+import { memoryLeakDetector } from 'lucide-react';
 
 interface MemoryStats {
   heapUsed: number;
@@ -60,7 +43,7 @@ export default function MemoryLeakMonitoringDashboard() {
         heapTotal: usage.heapTotal / 1024 / 1024, // MB
         external: usage.external / 1024 / 1024, // MB
         rss: usage.rss / 1024 / 1024, // MB
-        timestamp: Date.now(),
+        timestamp: Date.now()
       };
     }
 
@@ -70,7 +53,7 @@ export default function MemoryLeakMonitoringDashboard() {
       heapTotal: 0,
       external: 0,
       rss: 0,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
   };
 
@@ -156,7 +139,7 @@ export default function MemoryLeakMonitoringDashboard() {
           activeListeners,
           memoryUsage,
           lastActivity: data.lastActivity || Date.now(),
-          status,
+          status
         };
       }
     );
@@ -193,11 +176,11 @@ export default function MemoryLeakMonitoringDashboard() {
       memoryStats,
       componentStats,
       alerts,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json',
+      type: 'application/json'
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

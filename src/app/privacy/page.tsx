@@ -1,19 +1,9 @@
-import { Metadata } from 'next';
-import {
-  Shield,
-  Eye,
-  Lock,
-  Users,
-  FileText,
-  Globe,
-  Mail,
-  Calendar,
-} from 'lucide-react';
+import { Metadata } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - 209 Works',
   description:
-    'Learn how 209 Works protects your personal information and privacy. Our comprehensive privacy policy explains data collection, usage, and your rights.',
+    'Learn how 209 Works protects your personal information and privacy. Our comprehensive privacy policy explains data collection, usage, and your rights.'
 };
 
 export default function PrivacyPage() {
@@ -27,21 +17,21 @@ export default function PrivacyPage() {
       content: [
         {
           subtitle: 'Personal Information',
-          text: 'When you create an account, we collect your name, email address, phone number, location, and professional information including work experience, education, and skills.',
+          text: 'When you create an account, we collect your name, email address, phone number, location, and professional information including work experience, education, and skills.'
         },
         {
           subtitle: 'Resume and Profile Data',
-          text: 'We store resumes, cover letters, portfolio items, and other documents you upload. This includes any personal information contained within these documents.',
+          text: 'We store resumes, cover letters, portfolio items, and other documents you upload. This includes any personal information contained within these documents.'
         },
         {
           subtitle: 'Usage Information',
-          text: 'We collect information about how you use our platform, including job searches, applications submitted, pages visited, and features used.',
+          text: 'We collect information about how you use our platform, including job searches, applications submitted, pages visited, and features used.'
         },
         {
           subtitle: 'Technical Information',
-          text: 'We automatically collect IP addresses, browser type, device information, operating system, and other technical data to improve our services.',
+          text: 'We automatically collect IP addresses, browser type, device information, operating system, and other technical data to improve our services.'
         },
-      ],
+      ]
     },
     {
       id: 'how-we-use-information',
@@ -50,21 +40,21 @@ export default function PrivacyPage() {
       content: [
         {
           subtitle: 'Job Matching and Applications',
-          text: 'We use your profile information to match you with relevant job opportunities and to facilitate applications to employers.',
+          text: 'We use your profile information to match you with relevant job opportunities and to facilitate applications to employers.'
         },
         {
           subtitle: 'Platform Improvement',
-          text: 'We analyze usage patterns to improve our AI search algorithms, user experience, and platform features.',
+          text: 'We analyze usage patterns to improve our AI search algorithms, user experience, and platform features.'
         },
         {
           subtitle: 'Communication',
-          text: 'We send job alerts, platform updates, and important account information. You can control communication preferences in your settings.',
+          text: 'We send job alerts, platform updates, and important account information. You can control communication preferences in your settings.'
         },
         {
           subtitle: 'Security and Fraud Prevention',
-          text: 'We use your information to verify identity, prevent fraud, and maintain platform security for all users.',
+          text: 'We use your information to verify identity, prevent fraud, and maintain platform security for all users.'
         },
-      ],
+      ]
     },
     {
       id: 'information-sharing',
@@ -73,21 +63,21 @@ export default function PrivacyPage() {
       content: [
         {
           subtitle: 'With Employers',
-          text: 'When you apply to jobs or make your profile public, employers can view your profile information, resume, and application materials.',
+          text: 'When you apply to jobs or make your profile public, employers can view your profile information, resume, and application materials.'
         },
         {
           subtitle: 'Service Providers',
-          text: 'We share data with trusted third-party services that help us operate our platform, including cloud storage, email services, and analytics providers.',
+          text: 'We share data with trusted third-party services that help us operate our platform, including cloud storage, email services, and analytics providers.'
         },
         {
           subtitle: 'Legal Requirements',
-          text: 'We may disclose information when required by law, to protect our rights, or to ensure user safety and platform security.',
+          text: 'We may disclose information when required by law, to protect our rights, or to ensure user safety and platform security.'
         },
         {
           subtitle: 'Business Transfers',
-          text: 'In the event of a merger, acquisition, or sale of assets, user information may be transferred as part of the business transaction.',
+          text: 'In the event of a merger, acquisition, or sale of assets, user information may be transferred as part of the business transaction.'
         },
-      ],
+      ]
     },
     {
       id: 'data-security',
@@ -96,21 +86,21 @@ export default function PrivacyPage() {
       content: [
         {
           subtitle: 'Encryption',
-          text: 'All data is encrypted in transit using SSL/TLS protocols and at rest using industry-standard encryption methods.',
+          text: 'All data is encrypted in transit using SSL/TLS protocols and at rest using industry-standard encryption methods.'
         },
         {
           subtitle: 'Access Controls',
-          text: 'We implement strict access controls, ensuring only authorized personnel can access user data for legitimate business purposes.',
+          text: 'We implement strict access controls, ensuring only authorized personnel can access user data for legitimate business purposes.'
         },
         {
           subtitle: 'Regular Security Audits',
-          text: 'We conduct regular security assessments and penetration testing to identify and address potential vulnerabilities.',
+          text: 'We conduct regular security assessments and penetration testing to identify and address potential vulnerabilities.'
         },
         {
           subtitle: 'Incident Response',
-          text: 'We have procedures in place to quickly respond to and mitigate any security incidents or data breaches.',
+          text: 'We have procedures in place to quickly respond to and mitigate any security incidents or data breaches.'
         },
-      ],
+      ]
     },
     {
       id: 'your-rights',
@@ -119,21 +109,21 @@ export default function PrivacyPage() {
       content: [
         {
           subtitle: 'Access and Portability',
-          text: 'You can access, download, and export your personal data at any time through your account settings.',
+          text: 'You can access, download, and export your personal data at any time through your account settings.'
         },
         {
           subtitle: 'Correction and Updates',
-          text: 'You can update or correct your personal information directly in your profile or by contacting our support team.',
+          text: 'You can update or correct your personal information directly in your profile or by contacting our support team.'
         },
         {
           subtitle: 'Deletion',
-          text: 'You can delete your account and personal data at any time. Some information may be retained for legal or business purposes as outlined in this policy.',
+          text: 'You can delete your account and personal data at any time. Some information may be retained for legal or business purposes as outlined in this policy.'
         },
         {
           subtitle: 'Profile Visibility Control',
-          text: 'You have complete control over whether your profile is visible to employers and can change this setting at any time.',
+          text: 'You have complete control over whether your profile is visible to employers and can change this setting at any time.'
         },
-      ],
+      ]
     },
     {
       id: 'cookies-tracking',
@@ -142,21 +132,21 @@ export default function PrivacyPage() {
       content: [
         {
           subtitle: 'Essential Cookies',
-          text: 'We use necessary cookies to provide core platform functionality, maintain your session, and ensure security.',
+          text: 'We use necessary cookies to provide core platform functionality, maintain your session, and ensure security.'
         },
         {
           subtitle: 'Analytics Cookies',
-          text: 'We use analytics tools to understand how users interact with our platform and to improve our services.',
+          text: 'We use analytics tools to understand how users interact with our platform and to improve our services.'
         },
         {
           subtitle: 'Marketing Cookies',
-          text: 'With your consent, we may use cookies for targeted advertising and to measure the effectiveness of our marketing campaigns.',
+          text: 'With your consent, we may use cookies for targeted advertising and to measure the effectiveness of our marketing campaigns.'
         },
         {
           subtitle: 'Cookie Management',
-          text: 'You can control cookie preferences through your browser settings or our cookie preference center.',
+          text: 'You can control cookie preferences through your browser settings or our cookie preference center.'
         },
-      ],
+      ]
     },
   ];
 

@@ -2,32 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Eye, 
-  FileText, 
-  Bookmark, 
-  Search, 
-  MessageSquare, 
-  Target,
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Clock,
-  MapPin,
-  Building,
-  BarChart3,
-  PieChart,
-  Activity,
-  Users,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  RefreshCw
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface JobSeekerAnalytics {
@@ -96,7 +74,7 @@ export default function JobSeekerAnalyticsDashboard({ className = '' }: JobSeeke
       toast({
         title: 'Error',
         description: 'Failed to load analytics data',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
@@ -141,7 +119,7 @@ export default function JobSeekerAnalyticsDashboard({ className = '' }: JobSeeke
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 

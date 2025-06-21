@@ -3,23 +3,9 @@
 import React from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import JobSeekerAnalyticsDashboard from '@/components/analytics/JobSeekerAnalyticsDashboard';
-import EmployerAnalyticsDashboard from '@/components/analytics/EmployerAnalyticsDashboard';
-import AdminAnalyticsDashboard from '@/components/analytics/AdminAnalyticsDashboard';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  Briefcase, 
-  Shield,
-  ArrowLeft,
-  Download,
-  Share,
-  Calendar
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 export default function AnalyticsPage() {
   const { user, isLoaded } = useUser();

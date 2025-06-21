@@ -1,12 +1,11 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/components/ui/card';
 import { extractTextFromFile, validateExtractedText, type TextExtractionResult } from '@/components/ui/card';
-import { parseResumeWithEnhancedAI, sanitizeResumeData, type ParsedResumeResult } from '@/components/ui/card';
-import { isResumeParsingAvailable, logEnvironmentStatus } from '@/components/ui/card';
 import { z } from 'zod';
+import { isResumeParsingAvailable, logEnvironmentStatus } from '@/components/ui/card';
 
 // Request options schema
 const ParseOptionsSchema = z.object({

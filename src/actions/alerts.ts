@@ -3,18 +3,11 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { ActionResult } from '@/types/actions';
-import {
-  createAlertSchema,
-  updateAlertSchema,
-  testAlertSchema,
-  AlertCriteria,
-} from '@/lib/validations/alerts';
-import {
+import { ActionResult } from '@/lib/validations/alerts';
   EnhancedJobMatchingService,
   findMatchingJobs as enhancedFindMatchingJobs,
   calculateMatchQuality as enhancedCalculateMatchQuality,
-  generateOptimizationRecommendations as enhancedGenerateOptimizationRecommendations,
+  generateOptimizationRecommendations as enhancedGenerateOptimizationRecommendations
 } from '@/lib/search/job-matching';
 
 // Create job alert action
@@ -28,19 +21,19 @@ export async function createAlertAction(
     if (!userId) {
       return {
         success: false,
-        message: 'User not authenticated',
+        message: 'User not authenticated'
       };
     }
 
     // Check user's current alert count
     const alertCount = await prisma.jobAlert.count({
-      where: { userId },
+      where: { userId }
     });
 
     // Get user role for limit checking
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { role: true },
+      select: { role: true }
     });
 
     const maxAlerts = user?.role === 'admin' ? 100 : 20;
@@ -48,7 +41,7 @@ export async function createAlertAction(
     if (alertCount >= maxAlerts) {
       return {
         success: false,
-        message: `You have reached the maximum limit of ${maxAlerts} alerts`,
+        message: `You have reached the maximum limit of ${maxAlerts} alerts`
       };
     }
 
@@ -71,7 +64,7 @@ export async function createAlertAction(
       salaryMax:
         JSON.parse(formData.get('criteria') as string).salaryMax || undefined,
       frequency: formData.get('frequency') as any,
-      isActive: formData.get('isActive') === 'true',
+      isActive: formData.get('isActive') === 'true'
     };
 
     const validatedData = createAlertSchema.parse(rawData);
@@ -87,8 +80,8 @@ export async function createAlertAction(
         salaryMin: rawData.salaryMin,
         salaryMax: rawData.salaryMax,
         frequency: rawData.frequency,
-        isActive: rawData.isActive,
-      },
+        isActive: rawData.isActive
+      }
     });
 
     revalidatePath('/alerts');
@@ -97,7 +90,7 @@ export async function createAlertAction(
     return {
       success: true,
       message: 'Job alert created successfully!',
-      data: { alertId: alert.id },
+      data: { alertId: alert.id }
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -108,14 +101,14 @@ export async function createAlertAction(
           Object.entries(error.flatten().fieldErrors).filter(
             ([_, value]) => value !== undefined
           )
-        ) as Record<string, string[]>,
+        ) as Record<string, string[]>
       };
     }
 
     console.error('Create alert error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -131,7 +124,7 @@ export async function updateAlertAction(
     if (!userId) {
       return {
         success: false,
-        message: 'User not authenticated',
+        message: 'User not authenticated'
       };
     }
 
@@ -139,7 +132,7 @@ export async function updateAlertAction(
     if (!alertId) {
       return {
         success: false,
-        message: 'Alert ID is required',
+        message: 'Alert ID is required'
       };
     }
 
@@ -147,14 +140,14 @@ export async function updateAlertAction(
     const existingAlert = await prisma.jobAlert.findFirst({
       where: {
         id: alertId,
-        userId,
-      },
+        userId
+      }
     });
 
     if (!existingAlert) {
       return {
         success: false,
-        message: 'Alert not found or access denied',
+        message: 'Alert not found or access denied'
       };
     }
 
@@ -173,7 +166,7 @@ export async function updateAlertAction(
           : undefined,
       maxResults: formData.get('maxResults')
         ? Number(formData.get('maxResults'))
-        : undefined,
+        : undefined
     };
 
     const validatedData = updateAlertSchema.parse(rawData);
@@ -190,8 +183,8 @@ export async function updateAlertAction(
       where: { id: alertId },
       data: {
         ...updateData,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     });
 
     revalidatePath('/alerts');
@@ -200,7 +193,7 @@ export async function updateAlertAction(
     return {
       success: true,
       message: 'Alert updated successfully!',
-      data: { alertId: updatedAlert.id },
+      data: { alertId: updatedAlert.id }
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -211,14 +204,14 @@ export async function updateAlertAction(
           Object.entries(error.flatten().fieldErrors).filter(
             ([_, value]) => value !== undefined
           )
-        ) as Record<string, string[]>,
+        ) as Record<string, string[]>
       };
     }
 
     console.error('Update alert error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -233,33 +226,33 @@ export async function deleteAlertAction(
     const existingAlert = await prisma.jobAlert.findFirst({
       where: {
         id: alertId,
-        userId,
-      },
+        userId
+      }
     });
 
     if (!existingAlert) {
       return {
         success: false,
-        message: 'Alert not found or access denied',
+        message: 'Alert not found or access denied'
       };
     }
 
     // Delete the alert (this will cascade delete notifications)
     await prisma.jobAlert.delete({
-      where: { id: alertId },
+      where: { id: alertId }
     });
 
     revalidatePath('/alerts');
 
     return {
       success: true,
-      message: 'Alert deleted successfully',
+      message: 'Alert deleted successfully'
     };
   } catch (error) {
     console.error('Delete alert error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -274,15 +267,15 @@ export async function toggleAlertStatusAction(
     const existingAlert = await prisma.jobAlert.findFirst({
       where: {
         id: alertId,
-        userId,
+        userId
       },
-      select: { id: true, isActive: true, title: true },
+      select: { id: true, isActive: true, title: true }
     });
 
     if (!existingAlert) {
       return {
         success: false,
-        message: 'Alert not found or access denied',
+        message: 'Alert not found or access denied'
       };
     }
 
@@ -291,7 +284,7 @@ export async function toggleAlertStatusAction(
 
     await prisma.jobAlert.update({
       where: { id: alertId },
-      data: { isActive: newStatus },
+      data: { isActive: newStatus }
     });
 
     revalidatePath('/alerts');
@@ -300,13 +293,13 @@ export async function toggleAlertStatusAction(
     return {
       success: true,
       message: `Alert ${newStatus ? 'activated' : 'paused'} successfully`,
-      data: { isActive: newStatus },
+      data: { isActive: newStatus }
     };
   } catch (error) {
     console.error('Toggle alert status error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -322,7 +315,7 @@ export async function testAlertAction(
     if (!userId) {
       return {
         success: false,
-        message: 'User not authenticated',
+        message: 'User not authenticated'
       };
     }
 
@@ -337,14 +330,14 @@ export async function testAlertAction(
     const alert = await prisma.jobAlert.findFirst({
       where: {
         id: validatedData.alertId,
-        userId,
-      },
+        userId
+      }
     });
 
     if (!alert) {
       return {
         success: false,
-        message: 'Alert not found or access denied',
+        message: 'Alert not found or access denied'
       };
     }
 
@@ -360,7 +353,7 @@ export async function testAlertAction(
         | 'part_time'
         | undefined,
       salaryMin: alert.salaryMin || undefined,
-      salaryMax: alert.salaryMax || undefined,
+      salaryMax: alert.salaryMax || undefined
     };
 
     const matchingJobs = await enhancedFindMatchingJobs(alertCriteria, 10);
@@ -390,17 +383,17 @@ export async function testAlertAction(
         alert: {
           id: alert.id,
           title: alert.title,
-          frequency: alert.frequency,
+          frequency: alert.frequency
         },
         testResults: {
           totalMatches: matchingJobs.length,
           matchingJobs: matchingJobs.slice(0, 5), // Show top 5 for preview
           matchQuality,
-          recommendations,
+          recommendations
         },
         notificationPreview,
-        dryRun: validatedData.dryRun,
-      },
+        dryRun: validatedData.dryRun
+      }
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -411,14 +404,14 @@ export async function testAlertAction(
           Object.entries(error.flatten().fieldErrors).filter(
             ([_, value]) => value !== undefined
           )
-        ) as Record<string, string[]>,
+        ) as Record<string, string[]>
       };
     }
 
     console.error('Test alert error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -433,14 +426,14 @@ export async function bulkAlertOperationAction(
     if (alertIds.length === 0) {
       return {
         success: false,
-        message: 'No alerts selected',
+        message: 'No alerts selected'
       };
     }
 
     if (alertIds.length > 50) {
       return {
         success: false,
-        message: 'Cannot process more than 50 alerts at once',
+        message: 'Cannot process more than 50 alerts at once'
       };
     }
 
@@ -448,15 +441,15 @@ export async function bulkAlertOperationAction(
     const userAlerts = await prisma.jobAlert.findMany({
       where: {
         id: { in: alertIds },
-        userId,
+        userId
       },
-      select: { id: true },
+      select: { id: true }
     });
 
     if (userAlerts.length !== alertIds.length) {
       return {
         success: false,
-        message: 'Some alerts not found or access denied',
+        message: 'Some alerts not found or access denied'
       };
     }
 
@@ -465,18 +458,18 @@ export async function bulkAlertOperationAction(
       case 'activate':
         result = await prisma.jobAlert.updateMany({
           where: { id: { in: alertIds } },
-          data: { isActive: true },
+          data: { isActive: true }
         });
         break;
       case 'deactivate':
         result = await prisma.jobAlert.updateMany({
           where: { id: { in: alertIds } },
-          data: { isActive: false },
+          data: { isActive: false }
         });
         break;
       case 'delete':
         result = await prisma.jobAlert.deleteMany({
-          where: { id: { in: alertIds } },
+          where: { id: { in: alertIds } }
         });
         break;
     }
@@ -486,13 +479,13 @@ export async function bulkAlertOperationAction(
     return {
       success: true,
       message: `Successfully ${operation}d ${result.count} alert${result.count !== 1 ? 's' : ''}`,
-      data: { affectedCount: result.count },
+      data: { affectedCount: result.count }
     };
   } catch (error) {
     console.error('Bulk alert operation error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -519,12 +512,12 @@ function generateNotificationPreview(alert: any, jobs: any[]): any {
           job.salaryMin && job.salaryMax
             ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
             : 'Salary not specified',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`
       })),
       footerText:
         jobs.length > 3
           ? `View all ${jobs.length} matches on 209jobs`
-          : undefined,
-    },
+          : undefined
+    }
   };
 }

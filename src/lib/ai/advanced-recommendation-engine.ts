@@ -7,6 +7,7 @@ import { prisma } from '@/lib/database/prisma';
 import { processWithAI } from '@/lib/ai';
 import { SemanticSearchEngine } from '@/lib/ai/semantic-search';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';
+import path from "path";
 
 export interface RecommendationScore {
   jobId: string;
@@ -528,10 +529,10 @@ export class AdvancedRecommendationEngine {
   private static createUserPreferenceQuery(profile: any): string {
     // Create a search query based on user preferences
     const parts = [];
-    if (profile.skills) parts.push(profile.skills.join(' '));
+    if (profile.skills) parts.push(profile.skills.path.join(' '));
     if (profile.currentJobTitle) parts.push(profile.currentJobTitle);
-    if (profile.desiredJobTypes) parts.push(profile.desiredJobTypes.join(' '));
-    return parts.join(' ');
+    if (profile.desiredJobTypes) parts.push(profile.desiredJobTypes.path.join(' '));
+    return parts.path.join(' ');
   }
 
   private static calculateDiversityScore(recommendations: any[]): number {

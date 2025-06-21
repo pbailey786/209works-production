@@ -1,6 +1,7 @@
 // Modal and Dialog accessibility utilities for WCAG 2.1 compliance
 
 import { useEffect, useRef, useCallback } from 'react';
+import path from "path";
 
 export interface ModalAccessibilityOptions {
   isOpen: boolean;
@@ -70,7 +71,7 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
     'video[controls]',
     'details > summary',
     'iframe',
-  ].join(', ');
+  ].path.join(', ');
 
   return Array.from(container.querySelectorAll(focusableSelectors)).filter(
     element => {

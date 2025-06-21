@@ -1,12 +1,10 @@
 import { motion } from 'framer-motion';import {
-
-
   ExclamationTriangleIcon,
   XCircleIcon,
   WifiIcon,
   ClockIcon,
   ArrowPathIcon,
-  InformationCircleIcon,
+  InformationCircleIcon
 } from '@heroicons/react/24/outline';
 
 interface ErrorDisplayProps {
@@ -31,7 +29,7 @@ const typeConfig = {
     borderColor: 'border-red-200',
     textColor: 'text-red-800',
     iconColor: 'text-red-500',
-    buttonColor: 'bg-red-600 hover:bg-red-700',
+    buttonColor: 'bg-red-600 hover:bg-red-700'
   },
   warning: {
     icon: ExclamationTriangleIcon,
@@ -39,7 +37,7 @@ const typeConfig = {
     borderColor: 'border-yellow-200',
     textColor: 'text-yellow-800',
     iconColor: 'text-yellow-500',
-    buttonColor: 'bg-yellow-600 hover:bg-yellow-700',
+    buttonColor: 'bg-yellow-600 hover:bg-yellow-700'
   },
   network: {
     icon: WifiIcon,
@@ -47,7 +45,7 @@ const typeConfig = {
     borderColor: 'border-blue-200',
     textColor: 'text-blue-800',
     iconColor: 'text-blue-500',
-    buttonColor: 'bg-blue-600 hover:bg-blue-700',
+    buttonColor: 'bg-blue-600 hover:bg-blue-700'
   },
   timeout: {
     icon: ClockIcon,
@@ -55,7 +53,7 @@ const typeConfig = {
     borderColor: 'border-orange-200',
     textColor: 'text-orange-800',
     iconColor: 'text-orange-500',
-    buttonColor: 'bg-orange-600 hover:bg-orange-700',
+    buttonColor: 'bg-orange-600 hover:bg-orange-700'
   },
   validation: {
     icon: InformationCircleIcon,
@@ -63,8 +61,8 @@ const typeConfig = {
     borderColor: 'border-purple-200',
     textColor: 'text-purple-800',
     iconColor: 'text-purple-500',
-    buttonColor: 'bg-purple-600 hover:bg-purple-700',
-  },
+    buttonColor: 'bg-purple-600 hover:bg-purple-700'
+  }
 };
 
 const sizeClasses = {
@@ -72,27 +70,27 @@ const sizeClasses = {
     padding: 'p-3',
     iconSize: 'w-4 h-4',
     textSize: 'text-sm',
-    buttonSize: 'px-3 py-1 text-xs',
+    buttonSize: 'px-3 py-1 text-xs'
   },
   md: {
     padding: 'p-4',
     iconSize: 'w-5 h-5',
     textSize: 'text-sm',
-    buttonSize: 'px-4 py-2 text-sm',
+    buttonSize: 'px-4 py-2 text-sm'
   },
   lg: {
     padding: 'p-6',
     iconSize: 'w-6 h-6',
     textSize: 'text-base',
-    buttonSize: 'px-6 py-3 text-base',
-  },
+    buttonSize: 'px-6 py-3 text-base'
+  }
 };
 
 const variantClasses = {
   inline: 'rounded-md border',
   card: 'rounded-lg border shadow-sm',
   modal: 'rounded-lg border shadow-lg',
-  toast: 'rounded-md border shadow-md',
+  toast: 'rounded-md border shadow-md'
 };
 
 export default function ErrorDisplay({
@@ -107,7 +105,7 @@ export default function ErrorDisplay({
   className = '',
   showIcon = true,
   maxRetries = 3,
-  currentAttempt = 0,
+  currentAttempt = 0
 }: ErrorDisplayProps) {
   if (!error) return null;
 

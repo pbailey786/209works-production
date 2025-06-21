@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-import {
-  Building2,
-  MapPin,
-  Users,
-  Target,
-  CheckCircle,
-  Upload,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface User {
   id: string;
@@ -87,7 +78,7 @@ export default function EmployerOnboardingClient({ user }: EmployerOnboardingCli
     jobRolesCommon: [],
     postingPrefersAi: false,
     contactMethod: 'email',
-    hiringGoal: '',
+    hiringGoal: ''
   });
 
   const steps = [
@@ -120,7 +111,7 @@ export default function EmployerOnboardingClient({ user }: EmployerOnboardingCli
       const response = await fetch('/api/profile/employer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -128,7 +119,7 @@ export default function EmployerOnboardingClient({ user }: EmployerOnboardingCli
         await fetch('/api/profile/onboarding', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ onboardingCompleted: true }),
+          body: JSON.stringify({ onboardingCompleted: true })
         });
         
         router.push('/employers/dashboard');

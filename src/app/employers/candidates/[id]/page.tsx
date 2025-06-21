@@ -2,34 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { formatDistanceToNow } from 'date-fns';
-
-import {
-  ArrowLeft,
-  Star,
-  Calendar,
-  MapPin,
-  Mail,
-  Phone,
-  Download,
-  FileText,
-  ExternalLink,
-  MessageSquare,
-  UserCheck,
-  UserX,
-  StickyNote,
-  Award,
-  Briefcase,
-  GraduationCap,
-  Target,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Eye,
-  X,
-  Send,
-} from 'lucide-react';
+import { formatDistanceToNow } from 'lucide-react';
 
 interface CandidateSnapshot {
   id: string;
@@ -141,7 +114,7 @@ export default function CandidateSnapshotPage() {
       const response = await fetch(`/api/employers/candidates/${applicationId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus })
       });
 
       if (!response.ok) {
@@ -164,7 +137,7 @@ export default function CandidateSnapshotPage() {
       const response = await fetch(`/api/employers/candidates/${applicationId}/notes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note: newNote }),
+        body: JSON.stringify({ note: newNote })
       });
 
       if (!response.ok) {
@@ -194,8 +167,8 @@ export default function CandidateSnapshotPage() {
           subject: emailSubject,
           message: emailMessage,
           candidateName: candidate.user.name,
-          jobTitle: candidate.job.title,
-        }),
+          jobTitle: candidate.job.title
+        })
       });
 
       if (!response.ok) {

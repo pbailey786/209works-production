@@ -1,34 +1,19 @@
-import { useForm } from '@/components/ui/card';
-import { zodResolver } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
-import { Loader2 } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { FormErrorBoundary } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-
-'use client';
-
-
-  import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/card';
-  import {
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FormErrorBoundary } from '@/components/ui/form-error-boundary';
+import { useToast } from '@/components/ui/card';
   FormInput,
   PasswordInput,
   FormTextarea,
-  FileInput,
+  FileInput
 } from '@/components/ui/card';
-  import {
+  import { useEffect } from 'react';
   validationPatterns,
   handleFormSubmission,
   useFormDirtyState,
-  useDebounceValidation,
+  useDebounceValidation
 } from '@/lib/validations/form-utils';
 
 // Example registration schema using our validation patterns
@@ -60,19 +45,19 @@ const registrationSchema = z
 
     // Checkbox
     acceptTerms: z.boolean().refine(val => val === true, {
-      message: 'You must accept the terms and conditions',
-    }),
+      message: 'You must accept the terms and conditions'
+    })
   })
   .refine(data => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ['confirmPassword'],
+    path: ['confirmPassword']
   });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 export function ExampleRegistrationForm() {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
@@ -86,7 +71,7 @@ export function ExampleRegistrationForm() {
       linkedinUrl: '',
       website: '',
       bio: '',
-      acceptTerms: false,
+      acceptTerms: false
     },
     mode: 'onChange', // Validate on change for immediate feedback
   });
@@ -120,7 +105,7 @@ export function ExampleRegistrationForm() {
           toast({
             title: 'Success!',
             description: 'Your account has been created successfully.',
-            variant: 'default',
+            variant: 'default'
           });
           form.reset();
         },
@@ -130,17 +115,17 @@ export function ExampleRegistrationForm() {
             if (error.field === 'email') {
               form.setError('email', {
                 type: 'server',
-                message: error.message,
+                message: error.message
               });
             } else {
               toast({
                 title: 'Registration Failed',
                 description: error.message,
-                variant: 'destructive',
+                variant: 'destructive'
               });
             }
           });
-        },
+        }
       }
     );
 
@@ -148,7 +133,7 @@ export function ExampleRegistrationForm() {
   };
 
   // Warn user about unsaved changes
-  React.useEffect(() => {
+  useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
         e.preventDefault();

@@ -1,10 +1,8 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { PRICING_CONFIG } from './subscription';import {
-
-
   PricingTier,
   BillingInterval,
-  SubscriptionStatus,
+  SubscriptionStatus
 } from '@prisma/client';
 
 export interface BillingData {
@@ -92,7 +90,7 @@ export class BillingService {
       // Get user email for subscription
       const user = await prisma.user.findUnique({
         where: { id: data.userId },
-        select: { email: true },
+        select: { email: true }
       });
 
       if (!user) {
@@ -109,8 +107,8 @@ export class BillingService {
           billingCycle: data.billingCycle,
           status: 'trial', // Start with trial
           startDate: new Date(),
-          endDate: null,
-        },
+          endDate: null
+        }
       });
 
       // In a real implementation, you would integrate with Stripe/PayPal here
@@ -122,8 +120,8 @@ export class BillingService {
           id: `pi_${Date.now()}`,
           amount: price * 100, // Convert to cents
           currency: 'usd',
-          status: 'succeeded',
-        },
+          status: 'succeeded'
+        }
       };
     } catch (error) {
       console.error('Failed to create subscription with billing:', error);
@@ -140,7 +138,7 @@ export class BillingService {
     newBillingCycle?: BillingInterval
   ) {
     const subscription = await prisma.subscription.findUnique({
-      where: { id: subscriptionId },
+      where: { id: subscriptionId }
     });
 
     if (!subscription) {
@@ -174,14 +172,14 @@ export class BillingService {
         tier: newTier,
         price: newPrice,
         billingCycle,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     });
 
     return {
       subscription: updatedSubscription,
       prorationAmount,
-      effectiveDate: now,
+      effectiveDate: now
     };
   }
 
@@ -191,7 +189,7 @@ export class BillingService {
   static async processRenewal(subscriptionId: string) {
     const subscription = await prisma.subscription.findUnique({
       where: { id: subscriptionId },
-      include: { user: true },
+      include: { user: true }
     });
 
     if (!subscription) {
@@ -215,14 +213,14 @@ export class BillingService {
           status: 'active',
           startDate: new Date(),
           endDate: nextBillingDate,
-          updatedAt: new Date(),
-        },
+          updatedAt: new Date()
+        }
       });
 
       return {
         success: true,
         nextBillingDate,
-        amount: subscription.price,
+        amount: subscription.price
       };
     } catch (error) {
       // Mark subscription as past due
@@ -230,8 +228,8 @@ export class BillingService {
         where: { id: subscriptionId },
         data: {
           status: 'past_due',
-          updatedAt: new Date(),
-        },
+          updatedAt: new Date()
+        }
       });
 
       throw error;
@@ -243,7 +241,7 @@ export class BillingService {
    */
   static async cancelSubscription(subscriptionId: string, immediate = false) {
     const subscription = await prisma.subscription.findUnique({
-      where: { id: subscriptionId },
+      where: { id: subscriptionId }
     });
 
     if (!subscription) {
@@ -257,14 +255,14 @@ export class BillingService {
       data: {
         status: 'cancelled',
         endDate,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     });
 
     return {
       subscription,
       endDate,
-      immediate,
+      immediate
     };
   }
 
@@ -274,7 +272,7 @@ export class BillingService {
   static async getBillingHistory(userId: string) {
     const subscriptions = await prisma.subscription.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' }
     });
 
     // In a real implementation, you would also fetch invoice data
@@ -288,7 +286,7 @@ export class BillingService {
           description: `${PRICING_CONFIG[sub.tier].name} Plan - ${sub.billingCycle}`,
           amount: sub.price,
           quantity: 1,
-          total: sub.price,
+          total: sub.price
         },
       ],
       subtotal: sub.price,
@@ -296,12 +294,12 @@ export class BillingService {
       total: Number(sub.price) * 1.08,
       status: sub.status === 'active' ? 'paid' : 'draft',
       dueDate: sub.endDate || new Date(),
-      paidAt: sub.status === 'active' ? sub.startDate : undefined,
+      paidAt: sub.status === 'active' ? sub.startDate : undefined
     }));
 
     return {
       subscriptions,
-      invoices,
+      invoices
     };
   }
 
@@ -312,20 +310,20 @@ export class BillingService {
     const metrics = await prisma.subscription.groupBy({
       by: ['tier', 'status'],
       _count: {
-        id: true,
+        id: true
       },
       _sum: {
-        price: true,
-      },
+        price: true
+      }
     });
 
     const totalRevenue = await prisma.subscription.aggregate({
       where: {
-        status: 'active',
+        status: 'active'
       },
       _sum: {
-        price: true,
-      },
+        price: true
+      }
     });
 
     const churnRate = await this.calculateChurnRate();
@@ -333,7 +331,7 @@ export class BillingService {
     return {
       metrics,
       totalMonthlyRevenue: totalRevenue._sum.price || 0,
-      churnRate,
+      churnRate
     };
   }
 
@@ -349,16 +347,16 @@ export class BillingService {
         where: {
           status: 'cancelled',
           updatedAt: {
-            gte: thirtyDaysAgo,
-          },
-        },
+            gte: thirtyDaysAgo
+          }
+        }
       }),
       prisma.subscription.count({
         where: {
           createdAt: {
-            lt: thirtyDaysAgo,
-          },
-        },
+            lt: thirtyDaysAgo
+          }
+        }
       }),
     ]);
 

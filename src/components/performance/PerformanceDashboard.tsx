@@ -1,25 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Activity, 
-  Database, 
-  Zap, 
-  TrendingUp, 
-  TrendingDown,
-  RefreshCw,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  BarChart3,
-  Gauge
-} from 'lucide-react';
+import { Alert, AlertDescription } from 'lucide-react';
 
 interface PerformanceData {
   enhanced: {
@@ -138,7 +125,7 @@ export default function PerformanceDashboard({ region }: PerformanceDashboardPro
     const variants = {
       excellent: 'default',
       good: 'secondary',
-      'needs-improvement': 'destructive',
+      'needs-improvement': 'destructive'
     } as const;
     
     return (

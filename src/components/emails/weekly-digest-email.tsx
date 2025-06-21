@@ -10,7 +10,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface Job {
@@ -39,7 +39,7 @@ export default function WeeklyDigestEmail({
   totalJobs = 0,
   location = '209 Area',
   unsubscribeUrl = '#',
-  viewAllJobsUrl = 'https://209.works/jobs',
+  viewAllJobsUrl = 'https://209.works/jobs'
 }: WeeklyDigestEmailProps) {
   const previewText = `🌟 ${totalJobs} new jobs this week in ${location} | Your 209 Works Weekly Digest`;
 
@@ -176,7 +176,7 @@ const main = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   WebkitFontSmoothing: 'antialiased' as const,
   MozOsxFontSmoothing: 'grayscale' as const,
-  textRendering: 'optimizeLegibility' as const,
+  textRendering: 'optimizeLegibility' as const
 };
 
 const container = {
@@ -186,14 +186,14 @@ const container = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const header = {
   backgroundColor: '#2d4a3e',
   backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
   padding: '40px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const logo = {
@@ -201,14 +201,14 @@ const logo = {
   fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 8px 0',
-  letterSpacing: '-0.5px',
+  letterSpacing: '-0.5px'
 };
 
 const tagline = {
   color: '#ffffff',
   fontSize: '18px',
   margin: '0 0 12px 0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const weeklyStats = {
@@ -219,29 +219,29 @@ const weeklyStats = {
   backgroundColor: 'rgba(255, 255, 255, 0.1)',
   padding: '8px 16px',
   borderRadius: '20px',
-  display: 'inline-block',
+  display: 'inline-block'
 };
 
 const content = {
-  padding: '32px 24px',
+  padding: '32px 24px'
 };
 
 const greeting = {
   fontSize: '22px',
   fontWeight: '600',
   color: '#1e293b',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const intro = {
   fontSize: '16px',
   color: '#475569',
   lineHeight: '1.6',
-  margin: '0 0 32px 0',
+  margin: '0 0 32px 0'
 };
 
 const jobsSection = {
-  margin: '0 0 32px 0',
+  margin: '0 0 32px 0'
 };
 
 const sectionTitle = {
@@ -249,7 +249,7 @@ const sectionTitle = {
   fontWeight: 'bold',
   color: '#2d4a3e',
   margin: '0 0 24px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const jobCard = {
@@ -258,7 +258,7 @@ const jobCard = {
   borderRadius: '12px',
   padding: '20px',
   margin: '0 0 20px 0',
-  borderLeft: '4px solid #ff6b35',
+  borderLeft: '4px solid #ff6b35'
 };
 
 const jobTitleStyle = {
@@ -266,32 +266,32 @@ const jobTitleStyle = {
   fontWeight: 'bold',
   color: '#1e293b',
   margin: '0 0 6px 0',
-  lineHeight: '1.3',
+  lineHeight: '1.3'
 };
 
 const companyStyle = {
   fontSize: '16px',
   fontWeight: '600',
   color: '#ff6b35',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const jobMetaContainer = {
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const locationStyle = {
   fontSize: '13px',
   color: '#64748b',
   margin: '2px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const jobTypeStyle = {
   fontSize: '13px',
   color: '#64748b',
   margin: '2px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const salaryStyle = {
@@ -299,18 +299,18 @@ const salaryStyle = {
   color: '#059669',
   fontWeight: '600',
   margin: '2px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const postedStyle = {
   fontSize: '13px',
   color: '#64748b',
   margin: '2px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const jobButtonContainer = {
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const jobButton = {
@@ -325,7 +325,7 @@ const jobButton = {
   display: 'inline-block',
   padding: '10px 20px',
   border: 'none',
-  boxShadow: '0 2px 4px rgba(255, 107, 53, 0.2)',
+  boxShadow: '0 2px 4px rgba(255, 107, 53, 0.2)'
 };
 
 const moreJobsSection = {
@@ -334,19 +334,19 @@ const moreJobsSection = {
   padding: '24px',
   margin: '32px 0',
   border: '2px solid #bbf7d0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const moreJobsText = {
   fontSize: '18px',
   fontWeight: '600',
   color: '#2d4a3e',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const ctaContainer = {
   textAlign: 'center' as const,
-  margin: '20px 0',
+  margin: '20px 0'
 };
 
 const primaryButton = {
@@ -361,7 +361,7 @@ const primaryButton = {
   display: 'inline-block',
   padding: '14px 28px',
   border: 'none',
-  boxShadow: '0 2px 4px rgba(255, 107, 53, 0.2)',
+  boxShadow: '0 2px 4px rgba(255, 107, 53, 0.2)'
 };
 
 const tipsSection = {
@@ -369,14 +369,14 @@ const tipsSection = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  border: '2px solid #fed7aa',
+  border: '2px solid #fed7aa'
 };
 
 const tipsTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const tipItem = {
@@ -384,7 +384,7 @@ const tipItem = {
   color: '#7c2d12',
   margin: '8px 0',
   lineHeight: '1.5',
-  display: 'block',
+  display: 'block'
 };
 
 const noJobsSection = {
@@ -393,21 +393,21 @@ const noJobsSection = {
   padding: '32px',
   margin: '24px 0',
   textAlign: 'center' as const,
-  border: '1px solid #e2e8f0',
+  border: '1px solid #e2e8f0'
 };
 
 const noJobsTitle = {
   fontSize: '20px',
   fontWeight: 'bold',
   color: '#2d4a3e',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const noJobsText = {
   fontSize: '16px',
   color: '#475569',
   lineHeight: '1.6',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const footer = {
@@ -415,53 +415,53 @@ const footer = {
   color: '#64748b',
   margin: '32px 0 0 0',
   textAlign: 'center' as const,
-  lineHeight: '1.6',
+  lineHeight: '1.6'
 };
 
 const divider = {
   borderColor: '#e2e8f0',
-  margin: '0',
+  margin: '0'
 };
 
 const footerSection = {
   backgroundColor: '#f8fafc',
   padding: '24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const footerTitle = {
   color: '#2d4a3e',
   fontSize: '18px',
   fontWeight: 'bold',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const footerSubtitle = {
   color: '#64748b',
   fontSize: '14px',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const unsubscribeText = {
   fontSize: '14px',
   color: '#64748b',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const manageLink = {
   color: '#ff6b35',
   textDecoration: 'underline',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const unsubscribeLink = {
   color: '#64748b',
-  textDecoration: 'underline',
+  textDecoration: 'underline'
 };
 
 const copyrightText = {
   fontSize: '12px',
   color: '#94a3b8',
   margin: '0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };

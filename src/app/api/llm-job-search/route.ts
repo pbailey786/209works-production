@@ -1,16 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import {
-  extractJobSearchFilters,
-  generateConversationalResponse,
-  analyzeJobMatches
-} from '@/lib/ai';
-import { prisma } from '@/lib/database/prisma';
-import {
-  withAISecurity,
-  aiSecurityConfigs,
-  type AISecurityContext,
-  sanitizeUserData,
-} from '@/lib/middleware/ai-security';
+import { NextRequest, NextResponse } from '@/lib/ai';
+import { prisma } from '@/lib/middleware/ai-security';
 
 // Basic keyword extraction fallback when OpenAI is not available
 function extractBasicFilters(userMessage: string): any {
@@ -83,14 +72,14 @@ function extractBasicFilters(userMessage: string): any {
     application_type: null,
     skills: null,
     categories: null,
-    postedAt: null,
+    postedAt: null
   };
 }
 
 function buildJobQueryFromFilters(filters: any) {
   const query: any = {
     status: 'active',
-    OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
   };
 
   if (filters.location) {
@@ -124,13 +113,13 @@ function buildJobQueryFromFilters(filters: any) {
   if (filters.experience_level) {
     query.description = {
       contains: filters.experience_level,
-      mode: 'insensitive',
+      mode: 'insensitive'
     };
   }
   if (filters.requirements) {
     query.requirements = {
       contains: filters.requirements,
-      mode: 'insensitive',
+      mode: 'insensitive'
     };
   }
   if (filters.benefits) {
@@ -139,7 +128,7 @@ function buildJobQueryFromFilters(filters: any) {
   if (filters.application_type) {
     query.description = {
       contains: filters.application_type,
-      mode: 'insensitive',
+      mode: 'insensitive'
     };
   }
   if (filters.other) {
@@ -199,7 +188,7 @@ export const POST = withAISecurity(
         userMessage,
         conversationHistory = [],
         userProfile = null,
-        sessionId = null,
+        sessionId = null
       } = body;
 
       if (!userMessage || typeof userMessage !== 'string') {
@@ -248,7 +237,7 @@ export const POST = withAISecurity(
         jobs = await prisma.job.findMany({
           where: jobQuery,
           orderBy: { postedAt: 'desc' },
-          take: 20,
+          take: 20
         });
       } catch (queryError) {
         console.error('Job query error:', queryError);
@@ -277,8 +266,8 @@ export const POST = withAISecurity(
             hasUserProfile: !!userProfile,
             sessionId,
             timestamp: new Date().toISOString(),
-            emptyDatabase: true,
-          },
+            emptyDatabase: true
+          }
         });
       }
 
@@ -293,7 +282,7 @@ export const POST = withAISecurity(
         salaryMax: job.salaryMax,
         description: job.description,
         requirements: job.requirements,
-        benefits: job.benefits,
+        benefits: job.benefits
       }));
 
       // Generate intelligent response
@@ -318,7 +307,7 @@ export const POST = withAISecurity(
             jobs: jobSummaries,
             conversationHistory,
             userProfile: sanitizedUserProfile,
-            jobMatches,
+            jobMatches
           });
 
           // Generate follow-up questions based on results
@@ -364,8 +353,8 @@ export const POST = withAISecurity(
           hasUserProfile: !!sanitizedUserProfile,
           sessionId,
           timestamp: new Date().toISOString(),
-          authenticatedUserId: context.user?.id || null,
-        },
+          authenticatedUserId: context.user?.id || null
+        }
       });
     } catch (error) {
       console.error('LLM job search error:', error);

@@ -1,19 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { formatDistanceToNow } from 'date-fns';
-
-import {
-  ArrowLeft,
-  Users,
-  Clock,
-  Mail,
-  Eye,
-  Briefcase,
-  UserCheck,
-  UserX,
-  ChevronRight,
-} from 'lucide-react';
+import { formatDistanceToNow } from 'lucide-react';
 
 interface Application {
   id: string;
@@ -43,7 +31,7 @@ interface Job {
 const statusConfig = {
   applied: { title: 'Applied', color: 'bg-blue-50 border-blue-200', textColor: 'text-blue-700' },
   shortlisted: { title: 'Shortlisted', color: 'bg-green-50 border-green-200', textColor: 'text-green-700' },
-  rejected: { title: 'Rejected', color: 'bg-red-50 border-red-200', textColor: 'text-red-700' },
+  rejected: { title: 'Rejected', color: 'bg-red-50 border-red-200', textColor: 'text-red-700' }
 };
 
 export default function PipelineViewPage() {
@@ -84,7 +72,7 @@ export default function PipelineViewPage() {
       const response = await fetch(`/api/employers/candidates/${applicationId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus })
       });
 
       if (!response.ok) {

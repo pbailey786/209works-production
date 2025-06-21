@@ -2,19 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import {
-  X,
-  Check,
-  Star,
-  CreditCard,
-  Zap,
-  Package,
-  ArrowRight,
-  Loader2,
-  Sparkles,
-  TrendingUp,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface AddCreditsModalProps {
   isOpen: boolean;
@@ -49,7 +37,7 @@ const subscriptionPlans = [
       '30-day Job Duration',
       'Bulk Upload Access',
     ],
-    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
+    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days'
   },
   {
     id: 'standard',
@@ -70,7 +58,7 @@ const subscriptionPlans = [
     ],
     popular: true,
     badge: 'Most Popular',
-    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
+    billingNote: '🗓️ Renews monthly • Job credits expire in 30 days'
   },
   {
     id: 'pro',
@@ -91,7 +79,7 @@ const subscriptionPlans = [
     ],
     badge: 'Most Value',
     billingNote: '🗓️ Renews monthly • Job credits expire in 30 days',
-    highlight: true,
+    highlight: true
   },
 ];
 
@@ -104,7 +92,7 @@ const creditAddOns = [
     credits: 1,
     description: 'Perfect for reposting or one additional job',
     icon: Zap,
-    color: 'blue',
+    color: 'blue'
   },
   {
     id: 'fiveCredits',
@@ -115,14 +103,14 @@ const creditAddOns = [
     savings: 46,
     icon: Package,
     color: 'purple',
-    popular: true,
+    popular: true
   },
 ];
 
 export default function AddCreditsModal({
   isOpen,
   onClose,
-  onSuccess,
+  onSuccess
 }: AddCreditsModalProps) {
   const router = useRouter();
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
@@ -181,13 +169,13 @@ export default function AddCreditsModal({
       const response = await fetch('/api/job-posting/buy-credits', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           creditPack: creditPackId,
           successUrl: `${window.location.origin}/employers/dashboard?credit_purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/dashboard?credit_purchase_cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/dashboard?credit_purchase_cancelled=true`
+        })
       });
 
       const data = await response.json();

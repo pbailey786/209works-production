@@ -1,28 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  Briefcase, 
-  DollarSign, 
-  Brain,
-  Globe,
-  Calendar,
-  Download,
-  RefreshCw,
-  Target,
-  Zap,
-  Award
-} from 'lucide-react';
-import { 
+import { Progress } from 'lucide-react';
   AnalyticsTimeRange,
   UserBehaviorMetrics,
   JobPerformanceMetrics,
@@ -90,7 +74,7 @@ export default function AdvancedAnalyticsDashboard({
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount);
   };
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { RegionalJobService } from '@/components/ui/card';
 import { JobType } from '@/components/ui/card';
 import { z } from 'zod';

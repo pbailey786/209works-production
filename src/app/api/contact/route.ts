@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { z } from 'zod';
 import { ContactFormEmail } from '@/lib/email/templates/contact-form-email';
 
 // Lazy-load Resend client to avoid build-time errors

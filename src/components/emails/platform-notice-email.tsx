@@ -10,7 +10,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface PlatformNoticeEmailProps {
@@ -36,7 +36,7 @@ export default function PlatformNoticeEmail({
   actionText,
   actionUrl,
   effectiveDate,
-  supportUrl = 'https://209.works/contact',
+  supportUrl = 'https://209.works/contact'
 }: PlatformNoticeEmailProps) {
   const getNoticeIcon = () => {
     switch (noticeType) {
@@ -233,7 +233,7 @@ const main = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   WebkitFontSmoothing: 'antialiased' as const,
   MozOsxFontSmoothing: 'grayscale' as const,
-  textRendering: 'optimizeLegibility' as const,
+  textRendering: 'optimizeLegibility' as const
 };
 
 const container = {
@@ -243,14 +243,14 @@ const container = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const header = {
   backgroundColor: '#2d4a3e',
   backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
   padding: '32px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const logo = {
@@ -258,19 +258,19 @@ const logo = {
   fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 8px 0',
-  letterSpacing: '-0.5px',
+  letterSpacing: '-0.5px'
 };
 
 const tagline = {
   color: '#ffffff',
   fontSize: '18px',
   margin: '0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const urgencyBanner = {
   padding: '12px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const urgencyText = {
@@ -279,18 +279,18 @@ const urgencyText = {
   fontWeight: 'bold',
   margin: '0',
   textTransform: 'uppercase' as const,
-  letterSpacing: '1px',
+  letterSpacing: '1px'
 };
 
 const content = {
-  padding: '32px 24px',
+  padding: '32px 24px'
 };
 
 const greeting = {
   fontSize: '18px',
   color: '#1e293b',
   margin: '0 0 24px 0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const noticeCard = {
@@ -299,27 +299,27 @@ const noticeCard = {
   padding: '24px',
   margin: '24px 0',
   backgroundColor: '#fafafa',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const noticeIcon = {
   fontSize: '48px',
   margin: '0 0 16px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const noticeTitle = {
   fontSize: '24px',
   fontWeight: 'bold',
   margin: '0 0 12px 0',
-  lineHeight: '1.3',
+  lineHeight: '1.3'
 };
 
 const effectiveText = {
   fontSize: '14px',
   color: '#64748b',
   margin: '0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const messageSection = {
@@ -327,14 +327,14 @@ const messageSection = {
   border: '1px solid #e2e8f0',
   borderRadius: '8px',
   padding: '24px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const messageText = {
   fontSize: '16px',
   color: '#374151',
   lineHeight: '1.6',
-  margin: '0',
+  margin: '0'
 };
 
 const actionSection = {
@@ -343,25 +343,25 @@ const actionSection = {
   borderLeft: '4px solid #dc2626',
   borderRadius: '8px',
   padding: '24px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const actionTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#dc2626',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const actionDescription = {
   fontSize: '15px',
   color: '#7f1d1d',
   lineHeight: '1.5',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const actionButtonContainer = {
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const actionButton = {
@@ -374,7 +374,7 @@ const actionButton = {
   display: 'inline-block',
   padding: '14px 28px',
   border: 'none',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
 };
 
 const infoSection = {
@@ -382,14 +382,14 @@ const infoSection = {
   border: '1px solid #fed7aa',
   borderRadius: '8px',
   padding: '20px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const infoTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const infoItem = {
@@ -397,7 +397,7 @@ const infoItem = {
   color: '#7c2d12',
   margin: '6px 0',
   lineHeight: '1.4',
-  display: 'block',
+  display: 'block'
 };
 
 const securitySection = {
@@ -405,14 +405,14 @@ const securitySection = {
   border: '1px solid #bbf7d0',
   borderRadius: '8px',
   padding: '20px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const securityTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#166534',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const securityItem = {
@@ -420,7 +420,7 @@ const securityItem = {
   color: '#166534',
   margin: '6px 0',
   lineHeight: '1.4',
-  display: 'block',
+  display: 'block'
 };
 
 const featureSection = {
@@ -429,25 +429,25 @@ const featureSection = {
   borderRadius: '8px',
   padding: '20px',
   margin: '24px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const featureTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#2d4a3e',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const featureDescription = {
   fontSize: '14px',
   color: '#64748b',
   lineHeight: '1.5',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const featureButtonContainer = {
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const featureButton = {
@@ -460,7 +460,7 @@ const featureButton = {
   textAlign: 'center' as const,
   display: 'inline-block',
   padding: '12px 24px',
-  border: 'none',
+  border: 'none'
 };
 
 const supportSection = {
@@ -469,21 +469,21 @@ const supportSection = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const supportTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#166534',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const supportText = {
   fontSize: '15px',
   color: '#166534',
   lineHeight: '1.5',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const supportContact = {
@@ -491,13 +491,13 @@ const supportContact = {
   color: '#166534',
   fontWeight: '500',
   lineHeight: '1.8',
-  margin: '0',
+  margin: '0'
 };
 
 const supportLink = {
   color: '#ff6b35',
   textDecoration: 'underline',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const closingText = {
@@ -509,50 +509,50 @@ const closingText = {
   padding: '16px',
   backgroundColor: '#f0fdf4',
   borderRadius: '8px',
-  border: '1px solid #bbf7d0',
+  border: '1px solid #bbf7d0'
 };
 
 const signature = {
   fontSize: '15px',
   color: '#374151',
   margin: '24px 0 0 0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 };
 
 const divider = {
   borderColor: '#e2e8f0',
-  margin: '0',
+  margin: '0'
 };
 
 const footerSection = {
   backgroundColor: '#f8fafc',
   padding: '24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const footerTitle = {
   color: '#2d4a3e',
   fontSize: '16px',
   fontWeight: 'bold',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const footerSubtitle = {
   color: '#64748b',
   fontSize: '12px',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const footerText = {
   fontSize: '12px',
   color: '#64748b',
   margin: '0 0 12px 0',
-  lineHeight: '1.4',
+  lineHeight: '1.4'
 };
 
 const copyrightText = {
   fontSize: '12px',
   color: '#94a3b8',
   margin: '0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 }; 

@@ -1,7 +1,7 @@
-import { useEffect, useState } from '@/components/ui/card';
+import { useState } from 'react';
 import { AlertCircle, RefreshCw, Wifi, WifiOff } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 
 'use client';

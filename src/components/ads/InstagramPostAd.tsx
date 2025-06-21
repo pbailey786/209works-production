@@ -1,14 +1,4 @@
-import { useState, useEffect } from 'react';
-
-'use client';
-
-  import {
-  Heart,
-  MessageCircle,
-  Send,
-  Bookmark,
-  MoreHorizontal,
-} from 'lucide-react';
+import { useState, useEffect } from 'lucide-react';
 
 interface InstagramPostAdProps {
   maxAds?: number;
@@ -36,7 +26,7 @@ export default function InstagramPostAd({
   maxAds = 1,
   userLocation,
   className = '',
-  showEngagement = true,
+  showEngagement = true
 }: InstagramPostAdProps) {
   const [ads, setAds] = useState<Advertisement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +43,7 @@ export default function InstagramPostAd({
       const params = new URLSearchParams({
         placement: 'social',
         limit: maxAds.toString(),
-        ...(userLocation && { location: userLocation }),
+        ...(userLocation && { location: userLocation })
       });
 
       const response = await fetch(`/api/ads/display?${params}`);
@@ -80,8 +70,8 @@ export default function InstagramPostAd({
           page: window.location.pathname,
           position: 'instagram-post',
           userAgent: navigator.userAgent,
-          referrer: document.referrer,
-        }),
+          referrer: document.referrer
+        })
       });
     } catch (err) {
       console.error('Failed to track impression:', err);
@@ -98,8 +88,8 @@ export default function InstagramPostAd({
           sessionId: `instagram_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           targetUrl,
           userAgent: navigator.userAgent,
-          referrer: document.referrer,
-        }),
+          referrer: document.referrer
+        })
       });
     } catch (err) {
       console.error('Failed to track click:', err);
@@ -262,7 +252,7 @@ export default function InstagramPostAd({
         {/* Location */}
         {ad.targeting?.zipCodes && (
           <div className="mt-2 text-xs text-gray-500">
-            📍 Serving {ad.targeting.zipCodes.join(', ')}
+            📍 Serving {ad.targeting.zipCodes.path.join(', ')}
           </div>
         )}
 

@@ -1,55 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
-import {
-  Users,
-  Search,
-  Filter,
-  Eye,
-  MessageSquare,
-  Calendar,
-  Star,
-  MapPin,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Gift,
-  FileText,
-  Mail,
-  Phone,
-  ExternalLink,
-  MoreHorizontal,
-  Download,
-  RefreshCw,
-  SortAsc,
-  SortDesc,
-  ChevronDown,
-  UserCheck,
-  UserX,
-  UserClock,
-  Briefcase,
-  Award,
-  TrendingUp,
-} from 'lucide-react';
+import { formatDistanceToNow } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import {
+import { Card } from '@/components/ui/dropdown-menu';
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 
@@ -103,38 +63,38 @@ const statusConfig = {
     icon: Clock,
     color: 'text-yellow-600',
     bg: 'bg-yellow-100',
-    label: 'Pending',
+    label: 'Pending'
   },
   reviewing: {
     icon: Eye,
     color: 'text-blue-600',
     bg: 'bg-blue-100',
-    label: 'Under Review',
+    label: 'Under Review'
   },
   interview: {
     icon: Calendar,
     color: 'text-purple-600',
     bg: 'bg-purple-100',
-    label: 'Interview',
+    label: 'Interview'
   },
   offer: {
     icon: Gift,
     color: 'text-green-600',
     bg: 'bg-green-100',
-    label: 'Offer',
+    label: 'Offer'
   },
   rejected: {
     icon: XCircle,
     color: 'text-red-600',
     bg: 'bg-red-100',
-    label: 'Rejected',
+    label: 'Rejected'
   },
   withdrawn: {
     icon: AlertCircle,
     color: 'text-gray-600',
     bg: 'bg-gray-100',
-    label: 'Withdrawn',
-  },
+    label: 'Withdrawn'
+  }
 };
 
 export default function ApplicantsPage() {
@@ -156,7 +116,7 @@ export default function ApplicantsPage() {
       setLoading(true);
       const params = new URLSearchParams({
         page: pageNum.toString(),
-        limit: '10',
+        limit: '10'
       });
 
       if (status !== 'all') {
@@ -195,7 +155,7 @@ export default function ApplicantsPage() {
       const response = await fetch('/api/employers/applications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ applicationId, status: newStatus }),
+        body: JSON.stringify({ applicationId, status: newStatus })
       });
 
       if (!response.ok) {
@@ -388,7 +348,7 @@ export default function ApplicantsPage() {
                           <Clock className="mr-1 h-4 w-4" />
                           Applied{' '}
                           {formatDistanceToNow(new Date(application.appliedAt), {
-                            addSuffix: true,
+                            addSuffix: true
                           })}
                         </span>
                       </div>

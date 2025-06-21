@@ -3,12 +3,7 @@ import { prisma } from '@/lib/database/prisma';
 import { paginatedQuerySchema } from '@/lib/validations/api';
 import { JobCacheService } from '@/lib/services/regional-job-service';
 import { createJobSchema } from '@/lib/validations/api';
-import { createSuccessResponse } from '@/lib/errors/api-errors';
-import {
-  withAPIMiddleware,
-  apiConfigs,
-  mergeAPIConfig,
-} from '@/lib/middleware/api-middleware';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
 // GET /api/jobs - List jobs with caching and pagination
 export const GET = withAPIMiddleware(
   async (req, context) => {
@@ -26,7 +21,7 @@ export const GET = withAPIMiddleware(
       {
         ...paginationParams,
         sortBy,
-        sortOrder,
+        sortOrder
       },
       performance
     );
@@ -37,8 +32,8 @@ export const GET = withAPIMiddleware(
     querySchema: paginatedQuerySchema,
     logging: {
       enabled: true,
-      includeQuery: true,
-    },
+      includeQuery: true
+    }
   })
 );
 
@@ -152,10 +147,10 @@ export const POST = withAPIMiddleware(
           select: {
             id: true,
             name: true,
-            companyWebsite: true,
-          },
-        },
-      },
+            companyWebsite: true
+          }
+        }
+      }
     });
 
     // Use job posting credit if this is not a free basic post
@@ -213,6 +208,6 @@ export const POST = withAPIMiddleware(
     bodySchema: createJobSchema,
     rateLimit: { enabled: true, type: 'authenticated' },
     logging: { enabled: true, includeBody: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );

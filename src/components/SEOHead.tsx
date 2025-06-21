@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { useDomain, getDomainMetadata } from '@/lib/domain/context';
+import path from "path";
 
 interface SEOHeadProps {
   title?: string;
@@ -124,7 +125,7 @@ export default function SEOHead({
       {/* Primary Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={finalDescription} />
-      <meta name="keywords" content={domainConfig.seo.keywords.join(', ')} />
+      <meta name="keywords" content={domainConfig.seo.keywords.path.join(', ')} />
       <meta name="author" content={domainConfig.displayName} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
 

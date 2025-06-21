@@ -1,8 +1,10 @@
-import { Eye, EyeOff, Loader2, CheckCircle, AlertCircle } from '@/components/ui/card';
+import { Check } from 'lucide-react';
 import { cn } from '@/components/ui/card';
 import { Input } from '@/components/ui/card';
 import { Label } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { useState } from "react";
+import path from "path";
 
 
 export interface FormInputProps
@@ -119,8 +121,8 @@ export const PasswordInput = React.forwardRef<
   HTMLInputElement,
   PasswordInputProps
 >(({ showStrengthIndicator = false, ...props }, ref) => {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [strength, setStrength] = React.useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [strength, setStrength] = useState(0);
 
   const calculatePasswordStrength = (password: string): number => {
     let score = 0;
@@ -333,8 +335,8 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
     },
     ref
   ) => {
-    const [preview, setPreview] = React.useState<string | null>(null);
-    const [fileName, setFileName] = React.useState<string>('');
+    const [preview, setPreview] = useState<string | null>(null);
+    const [fileName, setFileName] = useState<string>('');
     const hasError = Boolean(error);
     const hasSuccess = Boolean(success) && !hasError;
 
@@ -384,7 +386,7 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
             hasSuccess && 'border-green-500 focus-visible:ring-green-500',
             className
           )}
-          accept={acceptedFileTypes?.join(',')}
+          accept={acceptedFileTypes?.path.join(',')}
           onChange={handleFileChange}
           ref={ref}
           {...props}
@@ -415,7 +417,7 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
         {(acceptedFileTypes || maxFileSize) && !error && !success && (
           <div className="space-y-1 text-xs text-muted-foreground">
             {acceptedFileTypes && (
-              <p>Accepted formats: {acceptedFileTypes.join(', ')}</p>
+              <p>Accepted formats: {acceptedFileTypes.path.join(', ')}</p>
             )}
             {maxFileSize && <p>Maximum file size: {maxFileSize}MB</p>}
           </div>

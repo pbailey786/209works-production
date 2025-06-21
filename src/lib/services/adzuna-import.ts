@@ -1,5 +1,5 @@
-import { fetchAdzunaJobs, AdzunaJob } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
 import { JobType } from '@prisma/client';
 
 

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 // Define the JobType enum to match Prisma schema
 type JobType = 'full_time' | 'part_time' | 'contract' | 'internship' | 'temporary' | 'volunteer' | 'other';
@@ -264,7 +265,7 @@ async function processCSVFile(file: File): Promise<any[]> {
   const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
 
   if (missingHeaders.length > 0) {
-    throw new Error(`Missing required columns: ${missingHeaders.join(', ')}. Please ensure your CSV has these columns: ${requiredHeaders.join(', ')}`);
+    throw new Error(`Missing required columns: ${missingHeaders.path.join(', ')}. Please ensure your CSV has these columns: ${requiredHeaders.path.join(', ')}`);
   }
 
   const jobs = [];

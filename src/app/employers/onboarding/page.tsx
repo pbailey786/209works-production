@@ -3,23 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-
-import {
-  Building2,
-  Upload,
-  Users,
-  Briefcase,
-  CheckCircle,
-  ArrowRight,
-  ArrowLeft,
-  Globe,
-  MapPin,
-  GraduationCap,
-  Home,
-  TrendingUp,
-  Sparkles,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface OnboardingData {
   // Step 1: Company Info & Contact Person
@@ -56,7 +40,7 @@ export default function EmployerOnboardingPage() {
     contactPhone: '',
     urgentlyHiring: false,
     seasonalHiring: false,
-    alwaysHiring: false,
+    alwaysHiring: false
   });
 
   // Logo upload state
@@ -151,7 +135,7 @@ export default function EmployerOnboardingPage() {
 
       const response = await fetch('/api/employers/logo', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       if (response.ok) {
@@ -195,9 +179,9 @@ export default function EmployerOnboardingPage() {
       const response = await fetch('/api/employers/onboarding', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
       });
 
       if (response.ok) {

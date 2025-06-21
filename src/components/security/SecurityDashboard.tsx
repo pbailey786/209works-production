@@ -1,32 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Shield, 
-  AlertTriangle, 
-  Lock, 
-  Eye, 
-  Ban,
-  Users,
-  Activity,
-  CheckCircle,
-  XCircle,
-  Clock,
-  TrendingUp,
-  TrendingDown,
-  RefreshCw,
-  Settings,
-  FileText,
-  Globe,
-  Database,
-  Zap
-} from 'lucide-react';
+import { Alert, AlertDescription } from 'lucide-react';
 
 interface SecurityData {
   overview: {
@@ -113,7 +93,7 @@ export default function SecurityDashboard({ region }: SecurityDashboardProps) {
       const response = await fetch('/api/admin/security', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, target, reason }),
+        body: JSON.stringify({ action, target, reason })
       });
 
       if (response.ok) {

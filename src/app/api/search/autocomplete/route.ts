@@ -1,17 +1,9 @@
-import { NextRequest } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { autocompleteQuerySchema } from '@/components/ui/card';
 import { createSuccessResponse } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { TextProcessor } from '@/lib/search/algorithms';
-
-import {
-  getCache,
-  setCache,
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL,
-} from '@/lib/cache/redis';
+import { prisma } from '@/lib/database/prisma';
+import { TextProcessor } from '@/lib/cache/redis';
 
 // GET /api/search/autocomplete - Get search suggestions
 export const GET = withAPIMiddleware(
@@ -25,7 +17,7 @@ export const GET = withAPIMiddleware(
         query: '',
         type: type || 'jobs',
         suggestions: [],
-        error: 'Query parameter is required',
+        error: 'Query parameter is required'
       });
     }
 
@@ -48,7 +40,7 @@ export const GET = withAPIMiddleware(
         query: q,
         type,
         suggestions,
-        cached: true,
+        cached: true
       });
     }
 
@@ -87,21 +79,21 @@ export const GET = withAPIMiddleware(
     // Cache suggestions
     await setCache(cacheKey, suggestions, {
       ttl: DEFAULT_TTL.medium,
-      tags: ['search', 'autocomplete'],
+      tags: ['search', 'autocomplete']
     });
 
     return createSuccessResponse({
       query: q,
       type,
       suggestions,
-      cached: false,
+      cached: false
     });
   },
   {
     querySchema: autocompleteQuerySchema,
     rateLimit: { enabled: true, type: 'search' },
     logging: { enabled: true, includeQuery: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -117,11 +109,11 @@ async function generateJobSuggestions(
     where: {
       title: {
         contains: query,
-        mode: 'insensitive',
-      },
+        mode: 'insensitive'
+      }
     },
     select: {
-      title: true,
+      title: true
     },
     take: limit * 2, // Get more to filter duplicates
   });
@@ -151,14 +143,14 @@ async function generateCompanySuggestions(
     where: {
       company: {
         contains: query,
-        mode: 'insensitive',
-      },
+        mode: 'insensitive'
+      }
     },
     select: {
-      company: true,
+      company: true
     },
     distinct: ['company'],
-    take: limit,
+    take: limit
   });
 
   return companies.map(job => job.company).filter(Boolean);
@@ -176,14 +168,14 @@ async function generateLocationSuggestions(
     where: {
       location: {
         contains: query,
-        mode: 'insensitive',
-      },
+        mode: 'insensitive'
+      }
     },
     select: {
-      location: true,
+      location: true
     },
     distinct: ['location'],
-    take: limit,
+    take: limit
   });
 
   return locations.map(job => job.location).filter(Boolean);
@@ -250,13 +242,13 @@ async function generateSkillSuggestions(
   const userSkills = await prisma.user.findMany({
     where: {
       skills: {
-        hasSome: [query],
-      },
+        hasSome: [query]
+      }
     },
     select: {
-      skills: true,
+      skills: true
     },
-    take: 50,
+    take: 50
   });
 
   // Extract and flatten skills from users

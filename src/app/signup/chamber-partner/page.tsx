@@ -1,33 +1,19 @@
 import { Metadata } from 'next';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Card } from '@/components/ui/select';
 
 import Link from 'next/link';
-import {
   Building2,
   Users,
   CheckCircle,
   Shield,
   TrendingUp,
-  Handshake,
+  Handshake
 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Chamber Partner Signup | 209jobs',
   description:
-    'Join as a Chamber of Commerce partner to support local businesses and drive regional economic growth',
+    'Join as a Chamber of Commerce partner to support local businesses and drive regional economic growth'
 };
 
 export default function ChamberPartnerSignupPage() {

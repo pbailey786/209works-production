@@ -5,9 +5,10 @@
 
 'use client';
 
-import { useEffect, useCallback, useRef } from '@/components/ui/card';
+import { useEffect } from 'react';
 import { usePostHog } from '@/components/ui/card';
 import { usePathname, useSearchParams } from 'next/navigation';
+import path from "path";
 
 interface JobData {
   id: string;

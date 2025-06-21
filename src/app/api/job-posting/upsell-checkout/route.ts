@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/database/prisma';
 import { stripe } from '@/components/ui/card';
 import { z } from 'zod';
+import path from "path";
 
 const upsellCheckoutSchema = z.object({
   jobId: z.string().min(1, 'Job ID is required'),
@@ -212,7 +213,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Invalid request data', 
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`)
         },
         { status: 400 }
       );

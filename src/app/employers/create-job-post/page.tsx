@@ -3,27 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-
-import {
-  Briefcase,
-  Building2,
-  MapPin,
-  DollarSign,
-  Clock,
-  Users,
-  Heart,
-  TrendingUp,
-  Gift,
-  MessageSquare,
-  Upload,
-  Eye,
-  Sparkles,
-  ArrowRight,
-  HelpCircle,
-  Check,
-  ExternalLink,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 // Removed upsell and modal imports - Job Post Optimizer is now streamlined
 
 interface JobPostForm {
@@ -100,7 +80,7 @@ export default function CreateJobPostPage() {
     socialMediaShoutout: false,
     placementBump: false,
     upsellBundle: false,
-    upsellTotal: 0,
+    upsellTotal: 0
   });
 
   // Auto-fill company data from onboarding
@@ -114,7 +94,7 @@ export default function CreateJobPostPage() {
             setForm(prev => ({
               ...prev,
               companyName: data.data.companyName || prev.companyName,
-              location: data.data.businessLocation || prev.location,
+              location: data.data.businessLocation || prev.location
             }));
           }
         }
@@ -250,13 +230,13 @@ export default function CreateJobPostPage() {
       const response = await fetch('/api/job-post-optimizer/autofill', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           jobTitle: form.jobTitle,
           companyName: form.companyName,
-          location: form.location,
-        }),
+          location: form.location
+        })
       });
 
       if (response.ok) {
@@ -271,7 +251,7 @@ export default function CreateJobPostPage() {
           culture: template.culture || prev.culture,
           growthPath: template.growthPath || prev.growthPath,
           perks: template.perks || prev.perks,
-          applicationCTA: template.applicationCTA || prev.applicationCTA,
+          applicationCTA: template.applicationCTA || prev.applicationCTA
         }));
       } else {
         const errorData = await response.json();
@@ -317,13 +297,13 @@ export default function CreateJobPostPage() {
       const response = await fetch('/api/job-post-optimizer', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           ...form,
           salaryRangeMin: form.salaryRangeMin ? parseInt(form.salaryRangeMin) : undefined,
-          salaryRangeMax: form.salaryRangeMax ? parseInt(form.salaryRangeMax) : undefined,
-        }),
+          salaryRangeMax: form.salaryRangeMax ? parseInt(form.salaryRangeMax) : undefined
+        })
       });
 
       if (response.ok) {
@@ -353,7 +333,7 @@ export default function CreateJobPostPage() {
         const validation = validateManualJobPost(editedListing);
         if (!validation.isValid) {
           setErrors({
-            publish: `Please improve your job post:\n• ${validation.errors.join('\n• ')}`
+            publish: `Please improve your job post:\n• ${validation.errors.path.join('\n• ')}`
           });
           setIsPublishing(false);
           return;
@@ -363,7 +343,7 @@ export default function CreateJobPostPage() {
         const createResponse = await fetch('/api/job-post-optimizer', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             ...form,
@@ -371,7 +351,7 @@ export default function CreateJobPostPage() {
             salaryRangeMax: form.salaryRangeMax ? parseInt(form.salaryRangeMax) : undefined,
             manualContent: editedListing, // Send manual content
             skipAI: true, // Flag to indicate this is manual
-          }),
+          })
         });
 
         if (!createResponse.ok) {
@@ -390,11 +370,11 @@ export default function CreateJobPostPage() {
         await fetch(`/api/job-post-optimizer/${optimizerJobId}`, {
           method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            editedContent: editedListing,
-          }),
+            editedContent: editedListing
+          })
         });
       }
 
@@ -404,11 +384,11 @@ export default function CreateJobPostPage() {
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            useEditedContent: !!editedListing,
-          }),
+            useEditedContent: !!editedListing
+          })
         }
       );
 
@@ -1366,7 +1346,7 @@ export default function CreateJobPostPage() {
                     <div
                       className="job-post-preview"
                       dangerouslySetInnerHTML={{
-                        __html: renderJobPost(editedListing || generatedListing),
+                        __html: renderJobPost(editedListing || generatedListing)
                       }}
                     />
                   </div>

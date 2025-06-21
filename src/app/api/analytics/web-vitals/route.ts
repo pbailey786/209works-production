@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { PerformanceMetrics } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 

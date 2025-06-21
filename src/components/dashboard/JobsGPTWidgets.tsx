@@ -2,17 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import {
-  MessageSquare,
-  Clock,
-  Search,
-  Bookmark,
-  Sparkles,
-  ArrowRight,
-  TrendingUp,
-  ChevronRight,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 import { WidgetCard } from './DashboardCards';
 import { Button } from '@/components/ui/button';
 
@@ -61,21 +51,21 @@ export function RecentChatsWidget() {
             title: 'Software Engineering Jobs',
             lastMessage: 'Found 5 software engineering positions in Stockton...',
             timestamp: '2 hours ago',
-            messageCount: 8,
+            messageCount: 8
           },
           {
             id: '2',
             title: 'Healthcare Opportunities',
             lastMessage: 'Here are some nursing positions in Modesto...',
             timestamp: '1 day ago',
-            messageCount: 12,
+            messageCount: 12
           },
           {
             id: '3',
             title: 'Remote Work Options',
             lastMessage: 'I found several remote-friendly companies...',
             timestamp: '3 days ago',
-            messageCount: 6,
+            messageCount: 6
           },
         ]);
       } finally {
@@ -176,21 +166,21 @@ export function SavedSearchesWidget() {
             query: 'software engineer remote',
             filters: { location: '209 area', jobType: 'full_time' },
             resultCount: 12,
-            lastRun: '1 hour ago',
+            lastRun: '1 hour ago'
           },
           {
             id: '2',
             query: 'healthcare jobs modesto',
             filters: { location: 'Modesto', industry: 'healthcare' },
             resultCount: 8,
-            lastRun: '6 hours ago',
+            lastRun: '6 hours ago'
           },
           {
             id: '3',
             query: 'warehouse logistics',
             filters: { location: 'Stockton', industry: 'logistics' },
             resultCount: 15,
-            lastRun: '1 day ago',
+            lastRun: '1 day ago'
           },
         ]);
       } catch (error) {
@@ -279,7 +269,7 @@ export function JobsGPTStatsWidget() {
     totalChats: 0,
     totalQuestions: 0,
     jobsFound: 0,
-    applicationsHelped: 0,
+    applicationsHelped: 0
   });
 
   useEffect(() => {
@@ -290,7 +280,7 @@ export function JobsGPTStatsWidget() {
           totalChats: 12,
           totalQuestions: 47,
           jobsFound: 156,
-          applicationsHelped: 8,
+          applicationsHelped: 8
         });
       } catch (error) {
         console.error('Failed to fetch JobsGPT stats:', error);

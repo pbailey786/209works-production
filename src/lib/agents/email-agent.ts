@@ -3,6 +3,7 @@ import { render } from '@/components/ui/card';
 import { SecurityLogger } from '@/components/ui/card';
 import { emailSecurityValidator } from '@/components/ui/card';
 import { templateManager } from '@/lib/email/template-manager';
+import path from "path";
 
 
 export interface EmailJobData {
@@ -68,7 +69,7 @@ export class EmailAgent {
       // Validate email data
       const validation = this.validateEmailData(data);
       if (!validation.isValid) {
-        throw new Error(`Email validation failed: ${validation.errors.join(', ')}`);
+        throw new Error(`Email validation failed: ${validation.errors.path.join(', ')}`);
       }
 
       // Prepare email content
@@ -150,7 +151,7 @@ export class EmailAgent {
       const processingTime = Date.now() - startTime;
       if (this.isDevelopment) {
         console.log(
-          `[EMAIL-AGENT] Successfully sent email "${data.subject}" to ${recipients.join(', ')} in ${processingTime}ms`
+          `[EMAIL-AGENT] Successfully sent email "${data.subject}" to ${recipients.path.join(', ')} in ${processingTime}ms`
         );
       }
 

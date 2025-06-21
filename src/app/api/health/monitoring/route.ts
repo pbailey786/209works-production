@@ -1,4 +1,4 @@
-import { NextRequest } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { apiConfigs } from '@/components/ui/card';
 import { createSuccessResponse } from '@/components/ui/card';

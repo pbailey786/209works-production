@@ -1,25 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Eye,
-  Users,
-  Clock,
-  MapPin,
-  DollarSign,
-  Star,
-  Calendar,
-  Target,
-  Activity,
-  Download,
-  RefreshCw,
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 interface JobAnalyticsProps {
   jobId: string;
@@ -73,12 +57,12 @@ export function JobAnalytics({ jobId, className }: JobAnalyticsProps) {
               applications: Math.floor(Math.random() * 50) + 10,
               conversionRate: Math.random() * 10 + 2,
               averageTimeToApply: Math.floor(Math.random() * 5) + 1,
-              uniqueVisitors: Math.floor(Math.random() * 300) + 80,
+              uniqueVisitors: Math.floor(Math.random() * 300) + 80
             },
             trends: {
               viewsThisWeek: Array.from({ length: 7 }, () => Math.floor(Math.random() * 50) + 10),
               applicationsThisWeek: Array.from({ length: 7 }, () => Math.floor(Math.random() * 8) + 1),
-              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
             },
             demographics: {
               topLocations: [
@@ -99,7 +83,7 @@ export function JobAnalytics({ jobId, className }: JobAnalyticsProps) {
                 { source: 'Google', count: 12 },
                 { source: 'LinkedIn', count: 8 },
                 { source: 'Indeed', count: 6 },
-              ],
+              ]
             },
             performance: {
               score: Math.floor(Math.random() * 40) + 60,
@@ -108,8 +92,8 @@ export function JobAnalytics({ jobId, className }: JobAnalyticsProps) {
                 'Add more specific requirements to attract qualified candidates',
                 'Consider increasing salary range to be more competitive',
                 'Add company benefits to make the position more attractive',
-              ],
-            },
+              ]
+            }
           });
         }
       } catch (error) {

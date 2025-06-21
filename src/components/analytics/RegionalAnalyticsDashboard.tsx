@@ -1,50 +1,9 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-
-
-  /**
- * Regional Analytics Dashboard
- * Dashboard for viewing PostHog analytics with regional insights
- */
-'use client';
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/card';
-  import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-} from '@/components/ui/card';
-  import {
-  TrendingUp,
-  Users,
-  Search,
-  MapPin,
-  Briefcase,
-  Eye,
-  MousePointer,
-  UserPlus,
-  Calendar,
-  Filter,
-  Download,
-} from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+  import { X } from 'lucide-react';
 
 interface AnalyticsData {
   pageViews: Array<{ date: string; views: number; region: string }>;
@@ -86,7 +45,7 @@ const TIME_RANGES = [
 ];
 
 export default function RegionalAnalyticsDashboard({
-  className = '',
+  className = ''
 }: RegionalAnalyticsDashboardProps) {
   const [selectedRegion, setSelectedRegion] = useState('all');
   const [timeRange, setTimeRange] = useState('30d');
@@ -131,7 +90,7 @@ export default function RegionalAnalyticsDashboard({
           { step: 'Job Views', count: 1800, percentage: 18 },
           { step: 'Applications', count: 450, percentage: 4.5 },
           { step: 'Registrations', count: 180, percentage: 1.8 },
-        ],
+        ]
       };
 
       setAnalyticsData(mockData);
@@ -158,7 +117,7 @@ export default function RegionalAnalyticsDashboard({
       data.push({
         date: date.toISOString().split('T')[0],
         views: value,
-        region: selectedRegion,
+        region: selectedRegion
       });
     }
 
@@ -180,7 +139,7 @@ export default function RegionalAnalyticsDashboard({
       data.push({
         date: date.toISOString().split('T')[0],
         searches: value,
-        region: selectedRegion,
+        region: selectedRegion
       });
     }
 
@@ -202,7 +161,7 @@ export default function RegionalAnalyticsDashboard({
       data.push({
         date: date.toISOString().split('T')[0],
         views: value,
-        region: selectedRegion,
+        region: selectedRegion
       });
     }
 
@@ -224,7 +183,7 @@ export default function RegionalAnalyticsDashboard({
       data.push({
         date: date.toISOString().split('T')[0],
         registrations: value,
-        region: selectedRegion,
+        region: selectedRegion
       });
     }
 
@@ -531,7 +490,7 @@ export default function RegionalAnalyticsDashboard({
                         <div
                           className="h-4 w-4 rounded-full"
                           style={{
-                            backgroundColor: COLORS[index % COLORS.length],
+                            backgroundColor: COLORS[index % COLORS.length]
                           }}
                         />
                         <span className="font-medium">{region.region}</span>

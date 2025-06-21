@@ -5,30 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Permission } from '@/lib/types/permissions';
-import { usePermissions } from '@/hooks/usePermissions';
-import {
-  LayoutDashboard,
-  FileText,
-  Users,
-  BarChart3,
-  Settings,
-  Shield,
-  Activity,
-  PlayCircle,
-  UserCheck,
-  AlertTriangle,
-  Database,
-  Download,
-  Menu,
-  X,
-  ChevronDown,
-  ChevronRight,
-  CloudDownload,
-  Mail,
-  Send,
-  TestTube,
-  CreditCard,
-} from 'lucide-react';
+import { usePermissions } from 'lucide-react';
 
 interface NavItem {
   name: string;
@@ -45,7 +22,7 @@ const navigation: NavItem[] = [
     name: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
-    permission: Permission.VIEW_ANALYTICS,
+    permission: Permission.VIEW_ANALYTICS
   },
   {
     name: 'Content Moderation',
@@ -58,16 +35,16 @@ const navigation: NavItem[] = [
         href: '/admin/moderation/jobs',
         icon: FileText,
         badge: '12',
-        permission: Permission.MODERATE_JOBS,
+        permission: Permission.MODERATE_JOBS
       },
       {
         name: 'User Reports',
         href: '/admin/moderation/reports',
         icon: AlertTriangle,
         badge: '3',
-        permission: Permission.HANDLE_REPORTS,
+        permission: Permission.HANDLE_REPORTS
       },
-    ],
+    ]
   },
   {
     name: 'User Management',
@@ -79,27 +56,27 @@ const navigation: NavItem[] = [
         name: 'All Users',
         href: '/admin/users',
         icon: Users,
-        permission: Permission.VIEW_USERS,
+        permission: Permission.VIEW_USERS
       },
       {
         name: 'Employers',
         href: '/admin/users/employers',
         icon: UserCheck,
-        permission: Permission.VIEW_USERS,
+        permission: Permission.VIEW_USERS
       },
       {
         name: 'Jobseekers',
         href: '/admin/users/jobseekers',
         icon: Users,
-        permission: Permission.VIEW_USERS,
+        permission: Permission.VIEW_USERS
       },
       {
         name: 'Credit Management',
         href: '/admin/credits',
         icon: CreditCard,
-        permission: Permission.VIEW_USERS,
+        permission: Permission.VIEW_USERS
       },
-    ],
+    ]
   },
   {
     name: 'Advertisement Management',
@@ -111,15 +88,15 @@ const navigation: NavItem[] = [
         name: 'Active Campaigns',
         href: '/admin/ads/campaigns',
         icon: PlayCircle,
-        permission: Permission.MANAGE_AD_CAMPAIGNS,
+        permission: Permission.MANAGE_AD_CAMPAIGNS
       },
       {
         name: 'Performance',
         href: '/admin/ads/performance',
         icon: BarChart3,
-        permission: Permission.VIEW_AD_PERFORMANCE,
+        permission: Permission.VIEW_AD_PERFORMANCE
       },
-    ],
+    ]
   },
   {
     name: 'Analytics',
@@ -131,45 +108,45 @@ const navigation: NavItem[] = [
         name: 'Platform Overview',
         href: '/admin/analytics',
         icon: BarChart3,
-        permission: Permission.VIEW_ANALYTICS,
+        permission: Permission.VIEW_ANALYTICS
       },
       {
         name: 'JobsGPT Analytics',
         href: '/admin/jobsgpt-analytics',
         icon: BarChart3,
-        permission: Permission.VIEW_ANALYTICS,
+        permission: Permission.VIEW_ANALYTICS
       },
       {
         name: 'User Engagement',
         href: '/admin/analytics/engagement',
         icon: Users,
-        permission: Permission.VIEW_ANALYTICS,
+        permission: Permission.VIEW_ANALYTICS
       },
       {
         name: 'Search Analytics',
         href: '/admin/analytics/search',
         icon: BarChart3,
-        permission: Permission.VIEW_ANALYTICS,
+        permission: Permission.VIEW_ANALYTICS
       },
       {
         name: 'Email Performance',
         href: '/admin/analytics/email',
         icon: BarChart3,
-        permission: Permission.VIEW_EMAIL_ANALYTICS,
+        permission: Permission.VIEW_EMAIL_ANALYTICS
       },
       {
         name: 'Advanced Analytics',
         href: '/admin/advanced-analytics',
         icon: BarChart3,
-        permission: Permission.VIEW_ANALYTICS,
+        permission: Permission.VIEW_ANALYTICS
       },
-    ],
+    ]
   },
   {
     name: 'Social Media',
     href: '/admin/social-media',
     icon: Send,
-    permission: Permission.VIEW_ANALYTICS,
+    permission: Permission.VIEW_ANALYTICS
   },
   {
     name: 'Email Management',
@@ -181,63 +158,63 @@ const navigation: NavItem[] = [
         name: 'Dashboard',
         href: '/admin/email',
         icon: Mail,
-        permission: Permission.MANAGE_EMAIL_TEMPLATES,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES
       },
       {
         name: 'Templates',
         href: '/admin/email/templates',
         icon: FileText,
-        permission: Permission.MANAGE_EMAIL_TEMPLATES,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES
       },
       {
         name: 'Campaigns',
         href: '/admin/email/campaigns',
         icon: Send,
-        permission: Permission.MANAGE_EMAIL_TEMPLATES,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES
       },
       {
         name: 'Test Email',
         href: '/admin/email/test',
         icon: TestTube,
-        permission: Permission.MANAGE_EMAIL_TEMPLATES,
+        permission: Permission.MANAGE_EMAIL_TEMPLATES
       },
-    ],
+    ]
   },
   {
     name: 'Database Management',
     href: '/admin/database',
     icon: Database,
-    permission: Permission.MANAGE_SYSTEM_SETTINGS,
+    permission: Permission.MANAGE_SYSTEM_SETTINGS
   },
   {
     name: 'System Health',
     href: '/admin/health',
     icon: Activity,
-    permission: Permission.VIEW_SYSTEM_HEALTH,
+    permission: Permission.VIEW_SYSTEM_HEALTH
   },
   {
     name: 'Job Import',
     href: '/admin/adzuna-import',
     icon: CloudDownload,
-    permission: Permission.MANAGE_SYSTEM_SETTINGS,
+    permission: Permission.MANAGE_SYSTEM_SETTINGS
   },
   {
     name: 'Audit Logs',
     href: '/admin/audit',
     icon: FileText,
-    permission: Permission.VIEW_AUDIT_LOGS,
+    permission: Permission.VIEW_AUDIT_LOGS
   },
   {
     name: 'Reports',
     href: '/admin/reports',
     icon: Download,
-    permission: Permission.EXPORT_REPORTS,
+    permission: Permission.EXPORT_REPORTS
   },
   {
     name: 'Settings',
     href: '/admin/settings',
     icon: Settings,
-    permission: Permission.MANAGE_SYSTEM_SETTINGS,
+    permission: Permission.MANAGE_SYSTEM_SETTINGS
   },
 ];
 
@@ -266,7 +243,7 @@ export default function AdminSidebar() {
 
   const NavItemComponent = ({
     item,
-    level = 0,
+    level = 0
   }: {
     item: NavItem;
     level?: number;

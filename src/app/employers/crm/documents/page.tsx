@@ -1,15 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-
-import {
-  Download,
-  FileText,
-  Users,
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-} from 'lucide-react';
+import { useState } from 'lucide-react';
 
 export default function DocumentVaultPage() {
   const [expandedJobs, setExpandedJobs] = useState<string[]>([]);
@@ -30,37 +21,37 @@ export default function DocumentVaultPage() {
           name: 'Sarah Johnson',
           appliedDate: '2024-01-20',
           resumeUrl: '/resumes/sarah-johnson.pdf',
-          hasResume: true,
+          hasResume: true
         },
         {
           id: 'app-2',
           name: 'Mike Chen',
           appliedDate: '2024-01-19',
           resumeUrl: '/resumes/mike-chen.pdf',
-          hasResume: true,
+          hasResume: true
         },
         {
           id: 'app-3',
           name: 'Lisa Rodriguez',
           appliedDate: '2024-01-18',
           resumeUrl: '/resumes/lisa-rodriguez.pdf',
-          hasResume: true,
+          hasResume: true
         },
         {
           id: 'app-4',
           name: 'David Kim',
           appliedDate: '2024-01-17',
           resumeUrl: null,
-          hasResume: false,
+          hasResume: false
         },
         {
           id: 'app-5',
           name: 'Emma Wilson',
           appliedDate: '2024-01-16',
           resumeUrl: '/resumes/emma-wilson.pdf',
-          hasResume: true,
+          hasResume: true
         },
-      ],
+      ]
     },
     {
       id: 'job-2',
@@ -76,23 +67,23 @@ export default function DocumentVaultPage() {
           name: 'Jennifer Martinez',
           appliedDate: '2024-01-19',
           resumeUrl: '/resumes/jennifer-martinez.pdf',
-          hasResume: true,
+          hasResume: true
         },
         {
           id: 'app-7',
           name: 'Robert Taylor',
           appliedDate: '2024-01-18',
           resumeUrl: '/resumes/robert-taylor.pdf',
-          hasResume: true,
+          hasResume: true
         },
         {
           id: 'app-8',
           name: 'Amanda Brown',
           appliedDate: '2024-01-17',
           resumeUrl: null,
-          hasResume: false,
+          hasResume: false
         },
-      ],
+      ]
     },
     {
       id: 'job-3',
@@ -108,16 +99,16 @@ export default function DocumentVaultPage() {
           name: 'Carlos Gonzalez',
           appliedDate: '2024-01-20',
           resumeUrl: '/resumes/carlos-gonzalez.pdf',
-          hasResume: true,
+          hasResume: true
         },
         {
           id: 'app-10',
           name: 'Maria Lopez',
           appliedDate: '2024-01-19',
           resumeUrl: '/resumes/maria-lopez.pdf',
-          hasResume: true,
+          hasResume: true
         },
-      ],
+      ]
     },
   ];
 

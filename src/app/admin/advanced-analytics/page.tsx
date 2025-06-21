@@ -1,21 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { prisma } from '@/lib/database/prisma';
-import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
-import AutomatedReportsPanel from '@/components/admin/AutomatedReportsPanel';
-import UserImpersonationPanel from '@/components/admin/UserImpersonationPanel';
-import {
-  BarChart3,
-  FileText,
-  UserCheck,
-  Download,
-  TrendingUp,
-  Users,
-  Briefcase,
-  MessageSquare,
-} from 'lucide-react';
+import { prisma } from 'lucide-react';
 
 export default async function AdvancedAnalyticsPage() {
   const { userId } = await auth();
@@ -24,7 +11,7 @@ export default async function AdvancedAnalyticsPage() {
     }
     
     const user = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: userId! }
     });
 
   if (!user || user?.role !== 'admin') {

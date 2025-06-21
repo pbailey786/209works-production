@@ -1,23 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
-import {
-  Check,
-  Star,
-  Zap,
-  RefreshCw,
-  Share2,
-  Crown,
-  Loader2,
-  X,
-  CreditCard,
-  Coins,
-  Sparkles,
-  TrendingUp,
-  Instagram,
-  AlertCircle,
-} from 'lucide-react';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from 'lucide-react';
 
 interface JobPostingCheckoutProps {
   isOpen: boolean;
@@ -93,12 +77,12 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
       setSubscriptionStatus({
         hasActiveSubscription: subscriptionData.hasActiveSubscription,
         currentTier: subscriptionData.currentTier,
-        subscription: subscriptionData.subscription,
+        subscription: subscriptionData.subscription
       });
 
       setCreditBalance({
         universal: creditsData.universal || 0,
-        total: creditsData.total || 0,
+        total: creditsData.total || 0
       });
 
     } catch (error) {
@@ -131,7 +115,7 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
   const creditPacks = {
     small: { name: 'Small Pack', credits: 3, description: 'Perfect for a few job posts' },
     medium: { name: 'Medium Pack', credits: 5, description: 'Great for regular posting' },
-    large: { name: 'Large Pack', credits: 12, description: 'Best value for high-volume hiring' },
+    large: { name: 'Large Pack', credits: 12, description: 'Best value for high-volume hiring' }
   };
 
   // Calculate total credits needed
@@ -162,8 +146,8 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
         body: JSON.stringify({
           creditPack: selectedCreditPack,
           successUrl: `${window.location.origin}/employers/dashboard?credit_purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/dashboard?credit_purchase_cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/dashboard?credit_purchase_cancelled=true`
+        })
       });
 
       const data = await response.json();
@@ -190,8 +174,8 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
           tier: selectedTier,
           addons: [],
           successUrl: `${window.location.origin}/employers/dashboard?purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/dashboard?purchase_cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/dashboard?purchase_cancelled=true`
+        })
       });
 
       const data = await response.json();
@@ -544,25 +528,25 @@ export default function JobPostingCheckout({ isOpen, onClose, onSuccess, userCre
         return {
           title: 'Post Your Job',
           description: 'Use your existing credits to create and optimize your job listing',
-          content: renderSubscriptionWithCredits(),
+          content: renderSubscriptionWithCredits()
         };
       case 'subscription_no_credits':
         return {
           title: 'Buy More Credits',
           description: 'Your subscription is active - just need more credits to continue posting',
-          content: renderSubscriptionNoCredits(),
+          content: renderSubscriptionNoCredits()
         };
       case 'no_subscription':
         return {
           title: 'Choose Your Job Posting Package',
           description: 'Select a subscription plan to start posting jobs with AI optimization',
-          content: renderNoSubscription(),
+          content: renderNoSubscription()
         };
       default:
         return {
           title: 'Choose Your Job Posting Package',
           description: 'Loading your account status...',
-          content: <div>Loading...</div>,
+          content: <div>Loading...</div>
         };
     }
   };

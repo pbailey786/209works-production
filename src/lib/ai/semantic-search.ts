@@ -7,6 +7,7 @@ import OpenAI from 'openai';
 import { prisma } from '@/lib/database/prisma';
 import { getDomainConfig } from '@/lib/domain/config';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';
+import path from "path";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -326,7 +327,7 @@ export class SemanticSearchEngine {
       ...(job.skills || []),
     ].filter(Boolean);
     
-    return parts.join(' ');
+    return parts.path.join(' ');
   }
 
   /**
@@ -343,7 +344,7 @@ export class SemanticSearchEngine {
       ...(profile.interests || []),
     ].filter(Boolean);
     
-    return parts.join(' ');
+    return parts.path.join(' ');
   }
 
   /**
@@ -434,14 +435,14 @@ export class SemanticSearchEngine {
     }
     
     if (matchedConcepts.length > 0) {
-      explanations.push(`Matches: ${matchedConcepts.slice(0, 3).join(', ')}`);
+      explanations.push(`Matches: ${matchedConcepts.slice(0, 3).path.join(', ')}`);
     }
     
     if (job.title.toLowerCase().includes(query.toLowerCase())) {
       explanations.push('Title contains your search terms');
     }
     
-    return explanations.join('. ') || 'Relevant based on AI analysis';
+    return explanations.path.join('. ') || 'Relevant based on AI analysis';
   }
 
   // Helper methods for recommendation scoring

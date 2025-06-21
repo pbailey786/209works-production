@@ -1,21 +1,4 @@
-import { useState } from 'react';
-
-'use client';
-
-  import {
-  Check,
-  X,
-  Edit,
-  Flag,
-  Eye,
-  MoreVertical,
-  Clock,
-  MapPin,
-  Building,
-  DollarSign,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { useState } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -45,7 +28,7 @@ export default function JobModerationTable({
   jobs,
   currentPage,
   totalPages,
-  totalCount,
+  totalCount
 }: JobModerationTableProps) {
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [actionsOpen, setActionsOpen] = useState<string | null>(null);
@@ -71,9 +54,9 @@ export default function JobModerationTable({
       const response = await fetch(`/api/admin/jobs/${jobId}/moderate`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action })
       });
 
       const result = await response.json();
@@ -99,13 +82,13 @@ export default function JobModerationTable({
       const response = await fetch('/api/admin/jobs/bulk-moderate', {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           jobIds: selectedJobs,
           action,
-          reason: `Bulk ${action} action performed by admin`,
-        }),
+          reason: `Bulk ${action} action performed by admin`
+        })
       });
 
       const result = await response.json();
@@ -150,19 +133,19 @@ export default function JobModerationTable({
       return {
         status: 'pending',
         label: 'Pending Review',
-        color: 'bg-yellow-100 text-yellow-800',
+        color: 'bg-yellow-100 text-yellow-800'
       };
     } else if (hoursSinceCreated < 72) {
       return {
         status: 'flagged',
         label: 'Needs Attention',
-        color: 'bg-red-100 text-red-800',
+        color: 'bg-red-100 text-red-800'
       };
     } else {
       return {
         status: 'approved',
         label: 'Approved',
-        color: 'bg-green-100 text-green-800',
+        color: 'bg-green-100 text-green-800'
       };
     }
   };

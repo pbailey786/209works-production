@@ -1,8 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  useKeyboardNavigation,
-  useFocusRestore,
-} from '@/hooks/useKeyboardNavigation';
+import React, { useState, useRef, useEffect } from '@/hooks/useKeyboardNavigation';
 
 interface DropdownOption {
   value: string;
@@ -26,7 +22,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   placeholder = 'Select an option',
   className = '',
   disabled = false,
-  ariaLabel,
+  ariaLabel
 }) => {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -117,7 +113,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       if (open) {
         setActiveIndex(options.length - 1);
       }
-    },
+    }
   });
 
   const { handleKeyDown: handleListKeyDown } = useKeyboardNavigation({
@@ -149,7 +145,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
     },
     onEnd: () => {
       setActiveIndex(options.length - 1);
-    },
+    }
   });
 
   // Focus management for list items

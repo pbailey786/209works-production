@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-import { cronScheduler } from '@/components/ui/card';
-import { config } from '@/components/ui/card';
-import { writeFileSync, existsSync, readFileSync } from '@/components/ui/card';
+import cron from "node-cron";
+import "dotenv/config";
+import { writeFileSync } from 'fs';
 import { join } from 'path';
+import fs from "fs";
+import path from "path";
+import { cronScheduler } from "@/lib/services/cron-scheduler";
 
 
 
@@ -51,10 +54,10 @@ class ConfigManager {
     return {
       pidFile:
         process.env.CRON_SCHEDULER_PID_FILE ||
-        join(process.cwd(), 'cron-scheduler.pid'),
+        path.join(process.cwd(), 'cron-scheduler.pid'),
       lockFile:
         process.env.CRON_SCHEDULER_LOCK_FILE ||
-        join(process.cwd(), 'cron-scheduler.lock'),
+        path.join(process.cwd(), 'cron-scheduler.lock'),
       logLevel: this.validateLogLevel(
         process.env.CRON_SCHEDULER_LOG_LEVEL || 'info'
       ),
@@ -133,7 +136,7 @@ class Logger {
                 ? JSON.stringify(arg, null, 2)
                 : String(arg)
             )
-            .join(' ')
+            .path.join(' ')
         : '';
 
     return `[${timestamp}] [${pid}] [${level.toUpperCase()}] ${message}${formattedArgs}`;
@@ -197,7 +200,7 @@ class ProcessManager {
 
   createPidFile(): void {
     try {
-      writeFileSync(this.config.pidFile, process.pid.toString());
+      fs.writeFileSync(this.config.pidFile, process.pid.toString());
       this.logger.debug(`PID file created: ${this.config.pidFile}`);
     } catch (error) {
       this.logger.error('Failed to create PID file:', error);
@@ -206,9 +209,9 @@ class ProcessManager {
   }
 
   checkLock(): boolean {
-    if (existsSync(this.config.lockFile)) {
+    if (fs.existsSync(this.config.lockFile)) {
       try {
-        const lockPid = readFileSync(this.config.lockFile, 'utf8').trim();
+        const lockPid = fs.readFileSync(this.config.lockFile, 'utf8').trim();
         this.logger.warn(`Lock file exists with PID: ${lockPid}`);
 
         // Check if process is still running
@@ -227,7 +230,7 @@ class ProcessManager {
     }
 
     try {
-      writeFileSync(this.config.lockFile, process.pid.toString());
+      fs.writeFileSync(this.config.lockFile, process.pid.toString());
       return true;
     } catch (error) {
       this.logger.error('Failed to create lock file:', error);
@@ -237,7 +240,7 @@ class ProcessManager {
 
   removeLock(): void {
     try {
-      if (existsSync(this.config.lockFile)) {
+      if (fs.existsSync(this.config.lockFile)) {
         require('fs').unlinkSync(this.config.lockFile);
         this.logger.debug('Lock file removed');
       }
@@ -316,7 +319,7 @@ class ProcessManager {
   private cleanup(): void {
     try {
       // Remove PID file
-      if (existsSync(this.config.pidFile)) {
+      if (fs.existsSync(this.config.pidFile)) {
         require('fs').unlinkSync(this.config.pidFile);
         this.logger.debug('PID file removed');
       }

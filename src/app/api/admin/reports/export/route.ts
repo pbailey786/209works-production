@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 import { hasPermission, Permission } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 
 const exportRateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -82,7 +83,7 @@ function generateCSV(data: any[]): string {
 
   const headers = Object.keys(data[0]);
   const csvContent = [
-    headers.join(','),
+    headers.path.join(','),
     ...data.map(row =>
       headers
         .map(header => {
@@ -93,9 +94,9 @@ function generateCSV(data: any[]): string {
           }
           return String(value);
         })
-        .join(',')
+        .path.join(',')
     ),
-  ].join('\n');
+  ].path.join('\n');
 
   return csvContent;
 }
@@ -124,9 +125,9 @@ ${data
     (row, index) =>
       `Record ${index + 1}:\n${Object.entries(row)
         .map(([key, value]) => `  ${key}: ${value}`)
-        .join('\n')}`
+        .path.join('\n')}`
   )
-  .join('\n\n')}
+  .path.join('\n\n')}
 
 ${data.length > 10 ? `\n... and ${data.length - 10} more records` : ''}
   `;

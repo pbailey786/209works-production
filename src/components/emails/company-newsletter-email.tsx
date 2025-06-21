@@ -11,7 +11,7 @@
   Text,
   Hr,
   Link,
-  Img,
+  Img
 } from '@react-email/components';
 
 interface NewsletterItem {
@@ -70,7 +70,7 @@ export default function CompanyNewsletterEmail({
   platformStats,
   upcomingEvents,
   unsubscribeUrl = '#',
-  webViewUrl = '#',
+  webViewUrl = '#'
 }: CompanyNewsletterEmailProps) {
   const previewText = `📰 ${newsletterTitle} - ${edition} | Central Valley job market insights & opportunities`;
 
@@ -274,7 +274,7 @@ const main = {
   fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   WebkitFontSmoothing: 'antialiased' as const,
   MozOsxFontSmoothing: 'grayscale' as const,
-  textRendering: 'optimizeLegibility' as const,
+  textRendering: 'optimizeLegibility' as const
 };
 
 const container = {
@@ -284,14 +284,14 @@ const container = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const header = {
   backgroundColor: '#2d4a3e',
   backgroundImage: 'linear-gradient(135deg, #2d4a3e 0%, #1e3329 100%)',
   padding: '40px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const logo = {
@@ -299,58 +299,58 @@ const logo = {
   fontSize: '28px',
   fontWeight: 'bold',
   margin: '0 0 8px 0',
-  letterSpacing: '-0.5px',
+  letterSpacing: '-0.5px'
 };
 
 const tagline = {
   color: '#ffffff',
   fontSize: '20px',
   margin: '0 0 8px 0',
-  fontWeight: '600',
+  fontWeight: '600'
 };
 
 const editionStyle = {
   color: '#9fdf9f',
   fontSize: '14px',
   margin: '0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const webViewBanner = {
   backgroundColor: '#f1f5f9',
   padding: '12px 24px',
   textAlign: 'center' as const,
-  borderBottom: '1px solid #e2e8f0',
+  borderBottom: '1px solid #e2e8f0'
 };
 
 const webViewText = {
   fontSize: '12px',
   color: '#64748b',
-  margin: '0',
+  margin: '0'
 };
 
 const webViewLink = {
   color: '#ff6b35',
   textDecoration: 'underline',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const content = {
-  padding: '32px 24px',
+  padding: '32px 24px'
 };
 
 const greeting = {
   fontSize: '20px',
   fontWeight: '600',
   color: '#1e293b',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const intro = {
   fontSize: '16px',
   color: '#475569',
   lineHeight: '1.6',
-  margin: '0 0 32px 0',
+  margin: '0 0 32px 0'
 };
 
 const featuredSection = {
@@ -358,7 +358,7 @@ const featuredSection = {
   backgroundImage: 'linear-gradient(135deg, #9fdf9f 0%, #7dd87d 100%)',
   borderRadius: '12px',
   padding: '32px 24px',
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const featuredLabel = {
@@ -367,7 +367,7 @@ const featuredLabel = {
   color: '#1e3329',
   margin: '0 0 8px 0',
   textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
+  letterSpacing: '0.5px'
 };
 
 const featuredTitle = {
@@ -375,18 +375,18 @@ const featuredTitle = {
   fontWeight: 'bold',
   color: '#1e3329',
   margin: '0 0 16px 0',
-  lineHeight: '1.3',
+  lineHeight: '1.3'
 };
 
 const featuredContent = {
   fontSize: '16px',
   color: '#1e3329',
   lineHeight: '1.6',
-  margin: '0 0 24px 0',
+  margin: '0 0 24px 0'
 };
 
 const featuredCTA = {
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const primaryButton = {
@@ -401,11 +401,11 @@ const primaryButton = {
   display: 'inline-block',
   padding: '14px 28px',
   border: 'none',
-  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)',
+  boxShadow: '0 4px 8px rgba(255, 107, 53, 0.3)'
 };
 
 const newsSection = {
-  margin: '40px 0',
+  margin: '40px 0'
 };
 
 const sectionTitle = {
@@ -413,7 +413,7 @@ const sectionTitle = {
   fontWeight: 'bold',
   color: '#2d4a3e',
   margin: '0 0 24px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const newsItem = {
@@ -422,34 +422,34 @@ const newsItem = {
   borderRadius: '8px',
   padding: '20px',
   margin: '16px 0',
-  borderLeft: '4px solid #ff6b35',
+  borderLeft: '4px solid #ff6b35'
 };
 
 const newsItemTitle = {
   fontSize: '16px',
   fontWeight: '600',
   color: '#1e293b',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const newsItemDate = {
   fontSize: '12px',
   color: '#64748b',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const newsItemSummary = {
   fontSize: '14px',
   color: '#475569',
   lineHeight: '1.5',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const newsItemLink = {
   color: '#ff6b35',
   textDecoration: 'underline',
   fontSize: '14px',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const statsSection = {
@@ -458,27 +458,27 @@ const statsSection = {
   borderRadius: '12px',
   padding: '24px',
   margin: '32px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const statsTitle = {
   fontSize: '18px',
   fontWeight: 'bold',
   color: '#ea580c',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const statsGrid = {
   display: 'flex',
   justifyContent: 'space-around',
   flexWrap: 'wrap' as const,
-  margin: '0',
+  margin: '0'
 };
 
 const statItem = {
   textAlign: 'center' as const,
   margin: '8px',
-  minWidth: '120px',
+  minWidth: '120px'
 };
 
 const statNumber = {
@@ -486,7 +486,7 @@ const statNumber = {
   fontWeight: 'bold',
   color: '#ea580c',
   margin: '0 0 4px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const statLabel = {
@@ -495,7 +495,7 @@ const statLabel = {
   margin: '0',
   display: 'block',
   textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
+  letterSpacing: '0.5px'
 };
 
 const successSection = {
@@ -503,7 +503,7 @@ const successSection = {
   border: '2px solid #bbf7d0',
   borderRadius: '12px',
   padding: '24px',
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const successTitle = {
@@ -511,7 +511,7 @@ const successTitle = {
   fontWeight: 'bold',
   color: '#166534',
   margin: '0 0 16px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const successContent = {
@@ -519,7 +519,7 @@ const successContent = {
   color: '#166534',
   lineHeight: '1.6',
   margin: '0 0 12px 0',
-  fontStyle: 'italic',
+  fontStyle: 'italic'
 };
 
 const successAttribution = {
@@ -527,7 +527,7 @@ const successAttribution = {
   color: '#166534',
   fontWeight: '500',
   textAlign: 'right' as const,
-  margin: '0',
+  margin: '0'
 };
 
 const categoriesSection = {
@@ -535,7 +535,7 @@ const categoriesSection = {
   border: '1px solid #e2e8f0',
   borderRadius: '12px',
   padding: '24px',
-  margin: '32px 0',
+  margin: '32px 0'
 };
 
 const categoriesTitle = {
@@ -543,27 +543,27 @@ const categoriesTitle = {
   fontWeight: 'bold',
   color: '#2d4a3e',
   margin: '0 0 20px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const categoryGrid = {
   display: 'flex',
   flexWrap: 'wrap' as const,
   justifyContent: 'space-between',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const categoryItem = {
   textAlign: 'center' as const,
   margin: '8px',
   flex: '1 1 120px',
-  minWidth: '120px',
+  minWidth: '120px'
 };
 
 const categoryEmoji = {
   fontSize: '32px',
   margin: '0 0 8px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const categoryName = {
@@ -571,18 +571,18 @@ const categoryName = {
   fontWeight: '600',
   color: '#1e293b',
   margin: '0 0 4px 0',
-  display: 'block',
+  display: 'block'
 };
 
 const categoryCount = {
   fontSize: '12px',
   color: '#64748b',
   margin: '0',
-  display: 'block',
+  display: 'block'
 };
 
 const categoryButtonContainer = {
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const secondaryButton = {
@@ -596,7 +596,7 @@ const secondaryButton = {
   display: 'inline-block',
   padding: '12px 24px',
   border: 'none',
-  margin: '4px',
+  margin: '4px'
 };
 
 const tipsSection = {
@@ -604,18 +604,18 @@ const tipsSection = {
   border: '1px solid #cbd5e1',
   borderRadius: '8px',
   padding: '20px',
-  margin: '24px 0',
+  margin: '24px 0'
 };
 
 const tipsTitle = {
   fontSize: '16px',
   fontWeight: 'bold',
   color: '#334155',
-  margin: '0 0 16px 0',
+  margin: '0 0 16px 0'
 };
 
 const tipsList = {
-  margin: '0',
+  margin: '0'
 };
 
 const tipItem = {
@@ -623,7 +623,7 @@ const tipItem = {
   color: '#475569',
   margin: '8px 0',
   lineHeight: '1.5',
-  display: 'block',
+  display: 'block'
 };
 
 const ctaSection = {
@@ -632,81 +632,81 @@ const ctaSection = {
   borderRadius: '12px',
   padding: '32px 24px',
   margin: '40px 0',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const ctaTitle = {
   fontSize: '20px',
   fontWeight: 'bold',
   color: '#1e3329',
-  margin: '0 0 12px 0',
+  margin: '0 0 12px 0'
 };
 
 const ctaText = {
   fontSize: '16px',
   color: '#1e3329',
   margin: '0 0 24px 0',
-  lineHeight: '1.6',
+  lineHeight: '1.6'
 };
 
 const ctaButtons = {
   display: 'flex',
   justifyContent: 'center',
   gap: '16px',
-  flexWrap: 'wrap' as const,
+  flexWrap: 'wrap' as const
 };
 
 const divider = {
   borderColor: '#e2e8f0',
-  margin: '0',
+  margin: '0'
 };
 
 const footerSection = {
   backgroundColor: '#f8fafc',
   padding: '32px 24px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const footerTitle = {
   color: '#2d4a3e',
   fontSize: '20px',
   fontWeight: 'bold',
-  margin: '0 0 4px 0',
+  margin: '0 0 4px 0'
 };
 
 const footerSubtitle = {
   color: '#64748b',
   fontSize: '14px',
   margin: '0 0 16px 0',
-  fontWeight: '500',
+  fontWeight: '500'
 };
 
 const footerContent = {
   fontSize: '14px',
   color: '#64748b',
   lineHeight: '1.5',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const footerLinks = {
   fontSize: '14px',
   color: '#64748b',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const footerLink = {
   color: '#64748b',
-  textDecoration: 'underline',
+  textDecoration: 'underline'
 };
 
 const unsubscribeLink = {
   color: '#94a3b8',
-  textDecoration: 'underline',
+  textDecoration: 'underline'
 };
 
 const copyrightText = {
   fontSize: '12px',
   color: '#94a3b8',
   margin: '0',
-  lineHeight: '1.5',
+  lineHeight: '1.5'
 }; 

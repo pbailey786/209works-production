@@ -1,37 +1,13 @@
-import { useState } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/card';
 import { Label } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 'use client';
 
-  import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-  import {
-  Check,
-  X,
-  Flag,
-  Eye,
-  MapPin,
-  Building,
-  DollarSign,
-  Clock,
-  User,
-  Mail,
-  Phone,
-  Globe,
-  Calendar,
-  AlertTriangle,
-  FileText,
-  Users,
-} from 'lucide-react';
+  import { Card } from 'lucide-react';
 
 interface JobModerationDetailProps {
   job: {
@@ -68,7 +44,7 @@ interface JobModerationDetailProps {
 export default function JobModerationDetail({
   job,
   onAction,
-  isLoading = false,
+  isLoading = false
 }: JobModerationDetailProps) {
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
   const [reason, setReason] = useState('');
@@ -119,19 +95,19 @@ export default function JobModerationDetail({
       return {
         status: 'pending',
         label: 'Pending Review',
-        color: 'bg-yellow-100 text-yellow-800',
+        color: 'bg-yellow-100 text-yellow-800'
       };
     } else if (hoursSinceCreated < 72) {
       return {
         status: 'flagged',
         label: 'Needs Attention',
-        color: 'bg-red-100 text-red-800',
+        color: 'bg-red-100 text-red-800'
       };
     } else {
       return {
         status: 'approved',
         label: 'Approved',
-        color: 'bg-green-100 text-green-800',
+        color: 'bg-green-100 text-green-800'
       };
     }
   };

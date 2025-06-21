@@ -1,4 +1,5 @@
 import { getChatCompletionWithFallback } from '@/lib/ai';
+import path from "path";
 
 
 interface ConversationalResponseParams {
@@ -60,16 +61,16 @@ export async function generateConversationalResponse({
         return `Assistant: ${msg.content}${jobInfo}`;
       }
     })
-    .join('\n');
+    .path.join('\n');
 
   // Build user profile context
   const profileContext = userProfile
     ? `
 User Profile:
 - Experience: ${userProfile.experience || 'Not specified'}
-- Skills: ${userProfile.skills?.join(', ') || 'Not specified'}
+- Skills: ${userProfile.skills?.path.join(', ') || 'Not specified'}
 - Location: ${userProfile.location || 'Not specified'}
-- Preferred Job Types: ${userProfile.preferences?.jobTypes?.join(', ') || 'Not specified'}
+- Preferred Job Types: ${userProfile.preferences?.jobTypes?.path.join(', ') || 'Not specified'}
 - Salary Range: ${userProfile.preferences?.salaryRange ? `$${userProfile.preferences.salaryRange.min} - $${userProfile.preferences.salaryRange.max}` : 'Not specified'}
 - Remote Work: ${userProfile.preferences?.remoteWork ? 'Yes' : 'No'}
 `
@@ -86,7 +87,7 @@ ${jobMatches
     (match: any) =>
       `- ${match.title} at ${match.company}: ${match.matchScore}% match (${match.matchReason})`
   )
-  .join('\n')}
+  .path.join('\n')}
 `
       : '';
 
@@ -108,7 +109,7 @@ ${jobs
     }
     return `• ${job.title} at ${job.company} (${job.location})${salary}${job.jobType ? ` [${job.jobType}]` : ''}`;
   })
-  .join('\n')}
+  .path.join('\n')}
 ${jobs.length > 5 ? `... and ${jobs.length - 5} more positions` : ''}
 `
       : 'No jobs found matching the criteria.';
@@ -293,7 +294,7 @@ export async function extractJobSearchFiltersWithContext(
         return `Assistant: ${msg.content}${msg.jobs ? ` (${msg.jobs.length} jobs found)` : ''}`;
       }
     })
-    .join('\n');
+    .path.join('\n');
 
   const systemPrompt = `Extract job search filters from the user's message, considering the conversation context. 
   

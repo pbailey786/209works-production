@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { PaymentRetryService } from '@/lib/services/payment-retry';
 
 // This endpoint should be called by a cron service (like Vercel Cron or external cron)

@@ -1,10 +1,6 @@
 #!/usr/bin/env node
-import { TaskPerformanceOptimizer } from '@/components/ui/card';
-import { ConfigManager } from '@/components/ui/card';
-  import {
-  TaskValidator,
-  TasksCollection,
-} from '../lib/task-management/validation';
+import { z } from 'zod';
+import { ConfigManager } from '../lib/task-management/validation';
 
 /**
  * Task File Optimization Script
@@ -220,7 +216,7 @@ class TaskFileOptimizer {
       duplicateTasks,
       orphanedSubtasks,
       circularDependencies,
-      recommendations,
+      recommendations
     };
   }
 
@@ -325,7 +321,7 @@ class TaskFileOptimizer {
       if (task.subtasks) {
         const fixedSubtasks = task.subtasks.map(subtask => ({
           ...subtask,
-          parentTaskId: task.id,
+          parentTaskId: task.id
         }));
 
         return { ...task, subtasks: fixedSubtasks };
@@ -347,7 +343,7 @@ class TaskFileOptimizer {
         description: task.description.trim(),
         status: task.status,
         priority: task.priority,
-        dependencies: task.dependencies || [],
+        dependencies: task.dependencies || []
       };
 
       // Only include optional fields if they have values
@@ -367,7 +363,7 @@ class TaskFileOptimizer {
             description: subtask.description.trim(),
             status: subtask.status,
             dependencies: subtask.dependencies || [],
-            parentTaskId: subtask.parentTaskId,
+            parentTaskId: subtask.parentTaskId
           };
 
           if (subtask.details && subtask.details.trim()) {
@@ -420,7 +416,7 @@ class TaskFileOptimizer {
       return;
     }
 
-    const outputPath = path.join(
+    const outputPath = path.path.join(
       this.options.outputDir,
       'tasks-optimized.json'
     );
@@ -456,12 +452,12 @@ class TaskFileOptimizer {
         ...tasksData.metadata,
         projectName: `${tasksData.metadata.projectName} - Archive`,
         totalTasks: completedTasks.length,
-        lastModified: new Date().toISOString(),
+        lastModified: new Date().toISOString()
       },
-      tasks: completedTasks,
+      tasks: completedTasks
     };
 
-    const archivePath = path.join(this.options.outputDir, 'tasks-archive.json');
+    const archivePath = path.path.join(this.options.outputDir, 'tasks-archive.json');
     await fs.writeFile(archivePath, JSON.stringify(archiveData, null, 2));
     console.log(
       `✅ Archived ${completedTasks.length} completed tasks to: ${archivePath}`
@@ -489,7 +485,7 @@ class TaskFileOptimizer {
         originalSize: Math.round(originalSize / 1024),
         optimizedSize: Math.round(optimizedSize / 1024),
         sizeSavings: Math.round(sizeSavings / 1024),
-        percentSavings,
+        percentSavings
       },
       options: this.options,
       recommendations: [
@@ -497,11 +493,11 @@ class TaskFileOptimizer {
         'Monitor task file size and split when it exceeds 1MB',
         'Archive completed tasks periodically',
         'Use task validation to prevent data corruption',
-      ],
+      ]
     };
 
     if (!this.options.dryRun) {
-      const reportPath = path.join(
+      const reportPath = path.path.join(
         this.options.outputDir,
         'optimization-report.json'
       );
@@ -535,7 +531,7 @@ class TaskFileOptimizer {
       if (recursionStack.has(taskId)) {
         const cycleStart = path.indexOf(taskId);
         const cycle = path.slice(cycleStart).concat(taskId);
-        circularPaths.push(cycle.join(' -> '));
+        circularPaths.push(cycle.path.join(' -> '));
         return;
       }
 
@@ -581,7 +577,7 @@ async function main() {
     splitLargeTasks: true,
     removeCompletedTasks: false,
     archiveOldTasks: true,
-    dryRun: false,
+    dryRun: false
   };
 
   // Parse command line arguments

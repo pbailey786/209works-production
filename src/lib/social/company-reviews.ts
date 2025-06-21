@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/database/prisma';
 import { processWithAI } from '@/lib/ai';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';
+import path from "path";
 
 export interface CompanyReview {
   id: string;
@@ -340,8 +341,8 @@ export class CompanyReviewsService {
 
         // Combine all review text for analysis
         const allText = reviews.map(r => 
-          `${r.content} ${r.pros.join(' ')} ${r.cons.join(' ')}`
-        ).join(' ');
+          `${r.content} ${r.pros.path.join(' ')} ${r.cons.path.join(' ')}`
+        ).path.join(' ');
 
         // Use AI to analyze sentiment and themes
         const analysisPrompt = `
@@ -460,7 +461,7 @@ Format as JSON with sentimentScore, keyThemes, redFlags, and positiveHighlights 
     notes?: string;
   }> {
     // Basic content moderation
-    const content = `${reviewData.title} ${reviewData.content} ${reviewData.pros?.join(' ')} ${reviewData.cons?.join(' ')}`;
+    const content = `${reviewData.title} ${reviewData.content} ${reviewData.pros?.path.join(' ')} ${reviewData.cons?.path.join(' ')}`;
     
     // Check for inappropriate content
     const inappropriateWords = ['spam', 'fake', 'scam']; // Simplified list

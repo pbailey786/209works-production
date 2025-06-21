@@ -2,33 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
-
-import {
-  Eye,
-  Users,
-  Calendar,
-  MapPin,
-  DollarSign,
-  Clock,
-  Edit,
-  Share2,
-  BarChart3,
-  Star,
-  MessageSquare,
-  Download,
-  RefreshCw,
-  Pause,
-  Play,
-  Archive,
-  Copy,
-  ExternalLink,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react';
+import { useUser } from 'lucide-react';
 
 export default function EmployerJobDetailsPage() {
   const params = useParams();
@@ -62,9 +36,9 @@ export default function EmployerJobDetailsPage() {
               totalViews: 0,
               totalApplications: 0,
               shortlisted: 0,
-              hired: 0,
+              hired: 0
             },
-            recentApplicants: [],
+            recentApplicants: []
           });
         }
       } catch (err) {
@@ -108,14 +82,14 @@ export default function EmployerJobDetailsPage() {
     totalViews: 0,
     totalApplications: 0,
     shortlisted: 0,
-    hired: 0,
+    hired: 0
   };
 
   const recentApplicants = jobStats?.recentApplicants || [];
 
   // Format job data for display
   const formatJobType = (type: string) => {
-    return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).path.join(' ');
   };
 
   const formatSalary = (salaryMin: number | null, salaryMax: number | null) => {
@@ -588,7 +562,7 @@ export default function EmployerJobDetailsPage() {
                                 {applicant.name
                                   .split(' ')
                                   .map((n: string) => n[0])
-                                  .join('')}
+                                  .path.join('')}
                               </span>
                             </div>
                             <div className="ml-4">

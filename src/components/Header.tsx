@@ -3,23 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useUser, useAuth, SignInButton, UserButton } from '@clerk/nextjs';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Search,
-  Briefcase,
-  User,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  ChevronDown,
-  Sparkles,
-  Heart,
-  FileText,
-  BarChart3,
-  Users,
-  Building2,
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'lucide-react';
 import LoadingSpinner from './ui/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

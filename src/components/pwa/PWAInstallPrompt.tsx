@@ -3,17 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Download, 
-  X, 
-  Smartphone, 
-  Zap, 
-  Wifi, 
-  Bell,
-  Home,
-  Share
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -290,6 +280,6 @@ export function usePWAInstall() {
   return {
     isInstalled,
     isInstallable,
-    install,
+    install
   };
 }

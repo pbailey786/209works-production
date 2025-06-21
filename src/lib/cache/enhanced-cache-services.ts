@@ -1,25 +1,11 @@
 import { prisma } from '@/lib/prisma';
-import { generateCacheKey, CACHE_PREFIXES, DEFAULT_TTL } from './redis';
-import {
-  CursorPaginationParams,
-  OffsetPaginationParams,
-  SearchFilters,
-  PaginatedResponse,
-  CursorPaginationMeta,
-  OffsetPaginationMeta,
-} from '@/lib/types';
-import {
+import { generateCacheKey, CACHE_PREFIXES, DEFAULT_TTL } from '@/lib/types';
   buildCursorCondition,
   buildSortCondition,
   calculateOffsetPagination,
   generateCursorFromRecord,
   createPaginatedResponse,
-  generatePaginationCacheKey,
-} from '@/lib/pagination';
-import {
-  getAtomicCacheManager,
-  AtomicCacheUtils,
-  AtomicCacheManager,
+  generatePaginationCacheKey
 } from './atomic-cache-manager';
 
 /**
@@ -53,7 +39,7 @@ export class EnhancedJobCacheService {
     jobs: 'jobs',
     jobsByEmployer: 'jobs:employer',
     jobStats: 'jobs:stats',
-    jobSearch: 'jobs:search',
+    jobSearch: 'jobs:search'
   };
 
   private static cacheManager: AtomicCacheManager | null = null;
@@ -89,7 +75,7 @@ export class EnhancedJobCacheService {
         ...params,
         sortBy,
         sortOrder,
-        filters,
+        filters
       }
     );
 
@@ -135,7 +121,7 @@ export class EnhancedJobCacheService {
             return await prisma.job.findMany({
               where: {
                 ...whereCondition,
-                ...cursorCondition,
+                ...cursorCondition
               },
               orderBy,
               take: limit + 1, // Get one extra to check if there's a next page
@@ -147,8 +133,8 @@ export class EnhancedJobCacheService {
                     name: true,
                     website: true,
                     logo: true,
-                    subscriptionTier: true,
-                  },
+                    subscriptionTier: true
+                  }
                 },
                 // Only include essential application data
                 jobApplications: {
@@ -156,11 +142,11 @@ export class EnhancedJobCacheService {
                     id: true,
                     userId: true,
                     status: true,
-                    appliedAt: true,
+                    appliedAt: true
                   },
                   take: 5, // Limit to prevent large data loads
-                },
-              },
+                }
+              }
             });
           });
 
@@ -183,7 +169,7 @@ export class EnhancedJobCacheService {
             hasNextPage,
             hasPrevPage: !!cursor,
             nextCursor,
-            prevCursor,
+            prevCursor
           };
         } else {
           const offsetParams = params as OffsetPaginationParams;
@@ -210,10 +196,10 @@ export class EnhancedJobCacheService {
                   select: {
                     id: true,
                     status: true,
-                    appliedAt: true,
-                  },
-                },
-              },
+                    appliedAt: true
+                  }
+                }
+              }
             });
 
             return [count, jobs] as [number, any[]];
@@ -222,7 +208,7 @@ export class EnhancedJobCacheService {
           const { meta } = calculateOffsetPagination(page, limit, totalCount);
           return createPaginatedResponse(data, meta, {
             queryTime: 0,
-            cached: false,
+            cached: false
           });
         }
 
@@ -231,14 +217,14 @@ export class EnhancedJobCacheService {
           queryTime,
           cached: false,
           sortBy,
-          sortOrder,
+          sortOrder
         });
       },
       {
         ttl: this.CACHE_TTL,
         tags: [this.CACHE_TAGS.jobs, this.CACHE_TAGS.jobSearch],
         dependencies,
-        validateIntegrity: true,
+        validateIntegrity: true
       }
     );
   }
@@ -268,8 +254,8 @@ export class EnhancedJobCacheService {
                 website: true,
                 logo: true,
                 subscriptionTier: true,
-                description: true,
-              },
+                description: true
+              }
             },
             jobApplications: {
               select: {
@@ -281,23 +267,23 @@ export class EnhancedJobCacheService {
                   select: {
                     id: true,
                     name: true,
-                    email: true,
-                  },
-                },
+                    email: true
+                  }
+                }
               },
               orderBy: {
-                appliedAt: 'desc',
+                appliedAt: 'desc'
               },
-              take: 10,
-            },
-          },
+              take: 10
+            }
+          }
         });
       },
       {
         ttl: this.CACHE_TTL,
         tags: [this.CACHE_TAGS.jobs, `job:${id}`],
         dependencies: [`job:${id}`, 'jobs:all'],
-        validateIntegrity: true,
+        validateIntegrity: true
       }
     );
   }
@@ -337,11 +323,11 @@ export class EnhancedJobCacheService {
                 select: {
                   id: true,
                   status: true,
-                  appliedAt: true,
+                  appliedAt: true
                 },
-                take: 5,
-              },
-            },
+                take: 5
+              }
+            }
           });
 
           const hasNextPage = data.length > limit;
@@ -352,12 +338,12 @@ export class EnhancedJobCacheService {
             hasPrevPage: !!cursor,
             nextCursor: hasNextPage
               ? generateCursorFromRecord(data[data.length - 1], 'createdAt')
-              : undefined,
+              : undefined
           };
 
           return createPaginatedResponse(data, pagination, {
             queryTime: 0,
-            cached: false,
+            cached: false
           });
         } else {
           const { page, limit } = params as OffsetPaginationParams;
@@ -380,10 +366,10 @@ export class EnhancedJobCacheService {
                   select: {
                     id: true,
                     status: true,
-                    appliedAt: true,
-                  },
-                },
-              },
+                    appliedAt: true
+                  }
+                }
+              }
             });
 
             return [count, jobs] as [number, any[]];
@@ -392,7 +378,7 @@ export class EnhancedJobCacheService {
           const { meta } = calculateOffsetPagination(page, limit, totalCount);
           return createPaginatedResponse(data, meta, {
             queryTime: 0,
-            cached: false,
+            cached: false
           });
         }
       },
@@ -404,7 +390,7 @@ export class EnhancedJobCacheService {
           `employer:${employerId}`,
         ],
         dependencies: [`employer:${employerId}`, 'jobs:all'],
-        validateIntegrity: true,
+        validateIntegrity: true
       }
     );
   }
@@ -421,7 +407,7 @@ export class EnhancedJobCacheService {
       immediate = true,
       delayed = 0,
       cascade = true,
-      tags: additionalTags = [],
+      tags: additionalTags = []
     } = strategy;
 
     const invalidateOperation = async () => {
@@ -493,14 +479,14 @@ export class EnhancedJobCacheService {
         try {
           const result = await tx.job.update({
             where: { id: op.jobId },
-            data: op.data,
+            data: op.data
           });
           operationResults.push(result);
 
           // Invalidate relevant caches
           await this.invalidateJobCaches(op.jobId, op.employerId, {
             immediate: false,
-            delayed: 1,
+            delayed: 1
           });
         } catch (error) {
           operationResults.push(error);
@@ -511,14 +497,14 @@ export class EnhancedJobCacheService {
       for (const op of deleteOps) {
         try {
           const result = await tx.job.delete({
-            where: { id: op.jobId },
+            where: { id: op.jobId }
           });
           operationResults.push(result);
 
           // Invalidate relevant caches
           await this.invalidateJobCaches(op.jobId, op.employerId, {
             immediate: false,
-            delayed: 1,
+            delayed: 1
           });
         } catch (error) {
           operationResults.push(error);
@@ -629,7 +615,7 @@ export class EnhancedUserCacheService {
   private static readonly CACHE_TAGS = {
     users: 'users',
     userProfiles: 'users:profiles',
-    userApplications: 'users:applications',
+    userApplications: 'users:applications'
   };
 
   /**
@@ -661,15 +647,15 @@ export class EnhancedUserCacheService {
             phoneNumber: true,
             location: true,
             createdAt: true,
-            updatedAt: true,
-          },
+            updatedAt: true
+          }
         });
       },
       {
         ttl: this.CACHE_TTL,
         tags: [this.CACHE_TAGS.users, `user:${id}`],
         dependencies: [`user:${id}`, 'users:all'],
-        validateIntegrity: true,
+        validateIntegrity: true
       }
     );
   }
@@ -713,10 +699,10 @@ export class EnhancedUserCacheService {
                   location: true,
                   jobType: true,
                   salaryMin: true,
-                  salaryMax: true,
-                },
-              },
-            },
+                  salaryMax: true
+                }
+              }
+            }
           });
 
           const hasNextPage = data.length > limit;
@@ -727,19 +713,19 @@ export class EnhancedUserCacheService {
             hasPrevPage: !!cursor,
             nextCursor: hasNextPage
               ? generateCursorFromRecord(data[data.length - 1], 'appliedAt')
-              : undefined,
+              : undefined
           };
 
           return createPaginatedResponse(data, pagination, {
             queryTime: 0,
-            cached: false,
+            cached: false
           });
         } else {
           const { page, limit } = params as OffsetPaginationParams;
 
           const [totalCount, data] = await prisma.$transaction(async () => {
             const count = await prisma.jobApplication.count({
-              where: whereCondition,
+              where: whereCondition
             });
             const { skip, take } = calculateOffsetPagination(
               page,
@@ -761,10 +747,10 @@ export class EnhancedUserCacheService {
                     location: true,
                     jobType: true,
                     salaryMin: true,
-                    salaryMax: true,
-                  },
-                },
-              },
+                    salaryMax: true
+                  }
+                }
+              }
             });
 
             return [count, applications] as [number, any[]];
@@ -773,7 +759,7 @@ export class EnhancedUserCacheService {
           const { meta } = calculateOffsetPagination(page, limit, totalCount);
           return createPaginatedResponse(data, meta, {
             queryTime: 0,
-            cached: false,
+            cached: false
           });
         }
       },
@@ -785,7 +771,7 @@ export class EnhancedUserCacheService {
           `user:${userId}`,
         ],
         dependencies: [`user:${userId}`, 'users:all'],
-        validateIntegrity: true,
+        validateIntegrity: true
       }
     );
   }
@@ -801,7 +787,7 @@ export class EnhancedUserCacheService {
       immediate = true,
       delayed = 0,
       cascade = true,
-      tags: additionalTags = [],
+      tags: additionalTags = []
     } = strategy;
 
     const invalidateOperation = async () => {
@@ -833,7 +819,7 @@ export class EnhancedSearchCacheService {
   private static readonly CACHE_TTL = DEFAULT_TTL.short; // Search results change frequently
   private static readonly CACHE_TAGS = {
     search: 'search',
-    searchJobs: 'search:jobs',
+    searchJobs: 'search:jobs'
   };
 
   /**
@@ -864,14 +850,14 @@ export class EnhancedSearchCacheService {
         // Use the enhanced job service for consistent search
         return await EnhancedJobCacheService.getPaginatedJobs({
           ...params,
-          filters: { ...filters, q: query },
+          filters: { ...filters, q: query }
         });
       },
       {
         ttl: this.CACHE_TTL,
         tags: [this.CACHE_TAGS.search, this.CACHE_TAGS.searchJobs],
         dependencies,
-        validateIntegrity: true,
+        validateIntegrity: true
       }
     );
   }
@@ -887,7 +873,7 @@ export class EnhancedSearchCacheService {
       immediate = true,
       delayed = 0,
       cascade = true,
-      tags: additionalTags = [],
+      tags: additionalTags = []
     } = strategy;
 
     const invalidateOperation = async () => {
@@ -981,5 +967,5 @@ export class CacheHealthMonitor {
 export {
   EnhancedJobCacheService as JobCacheService,
   EnhancedUserCacheService as UserCacheService,
-  EnhancedSearchCacheService as SearchCacheService,
+  EnhancedSearchCacheService as SearchCacheService
 };

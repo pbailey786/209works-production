@@ -1,5 +1,6 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { JobMatchingService } from './job-matching';
+import path from "path";
 
 
 export interface EmailJobMatch {
@@ -353,7 +354,7 @@ export class FeaturedJobEmailService {
               'ai_similarity': '🤖 AI detected strong overall compatibility'
             }[reason] || `✨ ${reason.replace('_', ' ')}`;
             return `<li>${reasonText}</li>`;
-          }).join('')}
+          }).path.join('')}
         </ul>
       </div>
       ` : ''}
@@ -391,7 +392,7 @@ ${formatSalary() ? `💰 Salary: ${formatSalary()}` : ''}
 ${job.description.substring(0, 300)}${job.description.length > 300 ? '...' : ''}
 
 Why this job matches you:
-${matchReason.map(reason => `• ${reason.replace('_', ' ')}`).join('\n')}
+${matchReason.map(reason => `• ${reason.replace('_', ' ')}`).path.join('\n')}
 
 Apply now: ${jobUrl}
 

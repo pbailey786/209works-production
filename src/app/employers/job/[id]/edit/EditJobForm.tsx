@@ -1,19 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-import {
-  ArrowLeft,
-  Save,
-  X,
-  MapPin,
-  DollarSign,
-  Clock,
-  Building,
-  FileText,
-  Tag,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -47,7 +35,7 @@ export default function EditJobForm({ job }: EditJobFormProps) {
     salaryMin: job.salaryMin?.toString() || '',
     salaryMax: job.salaryMax?.toString() || '',
     categories: job.categories || [],
-    status: job.status || 'active',
+    status: job.status || 'active'
   });
 
   const jobTypes = [
@@ -82,15 +70,15 @@ export default function EditJobForm({ job }: EditJobFormProps) {
       const updateData = {
         ...formData,
         salaryMin: formData.salaryMin ? parseInt(formData.salaryMin) : undefined,
-        salaryMax: formData.salaryMax ? parseInt(formData.salaryMax) : undefined,
+        salaryMax: formData.salaryMax ? parseInt(formData.salaryMax) : undefined
       };
 
       const response = await fetch(`/api/jobs/${job.id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(updateData),
+        body: JSON.stringify(updateData)
       });
 
       if (!response.ok) {
@@ -110,7 +98,7 @@ export default function EditJobForm({ job }: EditJobFormProps) {
       ...prev,
       categories: prev.categories.includes(category)
         ? prev.categories.filter(c => c !== category)
-        : [...prev.categories, category],
+        : [...prev.categories, category]
     }));
   };
 

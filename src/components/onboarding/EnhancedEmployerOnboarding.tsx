@@ -2,33 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import {
-  Building2,
-  Users,
-  MapPin,
-  Globe,
-  Phone,
-  Mail,
-  Upload,
-  CheckCircle,
-  ArrowRight,
-  ArrowLeft,
-  Star,
-  Target,
-  Briefcase,
-  Award,
-  Clock,
-  DollarSign,
-  Shield,
-  Camera,
-  Plus,
-  X,
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 
 interface OnboardingData {
   // Company Information
@@ -99,7 +77,7 @@ export function EnhancedEmployerOnboarding({ user, onComplete }: EnhancedEmploye
     urgentHiring: false,
     businessLicense: '',
     taxId: '',
-    verificationDocuments: [],
+    verificationDocuments: []
   });
 
   const steps = [
@@ -107,31 +85,31 @@ export function EnhancedEmployerOnboarding({ user, onComplete }: EnhancedEmploye
       title: 'Company Information',
       description: 'Tell us about your company',
       icon: Building2,
-      fields: ['companyName', 'companyDescription', 'website', 'industry', 'companySize', 'foundedYear', 'headquarters'],
+      fields: ['companyName', 'companyDescription', 'website', 'industry', 'companySize', 'foundedYear', 'headquarters']
     },
     {
       title: 'Contact Details',
       description: 'Primary contact information',
       icon: Mail,
-      fields: ['contactName', 'contactEmail', 'contactPhone', 'contactTitle'],
+      fields: ['contactName', 'contactEmail', 'contactPhone', 'contactTitle']
     },
     {
       title: 'Company Culture',
       description: 'Values, benefits, and work environment',
       icon: Users,
-      fields: ['companyValues', 'benefits', 'workEnvironment', 'remotePolicy'],
+      fields: ['companyValues', 'benefits', 'workEnvironment', 'remotePolicy']
     },
     {
       title: 'Hiring Needs',
       description: 'Your hiring goals and requirements',
       icon: Target,
-      fields: ['hiringGoals', 'typicalRoles', 'hiringVolume', 'urgentHiring'],
+      fields: ['hiringGoals', 'typicalRoles', 'hiringVolume', 'urgentHiring']
     },
     {
       title: 'Verification',
       description: 'Verify your business (optional)',
       icon: Shield,
-      fields: ['businessLicense', 'taxId'],
+      fields: ['businessLicense', 'taxId']
     },
   ];
 
@@ -226,7 +204,7 @@ export function EnhancedEmployerOnboarding({ user, onComplete }: EnhancedEmploye
       const response = await fetch('/api/employers/enhanced-onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
       });
 
       if (response.ok) {

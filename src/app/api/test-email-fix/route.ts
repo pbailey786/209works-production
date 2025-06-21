@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { TemplateManager } from '@/components/ui/card';
 import { emailAgent } from '@/components/ui/card';
 import { render } from '@/components/ui/card';

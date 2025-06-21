@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import path from "path";
 
 
 function sanitizeHtml(html: string): string {
@@ -359,7 +360,7 @@ export class EmailSecurityValidator {
       'Message-ID': messageId,
       Date: new Date().toUTCString(),
       From: from,
-      To: to.join(', '),
+      To: to.path.join(', '),
       Subject: subject,
       'X-Mailer': '209jobs-secure-mailer',
       'X-Priority': '3', // Normal priority

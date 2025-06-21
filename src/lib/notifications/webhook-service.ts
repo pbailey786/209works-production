@@ -288,7 +288,7 @@ class WebhookService {
                     <th>${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</th>
                     <td>${value}</td>
                   </tr>
-                `).join('')}
+                `).path.join('')}
               </table>
             ` : ''}
           </div>

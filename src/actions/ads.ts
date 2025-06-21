@@ -1,21 +1,7 @@
-import { revalidatePath } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { ActionResult } from '@/types/actions';
-
-'use server';
-
-
-// Import validation schemas from existing files
-import {
-  createAdSchema,
-  updateAdSchema,
-  adImpressionSchema,
-  adClickSchema,
-  adConversionSchema,
-  AdTargeting,
-  // imports here,
-} from '@/lib/validations/ads';
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { prisma } from '@/lib/database/prisma';
+import { ActionResult } from '@/lib/validations/ads';
 
 // Create advertisement action
 export async function createAdAction(
@@ -28,32 +14,32 @@ export async function createAdAction(
     if (!userId) {
       return {
         success: false,
-        message: 'User not authenticated',
+        message: 'User not authenticated'
       };
     }
 
     // Verify user is an employer or admin
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true },
+      select: { id: true, role: true }
     });
 
     if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
       return {
         success: false,
-        message: 'Only employers can create advertisements',
+        message: 'Only employers can create advertisements'
       };
     }
 
     // Check user's current ad count (limit: 50 per employer)
     const adCount = await prisma.advertisement.count({
-      where: { employerId: userId },
+      where: { employerId: userId }
     });
 
     if (adCount >= 50) {
       return {
         success: false,
-        message: 'You have reached the maximum limit of 50 advertisements',
+        message: 'You have reached the maximum limit of 50 advertisements'
       };
     }
 
@@ -73,16 +59,16 @@ export async function createAdAction(
           : undefined,
         totalBudget: formData.get('totalBudget')
           ? Number(formData.get('totalBudget'))
-          : undefined,
+          : undefined
       },
       schedule: {
         startDate: formData.get('startDate') as string,
-        endDate: (formData.get('endDate') as string) || undefined,
+        endDate: (formData.get('endDate') as string) || undefined
       },
       priority: formData.get('priority')
         ? Number(formData.get('priority'))
         : undefined,
-      notes: (formData.get('notes') as string) || undefined,
+      notes: (formData.get('notes') as string) || undefined
     };
 
     const validatedData = createAdSchema.parse(rawData);
@@ -96,7 +82,7 @@ export async function createAdAction(
     if (endDate && startDate >= endDate) {
       return {
         success: false,
-        message: 'End date must be after start date',
+        message: 'End date must be after start date'
       };
     }
 
@@ -135,8 +121,8 @@ export async function createAdAction(
         clicks: 0,
         conversions: 0,
         currentSpend: 0,
-        priority: validatedData.priority || 5,
-      },
+        priority: validatedData.priority || 5
+      }
     });
 
     revalidatePath('/employers/ads');
@@ -145,21 +131,21 @@ export async function createAdAction(
     return {
       success: true,
       message: 'Advertisement created successfully!',
-      data: { adId: ad.id },
+      data: { adId: ad.id }
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
         message: 'Please check your input',
-        errors: error.flatten().fieldErrors as Record<string, string[]>,
+        errors: error.flatten().fieldErrors as Record<string, string[]>
       };
     }
 
     console.error('Create ad error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -175,7 +161,7 @@ export async function updateAdAction(
     if (!userId) {
       return {
         success: false,
-        message: 'User not authenticated',
+        message: 'User not authenticated'
       };
     }
 
@@ -183,7 +169,7 @@ export async function updateAdAction(
     if (!adId) {
       return {
         success: false,
-        message: 'Advertisement ID is required',
+        message: 'Advertisement ID is required'
       };
     }
 
@@ -191,14 +177,14 @@ export async function updateAdAction(
     const existingAd = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        employerId: userId,
-      },
+        employerId: userId
+      }
     });
 
     if (!existingAd) {
       return {
         success: false,
-        message: 'Advertisement not found or access denied',
+        message: 'Advertisement not found or access denied'
       };
     }
 
@@ -224,7 +210,7 @@ export async function updateAdAction(
         ? Number(formData.get('totalBudget'))
         : undefined,
       startDate: (formData.get('startDate') as string) || undefined,
-      endDate: (formData.get('endDate') as string) || undefined,
+      endDate: (formData.get('endDate') as string) || undefined
     };
 
     const validatedData = updateAdSchema.parse(rawData);
@@ -262,7 +248,7 @@ export async function updateAdAction(
     ) {
       return {
         success: false,
-        message: `Cannot change status from ${existingAd.status} to ${newStatus}`,
+        message: `Cannot change status from ${existingAd.status} to ${newStatus}`
       };
     }
 
@@ -275,8 +261,8 @@ export async function updateAdAction(
       where: { id: adId },
       data: {
         ...updateData,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     });
 
     revalidatePath('/employers/ads');
@@ -285,21 +271,21 @@ export async function updateAdAction(
     return {
       success: true,
       message: 'Advertisement updated successfully!',
-      data: { adId: updatedAd.id },
+      data: { adId: updatedAd.id }
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
         message: 'Please check your input',
-        errors: error.flatten().fieldErrors as Record<string, string[]>,
+        errors: error.flatten().fieldErrors as Record<string, string[]>
       };
     }
 
     console.error('Update ad error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -314,15 +300,15 @@ export async function deleteAdAction(
     const existingAd = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        employerId: userId,
+        employerId: userId
       },
-      select: { id: true, status: true, currentSpend: true },
+      select: { id: true, status: true, currentSpend: true }
     });
 
     if (!existingAd) {
       return {
         success: false,
-        message: 'Advertisement not found or access denied',
+        message: 'Advertisement not found or access denied'
       };
     }
 
@@ -331,7 +317,7 @@ export async function deleteAdAction(
       return {
         success: false,
         message:
-          'Cannot delete advertisement with significant spend. Archive it instead.',
+          'Cannot delete advertisement with significant spend. Archive it instead.'
       };
     }
 
@@ -340,26 +326,26 @@ export async function deleteAdAction(
       return {
         success: false,
         message:
-          'Cannot delete active or paused advertisements. Please complete or archive them first.',
+          'Cannot delete active or paused advertisements. Please complete or archive them first.'
       };
     }
 
     // Delete advertisement (this will cascade delete tracking data)
     await prisma.advertisement.delete({
-      where: { id: adId },
+      where: { id: adId }
     });
 
     revalidatePath('/employers/ads');
 
     return {
       success: true,
-      message: 'Advertisement deleted successfully',
+      message: 'Advertisement deleted successfully'
     };
   } catch (error) {
     console.error('Delete ad error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }
@@ -377,7 +363,7 @@ export async function trackImpressionAction(
       userAgent: (formData.get('userAgent') as string) || undefined,
       ipAddress: (formData.get('ipAddress') as string) || undefined,
       position: (formData.get('placement') as string) || undefined,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     const validatedData = adImpressionSchema.parse(rawData);
@@ -391,14 +377,14 @@ export async function trackImpressionAction(
         currentSpend: true,
         bidding: true,
         clicks: true,
-        impressions: true,
-      },
+        impressions: true
+      }
     });
 
     if (!ad || ad.status !== 'active') {
       return {
         success: false,
-        message: 'Advertisement not found or not active',
+        message: 'Advertisement not found or not active'
       };
     }
 
@@ -416,14 +402,14 @@ export async function trackImpressionAction(
         sessionId: validatedData.sessionId,
         createdAt: {
           gte: new Date(Date.now() - 30000), // 30 seconds ago
-        },
-      },
+        }
+      }
     });
 
     if (recentImpression) {
       return {
         success: false,
-        message: 'Duplicate impression ignored',
+        message: 'Duplicate impression ignored'
       };
     }
 
@@ -434,12 +420,12 @@ export async function trackImpressionAction(
         // Auto-pause ad if total budget exceeded
         await prisma.advertisement.update({
           where: { id: ad.id },
-          data: { status: 'paused' },
+          data: { status: 'paused' }
         });
 
         return {
           success: false,
-          message: 'Advertisement paused due to budget limit',
+          message: 'Advertisement paused due to budget limit'
         };
       }
     }
@@ -452,13 +438,13 @@ export async function trackImpressionAction(
         sessionId: validatedData.sessionId || 'anonymous',
         userAgent: validatedData.userAgent || null,
         ipAddress: validatedData.ipAddress || null,
-        placement: validatedData.position || null,
-      },
+        placement: validatedData.position || null
+      }
     });
 
     // Update ad statistics
     const updateData: any = {
-      impressions: { increment: 1 },
+      impressions: { increment: 1 }
     };
 
     // Add cost for CPM ads
@@ -468,26 +454,26 @@ export async function trackImpressionAction(
 
     await prisma.advertisement.update({
       where: { id: ad.id },
-      data: updateData,
+      data: updateData
     });
 
     return {
       success: true,
-      message: 'Impression tracked successfully',
+      message: 'Impression tracked successfully'
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
         message: 'Invalid tracking data',
-        errors: error.flatten().fieldErrors as Record<string, string[]>,
+        errors: error.flatten().fieldErrors as Record<string, string[]>
       };
     }
 
     console.error('Track impression error:', error);
     return {
       success: false,
-      message: 'Failed to track impression',
+      message: 'Failed to track impression'
     };
   }
 }
@@ -505,7 +491,7 @@ export async function trackClickAction(
       targetUrl: formData.get('targetUrl') as string,
       userAgent: (formData.get('userAgent') as string) || undefined,
       ipAddress: (formData.get('ipAddress') as string) || undefined,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     const validatedData = adClickSchema.parse(rawData);
@@ -519,14 +505,14 @@ export async function trackClickAction(
         currentSpend: true,
         bidding: true,
         clicks: true,
-        impressions: true,
-      },
+        impressions: true
+      }
     });
 
     if (!ad || ad.status !== 'active') {
       return {
         success: false,
-        message: 'Advertisement not found or not active',
+        message: 'Advertisement not found or not active'
       };
     }
 
@@ -541,7 +527,7 @@ export async function trackClickAction(
     if (validatedData.targetUrl && !isValidUrl(validatedData.targetUrl)) {
       return {
         success: false,
-        message: 'Invalid target URL',
+        message: 'Invalid target URL'
       };
     }
 
@@ -554,12 +540,12 @@ export async function trackClickAction(
       if (totalBudget && Number(ad.currentSpend) + cost > totalBudget) {
         await prisma.advertisement.update({
           where: { id: ad.id },
-          data: { status: 'paused' },
+          data: { status: 'paused' }
         });
 
         return {
           success: false,
-          message: 'Advertisement paused due to budget limit',
+          message: 'Advertisement paused due to budget limit'
         };
       }
     }
@@ -573,13 +559,13 @@ export async function trackClickAction(
         targetUrl: validatedData.targetUrl || null,
         userAgent: validatedData.userAgent || null,
         ipAddress: validatedData.ipAddress || null,
-        cost,
-      },
+        cost
+      }
     });
 
     // Update ad statistics
     const updateData: any = {
-      clicks: { increment: 1 },
+      clicks: { increment: 1 }
     };
 
     if (cost > 0) {
@@ -588,7 +574,7 @@ export async function trackClickAction(
 
     const updatedAd = await prisma.advertisement.update({
       where: { id: ad.id },
-      data: updateData,
+      data: updateData
     });
 
     // Calculate CTR
@@ -603,22 +589,22 @@ export async function trackClickAction(
       data: {
         cost,
         ctr: ctr.toFixed(2),
-        totalSpend: updatedAd.currentSpend,
-      },
+        totalSpend: updatedAd.currentSpend
+      }
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
         message: 'Invalid tracking data',
-        errors: error.flatten().fieldErrors as Record<string, string[]>,
+        errors: error.flatten().fieldErrors as Record<string, string[]>
       };
     }
 
     console.error('Track click error:', error);
     return {
       success: false,
-      message: 'Failed to track click',
+      message: 'Failed to track click'
     };
   }
 }
@@ -637,7 +623,7 @@ export async function trackConversionAction(
         ? Number(formData.get('conversionValue'))
         : undefined,
       customEvent: (formData.get('customEvent') as string) || undefined,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
 
     const validatedData = adConversionSchema.parse(rawData);
@@ -650,14 +636,14 @@ export async function trackConversionAction(
         conversionType: validatedData.type,
         createdAt: {
           gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
-        },
-      },
+        }
+      }
     });
 
     if (existingConversion) {
       return {
         success: false,
-        message: 'Conversion already tracked',
+        message: 'Conversion already tracked'
       };
     }
 
@@ -668,16 +654,16 @@ export async function trackConversionAction(
         userId: validatedData.userId || null,
         sessionId: (formData.get('sessionId') as string) || 'unknown',
         conversionType: validatedData.type,
-        conversionValue: validatedData.value || 0,
-      },
+        conversionValue: validatedData.value || 0
+      }
     });
 
     // Update ad statistics
     await prisma.advertisement.update({
       where: { id: validatedData.adId },
       data: {
-        conversions: { increment: 1 },
-      },
+        conversions: { increment: 1 }
+      }
     });
 
     // Calculate ROI if conversion has value
@@ -685,7 +671,7 @@ export async function trackConversionAction(
     if (validatedData.value) {
       const ad = await prisma.advertisement.findUnique({
         where: { id: validatedData.adId },
-        select: { currentSpend: true },
+        select: { currentSpend: true }
       });
 
       if (ad && Number(ad.currentSpend) > 0) {
@@ -702,22 +688,22 @@ export async function trackConversionAction(
       data: {
         conversionType: validatedData.type,
         conversionValue: validatedData.value,
-        roi: roi ? roi.toFixed(2) : null,
-      },
+        roi: roi ? roi.toFixed(2) : null
+      }
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
         message: 'Invalid conversion data',
-        errors: error.flatten().fieldErrors as Record<string, string[]>,
+        errors: error.flatten().fieldErrors as Record<string, string[]>
       };
     }
 
     console.error('Track conversion error:', error);
     return {
       success: false,
-      message: 'Failed to track conversion',
+      message: 'Failed to track conversion'
     };
   }
 }
@@ -737,7 +723,7 @@ export async function getAdAnalyticsAction(
     const ad = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        employerId: userId,
+        employerId: userId
       },
       select: {
         id: true,
@@ -749,14 +735,14 @@ export async function getAdAnalyticsAction(
         conversions: true,
         currentSpend: true,
         bidding: true,
-        createdAt: true,
-      },
+        createdAt: true
+      }
     });
 
     if (!ad) {
       return {
         success: false,
-        message: 'Advertisement not found or access denied',
+        message: 'Advertisement not found or access denied'
       };
     }
 
@@ -782,8 +768,8 @@ export async function getAdAnalyticsAction(
           adId,
           createdAt: {
             gte: dateRange.start,
-            lte: dateRange.end,
-          },
+            lte: dateRange.end
+          }
         }
       : { adId };
 
@@ -793,21 +779,21 @@ export async function getAdAnalyticsAction(
           by: ['createdAt'],
           where: whereClause,
           _count: { _all: true },
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: 'asc' }
         }),
         prisma.adClick.groupBy({
           by: ['createdAt'],
           where: whereClause,
           _count: { _all: true },
           _sum: { cost: true },
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: 'asc' }
         }),
         prisma.adConversion.groupBy({
           by: ['conversionType', 'createdAt'],
           where: whereClause,
           _count: { _all: true },
           _sum: { conversionValue: true },
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: 'asc' }
         }),
       ]
     );
@@ -820,7 +806,7 @@ export async function getAdAnalyticsAction(
           title: ad.title,
           type: ad.type,
           status: ad.status,
-          createdAt: ad.createdAt,
+          createdAt: ad.createdAt
         },
         performance: {
           impressions: ad.impressions,
@@ -830,30 +816,30 @@ export async function getAdAnalyticsAction(
           conversionRate: Number(conversionRate.toFixed(2)),
           currentSpend: ad.currentSpend,
           avgCostPerClick: Number(avgCost.toFixed(2)),
-          budgetUtilization: Number(budgetUtilization.toFixed(2)),
+          budgetUtilization: Number(budgetUtilization.toFixed(2))
         },
         budget: {
           daily: dailyBudget,
           total: totalBudget,
           spent: ad.currentSpend,
-          remaining: totalBudget ? totalBudget - Number(ad.currentSpend) : null,
+          remaining: totalBudget ? totalBudget - Number(ad.currentSpend) : null
         },
         bidding: {
           model: biddingModel,
-          amount: bidAmount,
+          amount: bidAmount
         },
         timeline: {
           impressions: impressionsByDay,
           clicks: clicksByDay,
-          conversions: conversionsByDay,
-        },
-      },
+          conversions: conversionsByDay
+        }
+      }
     };
   } catch (error) {
     console.error('Get ad analytics error:', error);
     return {
       success: false,
-      message: 'Failed to fetch analytics data',
+      message: 'Failed to fetch analytics data'
     };
   }
 }
@@ -868,14 +854,14 @@ export async function bulkAdOperationAction(
     if (adIds.length === 0) {
       return {
         success: false,
-        message: 'No advertisements selected',
+        message: 'No advertisements selected'
       };
     }
 
     if (adIds.length > 25) {
       return {
         success: false,
-        message: 'Cannot process more than 25 advertisements at once',
+        message: 'Cannot process more than 25 advertisements at once'
       };
     }
 
@@ -883,15 +869,15 @@ export async function bulkAdOperationAction(
     const userAds = await prisma.advertisement.findMany({
       where: {
         id: { in: adIds },
-        employerId: userId,
+        employerId: userId
       },
-      select: { id: true, status: true },
+      select: { id: true, status: true }
     });
 
     if (userAds.length !== adIds.length) {
       return {
         success: false,
-        message: 'Some advertisements not found or access denied',
+        message: 'Some advertisements not found or access denied'
       };
     }
 
@@ -921,14 +907,14 @@ export async function bulkAdOperationAction(
     if (eligibleAdIds.length === 0) {
       return {
         success: false,
-        message: `No advertisements eligible for ${operation}`,
+        message: `No advertisements eligible for ${operation}`
       };
     }
 
     // Perform bulk update
     const result = await prisma.advertisement.updateMany({
       where: { id: { in: eligibleAdIds } },
-      data: updateData,
+      data: updateData
     });
 
     revalidatePath('/employers/ads');
@@ -938,14 +924,14 @@ export async function bulkAdOperationAction(
       message: `Successfully ${operation}d ${result.count} advertisement${result.count !== 1 ? 's' : ''}`,
       data: {
         affectedCount: result.count,
-        skippedCount: adIds.length - result.count,
-      },
+        skippedCount: adIds.length - result.count
+      }
     };
   } catch (error) {
     console.error('Bulk ad operation error:', error);
     return {
       success: false,
-      message: 'An unexpected error occurred. Please try again.',
+      message: 'An unexpected error occurred. Please try again.'
     };
   }
 }

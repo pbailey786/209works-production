@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { NotFoundError } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 // GET /api/ads/:id/analytics/export - Export advertisement analytics as CSV
 export const GET = withAPIMiddleware(
   async (req, context) => {
@@ -81,9 +82,9 @@ export const GET = withAPIMiddleware(
     });
 
     const csvContent = [
-      csvHeaders.join(','),
-      ...csvRows.map(row => row.join(',')),
-    ].join('\n');
+      csvHeaders.path.join(','),
+      ...csvRows.map(row => row.path.join(',')),
+    ].path.join('\n');
 
     // Return CSV response
     return new NextResponse(csvContent, {

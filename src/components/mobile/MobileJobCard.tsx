@@ -3,24 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  MapPin, 
-  Clock, 
-  DollarSign, 
-  Bookmark, 
-  BookmarkCheck,
-  ExternalLink,
-  Building,
-  Calendar,
-  Users,
-  Zap,
-  Star,
-  Share,
-  Eye
-} from 'lucide-react';
+import { Badge } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -60,7 +45,7 @@ export default function MobileJobCard({
   onUnsave,
   isSaved = false,
   showFullDescription = false,
-  className = '',
+  className = ''
 }: MobileJobCardProps) {
   const [isExpanded, setIsExpanded] = useState(showFullDescription);
   const [isLoading, setIsLoading] = useState(false);
@@ -73,20 +58,20 @@ export default function MobileJobCard({
         await onUnsave?.(job.id);
         toast({
           title: 'Job removed',
-          description: 'Job removed from your saved list',
+          description: 'Job removed from your saved list'
         });
       } else {
         await onSave?.(job.id);
         toast({
           title: 'Job saved',
-          description: 'Job added to your saved list',
+          description: 'Job added to your saved list'
         });
       }
     } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to update saved job',
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setIsLoading(false);
@@ -97,7 +82,7 @@ export default function MobileJobCard({
     const shareData = {
       title: `${job.title} at ${job.company}`,
       text: `Check out this job opportunity: ${job.title} at ${job.company} in ${job.location}`,
-      url: `${window.location.origin}/jobs/${job.id}`,
+      url: `${window.location.origin}/jobs/${job.id}`
     };
 
     try {
@@ -108,7 +93,7 @@ export default function MobileJobCard({
         await navigator.clipboard.writeText(shareData.url);
         toast({
           title: 'Link copied',
-          description: 'Job link copied to clipboard',
+          description: 'Job link copied to clipboard'
         });
       }
     } catch (error) {

@@ -1,15 +1,8 @@
 'use client';
 
-import { useState } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Download } from '@/components/ui/dropdown-menu';
 
 interface AnalyticsExportButtonProps {
   type?: string;
@@ -29,7 +22,7 @@ export default function AnalyticsExportButton({
         type: exportType,
         format,
         startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        endDate: new Date().toISOString(),
+        endDate: new Date().toISOString()
       });
 
       const response = await fetch(`/api/admin/analytics/export?${params}`);

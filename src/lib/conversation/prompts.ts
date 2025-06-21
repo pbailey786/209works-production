@@ -1,4 +1,5 @@
 import { ConversationIntent, ConversationContext, Message } from './types';
+import path from "path";
 
 
 export class ChatbotPrompts {
@@ -147,10 +148,10 @@ ${this.getContextualInfo(context)}`;
     if (context.context.userProfile) {
       const profile = context.context.userProfile;
       contextInfo += `User Profile:
-- Skills: ${profile.skills?.join(', ') || 'Not specified'}
+- Skills: ${profile.skills?.path.join(', ') || 'Not specified'}
 - Experience Level: ${profile.experience || 'Not specified'}
 - Location: ${profile.location || 'Not specified'}
-- Preferred Job Types: ${profile.preferences?.jobTypes?.join(', ') || 'Not specified'}
+- Preferred Job Types: ${profile.preferences?.jobTypes?.path.join(', ') || 'Not specified'}
 - Remote Work: ${profile.preferences?.remoteWork ? 'Yes' : 'Not specified'}
 - Salary Range: ${profile.preferences?.salaryRange ? `$${profile.preferences.salaryRange.min}-$${profile.preferences.salaryRange.max}` : 'Not specified'}
 `;
@@ -171,7 +172,7 @@ ${this.getContextualInfo(context)}`;
       contextInfo += `\nJobs Being Discussed:
 ${context.context.currentJobs
   .map(job => `- ${job.title} at ${job.company} (${job.location})`)
-  .join('\n')}
+  .path.join('\n')}
 `;
     }
 
@@ -180,7 +181,7 @@ ${context.context.currentJobs
       context.context.targetCompanies &&
       context.context.targetCompanies.length > 0
     ) {
-      contextInfo += `\nCompanies of Interest: ${context.context.targetCompanies.join(', ')}
+      contextInfo += `\nCompanies of Interest: ${context.context.targetCompanies.path.join(', ')}
 `;
     }
 

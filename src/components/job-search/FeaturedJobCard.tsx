@@ -1,11 +1,9 @@
 import React, { useState } from '@/components/ui/card';
 import { motion } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/components/ui/card';
 import { FeaturedBadgeFloating } from './FeaturedJobBadge';import {
-
-
   MapPin,
   Clock,
   DollarSign,
@@ -17,7 +15,7 @@ import { FeaturedBadgeFloating } from './FeaturedJobBadge';import {
   ChevronRight,
   CheckCircle,
   TrendingUp,
-  Users,
+  Users
 } from 'lucide-react';
 
 interface FeaturedJobCardProps {
@@ -67,7 +65,7 @@ export default function FeaturedJobCard({
   onViewDetails,
   className,
   viewCount,
-  applicantCount,
+  applicantCount
 }: FeaturedJobCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isSaving, setIsSaving] = useState(false);

@@ -1,17 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-import {
-  TrendingUp,
-  Play,
-  Clock,
-  XCircle,
-  BarChart3,
-  DollarSign,
-  Eye,
-  MousePointer,
-} from 'lucide-react';
+import { Card } from 'lucide-react';
 
 interface AdManagementStatsProps {
   totalAds: number;
@@ -24,7 +13,7 @@ export default function AdManagementStats({
   totalAds,
   activeAds,
   scheduledAds,
-  expiredAds,
+  expiredAds
 }: AdManagementStatsProps) {
   const stats = [
     {
@@ -33,7 +22,7 @@ export default function AdManagementStats({
       icon: BarChart3,
       color: 'text-blue-600',
       bgColor: 'bg-blue-100',
-      description: 'All ads on platform',
+      description: 'All ads on platform'
     },
     {
       title: 'Active Ads',
@@ -41,7 +30,7 @@ export default function AdManagementStats({
       icon: Play,
       color: 'text-green-600',
       bgColor: 'bg-green-100',
-      description: 'Currently running',
+      description: 'Currently running'
     },
     {
       title: 'Scheduled Ads',
@@ -49,7 +38,7 @@ export default function AdManagementStats({
       icon: Clock,
       color: 'text-orange-600',
       bgColor: 'bg-orange-100',
-      description: 'Waiting to start',
+      description: 'Waiting to start'
     },
     {
       title: 'Expired Ads',
@@ -57,7 +46,7 @@ export default function AdManagementStats({
       icon: XCircle,
       color: 'text-gray-600',
       bgColor: 'bg-gray-100',
-      description: 'Campaign ended',
+      description: 'Campaign ended'
     },
   ];
 

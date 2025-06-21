@@ -1,4 +1,4 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { NextRequest } from 'next/server';
 
 

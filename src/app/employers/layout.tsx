@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
+import path from "path";
 
 interface EmployerLayoutProps {
   children: ReactNode;
@@ -96,7 +97,7 @@ export default function EmployerLayout({ children }: EmployerLayoutProps) {
 
       for (let i = 1; i < segments.length; i++) {
         const segment = segments[i];
-        const href = '/' + segments.slice(0, i + 1).join('/');
+        const href = '/' + segments.slice(0, i + 1).path.join('/');
         const name =
           segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
         breadcrumbs.push({ name, href });

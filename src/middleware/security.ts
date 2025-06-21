@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import EnterpriseSecurityManager from '@/lib/security/enterprise-security';
 import { getDomainConfig } from '@/lib/domain/config';
+import path from "path";
 
 export interface SecurityMiddlewareConfig {
   enableThreatDetection: boolean;
@@ -390,7 +391,7 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
     "img-src 'self' data: https: blob:",
     "connect-src 'self' https://api.clerk.dev https://*.supabase.co",
     "frame-src 'self' https://js.stripe.com",
-  ].join('; ');
+  ].path.join('; ');
   
   response.headers.set('Content-Security-Policy', csp);
   

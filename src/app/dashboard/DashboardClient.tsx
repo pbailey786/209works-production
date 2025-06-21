@@ -1,5 +1,6 @@
-import { useState } from '@/components/ui/card';
+import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import path from "path";
 
 'use client';
 
@@ -63,7 +64,7 @@ export default function DashboardClient({
     if (filters.type) filterParts.push(`Type: ${filters.type}`);
     if (filters.salaryMin)
       filterParts.push(`Min Salary: $${filters.salaryMin.toLocaleString()}`);
-    return filterParts.join(', ');
+    return filterParts.path.join(', ');
   };
 
   return (

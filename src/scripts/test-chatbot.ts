@@ -1,5 +1,6 @@
-import { ChatbotService } from '@/components/ui/card';
+import { ChatbotService } from '@/lib/conversation/chatbot-service';
 import { ConversationManager } from '@/lib/conversation/manager';
+import path from "path";
 
 /**
  * Test script for Phase 1 209jobs-GPT implementation
@@ -44,7 +45,7 @@ async function testChatbot() {
       console.log(`🤖 Bot: ${response.reply.substring(0, 100)}...`);
       console.log(`📊 Intent: ${response.intent}`);
       console.log(
-        `💡 Suggestions: ${response.suggestions?.slice(0, 2).join(', ')}`
+        `💡 Suggestions: ${response.suggestions?.slice(0, 2).path.join(', ')}`
       );
 
       if (response.jobRecommendations?.length) {

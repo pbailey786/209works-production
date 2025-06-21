@@ -1,19 +1,5 @@
 import React, { useState } from '@/components/ui/card';
-import { motion, AnimatePresence } from 'framer-motion';
-
-'use client';
-
-  import {
-  X,
-  Instagram,
-  TrendingUp,
-  Package,
-  Check,
-  Star,
-  CreditCard,
-  Loader2,
-  Sparkles,
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'lucide-react';
 
 interface PromotionUpsellPopupProps {
   isOpen: boolean;
@@ -48,7 +34,7 @@ export default function PromotionUpsellPopup({
         'Shared on X with relevant hashtags',
         '+3 more features'
       ],
-      icon: <Instagram className="h-6 w-6" />,
+      icon: <Instagram className="h-6 w-6" />
     },
     {
       id: 'placement-bump',
@@ -62,7 +48,7 @@ export default function PromotionUpsellPopup({
         '+3 more features'
       ],
       icon: <TrendingUp className="h-6 w-6" />,
-      popular: true,
+      popular: true
     },
     {
       id: 'bundle',
@@ -77,7 +63,7 @@ export default function PromotionUpsellPopup({
         '+3 more features'
       ],
       icon: <Package className="h-6 w-6" />,
-      badge: 'SAVE $13',
+      badge: 'SAVE $13'
     },
   ];
 
@@ -123,13 +109,13 @@ export default function PromotionUpsellPopup({
       const response = await fetch('/api/job-posting/checkout', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           addons: Array.from(selectedOptions),
           successUrl: `${window.location.origin}/employers/dashboard?promotion_success=true`,
-          cancelUrl: `${window.location.origin}/employers/dashboard?promotion_cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/dashboard?promotion_cancelled=true`
+        })
       });
 
       const data = await response.json();

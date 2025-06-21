@@ -3,20 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDomain } from '@/lib/domain/context';
-import DomainAwareHeader from '@/components/layout/DomainAwareHeader';
-import DomainAwareFooter from '@/components/layout/DomainAwareFooter';
-import {
-  Search,
-  Filter,
-  MapPin,
-  Calendar,
-  DollarSign,
-  Briefcase,
-  X,
-  ChevronDown,
-  SlidersHorizontal,
-} from 'lucide-react';
+import { useDomain } from 'lucide-react';
 
 
 // Dynamic suggestions based on domain - will be updated in component
@@ -86,7 +73,7 @@ function JobsContent() {
     salaryMax: searchParams.get('salaryMax') || '',
     remote: searchParams.get('remote') === 'true',
     datePosted: searchParams.get('datePosted') || '',
-    sortBy: searchParams.get('sortBy') || 'relevance',
+    sortBy: searchParams.get('sortBy') || 'relevance'
   });
 
   // UI state
@@ -143,12 +130,12 @@ function JobsContent() {
       await fetch('/api/search-history', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           query: query.trim(),
-          filters: filters,
-        }),
+          filters: filters
+        })
       });
     } catch (error) {
       console.error('Failed to save search history:', error);
@@ -174,7 +161,7 @@ function JobsContent() {
           salaryMax: searchFilters.salaryMax,
           remote: searchFilters.remote,
           datePosted: searchFilters.datePosted,
-          sortBy: searchFilters.sortBy,
+          sortBy: searchFilters.sortBy
         });
       }
 
@@ -196,7 +183,7 @@ function JobsContent() {
             remote: searchFilters.remote,
             datePosted: searchFilters.datePosted,
             region: config?.areaCode, // Add regional filtering
-          },
+          }
         };
 
         console.log('Attempting LLM Search:', requestBody);
@@ -204,9 +191,9 @@ function JobsContent() {
         const llmRes = await fetch('/api/llm-job-search', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(requestBody)
         });
 
         const llmData = await llmRes.json();
@@ -246,7 +233,7 @@ function JobsContent() {
             page: page.toString(),
             useRelevanceScoring: 'true',
             includeSnippets: 'true',
-            sortBy: searchFilters.sortBy,
+            sortBy: searchFilters.sortBy
           });
 
           if (searchFilters.location)
@@ -343,14 +330,14 @@ function JobsContent() {
       // Save search to history
       await saveSearchHistory(message.trim(), {
         searchType: 'chat',
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
 
       const userMessage = {
         id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         type: 'user' as const,
         content: message.trim(),
-        timestamp: new Date(),
+        timestamp: new Date()
       };
 
       // Add user message to conversation
@@ -364,14 +351,14 @@ function JobsContent() {
         const response = await fetch('/api/chat-job-search', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             userMessage: message.trim(),
             conversationHistory: conversation,
             userProfile: null,
-            sessionId: 'user-session',
-          }),
+            sessionId: 'user-session'
+          })
         });
 
         const data = await response.json();
@@ -385,7 +372,7 @@ function JobsContent() {
             content: data.response,
             timestamp: new Date(),
             jobs: data.jobs || [],
-            metadata: data.metadata,
+            metadata: data.metadata
           };
 
           setConversation(prev => [...prev, assistantMessage]);
@@ -405,7 +392,7 @@ function JobsContent() {
             content: data.error || "I'm here to help with your job search in the 209 area! What would you like to know?",
             timestamp: new Date(),
             jobs: [],
-            metadata: {},
+            metadata: {}
           };
           setConversation(prev => [...prev, assistantMessage]);
         } else {
@@ -417,8 +404,8 @@ function JobsContent() {
         const fallbackMessage = {
           id: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           type: 'assistant' as const,
-          content: `Hey there! I'm here to help you find work in the ${config?.areaCode || '209'} area - ${config?.cities.slice(0, 3).join(', ') || 'Stockton, Modesto, Tracy'} and all around ${config?.region || 'the Central Valley'}. Been helping folks find good jobs around here for a while. What kind of work are you looking for?`,
-          timestamp: new Date(),
+          content: `Hey there! I'm here to help you find work in the ${config?.areaCode || '209'} area - ${config?.cities.slice(0, 3).path.join(', ') || 'Stockton, Modesto, Tracy'} and all around ${config?.region || 'the Central Valley'}. Been helping folks find good jobs around here for a while. What kind of work are you looking for?`,
+          timestamp: new Date()
         };
         setConversation(prev => [...prev, fallbackMessage]);
 
@@ -471,7 +458,7 @@ function JobsContent() {
       salaryMax: '',
       remote: false,
       datePosted: '',
-      sortBy: 'relevance',
+      sortBy: 'relevance'
     });
     router.replace('/jobs');
   };
@@ -893,7 +880,7 @@ function JobsContent() {
                         onChange={e => {
                           const newFilters = {
                             ...filters,
-                            jobType: e.target.value,
+                            jobType: e.target.value
                           };
                           setFilters(newFilters);
                           setHasSearched(true);
@@ -920,7 +907,7 @@ function JobsContent() {
                         onChange={e => {
                           const newFilters = {
                             ...filters,
-                            experienceLevel: e.target.value,
+                            experienceLevel: e.target.value
                           };
                           setFilters(newFilters);
                           setHasSearched(true);
@@ -947,7 +934,7 @@ function JobsContent() {
                         onChange={e => {
                           const newFilters = {
                             ...filters,
-                            datePosted: e.target.value,
+                            datePosted: e.target.value
                           };
                           setFilters(newFilters);
                           setHasSearched(true);

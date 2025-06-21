@@ -1,20 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-  CreditCard,
-  Sparkles,
-  TrendingUp,
-  Clock,
-  Plus,
-  History,
-  AlertTriangle,
-} from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'lucide-react';
 
 interface CreditInfo {
   universal?: number;
@@ -54,7 +45,7 @@ export default function CreditBalanceCard({
   credits,
   hasActiveSubscription,
   onAddCredits,
-  onSubscribe,
+  onSubscribe
 }: CreditBalanceCardProps) {
   const [creditHistory, setCreditHistory] = useState<CreditTransaction[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -85,7 +76,7 @@ export default function CreditBalanceCard({
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 

@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
-import {
-  generateJobSearchResponse,
-  generateConversationalResponse,
-  extractJobSearchFilters,
-  extractJobSearchFiltersWithContext,
-} from '@/lib/ai';
-import {
+import { prisma } from '@/lib/ai';
   withAISecurity,
   aiSecurityConfigs,
   type AISecurityContext,
-  sanitizeUserData,
+  sanitizeUserData
 } from '@/lib/middleware/ai-security';
 import { conversationMemory } from '@/lib/conversation-memory';
 
@@ -43,7 +36,7 @@ function normalizeJobType(jobType: string | null): string | null {
     internship: 'internship',
     intern: 'internship',
     volunteer: 'volunteer',
-    other: 'other',
+    other: 'other'
   };
 
   return jobTypeMap[normalized] || normalized;
@@ -184,7 +177,7 @@ function extractBasicFilters(
       previousLocation: lastUserMessage
         ? locationKeywords.find(loc => lastUserMessage.includes(loc))
         : null,
-      messageCount: conversationHistory.length,
+      messageCount: conversationHistory.length
     },
     age: null,
     region: null,
@@ -197,7 +190,7 @@ function extractBasicFilters(
     application_type: null,
     skills: null,
     categories: null,
-    postedAt: null,
+    postedAt: null
   };
 }
 
@@ -210,7 +203,7 @@ function buildJobQueryFromFilters(filters: any) {
 
   // Add basic filters to ensure we only get active, non-expired jobs
   query.AND.push({
-    OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
   });
 
   // If we have previous jobs and this is a sorting request, filter to those jobs
@@ -238,17 +231,17 @@ function buildJobQueryFromFilters(filters: any) {
         OR: cities209.map(city => ({
           location: {
             contains: city,
-            mode: 'insensitive',
-          },
-        })),
+            mode: 'insensitive'
+          }
+        }))
       });
     } else {
       // Regular location search
       query.AND.push({
         location: {
           contains: filters.location,
-          mode: 'insensitive',
-        },
+          mode: 'insensitive'
+        }
       });
     }
   }
@@ -263,8 +256,8 @@ function buildJobQueryFromFilters(filters: any) {
     query.AND.push({
       company: {
         contains: filters.company,
-        mode: 'insensitive',
-      },
+        mode: 'insensitive'
+      }
     });
   }
 
@@ -272,8 +265,8 @@ function buildJobQueryFromFilters(filters: any) {
   if (filters.industry) {
     query.AND.push({
       categories: {
-        has: filters.industry,
-      },
+        has: filters.industry
+      }
     });
   }
 
@@ -282,8 +275,8 @@ function buildJobQueryFromFilters(filters: any) {
     query.AND.push({
       title: {
         contains: filters.role,
-        mode: 'insensitive',
-      },
+        mode: 'insensitive'
+      }
     });
   }
 
@@ -299,7 +292,7 @@ function buildJobQueryFromFilters(filters: any) {
         { title: { contains: filters.other, mode: 'insensitive' } },
         { description: { contains: filters.other, mode: 'insensitive' } },
         { company: { contains: filters.other, mode: 'insensitive' } },
-      ],
+      ]
     });
   }
 
@@ -355,7 +348,7 @@ export const POST = withAISecurity(
         userMessage,
         conversationHistory = [],
         userProfile = null,
-        sessionId = null,
+        sessionId = null
       } = body;
 
       if (!userMessage || typeof userMessage !== 'string') {
@@ -396,14 +389,14 @@ export const POST = withAISecurity(
                       company: true,
                       location: true,
                       jobType: true,
-                      categories: true,
-                    },
-                  },
+                      categories: true
+                    }
+                  }
                 },
                 orderBy: { appliedAt: 'desc' },
                 take: 10, // Last 10 applications for context
-              },
-            },
+              }
+            }
           });
 
           if (user) {
@@ -425,8 +418,8 @@ export const POST = withAISecurity(
                 company: app.job.company,
                 location: app.job.location,
                 jobType: app.job.jobType,
-                categories: app.job.categories,
-              })),
+                categories: app.job.categories
+              }))
             };
           }
         } catch (error) {
@@ -537,8 +530,8 @@ export const POST = withAISecurity(
             url: true,
             categories: true,
             requirements: true,
-            benefits: true,
-          },
+            benefits: true
+          }
         });
         console.log(`Successfully found ${jobs.length} jobs`);
       } catch (queryError) {
@@ -547,7 +540,7 @@ export const POST = withAISecurity(
           query: jobQuery,
           sortOrder: sortOrder,
           message:
-            queryError instanceof Error ? queryError.message : 'Unknown error',
+            queryError instanceof Error ? queryError.message : 'Unknown error'
         });
         return NextResponse.json(
           {
@@ -557,7 +550,7 @@ export const POST = withAISecurity(
                 ? queryError.message
                 : String(queryError),
             query: jobQuery,
-            sortOrder: sortOrder,
+            sortOrder: sortOrder
           },
           { status: 500 }
         );
@@ -627,9 +620,9 @@ export const POST = withAISecurity(
                 hasValidApiKey,
                 conversationLength: conversationHistory.length,
                 userSkills: sanitizedUserProfile?.skills?.length || 0,
-                sortBy: filters.sortBy || 'relevance',
-              },
-            },
+                sortBy: filters.sortBy || 'relevance'
+              }
+            }
           });
         } catch (analyticsError) {
           console.error('Failed to save chat analytics:', analyticsError);
@@ -658,8 +651,8 @@ export const POST = withAISecurity(
             existingConversation = await prisma.chatHistory.findFirst({
               where: {
                 userId: authenticatedUserId,
-                sessionId: sessionId,
-              },
+                sessionId: sessionId
+              }
             });
           } catch (tableError) {
             // ChatHistory table doesn't exist yet, skip saving for now
@@ -674,25 +667,25 @@ export const POST = withAISecurity(
                 where: { id: existingConversation.id },
                 data: {
                   messages: updatedConversationHistory,
-                  lastActivity: new Date(),
-                },
+                  lastActivity: new Date()
+                }
               });
             } else {
               // Check if user has reached the limit
               const userConversationCount = await prisma.chatHistory.count({
-                where: { userId: authenticatedUserId },
+                where: { userId: authenticatedUserId }
               });
 
               if (userConversationCount >= MAX_CONVERSATIONS_PER_USER) {
                 // Remove the oldest conversation
                 const oldestConversation = await prisma.chatHistory.findFirst({
                   where: { userId: authenticatedUserId },
-                  orderBy: { lastActivity: 'asc' },
+                  orderBy: { lastActivity: 'asc' }
                 });
 
                 if (oldestConversation) {
                   await prisma.chatHistory.delete({
-                    where: { id: oldestConversation.id },
+                    where: { id: oldestConversation.id }
                   });
                 }
               }
@@ -706,8 +699,8 @@ export const POST = withAISecurity(
                   sessionId: sessionId,
                   messages: updatedConversationHistory,
                   title: title,
-                  lastActivity: new Date(),
-                },
+                  lastActivity: new Date()
+                }
               });
             }
           }
@@ -741,10 +734,10 @@ export const POST = withAISecurity(
             jobInteractions: {
               applied: conversationContext.jobInteractions.applied.length,
               saved: conversationContext.jobInteractions.saved.length,
-              viewed: conversationContext.jobInteractions.viewed.length,
-            },
-          },
-        },
+              viewed: conversationContext.jobInteractions.viewed.length
+            }
+          }
+        }
       });
     } catch (error) {
       console.error('Chat job search error:', error);
@@ -752,7 +745,7 @@ export const POST = withAISecurity(
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
         hasApiKey: !!process.env.OPENAI_API_KEY,
-        apiKeyPrefix: process.env.OPENAI_API_KEY?.substring(0, 10) + '...',
+        apiKeyPrefix: process.env.OPENAI_API_KEY?.substring(0, 10) + '...'
       });
 
       // Always return a helpful response instead of an error
@@ -780,7 +773,7 @@ export const POST = withAISecurity(
           userApplicationHistory: 0,
           fallbackUsed: true,
           errorMessage: error instanceof Error ? error.message : 'Unknown error'
-        },
+        }
       });
     }
   },

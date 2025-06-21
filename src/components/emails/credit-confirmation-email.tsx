@@ -10,7 +10,7 @@
   Section,
   Text,
   Hr,
-  Link,
+  Link
 } from '@react-email/components';
 
 interface CreditConfirmationEmailProps {
@@ -26,7 +26,7 @@ export default function CreditConfirmationEmail({
   creditAmount = 0,
   planType = 'CREDIT PACK',
   dashboardUrl = 'https://209.works/employers/dashboard',
-  expirationDate = null,
+  expirationDate = null
 }: CreditConfirmationEmailProps) {
   const previewText = `🎉 Your ${creditAmount} 209Works credits are ready to use!`;
 
@@ -113,7 +113,7 @@ export default function CreditConfirmationEmail({
 // Styles
 const main = {
   backgroundColor: '#f6f9fc',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif'
 };
 
 const container = {
@@ -121,13 +121,13 @@ const container = {
   margin: '0 auto',
   padding: '20px 0 48px',
   marginBottom: '64px',
-  maxWidth: '600px',
+  maxWidth: '600px'
 };
 
 const header = {
   background: 'linear-gradient(135deg, #2d4a3e 0%, #1d3a2e 100%)',
   padding: '40px 20px',
-  textAlign: 'center' as const,
+  textAlign: 'center' as const
 };
 
 const headerTitle = {
@@ -135,32 +135,32 @@ const headerTitle = {
   fontSize: '32px',
   fontWeight: 'bold',
   margin: '0',
-  lineHeight: '1.2',
+  lineHeight: '1.2'
 };
 
 const headerSubtitle = {
   color: '#9fdf9f',
   fontSize: '16px',
   margin: '8px 0 0 0',
-  lineHeight: '1.4',
+  lineHeight: '1.4'
 };
 
 const content = {
-  padding: '40px 20px',
+  padding: '40px 20px'
 };
 
 const greeting = {
   color: '#2d4a3e',
   fontSize: '18px',
   fontWeight: '600',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const mainText = {
   color: '#333333',
   fontSize: '16px',
   lineHeight: '1.6',
-  margin: '0 0 30px 0',
+  margin: '0 0 30px 0'
 };
 
 const creditBox = {
@@ -169,7 +169,7 @@ const creditBox = {
   borderRadius: '12px',
   padding: '30px 20px',
   textAlign: 'center' as const,
-  margin: '30px 0',
+  margin: '30px 0'
 };
 
 const creditAmount = {
@@ -177,32 +177,32 @@ const creditAmount = {
   fontSize: '48px',
   fontWeight: 'bold',
   margin: '0',
-  lineHeight: '1',
+  lineHeight: '1'
 };
 
 const creditLabel = {
   color: '#2d4a3e',
   fontSize: '18px',
   fontWeight: '600',
-  margin: '8px 0 0 0',
+  margin: '8px 0 0 0'
 };
 
 const expirationText = {
   color: '#666666',
   fontSize: '14px',
-  margin: '8px 0 0 0',
+  margin: '8px 0 0 0'
 };
 
 const instructionText = {
   color: '#333333',
   fontSize: '16px',
   lineHeight: '1.6',
-  margin: '30px 0',
+  margin: '30px 0'
 };
 
 const buttonContainer = {
   textAlign: 'center' as const,
-  margin: '40px 0',
+  margin: '40px 0'
 };
 
 const button = {
@@ -216,74 +216,74 @@ const button = {
   display: 'inline-block',
   padding: '16px 32px',
   border: 'none',
-  cursor: 'pointer',
+  cursor: 'pointer'
 };
 
 const benefitsTitle = {
   color: '#2d4a3e',
   fontSize: '16px',
   fontWeight: '600',
-  margin: '30px 0 15px 0',
+  margin: '30px 0 15px 0'
 };
 
 const benefitsList = {
   color: '#333333',
   fontSize: '15px',
   lineHeight: '1.8',
-  margin: '0 0 30px 0',
+  margin: '0 0 30px 0'
 };
 
 const divider = {
   borderColor: '#e6e6e6',
-  margin: '40px 0',
+  margin: '40px 0'
 };
 
 const footerText = {
   color: '#666666',
   fontSize: '15px',
   lineHeight: '1.6',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const supportText = {
   color: '#666666',
   fontSize: '14px',
   lineHeight: '1.6',
-  margin: '0 0 30px 0',
+  margin: '0 0 30px 0'
 };
 
 const link = {
   color: '#ff6b35',
-  textDecoration: 'none',
+  textDecoration: 'none'
 };
 
 const footer = {
   backgroundColor: '#f8f9fa',
   padding: '30px 20px',
   textAlign: 'center' as const,
-  borderTop: '1px solid #e6e6e6',
+  borderTop: '1px solid #e6e6e6'
 };
 
 const footerBrand = {
   color: '#2d4a3e',
   fontSize: '18px',
   fontWeight: 'bold',
-  margin: '0 0 8px 0',
+  margin: '0 0 8px 0'
 };
 
 const footerTagline = {
   color: '#666666',
   fontSize: '14px',
-  margin: '0 0 20px 0',
+  margin: '0 0 20px 0'
 };
 
 const footerLinks = {
   color: '#666666',
   fontSize: '14px',
-  margin: '0',
+  margin: '0'
 };
 
 const footerLink = {
   color: '#666666',
-  textDecoration: 'none',
+  textDecoration: 'none'
 };

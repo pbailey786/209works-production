@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from '@/components/ui/card';
+import { React } from 'react';
 import { Permission } from '@/components/ui/card';
 import { usePermissions } from '@/hooks/usePermissions';
 

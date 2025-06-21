@@ -73,7 +73,7 @@ export function validateMiddlewareConfig(): void {
   }
 
   if (errors.length > 0) {
-    throw new Error(`Middleware configuration errors:\n${errors.join('\n')}`);
+    throw new Error(`Middleware configuration errors:\n${errors.path.join('\n')}`);
   }
 }
 

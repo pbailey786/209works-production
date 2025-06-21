@@ -2,14 +2,7 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { createSuccessResponse } from '@/lib/utils/api-response';
 import { prisma } from '@/lib/database/prisma';
-import { z } from 'zod';
-import {
-  getCache,
-  setCache,
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL,
-} from '@/lib/cache/redis';
+import { z } from '@/lib/cache/redis';
 
 // Query schema for suggestions
 const suggestionsQuerySchema = z.object({
@@ -17,7 +10,7 @@ const suggestionsQuerySchema = z.object({
   category: z
     .enum(['all', 'jobs', 'locations', 'companies', 'skills'])
     .default('all'),
-  limit: z.coerce.number().min(1).max(50).default(10),
+  limit: z.coerce.number().min(1).max(50).default(10)
 });
 
 // GET /api/search/suggestions - Get search suggestions and trending topics
@@ -48,7 +41,7 @@ export const GET = withAPIMiddleware(
         type: validType,
         category: validCategory,
         suggestions,
-        cached: true,
+        cached: true
       });
     }
 
@@ -84,21 +77,21 @@ export const GET = withAPIMiddleware(
     // Cache suggestions
     await setCache(cacheKey, suggestions, {
       ttl: DEFAULT_TTL.short, // Trending data changes frequently
-      tags: ['search', 'suggestions'],
+      tags: ['search', 'suggestions']
     });
 
     return createSuccessResponse({
       type: validType,
       category: validCategory,
       suggestions,
-      cached: false,
+      cached: false
     });
   },
   {
     querySchema: suggestionsQuerySchema,
     rateLimit: { enabled: true, type: 'general' },
     logging: { enabled: true },
-    cors: { enabled: true },
+    cors: { enabled: true }
   }
 );
 
@@ -117,13 +110,13 @@ async function generateTrendingSuggestions(
       where: {
         createdAt: {
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
-        },
+        }
       },
       select: {
         title: true,
-        jobType: true,
+        jobType: true
       },
-      take: 100,
+      take: 100
     });
 
     // Count job title frequencies
@@ -140,7 +133,7 @@ async function generateTrendingSuggestions(
         query: title,
         type: 'job',
         frequency: count,
-        trend: 'up',
+        trend: 'up'
       }));
 
     suggestions.push(...trendingJobs);
@@ -166,7 +159,7 @@ async function generateTrendingSuggestions(
         query: 'artificial intelligence',
         type: 'skill',
         frequency: 89,
-        trend: 'up',
+        trend: 'up'
       },
       { query: 'react', type: 'skill', frequency: 76, trend: 'stable' },
       { query: 'kubernetes', type: 'skill', frequency: 67, trend: 'up' },
@@ -211,20 +204,20 @@ async function generatePopularSuggestions(
     const popularCompanies = await prisma.job.groupBy({
       by: ['company'],
       _count: {
-        company: true,
+        company: true
       },
       orderBy: {
         _count: {
-          company: 'desc',
-        },
+          company: 'desc'
+        }
       },
-      take: Math.ceil(limit / 4),
+      take: Math.ceil(limit / 4)
     });
 
     const companyResults = popularCompanies.map(item => ({
       query: item.company,
       type: 'company',
-      searches: item._count.company,
+      searches: item._count.company
     }));
 
     suggestions.push(...companyResults);
@@ -248,24 +241,24 @@ async function generateRecentSuggestions(
       where: {
         createdAt: {
           gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
-        },
+        }
       },
       select: {
         title: true,
         company: true,
-        createdAt: true,
+        createdAt: true
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc'
       },
-      take: limit,
+      take: limit
     });
 
     const jobResults = recentJobs.map(job => ({
       query: job.title,
       type: 'job',
       company: job.company,
-      postedAt: job.createdAt,
+      postedAt: job.createdAt
     }));
 
     suggestions.push(...jobResults);

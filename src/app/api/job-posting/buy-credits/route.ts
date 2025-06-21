@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/components/ui/card';
 import { stripe } from '@/components/ui/card';
 import { JOB_POSTING_CONFIG } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
+import path from "path";
 
 const buyCreditSchema = z.object({
   creditPack: z.enum(['singleCredit', 'fiveCredits', 'small', 'medium', 'large']),
@@ -136,7 +137,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Invalid request data',
-          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`)
         },
         { status: 400 }
       );

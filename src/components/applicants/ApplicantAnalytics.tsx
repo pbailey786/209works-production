@@ -1,25 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Clock,
-  Target,
-  Award,
-  MapPin,
-  Briefcase,
-  GraduationCap,
-  Calendar,
-  Filter,
-  Download,
-  RefreshCw,
-} from 'lucide-react';
+import { Button } from 'lucide-react';
 
 interface ApplicantAnalyticsProps {
   className?: string;
@@ -98,7 +82,7 @@ export function ApplicantAnalytics({ className }: ApplicantAnalyticsProps) {
                 { jobTitle: 'Software Engineer', applications: 45, hireRate: 15.6 },
                 { jobTitle: 'Product Manager', applications: 32, hireRate: 12.5 },
                 { jobTitle: 'UX Designer', applications: 28, hireRate: 10.7 },
-              ],
+              ]
             },
             demographics: {
               locations: [
@@ -128,7 +112,7 @@ export function ApplicantAnalytics({ className }: ApplicantAnalyticsProps) {
                 { source: 'Indeed', count: 24, percentage: 18.9 },
                 { source: 'Google Jobs', count: 15, percentage: 11.8 },
                 { source: 'Referral', count: 5, percentage: 3.9 },
-              ],
+              ]
             },
             pipeline: {
               stages: [
@@ -143,7 +127,7 @@ export function ApplicantAnalytics({ className }: ApplicantAnalyticsProps) {
                 { from: 'Screening', to: 'Interview', rate: 43.6 },
                 { from: 'Interview', to: 'Offer', rate: 52.9 },
                 { from: 'Offer', to: 'Hired', rate: 66.7 },
-              ],
+              ]
             },
             trends: {
               applicationsByWeek: [
@@ -155,29 +139,29 @@ export function ApplicantAnalytics({ className }: ApplicantAnalyticsProps) {
               qualityScore: {
                 current: 78,
                 trend: 'up',
-                change: 5.2,
-              },
+                change: 5.2
+              }
             },
             insights: [
               {
                 type: 'positive',
                 title: 'Strong Conversion Rate',
                 description: 'Your interview-to-offer conversion rate of 52.9% is above industry average.',
-                action: 'Continue current interview process',
+                action: 'Continue current interview process'
               },
               {
                 type: 'negative',
                 title: 'Low Application Volume',
                 description: 'Applications decreased by 15% compared to last month.',
-                action: 'Consider expanding job posting reach',
+                action: 'Consider expanding job posting reach'
               },
               {
                 type: 'neutral',
                 title: 'Geographic Concentration',
                 description: '67% of applications come from Stockton and Modesto areas.',
-                action: 'Evaluate if this aligns with your hiring goals',
+                action: 'Evaluate if this aligns with your hiring goals'
               },
-            ],
+            ]
           });
         }
       } catch (error) {

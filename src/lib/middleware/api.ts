@@ -4,29 +4,14 @@ import { withValidation } from '@/lib/validation';
 import { applyCORS, getCORSConfig, CORSConfig } from '@/lib/cors';
 import { healthMetrics } from '@/lib/monitoring/health-metrics';
 import { requireAuth } from '@/lib/auth';
-import { requireRole } from '../../app/api/auth/requireRole';
-import {
-  applyRateLimit,
-  shouldRateLimit,
-  RateLimitType,
-  RateLimitResult,
-} from '@/lib/rate-limiting';
-import {
+import { requireRole } from '@/lib/rate-limiting';
   startRequestLogging,
   endRequestLogging,
-  getPerformanceMetrics,
-} from '@/lib/logging';
-import {
-  generateRequestId,
-  createErrorResponse,
-  createSuccessResponse,
-  AuthenticationError,
-  AuthorizationError,
+  getPerformanceMetrics
 } from '@/lib/utils/api-helpers';
-import {
   errorMonitor,
   createErrorContext,
-  ErrorLogger,
+  ErrorLogger
 } from '../monitoring/error-monitor';
 
 // API middleware configuration interface
@@ -125,8 +110,8 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
           trackCacheMiss: () => {
             const { trackCacheMiss } = require('./logging');
             trackCacheMiss(requestId);
-          },
-        },
+          }
+        }
       };
 
       // 1. CORS handling for preflight requests
@@ -157,14 +142,14 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
               id: user.id,
               email: user.email,
               role: user.role,
-              ...user,
+              ...user
             };
 
             // Set user context for error monitoring
             errorMonitor.setUserContext({
               id: user.id,
               email: user.email,
-              role: user.role,
+              role: user.role
             });
           }
         } catch (authError) {
@@ -179,8 +164,8 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
               requestId,
               additionalData: {
                 requiredRoles: config.requiredRoles,
-                requireAuthentication: config.requireAuthentication,
-              },
+                requireAuthentication: config.requireAuthentication
+              }
             })
           );
 
@@ -194,7 +179,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
         startRequestLogging(req, requestId, {
           userId: user?.id,
           userRole: user?.role,
-          includeBody: config.logging?.includeBody,
+          includeBody: config.logging?.includeBody
         });
       }
 
@@ -207,7 +192,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
           rateLimitResult = await applyRateLimit(req, {
             userId: user?.id,
             userRole: user?.role,
-            customType: config.rateLimit?.type,
+            customType: config.rateLimit?.type
           });
         } catch (rateLimitError) {
           error = rateLimitError;
@@ -221,8 +206,8 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
               requestId,
               additionalData: {
                 rateLimitType: config.rateLimit?.type,
-                rateLimitResult: (rateLimitError as any).rateLimitResult,
-              },
+                rateLimitResult: (rateLimitError as any).rateLimitResult
+              }
             })
           );
 
@@ -233,7 +218,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
             user,
             startTime,
             error: rateLimitError,
-            rateLimitResult: (rateLimitError as any).rateLimitResult,
+            rateLimitResult: (rateLimitError as any).rateLimitResult
           });
         }
       }
@@ -281,8 +266,8 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
               additionalData: {
                 bodySchema: !!config.bodySchema,
                 querySchema: !!config.querySchema,
-                paramsSchema: !!config.paramsSchema,
-              },
+                paramsSchema: !!config.paramsSchema
+              }
             })
           );
 
@@ -301,7 +286,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
         statusCode,
         user,
         startTime,
-        rateLimitResult,
+        rateLimitResult
       });
     } catch (handlerError) {
       error = handlerError;
@@ -318,9 +303,9 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
             handlerConfig: {
               requireAuthentication: config.requireAuthentication,
               requiredRoles: config.requiredRoles,
-              rateLimitEnabled: config.rateLimit?.enabled,
-            },
-          },
+              rateLimitEnabled: config.rateLimit?.enabled
+            }
+          }
         })
       );
 
@@ -332,7 +317,7 @@ export function withAPIMiddleware<TBody = any, TQuery = any>(
         user,
         startTime,
         error: handlerError,
-        rateLimitResult,
+        rateLimitResult
       });
     }
   };
@@ -392,8 +377,8 @@ function applyFinalMiddleware(
       additionalMetrics: {
         databaseQueries: metrics?.databaseQueries,
         cacheHits: metrics?.cacheHits,
-        cacheMisses: metrics?.cacheMisses,
-      },
+        cacheMisses: metrics?.cacheMisses
+      }
     });
 
     // Record request metrics for health monitoring
@@ -442,7 +427,7 @@ function applyFinalMiddleware(
               duration,
               databaseQueries: metrics?.databaseQueries || 0,
               cacheHits: metrics?.cacheHits || 0,
-              cacheMisses: metrics?.cacheMisses || 0,
+              cacheMisses: metrics?.cacheMisses || 0
             },
             createErrorContext(req, {
               userId: user?.id,
@@ -450,8 +435,8 @@ function applyFinalMiddleware(
               additionalData: {
                 performanceThreshold: 2000,
                 actualDuration: duration,
-                endpoint,
-              },
+                endpoint
+              }
             })
           );
         }

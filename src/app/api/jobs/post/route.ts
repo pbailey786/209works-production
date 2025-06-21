@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { getEmbedding } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { getEmbedding } from '@/lib/ai/embeddings';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { createJobSchema } from '@/components/ui/card';
-import { sanitizeFormData } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
+import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 export const POST = withAPIMiddleware(
   async (req: NextRequest, context) => {
@@ -122,7 +122,7 @@ export const POST = withAPIMiddleware(
           {
             error: 'Validation failed',
             details: error.errors.map(err => ({
-              field: err.path.join('.'),
+              field: err.path.path.join('.'),
               message: err.message,
             })),
           },

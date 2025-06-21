@@ -3,17 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-
-import {
-  Briefcase,
-  MapPin,
-  DollarSign,
-  Clock,
-  Send,
-  ArrowLeft,
-  CheckCircle,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 interface SimpleJobForm {
   title: string;
@@ -40,7 +30,7 @@ export default function SimplePostJobPage() {
     description: '',
     salaryMin: '',
     salaryMax: '',
-    contactEmail: '',
+    contactEmail: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,7 +72,7 @@ export default function SimplePostJobPage() {
     if (user?.email) {
       setForm(prev => ({
         ...prev,
-        contactEmail: user?.email || '',
+        contactEmail: user?.email || ''
       }));
     }
   }, [session]);
@@ -142,9 +132,9 @@ export default function SimplePostJobPage() {
       const response = await fetch('/api/jobs', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(finalJobData),
+        body: JSON.stringify(finalJobData)
       });
 
       console.log('🔍 DEBUG: Response status:', response.status);

@@ -1,4 +1,4 @@
-import { z } from '@/components/ui/card';
+import { z } from 'zod';
 import { searchFiltersSchema, paginatedQuerySchema } from '../cache/pagination';
 
 // Enhanced search filters schema

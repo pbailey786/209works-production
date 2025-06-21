@@ -1,12 +1,4 @@
-import { cn } from '@/lib/utils';
-
-'use client';
-
-  import {
-  CheckIcon,
-  ChevronRightIcon,
-  DotFilledIcon,
-} from '@radix-ui/react-icons';
+import { cn } from '@radix-ui/react-icons';
 
 
 const ContextMenu = ContextMenuPrimitive.Root;
@@ -199,5 +191,5 @@ export {
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
-  ContextMenuRadioGroup,
+  ContextMenuRadioGroup
 };

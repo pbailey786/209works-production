@@ -1,12 +1,10 @@
 import React, { useState } from '@/components/ui/card';
 import { motion, AnimatePresence } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/card';
 import { cn } from '@/lib/utils';import {
-
-
   Star, 
   TrendingUp, 
   Eye, 
@@ -15,7 +13,7 @@ import { cn } from '@/lib/utils';import {
   Info,
   Zap,
   Crown,
-  ArrowRight,
+  ArrowRight
 } from 'lucide-react';
 
 interface FeaturedPostUpgradeProps {
@@ -37,7 +35,7 @@ export default function FeaturedPostUpgrade({
   onBuyCredits,
   disabled = false,
   className,
-  showPreview = true,
+  showPreview = true
 }: FeaturedPostUpgradeProps) {
   const [showDetails, setShowDetails] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);

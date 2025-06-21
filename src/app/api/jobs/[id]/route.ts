@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/database/prisma';
 import { JobType } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 function isValidJobType(type: any): type is JobType {
   return Object.values(JobType).includes(type);

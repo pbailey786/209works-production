@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
+import path from "path";
 
 interface TimelineEvent {
   id: string;
@@ -256,5 +257,5 @@ function formatActionTitle(action: string): string {
   return action
     .split('_')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .path.join(' ');
 }

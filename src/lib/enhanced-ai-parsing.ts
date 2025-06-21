@@ -1,5 +1,6 @@
 import { processWithAI } from '@/components/ui/card';
 import { z } from 'zod';
+import path from "path";
 
 /**
  * Enhanced AI-powered resume parsing with improved reliability and validation
@@ -78,7 +79,7 @@ export async function parseResumeWithEnhancedAI(
   // Validate input text
   const textValidation = validateResumeText(resumeText);
   if (!textValidation.isValid) {
-    throw new Error(`Invalid resume text: ${textValidation.issues.join(', ')}`);
+    throw new Error(`Invalid resume text: ${textValidation.issues.path.join(', ')}`);
   }
 
   console.log('[AI Parsing] Starting enhanced resume parsing...');

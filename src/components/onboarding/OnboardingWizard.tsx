@@ -1,25 +1,6 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { useRouter } from '@/components/ui/card';
-import { useUser } from '@clerk/nextjs';
-
-'use client';
-
-  import {
-  CheckCircle,
-  ArrowRight,
-  ArrowLeft,
-  User,
-  MapPin,
-  Briefcase,
-  FileText,
-  Bell,
-  Star,
-  Upload,
-  Building2,
-  Users,
-  Target,
-  Zap,
-} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useUser } from 'lucide-react';
 
 interface OnboardingStep {
   id: string;
@@ -36,7 +17,7 @@ interface OnboardingWizardProps {
 
 export default function OnboardingWizard({
   userRole,
-  onComplete,
+  onComplete
 }: OnboardingWizardProps) {
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -52,35 +33,35 @@ export default function OnboardingWizard({
       title: 'Upload Your Resume',
       description: 'Let us extract your information automatically (optional)',
       icon: FileText,
-      required: false,
+      required: false
     },
     {
       id: 'profile',
       title: 'Complete Your Profile',
       description: 'Add your basic information to help employers find you',
       icon: User,
-      required: true,
+      required: true
     },
     {
       id: 'location',
       title: 'Set Your Location',
       description: "Tell us where you're looking for work",
       icon: MapPin,
-      required: true,
+      required: true
     },
     {
       id: 'experience',
       title: 'Add Your Experience',
       description: 'Share your skills and work history',
       icon: Briefcase,
-      required: true,
+      required: true
     },
     {
       id: 'preferences',
       title: 'Job Preferences',
       description: 'Set up job alerts and preferences',
       icon: Bell,
-      required: false,
+      required: false
     },
   ];
 
@@ -90,28 +71,28 @@ export default function OnboardingWizard({
       title: 'Company Information',
       description: 'Tell job seekers about your company',
       icon: Building2,
-      required: true,
+      required: true
     },
     {
       id: 'location',
       title: 'Company Location',
       description: 'Where is your business located?',
       icon: MapPin,
-      required: true,
+      required: true
     },
     {
       id: 'details',
       title: 'Company Details',
       description: 'Industry, size, and other details',
       icon: Users,
-      required: true,
+      required: true
     },
     {
       id: 'first-job',
       title: 'Post Your First Job',
       description: 'Start attracting candidates right away',
       icon: Target,
-      required: false,
+      required: false
     },
   ];
 
@@ -201,7 +182,7 @@ export default function OnboardingWizard({
 
       const response = await fetch('/api/resume/parse', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       if (response.ok) {
@@ -251,7 +232,7 @@ export default function OnboardingWizard({
       const dataToSend = {
         ...formData,
         onboardingCompleted: true,
-        completedSteps: Array.from(completedSteps),
+        completedSteps: Array.from(completedSteps)
       };
 
       console.log('🚀 Sending onboarding data:', dataToSend);
@@ -260,7 +241,7 @@ export default function OnboardingWizard({
       const response = await fetch('/api/profile/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(dataToSend)
       });
 
       if (response.ok) {
@@ -278,7 +259,7 @@ export default function OnboardingWizard({
         // Provide more specific error messages
         let errorMessage = 'Failed to complete onboarding. Please try again.';
         if (errorData.details && Array.isArray(errorData.details)) {
-          errorMessage = `Validation errors:\n${errorData.details.join('\n')}`;
+          errorMessage = `Validation errors:\n${errorData.details.path.join('\n')}`;
         } else if (errorData.error) {
           errorMessage = errorData.error;
         }
@@ -325,7 +306,7 @@ export default function OnboardingWizard({
                   onChange={e =>
                     setFormData({
                       ...formData,
-                      currentJobTitle: e.target.value,
+                      currentJobTitle: e.target.value
                     })
                   }
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -367,14 +348,14 @@ export default function OnboardingWizard({
                 Your Skills *
               </label>
               <textarea
-                value={formData.skills?.join(', ') || ''}
+                value={formData.skills?.path.join(', ') || ''}
                 onChange={e =>
                   setFormData({
                     ...formData,
                     skills: e.target.value
                       .split(',')
                       .map(s => s.trim())
-                      .filter(s => s.length > 0),
+                      .filter(s => s.length > 0)
                   })
                 }
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
@@ -589,7 +570,7 @@ export default function OnboardingWizard({
                           : current.filter((t: string) => t !== type);
                         setFormData({
                           ...formData,
-                          preferredJobTypes: updated,
+                          preferredJobTypes: updated
                         });
                       }}
                       className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -661,7 +642,7 @@ export default function OnboardingWizard({
           <div className="mb-6 flex items-center">
             <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
               {React.createElement(steps[currentStep].icon, {
-                className: 'w-6 h-6 text-blue-600',
+                className: 'w-6 h-6 text-blue-600'
               })}
             </div>
             <div>

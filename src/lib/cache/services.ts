@@ -1,19 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
-import { CacheUtils } from '@/lib/performance/enhanced-cache-manager';
-import {
-  CursorPaginationParams,
-  OffsetPaginationParams,
-  SearchFilters,
-  PaginatedResponse,
-  CursorPaginationMeta,
-  OffsetPaginationMeta,
-  buildCursorCondition,
-  buildSortCondition,
-  calculateOffsetPagination,
-  generateCursorFromRecord,
-  createPaginatedResponse,
-  generatePaginationCacheKey,
-} from './pagination';
+import { CacheUtils } from './pagination';
 
 // Job service with caching and pagination
 export class JobCacheService {
@@ -21,7 +7,7 @@ export class JobCacheService {
   private static readonly CACHE_TAGS = {
     jobs: 'jobs',
     jobsByEmployer: 'jobs:employer',
-    jobStats: 'jobs:stats',
+    jobStats: 'jobs:stats'
   };
 
   // Get paginated jobs with caching
@@ -68,7 +54,7 @@ export class JobCacheService {
       data = await prisma.job.findMany({
         where: {
           ...whereCondition,
-          ...cursorCondition,
+          ...cursorCondition
         },
         orderBy,
         take: limit + 1, // Get one extra to check if there's a next page
@@ -79,19 +65,19 @@ export class JobCacheService {
               name: true,
               website: true,
               logo: true,
-              subscriptionTier: true,
-            },
+              subscriptionTier: true
+            }
           },
           jobApplications: {
             select: {
               id: true,
               userId: true,
               appliedAt: true,
-              status: true,
+              status: true
             },
             take: 5, // Limit to prevent large data loads
-          },
-        },
+          }
+        }
       });
 
       const hasNextPage = data.length > limit;
@@ -113,7 +99,7 @@ export class JobCacheService {
         hasNextPage,
         hasPrevPage: !!cursor,
         nextCursor,
-        prevCursor,
+        prevCursor
       };
     } else {
       // Offset pagination
@@ -140,19 +126,19 @@ export class JobCacheService {
               name: true,
               website: true,
               logo: true,
-              subscriptionTier: true,
-            },
+              subscriptionTier: true
+            }
           },
           jobApplications: {
             select: {
               id: true,
               userId: true,
               appliedAt: true,
-              status: true,
+              status: true
             },
             take: 5, // Limit to prevent large data loads
-          },
-        },
+          }
+        }
       });
 
       pagination = {
@@ -161,7 +147,7 @@ export class JobCacheService {
         totalCount: totalCount,
         hasNextPage: page * limit < totalCount,
         hasPrevPage: page > 1,
-        limit,
+        limit
       };
     }
 
@@ -170,7 +156,7 @@ export class JobCacheService {
       queryTime,
       cached: false,
       sortBy,
-      sortOrder,
+      sortOrder
     });
 
     // Skip caching for now - implement later if needed
@@ -198,18 +184,18 @@ export class JobCacheService {
             name: true,
             website: true,
             logo: true,
-            subscriptionTier: true,
-          },
+            subscriptionTier: true
+          }
         },
         jobApplications: {
           select: {
             id: true,
             userId: true,
             appliedAt: true,
-            status: true,
-          },
-        },
-      },
+            status: true
+          }
+        }
+      }
     });
 
     if (job) {
@@ -249,10 +235,10 @@ export class JobCacheService {
               name: true,
               website: true,
               logo: true,
-              subscriptionTier: true,
-            },
-          },
-        },
+              subscriptionTier: true
+            }
+          }
+        }
       });
 
       const hasNextPage = data.length > limit;
@@ -263,12 +249,12 @@ export class JobCacheService {
         hasPrevPage: !!cursor,
         nextCursor: hasNextPage
           ? generateCursorFromRecord(data[data.length - 1])
-          : undefined,
+          : undefined
       };
 
       return createPaginatedResponse(data, pagination, {
         queryTime: 0,
-        cached: false,
+        cached: false
       });
     } else {
       const offsetParams = params as OffsetPaginationParams;
@@ -293,15 +279,15 @@ export class JobCacheService {
               name: true,
               website: true,
               logo: true,
-              subscriptionTier: true,
-            },
-          },
-        },
+              subscriptionTier: true
+            }
+          }
+        }
       });
 
       return createPaginatedResponse(data, meta, {
         queryTime: 0,
-        cached: false,
+        cached: false
       });
     }
   }
@@ -403,7 +389,7 @@ export class UserCacheService {
   private static readonly CACHE_TTL = 1800; // 30 minutes
   private static readonly CACHE_TAGS = {
     users: 'users',
-    userProfiles: 'users:profiles',
+    userProfiles: 'users:profiles'
   };
 
   // Get user by ID with caching
@@ -431,8 +417,8 @@ export class UserCacheService {
         phoneNumber: true,
         location: true,
         createdAt: true,
-        updatedAt: true,
-      },
+        updatedAt: true
+      }
     });
   }
 
@@ -464,10 +450,10 @@ export class UserCacheService {
               title: true,
               company: true,
               location: true,
-              jobType: true,
-            },
-          },
-        },
+              jobType: true
+            }
+          }
+        }
       });
 
       const hasNextPage = data.length > limit;
@@ -478,19 +464,19 @@ export class UserCacheService {
         hasPrevPage: !!cursor,
         nextCursor: hasNextPage
           ? generateCursorFromRecord(data[data.length - 1], 'appliedAt')
-          : undefined,
+          : undefined
       };
 
       return createPaginatedResponse(data, pagination, {
         queryTime: 0,
-        cached: false,
+        cached: false
       });
     } else {
       const offsetParams = params as OffsetPaginationParams;
       const page = 'page' in offsetParams ? offsetParams.page : 1;
       const limit = offsetParams.limit;
       const totalCount = await prisma.jobApplication.count({
-        where: whereCondition,
+        where: whereCondition
       });
       const { skip, take, meta } = calculateOffsetPagination(
         page,
@@ -510,15 +496,15 @@ export class UserCacheService {
               title: true,
               company: true,
               location: true,
-              jobType: true,
-            },
-          },
-        },
+              jobType: true
+            }
+          }
+        }
       });
 
       return createPaginatedResponse(data, meta, {
         queryTime: 0,
-        cached: false,
+        cached: false
       });
     }
   }
@@ -543,7 +529,7 @@ export class SearchCacheService {
     // Skip caching for now - implement later if needed
     return JobCacheService.getPaginatedJobs({
       ...params,
-      filters: { ...filters, q: query },
+      filters: { ...filters, q: query }
     });
   }
 }

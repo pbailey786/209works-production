@@ -1,19 +1,5 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-
-'use client';
-
-  import {
-  Megaphone,
-  TrendingUp,
-  Package,
-  Check,
-  Star,
-  Instagram,
-  MessageSquare,
-  Sparkles,
-  DollarSign,
-} from 'lucide-react';
+import { motion } from 'lucide-react';
 
 interface UpsellOption {
   id: string;
@@ -52,7 +38,7 @@ const upsellOptions: UpsellOption[] = [
       'Reaches hyper-local 209 area audience',
       'Analytics report on engagement',
     ],
-    icon: <Instagram className="h-6 w-6" />,
+    icon: <Instagram className="h-6 w-6" />
   },
   {
     id: 'placement-bump',
@@ -68,7 +54,7 @@ const upsellOptions: UpsellOption[] = [
       'Smart matching with user profiles',
     ],
     icon: <TrendingUp className="h-6 w-6" />,
-    popular: true,
+    popular: true
   },
   {
     id: 'bundle',
@@ -85,13 +71,13 @@ const upsellOptions: UpsellOption[] = [
       'Best value for maximum exposure',
     ],
     icon: <Package className="h-6 w-6" />,
-    badge: 'BEST VALUE',
+    badge: 'BEST VALUE'
   },
 ];
 
 export default function JobUpsellSelector({
   onSelectionChange,
-  className = '',
+  className = ''
 }: JobUpsellSelectorProps) {
   const [selectedOptions, setSelectedOptions] = useState<Set<string>>(
     new Set()
@@ -118,7 +104,7 @@ export default function JobUpsellSelector({
       socialMediaShoutout: socialMedia || bundle,
       placementBump: placementBump || bundle,
       upsellBundle: bundle,
-      total: calculatedTotal,
+      total: calculatedTotal
     });
   }, [selectedOptions, onSelectionChange]);
 

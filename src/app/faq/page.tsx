@@ -1,18 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
-import {
-  ChevronDown,
-  ChevronUp,
-  Users,
-  Building,
-  Headphones,
-  Search,
-  HelpCircle,
-  MessageCircle,
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'lucide-react';
 
 interface FAQItem {
   question: string;
@@ -33,49 +22,49 @@ export default function FAQPage() {
       question: 'How do I create a profile on 209 Works?',
       answer:
         "Creating a profile is easy! Click 'Sign Up' in the top right corner, choose 'Job Seeker', and fill out your basic information. You can then enhance your profile with your resume, skills, work preferences, and make it visible to employers.",
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
     {
       question: 'How does the AI job search work?',
       answer:
         "Our AI-powered search understands natural language queries. Instead of using complex filters, just type what you're looking for like 'warehouse jobs in Stockton' or 'part-time administrative work near me'. The AI will find relevant matches and suggest similar opportunities.",
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
     {
       question: 'Can I apply to jobs without creating an account?',
       answer:
         "While you can browse jobs without an account, you'll need to create a free profile to apply. This helps employers learn about you and allows you to track your applications, save jobs, and receive personalized job alerts.",
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
     {
       question: 'How do I upload my resume?',
       answer:
         "Go to your profile page and scroll to the 'Resume' section. You can upload PDF, DOC, or DOCX files up to 5MB. Your resume will be attached to job applications and visible to employers if you make your profile public.",
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
     {
       question: "What's the difference between Free and Premium accounts?",
       answer:
         'Free accounts can apply to jobs and create basic profiles. Premium accounts ($19/month) get enhanced profiles visible to employers, priority application delivery, advanced search filters, resume reviews, and priority support.',
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
     {
       question: 'How do I set up job alerts?',
       answer:
         "In your dashboard, click 'Job Alerts' and create custom alerts based on keywords, location, job type, and salary range. You'll receive email notifications when matching jobs are posted.",
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
     {
       question: "Can employers see my profile if I don't want them to?",
       answer:
         'Your profile visibility is completely under your control. By default, profiles are private. You can choose to make your profile public to employers in your privacy settings. You can change this anytime.',
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
     {
       question: 'How do I track my job applications?',
       answer:
         "Your dashboard includes an application tracker that shows all jobs you've applied to, application dates, and status updates from employers. Premium users get enhanced tracking with detailed analytics.",
-      category: 'job-seekers',
+      category: 'job-seekers'
     },
 
     // Employers
@@ -83,49 +72,49 @@ export default function FAQPage() {
       question: 'How much does it cost to post a job?',
       answer:
         'Job posting starts at $99 per job for 30 days. We also offer subscription plans: Starter ($199/month for 5 jobs), Professional ($399/month for 15 jobs), and Enterprise (custom pricing). All plans include candidate management tools.',
-      category: 'employers',
+      category: 'employers'
     },
     {
       question: 'How long do job postings stay active?',
       answer:
         'Standard job postings are active for 30 days. You can renew, edit, or remove them anytime. Premium plans include automatic renewal options and extended posting periods.',
-      category: 'employers',
+      category: 'employers'
     },
     {
       question: "Can I edit my job posting after it's published?",
       answer:
         "Yes! You can edit job details, requirements, salary, and other information anytime from your employer dashboard. Changes are reflected immediately and don't affect your posting duration.",
-      category: 'employers',
+      category: 'employers'
     },
     {
       question: 'How do I manage applications and candidates?',
       answer:
         'Your employer dashboard includes a full applicant tracking system. You can review resumes, send messages, schedule interviews, leave notes, and track candidates through your hiring process.',
-      category: 'employers',
+      category: 'employers'
     },
     {
       question: 'Do you offer bulk job posting?',
       answer:
         'Yes! Professional and Enterprise plans include bulk upload tools. You can upload multiple jobs via CSV or integrate with your existing HR systems. Contact our sales team for custom integration options.',
-      category: 'employers',
+      category: 'employers'
     },
     {
       question: 'Can I search for candidates proactively?',
       answer:
         'Absolutely! Professional and Enterprise plans include access to our candidate database. You can search profiles, view resumes, and reach out to potential candidates directly.',
-      category: 'employers',
+      category: 'employers'
     },
     {
       question: 'What payment methods do you accept?',
       answer:
         'We accept all major credit cards (Visa, MasterCard, American Express), ACH bank transfers, and can set up invoicing for Enterprise customers. All payments are processed securely through Stripe.',
-      category: 'employers',
+      category: 'employers'
     },
     {
       question: 'Do you offer refunds?',
       answer:
         "We offer full refunds within 7 days of posting if you haven't received any applications. For subscription plans, you can cancel anytime and won't be charged for the next billing cycle.",
-      category: 'employers',
+      category: 'employers'
     },
 
     // Technical
@@ -133,49 +122,49 @@ export default function FAQPage() {
       question: "Why can't I log into my account?",
       answer:
         "First, try resetting your password using the 'Forgot Password' link. If that doesn't work, check if you're using the correct email address. Clear your browser cache and cookies, or try a different browser. Contact support if issues persist.",
-      category: 'technical',
+      category: 'technical'
     },
     {
       question: "My job search isn't returning results. What's wrong?",
       answer:
         "Try broadening your search terms or location radius. Check your filters - you might have settings that are too restrictive. Our AI search works best with natural language, so try phrases like 'marketing jobs near Modesto' instead of exact keywords.",
-      category: 'technical',
+      category: 'technical'
     },
     {
       question: "I'm not receiving email notifications. How do I fix this?",
       answer:
         'Check your spam/junk folder first. Add notifications@209.works to your contacts. Verify your email address in your profile settings. Check your notification preferences to ensure alerts are enabled.',
-      category: 'technical',
+      category: 'technical'
     },
     {
       question: 'The website is loading slowly. Is there an issue?',
       answer:
         'Slow loading can be caused by internet connection, browser cache, or high traffic. Try refreshing the page, clearing your browser cache, or using a different browser. We monitor site performance 24/7 and address issues quickly.',
-      category: 'technical',
+      category: 'technical'
     },
     {
       question: 'Can I use 209 Works on my mobile phone?',
       answer:
         "Yes! Our website is fully responsive and works great on mobile devices. We're also developing a mobile app. For the best mobile experience, use the latest version of Chrome, Safari, or Firefox.",
-      category: 'technical',
+      category: 'technical'
     },
     {
       question: 'How do I delete my account?',
       answer:
         "Go to your profile settings and scroll to the bottom for 'Delete Account'. This permanently removes all your data. Alternatively, you can contact support to delete your account. Note: this action cannot be undone.",
-      category: 'technical',
+      category: 'technical'
     },
     {
       question: 'Is my personal information secure?',
       answer:
         "Yes! We use industry-standard encryption, secure servers, and never sell your personal information. We're GDPR compliant and follow strict data protection protocols. Read our Privacy Policy for complete details.",
-      category: 'technical',
+      category: 'technical'
     },
     {
       question: 'Do you have an API for integrations?',
       answer:
         'Yes! We offer REST APIs for job posting, candidate management, and data export. API access is available for Professional and Enterprise plans. Contact our technical team for documentation and integration support.',
-      category: 'technical',
+      category: 'technical'
     },
   ];
 
@@ -184,25 +173,25 @@ export default function FAQPage() {
       id: 'all',
       label: 'All Questions',
       icon: HelpCircle,
-      count: faqData.length,
+      count: faqData.length
     },
     {
       id: 'job-seekers',
       label: 'Job Seekers',
       icon: Users,
-      count: faqData.filter(item => item.category === 'job-seekers').length,
+      count: faqData.filter(item => item.category === 'job-seekers').length
     },
     {
       id: 'employers',
       label: 'Employers',
       icon: Building,
-      count: faqData.filter(item => item.category === 'employers').length,
+      count: faqData.filter(item => item.category === 'employers').length
     },
     {
       id: 'technical',
       label: 'Technical',
       icon: Headphones,
-      count: faqData.filter(item => item.category === 'technical').length,
+      count: faqData.filter(item => item.category === 'technical').length
     },
   ];
 

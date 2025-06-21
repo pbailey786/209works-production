@@ -1,19 +1,6 @@
 import React, { useState } from '@/components/ui/card';
 import { motion, AnimatePresence } from '@/components/ui/card';
-import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
-
-'use client';
-
-  import {
-  X,
-  Star,
-  Crown,
-  Zap,
-  Check,
-  Loader2,
-  CreditCard,
-  AlertTriangle,
-} from 'lucide-react';
+import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from 'lucide-react';
 
 interface CreditPackageModalProps {
   isOpen: boolean;
@@ -44,14 +31,14 @@ export default function CreditPackageModal({
       const response = await fetch('/api/job-posting/checkout', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           tier: selectedTier,
           addons: [],
           successUrl: `${window.location.origin}/employers/dashboard?purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/dashboard?purchase_cancelled=true`,
-        }),
+          cancelUrl: `${window.location.origin}/employers/dashboard?purchase_cancelled=true`
+        })
       });
 
       const data = await response.json();

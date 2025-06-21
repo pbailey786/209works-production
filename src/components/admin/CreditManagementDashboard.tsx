@@ -1,31 +1,15 @@
-import { useState } from '@/components/ui/card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/card';
 import { Label } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/card';
-import { toast } from 'sonner';
-
-'use client';
-
-  import {
-  CreditCard,
-  Users,
-  TrendingUp,
-  Clock,
-  Plus,
-  Search,
-  Calendar,
-  DollarSign,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-} from 'lucide-react';
+import { toast } from 'lucide-react';
 
 interface CreditData {
   totalCreditsIssued: number;
@@ -52,14 +36,14 @@ export default function CreditManagementDashboard({ creditData }: CreditManageme
       const response = await fetch('/api/admin/credits/assign', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           userEmail: formData.get('userEmail'),
           creditAmount: parseInt(formData.get('creditAmount') as string),
           creditType: formData.get('creditType'),
-          note: formData.get('note'),
-        }),
+          note: formData.get('note')
+        })
       });
 
       if (!response.ok) {
@@ -84,28 +68,28 @@ export default function CreditManagementDashboard({ creditData }: CreditManageme
       value: creditData.totalCreditsIssued.toLocaleString(),
       icon: CreditCard,
       color: 'bg-blue-500',
-      description: 'All-time credits created',
+      description: 'All-time credits created'
     },
     {
       title: 'Active Credits',
       value: creditData.activeCredits.toLocaleString(),
       icon: TrendingUp,
       color: 'bg-green-500',
-      description: 'Available for use',
+      description: 'Available for use'
     },
     {
       title: 'Credits Used',
       value: creditData.totalCreditsUsed.toLocaleString(),
       icon: CheckCircle,
       color: 'bg-purple-500',
-      description: 'Successfully consumed',
+      description: 'Successfully consumed'
     },
     {
       title: 'Credits Expired',
       value: creditData.totalCreditsExpired.toLocaleString(),
       icon: Clock,
       color: 'bg-orange-500',
-      description: 'Unused and expired',
+      description: 'Unused and expired'
     },
   ];
 

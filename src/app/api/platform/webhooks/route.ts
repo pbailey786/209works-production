@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import WebhookSystem from '@/lib/integrations/webhook-system';
 import { getDomainConfig } from '@/lib/domain/config';
+import path from "path";
 
 /**
  * GET /api/platform/webhooks
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
     
     if (invalidEvents.length > 0) {
       return NextResponse.json(
-        { error: `Invalid event types: ${invalidEvents.join(', ')}` },
+        { error: `Invalid event types: ${invalidEvents.path.join(', ')}` },
         { status: 400 }
       );
     }
@@ -180,7 +181,7 @@ export async function PUT(request: NextRequest) {
       
       if (invalidEvents.length > 0) {
         return NextResponse.json(
-          { error: `Invalid event types: ${invalidEvents.join(', ')}` },
+          { error: `Invalid event types: ${invalidEvents.path.join(', ')}` },
           { status: 400 }
         );
       }

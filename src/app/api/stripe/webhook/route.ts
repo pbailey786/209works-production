@@ -1,13 +1,8 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
 import { headers } from '@/components/ui/card';
 import { stripe, STRIPE_WEBHOOK_EVENTS } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { EmailQueue } from '@/lib/services/email-queue';
-import {
-  PricingTier,
-  BillingInterval,
-  SubscriptionStatus,
-} from '@prisma/client';
+import { prisma } from '@/lib/database/prisma';
+import { EmailQueue } from '@prisma/client';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -17,7 +12,7 @@ enum WebhookErrorType {
   MISSING_METADATA = 'MISSING_METADATA',
   DATABASE_ERROR = 'DATABASE_ERROR',
   STRIPE_API_ERROR = 'STRIPE_API_ERROR',
-  UNKNOWN = 'UNKNOWN',
+  UNKNOWN = 'UNKNOWN'
 }
 
 class WebhookError extends Error {
@@ -62,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Check for idempotency - prevent duplicate processing
     const existingEvent = await prisma.webhookEvent.findUnique({
-      where: { stripeEventId: event.id },
+      where: { stripeEventId: event.id }
     }).catch(() => null); // Handle case where table doesn't exist yet
 
     if (existingEvent) {
@@ -77,8 +72,8 @@ export async function POST(request: NextRequest) {
           stripeEventId: event.id,
           type: event.type,
           data: event.data.object as any,
-          processedAt: new Date(),
-        },
+          processedAt: new Date()
+        }
       });
     } catch (error) {
       console.warn('[Stripe Webhook] Could not log webhook event:', error);
@@ -151,7 +146,7 @@ export async function POST(request: NextRequest) {
       message: errorMessage,
       eventType: event?.type,
       eventId: event?.id,
-      error,
+      error
     });
 
     // Log to monitoring service (e.g., Sentry)
@@ -163,8 +158,8 @@ export async function POST(request: NextRequest) {
             eventType: event.type,
             errorType,
             errorMessage,
-            createdAt: new Date(),
-          },
+            createdAt: new Date()
+          }
         });
       } catch (logError) {
         console.warn('[Stripe Webhook] Could not log webhook error:', logError);
@@ -178,7 +173,7 @@ export async function POST(request: NextRequest) {
       { 
         error: 'Webhook handler failed',
         type: errorType,
-        message: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        message: process.env.NODE_ENV === 'development' ? errorMessage : undefined
       },
       { status: statusCode }
     );
@@ -228,7 +223,7 @@ async function handleCheckoutSessionCompleted(
     if (session.customer && typeof session.customer === 'string') {
       await prisma.user.update({
         where: { id: userId },
-        data: { stripeCustomerId: session.customer },
+        data: { stripeCustomerId: session.customer }
       });
     }
 
@@ -241,7 +236,7 @@ async function handleCheckoutSessionCompleted(
       // Get user email
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: { email: true },
+        select: { email: true }
       });
 
       if (!user) {
@@ -262,7 +257,7 @@ async function handleCheckoutSessionCompleted(
           endDate: new Date(
             (stripeSubscription as any).current_period_end * 1000
           ),
-          price: stripeSubscription.items.data[0]?.price.unit_amount || 0,
+          price: stripeSubscription.items.data[0]?.price.unit_amount || 0
         },
         create: {
           userId,
@@ -277,8 +272,8 @@ async function handleCheckoutSessionCompleted(
           endDate: new Date(
             (stripeSubscription as any).current_period_end * 1000
           ),
-          price: stripeSubscription.items.data[0]?.price.unit_amount || 0,
-        },
+          price: stripeSubscription.items.data[0]?.price.unit_amount || 0
+        }
       });
     }
 
@@ -301,7 +296,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
     // Get user email
     const dbUser = await prisma.user.findUnique({
       where: { id: userId },
-      select: { email: true },
+      select: { email: true }
     });
 
     if (!dbUser) {
@@ -318,7 +313,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         tier: tier as any || 'starter',
         startDate: new Date((subscription as any).current_period_start * 1000),
         endDate: new Date((subscription as any).current_period_end * 1000),
-        price: subscription.items.data[0]?.price.unit_amount || 0,
+        price: subscription.items.data[0]?.price.unit_amount || 0
       },
       create: {
         userId,
@@ -329,8 +324,8 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         status: subscription.status === 'trialing' ? 'trial' : 'active',
         startDate: new Date((subscription as any).current_period_start * 1000),
         endDate: new Date((subscription as any).current_period_end * 1000),
-        price: subscription.items.data[0]?.price.unit_amount || 0,
-      },
+        price: subscription.items.data[0]?.price.unit_amount || 0
+      }
     });
 
     // Allocate credits based on tier
@@ -361,13 +356,13 @@ async function allocateSubscriptionCredits(userId: string, tier: string) {
     creditsToCreate.push({
       userId,
       type: 'universal', // Unified credit type
-      expiresAt,
+      expiresAt
     });
   }
 
   if (creditsToCreate.length > 0) {
     await prisma.jobPostingCredit.createMany({
-      data: creditsToCreate,
+      data: creditsToCreate
     });
     console.log(`Allocated ${creditsToCreate.length} universal credits to user ${userId} for tier ${tier}`);
   }
@@ -390,10 +385,10 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
           select: {
             id: true,
             email: true,
-            name: true,
-          },
-        },
-      },
+            name: true
+          }
+        }
+      }
     });
 
     if (!currentSubscription) {
@@ -417,8 +412,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         startDate: new Date((subscription as any).current_period_start * 1000),
         endDate: new Date((subscription as any).current_period_end * 1000),
         price: subscription.items.data[0]?.price.unit_amount || 0,
-        updatedAt: new Date(),
-      },
+        updatedAt: new Date()
+      }
     });
 
     // Handle upgrades - immediate credit allocation
@@ -442,10 +437,10 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
             'Credits are available immediately',
           ],
           ctaText: 'Post a Job',
-          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/post-job`,
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/post-job`
         },
         userId,
-        priority: 'normal',
+        priority: 'normal'
       });
     }
 
@@ -468,10 +463,10 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
             'You can continue using your current credits until they expire',
           ],
           ctaText: 'View Subscription',
-          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`,
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`
         },
         userId,
-        priority: 'normal',
+        priority: 'normal'
       });
     }
 
@@ -488,8 +483,8 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       where: { stripeSubscriptionId: subscription.id },
       data: {
         status: 'cancelled',
-        endDate: new Date(),
-      },
+        endDate: new Date()
+      }
     });
 
     console.log(`Subscription cancelled: ${subscription.id}`);
@@ -508,8 +503,8 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
       const subscription = await prisma.subscription.update({
         where: { stripeSubscriptionId: (invoice as any).subscription },
         data: {
-          status: 'active',
-        },
+          status: 'active'
+        }
       });
 
       // For recurring payments (not the first payment), allocate new credits
@@ -540,10 +535,10 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
             select: {
               id: true,
               email: true,
-              name: true,
-            },
-          },
-        },
+              name: true
+            }
+          }
+        }
       });
 
       if (!subscription) {
@@ -556,8 +551,8 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
         where: { id: subscription.id },
         data: {
           status: 'past_due',
-          updatedAt: new Date(),
-        },
+          updatedAt: new Date()
+        }
       });
 
       // Create payment failure record for tracking (optional)
@@ -574,8 +569,8 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
               ? new Date(invoice.next_payment_attempt * 1000)
               : null,
             reason: (invoice as any).last_payment_error?.message || 'Unknown error',
-            createdAt: new Date(),
-          },
+            createdAt: new Date()
+          }
         });
       } catch (paymentFailureError) {
         console.warn('[Stripe Webhook] Could not create payment failure record:', paymentFailureError);
@@ -598,15 +593,15 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
             'Your subscription will remain active during the grace period',
           ],
           ctaText: 'Update Payment Method',
-          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`,
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`
         },
         userId: subscription.userId,
         priority: 'high',
         metadata: {
           invoiceId: invoice.id,
           subscriptionId: subscription.id,
-          attemptCount: invoice.attempt_count,
-        },
+          attemptCount: invoice.attempt_count
+        }
       });
 
       console.log(
@@ -719,14 +714,14 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
       where: { stripeSessionId: session.id },
       data: {
         status: 'completed',
-        stripePaymentIntentId: session.payment_intent as string,
+        stripePaymentIntentId: session.payment_intent as string
       },
       include: {
         user: {
           select: {
             id: true,
             email: true,
-            name: true,
+            name: true
           }
         }
       }
@@ -744,7 +739,7 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
         userId,
         purchaseId: purchase.id,
         type: 'universal', // All credits are now universal and interchangeable
-        expiresAt: purchase.expiresAt,
+        expiresAt: purchase.expiresAt
       });
     }
 
@@ -753,7 +748,7 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
     // Create all credits
     if (creditsToCreate.length > 0) {
       await prisma.jobPostingCredit.createMany({
-        data: creditsToCreate,
+        data: creditsToCreate
       });
     }
 
@@ -771,7 +766,7 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
           creditAmount: totalCredits,
           planType: planType.replace('_', ' ').toUpperCase(),
           dashboardUrl: `${process.env.NEXTAUTH_URL}/employers/dashboard`,
-          expirationDate: purchase.expiresAt ? new Date(purchase.expiresAt).toLocaleDateString() : null,
+          expirationDate: purchase.expiresAt ? new Date(purchase.expiresAt).toLocaleDateString() : null
         },
         userId
       );
@@ -815,21 +810,21 @@ async function handleJobUpsellPurchase(session: Stripe.Checkout.Session) {
       where: { stripeSessionId: session.id },
       data: {
         status: 'completed',
-        stripePaymentIntentId: session.payment_intent as string,
+        stripePaymentIntentId: session.payment_intent as string
       },
       include: {
         user: {
           select: {
             id: true,
             email: true,
-            name: true,
+            name: true
           }
         },
         job: {
           select: {
             id: true,
             title: true,
-            company: true,
+            company: true
           }
         }
       }
@@ -841,8 +836,8 @@ async function handleJobUpsellPurchase(session: Stripe.Checkout.Session) {
       data: {
         socialMediaShoutout,
         placementBump,
-        upsellBundle,
-      },
+        upsellBundle
+      }
     });
 
     // Send confirmation email
@@ -863,15 +858,15 @@ async function handleJobUpsellPurchase(session: Stripe.Checkout.Session) {
             upsellBundle && 'Complete Bundle: You\'re getting maximum exposure with both services',
           ].filter(Boolean),
           ctaText: 'View Job Dashboard',
-          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/my-jobs`,
+          ctaUrl: `${process.env.NEXTAUTH_URL}/employers/my-jobs`
         },
         userId: upsellPurchase.user.id,
         priority: 'high',
         metadata: {
           jobId,
           upsellType: upsellBundle ? 'bundle' : (socialMediaShoutout && placementBump ? 'both' : socialMediaShoutout ? 'social' : 'placement'),
-          totalAmount,
-        },
+          totalAmount
+        }
       });
     } catch (emailError) {
       console.error('Failed to send upsell confirmation email:', emailError);
@@ -949,7 +944,7 @@ function getCreditsForTier(tier: string): number {
     professional: 8,
     enterprise: 15,
     premium: 20,
-    starter: 3,
+    starter: 3
   };
   return creditMap[tier as keyof typeof creditMap] || 3;
 }
@@ -976,8 +971,8 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
           currency: paymentIntent.currency,
           reason: (paymentIntent as any).last_payment_error?.message || 'Unknown error',
           attemptCount: 1,
-          createdAt: new Date(),
-        },
+          createdAt: new Date()
+        }
       });
     } catch (error) {
       console.warn('[Stripe Webhook] Could not create payment failure record:', error);
@@ -1001,7 +996,7 @@ async function handleSubscriptionTrialWillEnd(subscription: Stripe.Subscription)
   try {
     const userRecord = await prisma.user.findUnique({
       where: { id: userId },
-      select: { email: true, name: true },
+      select: { email: true, name: true }
     });
 
     if (!user) {
@@ -1029,10 +1024,10 @@ async function handleSubscriptionTrialWillEnd(subscription: Stripe.Subscription)
           'Cancel anytime without charge',
         ],
         ctaText: 'Add Payment Method',
-        ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`,
+        ctaUrl: `${process.env.NEXTAUTH_URL}/employers/settings/billing`
       },
       userId,
-      priority: 'high',
+      priority: 'high'
     });
 
     console.log(`Trial ending notification sent for subscription: ${subscription.id}`);

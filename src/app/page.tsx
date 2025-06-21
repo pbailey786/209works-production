@@ -5,6 +5,7 @@ import { useDomain } from '@/lib/domain/context';
 import Link from 'next/link';
 import DomainAwareHeader from '@/components/layout/DomainAwareHeader';
 import DomainAwareFooter from '@/components/layout/DomainAwareFooter';
+import path from "path";
 
 export default function HomePage() {
   const { isSignedIn, user, isLoaded } = useUser();
@@ -75,7 +76,7 @@ export default function HomePage() {
             <h2 className="heading-2 mb-4">Why Choose {config.displayName}?</h2>
             <p className="body-large max-w-2xl mx-auto">
               We're focused exclusively on {config.region}, connecting local talent
-              with local opportunities in {config.cities.slice(0, 3).join(', ')} and surrounding areas.
+              with local opportunities in {config.cities.slice(0, 3).path.join(', ')} and surrounding areas.
             </p>
           </div>
 

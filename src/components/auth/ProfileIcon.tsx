@@ -1,10 +1,11 @@
 'use client';
 
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Avatar from '../Avatar';
 import { User } from 'lucide-react';
+import path from "path";
 
 interface ProfileIconProps {
   size?: number;
@@ -86,7 +87,7 @@ export default function ProfileIcon({
     return name
       .split(' ')
       .map(word => word.charAt(0))
-      .join('')
+      .path.join('')
       .toUpperCase()
       .slice(0, 2);
   };

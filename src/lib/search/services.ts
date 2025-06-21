@@ -1,31 +1,10 @@
-import { prisma } from '@/lib/database/prisma';
-import {
-  CursorPaginationParams,
-  OffsetPaginationParams,
-  PaginatedResponse,
-  createPaginatedResponse,
-  buildSortCondition,
-  buildCursorCondition,
-  calculateOffsetPagination,
-  generateCursorFromRecord,
-  generatePaginationCacheKey,
-} from '@/lib/pagination';
-import {
+import { prisma } from '@/lib/pagination';
   getCache,
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-  getCacheOrExecute,
-} from '@/lib/cache/services';
-import {
-  EnhancedSearchFilters,
-  SearchResult,
-  TextProcessor,
-  RelevanceScorer,
-  GeolocationUtils,
-  FacetedSearch,
-  SEARCH_CONFIG,
+  getCacheOrExecute
 } from './algorithms';
 
 // Enhanced search service for jobs
@@ -51,7 +30,7 @@ export class EnhancedJobSearchService {
       generateCacheKey(CACHE_PREFIXES.search, 'jobs-enhanced', query),
       {
         ...pagination,
-        filters,
+        filters
       }
     );
 
@@ -64,8 +43,8 @@ export class EnhancedJobSearchService {
         ...cached,
         metadata: {
           ...cached.metadata,
-          cached: true,
-        },
+          cached: true
+        }
       };
     }
 
@@ -104,7 +83,7 @@ export class EnhancedJobSearchService {
       jobs = await prisma.job.findMany({
         where: {
           ...whereCondition,
-          ...cursorCondition,
+          ...cursorCondition
         },
         orderBy: { createdAt: 'desc' },
         take: limit + 1, // Get one extra to check if there's a next page
@@ -116,19 +95,19 @@ export class EnhancedJobSearchService {
               name: true,
               website: true,
               logo: true,
-              subscriptionTier: true,
-            },
+              subscriptionTier: true
+            }
           },
           // Limit job applications to prevent large data loads
           jobApplications: {
             select: {
               id: true,
               userId: true,
-              status: true,
+              status: true
             },
-            take: 3,
-          },
-        },
+            take: 3
+          }
+        }
       });
 
       const hasNextPage = jobs.length > limit;
@@ -151,7 +130,7 @@ export class EnhancedJobSearchService {
         hasPrevPage: !!cursor,
         nextCursor,
         prevCursor,
-        totalCount,
+        totalCount
       };
     } else {
       // Offset-based pagination
@@ -174,19 +153,19 @@ export class EnhancedJobSearchService {
                 name: true,
                 website: true,
                 logo: true,
-                subscriptionTier: true,
-              },
+                subscriptionTier: true
+              }
             },
             // Limit job applications to prevent large data loads
             jobApplications: {
               select: {
                 id: true,
                 userId: true,
-                status: true,
+                status: true
               },
-              take: 3,
-            },
-          },
+              take: 3
+            }
+          }
         }),
         prisma.job.count({ where: whereCondition }),
       ]);
@@ -209,13 +188,13 @@ export class EnhancedJobSearchService {
       cached: false,
       sortBy: 'relevance',
       sortOrder: 'desc',
-      ...(facets && { facets }),
+      ...(facets && { facets })
     });
 
     // Cache the result
     await setCache(cacheKey, response, {
       ttl: this.CACHE_TTL,
-      tags: this.CACHE_TAGS,
+      tags: this.CACHE_TAGS
     });
 
     return response;
@@ -243,9 +222,9 @@ export class EnhancedJobSearchService {
               { title: { contains: term, mode: 'insensitive' } },
               { description: { contains: term, mode: 'insensitive' } },
               { company: { contains: term, mode: 'insensitive' } },
-            ],
+            ]
           })),
-        ],
+        ]
       };
 
       conditions.push(textSearchConditions);
@@ -263,7 +242,7 @@ export class EnhancedJobSearchService {
       } else {
         // Fall back to text-based location search
         conditions.push({
-          location: { contains: filters.location, mode: 'insensitive' },
+          location: { contains: filters.location, mode: 'insensitive' }
         });
       }
     }
@@ -287,15 +266,15 @@ export class EnhancedJobSearchService {
             {
               location: {
                 contains: filters.location || '',
-                mode: 'insensitive',
-              },
+                mode: 'insensitive'
+              }
             },
-          ],
+          ]
         });
       } else {
         // Fallback to text search if bounding box calculation failed
         conditions.push({
-          location: { contains: filters.location || '', mode: 'insensitive' },
+          location: { contains: filters.location || '', mode: 'insensitive' }
         });
       }
     }
@@ -307,7 +286,7 @@ export class EnhancedJobSearchService {
 
     if (filters.company) {
       conditions.push({
-        company: { contains: filters.company, mode: 'insensitive' },
+        company: { contains: filters.company, mode: 'insensitive' }
       });
     }
 
@@ -392,9 +371,9 @@ export class EnhancedJobSearchService {
           { categories: { hasSome: filters.skills } },
           // Fallback for text-based skills search
           ...filters.skills.map(skill => ({
-            description: { contains: skill, mode: 'insensitive' },
+            description: { contains: skill, mode: 'insensitive' }
           })),
-        ],
+        ]
       });
     }
 
@@ -428,7 +407,7 @@ export class EnhancedJobSearchService {
         item: job,
         relevanceScore,
         matchedFields: (job as any)._matchedFields || [],
-        snippet,
+        snippet
       };
     });
 
@@ -482,7 +461,7 @@ export class UserSearchService {
       generateCacheKey(CACHE_PREFIXES.search, 'users', query),
       {
         ...pagination,
-        filters,
+        filters
       }
     );
 
@@ -511,8 +490,8 @@ export class UserSearchService {
               resumeUrl: true,
               role: true,
               createdAt: true,
-              updatedAt: true,
-            },
+              updatedAt: true
+            }
           });
 
           const hasNextPage = users.length > pagination.limit;
@@ -523,12 +502,12 @@ export class UserSearchService {
             hasPrevPage: !!pagination.cursor,
             nextCursor: hasNextPage
               ? generateCursorFromRecord(users[users.length - 1], 'updatedAt')
-              : undefined,
+              : undefined
           };
 
           return createPaginatedResponse(users, paginationMeta, {
             queryTime: Date.now() - startTime,
-            cached: false,
+            cached: false
           });
         } else {
           trackPerformance?.trackDatabaseQuery();
@@ -550,8 +529,8 @@ export class UserSearchService {
                 resumeUrl: true,
                 role: true,
                 createdAt: true,
-                updatedAt: true,
-              },
+                updatedAt: true
+              }
             }),
             prisma.user.count({ where: whereCondition }),
           ]);
@@ -564,13 +543,13 @@ export class UserSearchService {
 
           return createPaginatedResponse(users, meta, {
             queryTime: Date.now() - startTime,
-            cached: false,
+            cached: false
           });
         }
       },
       {
         ttl: this.CACHE_TTL,
-        tags: this.CACHE_TAGS,
+        tags: this.CACHE_TAGS
       }
     );
   }
@@ -588,21 +567,21 @@ export class UserSearchService {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
           { skills: { hasSome: TextProcessor.extractKeywords(query) } },
-        ],
+        ]
       });
     }
 
     // Location filter
     if (filters.location) {
       conditions.push({
-        location: { contains: filters.location, mode: 'insensitive' },
+        location: { contains: filters.location, mode: 'insensitive' }
       });
     }
 
     // Skills filter
     if (filters.skills && filters.skills.length > 0) {
       conditions.push({
-        skills: { hasSome: filters.skills },
+        skills: { hasSome: filters.skills }
       });
     }
 

@@ -1,5 +1,5 @@
 import { randomBytes } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/database/prisma';
 import { sendEmail } from '@/components/ui/card';
 import { EmailVerificationTemplate } from '@/lib/email/templates/email-verification';
 

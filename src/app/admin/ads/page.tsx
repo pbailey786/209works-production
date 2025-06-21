@@ -8,13 +8,7 @@ import Link from 'next/link';
 import AdManagementStats from '@/components/admin/AdManagementStats';
 import AdManagementFilters from '@/components/admin/AdManagementFilters';
 import AdManagementTable from '@/components/admin/AdManagementTable';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 interface SearchParams {
   status?: string;

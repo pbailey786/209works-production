@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import fs from "fs";
+import path from "path";
 
 
 export const TaskStatus = z.enum([
@@ -180,13 +182,13 @@ export class TaskValidator {
     // Check for circular dependencies
     const circularDeps = this.detectCircularDependencies(tasksCollection.tasks);
     if (circularDeps.length > 0) {
-      errors.push(`Circular dependencies detected: ${circularDeps.join(', ')}`);
+      errors.push(`Circular dependencies detected: ${circularDeps.path.join(', ')}`);
     }
 
     // Check for invalid dependency references
     const invalidDeps = this.findInvalidDependencies(tasksCollection.tasks);
     if (invalidDeps.length > 0) {
-      errors.push(`Invalid dependency references: ${invalidDeps.join(', ')}`);
+      errors.push(`Invalid dependency references: ${invalidDeps.path.join(', ')}`);
     }
 
     // Check subtask integrity
@@ -209,7 +211,7 @@ export class TaskValidator {
     }
 
     if (errors.length > 0) {
-      throw new Error(`Integrity check failed:\n${errors.join('\n')}`);
+      throw new Error(`Integrity check failed:\n${errors.path.join('\n')}`);
     }
   }
 
@@ -226,7 +228,7 @@ export class TaskValidator {
       if (recursionStack.has(taskId)) {
         const cycleStart = path.indexOf(taskId);
         const cycle = path.slice(cycleStart).concat(taskId);
-        circularPaths.push(cycle.join(' -> '));
+        circularPaths.push(cycle.path.join(' -> '));
         return;
       }
 
@@ -350,8 +352,8 @@ export class TaskValidator {
    */
   private formatZodError(error: z.ZodError): string {
     return error.errors
-      .map(err => `${err.path.join('.')}: ${err.message}`)
-      .join('; ');
+      .map(err => `${err.path.path.join('.')}: ${err.message}`)
+      .path.join('; ');
   }
 
   /**

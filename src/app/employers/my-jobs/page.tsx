@@ -2,44 +2,10 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import {
-  Search,
-  Filter,
-  Plus,
-  Eye,
-  Edit,
-  Copy,
-  Archive,
-  Pause,
-  Play,
-  MoreHorizontal,
-  Calendar,
-  MapPin,
-  DollarSign,
-  Users,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Download,
-  RefreshCw,
-  Star,
-  BarChart3,
-  Settings,
-  Upload,
-} from 'lucide-react';
+import { useRouter, useSearchParams } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Card } from '@/components/ui/dropdown-menu';
 
 interface Job {
   id: string;
@@ -156,7 +122,7 @@ function MyJobsContent() {
     try {
       const response = await fetch(`/api/jobs/${jobId}/${action}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       });
 
       if (response.ok) {
@@ -180,7 +146,7 @@ function MyJobsContent() {
     setActionLoading(jobId);
     try {
       const response = await fetch(`/api/jobs/${jobId}/duplicate`, {
-        method: 'POST',
+        method: 'POST'
       });
 
       if (response.ok) {
@@ -315,7 +281,7 @@ function MyJobsContent() {
     expired: jobs.filter(j => j.status === 'expired').length,
     featured: jobs.filter(j => j.featured).length,
     totalApplications: jobs.reduce((sum, job) => sum + (job._count?.applications || 0), 0),
-    totalViews: jobs.reduce((sum, job) => sum + (job.views || 0), 0),
+    totalViews: jobs.reduce((sum, job) => sum + (job.views || 0), 0)
   };
 
   return (

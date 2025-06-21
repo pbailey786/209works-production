@@ -1,24 +1,10 @@
-import { useState } from '@/components/ui/card';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/card';
-import { toast } from 'sonner';
-
-'use client';
-
-  import {
-  Instagram,
-  TrendingUp,
-  Package,
-  Star,
-  Check,
-  X,
-  Sparkles,
-  DollarSign,
-  ArrowRight,
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Check } from 'lucide-react';
+import { toast } from 'lucide-react';
 
 interface JobPostingUpsellModalProps {
   isOpen: boolean;
@@ -64,7 +50,7 @@ const upsellOptions: UpsellOption[] = [
       'Reaches hyper-local 209 area audience',
       'Analytics report on engagement',
     ],
-    icon: <Instagram className="h-6 w-6" />,
+    icon: <Instagram className="h-6 w-6" />
   },
   {
     id: 'placement-bump',
@@ -80,7 +66,7 @@ const upsellOptions: UpsellOption[] = [
       'Detailed performance analytics',
     ],
     icon: <TrendingUp className="h-6 w-6" />,
-    popular: true,
+    popular: true
   },
   {
     id: 'complete-bundle',
@@ -97,7 +83,7 @@ const upsellOptions: UpsellOption[] = [
       'Best value for maximum exposure',
     ],
     icon: <Package className="h-6 w-6" />,
-    badge: 'Best Value',
+    badge: 'Best Value'
   },
 ];
 
@@ -107,7 +93,7 @@ export default function JobPostingUpsellModal({
   onContinue,
   jobTitle,
   company,
-  userCredits,
+  userCredits
 }: JobPostingUpsellModalProps) {
   const [selectedOptions, setSelectedOptions] = useState<Set<string>>(new Set());
   const [isProcessing, setIsProcessing] = useState(false);
@@ -161,7 +147,7 @@ export default function JobPostingUpsellModal({
       socialMediaShoutout: hasSocial,
       placementBump: hasPlacement,
       upsellBundle: hasBundle,
-      total: calculateTotal(),
+      total: calculateTotal()
     });
   };
 
@@ -170,7 +156,7 @@ export default function JobPostingUpsellModal({
       socialMediaShoutout: false,
       placementBump: false,
       upsellBundle: false,
-      total: 0,
+      total: 0
     });
   };
 

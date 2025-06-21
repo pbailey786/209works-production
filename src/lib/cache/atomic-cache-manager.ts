@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import { getRedisClient, isRedisAvailable } from './redis';
+import path from "path";
 
 /**
  * Atomic Cache Manager
@@ -473,7 +474,7 @@ export class AtomicCacheManager {
   ): Promise<boolean> {
     if (!tags || tags.length === 0) return true;
 
-    const lockKey = `invalidate:${tags.join(':')}`;
+    const lockKey = `invalidate:${tags.path.join(':')}`;
 
     return this.withLock(lockKey, async () => {
       if (!this.redis) return false;
@@ -548,7 +549,7 @@ export class AtomicCacheManager {
       options?: any;
     }>
   ): Promise<Array<any>> {
-    const lockKey = `batch:${operations.map(op => op.key).join(':')}`;
+    const lockKey = `batch:${operations.map(op => op.key).path.join(':')}`;
 
     return this.withLock(lockKey, async () => {
       const results: any[] = [];

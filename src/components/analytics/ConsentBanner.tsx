@@ -1,26 +1,8 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { usePostHog } from '@/lib/analytics/posthog-provider';
-
-/**
- * GDPR-Compliant Consent Banner
- * Handles user consent for analytics tracking with regional context
- */
-
-'use client';
-
-  import {
-  Cookie,
-  Shield,
-  Settings,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Info,
-  MapPin,
-} from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { usePostHog } from 'lucide-react';
 
 interface ConsentBannerProps {
   region?: string;
@@ -29,7 +11,7 @@ interface ConsentBannerProps {
 
 export default function ConsentBanner({
   region,
-  className = '',
+  className = ''
 }: ConsentBannerProps) {
   const { hasConsent, grantConsent, revokeConsent } = usePostHog();
   const [isVisible, setIsVisible] = useState(false);
@@ -71,33 +53,33 @@ export default function ConsentBanner({
         name: 'Central Valley',
         laws: 'CCPA (California Consumer Privacy Act)',
         rights:
-          'Right to know, delete, and opt-out of sale of personal information',
+          'Right to know, delete, and opt-out of sale of personal information'
       },
       '916': {
         name: 'Sacramento Metro',
         laws: 'CCPA (California Consumer Privacy Act)',
         rights:
-          'Right to know, delete, and opt-out of sale of personal information',
+          'Right to know, delete, and opt-out of sale of personal information'
       },
       '510': {
         name: 'East Bay',
         laws: 'CCPA (California Consumer Privacy Act)',
         rights:
-          'Right to know, delete, and opt-out of sale of personal information',
+          'Right to know, delete, and opt-out of sale of personal information'
       },
       norcal: {
         name: 'Northern California',
         laws: 'CCPA (California Consumer Privacy Act)',
         rights:
-          'Right to know, delete, and opt-out of sale of personal information',
-      },
+          'Right to know, delete, and opt-out of sale of personal information'
+      }
     };
 
     return (
       regionalInfo[region as keyof typeof regionalInfo] || {
         name: 'Your Region',
         laws: 'GDPR and CCPA',
-        rights: 'Right to access, rectify, erase, and port your data',
+        rights: 'Right to access, rectify, erase, and port your data'
       }
     );
   };

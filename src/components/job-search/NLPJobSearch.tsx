@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useRef } from '@/components/ui/card';
 import { motion, AnimatePresence } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';import {
-
-
   Search,
   Sparkles,
   ArrowRight,
   MapPin,
   Briefcase,
   Clock,
-  DollarSign,
+  DollarSign
 } from 'lucide-react';
 
 interface NLPJobSearchProps {
@@ -36,7 +34,7 @@ const quickFilters = [
   {
     icon: DollarSign,
     label: '$20+ /hour',
-    query: 'jobs paying $20 or more per hour',
+    query: 'jobs paying $20 or more per hour'
   },
   { icon: Briefcase, label: 'Entry Level', query: 'entry level positions' },
 ];
@@ -44,7 +42,7 @@ const quickFilters = [
 export default function NLPJobSearch({
   onSearch,
   loading = false,
-  className,
+  className
 }: NLPJobSearchProps) {
   const [query, setQuery] = useState('');
   const [currentSuggestion, setCurrentSuggestion] = useState(0);
@@ -127,7 +125,7 @@ export default function NLPJobSearch({
             rows={1}
             style={{
               height: 'auto',
-              minHeight: '80px',
+              minHeight: '80px'
             }}
           />
 

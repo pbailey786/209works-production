@@ -1,24 +1,8 @@
 import React, { useState, useEffect } from '@/components/ui/card';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-
-
-
-  /**
- * Regional Landing Page Component
- * Dynamic landing page for regional domains (209.works, 916.works, 510.works, norcal.works)
- */
-'use client';
-  import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/card';
-  import {
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/card';
   MapPin,
   Briefcase,
   TrendingUp,
@@ -29,7 +13,7 @@ import { Input } from '@/components/ui/input';
   ArrowRight,
   Star,
   Clock,
-  Target,
+  Target
 } from 'lucide-react';
 
 interface RegionalConfig {
@@ -88,7 +72,7 @@ const REGIONAL_CONFIGS: Record<string, RegionalConfig> = {
       'Logistics & Distribution',
       'Manufacturing',
       'Healthcare',
-    ],
+    ]
   },
   '916': {
     region: '916',
@@ -111,7 +95,7 @@ const REGIONAL_CONFIGS: Record<string, RegionalConfig> = {
       'Technology',
       'Healthcare',
       'Education',
-    ],
+    ]
   },
   '510': {
     region: '510',
@@ -134,7 +118,7 @@ const REGIONAL_CONFIGS: Record<string, RegionalConfig> = {
       'Biotech & Research',
       'Green Energy',
       'Creative Industries',
-    ],
+    ]
   },
   norcal: {
     region: 'norcal',
@@ -157,8 +141,8 @@ const REGIONAL_CONFIGS: Record<string, RegionalConfig> = {
       'Cross-Regional Opportunities',
       'Diverse Industries',
       'Regional Insights',
-    ],
-  },
+    ]
+  }
 };
 
 interface RegionalLandingPageProps {
@@ -168,7 +152,7 @@ interface RegionalLandingPageProps {
 
 export default function RegionalLandingPage({
   region,
-  className = '',
+  className = ''
 }: RegionalLandingPageProps) {
   const [stats, setStats] = useState<RegionalStats | null>(null);
   const [recentJobs, setRecentJobs] = useState<Job[]>([]);
@@ -274,7 +258,7 @@ export default function RegionalLandingPage({
       <section
         className="relative px-4 py-20 text-white"
         style={{
-          background: `linear-gradient(135deg, ${config.primaryColor} 0%, ${config.primaryColor}dd 100%)`,
+          background: `linear-gradient(135deg, ${config.primaryColor} 0%, ${config.primaryColor}dd 100%)`
         }}
       >
         <div className="mx-auto max-w-6xl">
@@ -562,7 +546,7 @@ export default function RegionalLandingPage({
       <section
         className="px-4 py-16 text-white"
         style={{
-          background: `linear-gradient(135deg, ${config.primaryColor} 0%, ${config.primaryColor}dd 100%)`,
+          background: `linear-gradient(135deg, ${config.primaryColor} 0%, ${config.primaryColor}dd 100%)`
         }}
       >
         <div className="mx-auto max-w-4xl text-center">

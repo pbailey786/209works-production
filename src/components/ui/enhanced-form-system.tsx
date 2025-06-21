@@ -1,7 +1,11 @@
 import { motion, AnimatePresence } from '@/components/ui/card';
-import { CheckCircle, AlertCircle, Eye, EyeOff, Loader2 } from '@/components/ui/card';
+import { Check } from 'lucide-react';
 import { cn } from '@/components/ui/card';
 import { useLoading, useToast } from '@/lib/ui/component-state-manager';
+import { useRef } from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 
 'use client';
 
@@ -66,13 +70,13 @@ export function EnhancedFormProvider({
 }) {
   const { addLoading, removeLoading } = useLoading();
   const { addToast } = useToast();
-  const validationRulesRef = React.useRef(validationRules);
-  const asyncValidationTimeouts = React.useRef<Record<string, NodeJS.Timeout>>(
+  const validationRulesRef = useRef(validationRules);
+  const asyncValidationTimeouts = useRef<Record<string, NodeJS.Timeout>>(
     {}
   );
 
   // Initialize form state
-  const [state, setState] = React.useState<FormState>(() => {
+  const [state, setState] = useState<FormState>(() => {
     const fields: Record<string, FormFieldState> = {};
 
     Object.keys(initialValues).forEach(name => {
@@ -96,7 +100,7 @@ export function EnhancedFormProvider({
   });
 
   // Validation function with debouncing for async validators
-  const validateField = React.useCallback(
+  const validateField = useCallback(
     async (name: string) => {
       const field = state.fields[name];
       const rules = validationRulesRef.current[name];
@@ -214,7 +218,7 @@ export function EnhancedFormProvider({
   );
 
   // Update field value
-  const updateField = React.useCallback(
+  const updateField = useCallback(
     (name: string, value: any) => {
       setState(prev => ({
         ...prev,
@@ -236,7 +240,7 @@ export function EnhancedFormProvider({
   );
 
   // Set field error manually
-  const setFieldError = React.useCallback(
+  const setFieldError = useCallback(
     (name: string, error: string | null) => {
       setState(prev => ({
         ...prev,
@@ -254,7 +258,7 @@ export function EnhancedFormProvider({
   );
 
   // Set field touched state
-  const setFieldTouched = React.useCallback(
+  const setFieldTouched = useCallback(
     (name: string, touched: boolean) => {
       setState(prev => ({
         ...prev,
@@ -275,7 +279,7 @@ export function EnhancedFormProvider({
   );
 
   // Submit form
-  const submitForm = React.useCallback(async () => {
+  const submitForm = useCallback(async () => {
     setState(prev => ({
       ...prev,
       isSubmitting: true,
@@ -341,7 +345,7 @@ export function EnhancedFormProvider({
   ]);
 
   // Reset form
-  const resetForm = React.useCallback(() => {
+  const resetForm = useCallback(() => {
     setState(prev => ({
       ...prev,
       fields: Object.fromEntries(
@@ -365,7 +369,7 @@ export function EnhancedFormProvider({
   }, [initialValues]);
 
   // Register field
-  const registerField = React.useCallback(
+  const registerField = useCallback(
     (name: string, rules: ValidationRule) => {
       validationRulesRef.current[name] = rules;
 
@@ -390,7 +394,7 @@ export function EnhancedFormProvider({
   );
 
   // Unregister field
-  const unregisterField = React.useCallback((name: string) => {
+  const unregisterField = useCallback((name: string) => {
     delete validationRulesRef.current[name];
 
     if (asyncValidationTimeouts.current[name]) {
@@ -409,7 +413,7 @@ export function EnhancedFormProvider({
   }, []);
 
   // Update form validity
-  React.useEffect(() => {
+  useEffect(() => {
     const isValid = Object.values(state.fields).every(
       field => field.isValid && !field.isValidating
     );
@@ -417,7 +421,7 @@ export function EnhancedFormProvider({
   }, [state.fields]);
 
   // Cleanup on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       Object.values(asyncValidationTimeouts.current).forEach(timeout => {
         clearTimeout(timeout);
@@ -506,7 +510,7 @@ export function EnhancedFormField({
   const field = state.fields[name];
 
   // Register field on mount
-  React.useEffect(() => {
+  useEffect(() => {
     registerField(name, rules);
     return () => unregisterField(name);
   }, [name, rules, registerField, unregisterField]);
@@ -669,7 +673,7 @@ export function EnhancedPasswordField({
 }: Omit<EnhancedFormFieldProps, 'type'> & {
   showStrengthIndicator?: boolean;
 }) {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { state } = useEnhancedForm();
   const field = state.fields[name];
 

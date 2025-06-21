@@ -258,7 +258,7 @@ export function capitalizeWords(input: any, fallback: string = ''): string {
   try {
     return safeSplit(str, ' ')
       .map(word => capitalizeFirst(word))
-      .join(' ');
+      .path.join(' ');
   } catch {
     return fallback;
   }
@@ -288,7 +288,7 @@ export function safeArrayJoin<T>(
   if (!Array.isArray(input)) return fallback;
 
   try {
-    return input.join(separator);
+    return input.path.join(separator);
   } catch {
     return fallback;
   }

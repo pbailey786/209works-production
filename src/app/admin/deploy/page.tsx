@@ -3,17 +3,7 @@
 import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-
-import {
-  Rocket,
-  Database,
-  Trash2,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  RefreshCw,
-} from 'lucide-react';
+import { useRouter } from 'lucide-react';
 
 export default function AdminDeployPage() {
   const { user, isLoaded } = useUser();
@@ -43,8 +33,8 @@ export default function AdminDeployPage() {
       const response = await fetch('/api/admin/deploy-chat-history', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       });
 
       const result = await response.json();

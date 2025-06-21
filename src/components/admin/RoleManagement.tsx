@@ -8,52 +8,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { usePermissions } from '@/hooks/usePermissions';
 import { PermissionGate } from './PermissionGate';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
+import { Card } from '@/components/ui/select';
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  TableRow
 } from '@/components/ui/dialog';
-import {
   AdminRole,
   Permission,
   ROLE_PERMISSIONS,
   ROLE_DISPLAY_INFO,
-  getUserPermissions,
-} from '@/lib/rbac/permissions';
-import {
-  Shield,
-  Users,
-  Settings,
-  Eye,
-  Edit,
-  Plus,
-  Check,
-  X,
+  getUserPermissions
 } from 'lucide-react';
 
 interface RoleManagementProps {
@@ -74,7 +41,7 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
   const roleStats = Object.values(AdminRole).map(role => ({
     role,
     count: users.filter(user => user.role === role).length,
-    ...ROLE_DISPLAY_INFO[role],
+    ...ROLE_DISPLAY_INFO[role]
   }));
 
   const handleRoleChange = async (userId: string, newRole: string) => {
