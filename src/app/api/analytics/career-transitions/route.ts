@@ -210,7 +210,7 @@ function generateTransitionRecommendations(transition: any, talentPool: any) {
       type: 'skills',
       priority: 'medium',
       title: 'Address Common Skill Gaps',
-      description: `Candidates typically need training in: ${transition.commonSkillGaps.slice(0, 3).path.join(', ')}. Consider offering training programs.`,
+      description: `Candidates typically need training in: ${transition.commonSkillGaps.slice(0, 3).join(', ')}. Consider offering training programs.`,
     });
   }
 

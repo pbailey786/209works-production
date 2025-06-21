@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
         userId: user?.id,
         action: `BULK_${action.toUpperCase()}`,
         resource: targetType.toUpperCase(),
-        resourceId: targetIds.path.join(','),
+        resourceId: targetIds.join(','),
         details: {
           action,
           targetType,

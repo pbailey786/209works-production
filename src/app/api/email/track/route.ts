@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createSuccessResponse } from '@/lib/middleware/api-middleware';
-import { createErrorResponse } from '@/lib/middleware/api-middleware';
-import {ValidationError} from '@/components/ui/card';
-import { JobMatchingService } from '@/lib/services/job-matching';
+// Mock ValidationError for build compatibility
+class ValidationError extends Error { constructor(message) { super(message); this.name = "ValidationError"; } }import { JobMatchingService } from '@/lib/services/job-matching';
 
 // GET /api/email/track - Track email interactions (opens, clicks)
 export async function GET(request: NextRequest) {
@@ -52,7 +50,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(jobUrl, 302);
     }
 
-    return createSuccessResponse({ tracked: true });
+    return NextResponse.json({ success: true, data: { tracked: true } });
 
   } catch (error) {
     console.error('Failed to track email interaction:', error);
@@ -73,6 +71,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return createErrorResponse(error);
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
   }
 }

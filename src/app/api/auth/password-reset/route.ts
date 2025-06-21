@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { randomBytes } from '@/components/ui/card';
+import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/database/prisma';
 import { EmailHelpers } from '@/lib/email/email-helpers';
 import { normalizeEmail } from '@/lib/utils/email-utils';
@@ -80,7 +80,7 @@ export async function PATCH(req: NextRequest) {
     },
   });
 
-  if (!user) {
+  if (!dbUser) {
     return NextResponse.json(
       { error: 'Invalid or expired token.' },
       { status: 400 }
@@ -92,7 +92,7 @@ export async function PATCH(req: NextRequest) {
 
   // Update password in Prisma database
   await prisma.user.update({
-    where: { id: user.id },
+    where: { id: dbUser.id },
     data: {
       passwordHash,
       passwordResetToken: null,
@@ -111,7 +111,7 @@ export async function PATCH(req: NextRequest) {
       );
 
       const { error: supabaseError } = await supabase.auth.admin.updateUserById(
-        user.id,
+        dbUser.id,
         { password }
       );
 

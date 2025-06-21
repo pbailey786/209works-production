@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     
     if (invalidEvents.length > 0) {
       return NextResponse.json(
-        { error: `Invalid event types: ${invalidEvents.path.join(', ')}` },
+        { error: `Invalid event types: ${invalidEvents.join(', ')}` },
         { status: 400 }
       );
     }
@@ -181,7 +181,7 @@ export async function PUT(request: NextRequest) {
       
       if (invalidEvents.length > 0) {
         return NextResponse.json(
-          { error: `Invalid event types: ${invalidEvents.path.join(', ')}` },
+          { error: `Invalid event types: ${invalidEvents.join(', ')}` },
           { status: 400 }
         );
       }

@@ -1,6 +1,6 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { withValidation } from '@/lib/middleware/validation';
+
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 
@@ -14,10 +14,15 @@ const suggestionsQuerySchema = z.object({
 });
 
 // GET /api/search/suggestions - Get search suggestions and trending topics
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { query, performance } = context;
-    const { type = 'trending', category = 'all', limit = 10 } = query!;
+export const GET = withValidation(
+  async (req, { params, query }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer', 'jobseeker']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
+    // Query already available from above
+    const { type = 'trending', category = 'all', limit = 10 } = query || {};
 
     // Validate parameters
     const validType = typeof type === 'string' ? type : 'trending';
@@ -37,12 +42,12 @@ export const GET = withAPIMiddleware(
     let suggestions = await getCache<any>(cacheKey);
     if (suggestions) {
       performance.trackCacheHit();
-      return createSuccessResponse({
+      return NextResponse.json({ success: true, data: {
         type: validType,
         category: validCategory,
         suggestions,
         cached: true
-      });
+      } });
     }
 
     performance.trackCacheMiss();
@@ -80,12 +85,12 @@ export const GET = withAPIMiddleware(
       tags: ['search', 'suggestions']
     });
 
-    return createSuccessResponse({
+    return NextResponse.json({ success: true, data: {
       type: validType,
       category: validCategory,
       suggestions,
       cached: false
-    });
+    } });
   },
   {
     querySchema: suggestionsQuerySchema,
@@ -105,7 +110,6 @@ async function generateTrendingSuggestions(
 
   if (category === 'all' || category === 'jobs') {
     // Get trending job titles based on recent job postings
-    performance.trackDatabaseQuery();
     const recentJobs = await prisma.job.findMany({
       where: {
         createdAt: {
@@ -200,7 +204,6 @@ async function generatePopularSuggestions(
 
   if (category === 'all' || category === 'companies') {
     // Popular company searches
-    performance.trackDatabaseQuery();
     const popularCompanies = await prisma.job.groupBy({
       by: ['company'],
       _count: {
@@ -236,7 +239,6 @@ async function generateRecentSuggestions(
 
   if (category === 'all' || category === 'jobs') {
     // Recent job postings
-    performance.trackDatabaseQuery();
     const recentJobs = await prisma.job.findMany({
       where: {
         createdAt: {

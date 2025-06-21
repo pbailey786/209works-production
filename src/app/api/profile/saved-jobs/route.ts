@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     // Get user from database with error handling
     const userQuery = await safeDBQuery(() => 
       prisma.user.findUnique({
-        where: { email: sessionValidation.user!.email },
+        where: { email: sessionValidation.user.email },
         select: { id: true, role: true },
       })
     );
@@ -247,7 +247,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

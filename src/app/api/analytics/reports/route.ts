@@ -403,8 +403,8 @@ async function generateCustomReport(user: any, startDate: Date, endDate: Date, m
 function convertToCSV(data: any): string {
   // Simple CSV conversion - would need more sophisticated implementation
   const headers = Object.keys(data);
-  const csvHeaders = headers.path.join(',');
+  const csvHeaders = headers.join(',');
   
   // For now, just return a basic CSV structure
-  return `${csvHeaders}\n${headers.map(h => JSON.stringify(data[h])).path.join(',')}`;
+  return `${csvHeaders}\n${headers.map(h => JSON.stringify(data[h])).join(',')}`;
 }

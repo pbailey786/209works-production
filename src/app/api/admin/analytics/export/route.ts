@@ -343,7 +343,7 @@ function convertOverviewToCSV(data: any): string {
     ['Chat Sessions', data.summary.totalChatSessions, data.summary.newChatSessions, `${((data.summary.newChatSessions / data.summary.totalChatSessions) * 100).toFixed(2)}%`],
   ];
 
-  return [headers, ...rows].map(row => row.path.join(',')).path.join('\n');
+  return [headers, ...rows].map(row => row.join(',')).join('\n');
 }
 
 function convertUsersToCSV(data: any): string {
@@ -360,7 +360,7 @@ function convertUsersToCSV(data: any): string {
     user._count.alerts,
   ]);
 
-  return [headers, ...rows].map(row => row.path.join(',')).path.join('\n');
+  return [headers, ...rows].map(row => row.join(',')).join('\n');
 }
 
 function convertJobsToCSV(data: any): string {
@@ -370,7 +370,7 @@ function convertJobsToCSV(data: any): string {
     job.title,
     job.company,
     job.location,
-    Array.isArray(job.categories) ? job.categories.path.join('; ') : '',
+    Array.isArray(job.categories) ? job.categories.join('; ') : '',
     job.salaryMin || '',
     job.salaryMax || '',
     job.status,
@@ -378,7 +378,7 @@ function convertJobsToCSV(data: any): string {
     job._count.jobApplications,
   ]);
 
-  return [headers, ...rows].map(row => row.path.join(',')).path.join('\n');
+  return [headers, ...rows].map(row => row.join(',')).join('\n');
 }
 
 function convertAIToCSV(data: any): string {
@@ -392,7 +392,7 @@ function convertAIToCSV(data: any): string {
     session.createdAt,
   ]);
 
-  return [headers, ...rows].map(row => row.path.join(',')).path.join('\n');
+  return [headers, ...rows].map(row => row.join(',')).join('\n');
 }
 
 function convertApplicationsToCSV(data: any): string {
@@ -409,5 +409,5 @@ function convertApplicationsToCSV(data: any): string {
     app.user.email,
   ]);
 
-  return [headers, ...rows].map(row => row.path.join(',')).path.join('\n');
+  return [headers, ...rows].map(row => row.join(',')).join('\n');
 }

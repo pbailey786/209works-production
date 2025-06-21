@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/auth/middleware';
 import { prisma } from '@/lib/database/prisma';
-import { getJobMatchScore } from '@/components/ui/card';
+import { getJobMatchScore } from '@/lib/validations/api';
 import { ShouldIApplyAnalysisService } from '@/lib/services/should-i-apply';
-import { JobAnalysisInput } from '@/components/ui/card';
+import { JobAnalysisInput } from '@/lib/validations/api';
 import { z } from 'zod';
 import path from "path";
 
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input',
-          details: validationResult.error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
+          details: validationResult.error.errors.map(e => `${e.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

@@ -404,7 +404,7 @@ expect.extend({
     const pass = missingFields.length === 0;
     
     return {
-      message: () => `expected job to have all required fields${pass ? '' : `, missing: ${missingFields.path.join(', ')}`}`,
+      message: () => `expected job to have all required fields${pass ? '' : `, missing: ${missingFields.join(', ')}`}`,
       pass,
     };
   },

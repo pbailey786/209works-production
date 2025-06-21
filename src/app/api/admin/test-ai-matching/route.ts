@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { createSuccessResponse } from '@/lib/middleware/api-middleware';
-import { createErrorResponse } from '@/lib/middleware/api-middleware';
+import { withValidation } from '@/lib/middleware/validation';
+import { requireRole } from '@/lib/auth/middleware';
 import { JobMatchingService } from '@/lib/services/job-matching';
 import { ResumeEmbeddingService } from '@/lib/services/resume-embedding';
 import { JobQueueService } from '@/lib/services/job-queue';
@@ -17,9 +16,11 @@ const testSchema = z.object({
 });
 
 // POST /api/admin/test-ai-matching - Test AI matching system components
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    const { body } = context;
+export const POST = withValidation(
+  async (req, { body }) => {
+    // Check admin authorization
+    const session = await requireRole(req, ['admin']);
+    if (session instanceof NextResponse) return session;
 
     try {
       const { action, userId, jobId, testResumeText } = body!;
@@ -38,25 +39,31 @@ export const POST = withAPIMiddleware(
           return await runFullTest();
         
         default:
-          return createErrorResponse(new Error('Invalid action'));
+          return NextResponse.json({
+            success: false,
+            error: 'Invalid action'
+          }, { status: 400 });
       }
 
     } catch (error) {
       console.error('AI matching test failed:', error);
-      return createErrorResponse(error);
+      return NextResponse.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500 });
     }
   },
   {
-    requiredRoles: ['admin'],
-    bodySchema: testSchema,
-    rateLimit: { enabled: true, type: 'authenticated' },
-    logging: { enabled: true, includeBody: true },
+    bodySchema: testSchema
   }
 );
 
 async function testResumeProcessing(userId?: string, testResumeText?: string) {
   if (!userId) {
-    return createErrorResponse(new Error('User ID required for resume processing test'));
+    return NextResponse.json({
+      success: false,
+      error: 'User ID required for resume processing test'
+    }, { status: 400 });
   }
 
   const resumeText = testResumeText || `
@@ -88,7 +95,8 @@ JavaScript, React, Node.js, PostgreSQL, MongoDB, AWS, Docker, Git, Python
     await ResumeEmbeddingService.processResumeEmbedding(userId, resumeText);
     const embedding = await ResumeEmbeddingService.getResumeEmbedding(userId);
 
-    return createSuccessResponse({
+    return NextResponse.json({
+      success: true,
       message: 'Resume processing test completed',
       user: embedding?.user,
       extractedData: {
@@ -100,7 +108,10 @@ JavaScript, React, Node.js, PostgreSQL, MongoDB, AWS, Docker, Git, Python
       embeddingLength: embedding?.embedding ? JSON.parse(embedding.embedding).length : 0
     });
   } catch (error) {
-    return createErrorResponse(error);
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
@@ -113,9 +124,12 @@ async function testJobMatching(jobId?: string) {
     });
 
     if (!featuredJob) {
-      return createErrorResponse(new Error('No featured jobs found for testing'));
+      return NextResponse.json({
+        success: false,
+        error: 'No featured jobs found for testing'
+      }, { status: 404 });
     }
-    
+
     jobId = featuredJob.id;
   }
 
@@ -123,12 +137,16 @@ async function testJobMatching(jobId?: string) {
 
   try {
     const result = await JobMatchingService.processFeaturedJobMatching(jobId);
-    return createSuccessResponse({
+    return NextResponse.json({
+      success: true,
       message: 'Job matching test completed',
       result
     });
   } catch (error) {
-    return createErrorResponse(error);
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
@@ -145,9 +163,12 @@ async function testEmailSending(jobId?: string) {
     });
 
     if (!jobWithMatches) {
-      return createErrorResponse(new Error('No jobs with unsent matches found for testing'));
+      return NextResponse.json({
+        success: false,
+        error: 'No jobs with unsent matches found for testing'
+      }, { status: 404 });
     }
-    
+
     jobId = jobWithMatches.jobId;
   }
 
@@ -156,13 +177,17 @@ async function testEmailSending(jobId?: string) {
   try {
     const { FeaturedJobEmailService } = await import('@/lib/services/featured-job-email');
     const result = await FeaturedJobEmailService.sendJobMatchEmails(jobId);
-    
-    return createSuccessResponse({
+
+    return NextResponse.json({
+      success: true,
       message: 'Email sending test completed',
       result
     });
   } catch (error) {
-    return createErrorResponse(error);
+    return NextResponse.json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
 
@@ -216,7 +241,8 @@ async function runFullTest() {
     });
     results.steps.push(`Found ${recentMatches.length} matches in last 24 hours`);
 
-    return createSuccessResponse({
+    return NextResponse.json({
+      success: true,
       message: 'Full system test completed successfully',
       results,
       summary: {
@@ -231,14 +257,21 @@ async function runFullTest() {
   } catch (error) {
     results.success = false;
     results.errors.push(error instanceof Error ? error.message : 'Unknown error');
-    
-    return createErrorResponse(new Error(`Full test failed: ${JSON.stringify(results)}`));
+
+    return NextResponse.json({
+      success: false,
+      error: `Full test failed: ${JSON.stringify(results)}`
+    }, { status: 500 });
   }
 }
 
 // GET /api/admin/test-ai-matching - Get system status
-export const GET = withAPIMiddleware(
-  async (req, context) => {
+export const GET = withValidation(
+  async (req) => {
+    // Check admin authorization
+    const session = await requireRole(req, ['admin']);
+    if (session instanceof NextResponse) return session;
+
     try {
       // Get basic system statistics
       const stats = {
@@ -258,7 +291,8 @@ export const GET = withAPIMiddleware(
 
       const queueStats = await JobQueueService.getQueueStats();
 
-      return createSuccessResponse({
+      return NextResponse.json({
+        success: true,
         message: 'AI matching system status',
         stats,
         queueStats,
@@ -272,12 +306,11 @@ export const GET = withAPIMiddleware(
 
     } catch (error) {
       console.error('Failed to get system status:', error);
-      return createErrorResponse(error);
+      return NextResponse.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500 });
     }
   },
-  {
-    requiredRoles: ['admin'],
-    rateLimit: { enabled: true, type: 'authenticated' },
-    logging: { enabled: true },
-  }
+  {}
 );

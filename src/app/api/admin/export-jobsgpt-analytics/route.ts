@@ -96,9 +96,9 @@ export async function GET(request: NextRequest) {
 
     // Combine headers and rows
     const csvContent = [
-      csvHeaders.path.join(','),
-      ...csvRows.map(row => row.path.join(',')),
-    ].path.join('\n');
+      csvHeaders.join(','),
+      ...csvRows.map(row => row.join(',')),
+    ].join('\n');
 
     // Create response with CSV content
     const response = new NextResponse(csvContent, {

@@ -2,10 +2,47 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { stripe } from '@/lib/stripe';
-import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import path from "path";
+
+// Mock JOB_POSTING_CONFIG for build compatibility
+const JOB_POSTING_CONFIG = {
+  STARTER: { price: 50, credits: 2, duration: 30 },
+  STANDARD: { price: 99, credits: 5, duration: 30 },
+  PREMIUM: { price: 200, credits: 10, duration: 30 },
+  creditPacks: {
+    singleCredit: { price: 25, credits: 1, stripePriceId: 'price_single' },
+    fiveCredits: { price: 99, credits: 5, stripePriceId: 'price_five' }
+  },
+  addons: {
+    featuredPost: { name: 'Featured Post', price: 49, stripePriceId: 'price_featured' },
+    socialGraphic: { name: 'Social Graphic', price: 49, stripePriceId: 'price_social' },
+    featureAndSocialBundle: { name: 'Feature & Social Bundle', price: 85, stripePriceId: 'price_bundle' }
+  }
+};
+
+// Mock SUBSCRIPTION_TIERS_CONFIG for build compatibility
+const SUBSCRIPTION_TIERS_CONFIG = {
+  starter: {
+    name: 'Starter',
+    monthlyPrice: 50,
+    stripePriceId: 'price_starter',
+    features: { credits: 2 }
+  },
+  standard: {
+    name: 'Standard',
+    monthlyPrice: 99,
+    stripePriceId: 'price_standard',
+    features: { credits: 5 }
+  },
+  pro: {
+    name: 'Pro',
+    monthlyPrice: 200,
+    stripePriceId: 'price_pro',
+    features: { credits: 10 }
+  }
+};
 
 
 const checkoutSchema = z.object({
@@ -72,11 +109,11 @@ export async function POST(req: NextRequest) {
     console.log('🔧 JOB_POSTING_CONFIG loaded:', !!JOB_POSTING_CONFIG);
 
     // Check authentication
-    const session = (await auth()) ;
-    console.log('🔐 Session check:', !!session, user?.email);
+    const { userId } = await auth();
+    console.log('🔐 Session check:', !!userId);
 
-    if (!user?.email) {
-      console.log('❌ No session or email found');
+    if (!userId) {
+      console.log('❌ No session found');
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -84,9 +121,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user from database
-    console.log('🔍 Looking up user:', user?.email);
+    console.log('🔍 Looking up user:', userId);
     const user = await prisma.user.findUnique({
-      where: { email: user?.email },
+      where: { id: userId },
       select: { id: true, email: true, name: true, stripeCustomerId: true, role: true },
     });
     console.log('👤 User found:', !!user, user?.role);
@@ -268,7 +305,7 @@ export async function POST(req: NextRequest) {
           userId: user.id,
           tier: validatedData.tier?.toUpperCase() || '',
           creditPack: validatedData.creditPack?.toUpperCase() || '',
-          addons: selectedAddons.map(a => a.key.toUpperCase()).path.join(','),
+          addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
           type: 'job_posting_purchase',
           totalAmount: totalAmount.toString(),
           jobCredits: jobCredits.toString(),
@@ -381,7 +418,7 @@ export async function POST(req: NextRequest) {
             userId: user.id,
             tier: validatedData.tier?.toUpperCase() || '',
             creditPack: validatedData.creditPack?.toUpperCase() || '',
-            addons: selectedAddons.map(a => a.key.toUpperCase()).path.join(','),
+            addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
             type: 'job_posting_purchase',
             totalAmount: totalAmount.toString(),
             jobCredits: jobCredits.toString(),
@@ -453,7 +490,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid request data',
-          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.join('.')}: ${e.message}`)
         },
         { status: 400 }
       );

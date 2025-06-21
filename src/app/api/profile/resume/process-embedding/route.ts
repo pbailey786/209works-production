@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { createSuccessResponse } from '@/lib/middleware/api-middleware';
-import { createErrorResponse } from '@/lib/middleware/api-middleware';
+import { withValidation } from '@/lib/middleware/validation';
 import { ApiError } from '@/lib/errors/api-errors';
 import { ErrorCode } from '@/lib/errors/api-errors';
 import { JobQueueService } from '@/lib/services/job-queue';
@@ -15,16 +13,21 @@ const processResumeSchema = z.object({
 });
 
 // POST /api/profile/resume/process-embedding - Process resume embedding
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    const { body, user } = context;
-    const userId = user!.id;
+export const POST = withValidation(
+  async (req, { params, body }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer', 'jobseeker']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
+    // Body and user already available from above
+    const userId = user.id;
 
     try {
       const { resumeText, immediate } = body!;
 
       // Check if user is a job seeker
-      if (user!.role !== 'jobseeker') {
+      if (user.role !== 'jobseeker') {
         return createErrorResponse(new ApiError('Only job seekers can process resume embeddings', 403, ErrorCode.AUTHORIZATION_ERROR));
       }
 
@@ -47,7 +50,7 @@ export const POST = withAPIMiddleware(
         // Get the processed embedding details
         const embedding = await ResumeEmbeddingService.getResumeEmbedding(userId);
         
-        return createSuccessResponse({
+        return NextResponse.json({ success: true, data: {
           message: 'Resume embedding processed successfully',
           processed: true,
           immediate: true,
@@ -57,19 +60,19 @@ export const POST = withAPIMiddleware(
             industries: embedding.industries,
             lastProcessed: embedding.lastJobProcessed
           } : null
-        });
+        } });
       } else {
         // Queue for background processing (default)
         console.log(`📋 Queueing resume embedding for user: ${userId}`);
         
         const jobId = await JobQueueService.queueResumeEmbedding(userId, resumeText);
         
-        return createSuccessResponse({
+        return NextResponse.json({ success: true, data: {
           message: 'Resume embedding queued for processing',
           processed: false,
           queued: true,
           queueJobId: jobId
-        });
+        } });
       }
 
     } catch (error) {
@@ -88,10 +91,15 @@ export const POST = withAPIMiddleware(
 );
 
 // GET /api/profile/resume/process-embedding - Get resume embedding status
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { user } = context;
-    const userId = user!.id;
+export const GET = withValidation(
+  async (req, { params, query }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer', 'jobseeker']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
+    // User already available from above
+    const userId = user.id;
 
     try {
       // Get current embedding status

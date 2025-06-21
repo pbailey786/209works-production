@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
-import {STRIPE_WEBHOOK_EVENTS} from '@/components/ui/card';
+import {STRIPE_WEBHOOK_EVENTS} from '@/lib/validations/api';
 import { prisma } from '@/lib/database/prisma';
 import { EmailQueue } from '@prisma/client';
 

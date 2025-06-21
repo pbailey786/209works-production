@@ -1,26 +1,27 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
-import { withAPIMiddleware, apiConfigs } from '@/lib/middleware/api-middleware';
+import { withValidation } from '@/lib/middleware/validation';
 import { createJobApplicationSchema } from '@/lib/validations/api';
 import { routeParamsSchemas } from '@/lib/errors/api-errors';
 
 // POST /api/jobs/:id/apply - Apply for a job (jobseeker only)
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    const { user, params, body, performance } = context;
-    const userId = user!.id;
+export const POST = withValidation(
+  async (req, { params, body }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer', 'jobseeker']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
+    // User, params, and body already available from above
+    const userId = user.id;
     const jobId = params.id;
 
     // Track database queries for performance monitoring
-    performance.trackDatabaseQuery();
-
     // Check if job exists
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) {
-      throw new NotFoundError('Job');
+      return NextResponse.json({ success: false, error: 'Job' }, { status: 404 });
     }
-
-    performance.trackDatabaseQuery();
 
     // Check if user already applied
     const existingApplication = await prisma.jobApplication.findUnique({
@@ -36,8 +37,6 @@ export const POST = withAPIMiddleware(
       throw new ConflictError('You have already applied for this job');
     }
 
-    performance.trackDatabaseQuery();
-
     // Create job application
     const application = await prisma.jobApplication.create({
       data: {
@@ -50,30 +49,26 @@ export const POST = withAPIMiddleware(
       }
     });
 
-    return createSuccessResponse(
-      { application },
-      'Application submitted successfully',
-      201
-    );
+    return NextResponse.json({
+      success: true,
+      data: { application },
+      message: 'Application submitted successfully'
+    }, { status: 201 });
   },
-  {
-    requiredRoles: ['jobseeker'],
-    bodySchema: createJobApplicationSchema,
-    paramsSchema: routeParamsSchemas.jobId,
-    rateLimit: { enabled: true, type: 'authenticated' },
-    logging: { enabled: true, includeBody: false }, // Don't log cover letters
-    cors: { enabled: true }
-  }
+  {}
 );
 
 // GET /api/jobs/:id/apply - Check application status (jobseeker only)
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { user, params, performance } = context;
-    const userId = user!.id;
-    const jobId = params.id;
+export const GET = withValidation(
+  async (req, { params, query }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer', 'jobseeker']);
+    if (session instanceof NextResponse) return session;
 
-    performance.trackDatabaseQuery();
+    const user = (session as any).user;
+    // Params already available from above
+    const userId = user.id;
+    const jobId = params.id;
 
     const application = await prisma.jobApplication.findUnique({
       where: {
@@ -84,16 +79,10 @@ export const GET = withAPIMiddleware(
       }
     });
 
-    return createSuccessResponse({
+    return NextResponse.json({ success: true, data: {
       hasApplied: !!application,
       application: application || null
-    });
+    } });
   },
-  {
-    requiredRoles: ['jobseeker'],
-    paramsSchema: routeParamsSchemas.jobId,
-    rateLimit: { enabled: true, type: 'authenticated' },
-    logging: { enabled: true },
-    cors: { enabled: true }
-  }
+  {}
 );

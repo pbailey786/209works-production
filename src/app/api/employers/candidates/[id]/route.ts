@@ -164,7 +164,7 @@ export async function GET(
     if (hasNotes) {
       const parts = coverLetterContent.split('[EMPLOYER NOTE');
       actualCoverLetter = parts[0].trim();
-      notes = '[EMPLOYER NOTE' + parts.slice(1).path.join('[EMPLOYER NOTE');
+      notes = '[EMPLOYER NOTE' + parts.slice(1).join('[EMPLOYER NOTE');
     }
 
     const candidateSnapshot = {

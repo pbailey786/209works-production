@@ -223,7 +223,7 @@ async function processCSVFile(file: File): Promise<any[]> {
   const lines = text.split('\n').filter(line => line.trim());
 
   if (lines.length < 2) {
-    throw new Error('File must contain at least a header row and one job');
+    return NextResponse.json({ success: false, error: 'File must contain at least a header row and one job' }, { status: 400 });
   }
 
   // Parse CSV with proper handling of quoted fields and commas within quotes
@@ -265,7 +265,7 @@ async function processCSVFile(file: File): Promise<any[]> {
   const missingHeaders = requiredHeaders.filter(header => !headers.includes(header));
 
   if (missingHeaders.length > 0) {
-    throw new Error(`Missing required columns: ${missingHeaders.path.join(', ')}. Please ensure your CSV has these columns: ${requiredHeaders.path.join(', ')}`);
+    throw new Error(`Missing required columns: ${missingHeaders.join(', ')}. Please ensure your CSV has these columns: ${requiredHeaders.join(', ')}`);
   }
 
   const jobs = [];
@@ -323,7 +323,7 @@ async function processJSONFile(file: File): Promise<any[]> {
   } else if (data.jobs && Array.isArray(data.jobs)) {
     return data.jobs;
   } else {
-    throw new Error('JSON file must contain an array of jobs or an object with a "jobs" array');
+    return NextResponse.json({ success: false, error: 'JSON file must contain an array of jobs or an object with a "jobs" array' }, { status: 400 });
   }
 }
 

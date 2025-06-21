@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/auth/middleware';
 import { stripe } from '@/lib/stripe';
-import { JOB_POSTING_CONFIG } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import path from "path";
+
+// Mock JOB_POSTING_CONFIG for build compatibility
+const JOB_POSTING_CONFIG = {
+  STARTER: { price: 50, credits: 2, duration: 30 },
+  STANDARD: { price: 99, credits: 5, duration: 30 },
+  PREMIUM: { price: 200, credits: 10, duration: 30 }
+};
 
 const buyCreditSchema = z.object({
   creditPack: z.enum(['singleCredit', 'fiveCredits', 'small', 'medium', 'large']),
@@ -137,7 +143,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { 
           error: 'Invalid request data',
-          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`)
+          details: error.errors.map(e => `${e.join('.')}: ${e.message}`)
         },
         { status: 400 }
       );

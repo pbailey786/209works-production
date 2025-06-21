@@ -176,7 +176,7 @@ export async function GET(request: NextRequest) {
 
       const headers = Object.keys(data[0]);
       const csvContent = [
-        headers.path.join(','),
+        headers.join(','),
         ...data.map(row => 
           headers.map(header => {
             const value = row[header];
@@ -187,9 +187,9 @@ export async function GET(request: NextRequest) {
               return `"${value.replace(/"/g, '""')}"`;
             }
             return value;
-          }).path.join(',')
+          }).join(',')
         ),
-      ].path.join('\n');
+      ].join('\n');
 
       return new NextResponse(csvContent, {
         headers: {

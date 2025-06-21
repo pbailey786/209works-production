@@ -1,48 +1,48 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { withValidation } from '@/lib/middleware/validation';
+import { requireRole } from '@/lib/auth/middleware';
 import { adQuerySchema, createAdSchema } from '@/lib/validations/ads';
 import { prisma } from '@/lib/database/prisma';
-import {
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL,
-  getCacheOrExecute,
-  invalidateCacheByTags
-} from '@/lib/cache/pagination';
 
 // GET /api/ads - List advertisements (admins see all, employers see their own)
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { user, query, performance } = context;
+export const GET = withValidation(
+  async (req, { query }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
 
     // Extract query parameters
-    const {
-      advertiserId,
-      status,
-      type,
-      isActive,
-      page,
-      limit,
-      sortBy,
-      sortOrder,
-      dateFrom,
-      dateTo
-    } = query!;
+    const url = new URL(req.url);
+    const advertiserId = url.searchParams.get('advertiserId');
+    const status = url.searchParams.get('status');
+    const type = url.searchParams.get('type');
+    const isActive = url.searchParams.get('isActive');
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const sortBy = url.searchParams.get('sortBy') || 'createdAt';
+    const sortOrder = url.searchParams.get('sortOrder') || 'desc';
+    const dateFrom = url.searchParams.get('dateFrom');
+    const dateTo = url.searchParams.get('dateTo');
 
     // Build where condition based on user role
     const whereCondition: any = {};
 
     // Role-based access control
-    if (user!.role === 'admin') {
+    if (user.role === 'admin') {
       // Admins can see all ads, optionally filtered by employer
       if (advertiserId) {
         whereCondition.employerId = advertiserId;
       }
-    } else if (user!.role === 'employer') {
+    } else if (user.role === 'employer') {
       // Employers can only see their own ads
-      whereCondition.employerId = user!.id;
+      whereCondition.employerId = user.id;
     } else {
-      throw new AuthorizationError('Only employers and admins can access ads');
+      return NextResponse.json({
+        success: false,
+        error: 'Only employers and admins can access ads'
+      }, { status: 403 });
     }
 
     // Apply filters
@@ -58,16 +58,8 @@ export const GET = withAPIMiddleware(
       const now = new Date();
       if (isActive === 'true') {
         whereCondition.status = 'active';
-        whereCondition.schedule = {
-          startDate: { lte: now },
-          OR: [{ endDate: null }, { endDate: { gte: now } }]
-        };
       } else {
-        whereCondition.OR = [
-          { status: { not: 'active' } },
-          { schedule: { startDate: { gt: now } } },
-          { schedule: { endDate: { lt: now } } },
-        ];
+        whereCondition.status = { not: 'active' };
       }
     }
 
@@ -82,173 +74,159 @@ export const GET = withAPIMiddleware(
       }
     }
 
-    // Generate cache key
-    const cacheKey = generateCacheKey(
-      CACHE_PREFIXES.ads,
-      user!.role === 'admin' ? 'all' : user!.id,
-      JSON.stringify(whereCondition),
-      `${page}-${limit}-${sortBy}-${sortOrder}`
-    );
+    // Count total ads
+    const totalCount = await prisma.advertisement.count({
+      where: whereCondition
+    });
 
-    const result = await getCacheOrExecute(
-      cacheKey,
-      async () => {
-        // Count total ads
-        performance.trackDatabaseQuery();
-        const totalCount = await prisma.advertisement.count({
-          where: whereCondition
-        });
-
-        // Get paginated ads
-        performance.trackDatabaseQuery();
-        const ads = await prisma.advertisement.findMany({
-          where: whereCondition,
-          orderBy: { [sortBy || 'createdAt']: sortOrder || 'desc' },
-          skip: ((page || 1) - 1) * (limit || 10),
-          take: limit || 10,
-          select: {
-            id: true,
-            name: true,
-            type: true,
-            content: true,
-            status: true,
-            bidding: true,
-            schedule: true,
-            priority: true,
-            createdAt: true,
-            updatedAt: true,
-            employerId: true,
-            // Use direct fields instead of _count
-            impressions: true,
-            clicks: true,
-            conversions: true
-          }
-        });
-
-        // Add performance metrics for each ad
-        const adsWithMetrics = await Promise.all(
-          ads.map(async ad => {
-            // Calculate basic metrics
-            const impressions = ad.impressions;
-            const clicks = ad.clicks;
-            const conversions = ad.conversions;
-
-            const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
-            const conversionRate =
-              clicks > 0 ? (conversions / clicks) * 100 : 0;
-
-            // Estimate spend based on bidding type (simplified)
-            let estimatedSpend = 0;
-            const bidding = ad.bidding as any;
-            if (bidding?.type === 'cpc') {
-              estimatedSpend = clicks * (bidding.bidAmount || 0);
-            } else if (bidding?.type === 'cpm') {
-              estimatedSpend = (impressions / 1000) * (bidding.bidAmount || 0);
-            }
-
-            return {
-              ...ad,
-              metrics: {
-                impressions,
-                clicks,
-                conversions,
-                ctr: Math.round(ctr * 100) / 100,
-                conversionRate: Math.round(conversionRate * 100) / 100,
-                estimatedSpend: Math.round(estimatedSpend * 100) / 100,
-                costPerClick: clicks > 0 ? estimatedSpend / clicks : 0
-              },
-              isCurrentlyActive: isAdCurrentlyActive(ad.status, ad.schedule)
-            };
-          })
-        );
-
-        const { meta } = calculateOffsetPagination(
-          page || 1,
-          limit || 10,
-          totalCount
-        );
-
-        return createPaginatedResponse(adsWithMetrics, meta, {
-          queryTime: Date.now(),
-          cached: false
-        });
-      },
-      {
-        ttl: DEFAULT_TTL.short,
-        tags: [
-          'ads',
-          user!.role === 'admin' ? 'admin' : `advertiser:${user!.id}`,
-        ]
+    // Get paginated ads
+    const ads = await prisma.advertisement.findMany({
+      where: whereCondition,
+      orderBy: { [sortBy]: sortOrder as 'asc' | 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        content: true,
+        status: true,
+        bidding: true,
+        schedule: true,
+        priority: true,
+        createdAt: true,
+        updatedAt: true,
+        employerId: true,
+        // Use direct fields instead of _count
+        impressions: true,
+        clicks: true,
+        conversions: true
       }
-    );
+    });
 
-    return createSuccessResponse(result);
+    // Add performance metrics for each ad
+    const adsWithMetrics = ads.map(ad => {
+      // Calculate basic metrics
+      const impressions = ad.impressions || 0;
+      const clicks = ad.clicks || 0;
+      const conversions = ad.conversions || 0;
+
+      const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0;
+      const conversionRate = clicks > 0 ? (conversions / clicks) * 100 : 0;
+
+      // Estimate spend based on bidding type (simplified)
+      let estimatedSpend = 0;
+      const bidding = ad.bidding as any;
+      if (bidding?.type === 'cpc') {
+        estimatedSpend = clicks * (bidding.bidAmount || 0);
+      } else if (bidding?.type === 'cpm') {
+        estimatedSpend = (impressions / 1000) * (bidding.bidAmount || 0);
+      }
+
+      return {
+        ...ad,
+        metrics: {
+          impressions,
+          clicks,
+          conversions,
+          ctr: Math.round(ctr * 100) / 100,
+          conversionRate: Math.round(conversionRate * 100) / 100,
+          estimatedSpend: Math.round(estimatedSpend * 100) / 100,
+          costPerClick: clicks > 0 ? estimatedSpend / clicks : 0
+        },
+        isCurrentlyActive: isAdCurrentlyActive(ad.status, ad.schedule)
+      };
+    });
+
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return NextResponse.json({
+      success: true,
+      data: adsWithMetrics,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages,
+        hasNextPage,
+        hasPrevPage
+      }
+    });
   },
   {
-    requiredRoles: ['admin', 'employer'],
-    querySchema: adQuerySchema,
-    rateLimit: { enabled: true, type: 'general' },
-    logging: { enabled: true },
-    cors: { enabled: true }
+    querySchema: adQuerySchema
   }
 );
 
 // POST /api/ads - Create new advertisement
-export const POST = withAPIMiddleware(
-  async (req, context) => {
-    const { user, body, performance } = context;
+export const POST = withValidation(
+  async (req, { body }) => {
+    // Check authorization
+    const session = await requireRole(req, ['employer']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
 
     // Only employers can create ads (admins can help via other means)
-    if (user!.role !== 'employer') {
-      throw new AuthorizationError('Only employers can create advertisements');
+    if (user.role !== 'employer') {
+      return NextResponse.json({
+        success: false,
+        error: 'Only employers can create advertisements'
+      }, { status: 403 });
     }
 
     // Check if user has reached their ad limit
-    performance.trackDatabaseQuery();
     const existingAdsCount = await prisma.advertisement.count({
-      where: { employerId: user!.id }
+      where: { employerId: user.id }
     });
 
     const maxAdsPerEmployer = 50; // Configurable limit
     if (existingAdsCount >= maxAdsPerEmployer) {
-      throw new AuthorizationError(
-        `Maximum ${maxAdsPerEmployer} advertisements allowed per account`
-      );
+      return NextResponse.json({
+        success: false,
+        error: `Maximum ${maxAdsPerEmployer} advertisements allowed per account`
+      }, { status: 400 });
     }
 
     // Validate schedule dates
     if (!body) {
-      throw new Error('Request body is required');
+      return NextResponse.json({
+        success: false,
+        error: 'Request body is required'
+      }, { status: 400 });
     }
 
-    const startDate = new Date(body.schedule.startDate);
-    const endDate = body.schedule.endDate
+    const startDate = new Date(body.schedule?.startDate || Date.now());
+    const endDate = body.schedule?.endDate
       ? new Date(body.schedule.endDate)
       : null;
 
     if (endDate && endDate <= startDate) {
-      throw new AuthorizationError('End date must be after start date');
+      return NextResponse.json({
+        success: false,
+        error: 'End date must be after start date'
+      }, { status: 400 });
     }
 
     // Set initial status based on validation needs
-    const initialStatus = determineInitialStatus(body, user!);
+    const initialStatus = determineInitialStatus(body, user);
 
     // Create the advertisement
-    performance.trackDatabaseQuery();
     const ad = await prisma.advertisement.create({
       data: {
         ...body,
-        employerId: user!.id,
+        employerId: user.id,
         status: initialStatus,
         title: body.name || 'Untitled Ad',
         businessName: body.content?.companyLogo || 'Unknown Business',
         imageUrl: body.content?.imageUrl || '',
         targetUrl: body.content?.ctaUrl || '',
-        zipCodes: (body.targeting?.cities || []).path.join(','),
-        startDate: new Date(body.schedule?.startDate || Date.now()),
-        endDate: body.schedule?.endDate
-          ? new Date(body.schedule.endDate)
-          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        zipCodes: (body.targeting?.cities || []).join(','),
+        startDate: startDate,
+        endDate: endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         impressions: 0,
         clicks: 0,
         conversions: 0,
@@ -269,25 +247,21 @@ export const POST = withAPIMiddleware(
       }
     });
 
-    // Invalidate relevant caches
-    await invalidateCacheByTags(['ads', `advertiser:${user!.id}`]);
-
     // Estimate potential reach (simplified calculation)
     const estimatedReach = calculateEstimatedReach({});
 
-    return createSuccessResponse({
-      ...ad,
-      estimatedReach,
-      message: `Advertisement created successfully. Status: ${initialStatus}`,
-      nextSteps: getNextSteps(initialStatus)
-    });
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...ad,
+        estimatedReach,
+        message: `Advertisement created successfully. Status: ${initialStatus}`,
+        nextSteps: getNextSteps(initialStatus)
+      }
+    }, { status: 201 });
   },
   {
-    requiredRoles: ['employer'],
-    bodySchema: createAdSchema,
-    rateLimit: { enabled: true, type: 'general' },
-    logging: { enabled: true },
-    cors: { enabled: true }
+    bodySchema: createAdSchema
   }
 );
 

@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid profile data',
-          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );
@@ -233,7 +233,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );

@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ Job queue processing failed:', error);
     
-    return createErrorResponse(error);
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
   }
 }
 
@@ -62,6 +62,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ Manual job queue processing failed:', error);
     
-    return createErrorResponse(error);
+    return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
   }
 }

@@ -1,25 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { NotFoundError } from '@/lib/errors/api-errors';
+import { withValidation } from '@/lib/middleware/validation';
+import { requireRole } from '@/lib/auth/middleware';
 import { prisma } from '@/lib/database/prisma';
-import path from "path";
+
 // GET /api/ads/:id/analytics/export - Export advertisement analytics as CSV
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { user, params, query } = context;
+export const GET = withValidation(
+  async (req, { params }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
     const adId = params.id;
-    const range = query?.range || '7d';
+    const url = new URL(req.url);
+    const range = url.searchParams.get('range') || '7d';
 
     // Verify ad exists and user has permission
     const ad = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        ...(user!.role === 'employer' ? { businessName: user!.name } : {}),
+        ...(user.role === 'employer' ? { businessName: user.name } : {}),
       },
     });
 
     if (!ad) {
-      throw new NotFoundError('Advertisement not found');
+      return NextResponse.json({
+        success: false,
+        error: 'Advertisement not found'
+      }, { status: 404 });
     }
 
     // Calculate date range
@@ -82,9 +90,9 @@ export const GET = withAPIMiddleware(
     });
 
     const csvContent = [
-      csvHeaders.path.join(','),
-      ...csvRows.map(row => row.path.join(',')),
-    ].path.join('\n');
+      csvHeaders.join(','),
+      ...csvRows.map(row => row.join(',')),
+    ].join('\n');
 
     // Return CSV response
     return new NextResponse(csvContent, {
@@ -94,12 +102,7 @@ export const GET = withAPIMiddleware(
       },
     });
   },
-  {
-    requiredRoles: ['admin', 'employer'],
-    rateLimit: { enabled: true, type: 'general' },
-    logging: { enabled: true },
-    cors: { enabled: true },
-  }
+  {}
 );
 
 function generateDailyMetrics(startDate: Date, endDate: Date) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { randomBytes } from '@/components/ui/card';
+import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/database/prisma';
 
 // Validation schemas

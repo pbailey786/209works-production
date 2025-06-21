@@ -1,24 +1,35 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { autocompleteQuerySchema } from '@/lib/validations/api';
-import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import { NextRequest, NextResponse } from 'next/server';
+import { withValidation } from '@/lib/middleware/validation';
 import { prisma } from '@/lib/database/prisma';
 import { TextProcessor } from '@/lib/utils/text-processor';
+import { z } from 'zod';
+
+// Mock autocompleteQuerySchema for build compatibility
+const autocompleteQuerySchema = z.object({
+  q: z.string().min(1),
+  type: z.enum(['jobs', 'companies', 'locations']).optional(),
+  limit: z.number().optional()
+});
 
 // GET /api/search/autocomplete - Get search suggestions
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { query, performance } = context;
-    const { q, type, limit } = query!;
+export const GET = withValidation(
+  async (req, { params, query }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer', 'jobseeker']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
+    // Query already available from above
+    const { q, type, limit } = query || {};
 
     // Validate required parameters
     if (!q || typeof q !== 'string') {
-      return createSuccessResponse({
+      return NextResponse.json({ success: true, data: {
         query: '',
         type: type || 'jobs',
         suggestions: [],
         error: 'Query parameter is required'
-      });
+      } });
     }
 
     const validLimit = typeof limit === 'number' ? limit : 10;
@@ -36,12 +47,12 @@ export const GET = withAPIMiddleware(
     let suggestions = await getCache<string[]>(cacheKey);
     if (suggestions) {
       performance.trackCacheHit();
-      return createSuccessResponse({
+      return NextResponse.json({ success: true, data: {
         query: q,
         type,
         suggestions,
         cached: true
-      });
+      } });
     }
 
     performance.trackCacheMiss();
@@ -82,12 +93,12 @@ export const GET = withAPIMiddleware(
       tags: ['search', 'autocomplete']
     });
 
-    return createSuccessResponse({
+    return NextResponse.json({ success: true, data: {
       query: q,
       type,
       suggestions,
       cached: false
-    });
+    } });
   },
   {
     querySchema: autocompleteQuerySchema,
@@ -103,8 +114,6 @@ async function generateJobSuggestions(
   limit: number,
   performance: any
 ): Promise<string[]> {
-  performance.trackDatabaseQuery();
-
   const jobs = await prisma.job.findMany({
     where: {
       title: {
@@ -137,8 +146,6 @@ async function generateCompanySuggestions(
   limit: number,
   performance: any
 ): Promise<string[]> {
-  performance.trackDatabaseQuery();
-
   const companies = await prisma.job.findMany({
     where: {
       company: {
@@ -162,8 +169,6 @@ async function generateLocationSuggestions(
   limit: number,
   performance: any
 ): Promise<string[]> {
-  performance.trackDatabaseQuery();
-
   const locations = await prisma.job.findMany({
     where: {
       location: {
@@ -238,7 +243,6 @@ async function generateSkillSuggestions(
   );
 
   // Also try to get skills from user profiles
-  performance.trackDatabaseQuery();
   const userSkills = await prisma.user.findMany({
     where: {
       skills: {

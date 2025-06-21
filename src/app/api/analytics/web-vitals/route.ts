@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PerformanceMetrics } from '@/components/ui/card';
+import { PerformanceMetrics } from '@/lib/validations/api';
 import { prisma } from '@/lib/database/prisma';
 
 // In-memory storage for demo (replace with database in production)

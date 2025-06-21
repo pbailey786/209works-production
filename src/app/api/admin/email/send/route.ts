@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const invalidEmails = recipients.filter(email => !emailRegex.test(email));
     if (invalidEmails.length > 0) {
       return NextResponse.json({ 
-        error: `Invalid email addresses: ${invalidEmails.path.join(', ')}` 
+        error: `Invalid email addresses: ${invalidEmails.join(', ')}` 
       }, { status: 400 });
     }
 

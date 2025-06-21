@@ -1,25 +1,33 @@
-import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { createSuccessResponse } from '@/lib/middleware/api-middleware';
-import { NotFoundError } from '@/lib/errors/api-errors';
+import { NextRequest, NextResponse } from 'next/server';
+import { withValidation } from '@/lib/middleware/validation';
+import { requireRole } from '@/lib/auth/middleware';
 import { prisma } from '@/lib/database/prisma';
+
 // GET /api/ads/:id/analytics - Get advertisement analytics
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { user, params, query } = context;
+export const GET = withValidation(
+  async (req, { params }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
     const adId = params.id;
-    const range = query?.range || '7d';
+    const url = new URL(req.url);
+    const range = url.searchParams.get('range') || '7d';
 
     // Verify ad exists and user has permission
     const ad = await prisma.advertisement.findFirst({
       where: {
         id: adId,
-        ...(user!.role === 'employer' ? { businessName: user!.name } : {}),
+        ...(user.role === 'employer' ? { businessName: user.name } : {}),
       },
     });
 
     if (!ad) {
-      throw new NotFoundError('Advertisement not found');
+      return NextResponse.json({
+        success: false,
+        error: 'Advertisement not found'
+      }, { status: 404 });
     }
 
     // Calculate date range
@@ -134,18 +142,14 @@ export const GET = withAPIMiddleware(
           100
         : 0;
 
-    return createSuccessResponse({
+    return NextResponse.json({
+      success: true,
       data: mockAnalytics,
       range,
       generatedAt: new Date().toISOString(),
     });
   },
-  {
-    requiredRoles: ['admin', 'employer'],
-    rateLimit: { enabled: true, type: 'general' },
-    logging: { enabled: true },
-    cors: { enabled: true },
-  }
+  {}
 );
 
 function getAdStatus(startDate: Date, endDate: Date): string {

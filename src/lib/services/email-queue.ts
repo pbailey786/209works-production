@@ -1,7 +1,7 @@
-import { Queue } from 'bullmq';
+import { Queue, Job } from 'bullmq';
 import { Worker } from 'bullmq';
 import { QueueEvents } from 'bullmq';
-import {Job} from '@/components/ui/card';
+import IORedis from 'ioredis';
 import { prisma } from '@/lib/database/prisma';
 import { emailSecurityValidator } from '@/lib/email/security';
 import { SecurityLogger } from '@/lib/monitoring/security-logger';

@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       // Optional: Store in a simple log file for demonstration
       const fs = require('fs').promises;
       const path = require('path');
-      const logPath = path.path.join(process.cwd(), 'job-reports.log');
+      const logPath = path.join(process.cwd(), 'job-reports.log');
 
       const logEntry = `${new Date().toISOString()} - Report ID: ${report.id} - Job: ${job.title} at ${job.company} (${jobId}) - Reason: ${report.reason} - Reporter: ${report.reporterUserId || 'anonymous'}\n`;
 

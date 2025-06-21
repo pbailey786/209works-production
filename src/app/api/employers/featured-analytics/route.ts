@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { createSuccessResponse } from '@/lib/middleware/api-middleware';
-import { createErrorResponse } from '@/lib/middleware/api-middleware';
+import { withValidation } from '@/lib/middleware/validation';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 
 
-export const GET = withAPIMiddleware(
-  async (req, context) => {
-    const { user } = context;
-    const employerId = user!.id;
+export const GET = withValidation(
+  async (req, { params, query }) => {
+    // Check authorization
+    const session = await requireRole(req, ['admin', 'employer', 'jobseeker']);
+    if (session instanceof NextResponse) return session;
+
+    const user = (session as any).user;
+    // User already available from above
+    const employerId = user.id;
 
     try {
       // Get summary analytics for this employer
@@ -57,7 +60,7 @@ export const GET = withAPIMiddleware(
       });
     } catch (error) {
       console.error('Failed to get employer featured analytics:', error);
-      return createErrorResponse(error);
+      return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
     }
   },
   {

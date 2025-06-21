@@ -84,7 +84,7 @@ function generateCSV(data: any[]): string {
 
   const headers = Object.keys(data[0]);
   const csvContent = [
-    headers.path.join(','),
+    headers.join(','),
     ...data.map(row =>
       headers
         .map(header => {
@@ -95,9 +95,9 @@ function generateCSV(data: any[]): string {
           }
           return String(value);
         })
-        .path.join(',')
+        .join(',')
     ),
-  ].path.join('\n');
+  ].join('\n');
 
   return csvContent;
 }
@@ -126,9 +126,9 @@ ${data
     (row, index) =>
       `Record ${index + 1}:\n${Object.entries(row)
         .map(([key, value]) => `  ${key}: ${value}`)
-        .path.join('\n')}`
+        .join('\n')}`
   )
-  .path.join('\n\n')}
+  .join('\n\n')}
 
 ${data.length > 10 ? `\n... and ${data.length - 10} more records` : ''}
   `;

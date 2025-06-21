@@ -157,7 +157,7 @@ function generateRecommendations(
       `Found ${unusedIndexes.length} unused indexes. Consider dropping: ${unusedIndexes
         .slice(0, 3)
         .map(idx => idx.indexname)
-        .path.join(', ')}`
+        .join(', ')}`
     );
   }
 
@@ -180,7 +180,7 @@ function generateRecommendations(
       `Large tables detected: ${largeTables
         .slice(0, 2)
         .map(t => t.tablename)
-        .path.join(', ')}. Consider partitioning or archiving old data.`
+        .join(', ')}. Consider partitioning or archiving old data.`
     );
   }
 

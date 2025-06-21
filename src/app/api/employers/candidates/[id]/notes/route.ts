@@ -72,7 +72,7 @@ export async function POST(
       : existingContent;
 
     const existingNotes = existingContent.includes('[EMPLOYER NOTE')
-      ? '[EMPLOYER NOTE' + existingContent.split('[EMPLOYER NOTE').slice(1).path.join('[EMPLOYER NOTE')
+      ? '[EMPLOYER NOTE' + existingContent.split('[EMPLOYER NOTE').slice(1).join('[EMPLOYER NOTE')
       : '';
 
     const updatedContent = existingNotes

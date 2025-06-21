@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { openai } from '@/lib/openai';
 import { prisma } from '@/lib/database/prisma';
 import { auth } from '@clerk/nextjs/server';
-import { z } from '@/lib/validations/input-validation';
+import { z } from 'zod';
 
 // Rate limiting - simple in-memory store (in production, use Redis)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -22,13 +22,16 @@ const VALIDATION_LIMITS = {
   MAX_JOB_ID_LENGTH: 100, // Maximum job ID length
 } as const;
 
+// Message schema
+const messageSchema = z.object({
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string().min(1).max(4000)
+});
+
 // Enhanced validation schema for JobBot requests
 const jobBotRequestSchema = z.object({
-  jobId: enhancedIdSchema,
-  messages: enhancedArraySchema(messageSchema, 50).min(
-    1,
-    'At least one message is required'
-  )
+  jobId: z.string().min(1).max(100),
+  messages: z.array(messageSchema).min(1, 'At least one message is required').max(50)
 });
 
 type JobBotRequest = z.infer<typeof jobBotRequestSchema>;
@@ -81,7 +84,7 @@ function checkRateLimit(identifier: string): {
 // Input sanitization and validation functions
 function sanitizeString(input: string): string {
   if (typeof input !== 'string') {
-    throw new Error('Input must be a string');
+    return NextResponse.json({ success: false, error: 'Input must be a string' }, { status: 400 });
   }
 
   // Remove null bytes and control characters except newlines and tabs
@@ -90,13 +93,13 @@ function sanitizeString(input: string): string {
 
 function validateJobId(jobId: unknown): string {
   if (!jobId || typeof jobId !== 'string') {
-    throw new Error('Missing or invalid jobId parameter');
+    return NextResponse.json({ success: false, error: 'Missing or invalid jobId parameter' }, { status: 400 });
   }
 
   const sanitized = sanitizeString(jobId);
 
   if (sanitized.length === 0) {
-    throw new Error('JobId cannot be empty');
+    return NextResponse.json({ success: false, error: 'JobId cannot be empty' }, { status: 400 });
   }
 
   if (sanitized.length > VALIDATION_LIMITS.MAX_JOB_ID_LENGTH) {
@@ -107,7 +110,7 @@ function validateJobId(jobId: unknown): string {
 
   // Basic format validation - should be alphanumeric with possible hyphens/underscores
   if (!/^[a-zA-Z0-9_-]+$/.test(sanitized)) {
-    throw new Error('JobId contains invalid characters');
+    return NextResponse.json({ success: false, error: 'JobId contains invalid characters' }, { status: 400 });
   }
 
   return sanitized;
@@ -117,11 +120,11 @@ function validateMessages(
   messages: unknown
 ): Array<{ role: 'user' | 'assistant' | 'system'; content: string }> {
   if (!messages || !Array.isArray(messages)) {
-    throw new Error('Missing or invalid messages array');
+    return NextResponse.json({ success: false, error: 'Missing or invalid messages array' }, { status: 400 });
   }
 
   if (messages.length === 0) {
-    throw new Error('Messages array cannot be empty');
+    return NextResponse.json({ success: false, error: 'Messages array cannot be empty' }, { status: 400 });
   }
 
   if (messages.length > VALIDATION_LIMITS.MAX_MESSAGES_COUNT) {
@@ -302,7 +305,7 @@ function buildSystemPrompt(context: JobContextData): string {
 - Location: ${job.location}
 - Job Type: ${job.type}
 - Posted: ${new Date(job.postedAt).toLocaleDateString()}
-- Categories: ${job.categories?.path.join(', ') || 'Not specified'}
+- Categories: ${job.categories?.join(', ') || 'Not specified'}
 
 **Job Description:**
 ${job.description}

@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
+import OpenAI from 'openai';
 
 
 const openai = new OpenAI({

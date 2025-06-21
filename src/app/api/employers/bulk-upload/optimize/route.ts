@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
           console.log(`✅ AI response for job ${job.id}: ${optimizedContent ? `Success (${optimizedContent.length} chars)` : 'Empty response'}`);
 
           if (!optimizedContent) {
-            throw new Error('Empty response from AI');
+            return NextResponse.json({ success: false, error: 'Empty response from AI' }, { status: 400 });
           }
 
           // Successful AI optimization
@@ -238,7 +238,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid input data',
-          details: error.errors.map(e => `${e.path.path.join('.')}: ${e.message}`),
+          details: error.errors.map(e => `${e.join('.')}: ${e.message}`),
         },
         { status: 400 }
       );
