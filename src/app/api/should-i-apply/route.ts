@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/components/ui/card';
+import { requireRole } from '@/lib/auth/middleware';
 import { prisma } from '@/lib/database/prisma';
 import { getJobMatchScore } from '@/components/ui/card';
-import { ShouldIApplyAnalysisService } from '@/components/ui/card';
+import { ShouldIApplyAnalysisService } from '@/lib/services/should-i-apply';
 import { JobAnalysisInput } from '@/components/ui/card';
 import { z } from 'zod';
 import path from "path";

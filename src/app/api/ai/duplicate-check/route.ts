@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { DuplicateDetectionService } from '@/components/ui/card';
+import { DuplicateDetectionService } from '@/lib/services/duplicate-detection';
 import { prisma } from '@/lib/database/prisma';
 
 

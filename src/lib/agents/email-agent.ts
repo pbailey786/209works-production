@@ -1,7 +1,7 @@
-import { Resend } from '@/components/ui/card';
-import { render } from '@/components/ui/card';
-import { SecurityLogger } from '@/components/ui/card';
-import { emailSecurityValidator } from '@/components/ui/card';
+import { Resend } from 'resend';
+import { render } from '@react-email/render';
+import { SecurityLogger } from '@/lib/monitoring/security-logger';
+import { emailSecurityValidator } from '@/lib/email/security';
 import { templateManager } from '@/lib/email/template-manager';
 import path from "path";
 

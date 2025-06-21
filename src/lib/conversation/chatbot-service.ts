@@ -1,9 +1,10 @@
-import { openai } from '@/components/ui/card';
-import { ConversationManager } from '@/components/ui/card';
-import { ChatbotPrompts } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
+import { ConversationManager } from '@/lib/conversation-memory';
+import { ChatbotPrompts } from '@/lib/conversation/prompts';
 import { prisma } from '@/lib/database/prisma';
-import { LocalKnowledgeService } from '@/lib/knowledge/company-knowledge';
+import { LocalKnowledgeService } from '@/lib/conversation/local-knowledge';
 import path from "path";
+import {
   ConversationIntent,
   ChatbotResponse,
   ConversationContext,

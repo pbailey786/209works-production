@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { isResumeParsingAvailable, getEnvironmentConfig } from '@/components/ui/card';
-import { isValidResumeFile } from '@/components/ui/card';
+import { isValidResumeFile } from '@/lib/utils/file-validation';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {

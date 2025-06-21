@@ -341,3 +341,8 @@ export class ApiResponse {
     );
   }
 }
+
+// Export convenience functions that are commonly imported
+export const withAPIMiddleware = withValidation;
+export const createSuccessResponse = ApiResponse.success;
+export const createErrorResponse = ApiResponse.error;

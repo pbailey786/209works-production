@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { ChatbotService } from '@/lib/conversation/chatbot-service';
-import { ConversationManager } from '@/components/ui/card';
+import { ConversationManager } from '@/lib/conversation-memory';
 import { prisma } from '@/lib/database/prisma';
 
 

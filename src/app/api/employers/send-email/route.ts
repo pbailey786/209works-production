@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/components/ui/card';
+import { requireRole } from '@/lib/auth/middleware';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);

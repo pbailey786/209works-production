@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { openai } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
-import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/components/ui/card';
-import { extractTextFromFile, validateExtractedText } from '@/components/ui/card';
+import { isValidResumeFile } from '@/lib/utils/file-validation';
+import { saveResumeFile } from '@/lib/utils/file-storage';
+import {type FileValidationResult} from '@/components/ui/card';
+import { extractTextFromFile } from '@/lib/utils/file-processing';
+import { validateExtractedText } from '@/lib/utils/file-validation';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
 import path from "path";
 

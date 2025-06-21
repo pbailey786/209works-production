@@ -3,13 +3,42 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardCards';
+import { DashboardLayout, type NavigationItem } from '@/components/dashboard/DashboardLayout';
+import {
+  MetricCard,
+  WidgetCard,
+  ActivityItem,
+  QuickAction,
+  StatsGrid
+} from '@/components/dashboard/DashboardCards';
+import {
   RecentChatsWidget,
   SavedSearchesWidget,
   JobsGPTStatsWidget
+} from '@/components/dashboard/JobsGPTWidgets';
+import {
+  ApplicationStatsWidget,
+  JobRecommendationsWidget,
+  ProfileCompletionWidget
 } from '@/components/dashboard/JobSeekerWidgets';
 import { Button } from '@/components/ui/button';
-import { Badge } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import {
+  BarChart3,
+  Search,
+  Bookmark,
+  Send,
+  User,
+  Settings,
+  Sparkles,
+  MessageSquare,
+  Heart,
+  Target,
+  Building,
+  FileText,
+  MapPin,
+  AlertCircle
+} from 'lucide-react';
 
 // Navigation configuration for job seeker dashboard
 const jobSeekerNavigation: NavigationItem[] = [

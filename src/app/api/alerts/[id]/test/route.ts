@@ -2,10 +2,12 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { testAlertSchema } from '@/lib/validations/alerts';
 import { routeParamsSchemas } from '@/lib/validations/api';
-import { createSuccessResponse, NotFoundError } from '@/lib/utils/api-response';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import {NotFoundError} from '@/lib/utils/api-response';
 import { EnhancedJobSearchService } from '@/lib/search/enhanced-job-search';
 import { prisma } from '@/lib/search/job-matching';
 import path from "path";
+import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,

@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { SecurityLogger } from './email/security';
+import { SecurityLogger } from '@/lib/monitoring/security-logger';
 
 // Validate environment variables (but allow build-time flexibility)
 if (

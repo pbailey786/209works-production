@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import path from "path";
+
+// Re-export z for compatibility
+export { z };
 
 
 export const VALIDATION_LIMITS = {

@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { autocompleteQuerySchema } from '@/components/ui/card';
-import { createSuccessResponse } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { autocompleteQuerySchema } from '@/lib/validations/api';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
 import { prisma } from '@/lib/database/prisma';
-import { TextProcessor } from '@/lib/cache/redis';
+import { TextProcessor } from '@/lib/utils/text-processor';
 
 // GET /api/search/autocomplete - Get search suggestions
 export const GET = withAPIMiddleware(

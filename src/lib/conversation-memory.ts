@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/database/prisma';
-import path from "path";
 
 export interface UserPreferences {
   preferredLocation?: string;
@@ -279,11 +278,11 @@ export class ConversationMemory {
     }
     
     if (preferences.preferredJobTypes?.length) {
-      summary += `- Interested in: ${preferences.preferredJobTypes.path.join(', ')}\n`;
+      summary += `- Interested in: ${preferences.preferredJobTypes.join(', ')}\n`;
     }
-    
+
     if (preferences.preferredIndustries?.length) {
-      summary += `- Industries: ${preferences.preferredIndustries.path.join(', ')}\n`;
+      summary += `- Industries: ${preferences.preferredIndustries.join(', ')}\n`;
     }
     
     if (preferences.salaryRange) {
@@ -300,7 +299,7 @@ export class ConversationMemory {
     }
     
     if (recentSearches.length) {
-      summary += `- Recent searches: ${recentSearches.slice(0, 3).path.join(', ')}\n`;
+      summary += `- Recent searches: ${recentSearches.slice(0, 3).join(', ')}\n`;
     }
     
     if (jobInteractions.applied.length) {
@@ -363,6 +362,9 @@ export class ConversationMemory {
 
 // Export singleton instance
 export const conversationMemory = ConversationMemory.getInstance();
+
+// Export ConversationManager alias for compatibility
+export const ConversationManager = ConversationMemory;
 
 // Cleanup cache every 30 minutes
 if (typeof window === 'undefined') { // Server-side only

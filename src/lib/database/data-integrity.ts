@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/database/prisma';
-import { getCache, setCache, invalidateCache } from '@/components/ui/card';
+import { getCache } from '@/lib/cache/redis';
+import { setCache } from '@/lib/cache/redis';
+import { invalidateCache } from '@/lib/cache/redis';
 import { DEFAULT_TTL } from '@/lib/cache/config';
 
 /**

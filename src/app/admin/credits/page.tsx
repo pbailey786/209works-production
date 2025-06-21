@@ -1,8 +1,9 @@
-import { Suspense } from '@/components/ui/card';
+import { Suspense } from 'react';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { hasPermission, Permission } from '@/components/ui/card';
+import { Permission } from '@/lib/auth/permissions';
+import { hasPermission } from '@/types/auth';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 

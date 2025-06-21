@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEmbedding } from '@/lib/ai/embeddings';
+import { getEmbedding, getChatCompletion } from '@/lib/openai';
 import { prisma } from '@/lib/database/prisma';
-import path from "path";
 
 
 class SemanticSearchValidator {
@@ -246,7 +245,7 @@ export async function POST(req: NextRequest) {
     // Determine embedding input
     const embeddingInput =
       extracted && extracted.keywords && extracted.keywords.length > 0
-        ? extracted.keywords.path.join(' ')
+        ? extracted.keywords.join(' ')
         : sanitizedQuery;
 
     // Generate embedding using secure wrapper
@@ -265,7 +264,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Convert embedding to string format for database
-    const embedding = `[${embeddingArr.path.join(',')}]`;
+    const embedding = `[${embeddingArr.join(',')}]`;
 
     // Build safe database query
     const { query: dbQuery, params } = buildSemanticSearchQuery(

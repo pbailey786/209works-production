@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { apiConfigs } from '@/components/ui/card';
-import { createSuccessResponse } from '@/components/ui/card';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
 import { getDatabaseHealthReport } from '@/components/ui/card';
 import { errorMonitor } from '@/lib/monitoring/error-monitor';
 

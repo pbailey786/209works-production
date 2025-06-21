@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import { createErrorResponse } from '@/lib/middleware/api-middleware';
+import { NotFoundError } from '@/lib/errors/api-errors';
+import {ValidationError} from '@/components/ui/card';
 import { FeaturedJobAnalyticsService } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 // POST /api/jobs/[id]/analytics/impression - Track job impression

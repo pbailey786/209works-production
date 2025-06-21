@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { prisma } from '@/lib/database/prisma';
-import { EmailHelpers } from '@/components/ui/card';
+import { EmailHelpers } from '@/lib/email/email-helpers';
 import { z } from 'zod';
 import { hash } from 'bcryptjs';
 

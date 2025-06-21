@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { openai } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import path from "path";
 

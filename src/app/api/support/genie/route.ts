@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { openai } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';

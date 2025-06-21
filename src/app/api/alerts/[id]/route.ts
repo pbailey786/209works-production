@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { updateAlertSchema } from '@/lib/validations/alerts';
 import { routeParamsSchemas } from '@/lib/validations/api';
-import { prisma } from '@/lib/utils/api-response';
+import { prisma } from '@/lib/database/prisma';
+import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,

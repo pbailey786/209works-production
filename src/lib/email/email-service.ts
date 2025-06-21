@@ -1,5 +1,7 @@
-import { emailAgent, EmailJobData, EmailResult, EmailMetrics } from '@/components/ui/card';
-import { templateManager, TemplateRenderResult } from '@/components/ui/card';
+import { emailAgent } from '@/lib/agents/email-agent';
+import {EmailJobData, EmailResult, EmailMetrics} from '@/components/ui/card';
+import { templateManager } from '@/lib/email/template-manager';
+import {TemplateRenderResult} from '@/components/ui/card';
 import { SecurityLogger } from '@/lib/security/security-monitor';
 
 

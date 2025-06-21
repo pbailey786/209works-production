@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { openai } from '@/components/ui/card';
-import { isValidResumeFile } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
+import { isValidResumeFile } from '@/lib/utils/file-validation';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {

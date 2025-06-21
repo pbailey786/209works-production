@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from '@/components/ui/card';
-import { cva } from '@/components/ui/card';
+import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 

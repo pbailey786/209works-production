@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { createServerSupabaseClient } from '@/components/ui/card';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createDatabaseBackup } from '@/lib/backup/database-backup';
 
 interface BackupResult {

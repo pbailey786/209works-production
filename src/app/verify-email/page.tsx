@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from '@/components/ui/card';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 

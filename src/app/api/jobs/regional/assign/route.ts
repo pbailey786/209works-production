@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { RegionalJobService } from '@/components/ui/card';
+import { RegionalJobService } from '@/lib/services/regional-job-service';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {

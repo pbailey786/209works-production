@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 import { paginatedQuerySchema } from '@/lib/validations/api';
-import { JobCacheService } from '@/lib/services/regional-job-service';
+import { JobCacheService } from '@/lib/services/job-cache';
 import { createJobSchema } from '@/lib/validations/api';
 import { createSuccessResponse } from '@/lib/middleware/api-middleware';
 // GET /api/jobs - List jobs with caching and pagination

@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-import { Card } from '@/components/ui/select';
+import { Card } from '@/components/ui/card';
 
 import Link from 'next/link';
 import { PricingSection } from 'lucide-react';

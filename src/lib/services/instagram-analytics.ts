@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/database/prisma';
-import { InstagramAPI, InstagramInsightsResponse } from '@/components/ui/card';
+import { InstagramAPI } from '@/lib/services/instagram-api';
+import {InstagramInsightsResponse} from '@/components/ui/card';
 import { InstagramAlertType } from '@prisma/client';
 
 /**

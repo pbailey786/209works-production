@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { EmailHelpers } from '@/components/ui/card';
+import { EmailHelpers } from '@/lib/email/email-helpers';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {

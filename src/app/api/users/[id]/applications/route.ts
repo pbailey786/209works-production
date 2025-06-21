@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { paginatedQuerySchema } from '@/components/ui/card';
-import { routeParamsSchemas } from '@/components/ui/card';
-import { UserCacheService } from '@/lib/errors/api-errors';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { paginatedQuerySchema } from '@/lib/validations/api';
+import { routeParamsSchemas } from '@/lib/errors/api-errors';
+import { UserCacheService } from '@/lib/services/user-cache';
 
 // GET /api/users/:id/applications - Get user's job applications with pagination
 export const GET = withAPIMiddleware(

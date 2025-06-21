@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/components/ui/card';
-import { stripe } from '@/components/ui/card';
+import { requireRole } from '@/lib/auth/middleware';
+import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';

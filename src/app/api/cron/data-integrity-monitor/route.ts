@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { DataIntegrityService } from '@/components/ui/card';
+import { DataIntegrityService } from '@/lib/database/data-integrity';
 import { headers } from 'next/headers';
 
 export const runtime = 'nodejs';

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { hasPermission, Permission } from '@/components/ui/card';
-import { emailService } from '@/components/ui/card';
-import { emailAgent } from '@/components/ui/card';
+import { Permission } from '@/lib/auth/permissions';
+import { hasPermission } from '@/types/auth';
+import { emailService } from '@/lib/email/email-service';
+import { emailAgent } from '@/lib/agents/email-agent';
 import { prisma } from '@/lib/database/prisma';
 
 

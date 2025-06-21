@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { geolocationSearchSchema } from '@/lib/validations/api';
-import { createSuccessResponse } from '@/lib/utils/api-response';
-import { prisma } from '@/lib/cache/redis';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import { prisma } from '@/lib/database/prisma';
+import {
   GeolocationUtils,
   RelevanceScorer,
   TextProcessor

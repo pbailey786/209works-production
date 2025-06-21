@@ -1,7 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { hasPermission, Permission } from '@/components/ui/card';
-import { ArrowLeft } from '@/components/ui/card';
+import { Permission } from '@/lib/auth/permissions';
+import { hasPermission } from '@/types/auth';
+import { ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/database/prisma';
 
 

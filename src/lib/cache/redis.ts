@@ -568,3 +568,14 @@ if (typeof process !== 'undefined') {
   process.on('SIGINT', gracefulShutdown);
   process.on('beforeExit', gracefulShutdown);
 }
+
+export function createSuccessResponse(data: any, message?: string) {
+  return { success: true, data, message };
+}
+
+export class AuthorizationError extends Error {
+  constructor(message: string = 'Unauthorized') {
+    super(message);
+    this.name = 'AuthorizationError';
+  }
+}

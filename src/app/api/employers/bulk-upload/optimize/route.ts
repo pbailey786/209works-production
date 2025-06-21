@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { openai } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 import path from "path";

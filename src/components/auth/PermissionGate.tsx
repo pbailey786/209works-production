@@ -4,7 +4,6 @@ import React from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Shield, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import path from "path";
 
 interface PermissionGateProps {
   children: React.ReactNode;
@@ -14,7 +13,7 @@ interface PermissionGateProps {
   showFallback?: boolean;
 }
 
-export default function PermissionGate({
+function PermissionGate({
   children,
   requiredRole = 'user',
   requiredPermissions = [],
@@ -97,7 +96,7 @@ export default function PermissionGate({
         <div className="text-sm text-gray-500">
           <p>Required role: <span className="font-medium">{requiredRole}</span></p>
           {requiredPermissions.length > 0 && (
-            <p>Required permissions: <span className="font-medium">{requiredPermissions.path.join(', ')}</span></p>
+            <p>Required permissions: <span className="font-medium">{requiredPermissions.join(', ')}</span></p>
           )}
         </div>
       </div>
@@ -131,3 +130,6 @@ export function UserGate({ children, fallback }: { children: React.ReactNode; fa
     </PermissionGate>
   );
 }
+
+export { PermissionGate };
+export default PermissionGate;

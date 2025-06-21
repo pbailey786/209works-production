@@ -5,7 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/dropdown-menu';
+import { Card } from '@/components/ui/card';
 
 interface Job {
   id: string;

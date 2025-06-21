@@ -1,5 +1,5 @@
 import { Metadata } from '@/components/ui/card';
-import { notFound } from '@/components/ui/card';
+import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 

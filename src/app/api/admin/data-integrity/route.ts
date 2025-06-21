@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { DataIntegrityService } from '@/components/ui/card';
+import { DataIntegrityService } from '@/lib/database/data-integrity';
 import { prisma } from '@/lib/database/prisma';
 
 export const runtime = 'nodejs';

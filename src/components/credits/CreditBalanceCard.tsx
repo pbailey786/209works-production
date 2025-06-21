@@ -5,7 +5,12 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'lucide-react';
+import { Table } from '@/components/ui/table';
+import { TableBody } from '@/components/ui/table';
+import { TableCell } from '@/components/ui/table';
+import { TableHead } from '@/components/ui/table';
+import { TableHeader } from '@/components/ui/table';
+import { TableRow } from '@/components/ui/table';
 
 interface CreditInfo {
   universal?: number;

@@ -1,4 +1,4 @@
-import { openai } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
 import { Job } from '@/components/ui/card';
 import { getDomainConfig } from '@/lib/domain/config';
 

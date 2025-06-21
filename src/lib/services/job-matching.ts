@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
-import { ResumeEmbeddingService } from '@/components/ui/card';
+import { ResumeEmbeddingService } from '@/lib/services/resume-embedding';
 import { FeaturedJobAnalyticsService } from './featured-job-analytics';
 import path from "path";
 

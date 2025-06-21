@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { useUser } from '@clerk/nextjs';
 import { useDomain } from '@/lib/domain/context';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/dropdown-menu';
-  User, 
-  Settings, 
-  LogOut, 
-  Briefcase, 
+import { Badge } from '@/components/ui/badge';
+import {
+  User,
+  Settings,
+  LogOut,
+  Briefcase,
   Search,
   Globe,
   Menu,

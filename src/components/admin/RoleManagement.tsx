@@ -8,20 +8,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { usePermissions } from '@/hooks/usePermissions';
 import { PermissionGate } from './PermissionGate';
 
-import { Card } from '@/components/ui/select';
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/dialog';
-  AdminRole,
-  Permission,
-  ROLE_PERMISSIONS,
-  ROLE_DISPLAY_INFO,
-  getUserPermissions
-} from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Table } from '@/components/ui/table';
+import { TableBody } from '@/components/ui/table';
+import { TableCell } from '@/components/ui/table';
+import { TableHead } from '@/components/ui/table';
+import { TableHeader } from '@/components/ui/table';
+import { TableRow } from '@/components/ui/table';
+import { AdminRole } from '@/types/auth';
+import { ROLE_PERMISSIONS } from '@/types/auth';
+import { ROLE_DISPLAY_INFO } from '@/types/auth';
+import { getUserPermissions } from '@/hooks/usePermissions';
+import {Permission} from '@/lib/auth/permissions';
+import { Shield, Users, Settings, Plus, Edit, Trash2, Check, X, Eye } from 'lucide-react';
 
 interface RoleManagementProps {
   users?: Array<{
@@ -33,7 +32,7 @@ interface RoleManagementProps {
   }>;
 }
 
-export default function RoleManagement({ users = [] }: RoleManagementProps) {
+function RoleManagement({ users = [] }: RoleManagementProps) {
   const [selectedRole, setSelectedRole] = useState<AdminRole | null>(null);
   const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
   const { hasPermission, userRole } = usePermissions();
@@ -268,3 +267,6 @@ export default function RoleManagement({ users = [] }: RoleManagementProps) {
     </div>
   );
 }
+
+export { RoleManagement };
+export default RoleManagement;

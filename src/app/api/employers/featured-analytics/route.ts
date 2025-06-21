@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { createSuccessResponse, createErrorResponse } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import { createErrorResponse } from '@/lib/middleware/api-middleware';
 import { FeaturedJobAnalyticsService } from '@/lib/services/featured-job-analytics';
 
 

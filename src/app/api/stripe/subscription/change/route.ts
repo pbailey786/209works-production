@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { stripe, STRIPE_PRICE_IDS } from '@/components/ui/card';
+import { stripe } from '@/lib/stripe';
+import { STRIPE_PRICE_IDS } from '@/lib/stripe/config';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 import type { PricingTier, BillingInterval } from '@prisma/client';

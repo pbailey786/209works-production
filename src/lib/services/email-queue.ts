@@ -1,7 +1,10 @@
-import { Queue, Worker, Job, QueueEvents } from '@/components/ui/card';
+import { Queue } from 'bullmq';
+import { Worker } from 'bullmq';
+import { QueueEvents } from 'bullmq';
+import {Job} from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
-import { emailSecurityValidator } from '@/components/ui/card';
-import { SecurityLogger } from '@/components/ui/card';
+import { emailSecurityValidator } from '@/lib/email/security';
+import { SecurityLogger } from '@/lib/monitoring/security-logger';
 import { emailService } from '@/lib/email';
 import { EmailHelpers } from '@/lib/email';
 

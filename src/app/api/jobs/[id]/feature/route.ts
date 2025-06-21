@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { z } from 'zod';
-import { JobQueueService } from '@/components/ui/card';
+import { JobQueueService } from '@/lib/services/job-queue';
 import { FeaturedJobAnalyticsService } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardCards';
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import RealTimeAnalyticsWidget from '@/components/analytics/RealTimeAnalyticsWidget';
 import { Button } from '@/components/ui/button';
 import { Badge } from 'lucide-react';

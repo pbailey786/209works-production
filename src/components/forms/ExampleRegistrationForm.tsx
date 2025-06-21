@@ -4,12 +4,14 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FormErrorBoundary } from '@/components/ui/form-error-boundary';
 import { useToast } from '@/components/ui/card';
+import {
   FormInput,
   PasswordInput,
   FormTextarea,
   FileInput
 } from '@/components/ui/card';
-  import { useEffect } from 'react';
+import { useEffect } from 'react';
+import {
   validationPatterns,
   handleFormSubmission,
   useFormDirtyState,

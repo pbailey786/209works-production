@@ -3,7 +3,8 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { DashboardLayout, NavigationItem } from '@/components/dashboard/DashboardCards';
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import {
   AIMatchingWidget,
   JobPerformanceWidget,
   CreditUsageWidget,

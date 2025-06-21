@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
-import { createSuccessResponse } from '@/lib/utils/api-response';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
 import { prisma } from '@/lib/database/prisma';
-import { z } from '@/lib/cache/redis';
+import { z } from 'zod';
 
 // Query schema for suggestions
 const suggestionsQuerySchema = z.object({

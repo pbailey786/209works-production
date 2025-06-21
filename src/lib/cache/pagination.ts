@@ -315,3 +315,13 @@ export const searchQuerySchema = z.intersection(
 );
 
 export type SearchQueryParams = z.infer<typeof searchQuerySchema>;
+
+export const generateCacheKey = {};
+
+export const CACHE_PREFIXES = {};
+
+export const getCacheOrExecute = {};
+
+export const DEFAULT_TTL = {};
+
+export const invalidateCacheByTags = {};

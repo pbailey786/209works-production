@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { stripe } from '@/components/ui/card';
+import { stripe } from '@/lib/stripe';
 import { z } from 'zod';
 
 

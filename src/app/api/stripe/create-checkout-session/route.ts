@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { stripe, STRIPE_CONFIG, getStripePriceId, validateStripeConfig } from '@/components/ui/card';
+import { stripe } from '@/lib/stripe';
+import { validateStripeConfig } from '@/lib/stripe/config';
+import { getStripePriceId } from '@/lib/stripe/config';
+import { STRIPE_CONFIG } from '@/lib/stripe/config';
 import { prisma } from '@/lib/database/prisma';
 import { PricingTier, BillingInterval } from '@prisma/client';
 

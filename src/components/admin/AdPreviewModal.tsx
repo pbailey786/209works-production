@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/dialog';
+import {
   Monitor,
   Smartphone,
   Tablet,
@@ -14,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/dialog
   Calendar,
   DollarSign,
   Target,
-  X,
+  X
 } from 'lucide-react';
 
 interface AdPreviewModalProps {
@@ -35,7 +36,7 @@ interface AdPreviewModalProps {
   };
 }
 
-export default function AdPreviewModal({
+function AdPreviewModal({
   isOpen,
   onClose,
   ad
@@ -495,3 +496,6 @@ export default function AdPreviewModal({
     </Dialog>
   );
 }
+
+export { AdPreviewModal };
+export default AdPreviewModal;

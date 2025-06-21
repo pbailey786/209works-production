@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { stripe } from '@/components/ui/card';
+import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';

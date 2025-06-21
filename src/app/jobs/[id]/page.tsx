@@ -1,9 +1,10 @@
 import { Metadata } from '@/components/ui/card';
-import { notFound } from '@/components/ui/card';
+import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { cache } from '@/components/ui/card';
-import { Job, JobType } from '@/components/ui/card';
+import { cache } from 'react';
+import { JobType } from '@prisma/client';
+import {Job} from '@/components/ui/card';
 import { prisma } from '@/lib/database/prisma';
 import { safeDBQuery, validateSession } from '@/lib/utils/safe-fetch';
 import path from "path";

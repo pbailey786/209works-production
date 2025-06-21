@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AdRotationService } from '@/lib/services/ad-rotation';
+import { AdRotationService } from '@/lib/services/adRotationService';
 import { z } from 'zod';
 
 const impressionSchema = z.object({

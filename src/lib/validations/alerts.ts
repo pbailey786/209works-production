@@ -104,3 +104,5 @@ export type TestAlert = z.infer<typeof testAlertSchema>;
 export type AlertStats = z.infer<typeof alertStatsSchema>;
 export type BulkAlertOperation = z.infer<typeof bulkAlertOperationSchema>;
 export type AlertNotification = z.infer<typeof alertNotificationSchema>;
+
+export { prisma } from '@/lib/database/prisma';

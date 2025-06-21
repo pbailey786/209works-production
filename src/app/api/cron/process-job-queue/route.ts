@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { JobQueueService } from '@/components/ui/card';
+import { JobQueueService } from '@/lib/services/job-queue';
 import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors';
 
 // GET /api/cron/process-job-queue - Process pending jobs from the queue

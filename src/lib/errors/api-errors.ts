@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { ZodError } from '@/components/ui/card';
+import { ZodError, z } from 'zod';
 import { Prisma } from '@prisma/client';
-import path from "path";
 
 
 export interface ApiErrorResponse {
@@ -115,7 +114,7 @@ export function createErrorResponse(
       message: 'Invalid input data',
       code: ErrorCode.VALIDATION_ERROR,
       details: error.errors.map(err => ({
-        field: err.path.path.join('.'),
+        field: err.path.join('.'),
         message: err.message,
         code: err.code,
       })),
@@ -237,3 +236,22 @@ export function createSuccessResponse<T>(
     { status: statusCode }
   );
 }
+
+// Route parameter schemas for validation
+export const routeParamsSchemas = {
+  id: z.object({
+    id: z.string().uuid('Invalid ID format')
+  }),
+  userId: z.object({
+    userId: z.string().uuid('Invalid user ID format')
+  }),
+  jobId: z.object({
+    jobId: z.string().uuid('Invalid job ID format')
+  }),
+  alertId: z.object({
+    alertId: z.string().uuid('Invalid alert ID format')
+  }),
+  adId: z.object({
+    adId: z.string().uuid('Invalid ad ID format')
+  })
+};

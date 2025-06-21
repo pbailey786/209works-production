@@ -3,7 +3,7 @@
 import { Button } from 'lucide-react';
 
 import Link from 'next/link';
-import { AdPreviewModal } from './AdPreviewModal';
+import { AdPreviewModal } from '@/components/admin/AdPreviewModal';
 
 interface Advertisement {
   id: string;

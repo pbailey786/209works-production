@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { saveResumeFile, isValidResumeFile, type FileValidationResult } from '@/components/ui/card';
-import { extractTextFromFile, validateExtractedText, type TextExtractionResult } from '@/components/ui/card';
+import { isValidResumeFile } from '@/lib/utils/file-validation';
+import { saveResumeFile } from '@/lib/utils/file-storage';
+import {type FileValidationResult} from '@/components/ui/card';
+import { extractTextFromFile } from '@/lib/utils/file-processing';
+import { validateExtractedText } from '@/lib/utils/file-validation';
+import {type TextExtractionResult} from '@/components/ui/card';
 import { z } from 'zod';
 import { isResumeParsingAvailable, logEnvironmentStatus } from '@/components/ui/card';
 

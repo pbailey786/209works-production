@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
-import { JobMatchingService } from '@/components/ui/card';
+import { JobMatchingService } from '@/lib/services/job-matching';
 import { ResumeEmbeddingService } from './resume-embedding';
 
 export type JobQueueType = 

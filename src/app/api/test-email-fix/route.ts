@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TemplateManager } from '@/components/ui/card';
-import { emailAgent } from '@/components/ui/card';
-import { render } from '@/components/ui/card';
+import { TemplateManager } from '@/lib/email/template-manager';
+import { emailAgent } from '@/lib/agents/email-agent';
+import { render } from '@react-email/render';
 import { Html, Body, Container, Text } from '@react-email/components';
 
 

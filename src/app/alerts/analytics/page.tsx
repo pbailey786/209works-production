@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useToast } from 'recharts';
+import {
   Mail,
   TrendingUp,
   Users,
@@ -25,7 +26,7 @@ import { useToast } from 'recharts';
   Download,
   RefreshCw
 } from 'lucide-react';
-import { Card } from '@/components/ui/select';
+import { Card } from '@/components/ui/card';
 
 interface EmailMetrics {
   totalSent: number;

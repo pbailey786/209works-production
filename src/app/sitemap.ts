@@ -1,6 +1,7 @@
 import { MetadataRoute } from '@/components/ui/card';
-import { headers } from '@/components/ui/card';
-import { getDomainConfig, getAllDomains } from '@/components/ui/card';
+import { headers } from 'next/headers';
+import { getDomainConfig } from '@/lib/domain/config';
+import {getAllDomains} from '@/components/ui/card';
 import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/database/prisma';
 

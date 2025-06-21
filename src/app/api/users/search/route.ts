@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { userSearchQuerySchema } from '@/components/ui/card';
-import { UserSearchService } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { userSearchQuerySchema } from '@/lib/validations/api';
+import { UserSearchService } from '@/lib/services/user-search';
 import { createSuccessResponse } from '@/lib/errors/api-errors';
 
 // GET /api/users/search - Search users/candidates (employers only)

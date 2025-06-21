@@ -1,9 +1,8 @@
-import { UseFormReturn, FieldPath, FieldValues } from '@/components/ui/card';
+'use client';
+
+import { UseFormReturn, FieldPath, FieldValues } from 'react-hook-form';
 import { z } from 'zod';
-import { useRef } from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
-import path from "path";
+import { useRef, useCallback, useEffect } from 'react';
 
 
 /**
@@ -61,7 +60,7 @@ export const validationPatterns = {
       .instanceof(File)
       .refine(
         file => allowedTypes.includes(file.type),
-        `File type must be one of: ${allowedTypes.path.join(', ')}`
+        `File type must be one of: ${allowedTypes.join(', ')}`
       ),
 
   // LinkedIn URL validation
@@ -146,7 +145,7 @@ export async function handleFormSubmission<T>(
 export function parseErrorToFormErrors(error: unknown): FormError[] {
   if (error instanceof z.ZodError) {
     return error.errors.map(err => ({
-      field: err.path.path.join('.'),
+      field: err.path.join('.'),
       message: err.message,
       type: 'validation' as const,
     }));

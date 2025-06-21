@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { createSuccessResponse, NotFoundError } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import { NotFoundError } from '@/lib/errors/api-errors';
 import { prisma } from '@/lib/database/prisma';
 // GET /api/ads/:id/analytics - Get advertisement analytics
 export const GET = withAPIMiddleware(

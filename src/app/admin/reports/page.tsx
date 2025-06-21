@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { hasPermission, Permission } from '@/components/ui/card';
+import { Permission } from '@/lib/auth/permissions';
+import { hasPermission } from '@/types/auth';
 import { prisma } from '@/lib/database/prisma';
 
 

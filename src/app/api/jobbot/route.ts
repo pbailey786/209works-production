@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { openai } from '@/components/ui/card';
+import { openai } from '@/lib/openai';
 import { prisma } from '@/lib/database/prisma';
 import { auth } from '@clerk/nextjs/server';
 import { z } from '@/lib/validations/input-validation';

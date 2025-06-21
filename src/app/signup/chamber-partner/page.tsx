@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
-import { Card } from '@/components/ui/select';
+import { Card } from '@/components/ui/card';
 
 import Link from 'next/link';
+import {
   Building2,
   Users,
   CheckCircle,

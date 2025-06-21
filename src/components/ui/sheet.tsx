@@ -1,5 +1,6 @@
 import { Cross2Icon } from '@/components/ui/card';
-import { cva, type VariantProps } from '@/components/ui/card';
+import { cva } from 'class-variance-authority';
+import {type VariantProps} from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 'use client';

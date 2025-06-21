@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { updateUserSchema } from '@/components/ui/card';
-import { routeParamsSchemas } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { updateUserSchema } from '@/lib/validations/api';
+import { routeParamsSchemas } from '@/lib/errors/api-errors';
 import { UserCacheService } from '@/lib/cache/services';
-import { prisma } from '@/lib/errors/api-errors';
+import { prisma } from '@/lib/database/prisma';
 // GET /api/users/:id - Get user profile (own profile or admin)
 export const GET = withAPIMiddleware(
   async (req, context) => {

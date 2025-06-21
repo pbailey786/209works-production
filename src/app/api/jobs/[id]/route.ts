@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
-import { JobType } from '@/components/ui/card';
+import { JobType } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 function isValidJobType(type: any): type is JobType {

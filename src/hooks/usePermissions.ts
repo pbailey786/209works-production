@@ -1,24 +1,64 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { redirect } from '@/lib/rbac/permissions';
+import { AdminRole, Permission, hasPermission, hasAnyPermission, hasAllPermissions, ROLE_PERMISSIONS } from '@/types/auth';
 
-export function usePermissions() {
+export interface UsePermissionsReturn {
+  userRole: AdminRole | null;
+  permissions: Permission[];
+  hasPermission: (permission: Permission) => boolean;
+  hasAnyPermission: (permissions: Permission[]) => boolean;
+  hasAllPermissions: (permissions: Permission[]) => boolean;
+  hasRole: (role: AdminRole) => boolean;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+}
+
+export function usePermissions(): UsePermissionsReturn {
   const { user, isLoaded } = useUser();
-  const userRole = (user as any)?.role || '';
+
+  // Extract role from user metadata or default to null
+  const userRole = user?.publicMetadata?.role as AdminRole | null;
+
+  // Get permissions for the user's role
+  const permissions = userRole ? ROLE_PERMISSIONS[userRole] : [];
+
+  const checkPermission = (permission: Permission): boolean => {
+    if (!userRole) return false;
+    return hasPermission(userRole, permission);
+  };
+
+  const checkAnyPermission = (permissionsToCheck: Permission[]): boolean => {
+    if (!userRole) return false;
+    return hasAnyPermission(userRole, permissionsToCheck);
+  };
+
+  const checkAllPermissions = (permissionsToCheck: Permission[]): boolean => {
+    if (!userRole) return false;
+    return hasAllPermissions(userRole, permissionsToCheck);
+  };
+
+  const checkRole = (role: AdminRole): boolean => {
+    return userRole === role;
+  };
 
   return {
-    hasPermission: (permission: Permission) =>
-      hasPermission(userRole, permission),
-    hasAnyPermission: (permissions: Permission[]) =>
-      hasAnyPermission(userRole, permissions),
-    hasAllPermissions: (permissions: Permission[]) =>
-      hasAllPermissions(userRole, permissions),
-    getUserPermissions: () => getUserPermissions(userRole),
-    canAccessRoute: (route: string) => canAccessRoute(userRole, route),
     userRole,
-    isAdmin: userRole === 'admin' || userRole.includes('admin')
+    permissions,
+    hasPermission: checkPermission,
+    hasAnyPermission: checkAnyPermission,
+    hasAllPermissions: checkAllPermissions,
+    hasRole: checkRole,
+    isLoading: !isLoaded,
+    isAuthenticated: !!user && !!userRole
   };
+}
+
+/**
+ * Get user permissions for a specific user (for admin use)
+ */
+export function getUserPermissions(role: AdminRole): Permission[] {
+  return ROLE_PERMISSIONS[role] || [];
 }
 
 export function useRequirePermission(permission: Permission) {

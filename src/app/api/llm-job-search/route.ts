@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from '@/lib/ai';
-import { prisma } from '@/lib/middleware/ai-security';
+import { NextResponse } from 'next/server';
+import {NextRequest} from '@/lib/ai';
+import { prisma } from '@/lib/database/prisma';
 
 // Basic keyword extraction fallback when OpenAI is not available
 function extractBasicFilters(userMessage: string): any {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from '@/components/ui/card';
+import { Resend } from 'resend';
 import { z } from 'zod';
 import { ContactFormEmail } from '@/lib/email/templates/contact-form-email';
 

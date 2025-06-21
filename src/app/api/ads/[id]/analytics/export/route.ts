@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { NotFoundError } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { NotFoundError } from '@/lib/errors/api-errors';
 import { prisma } from '@/lib/database/prisma';
 import path from "path";
 // GET /api/ads/:id/analytics/export - Export advertisement analytics as CSV

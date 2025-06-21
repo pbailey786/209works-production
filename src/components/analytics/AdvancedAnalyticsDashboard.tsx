@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from 'lucide-react';
+import {
   AnalyticsTimeRange,
   UserBehaviorMetrics,
   JobPerformanceMetrics,

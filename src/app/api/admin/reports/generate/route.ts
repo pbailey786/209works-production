@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { Resend } from '@/components/ui/card';
+import { Resend } from 'resend';
 import { prisma } from '@/lib/database/prisma';
 import path from "path";
 

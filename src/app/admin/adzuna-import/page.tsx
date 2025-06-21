@@ -1,6 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from 'react';
+import {
+  ExclamationTriangleIcon,
+  ChartBarIcon,
+  ClockIcon,
+  CloudArrowDownIcon,
+  TrashIcon,
+  CheckCircleIcon
+} from '@heroicons/react/24/outline';
 
 interface ImportStats {
   totalAdzunaJobs: number;

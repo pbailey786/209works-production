@@ -14,7 +14,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useToast } from 'lucide-react';
-import { Card } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
+import {
   Select,
   SelectContent,
   SelectItem,

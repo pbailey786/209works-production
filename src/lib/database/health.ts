@@ -257,3 +257,5 @@ export class DatabaseHealthMonitor {
     return this.lastHealthCheck;
   }
 }
+
+export { NextResponse } from 'next/server';

@@ -7,13 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { Badge } from '@/components/ui/select';
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from 'lucide-react';
+import { Table } from '@/components/ui/table';
+import { TableBody } from '@/components/ui/table';
+import { TableCell } from '@/components/ui/table';
+import { TableHead } from '@/components/ui/table';
+import { TableHeader } from '@/components/ui/table';
+import { TableRow } from '@/components/ui/table';
 
 interface ReportSchedule {
   id: string;

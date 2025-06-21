@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { templateManager } from '@/components/ui/card';
-import { hasPermission, Permission } from '@/components/ui/card';
+import { templateManager } from '@/lib/email/template-manager';
+import { Permission } from '@/lib/auth/permissions';
+import { hasPermission } from '@/types/auth';
 import { prisma } from '@/lib/database/prisma';
 
 export async function GET(request: NextRequest) {

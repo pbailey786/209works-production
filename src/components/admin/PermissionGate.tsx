@@ -1,7 +1,7 @@
 'use client';
 
 import { React } from 'react';
-import { Permission } from '@/components/ui/card';
+import { Permission } from '@/lib/auth/permissions';
 import { usePermissions } from '@/hooks/usePermissions';
 
 interface PermissionGateProps {

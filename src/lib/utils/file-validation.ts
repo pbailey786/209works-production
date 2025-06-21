@@ -1,0 +1,321 @@
+/**
+ * File Validation Utilities
+ * Validates file uploads, especially resumes and documents
+ */
+
+export interface FileValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+  fileInfo: {
+    size: number;
+    type: string;
+    extension: string;
+    name: string;
+  };
+}
+
+export interface ResumeValidationResult extends FileValidationResult {
+  extractedText?: string;
+  wordCount?: number;
+  hasContactInfo?: boolean;
+  hasWorkExperience?: boolean;
+  hasEducation?: boolean;
+  hasSkills?: boolean;
+}
+
+export class FileValidationService {
+  // Allowed file types for resumes
+  private static readonly ALLOWED_RESUME_TYPES = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain',
+    'text/rtf'
+  ];
+
+  // Allowed file extensions
+  private static readonly ALLOWED_RESUME_EXTENSIONS = [
+    '.pdf',
+    '.doc',
+    '.docx',
+    '.txt',
+    '.rtf'
+  ];
+
+  // Maximum file size (5MB)
+  private static readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+  /**
+   * Validate if file is a valid resume
+   */
+  static isValidResumeFile(file: File): FileValidationResult {
+    const result: FileValidationResult = {
+      isValid: true,
+      errors: [],
+      warnings: [],
+      fileInfo: {
+        size: file.size,
+        type: file.type,
+        extension: this.getFileExtension(file.name),
+        name: file.name
+      }
+    };
+
+    // Check file size
+    if (file.size > this.MAX_FILE_SIZE) {
+      result.isValid = false;
+      result.errors.push(`File size too large. Maximum allowed: ${this.formatFileSize(this.MAX_FILE_SIZE)}`);
+    }
+
+    if (file.size === 0) {
+      result.isValid = false;
+      result.errors.push('File is empty');
+    }
+
+    // Check file type
+    if (!this.ALLOWED_RESUME_TYPES.includes(file.type)) {
+      result.isValid = false;
+      result.errors.push(`Invalid file type: ${file.type}. Allowed types: PDF, DOC, DOCX, TXT, RTF`);
+    }
+
+    // Check file extension
+    const extension = this.getFileExtension(file.name);
+    if (!this.ALLOWED_RESUME_EXTENSIONS.includes(extension.toLowerCase())) {
+      result.isValid = false;
+      result.errors.push(`Invalid file extension: ${extension}. Allowed extensions: ${this.ALLOWED_RESUME_EXTENSIONS.join(', ')}`);
+    }
+
+    // Check filename
+    if (file.name.length > 255) {
+      result.isValid = false;
+      result.errors.push('Filename too long (max 255 characters)');
+    }
+
+    // Check for suspicious filenames
+    const suspiciousPatterns = [
+      /\.(exe|bat|cmd|scr|pif|com)$/i,
+      /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\.|$)/i
+    ];
+
+    for (const pattern of suspiciousPatterns) {
+      if (pattern.test(file.name)) {
+        result.isValid = false;
+        result.errors.push('Suspicious filename detected');
+        break;
+      }
+    }
+
+    // Warnings for suboptimal files
+    if (file.size < 1024) {
+      result.warnings.push('File seems very small for a resume');
+    }
+
+    if (file.type === 'text/plain') {
+      result.warnings.push('Plain text files may not preserve formatting. Consider using PDF or DOC format.');
+    }
+
+    return result;
+  }
+
+  /**
+   * Validate extracted text from resume
+   */
+  static validateExtractedText(text: string): ResumeValidationResult {
+    const result: ResumeValidationResult = {
+      isValid: true,
+      errors: [],
+      warnings: [],
+      fileInfo: {
+        size: text.length,
+        type: 'text/plain',
+        extension: '.txt',
+        name: 'extracted-text'
+      },
+      extractedText: text,
+      wordCount: this.countWords(text)
+    };
+
+    // Check if text was extracted
+    if (!text || text.trim().length === 0) {
+      result.isValid = false;
+      result.errors.push('No text could be extracted from the file');
+      return result;
+    }
+
+    // Check minimum content length
+    if (text.trim().length < 100) {
+      result.isValid = false;
+      result.errors.push('Resume content too short (minimum 100 characters)');
+    }
+
+    // Check word count
+    const wordCount = this.countWords(text);
+    result.wordCount = wordCount;
+
+    if (wordCount < 50) {
+      result.warnings.push('Resume seems very short (less than 50 words)');
+    }
+
+    if (wordCount > 2000) {
+      result.warnings.push('Resume is quite long (over 2000 words). Consider condensing.');
+    }
+
+    // Check for essential resume sections
+    result.hasContactInfo = this.hasContactInformation(text);
+    result.hasWorkExperience = this.hasWorkExperience(text);
+    result.hasEducation = this.hasEducation(text);
+    result.hasSkills = this.hasSkills(text);
+
+    // Validate essential sections
+    if (!result.hasContactInfo) {
+      result.warnings.push('No contact information detected');
+    }
+
+    if (!result.hasWorkExperience) {
+      result.warnings.push('No work experience section detected');
+    }
+
+    if (!result.hasEducation) {
+      result.warnings.push('No education section detected');
+    }
+
+    // Check for common issues
+    if (this.hasExcessiveWhitespace(text)) {
+      result.warnings.push('Document contains excessive whitespace');
+    }
+
+    if (this.hasGarbledText(text)) {
+      result.warnings.push('Document may contain garbled or corrupted text');
+    }
+
+    return result;
+  }
+
+  /**
+   * Get file extension from filename
+   */
+  private static getFileExtension(filename: string): string {
+    const lastDot = filename.lastIndexOf('.');
+    return lastDot === -1 ? '' : filename.substring(lastDot);
+  }
+
+  /**
+   * Format file size for display
+   */
+  private static formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  /**
+   * Count words in text
+   */
+  private static countWords(text: string): number {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  }
+
+  /**
+   * Check if text contains contact information
+   */
+  private static hasContactInformation(text: string): boolean {
+    const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+    const phonePattern = /(\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}/;
+    
+    return emailPattern.test(text) || phonePattern.test(text);
+  }
+
+  /**
+   * Check if text contains work experience
+   */
+  private static hasWorkExperience(text: string): boolean {
+    const experienceKeywords = [
+      'experience', 'employment', 'work history', 'professional experience',
+      'career', 'position', 'role', 'job', 'worked at', 'employed'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return experienceKeywords.some(keyword => lowerText.includes(keyword));
+  }
+
+  /**
+   * Check if text contains education information
+   */
+  private static hasEducation(text: string): boolean {
+    const educationKeywords = [
+      'education', 'degree', 'university', 'college', 'school',
+      'bachelor', 'master', 'phd', 'diploma', 'certificate',
+      'graduated', 'gpa', 'academic'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return educationKeywords.some(keyword => lowerText.includes(keyword));
+  }
+
+  /**
+   * Check if text contains skills information
+   */
+  private static hasSkills(text: string): boolean {
+    const skillsKeywords = [
+      'skills', 'abilities', 'competencies', 'proficient',
+      'technologies', 'programming', 'software', 'tools',
+      'languages', 'frameworks', 'platforms'
+    ];
+    
+    const lowerText = text.toLowerCase();
+    return skillsKeywords.some(keyword => lowerText.includes(keyword));
+  }
+
+  /**
+   * Check for excessive whitespace
+   */
+  private static hasExcessiveWhitespace(text: string): boolean {
+    // Check for more than 5 consecutive spaces or newlines
+    return /\s{5,}/.test(text) || /\n{3,}/.test(text);
+  }
+
+  /**
+   * Check for garbled text (common in OCR errors)
+   */
+  private static hasGarbledText(text: string): boolean {
+    // Check for excessive special characters or random character sequences
+    const specialCharRatio = (text.match(/[^a-zA-Z0-9\s]/g) || []).length / text.length;
+    const hasRandomSequences = /[a-zA-Z]{20,}/.test(text.replace(/\s/g, ''));
+    
+    return specialCharRatio > 0.3 || hasRandomSequences;
+  }
+
+  /**
+   * Sanitize filename for safe storage
+   */
+  static sanitizeFilename(filename: string): string {
+    // Remove or replace unsafe characters
+    return filename
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .replace(/_{2,}/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .substring(0, 255);
+  }
+
+  /**
+   * Generate unique filename
+   */
+  static generateUniqueFilename(originalName: string, userId: string): string {
+    const extension = this.getFileExtension(originalName);
+    const baseName = originalName.replace(extension, '');
+    const sanitizedBase = this.sanitizeFilename(baseName);
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    
+    return `${userId}_${sanitizedBase}_${timestamp}_${random}${extension}`;
+  }
+}
+
+// Export convenience functions
+export const isValidResumeFile = FileValidationService.isValidResumeFile.bind(FileValidationService);
+export const validateExtractedText = FileValidationService.validateExtractedText.bind(FileValidationService);

@@ -852,3 +852,5 @@ export function generateOptimizationRecommendations(
     jobs
   );
 }
+
+export { prisma } from '@/lib/database/prisma';

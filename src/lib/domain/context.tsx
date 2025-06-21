@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from './config';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getDomainConfig, type DomainConfig } from './config';
 
 interface DomainContextType {
   config: DomainConfig;
@@ -78,7 +79,7 @@ export function getDomainMetadata(hostname: string, path: string = '') {
   return {
     title: config.seo.title,
     description: config.seo.description,
-    keywords: config.seo.keywords.path.join(', '),
+    keywords: config.seo.keywords.join(', '),
     canonical: `${baseUrl}${path}`,
     ogImage: `${baseUrl}/og-images/${config.areaCode}-og.jpg`,
     siteName: config.displayName,

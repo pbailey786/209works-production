@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { JobType, UserRole } from '@/components/ui/card';
+import { JobType } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { validationPatterns } from './form-utils';
 
 // Common validation patterns
@@ -286,3 +287,92 @@ export const createAlertSchema = z.object({
 });
 
 export const updateAlertSchema = createAlertSchema.partial();
+
+// Route parameter schemas
+export const routeParamsSchemas = {
+  id: z.object({
+    id: uuidSchema
+  }),
+  userId: z.object({
+    userId: uuidSchema
+  }),
+  jobId: z.object({
+    jobId: uuidSchema
+  }),
+  alertId: z.object({
+    alertId: uuidSchema
+  }),
+  adId: z.object({
+    adId: uuidSchema
+  })
+};
+
+// Pagination schema
+export const paginatedQuerySchema = z.object({
+  page: z.coerce
+    .number()
+    .int()
+    .min(1, 'Page must be at least 1')
+    .max(1000, 'Page too high')
+    .optional()
+    .default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, 'Limit must be at least 1')
+    .max(100, 'Limit too high')
+    .optional()
+    .default(20),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('desc')
+});
+
+// Autocomplete query schema
+export const autocompleteQuerySchema = z.object({
+  q: z.string().min(1, 'Query is required').max(100, 'Query too long'),
+  type: z.enum(['job_title', 'company', 'location', 'skill']).optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, 'Limit must be at least 1')
+    .max(20, 'Limit too high')
+    .optional()
+    .default(10)
+});
+
+// Geolocation search schema
+export const geolocationSearchSchema = z.object({
+  lat: z.coerce.number().min(-90).max(90),
+  lng: z.coerce.number().min(-180).max(180),
+  radius: z.coerce
+    .number()
+    .int()
+    .min(1, 'Radius must be at least 1')
+    .max(100, 'Radius too large')
+    .optional()
+    .default(25),
+  unit: z.enum(['miles', 'km']).optional().default('miles')
+});
+
+// User search query schema
+export const userSearchQuerySchema = z.object({
+  q: z.string().optional(),
+  role: userRoleSchema.optional(),
+  location: z.string().max(100, 'Location too long').optional(),
+  skills: z.array(z.string()).optional(),
+  isActive: z.coerce.boolean().optional(),
+  page: z.coerce
+    .number()
+    .int()
+    .min(1, 'Page must be at least 1')
+    .max(1000, 'Page too high')
+    .optional()
+    .default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, 'Limit must be at least 1')
+    .max(50, 'Limit too high')
+    .optional()
+    .default(20)
+});

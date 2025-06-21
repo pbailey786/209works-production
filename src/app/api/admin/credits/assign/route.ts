@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/database/prisma';
-import { hasPermission, Permission } from '@/components/ui/card';
-import { EmailQueue } from '@/components/ui/card';
+import { Permission } from '@/lib/auth/permissions';
+import { hasPermission } from '@/types/auth';
+import { EmailQueue } from '@/lib/services/email-queue';
 import { z } from 'zod';
 import path from "path";
 

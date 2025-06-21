@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { createSuccessResponse, createErrorResponse } from '@/components/ui/card';
-import { JobMatchingService } from '@/components/ui/card';
-import { ResumeEmbeddingService } from '@/components/ui/card';
-import { JobQueueService } from '@/components/ui/card';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { createSuccessResponse } from '@/lib/middleware/api-middleware';
+import { createErrorResponse } from '@/lib/middleware/api-middleware';
+import { JobMatchingService } from '@/lib/services/job-matching';
+import { ResumeEmbeddingService } from '@/lib/services/resume-embedding';
+import { JobQueueService } from '@/lib/services/job-queue';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
 

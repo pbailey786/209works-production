@@ -621,3 +621,5 @@ export async function checkAIHealth(): Promise<{
 
   return result;
 }
+
+export { prisma } from '@/lib/database/prisma';

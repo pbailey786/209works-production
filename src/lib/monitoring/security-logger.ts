@@ -1,0 +1,319 @@
+/**
+ * Security Logger
+ * Centralized security event logging and monitoring
+ */
+
+import { prisma } from '@/lib/database/prisma';
+
+export enum SecurityEventType {
+  AUTHENTICATION_FAILURE = 'AUTHENTICATION_FAILURE',
+  AUTHORIZATION_FAILURE = 'AUTHORIZATION_FAILURE',
+  SUSPICIOUS_ACTIVITY = 'SUSPICIOUS_ACTIVITY',
+  DATA_ACCESS_VIOLATION = 'DATA_ACCESS_VIOLATION',
+  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
+  MALICIOUS_REQUEST = 'MALICIOUS_REQUEST',
+  EMAIL_SECURITY_VIOLATION = 'EMAIL_SECURITY_VIOLATION',
+  FILE_UPLOAD_VIOLATION = 'FILE_UPLOAD_VIOLATION',
+  API_ABUSE = 'API_ABUSE',
+  ADMIN_ACTION = 'ADMIN_ACTION'
+}
+
+export enum SecuritySeverity {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL'
+}
+
+export interface SecurityEvent {
+  type: SecurityEventType;
+  severity: SecuritySeverity;
+  message: string;
+  userId?: string;
+  userEmail?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  endpoint?: string;
+  method?: string;
+  payload?: any;
+  metadata?: Record<string, any>;
+  timestamp?: Date;
+}
+
+export class SecurityLogger {
+  /**
+   * Log a security event
+   */
+  static async logEvent(event: SecurityEvent): Promise<void> {
+    try {
+      // Log to database
+      await prisma.securityLog.create({
+        data: {
+          type: event.type,
+          severity: event.severity,
+          message: event.message,
+          userId: event.userId,
+          userEmail: event.userEmail,
+          ipAddress: event.ipAddress,
+          userAgent: event.userAgent,
+          endpoint: event.endpoint,
+          method: event.method,
+          payload: event.payload ? JSON.stringify(event.payload) : null,
+          metadata: event.metadata ? JSON.stringify(event.metadata) : null,
+          timestamp: event.timestamp || new Date()
+        }
+      });
+
+      // Log to console for development
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`[SECURITY] ${event.severity}: ${event.message}`, {
+          type: event.type,
+          userId: event.userId,
+          endpoint: event.endpoint
+        });
+      }
+
+      // Send alerts for critical events
+      if (event.severity === SecuritySeverity.CRITICAL) {
+        await this.sendCriticalAlert(event);
+      }
+    } catch (error) {
+      console.error('Failed to log security event:', error);
+      // Fallback to console logging
+      console.error(`[SECURITY FALLBACK] ${event.severity}: ${event.message}`, event);
+    }
+  }
+
+  /**
+   * Log authentication failure
+   */
+  static async logAuthFailure(
+    email: string,
+    ipAddress: string,
+    userAgent: string,
+    reason: string
+  ): Promise<void> {
+    await this.logEvent({
+      type: SecurityEventType.AUTHENTICATION_FAILURE,
+      severity: SecuritySeverity.MEDIUM,
+      message: `Authentication failed for ${email}: ${reason}`,
+      userEmail: email,
+      ipAddress,
+      userAgent,
+      metadata: { reason }
+    });
+  }
+
+  /**
+   * Log authorization failure
+   */
+  static async logAuthorizationFailure(
+    userId: string,
+    endpoint: string,
+    requiredPermission: string,
+    ipAddress: string
+  ): Promise<void> {
+    await this.logEvent({
+      type: SecurityEventType.AUTHORIZATION_FAILURE,
+      severity: SecuritySeverity.HIGH,
+      message: `Authorization failed: User ${userId} attempted to access ${endpoint} without ${requiredPermission}`,
+      userId,
+      endpoint,
+      ipAddress,
+      metadata: { requiredPermission }
+    });
+  }
+
+  /**
+   * Log suspicious activity
+   */
+  static async logSuspiciousActivity(
+    description: string,
+    userId?: string,
+    ipAddress?: string,
+    metadata?: Record<string, any>
+  ): Promise<void> {
+    await this.logEvent({
+      type: SecurityEventType.SUSPICIOUS_ACTIVITY,
+      severity: SecuritySeverity.HIGH,
+      message: `Suspicious activity detected: ${description}`,
+      userId,
+      ipAddress,
+      metadata
+    });
+  }
+
+  /**
+   * Log rate limit exceeded
+   */
+  static async logRateLimitExceeded(
+    endpoint: string,
+    ipAddress: string,
+    userId?: string
+  ): Promise<void> {
+    await this.logEvent({
+      type: SecurityEventType.RATE_LIMIT_EXCEEDED,
+      severity: SecuritySeverity.MEDIUM,
+      message: `Rate limit exceeded for ${endpoint}`,
+      userId,
+      endpoint,
+      ipAddress
+    });
+  }
+
+  /**
+   * Log email security violation
+   */
+  static async logEmailSecurityViolation(
+    violation: string,
+    email: string,
+    userId?: string,
+    metadata?: Record<string, any>
+  ): Promise<void> {
+    await this.logEvent({
+      type: SecurityEventType.EMAIL_SECURITY_VIOLATION,
+      severity: SecuritySeverity.HIGH,
+      message: `Email security violation: ${violation}`,
+      userId,
+      userEmail: email,
+      metadata
+    });
+  }
+
+  /**
+   * Log malicious request
+   */
+  static async logMaliciousRequest(
+    endpoint: string,
+    method: string,
+    ipAddress: string,
+    payload: any,
+    reason: string
+  ): Promise<void> {
+    await this.logEvent({
+      type: SecurityEventType.MALICIOUS_REQUEST,
+      severity: SecuritySeverity.CRITICAL,
+      message: `Malicious request detected: ${reason}`,
+      endpoint,
+      method,
+      ipAddress,
+      payload,
+      metadata: { reason }
+    });
+  }
+
+  /**
+   * Log admin action
+   */
+  static async logAdminAction(
+    adminId: string,
+    action: string,
+    targetId?: string,
+    metadata?: Record<string, any>
+  ): Promise<void> {
+    await this.logEvent({
+      type: SecurityEventType.ADMIN_ACTION,
+      severity: SecuritySeverity.LOW,
+      message: `Admin action: ${action}`,
+      userId: adminId,
+      metadata: { action, targetId, ...metadata }
+    });
+  }
+
+  /**
+   * Get security events with filtering
+   */
+  static async getEvents(filters: {
+    type?: SecurityEventType;
+    severity?: SecuritySeverity;
+    userId?: string;
+    startDate?: Date;
+    endDate?: Date;
+    limit?: number;
+    offset?: number;
+  } = {}) {
+    const {
+      type,
+      severity,
+      userId,
+      startDate,
+      endDate,
+      limit = 100,
+      offset = 0
+    } = filters;
+
+    const where: any = {};
+    
+    if (type) where.type = type;
+    if (severity) where.severity = severity;
+    if (userId) where.userId = userId;
+    if (startDate || endDate) {
+      where.timestamp = {};
+      if (startDate) where.timestamp.gte = startDate;
+      if (endDate) where.timestamp.lte = endDate;
+    }
+
+    return await prisma.securityLog.findMany({
+      where,
+      orderBy: { timestamp: 'desc' },
+      take: limit,
+      skip: offset
+    });
+  }
+
+  /**
+   * Get security statistics
+   */
+  static async getStats(timeframe: 'day' | 'week' | 'month' = 'day') {
+    const now = new Date();
+    let startDate: Date;
+
+    switch (timeframe) {
+      case 'day':
+        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      case 'week':
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case 'month':
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+    }
+
+    const [total, byType, bySeverity] = await Promise.all([
+      prisma.securityLog.count({
+        where: { timestamp: { gte: startDate } }
+      }),
+      prisma.securityLog.groupBy({
+        by: ['type'],
+        where: { timestamp: { gte: startDate } },
+        _count: true
+      }),
+      prisma.securityLog.groupBy({
+        by: ['severity'],
+        where: { timestamp: { gte: startDate } },
+        _count: true
+      })
+    ]);
+
+    return {
+      total,
+      byType: byType.reduce((acc, item) => {
+        acc[item.type] = item._count;
+        return acc;
+      }, {} as Record<string, number>),
+      bySeverity: bySeverity.reduce((acc, item) => {
+        acc[item.severity] = item._count;
+        return acc;
+      }, {} as Record<string, number>)
+    };
+  }
+
+  /**
+   * Send critical security alert
+   */
+  private static async sendCriticalAlert(event: SecurityEvent): Promise<void> {
+    // TODO: Implement email/Slack/webhook notifications for critical events
+    console.error(`[CRITICAL SECURITY ALERT] ${event.message}`, event);
+  }
+}

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { TemplateManager } from '@/components/ui/card';
+import { TemplateManager } from '@/lib/email/template-manager';
 import { emailAgent } from '@/lib/agents/email-agent';
 
 export async function GET(request: NextRequest) {
