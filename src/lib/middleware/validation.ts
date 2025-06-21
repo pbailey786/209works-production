@@ -1,6 +1,6 @@
-import { NextRequest } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
-
+import {
   validateRequestData,
   generateRequestId,
   createErrorResponse,

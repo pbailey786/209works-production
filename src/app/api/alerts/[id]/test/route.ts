@@ -1,18 +1,17 @@
-import { NextRequest } from '@/components/ui/card';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { testAlertSchema } from '@/components/ui/card';
-import { routeParamsSchemas } from '@/components/ui/card';
-import { createSuccessResponse, NotFoundError } from '@/components/ui/card';
-import { EnhancedJobSearchService } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { testAlertSchema } from '@/lib/validations/alerts';
+import { routeParamsSchemas } from '@/lib/validations/api';
+import { createSuccessResponse, NotFoundError } from '@/lib/utils/api-response';
+import { EnhancedJobSearchService } from '@/lib/search/enhanced-job-search';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   EnhancedJobMatchingService,
   findMatchingJobs,
   calculateMatchQuality,
   generateOptimizationRecommendations,
-} from '@/components/ui/card';
+} from '@/lib/search/job-matching';
 import {
-  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,

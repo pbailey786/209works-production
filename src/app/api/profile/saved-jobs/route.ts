@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 
     const dbUser = userQuery.data;
 
-    if (user.role !== 'jobseeker') {
+    if (dbUser.role !== 'jobseeker') {
       return NextResponse.json(
         { error: 'Only job seekers can save jobs' },
         { status: 403 }
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       Promise.all([
         prisma.jobApplication.findMany({
           where: {
-            userId: user.id,
+            userId: dbUser.id,
             status: 'saved',
           },
           include: {
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
         }),
         prisma.jobApplication.count({
           where: {
-            userId: user.id,
+            userId: dbUser.id,
             status: 'saved',
           },
         }),
@@ -157,34 +157,14 @@ export async function POST(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
-    
-    // Safely validate session
-    const sessionValidation = validateSession(session);
-    if (!sessionValidation.isValid || !sessionValidation.user) {
-      return NextResponse.json({ 
-        error: 'Unauthorized',
-        message: sessionValidation.error || 'Invalid session'
-      }, { status: 401 });
+
+    if (!userRecord?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user from database with error handling
-    const userQuery = await safeDBQuery(() => 
-      prisma.user.findUnique({
-        where: { email: sessionValidation.user!.email },
-        select: { id: true, role: true },
-      })
-    );
-
-    if (!userQuery.success || !userQuery.data) {
-      return NextResponse.json({ 
-        error: userQuery.error || 'User not found' 
-      }, { status: userQuery.error?.includes('Database') ? 500 : 404 });
-    }
-
-    const userRecord = userQuery.data;
-
-    if (user.role !== 'jobseeker') {
+    if (userRecord.role !== 'jobseeker') {
       return NextResponse.json(
         { error: 'Only job seekers can save jobs' },
         { status: 403 }
@@ -208,7 +188,7 @@ export async function POST(req: NextRequest) {
       // Check if already saved
       const existingSave = await prisma.jobApplication.findFirst({
         where: {
-          userId: user.id,
+          userId: userRecord.id,
           jobId: jobId,
           status: 'saved',
         },
@@ -225,7 +205,7 @@ export async function POST(req: NextRequest) {
       // Save the job
       const savedJob = await prisma.jobApplication.create({
         data: {
-          userId: user.id,
+          userId: userRecord.id,
           jobId: jobId,
           status: 'saved',
           appliedAt: new Date(),
@@ -241,7 +221,7 @@ export async function POST(req: NextRequest) {
       // Remove the saved job
       const deletedSave = await prisma.jobApplication.deleteMany({
         where: {
-          userId: user.id,
+          userId: userRecord.id,
           jobId: jobId,
           status: 'saved',
         },
@@ -289,18 +269,14 @@ export async function DELETE(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
-    });
-    
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
+      select: { id: true, role: true, email: true },
     });
 
-    if (!user || user.role !== 'jobseeker') {
+    if (!userRecord?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!userRecord || userRecord.role !== 'jobseeker') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -318,7 +294,7 @@ export async function DELETE(req: NextRequest) {
     const deletedSave = await prisma.jobApplication.deleteMany({
       where: {
         id: applicationId,
-        userId: user.id,
+        userId: userRecord.id,
         status: 'saved',
       },
     });

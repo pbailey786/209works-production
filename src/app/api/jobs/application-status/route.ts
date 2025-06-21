@@ -19,12 +19,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user and verify they're a job seeker
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
-
     if (!user || user.role !== 'jobseeker') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -107,19 +101,14 @@ export async function POST(request: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user and verify they're a job seeker
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user || user.role !== 'jobseeker') {
+    if (!userRecord || userRecord.role !== 'jobseeker') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -134,7 +123,7 @@ export async function POST(request: NextRequest) {
     const application = await prisma.jobApplication.findUnique({
       where: {
         userId_jobId: {
-          userId: user.id,
+          userId: userRecord.id,
           jobId: jobId,
         },
       },

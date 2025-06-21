@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-  checkDatabaseHealth, 
-  getDatabaseMetrics, 
+import {
+  checkDatabaseHealth,
+  getDatabaseMetrics,
   optimizeDatabase,
   checkIndexUsage,
   getTableSizes,

@@ -1,10 +1,11 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+// import { EnhancedJobCard } from '@/components/jobs/enhanced-job-card';
+
 import {
-  import {
   MapPin,
   Globe,
   Calendar,
@@ -199,16 +200,11 @@ export default function EmployerProfileClient({
               ) : jobs.length > 0 ? (
                 <div className="space-y-4">
                   {jobs.map(job => (
-                    <EnhancedJobCard
-                      key={job.id}
-                      {...job}
-                      applyUrl={`/jobs/${job.id}`}
-                      onSave={() => console.log('Save job:', job.id)}
-                      onViewDetails={() =>
-                        (window.location.href = `/jobs/${job.id}`)
-                      }
-                      saved={job.saved || false}
-                    />
+                    <div key={job.id} className="border rounded-lg p-4">
+                      <h3 className="font-semibold">{job.title}</h3>
+                      <p className="text-gray-600">{job.location}</p>
+                      <p className="text-sm text-gray-500">{job.type}</p>
+                    </div>
                   ))}
                 </div>
               ) : (

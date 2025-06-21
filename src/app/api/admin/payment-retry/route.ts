@@ -100,22 +100,17 @@ export async function GET(request: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { role: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    // Check if user is admin
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { role: true },
-    });
-
-    if (!user || user.role !== 'admin') {
+    if (!userRecord || userRecord.role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
         { status: 403 }

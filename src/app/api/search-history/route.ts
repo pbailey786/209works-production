@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     // Get search history
     const [searchHistory, totalCount] = await Promise.all([
       prisma.searchHistory.findMany({
-        where: { userId: user.id },
+        where: { userId: dbUser.id },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
         },
       }),
       prisma.searchHistory.count({
-        where: { userId: user.id },
+        where: { userId: dbUser.id },
       }),
     ]);
 
@@ -97,19 +97,14 @@ export async function POST(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user from database
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -119,7 +114,7 @@ export async function POST(req: NextRequest) {
     // Check if this exact search already exists recently (within last hour)
     const recentSearch = await prisma.searchHistory.findFirst({
       where: {
-        userId: user.id,
+        userId: userRecord.id,
         query: query,
         createdAt: {
           gte: new Date(Date.now() - 60 * 60 * 1000), // Last hour
@@ -139,7 +134,7 @@ export async function POST(req: NextRequest) {
     // Save the search
     const savedSearch = await prisma.searchHistory.create({
       data: {
-        userId: user.id,
+        userId: userRecord.id,
         query: query,
         filters: filters ? JSON.stringify(filters) : null,
       },
@@ -147,13 +142,13 @@ export async function POST(req: NextRequest) {
 
     // Clean up old search history (keep only last 50 searches per user)
     const searchCount = await prisma.searchHistory.count({
-      where: { userId: user.id },
+      where: { userId: userRecord.id },
     });
 
     if (searchCount > 50) {
       // Get the oldest searches to delete
       const oldSearches = await prisma.searchHistory.findMany({
-        where: { userId: user.id },
+        where: { userId: userRecord.id },
         orderBy: { createdAt: 'asc' },
         take: searchCount - 50,
         select: { id: true },
@@ -204,19 +199,14 @@ export async function DELETE(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user from database
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -228,7 +218,7 @@ export async function DELETE(req: NextRequest) {
       const deletedSearch = await prisma.searchHistory.deleteMany({
         where: {
           id: searchId,
-          userId: user.id, // Ensure user can only delete their own searches
+          userId: userRecord.id, // Ensure user can only delete their own searches
         },
       });
 
@@ -246,7 +236,7 @@ export async function DELETE(req: NextRequest) {
     } else {
       // Clear all search history for user
       const deletedCount = await prisma.searchHistory.deleteMany({
-        where: { userId: user.id },
+        where: { userId: userRecord.id },
       });
 
       return NextResponse.json({

@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import EnterpriseSecurityManager from '@/lib/security/enterprise-security';
 import GDPRComplianceManager from '@/lib/compliance/gdpr-compliance';
 import { getDomainConfig } from '@/lib/domain/config';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
 
 /**
  * GET /api/admin/security

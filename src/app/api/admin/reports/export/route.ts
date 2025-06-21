@@ -301,8 +301,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate limiting
-    const userId = (session!.user as any)?.id;
-    if (!checkRateLimit(userId)) {
+    const sessionUserId = (session!.user as any)?.id;
+    if (!checkRateLimit(sessionUserId)) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Maximum 10 exports per hour.' },
         { status: 429 }

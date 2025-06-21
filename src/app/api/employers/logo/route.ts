@@ -149,20 +149,21 @@ export async function DELETE(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
-    if (!session || !session.user || (session!.user as any).role !== 'employer') {
+
+    if (!userRecord?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!userRecord || userRecord.role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
 
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email! },
-      select: { id: true },
-    });
-
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
@@ -171,7 +172,7 @@ export async function DELETE(req: NextRequest) {
 
     // Remove logo from user record
     await prisma.user.update({
-      where: { id: user.id },
+      where: { id: userRecord.id },
       data: { companyLogo: null },
     });
 

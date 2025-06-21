@@ -115,19 +115,14 @@ export async function DELETE(
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user and verify they're an admin or employer
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user || !['admin', 'employer'].includes(user.role)) {
+    if (!userRecord || !['admin', 'employer'].includes(userRecord.role)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

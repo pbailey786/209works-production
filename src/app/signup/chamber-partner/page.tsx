@@ -1,11 +1,5 @@
-import { Metadata } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-
+import { Metadata } from 'next';
+import {
   Card,
   CardContent,
   CardDescription,
@@ -13,15 +7,15 @@ import { Badge } from '@/components/ui/badge';
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/card';
+} from '@/components/ui/select';
+
+import Link from 'next/link';
 import {
-  import {
   Building2,
   Users,
   CheckCircle,

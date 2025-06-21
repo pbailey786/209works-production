@@ -1,29 +1,26 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
-import { withAPIMiddleware } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   alertQuerySchema,
   createAlertSchema as createAlertValidationSchema,
-} from '@/components/ui/card';
+} from '@/lib/validations/alerts';
 import {
-  import {
   createSuccessResponse,
   NotFoundError,
   AuthorizationError,
-} from '@/components/ui/card';
+} from '@/lib/utils/api-response';
 import {
-  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
   invalidateCacheByTags,
-} from '@/components/ui/card';
+} from '@/lib/cache/redis';
 import {
-  import {
   calculateOffsetPagination,
   createPaginatedResponse,
 } from '@/lib/cache/pagination';
@@ -118,16 +115,12 @@ export async function POST(req: NextRequest) {
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
-    
-    if (!user?.email) {
+
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
 
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -136,7 +129,7 @@ export async function POST(req: NextRequest) {
 
     // Check if user already has maximum alerts (optional business rule)
     const alertCount = await prisma.alert.count({
-      where: { userId: user.id, isActive: true },
+      where: { userId: userRecord.id, isActive: true },
     });
 
     if (alertCount >= 10) {
@@ -149,7 +142,7 @@ export async function POST(req: NextRequest) {
 
     const alert = await prisma.alert.create({
       data: {
-        userId: user.id,
+        userId: userRecord.id,
         ...validatedData,
       },
     });

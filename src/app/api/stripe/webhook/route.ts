@@ -3,7 +3,7 @@ import { headers } from '@/components/ui/card';
 import { stripe, STRIPE_WEBHOOK_EVENTS } from '@/components/ui/card';
 import { prisma } from '@/components/ui/card';
 import { EmailQueue } from '@/lib/services/email-queue';
-
+import {
   PricingTier,
   BillingInterval,
   SubscriptionStatus,
@@ -304,7 +304,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       select: { email: true },
     });
 
-    if (!user) {
+    if (!dbUser) {
       console.error('User not found:', userId);
       return;
     }
@@ -322,7 +322,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
       },
       create: {
         userId,
-        email: user.email,
+        email: dbUser.email,
         stripeSubscriptionId: subscription.id,
         tier: tier as any || 'starter',
         billingCycle: 'monthly',
@@ -757,8 +757,7 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
       });
     }
 
-    // Calculate total credits
-    const totalCredits = (purchase.jobPostCredits || 0) + (purchase.featuredPostCredits || 0) + (purchase.socialGraphicCredits || 0);
+    // Use the already calculated totalCredits
 
     // Send credit confirmation email
     try {

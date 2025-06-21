@@ -1,11 +1,13 @@
-import React, { useState } from '@/components/ui/card';
-import { motion, AnimatePresence } from '@/components/ui/card';
-import { Switch } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Sparkles, Percent } from 'lucide-react';
-
 'use client';
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Sparkles, Percent } from 'lucide-react';
 
 
 interface PricingPlan {

@@ -1,7 +1,7 @@
-import { useState } from '@/components/ui/card';
-import { useUser } from '@clerk/nextjs';
-
 'use client';
+
+import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 
 
 export default function TestResumePage() {

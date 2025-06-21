@@ -1,7 +1,7 @@
-import { useState } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-
 'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 
 interface User {

@@ -202,18 +202,11 @@ export async function GET(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
-    });
-    
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
       select: {
         id: true,
         name: true,
         role: true,
+        email: true,
         onboardingCompleted: true,
         location: true,
         currentJobTitle: true,
@@ -226,18 +219,18 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Calculate profile completeness
     const requiredFields =
-      user.role === 'jobseeker'
+      userRecord.role === 'jobseeker'
         ? ['name', 'location', 'currentJobTitle', 'skills']
         : ['name', 'location', 'companyName', 'industry'];
 
     const completedFields = requiredFields.filter(field => {
-      const value = user[field as keyof typeof user];
+      const value = userRecord[field as keyof typeof userRecord];
       return value && (Array.isArray(value) ? value.length > 0 : true);
     });
 
@@ -246,14 +239,14 @@ export async function GET(req: NextRequest) {
     );
 
     return NextResponse.json({
-      user,
+      user: userRecord,
       profileCompleteness,
       missingFields: requiredFields.filter(
         field => !completedFields.includes(field)
       ),
       isNewUser:
-        !user.onboardingCompleted &&
-        new Date().getTime() - new Date(user.createdAt).getTime() <
+        !userRecord.onboardingCompleted &&
+        new Date().getTime() - new Date(userRecord.createdAt).getTime() <
           24 * 60 * 60 * 1000, // Less than 24 hours old
     });
   } catch (error) {

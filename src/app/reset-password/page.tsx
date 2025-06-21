@@ -1,9 +1,9 @@
-import { useState, Suspense } from '@/components/ui/card';
-import { useSearchParams, useRouter } from '@/components/ui/card';
-import { motion } from '@/components/ui/card';
-import { Lock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
-
 'use client';
+
+import { useState, Suspense } from 'react';
+import { useSearchParams, useRouter } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Lock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 
 // Component that uses search params - needs to be wrapped in Suspense
 function ResetPasswordContent() {

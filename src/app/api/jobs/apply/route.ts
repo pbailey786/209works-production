@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, name: true, email: true, resumeUrl: true },
     });
 
     if (!user?.email) {
@@ -34,12 +35,6 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const validatedData = applySchema.parse(body);
-
-    // Get user
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, name: true, email: true, resumeUrl: true },
-    });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -312,9 +307,10 @@ export async function GET(request: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -331,13 +327,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true },
-    });
-
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -345,7 +335,7 @@ export async function GET(request: NextRequest) {
     const application = await prisma.jobApplication.findUnique({
       where: {
         userId_jobId: {
-          userId: user.id,
+          userId: userRecord.id,
           jobId: jobId,
         },
       },

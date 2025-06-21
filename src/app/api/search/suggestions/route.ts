@@ -1,9 +1,9 @@
-import { NextRequest } from '@/components/ui/card';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { createSuccessResponse } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { createSuccessResponse } from '@/lib/utils/api-response';
+import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-
+import {
   getCache,
   setCache,
   generateCacheKey,

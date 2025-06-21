@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     let result;
-    const userId = (session.user as any)?.id;
+    const sessionUserId = (session.user as any)?.id;
 
     switch (testType) {
       case 'template':
@@ -209,13 +209,13 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const { userId } = await auth();
-    if (!userId) {
+    const { userId: getTestUserId } = await auth();
+    if (!getTestUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const dbUser = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: getTestUserId! },
     });
     if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

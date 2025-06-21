@@ -1,22 +1,20 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Switch } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/card';
-import { LoadingSpinner } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useToast } from '@/hooks/use-toast';
 import {
-  import {
   Plus,
   Edit3,
   Trash2,
@@ -26,9 +24,8 @@ import {
   Mail,
   Clock,
   Target,
-} from '@/components/ui/card';
+} from 'lucide-react';
 import {
-  import {
   Card,
   CardContent,
   CardDescription,
@@ -36,15 +33,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/card';
+} from '@/components/ui/dialog';
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
@@ -146,10 +141,10 @@ export default function AlertsPage() {
 
   // Load alerts on component mount
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (isLoaded && user) {
       loadAlerts();
     }
-  }, [status]);
+  }, [isLoaded, user]);
 
   const loadAlerts = async () => {
     try {
@@ -301,7 +296,7 @@ export default function AlertsPage() {
     }));
   };
 
-  if (status === 'loading' || loading) {
+  if (!isLoaded || loading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="flex items-center justify-center">
@@ -311,7 +306,7 @@ export default function AlertsPage() {
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (!user) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="mb-4 text-3xl font-bold">Job Alerts</h1>

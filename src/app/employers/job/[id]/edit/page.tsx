@@ -1,6 +1,5 @@
-import { notFound, redirect } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { notFound, redirect } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import EditJobForm from './EditJobForm';
 
@@ -44,7 +43,7 @@ export default async function EditJobPage({ params }: PageProps) {
     select: { id: true, role: true },
   });
 
-  if (!user || user.role !== 'employer') {
+  if (!dbUser || dbUser.role !== 'employer') {
     redirect('/employers/dashboard');
   }
 
@@ -52,7 +51,7 @@ export default async function EditJobPage({ params }: PageProps) {
   const jobData = await prisma.job.findFirst({
     where: {
       id: id,
-      employerId: user.id,
+      employerId: dbUser.id,
     },
     select: {
       id: true,

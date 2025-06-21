@@ -1,7 +1,6 @@
 
 
 import {
-  import {
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';

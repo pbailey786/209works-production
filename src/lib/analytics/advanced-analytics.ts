@@ -3,7 +3,7 @@
  * Provides comprehensive analytics, reporting, and business intelligence
  */
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { cache } from 'react';
 
 export interface AnalyticsTimeRange {

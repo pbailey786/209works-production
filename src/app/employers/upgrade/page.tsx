@@ -1,12 +1,11 @@
-import React, { useState, useEffect, Suspense } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { useRouter, useSearchParams } from 'next/navigation';
-
 'use client';
 
+import React, { useState, useEffect, Suspense } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 import {
-  import {
   Crown,
   Zap,
   Shield,

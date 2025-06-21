@@ -1,21 +1,19 @@
-import { NextRequest } from '@/components/ui/card';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { adQuerySchema, createAdSchema } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { adQuerySchema, createAdSchema } from '@/lib/validations/ads';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   createSuccessResponse,
   AuthorizationError,
-} from '@/components/ui/card';
+} from '@/lib/utils/api-response';
 import {
-  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
   invalidateCacheByTags,
-} from '@/components/ui/card';
+} from '@/lib/cache/redis';
 import {
-  import {
   calculateOffsetPagination,
   createPaginatedResponse,
 } from '@/lib/cache/pagination';

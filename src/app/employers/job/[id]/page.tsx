@@ -1,11 +1,10 @@
-import { useParams } from '@/components/ui/card';
-import { useState, useEffect } from '@/components/ui/card';
-import { useUser } from '@clerk/nextjs';
-
 'use client';
 
+import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+
 import {
-  import {
   Eye,
   Users,
   Calendar,

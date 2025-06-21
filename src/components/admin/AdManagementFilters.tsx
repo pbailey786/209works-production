@@ -1,28 +1,23 @@
-import { useState } from '@/components/ui/card';
-import { useRouter, useSearchParams } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/card';
-import { CalendarIcon, Search, X } from '@/components/ui/card';
-import { format } from 'date-fns';
-
 'use client';
 
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/card';
+} from '@/components/ui/select';
 import {
-  import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+
 
 export default function AdManagementFilters() {
   const router = useRouter();

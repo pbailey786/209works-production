@@ -14,16 +14,12 @@ export async function GET(req: NextRequest) {
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      include: { company: true },
     });
+
     if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // Check if user is an employer and get their company
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-      include: { company: true },
-    });
 
     if (!user || user.role !== 'employer' || !user.company) {
       return NextResponse.json(
@@ -126,18 +122,14 @@ export async function POST(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
-    });
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is an employer and get their company
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
       include: { company: true },
     });
 
-    if (!user || user.role !== 'employer' || !user.company) {
+    if (!userRecord?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!userRecord || userRecord.role !== 'employer' || !userRecord.company) {
       return NextResponse.json(
         {
           error: 'Access denied. Must be an employer with a company.',
@@ -160,7 +152,7 @@ export async function POST(req: NextRequest) {
 
     // Create knowledge entry
     const entry = await CompanyKnowledgeService.addCompanyKnowledge({
-      companyId: user.company.id,
+      companyId: userRecord.company.id,
       category,
       title,
       content,
@@ -204,18 +196,14 @@ export async function PUT(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
-    });
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is an employer and get their company
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
       include: { company: true },
     });
 
-    if (!user || user.role !== 'employer' || !user.company) {
+    if (!userRecord?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!userRecord || userRecord.role !== 'employer' || !userRecord.company) {
       return NextResponse.json(
         {
           error: 'Access denied. Must be an employer with a company.',
@@ -240,7 +228,7 @@ export async function PUT(req: NextRequest) {
     const existingEntry = await prisma.companyKnowledge.findFirst({
       where: {
         id: entryId,
-        companyId: user.company.id,
+        companyId: userRecord.company.id,
       },
     });
 
@@ -300,18 +288,14 @@ export async function DELETE(req: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
-    });
-    if (!user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check if user is an employer and get their company
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
       include: { company: true },
     });
 
-    if (!user || user.role !== 'employer' || !user.company) {
+    if (!userRecord?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!userRecord || userRecord.role !== 'employer' || !userRecord.company) {
       return NextResponse.json(
         {
           error: 'Access denied. Must be an employer with a company.',
@@ -336,7 +320,7 @@ export async function DELETE(req: NextRequest) {
     const existingEntry = await prisma.companyKnowledge.findFirst({
       where: {
         id: entryId,
-        companyId: user.company.id,
+        companyId: userRecord.company.id,
       },
     });
 

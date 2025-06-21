@@ -1,7 +1,7 @@
-import { Alert, AlertDescription } from '@/components/ui/card';
-import { Award } from 'lucide-react';
-
 'use client';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Award } from 'lucide-react';
 
 
 // Employer pricing plans - One-time payment model

@@ -1,8 +1,9 @@
-import { Metadata } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Metadata } from 'next';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
+import Link from 'next/link';
+import {
   Card,
   CardContent,
   CardDescription,
@@ -10,7 +11,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Check,
   Star,
   Zap,

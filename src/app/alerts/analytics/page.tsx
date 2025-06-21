@@ -1,18 +1,16 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { LoadingSpinner } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useToast } from '@/hooks/use-toast';
 import {
-  import {
   BarChart,
   Bar,
   XAxis,
@@ -27,9 +25,8 @@ import {
   Cell,
   Area,
   AreaChart,
-} from '@/components/ui/card';
+} from 'recharts';
 import {
-  import {
   Mail,
   TrendingUp,
   Users,
@@ -44,9 +41,8 @@ import {
   Filter,
   Download,
   RefreshCw,
-} from '@/components/ui/card';
+} from 'lucide-react';
 import {
-  import {
   Card,
   CardContent,
   CardDescription,
@@ -54,7 +50,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
@@ -124,10 +119,10 @@ export default function AlertAnalytics() {
   const [topAlerts, setTopAlerts] = useState<AlertPerformance[]>([]);
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (isLoaded && user) {
       loadAnalytics();
     }
-  }, [status, dateRange]);
+  }, [isLoaded, user, dateRange]);
 
   const loadAnalytics = async () => {
     try {
@@ -266,7 +261,7 @@ export default function AlertAnalytics() {
     }
   };
 
-  if (status === 'loading' || loading) {
+  if (!isLoaded || loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16">
         <div className="flex items-center justify-center">
@@ -276,7 +271,7 @@ export default function AlertAnalytics() {
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (!user) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="mb-4 text-3xl font-bold">Alert Analytics</h1>

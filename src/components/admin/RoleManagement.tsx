@@ -1,15 +1,14 @@
-import { useState } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/card';
-import { usePermissions } from '@/components/ui/card';
-import { PermissionGate } from './PermissionGate';
-
 'use client';
 
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { usePermissions } from '@/hooks/usePermissions';
+import { PermissionGate } from './PermissionGate';
+
 import {
-  import {
   Card,
   CardContent,
   CardDescription,
@@ -17,41 +16,36 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/card';
+} from '@/components/ui/select';
 import {
-  import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/card';
+} from '@/components/ui/table';
 import {
-  import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/card';
+} from '@/components/ui/dialog';
 import {
-  import {
   AdminRole,
   Permission,
   ROLE_PERMISSIONS,
   ROLE_DISPLAY_INFO,
   getUserPermissions,
-} from '@/components/ui/card';
+} from '@/lib/rbac/permissions';
 import {
-  import {
   Shield,
   Users,
   Settings,

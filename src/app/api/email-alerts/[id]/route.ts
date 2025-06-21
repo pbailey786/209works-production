@@ -54,14 +54,10 @@ export async function GET(
     const user = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
-    
+
     if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -123,16 +119,12 @@ export async function PATCH(
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
-    
-    if (!user?.email) {
+
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
 
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -140,7 +132,7 @@ export async function PATCH(
     const existingAlert = await prisma.alert.findFirst({
       where: {
         id: (await params).id,
-        userId: user.id,
+        userId: userRecord.id,
       },
     });
 
@@ -211,16 +203,12 @@ export async function DELETE(
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
-    
-    if (!user?.email) {
+
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-    });
 
-    if (!user) {
+    if (!userRecord) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
@@ -228,7 +216,7 @@ export async function DELETE(
     const existingAlert = await prisma.alert.findFirst({
       where: {
         id: (await params).id,
-        userId: user.id,
+        userId: userRecord.id,
       },
     });
 

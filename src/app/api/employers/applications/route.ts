@@ -28,17 +28,12 @@ export async function GET(request: NextRequest) {
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
     if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // Get user and verify they're an employer
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
 
     if (!user || user.role !== 'employer') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -154,19 +149,14 @@ export async function PATCH(request: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user and verify they're an employer
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user || user.role !== 'employer') {
+    if (!userRecord || userRecord.role !== 'employer') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -202,7 +192,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    if (application.job.employerId !== user.id) {
+    if (application.job.employerId !== userRecord.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -235,7 +225,7 @@ export async function PATCH(request: NextRequest) {
     await prisma.auditLog
       .create({
         data: {
-          userId: user.id,
+          userId: userRecord.id,
           action: 'application_status_updated_by_employer',
           resource: 'job_application',
           resourceId: validatedData.applicationId,

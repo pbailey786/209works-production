@@ -1,17 +1,15 @@
-import { revalidatePath } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { ActionResult } from '@/types/actions';
-
 'use server';
 
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { ActionResult } from '@/types/actions';
 import {
-  import {
   createAlertSchema,
   updateAlertSchema,
   testAlertSchema,
   AlertCriteria,
-} from '@/components/ui/card';
+} from '@/lib/validations/alerts';
 import {
   EnhancedJobMatchingService,
   findMatchingJobs as enhancedFindMatchingJobs,

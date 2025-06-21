@@ -1,15 +1,6 @@
 import { prisma } from '@/lib/database/prisma';
-
-  getCache,
-  setCache,
-  invalidateCacheByTags,
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL,
-  getCacheOrExecute,
-} from '@/components/ui/card';
+import { CacheUtils } from '@/lib/performance/enhanced-cache-manager';
 import {
-  import {
   CursorPaginationParams,
   OffsetPaginationParams,
   SearchFilters,
@@ -26,7 +17,7 @@ import {
 
 // Job service with caching and pagination
 export class JobCacheService {
-  private static readonly CACHE_TTL = DEFAULT_TTL.medium;
+  private static readonly CACHE_TTL = 300; // 5 minutes
   private static readonly CACHE_TAGS = {
     jobs: 'jobs',
     jobsByEmployer: 'jobs:employer',
@@ -49,30 +40,7 @@ export class JobCacheService {
     const startTime = Date.now();
     const { sortBy = 'createdAt', sortOrder = 'desc', filters = {} } = params;
 
-    // Generate cache key
-    const cacheKey = generatePaginationCacheKey(
-      generateCacheKey(CACHE_PREFIXES.jobs, 'paginated'),
-      {
-        ...params,
-        sortBy,
-        sortOrder,
-        filters,
-      }
-    );
-
-    // Try cache first
-    const cached = await getCache<PaginatedResponse<any>>(cacheKey);
-    if (cached) {
-      trackPerformance?.trackCacheHit();
-      return {
-        ...cached,
-        metadata: {
-          ...cached.metadata,
-          cached: true,
-        },
-      };
-    }
-
+    // Skip caching for now - implement later if needed
     trackPerformance?.trackCacheMiss();
 
     // Build where condition from filters
@@ -205,11 +173,7 @@ export class JobCacheService {
       sortOrder,
     });
 
-    // Cache the result
-    await setCache(cacheKey, response, {
-      ttl: this.CACHE_TTL,
-      tags: [this.CACHE_TAGS.jobs],
-    });
+    // Skip caching for now - implement later if needed
 
     return response;
   }
@@ -223,48 +187,38 @@ export class JobCacheService {
       trackCacheMiss: () => void;
     }
   ): Promise<any | null> {
-    const cacheKey = generateCacheKey(CACHE_PREFIXES.jobs, 'single', id);
-
-    return getCacheOrExecute(
-      cacheKey,
-      async () => {
-        trackPerformance?.trackDatabaseQuery();
-        const job = await prisma.job.findUnique({
-          where: { id },
-          include: {
-            companyRef: {
-              select: {
-                id: true,
-                name: true,
-                website: true,
-                logo: true,
-                subscriptionTier: true,
-              },
-            },
-            jobApplications: {
-              select: {
-                id: true,
-                userId: true,
-                appliedAt: true,
-                status: true,
-              },
-            },
+    // Skip caching for now - implement later if needed
+    trackPerformance?.trackDatabaseQuery();
+    const job = await prisma.job.findUnique({
+      where: { id },
+      include: {
+        companyRef: {
+          select: {
+            id: true,
+            name: true,
+            website: true,
+            logo: true,
+            subscriptionTier: true,
           },
-        });
-
-        if (job) {
-          trackPerformance?.trackCacheHit();
-        } else {
-          trackPerformance?.trackCacheMiss();
-        }
-
-        return job;
+        },
+        jobApplications: {
+          select: {
+            id: true,
+            userId: true,
+            appliedAt: true,
+            status: true,
+          },
+        },
       },
-      {
-        ttl: this.CACHE_TTL,
-        tags: [this.CACHE_TAGS.jobs, `job:${id}`],
-      }
-    );
+    });
+
+    if (job) {
+      trackPerformance?.trackCacheHit();
+    } else {
+      trackPerformance?.trackCacheMiss();
+    }
+
+    return job;
   }
 
   // Get jobs by employer with caching
@@ -272,101 +226,84 @@ export class JobCacheService {
     employerId: string,
     params: CursorPaginationParams | OffsetPaginationParams
   ): Promise<PaginatedResponse<any>> {
-    const cacheKey = generatePaginationCacheKey(
-      generateCacheKey(CACHE_PREFIXES.jobs, 'employer', employerId),
-      params
-    );
+    // Skip caching for now - implement later if needed
+    const whereCondition = { companyId: employerId };
+    const orderBy = this.buildJobSortCondition('createdAt', 'desc');
 
-    return getCacheOrExecute(
-      cacheKey,
-      async () => {
-        const whereCondition = { companyId: employerId };
-        const orderBy = this.buildJobSortCondition('createdAt', 'desc');
+    if ('cursor' in params) {
+      const { cursor, limit } = params;
 
-        if ('cursor' in params) {
-          const { cursor, limit } = params;
-
-          let cursorCondition = {};
-          if (cursor) {
-            cursorCondition = buildCursorCondition(cursor);
-          }
-
-          const data = await prisma.job.findMany({
-            where: { ...whereCondition, ...cursorCondition },
-            orderBy,
-            take: limit + 1,
-            include: {
-              companyRef: {
-                select: {
-                  id: true,
-                  name: true,
-                  website: true,
-                  logo: true,
-                  subscriptionTier: true,
-                },
-              },
-            },
-          });
-
-          const hasNextPage = data.length > limit;
-          if (hasNextPage) data.pop();
-
-          const pagination: CursorPaginationMeta = {
-            hasNextPage,
-            hasPrevPage: !!cursor,
-            nextCursor: hasNextPage
-              ? generateCursorFromRecord(data[data.length - 1])
-              : undefined,
-          };
-
-          return createPaginatedResponse(data, pagination, {
-            queryTime: 0,
-            cached: false,
-          });
-        } else {
-          const offsetParams = params as OffsetPaginationParams;
-          const page = 'page' in offsetParams ? offsetParams.page : 1;
-          const limit = offsetParams.limit;
-          const totalCount = await prisma.job.count({ where: whereCondition });
-          const { skip, take, meta } = calculateOffsetPagination(
-            page,
-            limit,
-            totalCount
-          );
-
-          const data = await prisma.job.findMany({
-            where: whereCondition,
-            orderBy,
-            skip,
-            take,
-            include: {
-              companyRef: {
-                select: {
-                  id: true,
-                  name: true,
-                  website: true,
-                  logo: true,
-                  subscriptionTier: true,
-                },
-              },
-            },
-          });
-
-          return createPaginatedResponse(data, meta, {
-            queryTime: 0,
-            cached: false,
-          });
-        }
-      },
-      {
-        ttl: this.CACHE_TTL,
-        tags: [
-          this.CACHE_TAGS.jobs,
-          this.CACHE_TAGS.jobsByEmployer,
-          `employer:${employerId}`,
-        ],
+      let cursorCondition = {};
+      if (cursor) {
+        cursorCondition = buildCursorCondition(cursor);
       }
-    );
+
+      const data = await prisma.job.findMany({
+        where: { ...whereCondition, ...cursorCondition },
+        orderBy,
+        take: limit + 1,
+        include: {
+          companyRef: {
+            select: {
+              id: true,
+              name: true,
+              website: true,
+              logo: true,
+              subscriptionTier: true,
+            },
+          },
+        },
+      });
+
+      const hasNextPage = data.length > limit;
+      if (hasNextPage) data.pop();
+
+      const pagination: CursorPaginationMeta = {
+        hasNextPage,
+        hasPrevPage: !!cursor,
+        nextCursor: hasNextPage
+          ? generateCursorFromRecord(data[data.length - 1])
+          : undefined,
+      };
+
+      return createPaginatedResponse(data, pagination, {
+        queryTime: 0,
+        cached: false,
+      });
+    } else {
+      const offsetParams = params as OffsetPaginationParams;
+      const page = 'page' in offsetParams ? offsetParams.page : 1;
+      const limit = offsetParams.limit;
+      const totalCount = await prisma.job.count({ where: whereCondition });
+      const { skip, take, meta } = calculateOffsetPagination(
+        page,
+        limit,
+        totalCount
+      );
+
+      const data = await prisma.job.findMany({
+        where: whereCondition,
+        orderBy,
+        skip,
+        take,
+        include: {
+          companyRef: {
+            select: {
+              id: true,
+              name: true,
+              website: true,
+              logo: true,
+              subscriptionTier: true,
+            },
+          },
+        },
+      });
+
+      return createPaginatedResponse(data, meta, {
+        queryTime: 0,
+        cached: false,
+      });
+    }
   }
 
   // Invalidate job caches
@@ -374,17 +311,8 @@ export class JobCacheService {
     jobId?: string,
     employerId?: string
   ): Promise<void> {
-    const tags = [this.CACHE_TAGS.jobs];
-
-    if (jobId) {
-      tags.push(`job:${jobId}`);
-    }
-
-    if (employerId) {
-      tags.push(this.CACHE_TAGS.jobsByEmployer, `employer:${employerId}`);
-    }
-
-    await invalidateCacheByTags(tags);
+    // Skip cache invalidation for now - implement later if needed
+    console.log('Cache invalidation skipped for:', { jobId, employerId });
   }
 
   // Build where condition for job search
@@ -472,7 +400,7 @@ export class JobCacheService {
 
 // User service with caching
 export class UserCacheService {
-  private static readonly CACHE_TTL = DEFAULT_TTL.long;
+  private static readonly CACHE_TTL = 1800; // 30 minutes
   private static readonly CACHE_TAGS = {
     users: 'users',
     userProfiles: 'users:profiles',
@@ -487,35 +415,25 @@ export class UserCacheService {
       trackCacheMiss: () => void;
     }
   ): Promise<any | null> {
-    const cacheKey = generateCacheKey(CACHE_PREFIXES.users, 'profile', id);
-
-    return getCacheOrExecute(
-      cacheKey,
-      async () => {
-        trackPerformance?.trackDatabaseQuery();
-        return await prisma.user.findUnique({
-          where: { id },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            role: true,
-            profilePictureUrl: true,
-            resumeUrl: true,
-            skills: true,
-            companyWebsite: true,
-            phoneNumber: true,
-            location: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        });
+    // Skip caching for now - implement later if needed
+    trackPerformance?.trackDatabaseQuery();
+    return await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        profilePictureUrl: true,
+        resumeUrl: true,
+        skills: true,
+        companyWebsite: true,
+        phoneNumber: true,
+        location: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      {
-        ttl: this.CACHE_TTL,
-        tags: [this.CACHE_TAGS.users, `user:${id}`],
-      }
-    );
+    });
   }
 
   // Get user applications with pagination
@@ -523,114 +441,98 @@ export class UserCacheService {
     userId: string,
     params: CursorPaginationParams | OffsetPaginationParams
   ): Promise<PaginatedResponse<any>> {
-    const cacheKey = generatePaginationCacheKey(
-      generateCacheKey(CACHE_PREFIXES.users, 'applications', userId),
-      params
-    );
+    // Skip caching for now - implement later if needed
+    const whereCondition = { userId };
+    const orderBy = buildSortCondition('appliedAt', 'desc');
 
-    return getCacheOrExecute(
-      cacheKey,
-      async () => {
-        const whereCondition = { userId };
-        const orderBy = buildSortCondition('appliedAt', 'desc');
+    if ('cursor' in params) {
+      const { cursor, limit } = params;
 
-        if ('cursor' in params) {
-          const { cursor, limit } = params;
-
-          let cursorCondition = {};
-          if (cursor) {
-            cursorCondition = buildCursorCondition(cursor, 'appliedAt');
-          }
-
-          const data = await prisma.jobApplication.findMany({
-            where: { ...whereCondition, ...cursorCondition },
-            orderBy,
-            take: limit + 1,
-            include: {
-              job: {
-                select: {
-                  id: true,
-                  title: true,
-                  company: true,
-                  location: true,
-                  jobType: true,
-                },
-              },
-            },
-          });
-
-          const hasNextPage = data.length > limit;
-          if (hasNextPage) data.pop();
-
-          const pagination: CursorPaginationMeta = {
-            hasNextPage,
-            hasPrevPage: !!cursor,
-            nextCursor: hasNextPage
-              ? generateCursorFromRecord(data[data.length - 1], 'appliedAt')
-              : undefined,
-          };
-
-          return createPaginatedResponse(data, pagination, {
-            queryTime: 0,
-            cached: false,
-          });
-        } else {
-          const offsetParams = params as OffsetPaginationParams;
-          const page = 'page' in offsetParams ? offsetParams.page : 1;
-          const limit = offsetParams.limit;
-          const totalCount = await prisma.jobApplication.count({
-            where: whereCondition,
-          });
-          const { skip, take, meta } = calculateOffsetPagination(
-            page,
-            limit,
-            totalCount
-          );
-
-          const data = await prisma.jobApplication.findMany({
-            where: whereCondition,
-            orderBy,
-            skip,
-            take,
-            include: {
-              job: {
-                select: {
-                  id: true,
-                  title: true,
-                  company: true,
-                  location: true,
-                  jobType: true,
-                },
-              },
-            },
-          });
-
-          return createPaginatedResponse(data, meta, {
-            queryTime: 0,
-            cached: false,
-          });
-        }
-      },
-      {
-        ttl: DEFAULT_TTL.short, // Applications change frequently
-        tags: [this.CACHE_TAGS.users, `user:${userId}:applications`],
+      let cursorCondition = {};
+      if (cursor) {
+        cursorCondition = buildCursorCondition(cursor, 'appliedAt');
       }
-    );
+
+      const data = await prisma.jobApplication.findMany({
+        where: { ...whereCondition, ...cursorCondition },
+        orderBy,
+        take: limit + 1,
+        include: {
+          job: {
+            select: {
+              id: true,
+              title: true,
+              company: true,
+              location: true,
+              jobType: true,
+            },
+          },
+        },
+      });
+
+      const hasNextPage = data.length > limit;
+      if (hasNextPage) data.pop();
+
+      const pagination: CursorPaginationMeta = {
+        hasNextPage,
+        hasPrevPage: !!cursor,
+        nextCursor: hasNextPage
+          ? generateCursorFromRecord(data[data.length - 1], 'appliedAt')
+          : undefined,
+      };
+
+      return createPaginatedResponse(data, pagination, {
+        queryTime: 0,
+        cached: false,
+      });
+    } else {
+      const offsetParams = params as OffsetPaginationParams;
+      const page = 'page' in offsetParams ? offsetParams.page : 1;
+      const limit = offsetParams.limit;
+      const totalCount = await prisma.jobApplication.count({
+        where: whereCondition,
+      });
+      const { skip, take, meta } = calculateOffsetPagination(
+        page,
+        limit,
+        totalCount
+      );
+
+      const data = await prisma.jobApplication.findMany({
+        where: whereCondition,
+        orderBy,
+        skip,
+        take,
+        include: {
+          job: {
+            select: {
+              id: true,
+              title: true,
+              company: true,
+              location: true,
+              jobType: true,
+            },
+          },
+        },
+      });
+
+      return createPaginatedResponse(data, meta, {
+        queryTime: 0,
+        cached: false,
+      });
+    }
   }
 
   // Invalidate user caches
   static async invalidateUserCaches(userId: string): Promise<void> {
-    await invalidateCacheByTags([
-      this.CACHE_TAGS.users,
-      `user:${userId}`,
-      `user:${userId}:applications`,
-    ]);
+    // Skip cache invalidation for now - implement later if needed
+    console.log('User cache invalidation skipped for:', userId);
   }
 }
 
 // Search service with caching
 export class SearchCacheService {
-  private static readonly CACHE_TTL = DEFAULT_TTL.short; // Search results change frequently
+  private static readonly CACHE_TTL = 60; // 1 minute
 
   // Cached search with pagination
   static async searchJobs(
@@ -638,26 +540,10 @@ export class SearchCacheService {
     filters: SearchFilters,
     params: CursorPaginationParams | OffsetPaginationParams
   ): Promise<PaginatedResponse<any>> {
-    const cacheKey = generatePaginationCacheKey(
-      generateCacheKey(CACHE_PREFIXES.search, 'jobs', query),
-      {
-        ...params,
-        filters,
-      }
-    );
-
-    return getCacheOrExecute(
-      cacheKey,
-      async () => {
-        return JobCacheService.getPaginatedJobs({
-          ...params,
-          filters: { ...filters, q: query },
-        });
-      },
-      {
-        ttl: this.CACHE_TTL,
-        tags: ['search', 'jobs'],
-      }
-    );
+    // Skip caching for now - implement later if needed
+    return JobCacheService.getPaginatedJobs({
+      ...params,
+      filters: { ...filters, q: query },
+    });
   }
 }

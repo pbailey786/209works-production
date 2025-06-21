@@ -139,29 +139,24 @@ export async function GET(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true }
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true }
-    });
-
-    if (!user || user.role !== 'employer') {
+    if (!userRecord || userRecord.role !== 'employer') {
       return NextResponse.json({ error: 'Only employers can view purchased addons' }, { status: 403 });
     }
 
     // Get user's purchased addons
     const userAddons = await prisma.userAddOn.findMany({
       where: {
-        userId: user.id,
+        userId: userRecord.id,
         isActive: true
       },
       include: {

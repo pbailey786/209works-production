@@ -1,20 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
-
-  EnhancedSearchFilters,
-  SearchResult,
-  TextProcessor,
-  RelevanceScorer,
-  GeolocationUtils,
-  SEARCH_CONFIG,
-} from '@/components/ui/card';
-import {
-  import {
-  getCache,
-  setCache,
-  generateCacheKey,
-  CACHE_PREFIXES,
-  DEFAULT_TTL,
-} from '../cache/redis';
+// Remove unused imports for now - implement later if needed
 
 // Enhanced alert criteria interface
 export interface AlertCriteria {
@@ -72,7 +57,7 @@ interface MatchQuality {
 
 // Enhanced Job Matching Algorithm
 export class EnhancedJobMatchingService {
-  private static readonly CACHE_TTL = DEFAULT_TTL.short;
+  private static readonly CACHE_TTL = 60; // 1 minute
   private static readonly CACHE_TAGS = ['job-matching', 'alerts'];
 
   // Weights for different matching criteria
@@ -98,18 +83,7 @@ export class EnhancedJobMatchingService {
     maxResults: number = 50,
     useAdvancedScoring: boolean = true
   ): Promise<JobMatchResult[]> {
-    const cacheKey = generateCacheKey(
-      CACHE_PREFIXES.search,
-      'job-matches',
-      JSON.stringify(criteria),
-      maxResults.toString()
-    );
-
-    // Try cache first
-    const cached = await getCache<JobMatchResult[]>(cacheKey);
-    if (cached) {
-      return cached;
-    }
+    // Skip caching for now - implement later if needed
 
     try {
       // Build enhanced database query
@@ -148,11 +122,7 @@ export class EnhancedJobMatchingService {
         .sort((a, b) => b.relevanceScore - a.relevanceScore)
         .slice(0, maxResults);
 
-      // Cache the results
-      await setCache(cacheKey, topMatches, {
-        ttl: this.CACHE_TTL,
-        tags: this.CACHE_TAGS,
-      });
+      // Skip caching for now - implement later if needed
 
       return topMatches;
     } catch (error) {

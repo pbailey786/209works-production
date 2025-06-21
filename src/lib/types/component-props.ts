@@ -8,9 +8,8 @@
  * and ensures runtime prop validation with default values.
  */
 
-  safeDateFormat as safeDateFormatUtil,
 import {
-  import {
+  safeDateFormat as safeDateFormatUtil,
   safeTimeFormat,
   getRelativeTime,
   safeString,

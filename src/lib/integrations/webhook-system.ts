@@ -3,7 +3,7 @@
  * Real-time event delivery system with retry logic and failure handling
  */
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { AuditLogger } from '@/lib/monitoring/error-monitor';
 import { EnhancedCacheManager, CACHE_DURATIONS } from '@/lib/performance/enhanced-cache-manager';
 

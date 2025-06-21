@@ -1,15 +1,10 @@
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Label } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-
 'use client';
 
+import { Metadata } from 'next';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
 import {
-  import {
   Card,
   CardContent,
   CardDescription,
@@ -17,15 +12,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/card';
+} from '@/components/ui/select';
+
+import Link from 'next/link';
+import { PricingSection } from '@/components/pricing/PricingSection';
 import {
-  import {
   Building2,
   MapPin,
   CheckCircle,

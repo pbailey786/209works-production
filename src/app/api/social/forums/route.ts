@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
         const { commentId } = data;
         
         // Check if user is the post author
-        const comment = await prisma.forumComment.findUnique({
+        const targetComment = await prisma.forumComment.findUnique({
           where: { id: commentId },
           include: {
             post: {
@@ -145,14 +145,14 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        if (!comment) {
+        if (!targetComment) {
           return NextResponse.json(
             { error: 'Comment not found' },
             { status: 404 }
           );
         }
 
-        if (comment.post.authorId !== user.id) {
+        if (targetComment.post.authorId !== user.id) {
           return NextResponse.json(
             { error: 'Only the post author can accept answers' },
             { status: 403 }
@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
         // Unmark previous accepted answer
         await prisma.forumComment.updateMany({
           where: {
-            postId: comment.postId,
+            postId: targetComment.postId,
             isAcceptedAnswer: true,
           },
           data: { isAcceptedAnswer: false },

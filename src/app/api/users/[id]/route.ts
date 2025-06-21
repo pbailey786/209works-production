@@ -2,9 +2,9 @@ import { NextRequest } from '@/components/ui/card';
 import { withAPIMiddleware } from '@/components/ui/card';
 import { updateUserSchema } from '@/components/ui/card';
 import { routeParamsSchemas } from '@/components/ui/card';
-import { UserCacheService } from '@/components/ui/card';
+import { UserCacheService } from '@/lib/cache/services';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   createSuccessResponse,
   NotFoundError,
   AuthorizationError,

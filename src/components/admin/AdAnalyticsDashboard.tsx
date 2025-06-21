@@ -1,12 +1,12 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Link from 'next/link';
+
 import {
-  import {
   Card,
   CardContent,
   CardDescription,
@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   BarChart3,
   TrendingUp,
   TrendingDown,

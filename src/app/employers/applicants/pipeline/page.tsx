@@ -1,10 +1,9 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { formatDistanceToNow } from 'date-fns';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+
 import {
-  import {
   ArrowLeft,
   Users,
   Clock,

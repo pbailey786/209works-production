@@ -1,11 +1,8 @@
-import { useState } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-
 'use client';
 
+import { Button } from '@/components/ui/button';
+
 import {
-  import {
   MoreVertical,
   Edit,
   Eye,
@@ -20,6 +17,9 @@ import {
   ChevronRight,
   Building,
 } from 'lucide-react';
+
+import Link from 'next/link';
+import { AdPreviewModal } from './AdPreviewModal';
 
 interface Advertisement {
   id: string;

@@ -1,6 +1,5 @@
-import { redirect } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { redirect } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import EmployerOnboardingClient from './EmployerOnboardingClient';
 
@@ -35,19 +34,19 @@ export default async function EmployerOnboardingPage() {
     },
   });
 
-  if (!user) {
+  if (!dbUser) {
     redirect('/signin');
   }
 
   // Redirect non-employers
-  if (user.role !== 'employer') {
-    redirect(user.role === 'jobseeker' ? '/onboarding/jobseeker' : '/dashboard');
+  if (dbUser.role !== 'employer') {
+    redirect(dbUser.role === 'jobseeker' ? '/onboarding/jobseeker' : '/dashboard');
   }
 
   // If onboarding is already completed, redirect to dashboard
-  if (user.onboardingCompleted) {
+  if (dbUser.onboardingCompleted) {
     redirect('/employers/dashboard');
   }
 
-  return <EmployerOnboardingClient user={user} />;
+  return <EmployerOnboardingClient user={dbUser} />;
 }

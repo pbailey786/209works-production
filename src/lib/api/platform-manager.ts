@@ -3,7 +3,7 @@
  * Enterprise-grade API management with rate limiting, analytics, and developer tools
  */
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { encrypt, decrypt } from '@/lib/encryption';
 import { AuditLogger } from '@/lib/monitoring/error-monitor';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';

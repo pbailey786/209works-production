@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { prisma } from '@/components/ui/card';
-import { paginatedQuerySchema } from '@/components/ui/card';
-import { JobCacheService } from '@/components/ui/card';
-import { createJobSchema } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/database/prisma';
+import { paginatedQuerySchema } from '@/lib/validations/api';
+import { JobCacheService } from '@/lib/services/regional-job-service';
+import { createJobSchema } from '@/lib/validations/api';
 import { createSuccessResponse } from '@/lib/errors/api-errors';
-
+import {
   withAPIMiddleware,
   apiConfigs,
   mergeAPIConfig,
-} from '@/lib/middleware/api';
+} from '@/lib/middleware/api-middleware';
 // GET /api/jobs - List jobs with caching and pagination
 export const GET = withAPIMiddleware(
   async (req, context) => {

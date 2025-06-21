@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const userId = (session.user as any)?.id;
+    const sessionUserId = (session.user as any)?.id;
     let result;
 
     switch (type) {
@@ -251,13 +251,13 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and permissions
-    const { userId } = await auth();
-    if (!userId) {
+    const { userId: getRequestUserId } = await auth();
+    if (!getRequestUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const dbUser = await prisma.user.findUnique({
-      where: { clerkId: userId! },
+      where: { clerkId: getRequestUserId! },
     });
     if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

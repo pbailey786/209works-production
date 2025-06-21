@@ -1,6 +1,6 @@
-import { PRICING_CONFIG } from '@/lib/services/subscription';
-
 'use client';
+
+import { PRICING_CONFIG } from '@/lib/services/subscription';
 
 
 export default function JobSeekerPricingPage() {

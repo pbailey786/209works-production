@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { auth } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(req: NextRequest) {
@@ -17,22 +16,20 @@ export async function POST(req: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const user = await prisma.user.findUnique({
       where: { clerkId: userId! },
     });
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-
-    const userId = (session.user as any).id;
     const { creditType = 'universal', count = 5 } = await req.json();
 
     // Create a test purchase record
     const purchase = await prisma.jobPostingPurchase.create({
       data: {
-        userId,
-        stripeSessionId: `test_${Date.now()}_${userId}`,
+        userId: user.id,
+        stripeSessionId: `test_${Date.now()}_${user.id}`,
         tier: 'test_credits',
         tierPrice: 0,
         addons: [],
@@ -54,7 +51,7 @@ export async function POST(req: NextRequest) {
     const credits = [];
     for (let i = 0; i < count; i++) {
       credits.push({
-        userId,
+        userId: user.id,
         purchaseId: purchase.id,
         type: creditType,
         isUsed: false,

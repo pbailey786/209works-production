@@ -1,10 +1,9 @@
-import { useState, useEffect } from '@/components/ui/card';
-import { useSearchParams, useRouter } from 'next/navigation';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+
 import {
-  import {
   CreditCard,
   ArrowLeft,
   Check,

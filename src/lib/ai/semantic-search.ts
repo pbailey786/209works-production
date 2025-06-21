@@ -4,7 +4,7 @@
  */
 
 import OpenAI from 'openai';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/database/prisma';
 import { getDomainConfig } from '@/lib/domain/config';
 import { EnhancedCacheManager, CACHE_DURATIONS, CACHE_TAGS } from '@/lib/performance/enhanced-cache-manager';
 

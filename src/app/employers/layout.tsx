@@ -1,7 +1,7 @@
-import { usePathname } from '@/components/ui/card';
-import { ReactNode } from 'react';
-
 'use client';
+
+import { usePathname } from 'next/navigation';
+import { ReactNode } from 'react';
 
 interface EmployerLayoutProps {
   children: ReactNode;

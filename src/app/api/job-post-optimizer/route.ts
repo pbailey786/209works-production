@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Job Post Optimizer is now accessible to all employers without credit requirements
-    const userId = (session!.user as any).id;
 
     // Parse and validate request body
     const body = await req.json();

@@ -154,17 +154,12 @@ export async function POST(request: NextRequest) {
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
     if (!user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    // Get user and verify they're an employer
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
 
     if (!user || user.role !== 'employer') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -439,19 +434,14 @@ export async function GET(request: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      select: { id: true, role: true, email: true },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user and verify they're an employer
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      select: { id: true, role: true },
-    });
-
-    if (!user || user.role !== 'employer') {
+    if (!userRecord || userRecord.role !== 'employer') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

@@ -1,6 +1,6 @@
-import { Resend } from '@/components/ui/card';
+import { Resend } from 'resend';
 import { SecurityLogger } from './security/security-monitor';
-
+import {
   emailSecurityValidator,
   emailAddressSchema,
   emailSubjectSchema,

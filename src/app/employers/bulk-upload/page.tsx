@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-
 'use client';
 
+import { useState, useEffect } from 'react';
+
 import {
-  import {
   Upload,
   FileText,
   CheckCircle,

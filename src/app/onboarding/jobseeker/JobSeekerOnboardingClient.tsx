@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-
 'use client';
 
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 import {
-  import {
   Upload,
   User,
   MapPin,

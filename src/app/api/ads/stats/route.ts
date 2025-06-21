@@ -1,13 +1,12 @@
-import { NextRequest } from '@/components/ui/card';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { adAnalyticsSchema } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { adAnalyticsSchema } from '@/lib/validations/ads';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   createSuccessResponse,
   AuthorizationError,
-} from '@/components/ui/card';
+} from '@/lib/utils/api-response';
 import {
-  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,

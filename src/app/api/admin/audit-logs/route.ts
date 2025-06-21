@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') || '';
     const severity = searchParams.get('severity') || '';
     const event = searchParams.get('event') || '';
-    const userId = searchParams.get('userId') || '';
+    const filterUserId = searchParams.get('userId') || '';
     const dateFrom = searchParams.get('dateFrom');
     const dateTo = searchParams.get('dateTo');
 
@@ -61,8 +61,8 @@ export async function GET(request: NextRequest) {
       where.event = event;
     }
 
-    if (userId) {
-      where.userId = userId;
+    if (filterUserId) {
+      where.userId = filterUserId;
     }
 
     if (dateFrom || dateTo) {

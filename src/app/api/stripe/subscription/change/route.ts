@@ -216,9 +216,12 @@ export async function GET(request: NextRequest) {
     
     const userRecord = await prisma.user.findUnique({
       where: { clerkId: userId! },
+      include: {
+        subscriptions: true,
+      },
     });
 
-    if (!user?.email) {
+    if (!userRecord?.email) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -236,22 +239,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user with current subscription
-    const userRecord = await prisma.user.findUnique({
-      where: { email: user?.email },
-      include: {
-        subscriptions: true,
-      },
-    });
-
-    if (!user || !user.subscriptions?.stripeSubscriptionId) {
+    if (!userRecord || !userRecord.subscriptions?.stripeSubscriptionId) {
       return NextResponse.json(
         { error: 'No active subscription found' },
         { status: 400 }
       );
     }
 
-    const currentSubscription = user.subscriptions;
+    const currentSubscription = userRecord.subscriptions;
     const priceMapping: any = STRIPE_PRICE_IDS;
     const newPriceId = priceMapping[newTier]?.[billingInterval];
 
@@ -265,7 +260,7 @@ export async function GET(request: NextRequest) {
     try {
       // Get proration preview from Stripe
       const preview = await (stripe.invoices as any).retrieveUpcoming({
-        customer: user.stripeCustomerId!,
+        customer: userRecord.stripeCustomerId!,
         subscription: currentSubscription.stripeSubscriptionId,
         subscription_items: [
           {

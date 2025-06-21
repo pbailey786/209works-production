@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from '@/components/ui/card';
-import { useUser } from '@/components/ui/card';
-import { redirect } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-
 'use client';
 
+import React, { useState, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+
 import {
-  import {
   Briefcase,
   MapPin,
   DollarSign,

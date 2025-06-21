@@ -1,15 +1,14 @@
-import { NextRequest } from '@/components/ui/card';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { updateAlertSchema } from '@/components/ui/card';
-import { routeParamsSchemas } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { updateAlertSchema } from '@/lib/validations/alerts';
+import { routeParamsSchemas } from '@/lib/validations/api';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   createSuccessResponse,
   NotFoundError,
   AuthorizationError,
-} from '@/components/ui/card';
+} from '@/lib/utils/api-response';
 import {
-  import {
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,

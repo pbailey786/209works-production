@@ -1,11 +1,10 @@
-import { useState } from '@/components/ui/card';
-import { motion } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-
 'use client';
 
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+
 import {
-  import {
   Mail,
   Phone,
   MapPin,

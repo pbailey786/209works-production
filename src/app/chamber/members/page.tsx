@@ -1,9 +1,10 @@
-import { Metadata } from '@/components/ui/card';
-import { Button } from '@/components/ui/card';
-import { Input } from '@/components/ui/card';
-import { Badge } from '@/components/ui/card';
+import { Metadata } from 'next';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-
+import Link from 'next/link';
+import {
   Card,
   CardContent,
   CardDescription,
@@ -11,7 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   Search,
   Filter,
   MapPin,

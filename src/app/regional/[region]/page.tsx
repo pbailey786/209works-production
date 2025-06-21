@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
  */
 
 import {
-  import {
   Card,
   CardContent,
   CardDescription,
@@ -17,7 +16,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  import {
   MapPin,
   Building2,
   Users,

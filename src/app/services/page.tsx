@@ -1,10 +1,9 @@
-import { motion } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-
 'use client';
 
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+
 import {
-  import {
   Search,
   Building,
   MapPin,

@@ -1,17 +1,16 @@
-import { NextRequest } from '@/components/ui/card';
-import { withAPIMiddleware } from '@/components/ui/card';
-import { geolocationSearchSchema } from '@/components/ui/card';
-import { createSuccessResponse } from '@/components/ui/card';
+import { NextRequest } from 'next/server';
+import { withAPIMiddleware } from '@/lib/middleware/api-middleware';
+import { geolocationSearchSchema } from '@/lib/validations/api';
+import { createSuccessResponse } from '@/lib/utils/api-response';
 import { prisma } from '@/lib/database/prisma';
-
+import {
   getCache,
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
-} from '@/components/ui/card';
+} from '@/lib/cache/redis';
 import {
-  import {
   GeolocationUtils,
   RelevanceScorer,
   TextProcessor,

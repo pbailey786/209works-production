@@ -2,9 +2,9 @@ import { Queue, Worker, Job, QueueEvents } from '@/components/ui/card';
 import { prisma } from '@/components/ui/card';
 import { emailSecurityValidator } from '@/components/ui/card';
 import { SecurityLogger } from '@/components/ui/card';
-import { emailService } from '@/components/ui/card';
+import { emailService } from '@/lib/email';
 import { EmailHelpers } from '@/lib/email/email-helpers';
-
+import {
   sendEmail,
   validateEmailAddress,
   EMAIL_SECURITY_CONFIG,

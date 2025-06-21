@@ -1,9 +1,9 @@
-import { useState, useEffect, Suspense } from '@/components/ui/card';
-import { useSearchParams } from '@/components/ui/card';
-import { motion } from '@/components/ui/card';
-import { Mail, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
-
 'use client';
+
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Mail, CheckCircle, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();

@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
       where: { clerkId: userId! },
     });
 
-    if (!(session?.user as any)?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userRecord) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const body = await request.json();
@@ -103,11 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user has employer role
-    const userRecord = await prisma.user.findUnique({
-      where: { id: (session?.user as any)?.id },
-    });
-
-    if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
+    if (!userRecord || (userRecord.role !== 'employer' && userRecord.role !== 'admin')) {
       return NextResponse.json(
         { error: 'Unauthorized - must be employer' },
         { status: 403 }
@@ -131,7 +127,7 @@ export async function POST(request: NextRequest) {
         OR: [{ name: { equals: name, mode: 'insensitive' } }, { slug: slug }],
         users: {
           none: {
-            id: (session?.user as any)?.id,
+            id: userRecord.id,
           },
         },
       },
@@ -148,10 +144,10 @@ export async function POST(request: NextRequest) {
 
     let company;
 
-    if (user.companyId) {
+    if (userRecord.companyId) {
       // Update existing company
       company = await prisma.company.update({
-        where: { id: user.companyId },
+        where: { id: userRecord.companyId },
         data: {
           name,
           slug: createSlug(name),
@@ -182,14 +178,14 @@ export async function POST(request: NextRequest) {
           contactPhone: contactPhone || null,
           logo: logo || null,
           users: {
-            connect: { id: (session?.user as any)?.id },
+            connect: { id: userRecord.id },
           },
         },
       });
 
       // Update user with company ID
       await prisma.user.update({
-        where: { id: (session?.user as any)?.id },
+        where: { id: userRecord.id },
         data: { companyId: company.id },
       });
     }
