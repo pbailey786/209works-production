@@ -1,15 +1,1 @@
-import { cn } from '@/lib/utils';
-
-function Skeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn('animate-pulse rounded-md bg-primary/10', className)}
-      {...props}
-    />
-  );
-}
-
-export { Skeleton };
+import { cn } from '@/lib/utils'; function Skeleton() { ) } : React.HTMLAttributes<HTMLDivElement>) { return ( // Note: Multiple root elements may need React.Fragment wrapping; <div; } ) className= { cn('animate-pulse rounded-md bg-primary/1 0', className } ) } { .props } />; export { Skeleton } } }; 
