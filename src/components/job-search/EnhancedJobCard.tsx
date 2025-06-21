@@ -2,7 +2,8 @@ import React, { useState } from '@/components/ui/card';
 import { motion } from '@/components/ui/card';
 import { Button } from '@/components/ui/card';
 import { Badge } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';import {
+
 
   MapPin,
   Clock,

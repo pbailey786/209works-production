@@ -3,7 +3,8 @@ import { motion } from '@/components/ui/card';
 import { Button } from '@/components/ui/card';
 import { Badge } from '@/components/ui/card';
 import { cn } from '@/components/ui/card';
-import { FeaturedBadgeFloating } from './FeaturedJobBadge';
+import { FeaturedBadgeFloating } from './FeaturedJobBadge';import {
+
 
   MapPin,
   Clock,

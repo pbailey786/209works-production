@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
  * Dashboard for viewing PostHog analytics with regional insights
  */
 'use client';
-import {
   import {
   Select,
   SelectContent,
@@ -19,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/card';
-import {
   import {
   BarChart,
   Bar,
@@ -34,7 +32,6 @@ import {
   Pie,
   Cell,
 } from '@/components/ui/card';
-import {
   import {
   TrendingUp,
   Users,

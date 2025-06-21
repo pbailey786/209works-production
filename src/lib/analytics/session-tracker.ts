@@ -7,7 +7,6 @@ import { useEffect, useRef, useCallback } from 'react';
 
 'use client';
 
-import {
   import {
   useJobBoardAnalytics,
   UserEngagementEvent,

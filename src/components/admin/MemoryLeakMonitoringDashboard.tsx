@@ -12,7 +12,6 @@ import { memoryLeakDetector } from '@/lib/monitoring/memory-leak-detector';
  * Admin dashboard component for monitoring memory leaks in real-time
  */
 
-import {
   import {
   AlertTriangle,
   CheckCircle,

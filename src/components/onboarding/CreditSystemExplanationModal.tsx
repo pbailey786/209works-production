@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 'use client';
 
-import {
   import {
   X,
   CreditCard,

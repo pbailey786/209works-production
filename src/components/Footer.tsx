@@ -1,6 +1,7 @@
-import { motion } from '@/components/ui/card';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Button } from './ui/button';
-
+import {
   MapPin,
   Mail,
   Phone,

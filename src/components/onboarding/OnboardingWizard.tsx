@@ -4,7 +4,6 @@ import { useUser } from '@clerk/nextjs';
 
 'use client';
 
-import {
   import {
   CheckCircle,
   ArrowRight,

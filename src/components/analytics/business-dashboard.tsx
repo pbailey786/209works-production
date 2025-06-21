@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
  * Comprehensive analytics dashboard for job board business intelligence
  */
 'use client';
-import {
   import {
   Select,
   SelectContent,
@@ -19,14 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/card';
-import {
   import {
   useBusinessMetrics,
   DashboardData,
   BusinessInsight,
   JobBoardKPIs,
 } from '@/components/ui/card';
-import {
   import {
   TrendingUp,
   TrendingDown,

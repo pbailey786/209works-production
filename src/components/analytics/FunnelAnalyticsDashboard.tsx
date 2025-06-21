@@ -13,7 +13,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 'use client';
 
-import {
   import {
   Select,
   SelectContent,
@@ -21,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/card';
-import {
   import {
   useFunnelAnalysis,
   FunnelAnalysis,
@@ -31,7 +29,6 @@ import {
   JOB_SEEKER_FUNNEL,
   EMPLOYER_FUNNEL,
 } from '@/components/ui/card';
-import {
   import {
   BarChart,
   Bar,
@@ -47,7 +44,6 @@ import {
   Cell,
   LabelList,
 } from '@/components/ui/card';
-import {
   import {
   TrendingDown,
   TrendingUp,

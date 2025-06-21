@@ -6,7 +6,6 @@ import { safeFetchAPI } from '@/lib/utils/safe-fetch';
 
 'use client';
 
-import {
   import {
   BookmarkIcon,
   ShareIcon,
@@ -24,7 +23,6 @@ import {
   MegaphoneIcon,
   ArrowTrendingUpIcon,
 } from '@/components/ui/card';
-import {
   import {
   formatJobDescription,
   extractJobHighlights,

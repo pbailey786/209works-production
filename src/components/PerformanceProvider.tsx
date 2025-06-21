@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 
 'use client';
 
-import {
   import {
   reportWebVitals,
   PerformanceMonitor,

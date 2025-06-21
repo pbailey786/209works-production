@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
  * Dynamic landing page for regional domains (209.works, 916.works, 510.works, norcal.works)
  */
 'use client';
-import {
   import {
   Select,
   SelectContent,
@@ -19,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/card';
-import {
   import {
   MapPin,
   Briefcase,

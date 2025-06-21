@@ -4,7 +4,6 @@ import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 
 'use client';
 
-import {
   import {
   X,
   Star,

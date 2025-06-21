@@ -4,11 +4,11 @@ import { ChatbotPrompts } from '@/components/ui/card';
 import { prisma } from '@/components/ui/card';
 import { LocalKnowledgeService } from './local-knowledge';
 
+import {
   CompanyKnowledgeService,
   CompanyInfo,
-} from '@/components/ui/card';
+} from '@/lib/knowledge/company-knowledge';
 import {
-  import {
   ConversationIntent,
   ChatbotResponse,
   ConversationContext,

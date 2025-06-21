@@ -4,12 +4,10 @@ import { GlobalLoadingOverlay } from './unified-loading-spinner';
 
 'use client';
 
-import {
   import {
   UIStateProvider,
   UIStateErrorBoundary,
 } from '@/components/ui/card';
-import {
   import {
   componentRegistry,
   withRegistry,

@@ -8,7 +8,6 @@ import { addDays, format } from 'date-fns';
 
 'use client';
 
-import {
   import {
   Card,
   CardContent,
@@ -16,7 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
   import {
   Select,
   SelectContent,
@@ -24,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/card';
-import {
   import {
   TrendingUp,
   TrendingDown,

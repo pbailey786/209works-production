@@ -1,6 +1,4 @@
 import React, {
-import { useRovingTabIndex } from '@/hooks/useKeyboardNavigation';
-
   useState,
   useRef,
   useEffect,
@@ -8,6 +6,7 @@ import { useRovingTabIndex } from '@/hooks/useKeyboardNavigation';
   cloneElement,
   isValidElement,
 } from 'react';
+import { useRovingTabIndex } from '@/hooks/useKeyboardNavigation';
 
 interface KeyboardNavigationListProps {
   children: React.ReactNode;

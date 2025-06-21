@@ -1,21 +1,22 @@
-import { prisma } from '@/components/ui/card';
+import { prisma } from '@/lib/prisma';
 import { generateCacheKey, CACHE_PREFIXES, DEFAULT_TTL } from './redis';
-
+import {
   CursorPaginationParams,
   OffsetPaginationParams,
   SearchFilters,
   PaginatedResponse,
   CursorPaginationMeta,
   OffsetPaginationMeta,
+} from '@/lib/types';
+import {
   buildCursorCondition,
   buildSortCondition,
   calculateOffsetPagination,
   generateCursorFromRecord,
   createPaginatedResponse,
   generatePaginationCacheKey,
-} from '@/components/ui/card';
+} from '@/lib/pagination';
 import {
-  import {
   getAtomicCacheManager,
   AtomicCacheUtils,
   AtomicCacheManager,

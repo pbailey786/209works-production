@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/card';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/card';
 import { Switch } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';import {
+
 
   Star, 
   TrendingUp, 

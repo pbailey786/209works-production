@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 
 'use client';
 
-import {
   import {
   Megaphone,
   TrendingUp,

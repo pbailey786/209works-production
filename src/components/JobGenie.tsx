@@ -5,7 +5,6 @@ import { JobGenieProps } from '@/lib/types/component-props';
 
 'use client';
 
-import {
   import {
   ChatBubbleLeftRightIcon,
   PaperAirplaneIcon,

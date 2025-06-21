@@ -7,7 +7,6 @@ import { Separator } from '@/components/ui/separator';
 
 'use client';
 
-import {
   import {
   Card,
   CardContent,
@@ -15,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
   import {
   Check,
   X,

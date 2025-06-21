@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/database/prisma';
-
+import {
   CursorPaginationParams,
   OffsetPaginationParams,
   PaginatedResponse,
@@ -9,18 +9,16 @@ import { prisma } from '@/lib/database/prisma';
   calculateOffsetPagination,
   generateCursorFromRecord,
   generatePaginationCacheKey,
-} from '@/components/ui/card';
+} from '@/lib/pagination';
 import {
-  import {
   getCache,
   setCache,
   generateCacheKey,
   CACHE_PREFIXES,
   DEFAULT_TTL,
   getCacheOrExecute,
-} from '@/components/ui/card';
+} from '@/lib/cache/services';
 import {
-  import {
   EnhancedSearchFilters,
   SearchResult,
   TextProcessor,

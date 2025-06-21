@@ -3,7 +3,6 @@ import { JOB_POSTING_CONFIG } from '@/lib/stripe';
 
 'use client';
 
-import {
   import {
   CreditCard,
   Zap,

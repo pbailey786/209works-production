@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 'use client';
 
-import {
   import {
   X,
   Megaphone,

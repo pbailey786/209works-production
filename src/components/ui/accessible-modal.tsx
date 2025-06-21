@@ -1,16 +1,15 @@
-import React, { useEffect, useMemo } from '@/components/ui/card';
-import { motion, AnimatePresence } from '@/components/ui/card';
-import { XMarkIcon } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-
 'use client';
+
+import React, { useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { cn } from '@/lib/utils';
 
 import {
   useModalAccessibility,
   createDialogAriaProps,
   createModalId,
   validateModalAccessibility,
-  import {
   type ModalAccessibilityOptions,
 } from '@/utils/modal-accessibility';
 

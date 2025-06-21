@@ -1,32 +1,29 @@
-import { NextRequest, NextResponse } from '@/components/ui/card';
-import { z } from '@/components/ui/card';
-import { withValidation } from '@/components/ui/card';
-import { applyCORS, getCORSConfig, CORSConfig } from '@/components/ui/card';
-import { healthMetrics } from '@/components/ui/card';
-import { requireAuth } from '@/components/ui/card';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { withValidation } from '@/lib/validation';
+import { applyCORS, getCORSConfig, CORSConfig } from '@/lib/cors';
+import { healthMetrics } from '@/lib/monitoring/health-metrics';
+import { requireAuth } from '@/lib/auth';
 import { requireRole } from '../../app/api/auth/requireRole';
-
+import {
   applyRateLimit,
   shouldRateLimit,
   RateLimitType,
   RateLimitResult,
-} from '@/components/ui/card';
+} from '@/lib/rate-limiting';
 import {
-  import {
   startRequestLogging,
   endRequestLogging,
   getPerformanceMetrics,
-} from '@/components/ui/card';
+} from '@/lib/logging';
 import {
-  import {
   generateRequestId,
   createErrorResponse,
   createSuccessResponse,
   AuthenticationError,
   AuthorizationError,
-} from '@/components/ui/card';
+} from '@/lib/utils/api-helpers';
 import {
-  import {
   errorMonitor,
   createErrorContext,
   ErrorLogger,
