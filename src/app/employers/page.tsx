@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { FEATURES } from '../../lib/feature-flags';
 
 export default function EmployerLandingPage() {
   const features = [
@@ -9,31 +10,34 @@ export default function EmployerLandingPage() {
         'Post jobs that reach qualified candidates in the Central Valley',
       href: '/employers/create-job-post',
     },
-    {
+    // AI features only shown if enabled
+    ...(FEATURES.AI_CHAT ? [{
       icon: '🤖',
       title: 'AI-Powered Tools',
       description:
         'Use AI to create better job descriptions and optimize posts',
       href: '/employers/bulk-upload',
-    },
-    {
+    }] : []),
+    // Dashboard only shown if employer dashboard is enabled
+    ...(FEATURES.EMPLOYER_DASHBOARD ? [{
       icon: '📊',
       title: 'Dashboard Overview',
       description: 'Manage your jobs and track hiring progress',
       href: '/employers/dashboard',
-    },
+    }] : []),
     {
       icon: '👥',
       title: 'Applicant Management',
       description: 'Organize and manage candidates with advanced filtering',
       href: '/employers/applicants',
     },
-    {
+    // Payment features only shown if enabled
+    ...(FEATURES.PAYMENT_SYSTEM ? [{
       icon: '💰',
       title: 'Cost-Effective Hiring',
       description: 'Competitive pricing with flexible credit system',
       href: '/employers/pricing',
-    },
+    }] : []),
     {
       icon: '⚡',
       title: 'Quick Setup',
@@ -83,12 +87,21 @@ export default function EmployerLandingPage() {
               >
                 Post Your First Job
               </Link>
-              <Link
-                href="/employers/dashboard"
-                className="rounded-lg border border-[#2d4a3e] px-8 py-3 text-lg font-semibold text-[#2d4a3e] transition-colors duration-200 hover:bg-[#2d4a3e]/5"
-              >
-                Employer Dashboard
-              </Link>
+              {FEATURES.EMPLOYER_DASHBOARD ? (
+                <Link
+                  href="/employers/dashboard"
+                  className="rounded-lg border border-[#2d4a3e] px-8 py-3 text-lg font-semibold text-[#2d4a3e] transition-colors duration-200 hover:bg-[#2d4a3e]/5"
+                >
+                  Employer Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/contact"
+                  className="rounded-lg border border-[#2d4a3e] px-8 py-3 text-lg font-semibold text-[#2d4a3e] transition-colors duration-200 hover:bg-[#2d4a3e]/5"
+                >
+                  Contact Us
+                </Link>
+              )}
             </div>
           </div>
         </div>

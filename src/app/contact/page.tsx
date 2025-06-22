@@ -16,6 +16,7 @@ import {
   Headphones,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FEATURES } from '../../lib/feature-flags';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({

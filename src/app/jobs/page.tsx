@@ -23,6 +23,8 @@ import AdDisplay from '../../components/ads/AdDisplay';
 import JobPagination from '../../components/job-search/JobPagination';
 
 import EnhancedJobCard from '../../components/job-search/EnhancedJobCard';
+import { FEATURES } from '../../lib/feature-flags';
+import { DisabledFeature } from '../../lib/feature-flags-ui';
 
 const suggestions = [
   'Full time warehouse jobs in Stockton',
@@ -78,6 +80,11 @@ interface SearchFilters {
 function JobsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  // If AI features are disabled, show simplified version
+  if (!FEATURES.AI_CHAT) {
+    return <SimpleJobSearch />;
+  }
 
   // Search state
   const [filters, setFilters] = useState<SearchFilters>({
@@ -1101,6 +1108,257 @@ function JobsContent() {
             <Button onClick={handleNewSearch} variant="outline">
               Start New Search
             </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Simplified Job Search Component (Phase 1)
+function SimpleJobSearch() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('q') || searchParams.get('query') || ''
+  );
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    setLoading(true);
+    setError('');
+    setHasSearched(true);
+
+    try {
+      // Simple job search without AI
+      const params = new URLSearchParams({
+        q: searchQuery,
+        limit: '20',
+        useRelevanceScoring: 'true',
+        includeSnippets: 'true',
+      });
+
+      const response = await fetch(`/api/jobs/search?${params}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        const searchResults = data.data?.data || [];
+        const jobItems = searchResults.map((result: any) => result.item || result);
+        setJobs(jobItems);
+        
+        // Update URL
+        router.replace(`/jobs?q=${encodeURIComponent(searchQuery)}`);
+      } else {
+        setError(data.error || 'Search failed');
+        setJobs([]);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      setError('Failed to search for jobs');
+      setJobs([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickSearch = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    // Trigger search automatically
+    setTimeout(() => {
+      const form = document.querySelector('#search-form') as HTMLFormElement;
+      if (form) form.requestSubmit();
+    }, 100);
+  };
+
+  // Auto-search when coming from homepage
+  useEffect(() => {
+    const query = searchParams.get('q') || searchParams.get('query');
+    if (query && !hasSearched) {
+      setSearchQuery(query);
+      // Auto-trigger search
+      setTimeout(() => {
+        const form = document.querySelector('#search-form') as HTMLFormElement;
+        if (form) form.requestSubmit();
+      }, 500);
+    }
+  }, [searchParams, hasSearched]);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="border-b bg-white shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 py-12">
+          <div className="text-center">
+            <h1 className="mb-4 text-4xl font-bold text-gray-900 sm:text-5xl">
+              Find Jobs in the 209
+            </h1>
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600">
+              Search for opportunities in Stockton, Modesto, Tracy, and the Central Valley.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="mx-auto max-w-4xl px-4 py-8">
+        {/* Search Form */}
+        <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <form id="search-form" onSubmit={handleSearch} className="space-y-4">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="What kind of work are you looking for?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 py-3 pl-12 pr-4 text-lg focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-orange-600 py-3 text-lg font-semibold text-white hover:bg-orange-700 disabled:bg-gray-400"
+            >
+              {loading ? 'Searching...' : 'Search Jobs'}
+            </button>
+          </form>
+
+          {/* Quick Search Suggestions */}
+          {!hasSearched && (
+            <div className="mt-6">
+              <p className="mb-3 text-sm font-medium text-gray-700">Popular searches:</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  'Warehouse jobs in Stockton',
+                  'Nursing jobs near Tracy',
+                  'Customer service positions',
+                  'Manufacturing jobs Modesto'
+                ].map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => handleQuickSearch(suggestion)}
+                    className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-sm text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-orange-600"></div>
+            <p className="text-gray-600">Searching for jobs...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+            <p className="mb-4 text-red-700">{error}</p>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                const form = document.querySelector('#search-form') as HTMLFormElement;
+                if (form) form.requestSubmit();
+              }}
+              className="rounded-lg border border-red-300 bg-white px-4 py-2 text-red-700 hover:bg-red-50"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {/* Job Results */}
+        {hasSearched && !loading && jobs.length > 0 && (
+          <div className="space-y-4">
+            <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Found {jobs.length} jobs for "{searchQuery}"
+              </h2>
+            </div>
+            
+            {jobs.map((job, index) => (
+              <div
+                key={job.id || `job-${index}`}
+                className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                      {job.title || job.job_title || 'Untitled Position'}
+                    </h3>
+                    <div className="mb-3 flex items-center gap-4 text-sm text-gray-600">
+                      <span className="font-medium">
+                        {job.company || job.company_name || 'Unknown Company'}
+                      </span>
+                      <span>•</span>
+                      <span>{job.location || job.job_location || 'Location not specified'}</span>
+                      {job.type || job.job_type && (
+                        <>
+                          <span>•</span>
+                          <span className="capitalize">
+                            {(job.type || job.job_type).replace('_', ' ')}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {job.description && (
+                      <p className="mb-4 text-gray-700 line-clamp-3">
+                        {job.description.length > 200 
+                          ? job.description.substring(0, 200) + '...'
+                          : job.description
+                        }
+                      </p>
+                    )}
+                  </div>
+                  <div className="ml-4 flex-shrink-0">
+                    <button
+                      onClick={() => {
+                        if (job.id) {
+                          window.open(`/jobs/${job.id}`, '_blank');
+                        }
+                      }}
+                      className="rounded-lg bg-orange-600 px-4 py-2 text-white hover:bg-orange-700"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* No Results */}
+        {hasSearched && !loading && jobs.length === 0 && !error && (
+          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+            <Search className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">No jobs found</h3>
+            <p className="mb-4 text-gray-600">
+              Try different keywords or check back later for new opportunities.
+            </p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setJobs([]);
+                setHasSearched(false);
+                setError('');
+                router.replace('/jobs');
+              }}
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50"
+            >
+              Start New Search
+            </button>
           </div>
         )}
       </div>
