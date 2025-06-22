@@ -27,35 +27,6 @@ export default function HomeSimple() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Simple Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">209</span>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">209 Works</h1>
-                <p className="text-sm text-gray-600">Central Valley Jobs</p>
-              </div>
-            </Link>
-            
-            <div className="hidden md:flex items-center space-x-6">
-              <Link href="/jobs" className="text-gray-700 hover:text-orange-600 font-medium">
-                Find Jobs
-              </Link>
-              <Link href="/employers" className="text-gray-700 hover:text-orange-600 font-medium">
-                Post Jobs
-              </Link>
-              <Link href="/contact" className="text-gray-700 hover:text-orange-600 font-medium">
-                Contact
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-orange-50 to-orange-100 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
