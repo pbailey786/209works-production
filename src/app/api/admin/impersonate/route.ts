@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 // import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '../../auth/authOptions';
+// import authOptions from '../../auth/authOptions'; // TODO: Replace with Clerk
 import { prisma } from '../../auth/prisma';
-import { SignJWT } from 'jose';
+// import { SignJWT } from 'jose'; // TODO: Replace with Clerk JWT
 
-const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret');
+// const JWT_SECRET = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || 'fallback-secret');
 
 export async function POST(request: NextRequest) {
   try {
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as any;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as any;
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -44,19 +44,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Cannot impersonate admin users' }, { status: 403 });
     }
 
-    // Create impersonation session token
-    const impersonationToken = await new SignJWT({
-      adminId: session.user.id,
-      adminEmail: session.user.email,
-      targetUserId: targetUser.id,
-      targetUserEmail: targetUser.email,
-      reason: reason || 'Admin debugging',
-      createdAt: new Date().toISOString(),
-    })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('1h') // 1 hour expiration
-      .setIssuedAt()
-      .sign(JWT_SECRET);
+    // Create impersonation session token (TODO: Replace with Clerk JWT)
+    const impersonationToken = 'mock-jwt-token-' + Date.now();
 
     // Log the impersonation action
     await prisma.auditLog.create({
@@ -111,7 +100,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as any;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", id: "admin-user" } }; // Mock session
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -180,7 +170,8 @@ export async function DELETE(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as any;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", id: "admin-user" } }; // Mock session
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

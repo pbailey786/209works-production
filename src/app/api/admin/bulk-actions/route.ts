@@ -7,7 +7,7 @@ import { prisma } from '@/lib/database/prisma';
 export async function POST(request: NextRequest) {
   try {
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
     // Check if user is admin
     if (!session?.user || session.user.role !== 'admin') {
@@ -246,7 +246,8 @@ export async function POST(request: NextRequest) {
 // GET endpoint to fetch items for bulk actions
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

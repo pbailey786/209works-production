@@ -32,7 +32,7 @@ function SignInContent() {
     try {
       // TODO: Replace with Clerk authentication
       console.log('Sign in attempt:', { email, password });
-      const res = { ok: true }; // Mock successful sign in
+      const res = { ok: true, error: null }; // Mock successful sign in
 
       if (res?.error === '2FA_REQUIRED') {
         setShowTotp(true);
@@ -75,7 +75,7 @@ function SignInContent() {
     try {
       // TODO: Replace with Clerk Google authentication
       console.log('Google sign in attempt');
-      const result = { ok: true, url: '/dashboard' }; // Mock successful Google sign in
+      const result = { ok: true, url: '/dashboard', error: null }; // Mock successful Google sign in
 
       if (result?.error) {
         setError('Google sign-in failed. Please try again.');

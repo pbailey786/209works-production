@@ -26,7 +26,7 @@ interface PageProps {
 export default async function EditJobPage({ params }: PageProps) {
   const { id } = await params;
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
   // Check authentication
   if (!session?.user?.email) {

@@ -9,7 +9,7 @@ export async function GET() {
   try {
     console.log('🏢 Company profile API - GET request started');
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
     console.log('🏢 Session check:', {
       hasSession: !!session,
       userEmail: session?.user?.email,
@@ -60,7 +60,8 @@ export async function GET() {
 // POST /api/company-profile - Create or update company profile
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
 
     if (!(session?.user as any)?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

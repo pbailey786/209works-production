@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export default function TestResumePage() {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);

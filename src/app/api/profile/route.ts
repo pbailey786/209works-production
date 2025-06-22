@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../auth/prisma';
 // @ts-ignore - NextAuth v4 JWT import issue
-import { getToken } from 'next-auth/jwt';
+// TODO: Replace with Clerk JWT
+// import { getToken } from 'next-auth/jwt';
 import { compare, hash } from 'bcryptjs';
 import fs from 'fs/promises';
 import path from 'path';
 
 export async function GET(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // TODO: Replace with Clerk authentication
+    const token = { email: 'admin@209.works', sub: 'mock-user-id' }; // Mock token
   if (!token || !token.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -39,7 +41,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // TODO: Replace with Clerk authentication
+    const token = { email: 'admin@209.works', sub: 'mock-user-id' }; // Mock token
   if (!token || !token.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -98,7 +101,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // TODO: Replace with Clerk authentication
+    const token = { email: 'admin@209.works', sub: 'admin-user-id' }; // Mock token
   if (!token || !token.email || !token.sub) {
     // Ensure token.sub (userId) is present
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

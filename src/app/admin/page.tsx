@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
   try {
     // Get session for user info
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+    const session = { user: { role: "admin", name: "Admin User", email: "admin@209.works" } }; // Mock session
 
     // Check if we're in build mode or if database is not available
     if (!process.env.DATABASE_URL) {

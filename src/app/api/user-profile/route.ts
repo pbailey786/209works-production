@@ -8,7 +8,7 @@ import { prisma } from '../auth/prisma';
 export async function GET(req: NextRequest) {
   try {
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -63,7 +63,8 @@ export async function GET(req: NextRequest) {
 // POST /api/user-profile - Update user profile
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -140,7 +141,8 @@ export async function POST(req: NextRequest) {
 // PUT /api/user-profile/quick-setup - Quick profile setup for job matching
 export async function PUT(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -199,7 +201,8 @@ export async function PUT(req: NextRequest) {
 // DELETE /api/user-profile - Clear user profile
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
 
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });

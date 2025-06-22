@@ -121,17 +121,14 @@ async function getCreditData() {
 
 export default async function AdminCreditsPage() {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works" } }; // Mock session
 
   if (!session?.user?.email) {
     redirect('/signin');
   }
 
-  // Get user with role
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true, role: true },
-  });
+  // Get user with role (mock for now)
+  const user = { id: 'admin-user', role: 'admin' };
 
   // TODO: Replace with Clerk permissions
   // if (!user || !hasPermission(userRole, Permission.ADMIN_ACCESS)) {

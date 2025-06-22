@@ -7,7 +7,8 @@ import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG, STRIPE_PRICE_IDS } from 
 export async function GET(req: NextRequest) {
   try {
     // Check authentication - only allow admins to see this debug info
-    const session = (await getServerSession(authOptions)) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },

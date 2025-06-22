@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   try {
     // Check authentication and admin role
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
@@ -63,7 +63,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },
@@ -117,7 +118,8 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
     if (!session?.user || (session.user as any).role !== 'admin') {
       return NextResponse.json(
         { error: 'Admin access required' },

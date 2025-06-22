@@ -7,7 +7,7 @@ import OnboardingClient from './OnboardingClient';
 
 export default async function OnboardingPage() {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
   if (!session!.user?.email) {
     redirect('/signin?callbackUrl=/onboarding');

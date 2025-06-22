@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils';
 
 export default function Header() {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id', image: null } };
   const status = 'authenticated';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);

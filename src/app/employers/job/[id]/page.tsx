@@ -33,7 +33,7 @@ import {
 export default function EmployerJobDetailsPage() {
   const params = useParams();
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const [activeTab, setActiveTab] = useState('overview');
   const [jobData, setJobData] = useState<any>(null);
   const [jobStats, setJobStats] = useState<any>(null);

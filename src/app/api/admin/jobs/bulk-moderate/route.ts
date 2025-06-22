@@ -8,7 +8,7 @@ import { hasPermission, Permission } from '@/lib/rbac/permissions';
 export async function PATCH(req: NextRequest) {
   try {
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
     // Check if user is authenticated and has moderation permissions
     if (!session) {

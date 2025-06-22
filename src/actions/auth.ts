@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { signIn, signOut } from 'next-auth/react';
+// TODO: Replace with Clerk authentication
+// import { signIn, signOut } from 'next-auth/react';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
 

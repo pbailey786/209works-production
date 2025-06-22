@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     // Get user session if authenticated
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
     let authenticatedUserId = userId;
 
     if (session?.user?.email) {
@@ -69,7 +69,8 @@ export async function GET(req: NextRequest) {
     const sessionId = searchParams.get('sessionId');
 
     // Get user session if authenticated
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
     let userId;
 
     if (session?.user?.email) {

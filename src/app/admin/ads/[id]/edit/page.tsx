@@ -18,7 +18,7 @@ export default async function EditAdPage({ params }: PageProps) {
 
   // TODO: Replace with Clerk authentication
   const session = { user: { role: 'admin', name: 'Admin User' } }; // Mock session
-  const userRole = 'admin'; // Mock admin role
+  const userRole = session.user.role; // Get role from session
 
   // Mock authentication check - always allow for now
   // if (!session) {
@@ -26,18 +26,22 @@ export default async function EditAdPage({ params }: PageProps) {
   // }
 
   // Mock permission check - always allow for now
-  // if (!true // TODO: Replace with Clerk permissions) {
+  // if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
   //   redirect('/admin');
   // }
 
   // Fetch the advertisement
+  const whereClause: any = {
+    id: id,
+  };
+
+  // Add employer-specific filter if user is an employer
+  if (userRole === 'employer') {
+    whereClause.businessName = session.user.name;
+  }
+
   const ad = await prisma.advertisement.findFirst({
-    where: {
-      id: id,
-      ...(userRole === 'employer'
-        ? { businessName: (session!.user as any)?.name }
-        : {}),
-    },
+    where: whereClause,
   });
 
   if (!ad) {

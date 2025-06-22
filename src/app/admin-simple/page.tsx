@@ -21,7 +21,7 @@ export default function SimpleAdminPage() {
   const [loading, setLoading] = useState(true);
 
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works' } };
+  const session = { user: { email: 'admin@209.works', sub: 'mock-user-id' } };
   const status = 'authenticated';
 
   useEffect(() => {

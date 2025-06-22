@@ -205,7 +205,8 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   // Parallelize data fetching for better performance
   const [job, session] = await Promise.all([
     getJob(id),
-    getServerSession(authOptions) as Promise<Session | null>,
+    // TODO: Replace with Clerk authentication
+    Promise.resolve({ user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }), // Mock session
   ]);
 
   if (!job) {

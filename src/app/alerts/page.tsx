@@ -120,7 +120,7 @@ const FREQUENCY_OPTIONS = [
 
 export default function AlertsPage() {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const status = 'authenticated';
   const { toast } = useToast();
   const [alerts, setAlerts] = useState<JobAlert[]>([]);

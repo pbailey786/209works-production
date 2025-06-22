@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function DebugPermissions() {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works" } }; // Mock session
 
   if (!session) {
     return <div>Not authenticated</div>;
@@ -16,7 +16,7 @@ export default async function DebugPermissions() {
 
   const userRole = session.user?.role || 'unknown';
   const userPermissions = getUserPermissions(userRole);
-  const hasEmailPermission = true // TODO: Replace with Clerk permissions;
+  const hasEmailPermission = true; // TODO: Replace with Clerk permissions
 
   return (
     <div className="p-8">

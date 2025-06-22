@@ -6,7 +6,7 @@ import authOptions from '@/app/api/auth/authOptions';
 export async function GET(request: NextRequest) {
   try {
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
     
     // Only allow admins or during development
     if (!session?.user?.email || (session.user as any).role !== 'admin') {

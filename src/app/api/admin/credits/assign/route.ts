@@ -19,7 +19,7 @@ const assignCreditsSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -28,11 +28,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get admin user and verify permissions
-    const adminUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true, name: true },
-    });
+    // TODO: Replace with Clerk user lookup
+    const adminUser = {
+      id: session.user.id,
+      role: session.user.role,
+      name: session.user.name
+    }; // Mock admin user
 
     // TODO: Replace with Clerk permissions
     // if (!adminUser || !hasPermission(userRole, Permission.ADMIN_ACCESS)) {
@@ -154,7 +155,8 @@ export async function POST(request: NextRequest) {
 // GET endpoint to fetch credit statistics for admin dashboard
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
 
     if (!session?.user?.email) {
       return NextResponse.json(

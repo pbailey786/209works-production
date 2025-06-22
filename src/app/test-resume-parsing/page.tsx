@@ -6,7 +6,7 @@ import { Upload, FileText, CheckCircle, XCircle, AlertCircle } from 'lucide-reac
 
 export default function TestResumeParsingPage() {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<any>(null);

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     // Step 2: Test authentication
     console.log('🔍 STEP 2: Testing authentication...');
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
     if (!session?.user?.email) {
       return NextResponse.json({
         error: 'Authentication failed',

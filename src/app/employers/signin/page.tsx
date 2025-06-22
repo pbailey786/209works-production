@@ -26,7 +26,7 @@ export default function EmployerSigninPage() {
   const [signInSuccess, setSignInSuccess] = useState(false);
   const router = useRouter();
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const status = 'authenticated';
 
   // Debug session on signin page
@@ -49,7 +49,12 @@ export default function EmployerSigninPage() {
 
       // TODO: Replace with Clerk authentication
       console.log('Mock sign in for:', email);
-      const result = { ok: true }; // Mock successful sign in
+      const result = {
+        ok: true,
+        error: null,
+        status: 200,
+        url: '/employers/dashboard'
+      }; // Mock successful sign in
 
       console.log('🔐 NextAuth result:', result);
       console.log('🔐 Result.ok:', result?.ok);

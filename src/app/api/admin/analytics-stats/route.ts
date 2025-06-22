@@ -7,7 +7,7 @@ import { prisma } from '@/lib/database/prisma';
 export async function GET(request: NextRequest) {
   try {
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
     // Check if user is admin
     if (!session?.user || session.user.role !== 'admin') {

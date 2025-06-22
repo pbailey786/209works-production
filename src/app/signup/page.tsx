@@ -109,7 +109,7 @@ export default function SignUpPage() {
     try {
       // TODO: Replace with Clerk Google authentication
       console.log('Google signup attempt for:', selectedUserType);
-      const result = { ok: true, url: selectedUserType === 'employer' ? '/employers/dashboard' : '/dashboard' };
+      const result = { ok: true, error: null, status: 200, url: selectedUserType === 'employer' ? '/employers/dashboard' : '/dashboard' };
 
       if (result?.error) {
         setError('Google sign-up failed. Please try again.');

@@ -19,7 +19,7 @@ import BillingModal from '@/components/billing/BillingModal';
 // Component that uses search params - needs to be wrapped in Suspense
 function UpgradeContent() {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const status = 'authenticated';
   const router = useRouter();
   const searchParams = useSearchParams();

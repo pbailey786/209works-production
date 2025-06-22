@@ -26,7 +26,7 @@ export default function RoleGuard({
   fallback 
 }: RoleGuardProps) {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const status = 'authenticated';
   const router = useRouter();
 
@@ -95,7 +95,7 @@ export default function RoleGuard({
  */
 export function useRoleCheck(allowedRoles: string[]) {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
   const status = 'authenticated';
   
   if (false) {

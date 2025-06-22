@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import speakeasy from 'speakeasy';
 import { prisma } from '../../prisma';
-// @ts-ignore - NextAuth v4 JWT import issue
-import { getToken } from 'next-auth/jwt';
+// TODO: Replace with Clerk JWT
+// import { getToken } from 'next-auth/jwt';
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    // TODO: Replace with Clerk authentication
+    const token = { email: 'admin@209.works', sub: 'mock-user-id' }; // Mock token
     if (!token || !token.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

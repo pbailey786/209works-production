@@ -22,7 +22,7 @@ export default async function JobModerationPage({
   searchParams: Promise<SearchParams>;
 }) {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
   // Check authentication and permissions
   if (!session) {

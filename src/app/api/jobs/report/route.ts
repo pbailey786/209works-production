@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     // Get session for additional context
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
     // Get user ID from database if session exists
     let sessionUserId;

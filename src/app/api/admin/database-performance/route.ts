@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin role
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
     if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(
@@ -190,7 +190,8 @@ function generateRecommendations(
 // Support POST for manual refresh and analysis
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
 
     if (!session?.user || (session!.user as any).role !== 'admin') {
       return NextResponse.json(

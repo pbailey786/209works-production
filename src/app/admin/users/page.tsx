@@ -59,7 +59,7 @@ export default async function UsersPage({
   searchParams: Promise<SearchParams>;
 }) {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session;
 
   // Await searchParams in Next.js 15
   const params = await searchParams;

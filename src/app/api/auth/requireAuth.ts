@@ -9,7 +9,7 @@ import authOptions from './authOptions';
  */
 export async function requireAuth(req: NextRequest) {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session;
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -43,7 +43,8 @@ const emailTests = [
 ];
 
 export default function EmailTestIntegrationPage() {
-  const { data: session } = useSession();
+  // TODO: Replace with Clerk authentication
+  const session = { user: { email: 'admin@209.works', sub: 'mock-user-id' } }; // Mock session
   const [selectedTest, setSelectedTest] = useState('');
   const [recipientEmail, setRecipientEmail] = useState(session?.user?.email || '');
   const [isLoading, setIsLoading] = useState(false);

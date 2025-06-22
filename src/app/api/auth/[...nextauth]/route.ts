@@ -1,48 +1,23 @@
-import NextAuth from 'next-auth';
-import authOptions from '../authOptions';
+// TODO: Replace with Clerk authentication
+import { NextResponse } from 'next/server';
 
-console.log('🚀 NextAuth route loaded');
+console.log('🚀 Mock NextAuth route loaded - TODO: Replace with Clerk');
 
-// @ts-ignore - NextAuth v4 App Router compatibility
-const handler = NextAuth(authOptions);
-
-// Wrap handlers with logging and error catching
-const loggedGET = async (req: Request, context: any) => {
-  console.log('📥 NextAuth GET request:', req.url);
-  console.log('📥 GET pathname:', new URL(req.url).pathname);
-  try {
-    const result = await handler(req, context);
-    return result;
-  } catch (error) {
-    console.error('💥 NextAuth GET Error:', error);
-    throw error;
-  }
+// Mock NextAuth handlers for build compatibility
+const mockGET = async (req: Request, context: any) => {
+  console.log('📥 Mock NextAuth GET request:', req.url);
+  return NextResponse.json({
+    error: 'NextAuth disabled - TODO: Replace with Clerk',
+    message: 'Authentication system is being migrated to Clerk'
+  }, { status: 501 });
 };
 
-const loggedPOST = async (req: Request, context: any) => {
-  console.log('📤 NextAuth POST request:', req.url);
-  console.log('📤 POST pathname:', new URL(req.url).pathname);
-
-  try {
-    const clone = req.clone();
-    const body = await clone.text();
-    console.log('📤 POST body:', body);
-  } catch (e) {
-    console.log('📤 Could not read POST body');
-  }
-
-  try {
-    const result = await handler(req, context);
-    console.log('✅ NextAuth POST completed successfully');
-    return result;
-  } catch (error) {
-    console.error('💥 NextAuth POST Error:', error);
-    console.error(
-      '💥 Error stack:',
-      error instanceof Error ? error.stack : 'No stack trace'
-    );
-    throw error;
-  }
+const mockPOST = async (req: Request, context: any) => {
+  console.log('📤 Mock NextAuth POST request:', req.url);
+  return NextResponse.json({
+    error: 'NextAuth disabled - TODO: Replace with Clerk',
+    message: 'Authentication system is being migrated to Clerk'
+  }, { status: 501 });
 };
 
-export { loggedGET as GET, loggedPOST as POST };
+export { mockGET as GET, mockPOST as POST };

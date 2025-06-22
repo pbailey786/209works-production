@@ -34,7 +34,7 @@ import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
 
 export default async function AnalyticsPage() {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session;
 
   // Get date ranges for analytics
   const now = new Date();

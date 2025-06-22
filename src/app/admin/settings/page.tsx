@@ -25,7 +25,7 @@ import {
 
 export default async function AdminSettingsPage() {
   // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session;
 
   // Fetch admin users for role management
   const adminUsers = await prisma.user.findMany({

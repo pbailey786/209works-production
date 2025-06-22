@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     // Check authentication
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required. Only employers can upload logos.' },
@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
 // GET /api/employers/logo - Get current logo
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },
@@ -130,7 +131,8 @@ export async function GET(req: NextRequest) {
 // DELETE /api/employers/logo - Remove logo
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required' },

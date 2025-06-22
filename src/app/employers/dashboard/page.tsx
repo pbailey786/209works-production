@@ -73,7 +73,7 @@ interface Applicant {
 // Component that uses search params - needs to be wrapped in Suspense
 function DashboardContent() {
   // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Admin User' } };
   const status = 'authenticated';
   const router = useRouter();
   const searchParams = useSearchParams();

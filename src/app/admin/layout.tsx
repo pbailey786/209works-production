@@ -23,7 +23,7 @@ export default async function AdminLayout({
     }
 
     // TODO: Replace with Clerk
-  const session = { user: { role: "admin" } } // Mock session as Session | null;
+    const session = { user: { role: "admin", name: "Admin User", email: "admin@209.works" } }; // Mock session
 
     // Check if user is authenticated
     if (!session) {
