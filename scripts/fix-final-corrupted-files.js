@@ -36,8 +36,14 @@ function fixFinalCorruption(content, filePath) {
 
   // 5. Fix malformed arrow functions in it blocks
   // Pattern: it('test', () =>  }{}
-  content = content.replace(/it\('([^']+)',\s*\(\)\s*=>\s*\}\{\}/g, "it('$1', () => {");
-  content = content.replace(/it\('([^']+)',\s*async\s*\(\)\s*=>\s*\{\s*'/g, "it('$1', async () => {");
+  content = content.replace(
+    /it\('([^']+)',\s*\(\)\s*=>\s*\}\{\}/g,
+    "it('$1', () => {"
+  );
+  content = content.replace(
+    /it\('([^']+)',\s*async\s*\(\)\s*=>\s*\{\s*'/g,
+    "it('$1', async () => {"
+  );
 
   // 6. Fix malformed JSX props with extra characters
   // Pattern: {...mockProp }s}
@@ -57,7 +63,10 @@ function fixFinalCorruption(content, filePath) {
   // 9. Fix malformed string concatenations
   // Pattern: variable }n}y} should be variable
   content = content.replace(/([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}n\}y\}/g, '$1');
-  content = content.replace(/([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\s*n\s*\}\s*y\s*\}/g, '$1');
+  content = content.replace(
+    /([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\s*n\s*\}\s*y\s*\}/g,
+    '$1'
+  );
 
   // 10. Fix malformed boolean values
   // Pattern: tru }e should be true
@@ -71,11 +80,17 @@ function fixFinalCorruption(content, filePath) {
 
   // 12. Fix malformed expect statements with extra quotes
   // Pattern: expect(something).toBeInTheDocument();'
-  content = content.replace(/expect\(([^)]+)\)\.([a-zA-Z]+)\(([^)]*)\);'/g, 'expect($1).$2($3);');
+  content = content.replace(
+    /expect\(([^)]+)\)\.([a-zA-Z]+)\(([^)]*)\);'/g,
+    'expect($1).$2($3);'
+  );
 
   // 13. Fix malformed object properties with extra characters
   // Pattern: property: value },}
-  content = content.replace(/([a-zA-Z_$][a-zA-Z0-9_$]*:\s*[^,}]+)\s*\},\}/g, '$1');
+  content = content.replace(
+    /([a-zA-Z_$][a-zA-Z0-9_$]*:\s*[^,}]+)\s*\},\}/g,
+    '$1'
+  );
 
   // 14. Fix malformed array/object closing
   // Pattern: ] },} should be ]
@@ -84,33 +99,57 @@ function fixFinalCorruption(content, filePath) {
 
   // 15. Fix malformed async function syntax
   // Pattern: async () => { code };}'
-  content = content.replace(/async\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\};'/g, 'async () => { $1 }');
+  content = content.replace(
+    /async\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\};'/g,
+    'async () => { $1 }'
+  );
 
   // 16. Fix specific test patterns
   // Fix: const user = userEvent.setup() };}
-  content = content.replace(/const\s+user\s*=\s*userEvent\.setup\(\)\s*\};\}/g, 'const user = userEvent.setup();');
+  content = content.replace(
+    /const\s+user\s*=\s*userEvent\.setup\(\)\s*\};\}/g,
+    'const user = userEvent.setup();'
+  );
 
-  // Fix: const { container } } = 
-  content = content.replace(/const\s*\{\s*([^}]+)\s*\}\s*\}\s*=/g, 'const { $1 } =');
+  // Fix: const { container } } =
+  content = content.replace(
+    /const\s*\{\s*([^}]+)\s*\}\s*\}\s*=/g,
+    'const { $1 } ='
+  );
 
-  // Fix: const { rerender } } = 
-  content = content.replace(/const\s*\{\s*rerender\s*\}\s*\}\s*=/g, 'const { rerender } =');
+  // Fix: const { rerender } } =
+  content = content.replace(
+    /const\s*\{\s*rerender\s*\}\s*\}\s*=/g,
+    'const { rerender } ='
+  );
 
   // 17. Fix malformed waitFor statements
   // Pattern: await waitFor(() => { expect(something) };}
-  content = content.replace(/await\s+waitFor\(\(\)\s*=>\s*\{\s*([^}]+)\s*\};\}/g, 'await waitFor(() => { $1 });');
+  content = content.replace(
+    /await\s+waitFor\(\(\)\s*=>\s*\{\s*([^}]+)\s*\};\}/g,
+    'await waitFor(() => { $1 });'
+  );
 
   // 18. Fix malformed fireEvent statements
   // Pattern: fireEvent.keyDown(element, { key: 'Enter' } });'
-  content = content.replace(/fireEvent\.([a-zA-Z]+)\(([^)]+)\);'/g, 'fireEvent.$1($2);');
+  content = content.replace(
+    /fireEvent\.([a-zA-Z]+)\(([^)]+)\);'/g,
+    'fireEvent.$1($2);'
+  );
 
   // 19. Fix malformed screen queries
   // Pattern: screen.getByRole('button', { name: /save/i } });'
-  content = content.replace(/screen\.([a-zA-Z]+)\(([^)]+)\);'/g, 'screen.$1($2);');
+  content = content.replace(
+    /screen\.([a-zA-Z]+)\(([^)]+)\);'/g,
+    'screen.$1($2);'
+  );
 
   // 20. Fix malformed renderWithProviders calls
   // Pattern: renderWithProviders(<Component {...props} />);'
-  content = content.replace(/renderWithProviders\(([^)]+)\);'/g, 'renderWithProviders($1);');
+  content = content.replace(
+    /renderWithProviders\(([^)]+)\);'/g,
+    'renderWithProviders($1);'
+  );
 
   if (content !== originalContent) {
     hasChanges = true;
@@ -122,7 +161,10 @@ function fixFinalCorruption(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = fixFinalCorruption(content, filePath);
+    const { content: newContent, hasChanges } = fixFinalCorruption(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -137,18 +179,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -157,10 +205,16 @@ function main() {
 
   // Focus on test files first since they're most corrupted
   const allFiles = getAllTSFiles('src');
-  const testFiles = allFiles.filter(file => file.includes('test') || file.includes('__tests__'));
-  const otherFiles = allFiles.filter(file => !file.includes('test') && !file.includes('__tests__'));
+  const testFiles = allFiles.filter(
+    file => file.includes('test') || file.includes('__tests__')
+  );
+  const otherFiles = allFiles.filter(
+    file => !file.includes('test') && !file.includes('__tests__')
+  );
 
-  console.log(`Found ${testFiles.length} test files and ${otherFiles.length} other files...\n`);
+  console.log(
+    `Found ${testFiles.length} test files and ${otherFiles.length} other files...\n`
+  );
 
   let fixedCount = 0;
 

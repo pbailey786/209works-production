@@ -15,7 +15,7 @@ function fixRemainingPatterns(content, filePath) {
   if (content.includes("import { ActionResult } from '@/lib/validations/")) {
     content = content.replace(
       /import { ActionResult } from '@\/lib\/validations\/[^']+';/g,
-      "// ActionResult type definition\ntype ActionResult = { success: boolean; error?: string; data?: any; };"
+      '// ActionResult type definition\ntype ActionResult = { success: boolean; error?: string; data?: any; };'
     );
     hasChanges = true;
   }
@@ -27,7 +27,10 @@ function fixRemainingPatterns(content, filePath) {
   );
 
   // 3. Fix missing prisma import
-  if (content.includes("from '@/lib/prisma'") && !content.includes("from '@/lib/database/prisma'")) {
+  if (
+    content.includes("from '@/lib/prisma'") &&
+    !content.includes("from '@/lib/database/prisma'")
+  ) {
     content = content.replace(
       /from '@\/lib\/prisma'/g,
       "from '@/lib/database/prisma'"
@@ -42,7 +45,10 @@ function fixRemainingPatterns(content, filePath) {
   );
 
   // 5. Fix missing type definitions
-  if (content.includes('AlertCriteria') && !content.includes('type AlertCriteria')) {
+  if (
+    content.includes('AlertCriteria') &&
+    !content.includes('type AlertCriteria')
+  ) {
     content = content.replace(
       /const alertCriteria: AlertCriteria = {/g,
       'const alertCriteria: any = {'
@@ -66,23 +72,20 @@ function fixRemainingPatterns(content, filePath) {
   // 7. Fix test mock issues
   if (filePath.includes('.test.ts')) {
     // Fix mockFactories access
-    content = content.replace(
-      /prismaMock\.mockFactories/g,
-      'mockFactories'
-    );
-    
+    content = content.replace(/prismaMock\.mockFactories/g, 'mockFactories');
+
     // Fix $2, $3 placeholders
     content = content.replace(
       /\.\$2\.mockResolvedValue\(\$3 as any\)/g,
       '.mockResolvedValue(mockFactories.user({ role: "job_seeker" }) as any)'
     );
-    
+
     // Fix body type issue
     content = content.replace(
       /body: 'invalid json'/g,
       'body: JSON.stringify("invalid json")'
     );
-    
+
     hasChanges = true;
   }
 
@@ -95,10 +98,33 @@ function fixRemainingPatterns(content, filePath) {
   // 9. Add missing lucide-react imports for common icons
   const iconsInContent = [];
   const commonIcons = [
-    'Briefcase', 'Users', 'Building', 'TrendingUp', 'Sparkles', 'MapPin', 'Zap', 
-    'Shield', 'Clock', 'Heart', 'CheckCircle', 'Target', 'Mail', 'BarChart3', 
-    'Activity', 'Database', 'Download', 'Settings', 'Plus', 'Edit', 'Trash2',
-    'Filter', 'Eye', 'DollarSign', 'PlayCircle', 'PauseCircle', 'MousePointer'
+    'Briefcase',
+    'Users',
+    'Building',
+    'TrendingUp',
+    'Sparkles',
+    'MapPin',
+    'Zap',
+    'Shield',
+    'Clock',
+    'Heart',
+    'CheckCircle',
+    'Target',
+    'Mail',
+    'BarChart3',
+    'Activity',
+    'Database',
+    'Download',
+    'Settings',
+    'Plus',
+    'Edit',
+    'Trash2',
+    'Filter',
+    'Eye',
+    'DollarSign',
+    'PlayCircle',
+    'PauseCircle',
+    'MousePointer',
   ];
 
   for (const icon of commonIcons) {
@@ -111,13 +137,17 @@ function fixRemainingPatterns(content, filePath) {
 
   if (iconsInContent.length > 0) {
     // Check if there's already a lucide-react import
-    const lucideImportMatch = content.match(/import\s*{([^}]+)}\s*from\s*['"]lucide-react['"]/);
-    
+    const lucideImportMatch = content.match(
+      /import\s*{([^}]+)}\s*from\s*['"]lucide-react['"]/
+    );
+
     if (lucideImportMatch) {
       // Add to existing import
       const existingIcons = lucideImportMatch[1].split(',').map(s => s.trim());
-      const newIcons = iconsInContent.filter(icon => !existingIcons.includes(icon));
-      
+      const newIcons = iconsInContent.filter(
+        icon => !existingIcons.includes(icon)
+      );
+
       if (newIcons.length > 0) {
         const allIcons = [...existingIcons, ...newIcons].join(', ');
         content = content.replace(
@@ -129,17 +159,19 @@ function fixRemainingPatterns(content, filePath) {
     } else {
       // Add new import
       const importStatement = `import { ${iconsInContent.join(', ')} } from 'lucide-react';\n`;
-      
+
       // Find the first import line or add at the top
       const lines = content.split('\n');
-      const firstImportIndex = lines.findIndex(line => line.trim().startsWith('import'));
-      
+      const firstImportIndex = lines.findIndex(line =>
+        line.trim().startsWith('import')
+      );
+
       if (firstImportIndex >= 0) {
         lines.splice(firstImportIndex, 0, importStatement.trim());
       } else {
         lines.unshift(importStatement.trim(), '');
       }
-      
+
       content = lines.join('\n');
       hasChanges = true;
     }
@@ -149,14 +181,16 @@ function fixRemainingPatterns(content, filePath) {
   if (content.includes('<Link') && !content.includes('import Link')) {
     const importStatement = "import Link from 'next/link';\n";
     const lines = content.split('\n');
-    const firstImportIndex = lines.findIndex(line => line.trim().startsWith('import'));
-    
+    const firstImportIndex = lines.findIndex(line =>
+      line.trim().startsWith('import')
+    );
+
     if (firstImportIndex >= 0) {
       lines.splice(firstImportIndex, 0, importStatement.trim());
     } else {
       lines.unshift(importStatement.trim(), '');
     }
-    
+
     content = lines.join('\n');
     hasChanges = true;
   }
@@ -167,7 +201,10 @@ function fixRemainingPatterns(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = fixRemainingPatterns(content, filePath);
+    const { content: newContent, hasChanges } = fixRemainingPatterns(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -182,18 +219,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -212,10 +255,12 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     // Show progress every 100 files
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

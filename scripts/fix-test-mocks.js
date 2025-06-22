@@ -128,7 +128,7 @@ function main() {
 
   const testFiles = [
     'src/__tests__/integration/api/jobs.test.ts',
-    'src/__tests__/utils/test-helpers.tsx'
+    'src/__tests__/utils/test-helpers.tsx',
   ];
 
   let fixedCount = 0;

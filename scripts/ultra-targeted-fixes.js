@@ -12,16 +12,34 @@ function ultraTargetedFixes(content, filePath) {
 
   // 1. Fix only the most obvious semicolon cases
   // Only add semicolons to very simple variable declarations
-  content = content.replace(/^(\s*const\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;{}\[\]()]+)$/gm, '$1;');
-  content = content.replace(/^(\s*let\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;{}\[\]()]+)$/gm, '$1;');
-  content = content.replace(/^(\s*var\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;{}\[\]()]+)$/gm, '$1;');
+  content = content.replace(
+    /^(\s*const\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;{}\[\]()]+)$/gm,
+    '$1;'
+  );
+  content = content.replace(
+    /^(\s*let\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;{}\[\]()]+)$/gm,
+    '$1;'
+  );
+  content = content.replace(
+    /^(\s*var\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;{}\[\]()]+)$/gm,
+    '$1;'
+  );
 
   // 2. Fix only obvious import statements missing semicolons
-  content = content.replace(/^(\s*import\s+[^;]+from\s+['"][^'"]+['"])$/gm, '$1;');
+  content = content.replace(
+    /^(\s*import\s+[^;]+from\s+['"][^'"]+['"])$/gm,
+    '$1;'
+  );
 
   // 3. Fix only obvious export statements missing semicolons
-  content = content.replace(/^(\s*export\s+\{[^}]+\}\s+from\s+['"][^'"]+['"])$/gm, '$1;');
-  content = content.replace(/^(\s*export\s+default\s+[a-zA-Z_$][a-zA-Z0-9_$]*)$/gm, '$1;');
+  content = content.replace(
+    /^(\s*export\s+\{[^}]+\}\s+from\s+['"][^'"]+['"])$/gm,
+    '$1;'
+  );
+  content = content.replace(
+    /^(\s*export\s+default\s+[a-zA-Z_$][a-zA-Z0-9_$]*)$/gm,
+    '$1;'
+  );
 
   // 4. Fix only obvious duplicate keywords (very safe)
   content = content.replace(/\bconst\s+const\b/g, 'const');
@@ -47,7 +65,10 @@ function ultraTargetedFixes(content, filePath) {
   content = content.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
   // 10. Fix only very simple function parameter commas
-  content = content.replace(/(\w+)\s*\(\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\)/g, '$1($2, $3)');
+  content = content.replace(
+    /(\w+)\s*\(\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\)/g,
+    '$1($2, $3)'
+  );
 
   if (content !== originalContent) {
     hasChanges = true;
@@ -59,7 +80,10 @@ function ultraTargetedFixes(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = ultraTargetedFixes(content, filePath);
+    const { content: newContent, hasChanges } = ultraTargetedFixes(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -74,18 +98,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -104,9 +134,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 
@@ -116,7 +148,9 @@ function main() {
 
   if (fixedCount > 0) {
     console.log('\n🎯 Ultra targeted fixes complete!');
-    console.log('💡 Run "npm run type-check" to see the ultra-safe improvements.');
+    console.log(
+      '💡 Run "npm run type-check" to see the ultra-safe improvements.'
+    );
   } else {
     console.log('\n✨ No ultra targeted fixes needed!');
   }

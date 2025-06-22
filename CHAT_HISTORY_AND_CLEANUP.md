@@ -78,6 +78,7 @@ Added `chatHistory` relation to User model.
 **`scripts/cleanup-test-data.js`**
 
 Removes:
+
 - Test jobs with fake titles ("Paul's first job yay", etc.)
 - Jobs from test sources
 - Test user accounts
@@ -89,6 +90,7 @@ Removes:
 **`scripts/debug-job-applications.js`**
 
 Analyzes:
+
 - All jobs and their application counts
 - Job applications and their relationships
 - Employer-job relationships
@@ -120,6 +122,7 @@ node scripts/cleanup-test-data.js
 ### 3. Verify Changes
 
 Check that:
+
 - Chat history is being saved for authenticated users
 - Fake data has been removed from employer dashboard
 - Job applications are properly linked to employers
@@ -147,13 +150,13 @@ Check that:
 import ChatHistory from '@/components/chat/ChatHistory';
 
 // In job seeker dashboard
-<ChatHistory 
-  onLoadConversation={(conversation) => {
+<ChatHistory
+  onLoadConversation={conversation => {
     // Load conversation into chat interface
     setCurrentConversation(conversation);
   }}
   className="w-full max-w-md"
-/>
+/>;
 ```
 
 ### API Usage

@@ -18,7 +18,7 @@ const colors = {
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
   reset: '\x1b[0m',
-  bold: '\x1b[1m'
+  bold: '\x1b[1m',
 };
 
 function log(message, color = colors.reset) {
@@ -44,21 +44,25 @@ function info(message) {
 // HTTP request helper
 function makeRequest(url, options = {}) {
   return new Promise((resolve, reject) => {
-    const req = https.request(url, {
-      timeout: TIMEOUT,
-      ...options
-    }, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        resolve({
-          statusCode: res.statusCode,
-          headers: res.headers,
-          data: data,
-          responseTime: Date.now() - startTime
+    const req = https.request(
+      url,
+      {
+        timeout: TIMEOUT,
+        ...options,
+      },
+      res => {
+        let data = '';
+        res.on('data', chunk => (data += chunk));
+        res.on('end', () => {
+          resolve({
+            statusCode: res.statusCode,
+            headers: res.headers,
+            data: data,
+            responseTime: Date.now() - startTime,
+          });
         });
-      });
-    });
+      }
+    );
 
     const startTime = Date.now();
     req.on('error', reject);
@@ -75,17 +79,17 @@ async function testHomepage() {
   info('Testing homepage...');
   try {
     const response = await makeRequest(PRODUCTION_URL);
-    
+
     if (response.statusCode === 200) {
       success(`Homepage loaded successfully (${response.responseTime}ms)`);
-      
+
       // Check for critical elements
       if (response.data.includes('209 Works')) {
         success('Page title found');
       } else {
         warning('Page title not found in response');
       }
-      
+
       return true;
     } else {
       error(`Homepage returned status ${response.statusCode}`);
@@ -99,20 +103,18 @@ async function testHomepage() {
 
 async function testAPI() {
   info('Testing API endpoints...');
-  const endpoints = [
-    '/api/health',
-    '/api/jobs',
-    '/api/auth/session'
-  ];
-  
+  const endpoints = ['/api/health', '/api/jobs', '/api/auth/session'];
+
   let passed = 0;
-  
+
   for (const endpoint of endpoints) {
     try {
       const response = await makeRequest(`${PRODUCTION_URL}${endpoint}`);
-      
+
       if (response.statusCode < 500) {
-        success(`${endpoint} responded (${response.statusCode}, ${response.responseTime}ms)`);
+        success(
+          `${endpoint} responded (${response.statusCode}, ${response.responseTime}ms)`
+        );
         passed++;
       } else {
         error(`${endpoint} returned ${response.statusCode}`);
@@ -121,7 +123,7 @@ async function testAPI() {
       error(`${endpoint} failed: ${err.message}`);
     }
   }
-  
+
   return passed === endpoints.length;
 }
 
@@ -130,16 +132,16 @@ async function testSecurityHeaders() {
   try {
     const response = await makeRequest(PRODUCTION_URL);
     const headers = response.headers;
-    
+
     const securityHeaders = [
       'x-frame-options',
       'x-content-type-options',
       'x-xss-protection',
-      'strict-transport-security'
+      'strict-transport-security',
     ];
-    
+
     let passed = 0;
-    
+
     for (const header of securityHeaders) {
       if (headers[header]) {
         success(`${header}: ${headers[header]}`);
@@ -148,7 +150,7 @@ async function testSecurityHeaders() {
         warning(`Missing security header: ${header}`);
       }
     }
-    
+
     return passed >= securityHeaders.length * 0.75; // 75% pass rate
   } catch (err) {
     error(`Security headers test failed: ${err.message}`);
@@ -160,7 +162,7 @@ async function testSSL() {
   info('Testing SSL certificate...');
   try {
     const response = await makeRequest(PRODUCTION_URL);
-    
+
     if (response.headers['strict-transport-security']) {
       success('HTTPS enforced with HSTS');
       return true;
@@ -180,7 +182,7 @@ async function testPerformance() {
     const startTime = Date.now();
     const response = await makeRequest(PRODUCTION_URL);
     const responseTime = Date.now() - startTime;
-    
+
     if (responseTime < 3000) {
       success(`Page load time: ${responseTime}ms (Good)`);
       return true;
@@ -204,18 +206,22 @@ async function testDomainRedirects() {
     '916.works',
     '510.works',
     '925.works',
-    '559.works'
+    '559.works',
   ];
-  
+
   let passed = 0;
-  
+
   for (const domain of domains) {
     try {
       const response = await makeRequest(`https://${domain}`, {
-        method: 'HEAD'
+        method: 'HEAD',
       });
-      
-      if (response.statusCode === 301 || response.statusCode === 302 || response.statusCode === 200) {
+
+      if (
+        response.statusCode === 301 ||
+        response.statusCode === 302 ||
+        response.statusCode === 200
+      ) {
         success(`${domain} redirect working`);
         passed++;
       } else {
@@ -225,24 +231,24 @@ async function testDomainRedirects() {
       warning(`${domain} test failed: ${err.message}`);
     }
   }
-  
+
   return passed >= 1; // At least main domain should work
 }
 
 async function testEnvironmentVariables() {
   info('Testing environment variables...');
-  
+
   const requiredEnvVars = [
     'DATABASE_URL',
     'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
     'CLERK_SECRET_KEY',
     'NEXT_PUBLIC_APP_URL',
     'OPENAI_API_KEY',
-    'RESEND_API_KEY'
+    'RESEND_API_KEY',
   ];
-  
+
   let passed = 0;
-  
+
   for (const envVar of requiredEnvVars) {
     if (process.env[envVar]) {
       success(`${envVar} is set`);
@@ -251,15 +257,17 @@ async function testEnvironmentVariables() {
       error(`${envVar} is missing`);
     }
   }
-  
+
   return passed === requiredEnvVars.length;
 }
 
 // Main verification function
 async function runVerification() {
   log(`${colors.bold}🚀 209 Works Production Verification${colors.reset}`);
-  log(`${colors.blue}Testing production deployment at ${PRODUCTION_URL}${colors.reset}\n`);
-  
+  log(
+    `${colors.blue}Testing production deployment at ${PRODUCTION_URL}${colors.reset}\n`
+  );
+
   const tests = [
     { name: 'Environment Variables', fn: testEnvironmentVariables },
     { name: 'Homepage', fn: testHomepage },
@@ -267,11 +275,11 @@ async function runVerification() {
     { name: 'Security Headers', fn: testSecurityHeaders },
     { name: 'SSL Certificate', fn: testSSL },
     { name: 'Performance', fn: testPerformance },
-    { name: 'Domain Redirects', fn: testDomainRedirects }
+    { name: 'Domain Redirects', fn: testDomainRedirects },
   ];
-  
+
   const results = [];
-  
+
   for (const test of tests) {
     log(`\n${colors.bold}Testing ${test.name}...${colors.reset}`);
     try {
@@ -282,14 +290,14 @@ async function runVerification() {
       results.push({ name: test.name, passed: false });
     }
   }
-  
+
   // Summary
   log(`\n${colors.bold}📊 Verification Summary${colors.reset}`);
   log('='.repeat(50));
-  
+
   const passed = results.filter(r => r.passed).length;
   const total = results.length;
-  
+
   results.forEach(result => {
     if (result.passed) {
       success(`${result.name}: PASSED`);
@@ -297,9 +305,9 @@ async function runVerification() {
       error(`${result.name}: FAILED`);
     }
   });
-  
+
   log('\n' + '='.repeat(50));
-  
+
   if (passed === total) {
     success(`🎉 All tests passed! (${passed}/${total})`);
     success('🚀 Production deployment is ready!');

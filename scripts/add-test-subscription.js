@@ -9,7 +9,7 @@ async function addTestSubscription(userEmail) {
     // Find the user
     const user = await prisma.user.findUnique({
       where: { email: userEmail },
-      select: { id: true, role: true, name: true, email: true }
+      select: { id: true, role: true, name: true, email: true },
     });
 
     if (!user) {
@@ -33,7 +33,9 @@ async function addTestSubscription(userEmail) {
     });
 
     if (existingSubscription) {
-      console.log(`✅ User already has an active subscription: ${existingSubscription.id}`);
+      console.log(
+        `✅ User already has an active subscription: ${existingSubscription.id}`
+      );
       return;
     }
 
@@ -80,8 +82,9 @@ async function addTestSubscription(userEmail) {
       endDate: verifySubscription.endDate,
     });
 
-    console.log(`🔗 Test the modal: http://localhost:3000/employers/create-job-post`);
-
+    console.log(
+      `🔗 Test the modal: http://localhost:3000/employers/create-job-post`
+    );
   } catch (error) {
     console.error('❌ Error adding test subscription:', error);
   } finally {
@@ -95,7 +98,9 @@ const userEmail = args[0];
 
 if (!userEmail) {
   console.log('Usage: node scripts/add-test-subscription.js <email>');
-  console.log('Example: node scripts/add-test-subscription.js digitalstele@gmail.com');
+  console.log(
+    'Example: node scripts/add-test-subscription.js digitalstele@gmail.com'
+  );
   process.exit(1);
 }
 

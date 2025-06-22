@@ -9,10 +9,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File;
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
     // TODO: Implement enhanced resume parsing logic
@@ -22,12 +19,12 @@ export async function POST(request: NextRequest) {
       phone: '',
       skills: [],
       experience: [],
-      education: []
+      education: [],
     };
 
     return NextResponse.json({
       success: true,
-      data: parsedData
+      data: parsedData,
     });
   } catch (error) {
     console.error('Enhanced resume parsing error:', error);

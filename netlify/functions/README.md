@@ -15,6 +15,7 @@ Creates Stripe Checkout sessions for subscription plans.
 **Method:** `POST`
 
 **Request Body:**
+
 ```json
 {
   "plan": "starter|standard|pro",
@@ -25,6 +26,7 @@ Creates Stripe Checkout sessions for subscription plans.
 ```
 
 **Response:**
+
 ```json
 {
   "url": "https://checkout.stripe.com/pay/...",
@@ -53,16 +55,19 @@ URL=https://209.works
 ## Setup Instructions
 
 1. **Install Dependencies** (already done in your project):
+
    ```bash
    npm install stripe
    ```
 
 2. **Set Environment Variables** in Netlify:
+
    - Go to your Netlify site dashboard
    - Navigate to Site settings > Environment variables
    - Add the required variables listed above
 
 3. **Deploy** your site to Netlify:
+
    ```bash
    git push origin main
    ```
@@ -77,37 +82,45 @@ URL=https://209.works
 ## Integration Examples
 
 ### Basic HTML/JavaScript
+
 ```html
 <button onclick="handlePlanSelection('starter')">
   Get Starter Plan - $99/month
 </button>
 
 <script>
-async function handlePlanSelection(plan) {
-  const response = await fetch('/.netlify/functions/create-checkout-session', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ plan })
-  });
-  
-  const data = await response.json();
-  if (data.url) {
-    window.location.href = data.url;
+  async function handlePlanSelection(plan) {
+    const response = await fetch(
+      '/.netlify/functions/create-checkout-session',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      }
+    );
+
+    const data = await response.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
   }
-}
 </script>
 ```
 
 ### React/Next.js
+
 ```jsx
 const PricingButton = ({ plan }) => {
   const handleClick = async () => {
-    const response = await fetch('/.netlify/functions/create-checkout-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan })
-    });
-    
+    const response = await fetch(
+      '/.netlify/functions/create-checkout-session',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      }
+    );
+
     const data = await response.json();
     if (data.url) window.location.href = data.url;
   };
@@ -138,6 +151,7 @@ All errors return appropriate HTTP status codes and descriptive error messages.
 ## Testing
 
 ### Test with curl:
+
 ```bash
 # Valid request
 curl -X POST https://your-site.netlify.app/.netlify/functions/create-checkout-session \
@@ -153,6 +167,7 @@ curl -X POST https://your-site.netlify.app/.netlify/functions/create-checkout-se
 ### Expected Responses:
 
 **Success (200):**
+
 ```json
 {
   "url": "https://checkout.stripe.com/pay/cs_...",
@@ -162,6 +177,7 @@ curl -X POST https://your-site.netlify.app/.netlify/functions/create-checkout-se
 ```
 
 **Error (400):**
+
 ```json
 {
   "error": "Invalid plan. Valid plans are: starter, standard, pro"
@@ -171,6 +187,7 @@ curl -X POST https://your-site.netlify.app/.netlify/functions/create-checkout-se
 ## Monitoring
 
 Monitor function performance and errors in:
+
 - Netlify Functions dashboard
 - Stripe Dashboard > Logs
 - Your application's error tracking service
@@ -178,6 +195,7 @@ Monitor function performance and errors in:
 ## Support
 
 For issues with this function:
+
 1. Check Netlify function logs
 2. Verify environment variables are set correctly
 3. Test with Stripe's test mode first

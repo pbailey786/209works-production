@@ -3,6 +3,7 @@
 ## ✅ Required Environment Variables (Must Have)
 
 ### **Core Application**
+
 ```
 NODE_ENV=production
 NEXT_PUBLIC_APP_URL=https://209.works
@@ -11,11 +12,13 @@ NEXTAUTH_SECRET=your-super-secret-key-here-64-chars-minimum
 ```
 
 ### **Database (PostgreSQL)**
+
 ```
 DATABASE_URL=postgresql://username:password@host:port/database_name
 ```
 
 ### **Email Service (Resend) - ✅ You have this**
+
 ```
 RESEND_API_KEY=your-resend-api-key
 ```
@@ -23,23 +26,27 @@ RESEND_API_KEY=your-resend-api-key
 ## 🔧 Optional but Recommended
 
 ### **AI Features (if you want JobsGPT)**
+
 ```
 OPENAI_API_KEY=sk-your-openai-api-key-here
 ```
 
 ### **Job Data Import (if you want Adzuna jobs)**
+
 ```
 ADZUNA_APP_ID=your-adzuna-app-id
 ADZUNA_API_KEY=your-adzuna-api-key
 ```
 
 ### **Redis (for performance - can skip for now)**
+
 ```
 SKIP_REDIS=true
 REDIS_DISABLED=true
 ```
 
 ### **Admin Settings**
+
 ```
 ADMIN_EMAILS=admin@209.works,support@209.works
 SUPPORT_EMAIL=support@209.works
@@ -48,12 +55,14 @@ SUPPORT_EMAIL=support@209.works
 ## 🛡️ Security & Performance
 
 ### **OpenTelemetry Disabling (for build fix)**
+
 ```
 OTEL_SDK_DISABLED=true
 NETLIFY=true
 ```
 
 ### **Rate Limiting (optional)**
+
 ```
 RATE_LIMIT_ENABLED=true
 RATE_LIMIT_MAX_REQUESTS=100
@@ -72,6 +81,7 @@ RATE_LIMIT_WINDOW_MS=900000
 ## 🔑 Generate Secure Secrets
 
 Run this to generate a secure NEXTAUTH_SECRET:
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
@@ -79,6 +89,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ## 🎯 Minimum Required for Basic Functionality
 
 **Just these 4 variables will get you running:**
+
 1. `NODE_ENV=production`
 2. `NEXT_PUBLIC_APP_URL=https://209.works`
 3. `NEXTAUTH_URL=https://209.works`
@@ -109,6 +120,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ## 📞 Need Help?
 
 If you encounter issues:
+
 1. Check Netlify build logs
 2. Verify environment variables are set
 3. Test database connectivity

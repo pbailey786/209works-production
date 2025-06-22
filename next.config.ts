@@ -190,7 +190,11 @@ const nextConfig: NextConfig = {
   experimental: {
     // Performance optimizations
     optimizeCss: true,
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-icons'],
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      '@radix-ui/react-icons',
+    ],
     // Security features
     strictNextHead: true,
   },
@@ -277,7 +281,7 @@ const nextConfig: NextConfig = {
       {
         module: /node_modules\/ioredis/,
         message: /Critical dependency/,
-      }
+      },
     ];
 
     // Security headers for webpack dev server

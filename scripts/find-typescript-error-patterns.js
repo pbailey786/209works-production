@@ -11,17 +11,19 @@ const errorPatterns = {
   // 1. Testing Library import issues
   testingLibraryImports: {
     pattern: /import \{[^}]*screen[^}]*\} from '@testing-library\/react'/,
-    description: 'Testing Library imports - screen, fireEvent, waitFor should come from @testing-library/dom',
+    description:
+      'Testing Library imports - screen, fireEvent, waitFor should come from @testing-library/dom',
     severity: 'error',
-    autoFix: true
+    autoFix: true,
   },
 
   // 2. Missing API route exports
   missingApiExports: {
-    pattern: /import \{[^}]*(PUT|DELETE)[^}]*\} from '@\/app\/api\/[^']+\/route'/,
+    pattern:
+      /import \{[^}]*(PUT|DELETE)[^}]*\} from '@\/app\/api\/[^']+\/route'/,
     description: 'Importing non-existent exports from API routes',
     severity: 'error',
-    autoFix: true
+    autoFix: true,
   },
 
   // 3. API function calls missing context parameter
@@ -29,7 +31,7 @@ const errorPatterns = {
     pattern: /await (GET|POST|PUT|DELETE)\([^,)]+\);/,
     description: 'API route handlers require both req and context parameters',
     severity: 'error',
-    autoFix: true
+    autoFix: true,
   },
 
   // 4. Mock type mismatches
@@ -37,7 +39,7 @@ const errorPatterns = {
     pattern: /mockResolvedValue\([^)]+\);/,
     description: 'Mock return values may not match expected types',
     severity: 'warning',
-    autoFix: true
+    autoFix: true,
   },
 
   // 5. Array method confusion (.path.join)
@@ -45,7 +47,7 @@ const errorPatterns = {
     pattern: /\.path\.join\(/,
     description: 'Incorrect use of .path.join() on arrays - should be .join()',
     severity: 'error',
-    autoFix: true
+    autoFix: true,
   },
 
   // 6. Missing Node.js imports
@@ -53,15 +55,16 @@ const errorPatterns = {
     pattern: /(^|\s)(fs|path|config)\./,
     description: 'Using Node.js modules without proper imports',
     severity: 'error',
-    autoFix: true
+    autoFix: true,
   },
 
   // 7. Next.js 15 params structure
   nextjs15Params: {
     pattern: /\{ params: \{ [^}]+ \} \}/,
-    description: 'Next.js 15 requires params to be Promise<T> in route handlers',
+    description:
+      'Next.js 15 requires params to be Promise<T> in route handlers',
     severity: 'error',
-    autoFix: true
+    autoFix: true,
   },
 
   // 8. Prisma type mismatches
@@ -69,7 +72,7 @@ const errorPatterns = {
     pattern: /prisma\.[a-zA-Z]+\.(create|update|findMany|findUnique)\(/,
     description: 'Potential Prisma type mismatches',
     severity: 'warning',
-    autoFix: false
+    autoFix: false,
   },
 
   // 9. React import issues
@@ -77,7 +80,7 @@ const errorPatterns = {
     pattern: /import \{ React, \{/,
     description: 'Malformed React imports',
     severity: 'error',
-    autoFix: true
+    autoFix: true,
   },
 
   // 10. Component import path issues
@@ -85,8 +88,8 @@ const errorPatterns = {
     pattern: /import \{[^}]+\} from '@\/components\/ui\/[^']+'/,
     description: 'Potential incorrect component import paths',
     severity: 'warning',
-    autoFix: false
-  }
+    autoFix: false,
+  },
 };
 
 // File extensions to scan
@@ -100,17 +103,11 @@ const scanDirectories = [
   'src/lib',
   'src/scripts',
   'src/utils',
-  'src/hooks'
+  'src/hooks',
 ];
 
 // Directories to exclude
-const excludeDirectories = [
-  'node_modules',
-  '.next',
-  '.git',
-  'dist',
-  'build'
-];
+const excludeDirectories = ['node_modules', '.next', '.git', 'dist', 'build'];
 
 function scanDirectory(dir, results = []) {
   if (!fs.existsSync(dir)) {
@@ -152,7 +149,7 @@ function analyzeFile(filePath) {
           severity: config.severity,
           autoFix: config.autoFix,
           matches: matches.length,
-          file: filePath
+          file: filePath,
         });
       }
     }
@@ -172,23 +169,23 @@ function generateReport(allIssues) {
       totalIssues: 0,
       errorCount: 0,
       warningCount: 0,
-      autoFixableCount: 0
+      autoFixableCount: 0,
     },
     byPattern: {},
     byFile: {},
-    recommendations: []
+    recommendations: [],
   };
 
   // Group issues by pattern and file
   for (const issue of allIssues) {
     report.summary.totalIssues++;
-    
+
     if (issue.severity === 'error') {
       report.summary.errorCount++;
     } else {
       report.summary.warningCount++;
     }
-    
+
     if (issue.autoFix) {
       report.summary.autoFixableCount++;
     }
@@ -200,7 +197,7 @@ function generateReport(allIssues) {
         severity: issue.severity,
         autoFix: issue.autoFix,
         files: [],
-        totalMatches: 0
+        totalMatches: 0,
       };
     }
     report.byPattern[issue.pattern].files.push(issue.file);
@@ -219,16 +216,18 @@ function generateReport(allIssues) {
   if (report.byPattern.testingLibraryImports) {
     report.recommendations.push({
       priority: 'high',
-      action: 'Run the fix-typescript-test-errors.js script to fix Testing Library imports',
-      command: 'node scripts/fix-typescript-test-errors.js'
+      action:
+        'Run the fix-typescript-test-errors.js script to fix Testing Library imports',
+      command: 'node scripts/fix-typescript-test-errors.js',
     });
   }
 
   if (report.byPattern.apiCallMissingContext) {
     report.recommendations.push({
       priority: 'high',
-      action: 'Update API route calls to include context parameter for Next.js 15 compatibility',
-      command: 'node scripts/fix-typescript-test-errors.js'
+      action:
+        'Update API route calls to include context parameter for Next.js 15 compatibility',
+      command: 'node scripts/fix-typescript-test-errors.js',
     });
   }
 
@@ -236,7 +235,7 @@ function generateReport(allIssues) {
     report.recommendations.push({
       priority: 'medium',
       action: 'Fix .path.join() calls on arrays - should be .join()',
-      command: 'node scripts/fix-typescript-test-errors.js'
+      command: 'node scripts/fix-typescript-test-errors.js',
     });
   }
 
@@ -245,7 +244,7 @@ function generateReport(allIssues) {
 
 function printReport(report) {
   console.log('🔍 TypeScript Error Pattern Analysis Report\n');
-  
+
   // Summary
   console.log('📊 Summary:');
   console.log(`   Total files scanned: ${report.summary.totalFiles}`);
@@ -261,7 +260,9 @@ function printReport(report) {
     for (const [pattern, data] of Object.entries(report.byPattern)) {
       const icon = data.severity === 'error' ? '❌' : '⚠️';
       const fixable = data.autoFix ? '🔧' : '🔍';
-      console.log(`   ${icon} ${fixable} ${pattern}: ${data.totalMatches} matches in ${data.files.length} files`);
+      console.log(
+        `   ${icon} ${fixable} ${pattern}: ${data.totalMatches} matches in ${data.files.length} files`
+      );
       console.log(`      ${data.description}`);
     }
     console.log('');
@@ -282,7 +283,7 @@ function printReport(report) {
 
   // Files with most issues
   const filesByIssueCount = Object.entries(report.byFile)
-    .sort(([,a], [,b]) => b.length - a.length)
+    .sort(([, a], [, b]) => b.length - a.length)
     .slice(0, 10);
 
   if (filesByIssueCount.length > 0) {
@@ -302,7 +303,9 @@ function main() {
     allFiles = allFiles.concat(files);
   }
 
-  console.log(`Found ${allFiles.length} TypeScript/JavaScript files to analyze...\n`);
+  console.log(
+    `Found ${allFiles.length} TypeScript/JavaScript files to analyze...\n`
+  );
 
   const allIssues = [];
   for (const file of allFiles) {
@@ -331,5 +334,5 @@ module.exports = {
   scanDirectory,
   analyzeFile,
   generateReport,
-  errorPatterns
+  errorPatterns,
 };

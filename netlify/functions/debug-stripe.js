@@ -6,12 +6,18 @@ exports.handler = async (event, context) => {
       timestamp: new Date().toISOString(),
       environment: {
         hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
-        stripeKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : 'missing',
-        stripeKeyLength: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 0,
-        stripeKeyEnd: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.slice(-10) : 'missing',
+        stripeKeyPrefix: process.env.STRIPE_SECRET_KEY
+          ? process.env.STRIPE_SECRET_KEY.substring(0, 7)
+          : 'missing',
+        stripeKeyLength: process.env.STRIPE_SECRET_KEY
+          ? process.env.STRIPE_SECRET_KEY.length
+          : 0,
+        stripeKeyEnd: process.env.STRIPE_SECRET_KEY
+          ? process.env.STRIPE_SECRET_KEY.slice(-10)
+          : 'missing',
         hasStarterPrice: !!process.env.STRIPE_PRICE_STARTER,
         starterPrice: process.env.STRIPE_PRICE_STARTER,
-      }
+      },
     };
 
     // Test Stripe import
@@ -19,17 +25,16 @@ exports.handler = async (event, context) => {
       result.step = 'importing stripe';
       const Stripe = require('stripe');
       result.stripeImported = true;
-      
+
       result.step = 'initializing stripe';
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
       result.stripeInitialized = true;
-      
+
       // Test a simple Stripe API call
       result.step = 'testing stripe api';
       const prices = await stripe.prices.list({ limit: 1 });
       result.stripeApiWorking = true;
       result.pricesCount = prices.data.length;
-      
     } catch (stripeError) {
       result.stripeError = {
         message: stripeError.message,
@@ -46,7 +51,6 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify(result),
     };
-
   } catch (error) {
     return {
       statusCode: 500,

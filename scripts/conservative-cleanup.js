@@ -14,32 +14,44 @@ function conservativeCleanup(content, filePath) {
   // Only add semicolons to lines that clearly need them and are safe
   const lines = content.split('\n');
   const fixedLines = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     const trimmed = line.trim();
-    
+
     // Skip empty lines, comments, and complex statements
-    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*') || 
-        trimmed.includes('{') || trimmed.includes('}') || trimmed.includes('(') || 
-        trimmed.includes(')') || trimmed.includes('[') || trimmed.includes(']')) {
+    if (
+      !trimmed ||
+      trimmed.startsWith('//') ||
+      trimmed.startsWith('/*') ||
+      trimmed.includes('{') ||
+      trimmed.includes('}') ||
+      trimmed.includes('(') ||
+      trimmed.includes(')') ||
+      trimmed.includes('[') ||
+      trimmed.includes(']')
+    ) {
       fixedLines.push(line);
       continue;
     }
-    
+
     // Only add semicolons to very simple, safe cases
-    if (trimmed.match(/^(const|let|var)\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;]+$/) ||
-        trimmed.match(/^import\s+[^;]+from\s+['"][^'"]+['"]$/) ||
-        trimmed.match(/^export\s+(const|let|var|function|class)\s+[^;]+$/) ||
-        trimmed.match(/^return\s+[^;]+$/) ||
-        trimmed.match(/^throw\s+[^;]+$/)) {
+    if (
+      trimmed.match(
+        /^(const|let|var)\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;]+$/
+      ) ||
+      trimmed.match(/^import\s+[^;]+from\s+['"][^'"]+['"]$/) ||
+      trimmed.match(/^export\s+(const|let|var|function|class)\s+[^;]+$/) ||
+      trimmed.match(/^return\s+[^;]+$/) ||
+      trimmed.match(/^throw\s+[^;]+$/)
+    ) {
       line = line.replace(/\s*$/, ';');
       hasChanges = true;
     }
-    
+
     fixedLines.push(line);
   }
-  
+
   content = fixedLines.join('\n');
 
   // 2. Fix only obvious duplicate keywords
@@ -52,7 +64,10 @@ function conservativeCleanup(content, filePath) {
 
   // 3. Fix only simple comma issues in function calls
   // Only fix very obvious cases
-  content = content.replace(/(\w+)\s*\(\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\)/g, '$1($2, $3)');
+  content = content.replace(
+    /(\w+)\s*\(\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\)/g,
+    '$1($2, $3)'
+  );
 
   // 4. Fix only obvious expression issues
   content = content.replace(/\.\s*\./g, '.');
@@ -75,11 +90,18 @@ function conservativeCleanup(content, filePath) {
   const cleanLines = content.split('\n').filter(line => {
     const trimmed = line.trim();
     // Only remove lines that are single problematic characters
-    return !(trimmed === '}' || trimmed === ')' || trimmed === ']' || 
-             trimmed === ';' || trimmed === ',' || trimmed === '{' || 
-             trimmed === '(' || trimmed === '[');
+    return !(
+      trimmed === '}' ||
+      trimmed === ')' ||
+      trimmed === ']' ||
+      trimmed === ';' ||
+      trimmed === ',' ||
+      trimmed === '{' ||
+      trimmed === '(' ||
+      trimmed === '['
+    );
   });
-  
+
   if (cleanLines.length !== content.split('\n').length) {
     content = cleanLines.join('\n');
     hasChanges = true;
@@ -100,7 +122,10 @@ function conservativeCleanup(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = conservativeCleanup(content, filePath);
+    const { content: newContent, hasChanges } = conservativeCleanup(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -115,18 +140,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -145,9 +176,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

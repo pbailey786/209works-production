@@ -11,12 +11,14 @@ const prisma = new PrismaClient();
 
 async function addUniversalCredits(userEmail, creditCount = 15) {
   try {
-    console.log(`🧪 Adding ${creditCount} universal credits to ${userEmail}...`);
+    console.log(
+      `🧪 Adding ${creditCount} universal credits to ${userEmail}...`
+    );
 
     // Find the user
     const user = await prisma.user.findUnique({
       where: { email: userEmail },
-      select: { id: true, role: true, name: true }
+      select: { id: true, role: true, name: true },
     });
 
     if (!user) {
@@ -49,9 +51,9 @@ async function addUniversalCredits(userEmail, creditCount = 15) {
         metadata: {
           testPurchase: true,
           createdBy: 'universal-credits-script',
-          timestamp: new Date().toISOString()
-        }
-      }
+          timestamp: new Date().toISOString(),
+        },
+      },
     });
 
     console.log(`✅ Created test purchase: ${purchase.id}`);
@@ -68,7 +70,7 @@ async function addUniversalCredits(userEmail, creditCount = 15) {
     }
 
     await prisma.jobPostingCredit.createMany({
-      data: creditsToCreate
+      data: creditsToCreate,
     });
 
     console.log(`✅ Created ${creditCount} universal credits`);
@@ -78,11 +80,8 @@ async function addUniversalCredits(userEmail, creditCount = 15) {
       where: {
         userId: user.id,
         isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      }
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      },
     });
 
     const universalCredits = await prisma.jobPostingCredit.count({
@@ -90,17 +89,15 @@ async function addUniversalCredits(userEmail, creditCount = 15) {
         userId: user.id,
         type: 'universal',
         isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      }
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      },
     });
 
     console.log(`🎉 User now has ${totalCredits} total available credits`);
     console.log(`🎉 User now has ${universalCredits} universal credits`);
-    console.log(`🔗 Test the dashboard: http://localhost:3000/employers/dashboard?purchase_success=true`);
-
+    console.log(
+      `🔗 Test the dashboard: http://localhost:3000/employers/dashboard?purchase_success=true`
+    );
   } catch (error) {
     console.error('❌ Error adding universal credits:', error);
   } finally {
@@ -114,8 +111,12 @@ const userEmail = args[0];
 const creditCount = parseInt(args[1]) || 15;
 
 if (!userEmail) {
-  console.log('Usage: node scripts/add-universal-credits.js <email> [credit_count]');
-  console.log('Example: node scripts/add-universal-credits.js employer@example.com 15');
+  console.log(
+    'Usage: node scripts/add-universal-credits.js <email> [credit_count]'
+  );
+  console.log(
+    'Example: node scripts/add-universal-credits.js employer@example.com 15'
+  );
   process.exit(1);
 }
 

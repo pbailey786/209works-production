@@ -14,7 +14,7 @@ function fixComplexJSXErrors(content, filePath) {
   // Pattern: onClick={(() => window.open(`/path/${variable)}/more`, '_blank'))}
   content = content.replace(
     /onClick=\{\(\(\) => window\.open\(`([^`]*)\$\{([^}]+)\)\}([^`]*)`([^)]*)\)\)\}/g,
-    "onClick={() => window.open(`$1\\${$2}$3`$4)}"
+    'onClick={() => window.open(`$1\\${$2}$3`$4)}'
   );
 
   // 2. Fix malformed template literals with mismatched parentheses
@@ -27,26 +27,51 @@ function fixComplexJSXErrors(content, filePath) {
 
   // 4. Fix malformed JSX expressions with missing closing braces
   // Look for patterns like: className={`class ${condition ? 'true' : 'false'`}
-  content = content.replace(/className=\{\`([^`]*)\`([^}]*)\s*$/gm, 'className={`$1`}');
+  content = content.replace(
+    /className=\{\`([^`]*)\`([^}]*)\s*$/gm,
+    'className={`$1`}'
+  );
 
   // 5. Fix malformed arrow function parameters in JSX
   // Pattern: onChange={(e => should be onChange={(e) =>
   const eventHandlers = [
-    'onChange', 'onClick', 'onSubmit', 'onFocus', 'onBlur', 'onKeyDown', 
-    'onKeyUp', 'onMouseDown', 'onMouseUp', 'onMouseEnter', 'onMouseLeave',
-    'onSelect', 'onInput', 'onLoad', 'onError', 'onDoubleClick'
+    'onChange',
+    'onClick',
+    'onSubmit',
+    'onFocus',
+    'onBlur',
+    'onKeyDown',
+    'onKeyUp',
+    'onMouseDown',
+    'onMouseUp',
+    'onMouseEnter',
+    'onMouseLeave',
+    'onSelect',
+    'onInput',
+    'onLoad',
+    'onError',
+    'onDoubleClick',
   ];
 
   for (const handler of eventHandlers) {
     // Fix missing parentheses around parameters
-    const pattern = new RegExp(`${handler}=\\{\\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>`, 'g');
+    const pattern = new RegExp(
+      `${handler}=\\{\\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>`,
+      'g'
+    );
     content = content.replace(pattern, `${handler}={($1) =>`);
-    
+
     // Fix extra parentheses around function calls
-    const callPattern = new RegExp(`${handler}=\\{\\(([a-zA-Z_$][a-zA-Z0-9_$]*)\\) as any\\}`, 'g');
+    const callPattern = new RegExp(
+      `${handler}=\\{\\(([a-zA-Z_$][a-zA-Z0-9_$]*)\\) as any\\}`,
+      'g'
+    );
     content = content.replace(callPattern, `${handler}={$1}`);
-    
-    const callPattern2 = new RegExp(`${handler}=\\{\\(([a-zA-Z_$][a-zA-Z0-9_$]*)\\)\\}`, 'g');
+
+    const callPattern2 = new RegExp(
+      `${handler}=\\{\\(([a-zA-Z_$][a-zA-Z0-9_$]*)\\)\\}`,
+      'g'
+    );
     content = content.replace(callPattern2, `${handler}={$1}`);
   }
 
@@ -61,21 +86,25 @@ function fixComplexJSXErrors(content, filePath) {
   const lines = content.split('\n');
   const fixedLines = [];
   let openTags = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
-    
+
     // Track opening tags (excluding self-closing)
     const openTagMatches = line.match(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*(?<!\/)\>/g);
     if (openTagMatches) {
       openTagMatches.forEach(tag => {
         const tagName = tag.match(/<([a-zA-Z][a-zA-Z0-9]*)/)[1];
-        if (!['input', 'img', 'br', 'hr', 'meta', 'link'].includes(tagName.toLowerCase())) {
+        if (
+          !['input', 'img', 'br', 'hr', 'meta', 'link'].includes(
+            tagName.toLowerCase()
+          )
+        ) {
           openTags.push({ name: tagName, line: i });
         }
       });
     }
-    
+
     // Track self-closing tags (remove from consideration)
     const selfClosingMatches = line.match(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*\/\>/g);
     if (selfClosingMatches) {
@@ -87,7 +116,7 @@ function fixComplexJSXErrors(content, filePath) {
         }
       });
     }
-    
+
     // Track closing tags
     const closeTagMatches = line.match(/<\/([a-zA-Z][a-zA-Z0-9]*)\>/g);
     if (closeTagMatches) {
@@ -99,14 +128,17 @@ function fixComplexJSXErrors(content, filePath) {
         }
       });
     }
-    
+
     fixedLines.push(line);
   }
 
   // 8. Fix specific patterns from error messages
   // Fix: '}' expected, ')' expected, '>' expected patterns
   content = content.replace(/\$\{([^}]+)\)\}/g, '${$1}');
-  content = content.replace(/\`([^`]*)\$\{([^}]+)\)\}([^`]*)\`/g, '`$1${$2}$3`');
+  content = content.replace(
+    /\`([^`]*)\$\{([^}]+)\)\}([^`]*)\`/g,
+    '`$1${$2}$3`'
+  );
 
   // 9. Fix malformed JSX attribute syntax
   // Pattern: attribute={value as any} should be attribute={value}
@@ -128,10 +160,16 @@ function fixComplexJSXErrors(content, filePath) {
   }
 
   // 11. Fix common template literal issues
-  content = content.replace(/\`([^`]*)\$\{([^}]+)\)\}([^`]*)\`/g, '`$1${$2}$3`');
+  content = content.replace(
+    /\`([^`]*)\$\{([^}]+)\)\}([^`]*)\`/g,
+    '`$1${$2}$3`'
+  );
 
   // 12. Fix malformed function calls in JSX
-  content = content.replace(/\{\(([a-zA-Z_$][a-zA-Z0-9_$]*)\) as any\}/g, '{$1}');
+  content = content.replace(
+    /\{\(([a-zA-Z_$][a-zA-Z0-9_$]*)\) as any\}/g,
+    '{$1}'
+  );
 
   if (content !== originalContent) {
     hasChanges = true;
@@ -143,7 +181,10 @@ function fixComplexJSXErrors(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = fixComplexJSXErrors(content, filePath);
+    const { content: newContent, hasChanges } = fixComplexJSXErrors(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -158,18 +199,21 @@ function fixFile(filePath) {
 
 function getAllTSXFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSXFiles(fullPath, files);
     } else if (stat.isFile() && item.endsWith('.tsx')) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -188,9 +232,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 50 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

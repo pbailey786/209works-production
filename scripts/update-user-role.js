@@ -12,10 +12,10 @@ const prisma = new PrismaClient();
 async function updateUserRole(email) {
   try {
     console.log(`🔍 Looking for user with email: ${email}`);
-    
+
     // Find the user
     const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() }
+      where: { email: email.toLowerCase() },
     });
 
     if (!user) {
@@ -34,17 +34,16 @@ async function updateUserRole(email) {
     // Update the user role to employer
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
-      data: { 
+      data: {
         role: 'employer',
         // Also mark onboarding as completed for employers
-        onboardingCompleted: true
-      }
+        onboardingCompleted: true,
+      },
     });
 
     console.log(`🎉 Successfully updated user role!`);
     console.log(`📋 New role: ${updatedUser.role}`);
     console.log(`✅ Onboarding completed: ${updatedUser.onboardingCompleted}`);
-
   } catch (error) {
     console.error('❌ Error updating user role:', error);
     process.exit(1);

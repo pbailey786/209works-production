@@ -35,74 +35,77 @@ function fixFile(filePath, fixes) {
 // Fix keyboard-navigation-list.tsx
 fixFile('src/components/ui/keyboard-navigation-list.tsx', [
   {
-    pattern: /^import { useRovingTabIndex } from '@\/hooks\/useKeyboardNavigation';$/m,
-    replacement: 'import { useRovingTabIndex } from \'@/hooks/useKeyboardNavigation\';',
-    description: 'Fix malformed import statement'
+    pattern:
+      /^import { useRovingTabIndex } from '@\/hooks\/useKeyboardNavigation';$/m,
+    replacement:
+      "import { useRovingTabIndex } from '@/hooks/useKeyboardNavigation';",
+    description: 'Fix malformed import statement',
   },
   {
     pattern: /^([^}]*)} from 'react';/m,
-    replacement: 'import {\n$1} from \'react\';',
-    description: 'Add missing import {'
-  }
+    replacement: "import {\n$1} from 'react';",
+    description: 'Add missing import {',
+  },
 ]);
 
 // Fix menubar.tsx
 fixFile('src/components/ui/menubar.tsx', [
   {
-    pattern: /^import \* as MenubarPrimitive from '@radix-ui\/react-menubar';$/m,
-    replacement: 'import * as MenubarPrimitive from \'@radix-ui/react-menubar\';',
-    description: 'Fix malformed import statement'
-  }
+    pattern:
+      /^import \* as MenubarPrimitive from '@radix-ui\/react-menubar';$/m,
+    replacement: "import * as MenubarPrimitive from '@radix-ui/react-menubar';",
+    description: 'Fix malformed import statement',
+  },
 ]);
 
 // Fix cache-migration-utility.ts
 fixFile('src/lib/cache/cache-migration-utility.ts', [
   {
     pattern: /^([^}]*)} from '\.\/services';/m,
-    replacement: 'import {\n$1} from \'./services\';',
-    description: 'Add missing import {'
+    replacement: "import {\n$1} from './services';",
+    description: 'Add missing import {',
   },
   {
     pattern: /^import {\s*import {/m,
     replacement: 'import {',
-    description: 'Remove duplicate import {'
-  }
+    description: 'Remove duplicate import {',
+  },
 ]);
 
 // Fix enhanced-cache-services.ts
 fixFile('src/lib/cache/enhanced-cache-services.ts', [
   {
     pattern: /^([^}]*)} from '@\/components\/ui\/card';/m,
-    replacement: 'import {\n$1} from \'@/components/ui/card\';',
-    description: 'Add missing import {'
-  }
+    replacement: "import {\n$1} from '@/components/ui/card';",
+    description: 'Add missing import {',
+  },
 ]);
 
 // Fix chatbot-service.ts
 fixFile('src/lib/conversation/chatbot-service.ts', [
   {
     pattern: /^([^}]*)} from '@\/components\/ui\/card';/m,
-    replacement: 'import {\n$1} from \'@/components/ui/card\';',
-    description: 'Add missing import {'
-  }
+    replacement: "import {\n$1} from '@/components/ui/card';",
+    description: 'Add missing import {',
+  },
 ]);
 
 // Fix middleware/api.ts
 fixFile('src/lib/middleware/api.ts', [
   {
     pattern: /^([^}]*)} from '@\/components\/ui\/card';/m,
-    replacement: 'import {\n$1} from \'@/components/ui/card\';',
-    description: 'Add missing import {'
-  }
+    replacement: "import {\n$1} from '@/components/ui/card';",
+    description: 'Add missing import {',
+  },
 ]);
 
 // Fix search/services.ts
 fixFile('src/lib/search/services.ts', [
   {
     pattern: /^([^}]*)} from '@\/components\/ui\/card';/m,
-    replacement: 'import {\n$1} from \'@/components/ui/card\';',
-    description: 'Add missing import {'
-  }
+    replacement: "import {\n$1} from '@/components/ui/card';",
+    description: 'Add missing import {',
+  },
 ]);
 
 console.log('\n✨ Final import fixes complete!');

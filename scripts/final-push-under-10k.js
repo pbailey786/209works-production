@@ -14,33 +14,43 @@ function finalPushUnder10k(content, filePath) {
   // Add semicolons to lines that clearly need them
   const lines = content.split('\n');
   const fixedLines = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     const trimmed = line.trim();
-    
+
     // Skip empty lines and comments
     if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) {
       fixedLines.push(line);
       continue;
     }
-    
+
     // Add semicolon to lines that need it
-    if (trimmed && !trimmed.endsWith(';') && !trimmed.endsWith('{') && !trimmed.endsWith('}') && 
-        !trimmed.endsWith(',') && !trimmed.endsWith('(') && !trimmed.endsWith(')')) {
-      
+    if (
+      trimmed &&
+      !trimmed.endsWith(';') &&
+      !trimmed.endsWith('{') &&
+      !trimmed.endsWith('}') &&
+      !trimmed.endsWith(',') &&
+      !trimmed.endsWith('(') &&
+      !trimmed.endsWith(')')
+    ) {
       // Check if it's a statement that needs a semicolon
-      if (trimmed.match(/^(const|let|var|import|export|return|throw|break|continue)\s/) ||
-          trimmed.match(/^[a-zA-Z_$][a-zA-Z0-9_$]*\s*=/) ||
-          trimmed.match(/^[a-zA-Z_$][a-zA-Z0-9_$]*\([^)]*\)$/)) {
+      if (
+        trimmed.match(
+          /^(const|let|var|import|export|return|throw|break|continue)\s/
+        ) ||
+        trimmed.match(/^[a-zA-Z_$][a-zA-Z0-9_$]*\s*=/) ||
+        trimmed.match(/^[a-zA-Z_$][a-zA-Z0-9_$]*\([^)]*\)$/)
+      ) {
         line = line.replace(/\s*$/, ';');
         hasChanges = true;
       }
     }
-    
+
     fixedLines.push(line);
   }
-  
+
   content = fixedLines.join('\n');
 
   // 2. Fix "Unexpected keyword or identifier" (23 instances)
@@ -54,9 +64,18 @@ function finalPushUnder10k(content, filePath) {
   content = content.replace(/\b(type)\s+\1\b/g, '$1');
 
   // Fix keywords followed by unexpected identifiers
-  content = content.replace(/\bconst\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g, 'const $1 =');
-  content = content.replace(/\blet\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g, 'let $1 =');
-  content = content.replace(/\bvar\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g, 'var $1 =');
+  content = content.replace(
+    /\bconst\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g,
+    'const $1 ='
+  );
+  content = content.replace(
+    /\blet\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g,
+    'let $1 ='
+  );
+  content = content.replace(
+    /\bvar\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g,
+    'var $1 ='
+  );
 
   // 3. Fix "',' expected" (6 instances)
   // Fix function parameters and object properties
@@ -66,7 +85,10 @@ function finalPushUnder10k(content, filePath) {
 
   // Fix array elements
   content = content.replace(/\[\s*([^,\]]+)\s+([^,\]]+)\s*\]/g, '[$1, $2]');
-  content = content.replace(/\[\s*([^,\]]+)\s+([^,\]]+)\s+([^,\]]+)\s*\]/g, '[$1, $2, $3]');
+  content = content.replace(
+    /\[\s*([^,\]]+)\s+([^,\]]+)\s+([^,\]]+)\s*\]/g,
+    '[$1, $2, $3]'
+  );
 
   // 4. Fix "Expression expected" (5 instances)
   // Clean up malformed expressions
@@ -82,7 +104,7 @@ function finalPushUnder10k(content, filePath) {
 
   // 5. Fix "')' expected" (3 instances)
   // Add missing closing parentheses
-  content = content.replace(/\([^)]*$/gm, (match) => {
+  content = content.replace(/\([^)]*$/gm, match => {
     const openCount = (match.match(/\(/g) || []).length;
     const closeCount = (match.match(/\)/g) || []).length;
     if (openCount > closeCount) {
@@ -94,7 +116,10 @@ function finalPushUnder10k(content, filePath) {
   // 6. Fix "'(' expected" (3 instances)
   // Add missing opening parentheses for function calls
   content = content.replace(/(\w+)\s*\)/g, '$1()');
-  content = content.replace(/function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\{/g, 'function $1() {');
+  content = content.replace(
+    /function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\{/g,
+    'function $1() {'
+  );
 
   // 7. Fix "Identifier expected" (2 instances)
   // Fix malformed identifiers
@@ -110,7 +135,7 @@ function finalPushUnder10k(content, filePath) {
 
   // 8. Fix "'}' expected" (2 instances)
   // Add missing closing braces
-  content = content.replace(/\{[^}]*$/gm, (match) => {
+  content = content.replace(/\{[^}]*$/gm, match => {
     const openCount = (match.match(/\{/g) || []).length;
     const closeCount = (match.match(/\}/g) || []).length;
     if (openCount > closeCount) {
@@ -138,24 +163,30 @@ function finalPushUnder10k(content, filePath) {
   content = content.replace(/\$\{([^}]*)\s*\$\{/g, '${$1} ${');
 
   // Fix malformed object destructuring
-  content = content.replace(/const\s*\{\s*([^}]*)\s*\}\s*=/g, (match, props) => {
-    const cleanProps = props
-      .split(',')
-      .map(p => p.trim())
-      .filter(p => p && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(p))
-      .join(', ');
-    return `const { ${cleanProps} } =`;
-  });
+  content = content.replace(
+    /const\s*\{\s*([^}]*)\s*\}\s*=/g,
+    (match, props) => {
+      const cleanProps = props
+        .split(',')
+        .map(p => p.trim())
+        .filter(p => p && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(p))
+        .join(', ');
+      return `const { ${cleanProps} } =`;
+    }
+  );
 
   // Fix malformed array destructuring
-  content = content.replace(/const\s*\[\s*([^\]]*)\s*\]\s*=/g, (match, items) => {
-    const cleanItems = items
-      .split(',')
-      .map(i => i.trim())
-      .filter(i => i && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(i))
-      .join(', ');
-    return `const [ ${cleanItems} ] =`;
-  });
+  content = content.replace(
+    /const\s*\[\s*([^\]]*)\s*\]\s*=/g,
+    (match, items) => {
+      const cleanItems = items
+        .split(',')
+        .map(i => i.trim())
+        .filter(i => i && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(i))
+        .join(', ');
+      return `const [ ${cleanItems} ] =`;
+    }
+  );
 
   // 13. Clean up whitespace and formatting
   content = content.replace(/\s+/g, ' '); // Normalize whitespace
@@ -165,14 +196,17 @@ function finalPushUnder10k(content, filePath) {
   content = content.replace(/\s*\}\s*/g, ' } '); // Normalize closing braces
 
   // 14. Final line-by-line cleanup
-  const finalLines = content.split('\n').map(line => {
-    // Remove lines that are just whitespace or single characters
-    const trimmed = line.trim();
-    if (trimmed.length <= 1 && /[^\w]/.test(trimmed)) {
-      return '';
-    }
-    return line;
-  }).filter(line => line.trim().length > 0);
+  const finalLines = content
+    .split('\n')
+    .map(line => {
+      // Remove lines that are just whitespace or single characters
+      const trimmed = line.trim();
+      if (trimmed.length <= 1 && /[^\w]/.test(trimmed)) {
+        return '';
+      }
+      return line;
+    })
+    .filter(line => line.trim().length > 0);
 
   content = finalLines.join('\n');
 
@@ -186,7 +220,10 @@ function finalPushUnder10k(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = finalPushUnder10k(content, filePath);
+    const { content: newContent, hasChanges } = finalPushUnder10k(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -201,18 +238,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -231,9 +274,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 
@@ -243,7 +288,9 @@ function main() {
 
   if (fixedCount > 0) {
     console.log('\n🚀 Final push complete!');
-    console.log('💡 Run "npm run type-check" to see if we broke the 10k barrier!');
+    console.log(
+      '💡 Run "npm run type-check" to see if we broke the 10k barrier!'
+    );
   } else {
     console.log('\n✨ No additional fixes needed!');
   }

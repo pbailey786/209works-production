@@ -16,7 +16,7 @@ function fixBrokenImports(filePath) {
     const brokenImportPatterns = [
       // Pattern: import {\nimport something from "somewhere";\n  actualImport
       /import\s*{\s*\nimport\s+([^;]+);\s*\n\s*([^}]+)\s*}\s*from\s*['"]([^'"]+)['"];?/g,
-      
+
       // Pattern: import {\nimport something from "somewhere";\n
       /import\s*{\s*\nimport\s+([^;]+);\s*\n/g,
     ];
@@ -49,7 +49,7 @@ function fixBrokenImports(filePath) {
     const lines = content.split('\n');
     const seenImports = new Set();
     const filteredLines = [];
-    
+
     for (const line of lines) {
       if (line.trim().startsWith('import ')) {
         if (!seenImports.has(line.trim())) {
@@ -62,7 +62,7 @@ function fixBrokenImports(filePath) {
         filteredLines.push(line);
       }
     }
-    
+
     if (modified) {
       content = filteredLines.join('\n');
     }
@@ -83,18 +83,22 @@ function fixBrokenImports(filePath) {
 // Get all TypeScript files
 function getAllTsFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules') {
+
+    if (
+      stat.isDirectory() &&
+      !item.startsWith('.') &&
+      item !== 'node_modules'
+    ) {
       getAllTsFiles(fullPath, files);
     } else if (item.endsWith('.ts') || item.endsWith('.tsx')) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 

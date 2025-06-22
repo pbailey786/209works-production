@@ -31,7 +31,7 @@ export class AdzunaToDbService {
           postedAt: new Date(),
           jobType: 'full_time', // Default value, adjust as needed
           // Add other required fields based on your schema
-        }
+        },
       });
     } catch (error) {
       console.error('Error importing job to database:', error);

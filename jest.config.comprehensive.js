@@ -14,31 +14,31 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   // Test environment
   testEnvironment: 'jsdom',
-  
+
   // Setup files
   setupFilesAfterEnv: [
     '<rootDir>/jest.setup.js',
     '<rootDir>/src/__tests__/setup/test-setup.ts',
   ],
-  
+
   // Module name mapping for absolute imports
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@/__tests__/(.*)$': '<rootDir>/src/__tests__/$1',
-    
+
     // Mock static assets
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': 
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/src/__tests__/mocks/file-mock.js',
   },
-  
+
   // Test match patterns
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.(test|spec).{js,jsx,ts,tsx}',
     '<rootDir>/src/__tests__/**/*.{js,jsx,ts,tsx}',
   ],
-  
+
   // Ignore patterns
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
@@ -48,7 +48,7 @@ const customJestConfig = {
     '<rootDir>/src/__tests__/mocks/',
     '<rootDir>/src/__tests__/setup/',
   ],
-  
+
   // Coverage configuration
   collectCoverage: true,
   collectCoverageFrom: [
@@ -67,7 +67,7 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!**/.next/**',
   ],
-  
+
   // Coverage thresholds
   coverageThreshold: {
     global: {
@@ -102,38 +102,31 @@ const customJestConfig = {
       statements: 85,
     },
   },
-  
+
   // Coverage reporters
-  coverageReporters: [
-    'text',
-    'text-summary',
-    'html',
-    'lcov',
-    'json',
-    'clover',
-  ],
-  
+  coverageReporters: ['text', 'text-summary', 'html', 'lcov', 'json', 'clover'],
+
   // Coverage directory
   coverageDirectory: '<rootDir>/coverage',
-  
+
   // Transform configuration
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
   },
-  
+
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  
+
   // Test timeout
   testTimeout: 30000,
-  
+
   // Globals
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
     },
   },
-  
+
   // Reporters
   reporters: [
     'default',
@@ -166,34 +159,34 @@ const customJestConfig = {
       },
     ],
   ],
-  
+
   // Watch plugins
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname',
   ],
-  
+
   // Clear mocks between tests
   clearMocks: true,
   restoreMocks: true,
   resetMocks: true,
-  
+
   // Error handling
   errorOnDeprecated: true,
-  
+
   // Performance monitoring
   maxWorkers: '50%',
-  
+
   // Cache
   cache: true,
   cacheDirectory: '<rootDir>/.jest-cache',
-  
+
   // Verbose output for CI
   verbose: process.env.CI === 'true',
-  
+
   // Silent mode for local development
   silent: process.env.NODE_ENV === 'development' && process.env.CI !== 'true',
-  
+
   // Projects for different test types
   projects: [
     {
@@ -216,7 +209,7 @@ const customJestConfig = {
       ],
     },
   ],
-  
+
   // Custom matchers
   setupFilesAfterEnv: [
     '<rootDir>/jest.setup.js',
@@ -226,9 +219,7 @@ const customJestConfig = {
 
 // Environment-specific configurations
 if (process.env.NODE_ENV === 'test') {
-  customJestConfig.setupFiles = [
-    '<rootDir>/src/__tests__/setup/env-setup.ts',
-  ];
+  customJestConfig.setupFiles = ['<rootDir>/src/__tests__/setup/env-setup.ts'];
 }
 
 // CI-specific configurations
@@ -237,7 +228,7 @@ if (process.env.CI === 'true') {
   customJestConfig.cache = false;
   customJestConfig.verbose = true;
   customJestConfig.collectCoverage = true;
-  
+
   // Add performance monitoring in CI
   customJestConfig.reporters.push([
     'jest-performance-testing',
@@ -257,7 +248,7 @@ if (process.env.NODE_ENV === 'development') {
   customJestConfig.watch = true;
   customJestConfig.collectCoverage = false;
   customJestConfig.verbose = false;
-  
+
   // Faster feedback in development
   customJestConfig.bail = 1;
   customJestConfig.maxWorkers = 1;
@@ -287,12 +278,14 @@ module.exports.projects = [
       },
     },
   },
-  
+
   // Integration tests
   {
     ...customJestConfig,
     displayName: 'integration',
-    testMatch: ['<rootDir>/src/__tests__/integration/**/*.test.{js,jsx,ts,tsx}'],
+    testMatch: [
+      '<rootDir>/src/__tests__/integration/**/*.test.{js,jsx,ts,tsx}',
+    ],
     setupFilesAfterEnv: [
       '<rootDir>/jest.setup.js',
       '<rootDir>/src/__tests__/setup/integration-setup.ts',
@@ -307,27 +300,25 @@ module.exports.projects = [
       },
     },
   },
-  
+
   // API tests
   {
     ...customJestConfig,
     displayName: 'api',
     testMatch: ['<rootDir>/src/__tests__/api/**/*.test.{js,jsx,ts,tsx}'],
     testEnvironment: 'node',
-    setupFilesAfterEnv: [
-      '<rootDir>/src/__tests__/setup/api-setup.ts',
-    ],
+    setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup/api-setup.ts'],
     testTimeout: 30000,
   },
-  
+
   // Performance tests
   {
     ...customJestConfig,
     displayName: 'performance',
-    testMatch: ['<rootDir>/src/__tests__/performance/**/*.test.{js,jsx,ts,tsx}'],
-    setupFilesAfterEnv: [
-      '<rootDir>/src/__tests__/setup/performance-setup.ts',
+    testMatch: [
+      '<rootDir>/src/__tests__/performance/**/*.test.{js,jsx,ts,tsx}',
     ],
+    setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup/performance-setup.ts'],
     testTimeout: 120000,
     reporters: [
       'default',

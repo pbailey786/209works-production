@@ -27,24 +27,29 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // Default to 209 Works
   let title = '209 Works - Local Jobs in Central Valley';
-  let description = 'Find local jobs in Stockton, Modesto, Tracy and the Central Valley. Built for the 209. Made for the people who work here.';
+  let description =
+    'Find local jobs in Stockton, Modesto, Tracy and the Central Valley. Built for the 209. Made for the people who work here.';
   let displayName = '209 Works';
 
   if (hostname.includes('916')) {
     title = '916 Jobs - Local Jobs in Sacramento Metro';
-    description = 'Find local jobs in Sacramento, Elk Grove, Roseville and the Sacramento Metro area. Built for the 916.';
+    description =
+      'Find local jobs in Sacramento, Elk Grove, Roseville and the Sacramento Metro area. Built for the 916.';
     displayName = '916 Jobs';
   } else if (hostname.includes('510')) {
     title = '510 Jobs - Local Jobs in East Bay';
-    description = 'Find local jobs in Oakland, Berkeley, Fremont and the East Bay area. Built for the 510.';
+    description =
+      'Find local jobs in Oakland, Berkeley, Fremont and the East Bay area. Built for the 510.';
     displayName = '510 Jobs';
   } else if (hostname.includes('925')) {
     title = '925 Works - Local Jobs in Tri-Valley';
-    description = 'Find local jobs in Concord, Walnut Creek, Pleasanton and the Tri-Valley area. Built for the 925.';
+    description =
+      'Find local jobs in Concord, Walnut Creek, Pleasanton and the Tri-Valley area. Built for the 925.';
     displayName = '925 Works';
   } else if (hostname.includes('559')) {
     title = '559 Jobs - Local Jobs in Fresno';
-    description = 'Find local jobs in Fresno, Visalia, Clovis and the Central Valley South. Built for the 559.';
+    description =
+      'Find local jobs in Fresno, Visalia, Clovis and the Central Valley South. Built for the 559.';
     displayName = '559 Jobs';
   }
 
@@ -89,8 +94,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   // Check if we have valid Clerk keys
-  const hasValidClerkKeys = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_placeholder_key_for_build' &&
+  const hasValidClerkKeys =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !==
+      'pk_test_placeholder_key_for_build' &&
     process.env.CLERK_SECRET_KEY &&
     process.env.CLERK_SECRET_KEY !== 'sk_test_placeholder_key_for_build';
 
@@ -117,13 +124,9 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${inter.variable} antialiased`}>
         {hasValidClerkKeys ? (
-          <ClerkProvider>
-            {children}
-          </ClerkProvider>
+          <ClerkProvider>{children}</ClerkProvider>
         ) : (
-          <div>
-            {children}
-          </div>
+          <div>{children}</div>
         )}
       </body>
     </html>

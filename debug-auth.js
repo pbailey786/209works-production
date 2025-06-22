@@ -16,7 +16,7 @@ function makeRequest(path, options = {}) {
   return new Promise((resolve, reject) => {
     const url = new URL(path, BASE_URL);
     const client = url.protocol === 'https:' ? https : http;
-    
+
     const requestOptions = {
       hostname: url.hostname,
       port: url.port,
@@ -24,19 +24,19 @@ function makeRequest(path, options = {}) {
       method: 'GET',
       headers: {
         'User-Agent': 'Debug-Auth-Test/1.0',
-        ...options.headers
+        ...options.headers,
       },
-      ...options
+      ...options,
     };
 
-    const req = client.request(requestOptions, (res) => {
+    const req = client.request(requestOptions, res => {
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', chunk => (data += chunk));
       res.on('end', () => {
         resolve({
           status: res.statusCode,
           headers: res.headers,
-          body: data
+          body: data,
         });
       });
     });
@@ -100,7 +100,6 @@ async function testAuthFlow() {
     console.log('');
 
     console.log('✅ Auth flow test completed');
-
   } catch (error) {
     console.error('❌ Error testing auth flow:', error.message);
   }

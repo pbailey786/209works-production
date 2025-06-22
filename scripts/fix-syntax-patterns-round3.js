@@ -34,51 +34,60 @@ function fixSyntaxPatternsRound3(content, filePath) {
   content = content.replace(/^(\s*)(const|let|var)\s+([^;]+)$/gm, '$1$2 $3;'); // Variable declarations
   content = content.replace(/^(\s*)(import\s+[^;]+)$/gm, '$1$2;'); // Import statements
   content = content.replace(/^(\s*)(export\s+[^;]+)$/gm, '$1$2;'); // Export statements
-  content = content.replace(/^(\s*)([a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;]+)$/gm, '$1$2;'); // Assignments
+  content = content.replace(
+    /^(\s*)([a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[^;]+)$/gm,
+    '$1$2;'
+  ); // Assignments
 
   // 5. Fix "Parameter declaration expected" errors
   // Fix malformed function parameters
-  content = content.replace(/function\s*\(\s*([^)]*)\s*\{/g, (match, params) => {
-    if (params.trim()) {
-      // Ensure parameters are properly formatted
-      const cleanParams = params.split(/\s+/).filter(p => p.trim()).join(', ');
-      return `function(${cleanParams}) {`;
+  content = content.replace(
+    /function\s*\(\s*([^)]*)\s*\{/g,
+    (match, params) => {
+      if (params.trim()) {
+        // Ensure parameters are properly formatted
+        const cleanParams = params
+          .split(/\s+/)
+          .filter(p => p.trim())
+          .join(', ');
+        return `function(${cleanParams}) {`;
+      }
+      return 'function() {';
     }
-    return 'function() {';
-  });
+  );
 
   // 6. Fix "Unterminated string literal" errors
   // Find and fix unterminated strings
   const lines = content.split('\n');
   const fixedLines = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
-    
+
     // Check for unterminated single quotes
     const singleQuotes = (line.match(/'/g) || []).length;
     if (singleQuotes % 2 !== 0) {
       // Odd number of single quotes - likely unterminated
       line += "'";
     }
-    
+
     // Check for unterminated double quotes
     const doubleQuotes = (line.match(/"/g) || []).length;
     if (doubleQuotes % 2 !== 0) {
       // Odd number of double quotes - likely unterminated
       line += '"';
     }
-    
+
     // Check for unterminated template literals
     const backticks = (line.match(/`/g) || []).length;
     if (backticks % 2 !== 0) {
       // Odd number of backticks - likely unterminated
       line += '`';
     }
-    
+
     fixedLines.push(line);
   }
-  
+
   content = fixedLines.join('\n');
 
   // 7. Fix "Unexpected keyword or identifier" errors
@@ -96,8 +105,14 @@ function fixSyntaxPatternsRound3(content, filePath) {
 
   // 9. Fix "'{' or ';' expected" errors
   // Fix malformed function and object declarations
-  content = content.replace(/function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, 'function $1('); // Fix function declarations
-  content = content.replace(/class\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\{/g, 'class $1 {'); // Fix class declarations
+  content = content.replace(
+    /function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g,
+    'function $1('
+  ); // Fix function declarations
+  content = content.replace(
+    /class\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\{/g,
+    'class $1 {'
+  ); // Fix class declarations
 
   // 10. Fix malformed JSX syntax
   // Clean up JSX-specific issues
@@ -137,7 +152,10 @@ function fixSyntaxPatternsRound3(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = fixSyntaxPatternsRound3(content, filePath);
+    const { content: newContent, hasChanges } = fixSyntaxPatternsRound3(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -152,18 +170,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -182,9 +206,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

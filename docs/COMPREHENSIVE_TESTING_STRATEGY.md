@@ -7,17 +7,20 @@ This document outlines the complete testing strategy for 209 Works, covering all
 ## Testing Pyramid
 
 ### 1. Unit Tests (70% of tests)
+
 - **Framework**: Jest + React Testing Library
 - **Coverage Target**: 80% minimum
 - **Focus**: Individual functions, components, and utilities
 - **Location**: `src/**/*.test.{ts,tsx}`
 
 ### 2. Integration Tests (20% of tests)
+
 - **Framework**: Jest + Supertest
 - **Focus**: API endpoints, database interactions, service integrations
 - **Location**: `src/__tests__/integration/`
 
 ### 3. End-to-End Tests (10% of tests)
+
 - **Framework**: Playwright
 - **Focus**: Critical user journeys and workflows
 - **Location**: `e2e/`
@@ -27,6 +30,7 @@ This document outlines the complete testing strategy for 209 Works, covering all
 ### 🔧 Unit Testing
 
 #### Components
+
 ```typescript
 // Example: JobCard component test
 describe('JobCard', () => {
@@ -38,6 +42,7 @@ describe('JobCard', () => {
 ```
 
 #### Utilities & Services
+
 ```typescript
 // Example: AI service test
 describe('AIService', () => {
@@ -51,6 +56,7 @@ describe('AIService', () => {
 ### 🔗 Integration Testing
 
 #### API Endpoints
+
 ```typescript
 // Example: Job API test
 describe('/api/jobs', () => {
@@ -64,6 +70,7 @@ describe('/api/jobs', () => {
 ```
 
 #### Database Operations
+
 ```typescript
 // Example: Prisma integration test
 describe('JobRepository', () => {
@@ -77,6 +84,7 @@ describe('JobRepository', () => {
 ### 🎭 End-to-End Testing
 
 #### Critical User Journeys
+
 1. **Job Seeker Registration & Onboarding**
 2. **Job Search & Application Process**
 3. **Employer Job Posting Workflow**
@@ -84,6 +92,7 @@ describe('JobRepository', () => {
 5. **Payment & Credit System**
 
 #### Cross-Browser Testing
+
 - Chrome (latest)
 - Firefox (latest)
 - Safari (latest)
@@ -92,6 +101,7 @@ describe('JobRepository', () => {
 ### 📱 Mobile Testing
 
 #### Responsive Design Tests
+
 ```typescript
 // Example: Mobile viewport test
 test('mobile navigation works correctly', async ({ page }) => {
@@ -102,6 +112,7 @@ test('mobile navigation works correctly', async ({ page }) => {
 ```
 
 #### PWA Testing
+
 - Service Worker functionality
 - Offline capabilities
 - App installation flow
@@ -110,17 +121,17 @@ test('mobile navigation works correctly', async ({ page }) => {
 ### 🔒 Security Testing
 
 #### Authentication Tests
+
 ```typescript
 describe('Authentication', () => {
   it('prevents unauthorized access', async () => {
-    const response = await request(app)
-      .get('/api/protected')
-      .expect(401);
+    const response = await request(app).get('/api/protected').expect(401);
   });
 });
 ```
 
 #### Input Validation Tests
+
 ```typescript
 describe('Input Validation', () => {
   it('sanitizes user input', async () => {
@@ -134,6 +145,7 @@ describe('Input Validation', () => {
 ### ⚡ Performance Testing
 
 #### Load Testing
+
 ```typescript
 // Example: Load test configuration
 const loadTest = {
@@ -142,12 +154,13 @@ const loadTest = {
     { duration: '5m', target: 100 }, // Stay at 100 users
     { duration: '2m', target: 200 }, // Ramp up to 200
     { duration: '5m', target: 200 }, // Stay at 200
-    { duration: '2m', target: 0 },   // Ramp down
+    { duration: '2m', target: 0 }, // Ramp down
   ],
 };
 ```
 
 #### Core Web Vitals Testing
+
 - Largest Contentful Paint (LCP) < 2.5s
 - First Input Delay (FID) < 100ms
 - Cumulative Layout Shift (CLS) < 0.1
@@ -155,6 +168,7 @@ const loadTest = {
 ### 🤖 AI/ML Testing
 
 #### JobsGPT Testing
+
 ```typescript
 describe('JobsGPT', () => {
   it('provides relevant job recommendations', async () => {
@@ -166,6 +180,7 @@ describe('JobsGPT', () => {
 ```
 
 #### Recommendation Engine Testing
+
 ```typescript
 describe('RecommendationEngine', () => {
   it('generates personalized recommendations', async () => {
@@ -178,6 +193,7 @@ describe('RecommendationEngine', () => {
 ## Quality Gates
 
 ### Pre-commit Hooks
+
 ```json
 {
   "husky": {
@@ -190,6 +206,7 @@ describe('RecommendationEngine', () => {
 ```
 
 ### CI/CD Pipeline Gates
+
 1. **Linting**: ESLint + Prettier
 2. **Type Checking**: TypeScript
 3. **Unit Tests**: 80% coverage minimum
@@ -198,6 +215,7 @@ describe('RecommendationEngine', () => {
 6. **Performance Budget**: Core Web Vitals thresholds
 
 ### Code Review Requirements
+
 - [ ] All tests passing
 - [ ] Code coverage maintained
 - [ ] Security considerations addressed
@@ -207,6 +225,7 @@ describe('RecommendationEngine', () => {
 ## Test Data Management
 
 ### Test Database
+
 ```typescript
 // Example: Test database setup
 beforeEach(async () => {
@@ -219,6 +238,7 @@ afterEach(async () => {
 ```
 
 ### Mock Data
+
 ```typescript
 // Example: Job mock factory
 export const createMockJob = (overrides = {}) => ({
@@ -233,6 +253,7 @@ export const createMockJob = (overrides = {}) => ({
 ## Monitoring & Observability
 
 ### Production Monitoring
+
 - Error tracking (Sentry)
 - Performance monitoring (Vercel Analytics)
 - User behavior analytics
@@ -240,6 +261,7 @@ export const createMockJob = (overrides = {}) => ({
 - Database query performance
 
 ### Health Checks
+
 ```typescript
 // Example: Health check endpoint
 export async function GET() {
@@ -248,7 +270,7 @@ export async function GET() {
     checkRedis(),
     checkExternalAPIs(),
   ]);
-  
+
   return Response.json({
     status: checks.every(c => c.healthy) ? 'healthy' : 'unhealthy',
     checks,
@@ -259,6 +281,7 @@ export async function GET() {
 ## Testing Tools & Configuration
 
 ### Core Testing Stack
+
 - **Jest**: Unit testing framework
 - **React Testing Library**: Component testing
 - **Playwright**: E2E testing
@@ -267,6 +290,7 @@ export async function GET() {
 - **Faker**: Test data generation
 
 ### Quality Tools
+
 - **ESLint**: Code linting
 - **Prettier**: Code formatting
 - **TypeScript**: Type checking
@@ -274,6 +298,7 @@ export async function GET() {
 - **Codecov**: Coverage reporting
 
 ### Performance Tools
+
 - **Lighthouse CI**: Performance auditing
 - **Bundle Analyzer**: Bundle size analysis
 - **k6**: Load testing
@@ -282,6 +307,7 @@ export async function GET() {
 ## Best Practices
 
 ### Test Organization
+
 ```
 src/
 ├── components/
@@ -296,6 +322,7 @@ src/
 ```
 
 ### Test Naming Convention
+
 ```typescript
 describe('Component/Function Name', () => {
   describe('when condition', () => {
@@ -307,6 +334,7 @@ describe('Component/Function Name', () => {
 ```
 
 ### Test Data Isolation
+
 - Use factories for test data creation
 - Clean up after each test
 - Avoid shared mutable state
@@ -315,6 +343,7 @@ describe('Component/Function Name', () => {
 ## Continuous Improvement
 
 ### Metrics to Track
+
 - Test coverage percentage
 - Test execution time
 - Flaky test rate
@@ -323,6 +352,7 @@ describe('Component/Function Name', () => {
 - Mean time to recovery (MTTR)
 
 ### Regular Reviews
+
 - Weekly test result analysis
 - Monthly coverage review
 - Quarterly strategy assessment
@@ -331,6 +361,7 @@ describe('Component/Function Name', () => {
 ## Emergency Procedures
 
 ### Production Issues
+
 1. **Immediate**: Rollback if critical
 2. **Investigation**: Check monitoring dashboards
 3. **Communication**: Update status page
@@ -338,6 +369,7 @@ describe('Component/Function Name', () => {
 5. **Post-mortem**: Document lessons learned
 
 ### Test Environment Issues
+
 1. **Isolation**: Identify affected tests
 2. **Bypass**: Use alternative test paths
 3. **Fix**: Address root cause

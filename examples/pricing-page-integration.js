@@ -10,18 +10,21 @@ async function handlePlanSelection(planName) {
     button.disabled = true;
 
     // Call your Netlify function
-    const response = await fetch('/.netlify/functions/create-checkout-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        plan: planName, // 'starter', 'standard', 'pro'
-        success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${planName}`,
-        cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
-        customer_email: null, // Optional: pre-fill if user is logged in
-      }),
-    });
+    const response = await fetch(
+      '/.netlify/functions/create-checkout-session',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plan: planName, // 'starter', 'standard', 'pro'
+          success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${planName}`,
+          cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
+          customer_email: null, // Optional: pre-fill if user is logged in
+        }),
+      }
+    );
 
     const data = await response.json();
 
@@ -31,14 +34,13 @@ async function handlePlanSelection(planName) {
 
     // Redirect to Stripe Checkout
     window.location.href = data.url;
-
   } catch (error) {
     console.error('Checkout error:', error);
-    
+
     // Reset button state
     button.textContent = originalText;
     button.disabled = false;
-    
+
     // Show user-friendly error
     alert('Something went wrong. Please try again or contact support.');
   }
@@ -77,18 +79,21 @@ const exampleHTML = `
 // Advanced usage with user context
 async function handlePlanSelectionAdvanced(planName, userEmail = null) {
   try {
-    const response = await fetch('/.netlify/functions/create-checkout-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        plan: planName,
-        customer_email: userEmail,
-        success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${planName}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${window.location.origin}/employers/pricing?cancelled=true&plan=${planName}`,
-      }),
-    });
+    const response = await fetch(
+      '/.netlify/functions/create-checkout-session',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plan: planName,
+          customer_email: userEmail,
+          success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${planName}&session_id={CHECKOUT_SESSION_ID}`,
+          cancel_url: `${window.location.origin}/employers/pricing?cancelled=true&plan=${planName}`,
+        }),
+      }
+    );
 
     const data = await response.json();
 
@@ -100,30 +105,32 @@ async function handlePlanSelectionAdvanced(planName, userEmail = null) {
     if (typeof gtag !== 'undefined') {
       gtag('event', 'begin_checkout', {
         currency: 'USD',
-        value: planName === 'starter' ? 99 : planName === 'standard' ? 199 : 350,
-        items: [{
-          item_id: planName,
-          item_name: `${planName.charAt(0).toUpperCase() + planName.slice(1)} Plan`,
-          category: 'subscription',
-          quantity: 1,
-        }]
+        value:
+          planName === 'starter' ? 99 : planName === 'standard' ? 199 : 350,
+        items: [
+          {
+            item_id: planName,
+            item_name: `${planName.charAt(0).toUpperCase() + planName.slice(1)} Plan`,
+            category: 'subscription',
+            quantity: 1,
+          },
+        ],
       });
     }
 
     // Redirect to Stripe Checkout
     window.location.href = data.url;
-
   } catch (error) {
     console.error('Checkout error:', error);
-    
+
     // Optional: Track the error
     if (typeof gtag !== 'undefined') {
       gtag('event', 'exception', {
         description: `Checkout error: ${error.message}`,
-        fatal: false
+        fatal: false,
       });
     }
-    
+
     alert('Something went wrong. Please try again or contact support.');
   }
 }
@@ -134,19 +141,22 @@ const PricingButton = ({ plan, price, children }) => {
 
   const handleClick = async () => {
     setLoading(true);
-    
+
     try {
-      const response = await fetch('/.netlify/functions/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          plan: plan,
-          success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${plan}`,
-          cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
-        }),
-      });
+      const response = await fetch(
+        '/.netlify/functions/create-checkout-session',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            plan: plan,
+            success_url: `${window.location.origin}/employers/dashboard?success=true&plan=${plan}`,
+            cancel_url: `${window.location.origin}/employers/pricing?cancelled=true`,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -155,7 +165,6 @@ const PricingButton = ({ plan, price, children }) => {
       }
 
       window.location.href = data.url;
-
     } catch (error) {
       console.error('Checkout error:', error);
       alert('Something went wrong. Please try again.');
@@ -165,11 +174,7 @@ const PricingButton = ({ plan, price, children }) => {
   };
 
   return (
-    <button 
-      onClick={handleClick}
-      disabled={loading}
-      className="btn-primary"
-    >
+    <button onClick={handleClick} disabled={loading} className="btn-primary">
       {loading ? 'Loading...' : children}
     </button>
   );

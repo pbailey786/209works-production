@@ -9,18 +9,18 @@ async function createAdminViaAPI() {
     const adminData = {
       email: 'admin@209.works',
       password: 'AdminPassword123!',
-      role: 'admin' // This will be set in the API
+      role: 'admin', // This will be set in the API
     };
 
     // Your site URL - update if different
     const siteUrl = 'https://flourishing-kheer-7a3783.netlify.app';
-    
+
     const response = await fetch(`${siteUrl}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(adminData)
+      body: JSON.stringify(adminData),
     });
 
     const result = await response.json();
@@ -33,13 +33,16 @@ async function createAdminViaAPI() {
       console.log('\n🌐 Admin login URL:', `${siteUrl}/signin`);
     } else {
       console.error('❌ Error creating admin user:', result);
-      
+
       if (result.error === 'User already exists') {
-        console.log('\n💡 User already exists. You can manually update their role in the database:');
-        console.log(`UPDATE "User" SET role = 'admin' WHERE email = '${adminData.email}';`);
+        console.log(
+          '\n💡 User already exists. You can manually update their role in the database:'
+        );
+        console.log(
+          `UPDATE "User" SET role = 'admin' WHERE email = '${adminData.email}';`
+        );
       }
     }
-
   } catch (error) {
     console.error('❌ Network error:', error);
   }

@@ -12,18 +12,45 @@ function fixJSXSyntaxErrors(content, filePath) {
 
   // 1. Fix malformed arrow function syntax in event handlers
   // Pattern: onChange={(e => should be onChange={(e) =>
-  content = content.replace(/onChange=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g, 'onChange={($1) =>');
-  content = content.replace(/onClick=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g, 'onClick={($1) =>');
-  content = content.replace(/onSubmit=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g, 'onSubmit={($1) =>');
-  content = content.replace(/onFocus=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g, 'onFocus={($1) =>');
-  content = content.replace(/onBlur=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g, 'onBlur={($1) =>');
-  content = content.replace(/onKeyDown=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g, 'onKeyDown={($1) =>');
-  content = content.replace(/onKeyUp=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g, 'onKeyUp={($1) =>');
+  content = content.replace(
+    /onChange=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g,
+    'onChange={($1) =>'
+  );
+  content = content.replace(
+    /onClick=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g,
+    'onClick={($1) =>'
+  );
+  content = content.replace(
+    /onSubmit=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g,
+    'onSubmit={($1) =>'
+  );
+  content = content.replace(
+    /onFocus=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g,
+    'onFocus={($1) =>'
+  );
+  content = content.replace(
+    /onBlur=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g,
+    'onBlur={($1) =>'
+  );
+  content = content.replace(
+    /onKeyDown=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g,
+    'onKeyDown={($1) =>'
+  );
+  content = content.replace(
+    /onKeyUp=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*) =>/g,
+    'onKeyUp={($1) =>'
+  );
 
   // 2. Fix malformed function calls in onClick handlers
   // Pattern: onClick={(functionName) as any} should be onClick={functionName}
-  content = content.replace(/onClick=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*)\) as any\}/g, 'onClick={$1}');
-  content = content.replace(/onClick=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*)\)\}/g, 'onClick={$1}');
+  content = content.replace(
+    /onClick=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*)\) as any\}/g,
+    'onClick={$1}'
+  );
+  content = content.replace(
+    /onClick=\{\(([a-zA-Z_$][a-zA-Z0-9_$]*)\)\}/g,
+    'onClick={$1}'
+  );
 
   // 3. Fix malformed JSX closing brackets
   // Pattern: ) as any})) should be ))}
@@ -36,22 +63,25 @@ function fixJSXSyntaxErrors(content, filePath) {
 
   // 5. Fix malformed template literals in JSX
   // Pattern: className={`class ${condition ? 'true' : 'false'`} (missing closing brace)
-  content = content.replace(/className=\{\`([^`]+)\`([^}]*)\}/g, (match, template, rest) => {
-    if (!rest.includes('}')) {
-      return `className={\`${template}\`}`;
+  content = content.replace(
+    /className=\{\`([^`]+)\`([^}]*)\}/g,
+    (match, template, rest) => {
+      if (!rest.includes('}')) {
+        return `className={\`${template}\`}`;
+      }
+      return match;
     }
-    return match;
-  });
+  );
 
   // 6. Fix missing closing JSX tags
   // Look for unclosed div tags and other common patterns
   const lines = content.split('\n');
   const fixedLines = [];
   let openTags = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
-    
+
     // Track opening tags
     const openTagMatches = line.match(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*(?<!\/)\>/g);
     if (openTagMatches) {
@@ -60,7 +90,7 @@ function fixJSXSyntaxErrors(content, filePath) {
         openTags.push(tagName);
       });
     }
-    
+
     // Track self-closing tags (remove from stack)
     const selfClosingMatches = line.match(/<([a-zA-Z][a-zA-Z0-9]*)[^>]*\/\>/g);
     if (selfClosingMatches) {
@@ -72,7 +102,7 @@ function fixJSXSyntaxErrors(content, filePath) {
         }
       });
     }
-    
+
     // Track closing tags
     const closeTagMatches = line.match(/<\/([a-zA-Z][a-zA-Z0-9]*)\>/g);
     if (closeTagMatches) {
@@ -84,14 +114,14 @@ function fixJSXSyntaxErrors(content, filePath) {
         }
       });
     }
-    
+
     fixedLines.push(line);
   }
 
   // 7. Fix specific JSX syntax patterns
   // Fix: } as any})) patterns
   content = content.replace(/\} as any\}\)\)/g, '})}');
-  
+
   // Fix: missing parentheses in arrow functions
   content = content.replace(/=\{e =>/g, '={(e) =>');
   content = content.replace(/=\{event =>/g, '={(event) =>');
@@ -125,7 +155,10 @@ function fixJSXSyntaxErrors(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = fixJSXSyntaxErrors(content, filePath);
+    const { content: newContent, hasChanges } = fixJSXSyntaxErrors(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -140,18 +173,21 @@ function fixFile(filePath) {
 
 function getAllTSXFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSXFiles(fullPath, files);
     } else if (stat.isFile() && item.endsWith('.tsx')) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -170,9 +206,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 50 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

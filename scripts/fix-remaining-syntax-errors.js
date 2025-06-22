@@ -32,16 +32,16 @@ function fixRemainingSyntaxErrors(content, filePath) {
   const lines = content.split('\n');
   const fixedLines = [];
   let openBraces = 0;
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
-    
+
     // Count opening braces
     const openBraceCount = (line.match(/\{/g) || []).length;
     const closeBraceCount = (line.match(/\}/g) || []).length;
-    
+
     openBraces += openBraceCount - closeBraceCount;
-    
+
     // If we have unmatched opening braces and this looks like the end of a function
     if (openBraces > 0 && (line.trim() === '' || line.includes('}'))) {
       // Add missing closing braces
@@ -50,10 +50,10 @@ function fixRemainingSyntaxErrors(content, filePath) {
         openBraces--;
       }
     }
-    
+
     fixedLines.push(line);
   }
-  
+
   if (fixedLines.join('\n') !== content) {
     content = fixedLines.join('\n');
     hasChanges = true;
@@ -78,7 +78,10 @@ function fixRemainingSyntaxErrors(content, filePath) {
 
   // 11. Fix specific JSX syntax errors
   // Pattern: className={`class ${variable`} should be className={`class ${variable}`}
-  content = content.replace(/className=\{\`([^`]*)\$\{([^}]+)\`\}/g, 'className={`$1${$2}`}');
+  content = content.replace(
+    /className=\{\`([^`]*)\$\{([^}]+)\`\}/g,
+    'className={`$1${$2}`}'
+  );
 
   // 12. Fix malformed event handlers
   // Pattern: onClick={function should be onClick={function}
@@ -105,7 +108,10 @@ function fixRemainingSyntaxErrors(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = fixRemainingSyntaxErrors(content, filePath);
+    const { content: newContent, hasChanges } = fixRemainingSyntaxErrors(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -120,18 +126,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -150,9 +162,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

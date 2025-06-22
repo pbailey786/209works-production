@@ -7,6 +7,7 @@ The 209 Works platform now includes a comprehensive duplicate detection and moni
 ## Key Changes Made
 
 ### 1. Free Job Post Duration
+
 - **Changed from 30 days to 7 days** for free job postings
 - Premium job posts remain at 30 days
 - Updated display text and expiration logic
@@ -14,12 +15,14 @@ The 209 Works platform now includes a comprehensive duplicate detection and moni
 ### 2. Duplicate Detection System
 
 #### Database Schema
+
 - Added duplicate tracking fields to `Job` table
 - Created `JobPostingPattern` table for pattern analysis
 - Created `DuplicateJobAlert` table for flagged duplicates
 - Added database functions for automatic duplicate detection
 
 #### Automatic Detection
+
 - **Title Hash Matching**: Detects exact title duplicates
 - **Description Hash Matching**: Identifies similar job descriptions
 - **Company + Location Similarity**: Finds similar jobs from same company
@@ -30,12 +33,14 @@ The 209 Works platform now includes a comprehensive duplicate detection and moni
 #### API Endpoints
 
 **Check for Duplicates:**
+
 ```
 POST /api/ai/duplicate-check
 Headers: x-api-key: YOUR_AI_ASSISTANT_API_KEY
 ```
 
 **Monitor Duplicates (Admin):**
+
 ```
 GET /api/admin/duplicate-monitoring?type=alerts
 GET /api/admin/duplicate-monitoring?type=patterns
@@ -43,6 +48,7 @@ GET /api/admin/duplicate-monitoring?type=statistics
 ```
 
 **Review Duplicates (Admin):**
+
 ```
 POST /api/admin/duplicate-monitoring
 {
@@ -64,17 +70,17 @@ const response = await fetch('/api/ai/duplicate-check', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'x-api-key': process.env.AI_ASSISTANT_API_KEY
+    'x-api-key': process.env.AI_ASSISTANT_API_KEY,
   },
   body: JSON.stringify({
     jobData: {
-      title: "Software Developer",
-      company: "Tech Corp",
-      location: "Modesto, CA",
-      employerId: "employer-id",
-      description: "Job description..."
-    }
-  })
+      title: 'Software Developer',
+      company: 'Tech Corp',
+      location: 'Modesto, CA',
+      employerId: 'employer-id',
+      description: 'Job description...',
+    },
+  }),
 });
 
 const result = await response.json();
@@ -86,12 +92,13 @@ const result = await response.json();
 The system provides automated risk scoring:
 
 - **HIGH RISK (0.7+)**: Manual review required
-- **MEDIUM RISK (0.4-0.7)**: Additional verification recommended  
+- **MEDIUM RISK (0.4-0.7)**: Additional verification recommended
 - **LOW RISK (0-0.4)**: Appears unique
 
 ### 3. Pattern Detection
 
 Monitors for suspicious patterns:
+
 - High-frequency posting (>10 posts from same employer)
 - Identical job titles with minor variations
 - Same company posting identical jobs in multiple locations
@@ -100,6 +107,7 @@ Monitors for suspicious patterns:
 ### 4. Automated Actions
 
 The system can automatically:
+
 - Flag suspicious posts for review
 - Calculate similarity scores
 - Track posting patterns
@@ -121,12 +129,14 @@ The system can automatically:
 ## Implementation Steps
 
 ### 1. Apply Database Schema
+
 ```sql
 -- Run in your database
 \i scripts/add-duplicate-tracking.sql
 ```
 
 ### 2. Set Environment Variables
+
 ```bash
 # Add to your .env
 AI_ASSISTANT_API_KEY=your-secure-api-key-here
@@ -135,6 +145,7 @@ AI_ASSISTANT_API_KEY=your-secure-api-key-here
 ### 3. Configure AI Assistant
 
 The AI assistant should:
+
 1. Check all new job posts for duplicates
 2. Flag high-risk posts for manual review
 3. Monitor posting patterns
@@ -152,15 +163,17 @@ Admins can monitor duplicates through:
 ## Example AI Assistant Prompts
 
 ### For Duplicate Detection:
+
 ```
-"Check this job posting for duplicates and assess risk level. 
+"Check this job posting for duplicates and assess risk level.
 Job: [title], Company: [company], Location: [location]
 Provide recommendations for approval/rejection."
 ```
 
 ### For Pattern Analysis:
+
 ```
-"Analyze posting patterns for employer [employer-id]. 
+"Analyze posting patterns for employer [employer-id].
 Look for signs of spam, duplicate content, or suspicious behavior.
 Generate a risk assessment report."
 ```
@@ -184,6 +197,7 @@ Generate a risk assessment report."
 ## API Response Examples
 
 ### Duplicate Check Response:
+
 ```json
 {
   "success": true,

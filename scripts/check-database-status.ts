@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function checkDatabaseStatus() {
   console.log('🔍 Checking database status...');
-  
+
   try {
     // Test basic connection
     await prisma.$connect();
@@ -13,7 +13,9 @@ async function checkDatabaseStatus() {
     // Check if ChatHistory table exists
     try {
       const chatHistoryCount = await prisma.chatHistory.count();
-      console.log(`✅ ChatHistory table exists with ${chatHistoryCount} records`);
+      console.log(
+        `✅ ChatHistory table exists with ${chatHistoryCount} records`
+      );
     } catch (error) {
       console.log('❌ ChatHistory table does not exist or is not accessible');
       console.log('Error:', error);
@@ -31,9 +33,13 @@ async function checkDatabaseStatus() {
     // Check if JobApplication table exists
     try {
       const jobApplicationCount = await prisma.jobApplication.count();
-      console.log(`✅ JobApplication table exists with ${jobApplicationCount} records`);
+      console.log(
+        `✅ JobApplication table exists with ${jobApplicationCount} records`
+      );
     } catch (error) {
-      console.log('❌ JobApplication table does not exist or is not accessible');
+      console.log(
+        '❌ JobApplication table does not exist or is not accessible'
+      );
       console.log('Error:', error);
     }
 
@@ -57,7 +63,7 @@ async function checkDatabaseStatus() {
 
     // Check for test data
     console.log('\n🧹 Checking for test data...');
-    
+
     try {
       const testJobs = await prisma.job.findMany({
         where: {
@@ -66,16 +72,18 @@ async function checkDatabaseStatus() {
             { title: { contains: 'sample', mode: 'insensitive' } },
             { title: { contains: 'demo', mode: 'insensitive' } },
             { company: { contains: 'test', mode: 'insensitive' } },
-          ]
+          ],
         },
-        select: { id: true, title: true, company: true }
+        select: { id: true, title: true, company: true },
       });
-      
+
       if (testJobs.length > 0) {
         console.log(`⚠️  Found ${testJobs.length} potential test jobs:`);
-        testJobs.forEach((job: { id: string; title: string; company: string }) => {
-          console.log(`   - ${job.title} at ${job.company} (ID: ${job.id})`);
-        });
+        testJobs.forEach(
+          (job: { id: string; title: string; company: string }) => {
+            console.log(`   - ${job.title} at ${job.company} (ID: ${job.id})`);
+          }
+        );
       } else {
         console.log('✅ No obvious test jobs found');
       }
@@ -86,25 +94,28 @@ async function checkDatabaseStatus() {
     // Check for orphaned applications by checking if jobId references exist
     try {
       const allApplications = await prisma.jobApplication.findMany({
-        select: { id: true, jobId: true }
+        select: { id: true, jobId: true },
       });
 
       const existingJobIds = await prisma.job.findMany({
-        select: { id: true }
+        select: { id: true },
       });
 
       const existingJobIdSet = new Set(existingJobIds.map(job => job.id));
-      const orphanedApps = allApplications.filter(app => !existingJobIdSet.has(app.jobId));
+      const orphanedApps = allApplications.filter(
+        app => !existingJobIdSet.has(app.jobId)
+      );
 
       if (orphanedApps.length > 0) {
-        console.log(`⚠️  Found ${orphanedApps.length} orphaned job applications`);
+        console.log(
+          `⚠️  Found ${orphanedApps.length} orphaned job applications`
+        );
       } else {
         console.log('✅ No orphaned job applications found');
       }
     } catch (error) {
       console.log('❌ Could not check for orphaned applications');
     }
-
   } catch (error) {
     console.error('❌ Database connection failed:', error);
   } finally {

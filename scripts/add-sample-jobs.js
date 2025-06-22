@@ -11,9 +11,12 @@ const sampleJobs = [
     jobType: 'full_time',
     salaryMin: 18,
     salaryMax: 22,
-    description: 'Join our fast-paced warehouse team! We\'re looking for reliable team members to help fulfill customer orders. No experience necessary - we provide full training.',
-    requirements: 'Must be able to lift up to 50 lbs, stand for extended periods, and work in a team environment.',
-    benefits: 'Health insurance, dental, vision, 401k with company match, paid time off, career advancement opportunities.',
+    description:
+      "Join our fast-paced warehouse team! We're looking for reliable team members to help fulfill customer orders. No experience necessary - we provide full training.",
+    requirements:
+      'Must be able to lift up to 50 lbs, stand for extended periods, and work in a team environment.',
+    benefits:
+      'Health insurance, dental, vision, 401k with company match, paid time off, career advancement opportunities.',
     isRemote: false,
     categories: ['warehouse', 'logistics'],
     status: 'active',
@@ -28,9 +31,12 @@ const sampleJobs = [
     jobType: 'full_time',
     salaryMin: 85000,
     salaryMax: 110000,
-    description: 'Seeking experienced ICU nurses to join our critical care team. Provide direct patient care in our state-of-the-art intensive care unit.',
-    requirements: 'Current RN license in California, BSN preferred, 2+ years ICU experience, BLS and ACLS certification required.',
-    benefits: 'Excellent health benefits, retirement plan, tuition reimbursement, flexible scheduling, sign-on bonus available.',
+    description:
+      'Seeking experienced ICU nurses to join our critical care team. Provide direct patient care in our state-of-the-art intensive care unit.',
+    requirements:
+      'Current RN license in California, BSN preferred, 2+ years ICU experience, BLS and ACLS certification required.',
+    benefits:
+      'Excellent health benefits, retirement plan, tuition reimbursement, flexible scheduling, sign-on bonus available.',
     isRemote: false,
     categories: ['healthcare', 'nursing'],
     status: 'active',
@@ -45,9 +51,12 @@ const sampleJobs = [
     jobType: 'full_time',
     salaryMin: 16,
     salaryMax: 20,
-    description: 'Provide exceptional customer service to our members. Handle account inquiries, process transactions, and help members with their financial needs.',
-    requirements: 'High school diploma, excellent communication skills, cash handling experience preferred, bilingual Spanish a plus.',
-    benefits: 'Health insurance, paid holidays, vacation time, employee banking benefits, professional development opportunities.',
+    description:
+      'Provide exceptional customer service to our members. Handle account inquiries, process transactions, and help members with their financial needs.',
+    requirements:
+      'High school diploma, excellent communication skills, cash handling experience preferred, bilingual Spanish a plus.',
+    benefits:
+      'Health insurance, paid holidays, vacation time, employee banking benefits, professional development opportunities.',
     isRemote: false,
     categories: ['customer-service', 'finance'],
     status: 'active',
@@ -62,9 +71,12 @@ const sampleJobs = [
     jobType: 'full_time',
     salaryMin: 75000,
     salaryMax: 95000,
-    description: 'Join our growing tech team! We\'re building innovative software solutions for local businesses. Work with modern technologies in a collaborative environment.',
-    requirements: 'Bachelor\'s degree in Computer Science or related field, 2+ years experience with JavaScript, React, Node.js, experience with databases.',
-    benefits: 'Competitive salary, health insurance, flexible work arrangements, professional development budget, modern equipment.',
+    description:
+      "Join our growing tech team! We're building innovative software solutions for local businesses. Work with modern technologies in a collaborative environment.",
+    requirements:
+      "Bachelor's degree in Computer Science or related field, 2+ years experience with JavaScript, React, Node.js, experience with databases.",
+    benefits:
+      'Competitive salary, health insurance, flexible work arrangements, professional development budget, modern equipment.',
     isRemote: true,
     categories: ['technology', 'software'],
     status: 'active',
@@ -79,9 +91,12 @@ const sampleJobs = [
     jobType: 'full_time',
     salaryMin: 19,
     salaryMax: 23,
-    description: 'Operate forklifts and other warehouse equipment to move, stack, and organize inventory. Safety-focused environment with opportunities for advancement.',
-    requirements: 'Valid forklift certification required, 1+ years warehouse experience, ability to work various shifts, attention to detail.',
-    benefits: 'Health insurance, dental, vision, overtime opportunities, safety bonuses, equipment training provided.',
+    description:
+      'Operate forklifts and other warehouse equipment to move, stack, and organize inventory. Safety-focused environment with opportunities for advancement.',
+    requirements:
+      'Valid forklift certification required, 1+ years warehouse experience, ability to work various shifts, attention to detail.',
+    benefits:
+      'Health insurance, dental, vision, overtime opportunities, safety bonuses, equipment training provided.',
     isRemote: false,
     categories: ['warehouse', 'logistics', 'equipment'],
     status: 'active',
@@ -96,9 +111,12 @@ const sampleJobs = [
     jobType: 'part_time',
     salaryMin: 18,
     salaryMax: 22,
-    description: 'Support our medical team by assisting with patient care, administrative tasks, and clinical procedures. Great opportunity for healthcare career growth.',
-    requirements: 'Medical Assistant certification, excellent communication skills, computer proficiency, bilingual Spanish preferred.',
-    benefits: 'Flexible scheduling, health insurance (for 30+ hours), paid training, career advancement opportunities.',
+    description:
+      'Support our medical team by assisting with patient care, administrative tasks, and clinical procedures. Great opportunity for healthcare career growth.',
+    requirements:
+      'Medical Assistant certification, excellent communication skills, computer proficiency, bilingual Spanish preferred.',
+    benefits:
+      'Flexible scheduling, health insurance (for 30+ hours), paid training, career advancement opportunities.',
     isRemote: false,
     categories: ['healthcare', 'medical'],
     status: 'active',
@@ -113,9 +131,12 @@ const sampleJobs = [
     jobType: 'part_time',
     salaryMin: 16,
     salaryMax: 18,
-    description: 'Provide excellent guest service, maintain store appearance, and support sales goals. Flexible scheduling available for work-life balance.',
-    requirements: 'Customer service experience preferred, ability to work weekends and holidays, positive attitude, team player.',
-    benefits: 'Employee discount, flexible scheduling, health benefits for eligible team members, career development programs.',
+    description:
+      'Provide excellent guest service, maintain store appearance, and support sales goals. Flexible scheduling available for work-life balance.',
+    requirements:
+      'Customer service experience preferred, ability to work weekends and holidays, positive attitude, team player.',
+    benefits:
+      'Employee discount, flexible scheduling, health benefits for eligible team members, career development programs.',
     isRemote: false,
     categories: ['retail', 'customer-service'],
     status: 'active',
@@ -130,28 +151,31 @@ const sampleJobs = [
     jobType: 'full_time',
     salaryMin: 20,
     salaryMax: 25,
-    description: 'Deliver packages to residential and commercial customers. Enjoy being on the road and providing excellent customer service.',
-    requirements: 'Valid driver\'s license with clean driving record, ability to lift up to 75 lbs, DOT physical required, customer service skills.',
-    benefits: 'Competitive pay, health insurance, retirement plan, paid time off, vehicle provided, route training.',
+    description:
+      'Deliver packages to residential and commercial customers. Enjoy being on the road and providing excellent customer service.',
+    requirements:
+      "Valid driver's license with clean driving record, ability to lift up to 75 lbs, DOT physical required, customer service skills.",
+    benefits:
+      'Competitive pay, health insurance, retirement plan, paid time off, vehicle provided, route training.',
     isRemote: false,
     categories: ['delivery', 'logistics', 'driving'],
     status: 'active',
     postedAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000), // 12 days ago
     url: 'https://fedex.com/careers',
-  }
+  },
 ];
 
 async function addSampleJobs() {
   try {
     console.log('Adding sample jobs to database...');
-    
+
     for (const job of sampleJobs) {
       await prisma.job.create({
-        data: job
+        data: job,
       });
       console.log(`Added job: ${job.title} at ${job.company}`);
     }
-    
+
     console.log(`Successfully added ${sampleJobs.length} sample jobs!`);
   } catch (error) {
     console.error('Error adding sample jobs:', error);

@@ -122,28 +122,30 @@ const replacements = [
   // Import replacements
   {
     pattern: /import\s+{\s*auth\s*}\s+from\s+["']@\/auth["'];?/g,
-    replacement: "import { auth } from '@clerk/nextjs/server';"
+    replacement: "import { auth } from '@clerk/nextjs/server';",
   },
   {
-    pattern: /import\s+{\s*auth\s+as\s+getServerSession\s*}\s+from\s+["']@\/auth["'];?/g,
-    replacement: "import { auth } from '@clerk/nextjs/server';"
+    pattern:
+      /import\s+{\s*auth\s+as\s+getServerSession\s*}\s+from\s+["']@\/auth["'];?/g,
+    replacement: "import { auth } from '@clerk/nextjs/server';",
   },
   {
     pattern: /import\s+type\s+{\s*Session\s*}\s+from\s+["']next-auth["'];?/g,
-    replacement: "import { prisma } from '@/lib/database/prisma';"
+    replacement: "import { prisma } from '@/lib/database/prisma';",
   },
   {
     pattern: /import\s+{\s*useSession\s*}\s+from\s+["']next-auth\/react["'];?/g,
-    replacement: "import { useUser } from '@clerk/nextjs';"
+    replacement: "import { useUser } from '@clerk/nextjs';",
   },
   {
     pattern: /import\s+{\s*ActionResult\s*}\s+from\s+["']\.\/auth["'];?/g,
-    replacement: "// ActionResult type removed - using standard return types"
+    replacement: '// ActionResult type removed - using standard return types',
   },
-  
+
   // Function call replacements
   {
-    pattern: /const\s+session\s*=\s*await\s+auth\(\)\s*as\s+Session\s*\|\s*null;?/g,
+    pattern:
+      /const\s+session\s*=\s*await\s+auth\(\)\s*as\s+Session\s*\|\s*null;?/g,
     replacement: `const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -151,10 +153,11 @@ const replacements = [
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-    });`
+    });`,
   },
   {
-    pattern: /const\s+session\s*=\s*await\s+getServerSession\(\)\s*as\s+Session\s*\|\s*null;?/g,
+    pattern:
+      /const\s+session\s*=\s*await\s+getServerSession\(\)\s*as\s+Session\s*\|\s*null;?/g,
     replacement: `const { userId } = await auth();
     if (!userId) {
       redirect('/signin');
@@ -162,50 +165,50 @@ const replacements = [
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-    });`
+    });`,
   },
   {
     pattern: /const\s+{\s*data:\s*session\s*}\s*=\s*useSession\(\);?/g,
-    replacement: "const { user, isLoaded } = useUser();"
+    replacement: 'const { user, isLoaded } = useUser();',
   },
   {
     pattern: /const\s+session\s*=\s*useSession\(\);?/g,
-    replacement: "const { user, isLoaded } = useUser();"
+    replacement: 'const { user, isLoaded } = useUser();',
   },
-  
+
   // Session checks
   {
     pattern: /if\s*\(\s*!session\?\.\s*user\s*\)\s*{/g,
-    replacement: "if (!user) {"
+    replacement: 'if (!user) {',
   },
   {
     pattern: /if\s*\(\s*!session\s*\)\s*{/g,
-    replacement: "if (!user) {"
+    replacement: 'if (!user) {',
   },
   {
     pattern: /session\!\.\s*user\?\.\s*email/g,
-    replacement: "user?.emailAddresses?.[0]?.emailAddress"
+    replacement: 'user?.emailAddresses?.[0]?.emailAddress',
   },
   {
     pattern: /session\?\.\s*user\?\.\s*email/g,
-    replacement: "user?.emailAddresses?.[0]?.emailAddress"
+    replacement: 'user?.emailAddresses?.[0]?.emailAddress',
   },
   {
     pattern: /session\!\.\s*user\?\.\s*name/g,
-    replacement: "user?.fullName"
+    replacement: 'user?.fullName',
   },
   {
     pattern: /session\?\.\s*user\?\.\s*name/g,
-    replacement: "user?.fullName"
+    replacement: 'user?.fullName',
   },
   {
     pattern: /session\!\.\s*user\?\.\s*role/g,
-    replacement: "user?.publicMetadata?.role"
+    replacement: 'user?.publicMetadata?.role',
   },
   {
     pattern: /session\?\.\s*user\?\.\s*role/g,
-    replacement: "user?.publicMetadata?.role"
-  }
+    replacement: 'user?.publicMetadata?.role',
+  },
 ];
 
 function updateFile(filePath) {
@@ -214,10 +217,10 @@ function updateFile(filePath) {
       console.log(`⚠️  File not found: ${filePath}`);
       return false;
     }
-    
+
     let content = fs.readFileSync(filePath, 'utf8');
     let modified = false;
-    
+
     // Apply all replacements
     replacements.forEach(({ pattern, replacement }) => {
       if (pattern.test(content)) {
@@ -225,7 +228,7 @@ function updateFile(filePath) {
         modified = true;
       }
     });
-    
+
     if (modified) {
       fs.writeFileSync(filePath, content, 'utf8');
       console.log(`✅ Updated: ${filePath}`);
@@ -242,20 +245,20 @@ function updateFile(filePath) {
 
 function main() {
   console.log('🚀 Starting Clerk migration...\n');
-  
+
   let updatedCount = 0;
   let totalCount = filesToUpdate.length;
-  
+
   filesToUpdate.forEach(filePath => {
     if (updateFile(filePath)) {
       updatedCount++;
     }
   });
-  
+
   console.log(`\n📊 Migration Summary:`);
   console.log(`   Updated: ${updatedCount}/${totalCount} files`);
   console.log(`   Skipped: ${totalCount - updatedCount} files`);
-  
+
   if (updatedCount > 0) {
     console.log('\n🎯 Next steps:');
     console.log('   1. Review the changes');

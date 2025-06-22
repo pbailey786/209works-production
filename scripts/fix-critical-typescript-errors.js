@@ -40,16 +40,21 @@ type ActionResult = {
   error?: string;
 };
 `;
-      
+
       // Add at the top after imports
       const lines = content.split('\n');
-      const importEndIndex = lines.findIndex(line => !line.startsWith('import') && !line.startsWith('//') && line.trim() !== '');
+      const importEndIndex = lines.findIndex(
+        line =>
+          !line.startsWith('import') &&
+          !line.startsWith('//') &&
+          line.trim() !== ''
+      );
       if (importEndIndex > 0) {
         lines.splice(importEndIndex, 0, missingSchemas);
         return lines.join('\n');
       }
     }
-    
+
     if (filePath.includes('actions/alerts.ts')) {
       const missingSchemas = `
 // Temporary schema definitions
@@ -78,33 +83,46 @@ type AlertCriteria = {
   jobType?: string;
 };
 `;
-      
+
       const lines = content.split('\n');
-      const importEndIndex = lines.findIndex(line => !line.startsWith('import') && !line.startsWith('//') && line.trim() !== '');
+      const importEndIndex = lines.findIndex(
+        line =>
+          !line.startsWith('import') &&
+          !line.startsWith('//') &&
+          line.trim() !== ''
+      );
       if (importEndIndex > 0) {
         lines.splice(importEndIndex, 0, missingSchemas);
         return lines.join('\n');
       }
     }
-    
+
     return content;
   },
 
   // Fix missing imports
   fixMissingImports: (content, filePath) => {
     const fixes = [];
-    
+
     // Fix lucide-react imports
-    if (content.includes('from \'lucide-react\'') && !content.includes('import React')) {
+    if (
+      content.includes("from 'lucide-react'") &&
+      !content.includes('import React')
+    ) {
       content = content.replace(
         /import \{ ([^}]+) \} from 'lucide-react';/g,
         (match, imports) => {
           // Separate React hooks from icons
           const importList = imports.split(',').map(i => i.trim());
-          const reactHooks = ['useEffect', 'useState', 'useCallback', 'useMemo'];
+          const reactHooks = [
+            'useEffect',
+            'useState',
+            'useCallback',
+            'useMemo',
+          ];
           const hooks = importList.filter(i => reactHooks.includes(i));
           const icons = importList.filter(i => !reactHooks.includes(i));
-          
+
           let result = '';
           if (hooks.length > 0) {
             result += `import { ${hooks.join(', ')} } from 'react';\n`;
@@ -116,50 +134,55 @@ type AlertCriteria = {
         }
       );
     }
-    
+
     // Fix missing prisma import
-    if (content.includes('prisma.') && !content.includes('import') && !content.includes('prisma')) {
+    if (
+      content.includes('prisma.') &&
+      !content.includes('import') &&
+      !content.includes('prisma')
+    ) {
       content = `import { prisma } from '@/lib/database/prisma';\n\n${content}`;
     }
-    
+
     // Fix missing Link import
-    if (content.includes('<Link') && !content.includes('import') && !content.includes('Link')) {
+    if (
+      content.includes('<Link') &&
+      !content.includes('import') &&
+      !content.includes('Link')
+    ) {
       content = `import Link from 'next/link';\n\n${content}`;
     }
-    
+
     return content;
   },
 
   // Fix component import paths
-  fixComponentPaths: (content) => {
+  fixComponentPaths: content => {
     // Fix common UI component import issues
     const componentFixes = {
-      'from \'@/components/ui/card\'': 'from \'@/components/ui/card\'',
-      'from \'@/components/ui/button\'': 'from \'@/components/ui/button\'',
-      'from \'@/components/ui/input\'': 'from \'@/components/ui/input\'',
+      "from '@/components/ui/card'": "from '@/components/ui/card'",
+      "from '@/components/ui/button'": "from '@/components/ui/button'",
+      "from '@/components/ui/input'": "from '@/components/ui/input'",
     };
-    
+
     for (const [wrong, correct] of Object.entries(componentFixes)) {
       content = content.replace(new RegExp(wrong, 'g'), correct);
     }
-    
+
     return content;
   },
 
   // Fix type issues
-  fixTypeIssues: (content) => {
+  fixTypeIssues: content => {
     // Add type assertions for common issues
     content = content.replace(
       /mockFactories\.(user|job|employer)\(\)/g,
       'mockFactories.$1() as any'
     );
-    
+
     // Fix session type issues
-    content = content.replace(
-      /session!\.user/g,
-      '(session!.user as any)'
-    );
-    
+    content = content.replace(/session!\.user/g, '(session!.user as any)');
+
     return content;
   },
 
@@ -171,15 +194,15 @@ type AlertCriteria = {
         /if \(!user\) \{/g,
         'const user = validatedData.user; if (!user) {'
       );
-      
+
       content = content.replace(
         /if \(user\.email !== validatedData\.confirmEmail\) \{/g,
         'if (user?.email !== validatedData.confirmEmail) {'
       );
     }
-    
+
     return content;
-  }
+  },
 };
 
 function fixFile(filePath) {
@@ -259,5 +282,5 @@ if (require.main === module) {
 
 module.exports = {
   criticalFixes,
-  fixFile
+  fixFile,
 };

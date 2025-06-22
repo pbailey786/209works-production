@@ -13,35 +13,38 @@ function stabilizingCleanup(content, filePath) {
   // 1. Fix only the most obvious semicolon cases (very conservative)
   const lines = content.split('\n');
   const fixedLines = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     const trimmed = line.trim();
-    
+
     // Skip empty lines, comments, and complex statements
     if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) {
       fixedLines.push(line);
       continue;
     }
-    
+
     // Only add semicolons to very simple, safe cases
-    if (trimmed.match(/^(const|let|var)\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[a-zA-Z0-9_$"'`]+$/) ||
-        trimmed.match(/^import\s+[^;]+from\s+['"][^'"]+['"]$/) ||
-        trimmed.match(/^export\s+default\s+[a-zA-Z_$][a-zA-Z0-9_$]*$/) ||
-        trimmed.match(/^return\s+[a-zA-Z0-9_$"'`]+$/) ||
-        trimmed.match(/^throw\s+new\s+Error\(['"][^'"]*['"]\)$/) ||
-        trimmed === 'break' ||
-        trimmed === 'continue') {
-      
+    if (
+      trimmed.match(
+        /^(const|let|var)\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=\s*[a-zA-Z0-9_$"'`]+$/
+      ) ||
+      trimmed.match(/^import\s+[^;]+from\s+['"][^'"]+['"]$/) ||
+      trimmed.match(/^export\s+default\s+[a-zA-Z_$][a-zA-Z0-9_$]*$/) ||
+      trimmed.match(/^return\s+[a-zA-Z0-9_$"'`]+$/) ||
+      trimmed.match(/^throw\s+new\s+Error\(['"][^'"]*['"]\)$/) ||
+      trimmed === 'break' ||
+      trimmed === 'continue'
+    ) {
       if (!trimmed.endsWith(';')) {
         line = line.replace(/\s*$/, ';');
         hasChanges = true;
       }
     }
-    
+
     fixedLines.push(line);
   }
-  
+
   content = fixedLines.join('\n');
 
   // 2. Fix only obvious duplicate keywords (very safe)
@@ -70,17 +73,27 @@ function stabilizingCleanup(content, filePath) {
   content = content.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
   // 8. Fix only very simple function parameter commas (very conservative)
-  content = content.replace(/(\w+)\s*\(\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\)/g, '$1($2, $3)');
+  content = content.replace(
+    /(\w+)\s*\(\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\)/g,
+    '$1($2, $3)'
+  );
 
   // 9. Remove only obvious stray single characters on their own lines
   const cleanLines = content.split('\n').filter(line => {
     const trimmed = line.trim();
     // Only remove lines that are single problematic characters
-    return !(trimmed === '}' || trimmed === ')' || trimmed === ']' || 
-             trimmed === ';' || trimmed === ',' || trimmed === '{' || 
-             trimmed === '(' || trimmed === '[');
+    return !(
+      trimmed === '}' ||
+      trimmed === ')' ||
+      trimmed === ']' ||
+      trimmed === ';' ||
+      trimmed === ',' ||
+      trimmed === '{' ||
+      trimmed === '(' ||
+      trimmed === '['
+    );
   });
-  
+
   if (cleanLines.length !== content.split('\n').length) {
     content = cleanLines.join('\n');
     hasChanges = true;
@@ -99,8 +112,14 @@ function stabilizingCleanup(content, filePath) {
   content = content.replace(/^(\s*)(const|let|var)\s*$/gm, '');
 
   // 13. Fix only obvious malformed destructuring (very conservative)
-  content = content.replace(/const\s*\{\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\s*=/g, 'const { $1 } =');
-  content = content.replace(/const\s*\[\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\]\s*=/g, 'const [ $1 ] =');
+  content = content.replace(
+    /const\s*\{\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\s*=/g,
+    'const { $1 } ='
+  );
+  content = content.replace(
+    /const\s*\[\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\]\s*=/g,
+    'const [ $1 ] ='
+  );
 
   // 14. Fix only obvious arrow function issues
   content = content.replace(/=>\s*\{([^}]*)\s*$/gm, (match, body) => {
@@ -123,7 +142,10 @@ function stabilizingCleanup(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = stabilizingCleanup(content, filePath);
+    const { content: newContent, hasChanges } = stabilizingCleanup(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -138,18 +160,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -168,9 +196,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 
@@ -180,7 +210,9 @@ function main() {
 
   if (fixedCount > 0) {
     console.log('\n🛡️ Stabilizing cleanup complete!');
-    console.log('💡 Run "npm run type-check" to see the stabilized improvements.');
+    console.log(
+      '💡 Run "npm run type-check" to see the stabilized improvements.'
+    );
   } else {
     console.log('\n✨ No stabilizing fixes needed!');
   }

@@ -15,7 +15,7 @@ async function setupAIMatching() {
   try {
     // 1. Check if default matching config exists
     const existingConfig = await prisma.matchingConfig.findUnique({
-      where: { name: 'default_featured_matching' }
+      where: { name: 'default_featured_matching' },
     });
 
     if (!existingConfig) {
@@ -28,8 +28,8 @@ async function setupAIMatching() {
           maxEmailsPerHour: 20,
           batchSize: 50,
           emailTemplate: 'featured_job_match',
-          isActive: true
-        }
+          isActive: true,
+        },
       });
       console.log('✅ Default matching configuration created');
     } else {
@@ -40,13 +40,13 @@ async function setupAIMatching() {
     const stats = {
       users: await prisma.user.count(),
       jobSeekers: await prisma.user.count({ where: { role: 'jobseeker' } }),
-      optedInJobSeekers: await prisma.jobSeekerProfile.count({ 
-        where: { optInEmailAlerts: true } 
+      optedInJobSeekers: await prisma.jobSeekerProfile.count({
+        where: { optInEmailAlerts: true },
       }),
       featuredJobs: await prisma.job.count({ where: { featured: true } }),
       resumeEmbeddings: await prisma.resumeEmbedding.count(),
       jobMatches: await prisma.jobMatch.count(),
-      queueJobs: await prisma.jobProcessingQueue.count()
+      queueJobs: await prisma.jobProcessingQueue.count(),
     };
 
     console.log('\n📊 Current System Statistics:');
@@ -65,11 +65,13 @@ async function setupAIMatching() {
       'RESEND_API_KEY',
       'FROM_EMAIL',
       'CRON_SECRET',
-      'NEXT_PUBLIC_BASE_URL'
+      'NEXT_PUBLIC_BASE_URL',
     ];
 
-    const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
-    
+    const missingEnvVars = requiredEnvVars.filter(
+      envVar => !process.env[envVar]
+    );
+
     if (missingEnvVars.length > 0) {
       console.log('❌ Missing environment variables:');
       missingEnvVars.forEach(envVar => {
@@ -82,15 +84,19 @@ async function setupAIMatching() {
 
     // 4. Recommendations
     console.log('\n💡 Recommendations:');
-    
+
     if (stats.optedInJobSeekers === 0) {
       console.log('  • No job seekers have opted in for email alerts yet');
-      console.log('  • Users need to enable email alerts in their profile to receive AI matches');
+      console.log(
+        '  • Users need to enable email alerts in their profile to receive AI matches'
+      );
     }
 
     if (stats.resumeEmbeddings === 0) {
       console.log('  • No resume embeddings processed yet');
-      console.log('  • Users need to upload resumes and process embeddings for AI matching');
+      console.log(
+        '  • Users need to upload resumes and process embeddings for AI matching'
+      );
     }
 
     if (stats.featuredJobs === 0) {
@@ -106,7 +112,6 @@ async function setupAIMatching() {
     console.log('  5. Check employer analytics dashboard');
 
     console.log('\n✅ AI Job Matching System setup complete!');
-
   } catch (error) {
     console.error('❌ Setup failed:', error);
     process.exit(1);

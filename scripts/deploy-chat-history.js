@@ -15,7 +15,7 @@ const prisma = new PrismaClient();
 
 async function deploymentScript() {
   console.log('🚀 Starting chat history deployment...');
-  
+
   try {
     // Step 1: Generate Prisma client
     console.log('\n📦 Generating Prisma client...');
@@ -65,7 +65,6 @@ async function deploymentScript() {
     console.log('  ✅ Test data cleaned up');
     console.log('  ✅ Chat history API endpoints deployed');
     console.log('  ✅ Job application debugging completed');
-
   } catch (error) {
     console.error('\n❌ Deployment failed:', error);
     throw error;
@@ -86,22 +85,21 @@ async function debugCurrentState() {
 
     // Check employers
     const employerCount = await prisma.user.count({
-      where: { role: 'employer' }
+      where: { role: 'employer' },
     });
     console.log(`  👔 Total employers: ${employerCount}`);
 
     // Check job seekers
     const jobSeekerCount = await prisma.user.count({
-      where: { role: 'jobseeker' }
+      where: { role: 'jobseeker' },
     });
     console.log(`  👤 Total job seekers: ${jobSeekerCount}`);
 
     // Check for jobs without employers
     const jobsWithoutEmployer = await prisma.job.count({
-      where: { employerId: null }
+      where: { employerId: null },
     });
     console.log(`  ⚠️  Jobs without employer: ${jobsWithoutEmployer}`);
-
   } catch (error) {
     console.error('  ❌ Debug failed:', error.message);
   }
@@ -110,7 +108,7 @@ async function debugCurrentState() {
 async function cleanupTestData() {
   try {
     const testJobTitles = [
-      'Paul\'s first job yay',
+      "Paul's first job yay",
       'Test Job for Instagram',
       'Test Job',
       'Sample Job',
@@ -125,10 +123,10 @@ async function cleanupTestData() {
         OR: testJobTitles.map(title => ({
           title: {
             contains: title,
-            mode: 'insensitive'
-          }
-        }))
-      }
+            mode: 'insensitive',
+          },
+        })),
+      },
     });
 
     console.log(`  ✅ Deleted ${deletedJobs.count} test jobs`);
@@ -145,21 +143,21 @@ async function cleanupTestData() {
     const deletedUsers = await prisma.user.deleteMany({
       where: {
         email: {
-          in: testUserEmails
-        }
-      }
+          in: testUserEmails,
+        },
+      },
     });
 
     console.log(`  ✅ Deleted ${deletedUsers.count} test users`);
 
     // Clean up orphaned applications
     const existingJobIds = await prisma.job.findMany({
-      select: { id: true }
+      select: { id: true },
     });
     const existingJobIdSet = new Set(existingJobIds.map(job => job.id));
 
     const allApplications = await prisma.jobApplication.findMany({
-      select: { id: true, jobId: true }
+      select: { id: true, jobId: true },
     });
 
     const orphanedApplicationIds = allApplications
@@ -170,15 +168,16 @@ async function cleanupTestData() {
       const deletedApplications = await prisma.jobApplication.deleteMany({
         where: {
           id: {
-            in: orphanedApplicationIds
-          }
-        }
+            in: orphanedApplicationIds,
+          },
+        },
       });
-      console.log(`  ✅ Deleted ${deletedApplications.count} orphaned applications`);
+      console.log(
+        `  ✅ Deleted ${deletedApplications.count} orphaned applications`
+      );
     } else {
       console.log(`  ✅ No orphaned applications found`);
     }
-
   } catch (error) {
     console.error('  ❌ Cleanup failed:', error.message);
   }
@@ -194,9 +193,9 @@ async function finalVerification() {
     const applicationsWithJobs = await prisma.jobApplication.count({
       where: {
         job: {
-          isNot: null
-        }
-      }
+          isNot: null,
+        },
+      },
     });
     console.log(`  🔗 Valid job applications: ${applicationsWithJobs}`);
 
@@ -204,12 +203,11 @@ async function finalVerification() {
     const jobsWithEmployers = await prisma.job.count({
       where: {
         employerId: {
-          not: null
-        }
-      }
+          not: null,
+        },
+      },
     });
     console.log(`  👔 Jobs with employers: ${jobsWithEmployers}`);
-
   } catch (error) {
     console.error('  ❌ Verification failed:', error.message);
   }
@@ -222,7 +220,7 @@ if (require.main === module) {
       console.log('\n✅ Deployment script completed successfully');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('\n❌ Deployment script failed:', error);
       process.exit(1);
     });

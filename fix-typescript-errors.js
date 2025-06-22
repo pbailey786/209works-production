@@ -14,7 +14,7 @@ const errorFiles = [
   'src/components/ui/collapsible.tsx',
   'src/components/ui/skeleton.tsx',
   'src/types/global.d.ts',
-  'src/types/pdf-parse.d.ts'
+  'src/types/pdf-parse.d.ts',
 ];
 
 // Function to fix common patterns
@@ -93,14 +93,16 @@ export {};`;
   }
 
   // Fix service files that contain JSX (should be placeholder pages)
-  if (filePath.includes('adzunaService.ts') || 
-      filePath.includes('adzunaToDb.ts') || 
-      filePath.includes('jobsPikrService.ts') ||
-      filePath.includes('enhanced-route.ts')) {
-    
+  if (
+    filePath.includes('adzunaService.ts') ||
+    filePath.includes('adzunaToDb.ts') ||
+    filePath.includes('jobsPikrService.ts') ||
+    filePath.includes('enhanced-route.ts')
+  ) {
     const serviceName = path.basename(filePath, path.extname(filePath));
-    const capitalizedName = serviceName.charAt(0).toUpperCase() + serviceName.slice(1);
-    
+    const capitalizedName =
+      serviceName.charAt(0).toUpperCase() + serviceName.slice(1);
+
     return `// ${capitalizedName} Service
 // This is a placeholder service file
 
@@ -120,7 +122,7 @@ errorFiles.forEach(filePath => {
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, 'utf8');
       const fixedContent = fixFileContent(content, filePath);
-      
+
       if (fixedContent !== content) {
         fs.writeFileSync(filePath, fixedContent);
         console.log(`Fixed: ${filePath}`);

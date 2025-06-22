@@ -3,9 +3,9 @@ const fetch = require('node-fetch');
 
 async function testJobsGPT() {
   const baseUrl = 'http://localhost:3000';
-  
+
   console.log('🤖 Testing JobsGPT functionality...\n');
-  
+
   // Test cases
   const testCases = [
     {
@@ -34,11 +34,11 @@ async function testJobsGPT() {
       expectedJobs: true,
     },
   ];
-  
+
   for (const testCase of testCases) {
     console.log(`📝 Testing: ${testCase.name}`);
     console.log(`💬 Message: "${testCase.message}"`);
-    
+
     try {
       const response = await fetch(`${baseUrl}/api/chat-job-search`, {
         method: 'POST',
@@ -51,25 +51,27 @@ async function testJobsGPT() {
           sessionId: `test_${Date.now()}`,
         }),
       });
-      
+
       if (!response.ok) {
         console.log(`❌ HTTP Error: ${response.status} ${response.statusText}`);
         continue;
       }
-      
+
       const data = await response.json();
-      
+
       console.log(`✅ Response received`);
       console.log(`📊 Jobs found: ${data.jobs?.length || 0}`);
       console.log(`🤖 AI Response: ${data.response?.substring(0, 100)}...`);
-      
+
       if (data.jobs && data.jobs.length > 0) {
         console.log(`📋 Sample jobs:`);
         data.jobs.slice(0, 2).forEach((job, index) => {
-          console.log(`   ${index + 1}. ${job.title} at ${job.company} (${job.location})`);
+          console.log(
+            `   ${index + 1}. ${job.title} at ${job.company} (${job.location})`
+          );
         });
       }
-      
+
       if (testCase.expectedJobs && (!data.jobs || data.jobs.length === 0)) {
         console.log(`⚠️  Expected jobs but found none`);
       } else if (!testCase.expectedJobs && data.jobs && data.jobs.length > 0) {
@@ -77,14 +79,13 @@ async function testJobsGPT() {
       } else {
         console.log(`✅ Test passed!`);
       }
-      
     } catch (error) {
       console.log(`❌ Error: ${error.message}`);
     }
-    
+
     console.log(''); // Empty line for readability
   }
-  
+
   console.log('🎉 JobsGPT testing completed!');
 }
 

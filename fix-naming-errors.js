@@ -10,7 +10,9 @@ function kebabToCamelCase(str) {
 
 // Function to convert kebab-case to PascalCase
 function kebabToPascalCase(str) {
-  return str.replace(/(^|-)([a-z])/g, (match, dash, letter) => letter.toUpperCase());
+  return str.replace(/(^|-)([a-z])/g, (match, dash, letter) =>
+    letter.toUpperCase()
+  );
 }
 
 // Get all files that need fixing based on the error output
@@ -49,7 +51,7 @@ const filesToFix = [
   'src/lib/database/optimized-queries.ts',
   'src/lib/database/prisma-with-timeout.ts',
   'src/lib/database/type-safety.ts',
-  'src/lib/database/validation-middleware.ts'
+  'src/lib/database/validation-middleware.ts',
 ];
 
 function fixFileContent(filePath) {
@@ -57,16 +59,19 @@ function fixFileContent(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
     const fileName = path.basename(filePath, path.extname(filePath));
     const isReactComponent = filePath.endsWith('.tsx');
-    
+
     // Convert kebab-case names to valid JavaScript identifiers
     const camelCaseName = kebabToCamelCase(fileName);
     const pascalCaseName = kebabToPascalCase(fileName);
-    
+
     let newContent = content;
-    
+
     // Fix variable/function names with hyphens
-    newContent = newContent.replace(new RegExp(`\\b${fileName}\\b`, 'g'), camelCaseName);
-    
+    newContent = newContent.replace(
+      new RegExp(`\\b${fileName}\\b`, 'g'),
+      camelCaseName
+    );
+
     // Fix interface names for React components
     if (isReactComponent) {
       newContent = newContent.replace(
@@ -78,7 +83,7 @@ function fixFileContent(filePath) {
         `export function ${pascalCaseName}`
       );
     }
-    
+
     // Fix export statements
     newContent = newContent.replace(
       new RegExp(`export const ${fileName}`, 'g'),
@@ -92,7 +97,7 @@ function fixFileContent(filePath) {
       new RegExp(`export default ${fileName}`, 'g'),
       `export default ${camelCaseName}`
     );
-    
+
     return newContent;
   } catch (error) {
     console.error(`Error reading ${filePath}:`, error.message);

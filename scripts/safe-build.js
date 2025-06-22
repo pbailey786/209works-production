@@ -38,7 +38,9 @@ function safeBuild() {
     execSync('npx prisma generate', { stdio: 'inherit' });
     console.log('✅ Prisma client generated successfully');
   } catch (error) {
-    console.warn('⚠️ Prisma client generation had issues, but continuing build...');
+    console.warn(
+      '⚠️ Prisma client generation had issues, but continuing build...'
+    );
     console.warn('This is expected if database schema is being updated');
   }
 
@@ -67,9 +69,16 @@ function safeBuild() {
   process.env.NEXT_TELEMETRY_DISABLED = '1';
 
   // Build with maximum compatibility
-  if (!runCommand('npx next build --no-lint', 'Building application (maximum compatibility mode)')) {
+  if (
+    !runCommand(
+      'npx next build --no-lint',
+      'Building application (maximum compatibility mode)'
+    )
+  ) {
     console.error('❌ Build failed');
-    console.error('❌ This is likely due to critical errors or missing environment variables');
+    console.error(
+      '❌ This is likely due to critical errors or missing environment variables'
+    );
     process.exit(2);
   }
 

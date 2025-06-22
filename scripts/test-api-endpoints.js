@@ -16,23 +16,30 @@ async function testApiEndpoints() {
       where: {
         userId: testUserId,
         isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
-      }
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      },
     });
 
     // Count universal credits
-    const universalCredits = allCredits.filter(c => c.type === 'universal').length;
+    const universalCredits = allCredits.filter(
+      c => c.type === 'universal'
+    ).length;
 
     // Count legacy credits (for backward compatibility)
     const jobPostCredits = allCredits.filter(c => c.type === 'job_post').length;
-    const featuredPostCredits = allCredits.filter(c => c.type === 'featured_post').length;
-    const socialGraphicCredits = allCredits.filter(c => c.type === 'social_graphic').length;
+    const featuredPostCredits = allCredits.filter(
+      c => c.type === 'featured_post'
+    ).length;
+    const socialGraphicCredits = allCredits.filter(
+      c => c.type === 'social_graphic'
+    ).length;
 
     // Total credits = universal + all legacy credits (since they can all be used for any purpose now)
-    const totalCredits = universalCredits + jobPostCredits + featuredPostCredits + socialGraphicCredits;
+    const totalCredits =
+      universalCredits +
+      jobPostCredits +
+      featuredPostCredits +
+      socialGraphicCredits;
 
     const credits = {
       universal: universalCredits,
@@ -46,7 +53,7 @@ async function testApiEndpoints() {
     console.log('Credits result:', credits);
 
     console.log('\n2. Testing subscription status...');
-    
+
     // Check subscription
     const subscription = await prisma.subscription.findFirst({
       where: {
@@ -61,47 +68,49 @@ async function testApiEndpoints() {
     console.log('Subscription result:', subscription);
 
     console.log('\n3. Testing user data...');
-    
+
     const user = await prisma.user.findUnique({
       where: { id: testUserId },
-      select: { 
-        id: true, 
+      select: {
+        id: true,
         role: true,
         currentTier: true,
         subscriptionEndsAt: true,
         trialEndsAt: true,
         email: true,
-        name: true
+        name: true,
       },
     });
 
     console.log('User result:', user);
 
     console.log('\n4. Testing raw credit query...');
-    
+
     const rawCredits = await prisma.jobPostingCredit.findMany({
       where: {
         userId: testUserId,
         isUsed: false,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
       },
       select: {
         id: true,
         type: true,
         isUsed: true,
         expiresAt: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     console.log('Raw credits:', rawCredits);
     console.log('Total raw credits:', rawCredits.length);
-    console.log('Universal credits:', rawCredits.filter(c => c.type === 'universal').length);
-    console.log('Job post credits:', rawCredits.filter(c => c.type === 'job_post').length);
-
+    console.log(
+      'Universal credits:',
+      rawCredits.filter(c => c.type === 'universal').length
+    );
+    console.log(
+      'Job post credits:',
+      rawCredits.filter(c => c.type === 'job_post').length
+    );
   } catch (error) {
     console.error('❌ Error testing API endpoints:', error);
   } finally {

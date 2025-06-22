@@ -58,7 +58,7 @@ const filesToFix = [
   'src/lib/conversation/manager.ts',
   'src/lib/email/templates/employer-candidate-contact.tsx',
   'src/scripts/finalizeCacheSystemMigration.ts',
-  'src/scripts/optimizeTasksFile.ts'
+  'src/scripts/optimizeTasksFile.ts',
 ];
 
 function fixDuplicateImports(filePath) {
@@ -71,32 +71,35 @@ function fixDuplicateImports(filePath) {
 
     let content = fs.readFileSync(fullPath, 'utf8');
     const lines = content.split('\n');
-    
+
     let modified = false;
     const newLines = [];
-    
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const nextLine = lines[i + 1];
-      
+
       // Check for duplicate "import {" pattern
-      if (line.trim() === 'import {' && nextLine && nextLine.trim() === 'import {') {
+      if (
+        line.trim() === 'import {' &&
+        nextLine &&
+        nextLine.trim() === 'import {'
+      ) {
         // Skip the duplicate line
         modified = true;
         console.log(`Fixed duplicate import in ${filePath} at line ${i + 1}`);
         continue;
       }
-      
+
       newLines.push(line);
     }
-    
+
     if (modified) {
       fs.writeFileSync(fullPath, newLines.join('\n'));
       console.log(`✅ Fixed ${filePath}`);
     } else {
       console.log(`⚪ No changes needed for ${filePath}`);
     }
-    
   } catch (error) {
     console.error(`❌ Error processing ${filePath}:`, error.message);
   }

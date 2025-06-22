@@ -6,18 +6,22 @@ const path = require('path');
 // Get all TypeScript files that need fixing
 function getAllTSFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
-  
+
   files.forEach(file => {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
-    
-    if (stat.isDirectory() && !file.startsWith('.') && file !== 'node_modules') {
+
+    if (
+      stat.isDirectory() &&
+      !file.startsWith('.') &&
+      file !== 'node_modules'
+    ) {
       getAllTSFiles(filePath, fileList);
     } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
       fileList.push(filePath);
     }
   });
-  
+
   return fileList;
 }
 
@@ -27,11 +31,13 @@ function isCorruptedFile(content) {
   if (lines.length <= 3) {
     // Check for signs of corruption: multiple statements on one line
     const firstLine = lines[0] || '';
-    return firstLine.length > 200 || 
-           firstLine.includes('; ') || 
-           firstLine.includes('} }') ||
-           firstLine.includes('() =>') ||
-           firstLine.includes('export ') && firstLine.includes('import ');
+    return (
+      firstLine.length > 200 ||
+      firstLine.includes('; ') ||
+      firstLine.includes('} }') ||
+      firstLine.includes('() =>') ||
+      (firstLine.includes('export ') && firstLine.includes('import '))
+    );
   }
   return false;
 }
@@ -39,11 +45,12 @@ function isCorruptedFile(content) {
 // Create a basic TypeScript file template
 function createBasicTemplate(filePath) {
   const fileName = path.basename(filePath, path.extname(filePath));
-  const isReactComponent = filePath.includes('/components/') || filePath.endsWith('.tsx');
+  const isReactComponent =
+    filePath.includes('/components/') || filePath.endsWith('.tsx');
   const isHook = fileName.startsWith('use');
   const isService = filePath.includes('/services/');
   const isUtil = filePath.includes('/utils/') || filePath.includes('/lib/');
-  
+
   if (isReactComponent) {
     return `'use client';
 
@@ -64,7 +71,7 @@ export function ${fileName}(props: ${fileName}Props) {
 
 export default ${fileName};`;
   }
-  
+
   if (isHook) {
     return `'use client';
 
@@ -87,7 +94,7 @@ export function ${fileName}() {
 
 export default ${fileName};`;
   }
-  
+
   if (isService) {
     const className = fileName.charAt(0).toUpperCase() + fileName.slice(1);
     return `// ${className} Service
@@ -103,7 +110,7 @@ export class ${className} {
 
 export default ${className};`;
   }
-  
+
   if (isUtil) {
     return `// ${fileName} utility functions
 // TODO: Implement utility functions
@@ -115,7 +122,7 @@ export function ${fileName}() {
 
 export default ${fileName};`;
   }
-  
+
   // Generic TypeScript file
   return `// ${fileName}
 // TODO: Implement functionality
@@ -139,7 +146,7 @@ tsFiles.forEach(filePath => {
   try {
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, 'utf8');
-      
+
       if (isCorruptedFile(content)) {
         const template = createBasicTemplate(filePath);
         fs.writeFileSync(filePath, template);
@@ -157,4 +164,6 @@ tsFiles.forEach(filePath => {
 console.log(`\nProcessing complete!`);
 console.log(`Fixed: ${fixedCount} files`);
 console.log(`Skipped: ${skippedCount} files`);
-console.log(`\nNote: Fixed files contain basic templates. You'll need to implement the actual functionality.`);
+console.log(
+  `\nNote: Fixed files contain basic templates. You'll need to implement the actual functionality.`
+);

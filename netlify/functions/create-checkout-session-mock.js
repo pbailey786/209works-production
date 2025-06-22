@@ -12,8 +12,8 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
-      body: JSON.stringify({ 
-        error: 'Method not allowed. Use POST.' 
+      body: JSON.stringify({
+        error: 'Method not allowed. Use POST.',
       }),
     };
   }
@@ -43,18 +43,13 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: 'Invalid JSON in request body' 
+        body: JSON.stringify({
+          error: 'Invalid JSON in request body',
         }),
       };
     }
 
-    const { 
-      plan, 
-      success_url, 
-      cancel_url,
-      customer_email 
-    } = requestBody;
+    const { plan, success_url, cancel_url, customer_email } = requestBody;
 
     // Validate required fields
     if (!plan) {
@@ -64,8 +59,8 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: 'Plan is required' 
+        body: JSON.stringify({
+          error: 'Plan is required',
         }),
       };
     }
@@ -79,8 +74,8 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: `Invalid plan. Valid plans are: ${VALID_PLANS.join(', ')}` 
+        body: JSON.stringify({
+          error: `Invalid plan. Valid plans are: ${VALID_PLANS.join(', ')}`,
         }),
       };
     }
@@ -90,8 +85,10 @@ exports.handler = async (event, context) => {
     const mockCheckoutUrl = `https://checkout.stripe.com/pay/${mockSessionId}`;
 
     // For testing, we'll return a mock URL that redirects to success
-    const testSuccessUrl = success_url || `https://209.works/employers/dashboard?success=true&plan=${normalizedPlan}`;
-    
+    const testSuccessUrl =
+      success_url ||
+      `https://209.works/employers/dashboard?success=true&plan=${normalizedPlan}`;
+
     // Return mock response (in production, this would be the real Stripe URL)
     return {
       statusCode: 200,
@@ -104,22 +101,21 @@ exports.handler = async (event, context) => {
         sessionId: mockSessionId,
         plan: normalizedPlan,
         mock: true,
-        message: 'This is a mock response while Stripe is being configured'
+        message: 'This is a mock response while Stripe is being configured',
       }),
     };
-
   } catch (error) {
     console.error('Mock Checkout Session Error:', error);
-    
+
     return {
       statusCode: 500,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         error: 'Internal server error. Please try again.',
-        debug: error.message
+        debug: error.message,
       }),
     };
   }

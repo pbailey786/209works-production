@@ -17,7 +17,10 @@ function findApiRoutes(dir) {
 
         if (stat.isDirectory()) {
           traverse(fullPath);
-        } else if (item === 'route.ts' && fullPath.includes(path.join('src', 'app', 'api'))) {
+        } else if (
+          item === 'route.ts' &&
+          fullPath.includes(path.join('src', 'app', 'api'))
+        ) {
           files.push(fullPath);
         }
       }
@@ -32,64 +35,66 @@ function findApiRoutes(dir) {
 
 // Check if file needs fixing
 function needsFix(content) {
-  return content.includes('withAPIMiddleware') ||
-         content.includes('@/lib/middleware/api-middleware') ||
-         content.includes('@/components/ui/card') ||
-         content.includes('.path.join(') ||
-         content.includes('createSuccessResponse') ||
-         content.includes('createErrorResponse') ||
-         content.includes('NotFoundError') ||
-         content.includes('AuthorizationError');
+  return (
+    content.includes('withAPIMiddleware') ||
+    content.includes('@/lib/middleware/api-middleware') ||
+    content.includes('@/components/ui/card') ||
+    content.includes('.path.join(') ||
+    content.includes('createSuccessResponse') ||
+    content.includes('createErrorResponse') ||
+    content.includes('NotFoundError') ||
+    content.includes('AuthorizationError')
+  );
 }
 
 // Fix common patterns in API routes
 function fixApiRoute(content) {
   let fixed = content;
-  
+
   // Fix imports
   fixed = fixed.replace(
     /import { NextRequest } from 'next\/server';/g,
     "import { NextRequest, NextResponse } from 'next/server';"
   );
-  
+
   fixed = fixed.replace(
     /import { withAPIMiddleware.*?} from '@\/lib\/middleware\/api-middleware';/g,
     "import { withValidation } from '@/lib/middleware/validation';"
   );
-  
+
   fixed = fixed.replace(
     /import { requireRole } from '@\/lib\/auth\/middleware';/g,
     "import { requireRole } from '@/lib/auth/middleware';"
   );
-  
+
   // Remove complex middleware imports
   fixed = fixed.replace(
     /import {[^}]*createSuccessResponse[^}]*} from '@\/lib\/middleware\/api-middleware';?\n?/g,
     ''
   );
-  
+
   fixed = fixed.replace(
     /import {[^}]*createErrorResponse[^}]*} from '@\/lib\/middleware\/api-middleware';?\n?/g,
     ''
   );
-  
+
   // Remove error imports
   fixed = fixed.replace(
     /import {[^}]*NotFoundError[^}]*} from '@\/lib\/errors\/api-errors';?\n?/g,
     ''
   );
-  
+
   fixed = fixed.replace(
     /import {[^}]*AuthorizationError[^}]*} from '@\/lib\/errors\/api-errors';?\n?/g,
     ''
   );
-  
+
   // Remove cache imports
   fixed = fixed.replace(
     /import {[^}]*generateCacheKey[^}]*} from '@\/lib\/cache\/[^']+';?\n?/g,
     ''
   );
-  
+
   // Remove imports that don't exist - these were incorrectly moved
   fixed = fixed.replace(
     /import {[^}]*PasswordResetService[^}]*} from '@\/lib\/validations\/api';?\n?/g,
@@ -153,14 +158,11 @@ function fixApiRoute(content) {
   );
 
   // Fix schema imports from wrong location
-  fixed = fixed.replace(
-    /@\/components\/ui\/card/g,
-    '@/lib/validations/api'
-  );
-  
+  fixed = fixed.replace(/@\/components\/ui\/card/g, '@/lib/validations/api');
+
   // Fix .path.join() syntax errors
   fixed = fixed.replace(/\.path\.join\(/g, '.join(');
-  
+
   // Fix withAPIMiddleware usage
   fixed = fixed.replace(
     /export const (GET|POST|PUT|PATCH|DELETE) = withAPIMiddleware\(\s*async \(req, context\) => {/g,
@@ -172,7 +174,7 @@ function fixApiRoute(content) {
       }
     }
   );
-  
+
   // Fix context destructuring - remove all variations
   fixed = fixed.replace(
     /const { user, params, query, performance } = context;/g,
@@ -223,26 +225,26 @@ function fixApiRoute(content) {
     /const { query } = context;/g,
     '// Query already available from above'
   );
-  
+
   // Fix user references
   fixed = fixed.replace(/user!/g, 'user');
-  
+
   // Fix error throwing to return responses
   fixed = fixed.replace(
     /throw new NotFoundError\('([^']+)'\);/g,
     "return NextResponse.json({ success: false, error: '$1' }, { status: 404 });"
   );
-  
+
   fixed = fixed.replace(
     /throw new AuthorizationError\('([^']+)'\);/g,
     "return NextResponse.json({ success: false, error: '$1' }, { status: 403 });"
   );
-  
+
   fixed = fixed.replace(
     /throw new Error\('([^']+)'\);/g,
     "return NextResponse.json({ success: false, error: '$1' }, { status: 400 });"
   );
-  
+
   // Fix response functions
   fixed = fixed.replace(
     /return createSuccessResponse\(([^)]+)\);/g,
@@ -264,20 +266,20 @@ function fixApiRoute(content) {
     /return NextResponse\.json\(\{ success: true, data:\s*([^,]+),\s*'([^']+)',\s*(\d+)\s*\}\);/g,
     'return NextResponse.json({ success: true, data: $1, message: "$2" }, { status: $3 });'
   );
-  
+
   // Remove performance tracking
   fixed = fixed.replace(/performance\.trackDatabaseQuery\(\);\s*/g, '');
 
   // Fix malformed comments that break syntax
   fixed = fixed.replace(/context\.\/\/ /g, '// ');
   fixed = fixed.replace(/context\.\s*\/\/ /g, '// ');
-  
+
   // Simplify middleware config
   fixed = fixed.replace(
     /},\s*{\s*requiredRoles:.*?cors: { enabled: true }\s*}\s*\);/gs,
     '},\n  {}\n);'
   );
-  
+
   return fixed;
 }
 

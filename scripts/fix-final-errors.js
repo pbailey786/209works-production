@@ -11,18 +11,22 @@ const filesToFix = [
 // Get all TypeScript files in the project
 function getAllTsFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !item.startsWith('.') && item !== 'node_modules') {
+
+    if (
+      stat.isDirectory() &&
+      !item.startsWith('.') &&
+      item !== 'node_modules'
+    ) {
       getAllTsFiles(fullPath, files);
     } else if (item.endsWith('.ts') || item.endsWith('.tsx')) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -30,92 +34,93 @@ function getAllTsFiles(dir, files = []) {
 const replacements = [
   // Fix duplicate prisma imports
   {
-    pattern: /import\s*{\s*prisma\s*}\s*from\s*['"][^'"]*auth\/prisma['"];\s*\n/g,
-    replacement: ''
+    pattern:
+      /import\s*{\s*prisma\s*}\s*from\s*['"][^'"]*auth\/prisma['"];\s*\n/g,
+    replacement: '',
   },
-  
+
   // Fix user property access patterns
   {
     pattern: /user\?\.\s*publicMetadata\?\.\s*role/g,
-    replacement: 'user?.role'
+    replacement: 'user?.role',
   },
-  
+
   // Fix session references that should be user
   {
     pattern: /session\!\.\s*user\?\.\s*email/g,
-    replacement: 'user?.email'
+    replacement: 'user?.email',
   },
   {
     pattern: /session\?\.\s*user\?\.\s*email/g,
-    replacement: 'user?.email'
+    replacement: 'user?.email',
   },
   {
     pattern: /session\!\.\s*user\?\.\s*name/g,
-    replacement: 'user?.name'
+    replacement: 'user?.name',
   },
   {
     pattern: /session\?\.\s*user\?\.\s*name/g,
-    replacement: 'user?.name'
+    replacement: 'user?.name',
   },
   {
     pattern: /session\!\.\s*user\?\.\s*role/g,
-    replacement: 'user?.role'
+    replacement: 'user?.role',
   },
   {
     pattern: /session\?\.\s*user\?\.\s*role/g,
-    replacement: 'user?.role'
+    replacement: 'user?.role',
   },
   {
     pattern: /session\!\.\s*user\?\.\s*id/g,
-    replacement: 'user?.id'
+    replacement: 'user?.id',
   },
   {
     pattern: /session\?\.\s*user\?\.\s*id/g,
-    replacement: 'user?.id'
+    replacement: 'user?.id',
   },
   {
     pattern: /session\.\s*user\?\.\s*email/g,
-    replacement: 'user?.email'
+    replacement: 'user?.email',
   },
   {
     pattern: /session\.\s*user\?\.\s*name/g,
-    replacement: 'user?.name'
+    replacement: 'user?.name',
   },
   {
     pattern: /session\.\s*user\?\.\s*role/g,
-    replacement: 'user?.role'
+    replacement: 'user?.role',
   },
   {
     pattern: /session\.\s*user\?\.\s*id/g,
-    replacement: 'user?.id'
+    replacement: 'user?.id',
   },
   {
     pattern: /session\.\s*user\.email/g,
-    replacement: 'user?.email'
+    replacement: 'user?.email',
   },
   {
     pattern: /session\.\s*user\.name/g,
-    replacement: 'user?.name'
+    replacement: 'user?.name',
   },
   {
     pattern: /session\.\s*user\.role/g,
-    replacement: 'user?.role'
+    replacement: 'user?.role',
   },
   {
     pattern: /session\.\s*user\.id/g,
-    replacement: 'user?.id'
+    replacement: 'user?.id',
   },
-  
+
   // Fix useSession to useUser
   {
     pattern: /const\s*{\s*data:\s*session,?\s*status\s*}\s*=\s*useUser\(\);/g,
-    replacement: 'const { user, isLoaded } = useUser();'
+    replacement: 'const { user, isLoaded } = useUser();',
   },
   {
     pattern: /const\s*{\s*data:\s*session\s*}\s*=\s*useUser\(\);/g,
-    replacement: 'const { user } = useUser();'
+    replacement: 'const { user } = useUser();',
   },
-  
+
   // Fix getServerSession references
   {
     pattern: /const\s+session\s*=\s*await\s+getServerSession\(\)\s*as\s*any;?/g,
@@ -126,7 +131,7 @@ const replacements = [
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-    });`
+    });`,
   },
   {
     pattern: /const\s+session\s*=\s*await\s+getServerSession\(\);?/g,
@@ -137,29 +142,29 @@ const replacements = [
     
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-    });`
+    });`,
   },
-  
+
   // Fix Session type references
   {
     pattern: /as\s+Session\s*\|\s*null/g,
-    replacement: ''
+    replacement: '',
   },
   {
     pattern: /:\s*Session\s*\|\s*null/g,
-    replacement: ''
+    replacement: '',
   },
-  
+
   // Fix clerkId type issues
   {
     pattern: /where:\s*{\s*clerkId:\s*userId\s*}/g,
-    replacement: 'where: { clerkId: userId! }'
+    replacement: 'where: { clerkId: userId! }',
   },
-  
+
   // Add missing imports
   {
     pattern: /^(import.*from.*clerk.*;\s*\n)/m,
-    replacement: '$1import { redirect } from \'next/navigation\';\n'
+    replacement: "$1import { redirect } from 'next/navigation';\n",
   },
 ];
 
@@ -168,19 +173,21 @@ function fixFile(filePath) {
     if (!fs.existsSync(filePath)) {
       return false;
     }
-    
+
     let content = fs.readFileSync(filePath, 'utf8');
     let modified = false;
-    
+
     // Skip if file doesn't contain problematic patterns
-    if (!content.includes('session') && 
-        !content.includes('useSession') && 
-        !content.includes('getServerSession') &&
-        !content.includes('publicMetadata') &&
-        !content.includes('auth/prisma')) {
+    if (
+      !content.includes('session') &&
+      !content.includes('useSession') &&
+      !content.includes('getServerSession') &&
+      !content.includes('publicMetadata') &&
+      !content.includes('auth/prisma')
+    ) {
       return false;
     }
-    
+
     // Apply all replacements
     replacements.forEach(({ pattern, replacement }) => {
       if (pattern.test && pattern.test(content)) {
@@ -188,25 +195,28 @@ function fixFile(filePath) {
         modified = true;
       }
     });
-    
+
     // Fix variable redeclaration issues
     const lines = content.split('\n');
     const seenVars = new Set();
     const filteredLines = [];
-    
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      
+
       // Check for variable redeclaration
       const userMatch = line.match(/^\s*const\s+(user|userId)\s*=/);
       if (userMatch) {
         const varName = userMatch[1];
         const varKey = `${varName}_${i}`;
-        
+
         if (seenVars.has(varName)) {
           // Rename the variable
           const newVarName = varName === 'user' ? 'dbUser' : 'clerkUserId';
-          const newLine = line.replace(new RegExp(`\\b${varName}\\b`), newVarName);
+          const newLine = line.replace(
+            new RegExp(`\\b${varName}\\b`),
+            newVarName
+          );
           filteredLines.push(newLine);
           modified = true;
         } else {
@@ -217,19 +227,21 @@ function fixFile(filePath) {
         filteredLines.push(line);
       }
     }
-    
+
     if (modified) {
       content = filteredLines.join('\n');
-      
+
       // Clean up duplicate imports
-      content = content.replace(/import\s*{\s*redirect\s*}\s*from\s*['"]next\/navigation['"];\s*\nimport\s*{\s*redirect\s*}\s*from\s*['"]next\/navigation['"];?/g, 
-        "import { redirect } from 'next/navigation';");
-      
+      content = content.replace(
+        /import\s*{\s*redirect\s*}\s*from\s*['"]next\/navigation['"];\s*\nimport\s*{\s*redirect\s*}\s*from\s*['"]next\/navigation['"];?/g,
+        "import { redirect } from 'next/navigation';"
+      );
+
       fs.writeFileSync(filePath, content, 'utf8');
       console.log(`✅ Fixed: ${filePath}`);
       return true;
     }
-    
+
     return false;
   } catch (error) {
     console.error(`❌ Error fixing ${filePath}:`, error.message);
@@ -239,24 +251,24 @@ function fixFile(filePath) {
 
 function main() {
   console.log('🔧 Starting comprehensive error fixes...\n');
-  
+
   // Get all TypeScript files
   const allFiles = getAllTsFiles('./src');
-  
+
   let fixedCount = 0;
   let totalCount = allFiles.length;
-  
+
   allFiles.forEach(filePath => {
     if (fixFile(filePath)) {
       fixedCount++;
     }
   });
-  
+
   console.log(`\n📊 Fix Summary:`);
   console.log(`   Processed: ${totalCount} files`);
   console.log(`   Fixed: ${fixedCount} files`);
   console.log(`   Skipped: ${totalCount - fixedCount} files`);
-  
+
   if (fixedCount > 0) {
     console.log('\n🎯 Next steps:');
     console.log('   1. Review the changes');

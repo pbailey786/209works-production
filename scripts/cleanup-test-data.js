@@ -8,9 +8,9 @@ async function cleanupTestData() {
   try {
     // 1. Remove test jobs with obvious fake titles
     console.log('📋 Cleaning up test jobs...');
-    
+
     const testJobTitles = [
-      'Paul\'s first job yay',
+      "Paul's first job yay",
       'Test Job for Instagram',
       'Test Job',
       'Sample Job',
@@ -19,12 +19,7 @@ async function cleanupTestData() {
       'Example Job',
     ];
 
-    const testJobSources = [
-      'test',
-      'fake',
-      'demo',
-      'sample',
-    ];
+    const testJobSources = ['test', 'fake', 'demo', 'sample'];
 
     // Delete jobs with test titles
     const deletedJobsByTitle = await prisma.job.deleteMany({
@@ -32,28 +27,32 @@ async function cleanupTestData() {
         OR: testJobTitles.map(title => ({
           title: {
             contains: title,
-            mode: 'insensitive'
-          }
-        }))
-      }
+            mode: 'insensitive',
+          },
+        })),
+      },
     });
 
-    console.log(`  ✅ Deleted ${deletedJobsByTitle.count} jobs with test titles`);
+    console.log(
+      `  ✅ Deleted ${deletedJobsByTitle.count} jobs with test titles`
+    );
 
     // Delete jobs from test sources
     const deletedJobsBySource = await prisma.job.deleteMany({
       where: {
         source: {
-          in: testJobSources
-        }
-      }
+          in: testJobSources,
+        },
+      },
     });
 
-    console.log(`  ✅ Deleted ${deletedJobsBySource.count} jobs from test sources`);
+    console.log(
+      `  ✅ Deleted ${deletedJobsBySource.count} jobs from test sources`
+    );
 
     // 2. Remove test users
     console.log('👤 Cleaning up test users...');
-    
+
     const testUserEmails = [
       'test@instagram.com',
       'test@test.com',
@@ -65,25 +64,25 @@ async function cleanupTestData() {
     const deletedUsers = await prisma.user.deleteMany({
       where: {
         email: {
-          in: testUserEmails
-        }
-      }
+          in: testUserEmails,
+        },
+      },
     });
 
     console.log(`  ✅ Deleted ${deletedUsers.count} test users`);
 
     // 3. Clean up orphaned job applications (applications for deleted jobs)
     console.log('📝 Cleaning up orphaned job applications...');
-    
+
     // First, find all job IDs that exist
     const existingJobIds = await prisma.job.findMany({
-      select: { id: true }
+      select: { id: true },
     });
     const existingJobIdSet = new Set(existingJobIds.map(job => job.id));
 
     // Find applications for non-existent jobs
     const allApplications = await prisma.jobApplication.findMany({
-      select: { id: true, jobId: true }
+      select: { id: true, jobId: true },
     });
 
     const orphanedApplicationIds = allApplications
@@ -94,64 +93,77 @@ async function cleanupTestData() {
       const deletedApplications = await prisma.jobApplication.deleteMany({
         where: {
           id: {
-            in: orphanedApplicationIds
-          }
-        }
+            in: orphanedApplicationIds,
+          },
+        },
       });
-      console.log(`  ✅ Deleted ${deletedApplications.count} orphaned job applications`);
+      console.log(
+        `  ✅ Deleted ${deletedApplications.count} orphaned job applications`
+      );
     } else {
       console.log(`  ✅ No orphaned job applications found`);
     }
 
     // 4. Clean up jobs with suspicious patterns
     console.log('🔍 Checking for suspicious job patterns...');
-    
+
     const suspiciousJobs = await prisma.job.findMany({
       where: {
         OR: [
           {
             description: {
               contains: 'test',
-              mode: 'insensitive'
-            }
+              mode: 'insensitive',
+            },
           },
           {
             company: {
               contains: 'test',
-              mode: 'insensitive'
-            }
+              mode: 'insensitive',
+            },
           },
           {
             url: {
-              contains: 'example.com'
-            }
-          }
-        ]
+              contains: 'example.com',
+            },
+          },
+        ],
       },
       select: {
         id: true,
         title: true,
         company: true,
-        source: true
-      }
+        source: true,
+      },
     });
 
-    console.log(`  ⚠️  Found ${suspiciousJobs.length} potentially suspicious jobs:`);
+    console.log(
+      `  ⚠️  Found ${suspiciousJobs.length} potentially suspicious jobs:`
+    );
     suspiciousJobs.forEach(job => {
-      console.log(`    - "${job.title}" by ${job.company} (source: ${job.source})`);
+      console.log(
+        `    - "${job.title}" by ${job.company} (source: ${job.source})`
+      );
     });
 
     if (suspiciousJobs.length > 0) {
-      console.log('  ℹ️  Review these jobs manually and delete if they are test data');
+      console.log(
+        '  ℹ️  Review these jobs manually and delete if they are test data'
+      );
     }
 
     console.log('\n🎉 Cleanup completed successfully!');
     console.log('\n📊 Summary:');
-    console.log(`  • Jobs deleted: ${deletedJobsByTitle.count + deletedJobsBySource.count}`);
+    console.log(
+      `  • Jobs deleted: ${deletedJobsByTitle.count + deletedJobsBySource.count}`
+    );
     console.log(`  • Users deleted: ${deletedUsers.count}`);
-    console.log(`  • Orphaned applications deleted: ${orphanedApplicationIds.length}`);
-    console.log(`  • Suspicious jobs found: ${suspiciousJobs.length} (review manually)`);
-
+    console.log(
+      `  • Orphaned applications deleted: ${orphanedApplicationIds.length}`
+    );
+    console.log(
+      `  • Suspicious jobs found: ${suspiciousJobs.length} (review manually)`
+    );
   } catch (error) {
     console.error('❌ Error during cleanup:', error);
     throw error;
@@ -166,7 +178,7 @@ cleanupTestData()
     console.log('✅ Cleanup script completed');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('❌ Cleanup script failed:', error);
     process.exit(1);
   });

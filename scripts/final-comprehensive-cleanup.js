@@ -15,15 +15,24 @@ function finalComprehensiveCleanup(content, filePath) {
   content = content.replace(/'$/gm, '');
 
   // 2. Fix malformed object properties
-  content = content.replace(/([a-zA-Z_$][a-zA-Z0-9_$]*): '([^']*)','/g, "$1: '$2',");
-  content = content.replace(/([a-zA-Z_$][a-zA-Z0-9_$]*): '([^']*)'$/gm, "$1: '$2'");
+  content = content.replace(
+    /([a-zA-Z_$][a-zA-Z0-9_$]*): '([^']*)','/g,
+    "$1: '$2',"
+  );
+  content = content.replace(
+    /([a-zA-Z_$][a-zA-Z0-9_$]*): '([^']*)'$/gm,
+    "$1: '$2'"
+  );
 
   // 3. Fix malformed JSX props
   content = content.replace(/\{\.\.\.\s*([^}]+)\s*\)/g, '{...$1}');
   content = content.replace(/\{\.\.\.\s*([^}]+)\s*\}\s*\)/g, '{...$1}');
 
   // 4. Fix malformed function calls
-  content = content.replace(/([a-zA-Z_$][a-zA-Z0-9_$]*)\(\s*([^)]+)\s*\)/g, '$1($2)');
+  content = content.replace(
+    /([a-zA-Z_$][a-zA-Z0-9_$]*)\(\s*([^)]+)\s*\)/g,
+    '$1($2)'
+  );
 
   // 5. Fix malformed template literals
   content = content.replace(/\$\{([^}]+)\s*\}([^}]*)\s*\}/g, '${$1}');
@@ -33,23 +42,44 @@ function finalComprehensiveCleanup(content, filePath) {
   content = content.replace(/\bfals\s*\}/g, 'false');
 
   // 7. Fix malformed variable names
-  content = content.replace(/([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}([a-zA-Z])/g, '$1$2');
+  content = content.replace(
+    /([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}([a-zA-Z])/g,
+    '$1$2'
+  );
 
   // 8. Fix malformed screen queries
-  content = content.replace(/screen\.([a-zA-Z]+)\(([^)]+)\)\s*\)/g, 'screen.$1($2)');
+  content = content.replace(
+    /screen\.([a-zA-Z]+)\(([^)]+)\)\s*\)/g,
+    'screen.$1($2)'
+  );
 
   // 9. Fix malformed expect statements
-  content = content.replace(/expect\(([^)]+)\)\.([a-zA-Z]+)\(([^)]*)\)\s*;/g, 'expect($1).$2($3);');
+  content = content.replace(
+    /expect\(([^)]+)\)\.([a-zA-Z]+)\(([^)]*)\)\s*;/g,
+    'expect($1).$2($3);'
+  );
 
   // 10. Fix malformed arrow functions
-  content = content.replace(/\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g, '() => { $1 }');
+  content = content.replace(
+    /\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g,
+    '() => { $1 }'
+  );
 
   // 11. Fix malformed async functions
-  content = content.replace(/async\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g, 'async () => { $1 }');
+  content = content.replace(
+    /async\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g,
+    'async () => { $1 }'
+  );
 
   // 12. Fix malformed describe/it blocks
-  content = content.replace(/describe\('([^']+)',\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g, "describe('$1', () => { $2 });");
-  content = content.replace(/it\('([^']+)',\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g, "it('$1', () => { $2 });");
+  content = content.replace(
+    /describe\('([^']+)',\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g,
+    "describe('$1', () => { $2 });"
+  );
+  content = content.replace(
+    /it\('([^']+)',\s*\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*;/g,
+    "it('$1', () => { $2 });"
+  );
 
   // 13. Fix malformed object destructuring
   content = content.replace(/const\s*\{\s*([^}]+)\s*\}\s*\}/g, 'const { $1 }');
@@ -58,24 +88,48 @@ function finalComprehensiveCleanup(content, filePath) {
   content = content.replace(/const\s*\[\s*([^\]]+)\s*\]\s*\]/g, 'const [ $1 ]');
 
   // 15. Fix malformed import statements
-  content = content.replace(/import\s*\{\s*([^}]+)\s*\}\s*from\s*'([^']+)'\s*;/g, "import { $1 } from '$2';");
-  content = content.replace(/import\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+from\s*'([^']+)'\s*;/g, "import $1 from '$2';");
+  content = content.replace(
+    /import\s*\{\s*([^}]+)\s*\}\s*from\s*'([^']+)'\s*;/g,
+    "import { $1 } from '$2';"
+  );
+  content = content.replace(
+    /import\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+from\s*'([^']+)'\s*;/g,
+    "import $1 from '$2';"
+  );
 
   // 16. Fix malformed export statements
-  content = content.replace(/export\s*\{\s*([^}]+)\s*\}\s*;/g, 'export { $1 };');
-  content = content.replace(/export\s+default\s+([^;]+)\s*;/g, 'export default $1;');
+  content = content.replace(
+    /export\s*\{\s*([^}]+)\s*\}\s*;/g,
+    'export { $1 };'
+  );
+  content = content.replace(
+    /export\s+default\s+([^;]+)\s*;/g,
+    'export default $1;'
+  );
 
   // 17. Fix malformed jest.mock statements
-  content = content.replace(/jest\.mock\('([^']+)',\s*\(\)\s*=>\s*\(\{\s*([^}]+)\s*\}\)\s*\)\s*;/g, "jest.mock('$1', () => ({ $2 }));");
+  content = content.replace(
+    /jest\.mock\('([^']+)',\s*\(\)\s*=>\s*\(\{\s*([^}]+)\s*\}\)\s*\)\s*;/g,
+    "jest.mock('$1', () => ({ $2 }));"
+  );
 
   // 18. Fix malformed beforeEach statements
-  content = content.replace(/beforeEach\(\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*\)\s*;/g, 'beforeEach(() => { $1 });');
+  content = content.replace(
+    /beforeEach\(\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*\)\s*;/g,
+    'beforeEach(() => { $1 });'
+  );
 
   // 19. Fix malformed afterEach statements
-  content = content.replace(/afterEach\(\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*\)\s*;/g, 'afterEach(() => { $1 });');
+  content = content.replace(
+    /afterEach\(\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*\)\s*;/g,
+    'afterEach(() => { $1 });'
+  );
 
   // 20. Fix malformed waitFor statements
-  content = content.replace(/await\s+waitFor\(\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*\)\s*;/g, 'await waitFor(() => { $1 });');
+  content = content.replace(
+    /await\s+waitFor\(\(\)\s*=>\s*\{\s*([^}]+)\s*\}\s*\)\s*;/g,
+    'await waitFor(() => { $1 });'
+  );
 
   if (content !== originalContent) {
     hasChanges = true;
@@ -87,7 +141,10 @@ function finalComprehensiveCleanup(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = finalComprehensiveCleanup(content, filePath);
+    const { content: newContent, hasChanges } = finalComprehensiveCleanup(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -102,18 +159,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -132,9 +195,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

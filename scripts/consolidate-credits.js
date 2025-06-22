@@ -18,7 +18,7 @@ async function consolidateCredits(userEmail) {
       // Find the specific user
       const user = await prisma.user.findUnique({
         where: { email: userEmail },
-        select: { id: true, email: true, name: true, role: true }
+        select: { id: true, email: true, name: true, role: true },
       });
 
       if (!user) {
@@ -40,17 +40,19 @@ async function consolidateCredits(userEmail) {
       where: {
         ...whereClause,
         type: {
-          not: 'universal'
-        }
+          not: 'universal',
+        },
       },
       include: {
         user: {
-          select: { email: true, name: true }
-        }
-      }
+          select: { email: true, name: true },
+        },
+      },
     });
 
-    console.log(`📊 Found ${existingCredits.length} non-universal credits to convert`);
+    console.log(
+      `📊 Found ${existingCredits.length} non-universal credits to convert`
+    );
 
     if (existingCredits.length === 0) {
       console.log(`✅ No credits need conversion - all are already universal!`);
@@ -64,7 +66,7 @@ async function consolidateCredits(userEmail) {
       if (!creditsByUser[userKey]) {
         creditsByUser[userKey] = {
           user: credit.user,
-          types: {}
+          types: {},
         };
       }
       if (!creditsByUser[userKey].types[credit.type]) {
@@ -83,7 +85,9 @@ async function consolidateCredits(userEmail) {
     });
 
     // Ask for confirmation (in a real script, you might want to add readline)
-    console.log('\n⚠️  This will convert ALL non-universal credits to universal type.');
+    console.log(
+      '\n⚠️  This will convert ALL non-universal credits to universal type.'
+    );
     console.log('🔄 Proceeding with conversion...\n');
 
     // Convert all non-universal credits to universal
@@ -91,24 +95,26 @@ async function consolidateCredits(userEmail) {
       where: {
         ...whereClause,
         type: {
-          not: 'universal'
-        }
+          not: 'universal',
+        },
       },
       data: {
-        type: 'universal'
-      }
+        type: 'universal',
+      },
     });
 
-    console.log(`✅ Successfully converted ${updateResult.count} credits to universal type`);
+    console.log(
+      `✅ Successfully converted ${updateResult.count} credits to universal type`
+    );
 
     // Verify the conversion
     const verificationCredits = await prisma.jobPostingCredit.findMany({
       where: whereClause,
       include: {
         user: {
-          select: { email: true, name: true }
-        }
-      }
+          select: { email: true, name: true },
+        },
+      },
     });
 
     // Group verification results by user
@@ -121,7 +127,7 @@ async function consolidateCredits(userEmail) {
           total: 0,
           used: 0,
           available: 0,
-          types: {}
+          types: {},
         };
       }
       verificationByUser[userKey].total++;
@@ -142,12 +148,17 @@ async function consolidateCredits(userEmail) {
       console.log(`    - Total credits: ${data.total}`);
       console.log(`    - Available: ${data.available}`);
       console.log(`    - Used: ${data.used}`);
-      console.log(`    - Types: ${Object.entries(data.types).map(([type, count]) => `${count} ${type}`).join(', ')}`);
+      console.log(
+        `    - Types: ${Object.entries(data.types)
+          .map(([type, count]) => `${count} ${type}`)
+          .join(', ')}`
+      );
     });
 
     console.log('\n✅ Credit consolidation completed successfully!');
-    console.log('🔗 Test the modal: http://localhost:3000/employers/create-job-post');
-
+    console.log(
+      '🔗 Test the modal: http://localhost:3000/employers/create-job-post'
+    );
   } catch (error) {
     console.error('❌ Error consolidating credits:', error);
   } finally {
@@ -161,7 +172,9 @@ const userEmail = args[0];
 
 if (args.length > 1) {
   console.log('Usage: node scripts/consolidate-credits.js [email]');
-  console.log('  [email] - Optional: consolidate credits for specific user only');
+  console.log(
+    '  [email] - Optional: consolidate credits for specific user only'
+  );
   console.log('  If no email provided, consolidates credits for ALL users');
   process.exit(1);
 }

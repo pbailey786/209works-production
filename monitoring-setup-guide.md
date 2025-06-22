@@ -17,18 +17,21 @@ Comprehensive monitoring and analytics system for production deployment of 209 W
 ### **1. Sentry Error Tracking**
 
 **Environment Variables to Add:**
+
 ```bash
 # Add to Netlify environment variables
 SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 ```
 
 **Setup Steps:**
+
 1. Create Sentry account at https://sentry.io
 2. Create new project for "209 Works"
 3. Copy DSN from project settings
 4. Add DSN to Netlify environment variables
 
 **Features Enabled:**
+
 - ✅ Real-time error tracking
 - ✅ Performance monitoring
 - ✅ User context tracking
@@ -40,18 +43,21 @@ SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 ### **2. Google Analytics 4**
 
 **Environment Variables to Add:**
+
 ```bash
 # Add to Netlify environment variables
 NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 ```
 
 **Setup Steps:**
+
 1. Create Google Analytics 4 property
 2. Get tracking ID from GA4 dashboard
 3. Add tracking ID to environment variables
 4. Verify tracking in GA4 real-time reports
 
 **Events Tracked:**
+
 - ✅ User registration and login
 - ✅ Job searches (traditional and AI)
 - ✅ JobsGPT interactions
@@ -67,6 +73,7 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 **Endpoint:** `https://209.works/api/health`
 
 **Monitoring Checks:**
+
 - ✅ Database connectivity
 - ✅ Redis status (if configured)
 - ✅ External API health
@@ -74,6 +81,7 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 - ✅ System uptime
 
 **Integration Options:**
+
 - **UptimeRobot**: Free uptime monitoring
 - **Pingdom**: Advanced monitoring with alerts
 - **StatusPage**: Public status page for users
@@ -81,12 +89,14 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 ### **4. Performance Monitoring**
 
 **Built-in Metrics:**
+
 - ✅ API response times
 - ✅ Database query performance
 - ✅ Memory usage tracking
 - ✅ Error rate monitoring
 
 **Recommended Tools:**
+
 - **Lighthouse CI**: Automated performance testing
 - **Web Vitals**: Core Web Vitals monitoring
 - **Netlify Analytics**: Built-in performance metrics
@@ -94,11 +104,13 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 ## 📊 **Monitoring Dashboard**
 
 ### **Admin Dashboard Access**
+
 - **URL**: `https://209.works/admin/monitoring`
 - **Access**: Admin role required
 - **Features**: Real-time system status, metrics, and alerts
 
 ### **Dashboard Sections**
+
 1. **System Status** - Overall health and uptime
 2. **Health Checks** - Individual component status
 3. **System Metrics** - User activity and performance
@@ -107,6 +119,7 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 ## 🚨 **Alert Configuration**
 
 ### **Critical Alerts**
+
 - Database connection failures
 - High error rates (>5%)
 - Memory usage >90%
@@ -114,12 +127,14 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 - Payment processing failures
 
 ### **Warning Alerts**
+
 - Degraded external API performance
 - Memory usage >75%
 - Error rate >1%
 - Slow database queries
 
 ### **Notification Channels**
+
 - **Email**: Admin notifications
 - **Slack**: Real-time team alerts (optional)
 - **SMS**: Critical alerts only (optional)
@@ -129,6 +144,7 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 ### **Google Analytics 4 Setup**
 
 **Custom Events:**
+
 ```javascript
 // Job search tracking
 Analytics.trackJobSearch(query, 'semantic', resultsCount);
@@ -144,6 +160,7 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ```
 
 **User Properties:**
+
 - User type (jobseeker/employer)
 - User region (209/916/510/925/559)
 - User tier (free/starter/standard/pro)
@@ -151,6 +168,7 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ### **Conversion Tracking**
 
 **Key Conversions:**
+
 1. **User Registration** - New account creation
 2. **Job Application** - Application submission
 3. **Payment** - Credit purchase or job posting
@@ -160,11 +178,13 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ## 🔍 **Performance Monitoring**
 
 ### **Core Web Vitals**
+
 - **LCP (Largest Contentful Paint)**: <2.5s
 - **FID (First Input Delay)**: <100ms
 - **CLS (Cumulative Layout Shift)**: <0.1
 
 ### **API Performance**
+
 - **Response Time**: <500ms average
 - **Error Rate**: <1%
 - **Throughput**: Monitor requests per minute
@@ -173,11 +193,12 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ### **Lighthouse CI Integration**
 
 **Netlify Build Plugin:**
+
 ```toml
 # Add to netlify.toml
 [[plugins]]
   package = "@netlify/plugin-lighthouse"
-  
+
   [plugins.inputs.thresholds]
     performance = 0.8
     accessibility = 0.9
@@ -188,6 +209,7 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ## 🛡️ **Security Monitoring**
 
 ### **Security Events Tracked**
+
 - Failed login attempts
 - Suspicious IP activity
 - Rate limit violations
@@ -195,6 +217,7 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 - Data access violations
 
 ### **Security Metrics**
+
 - Authentication failure rate
 - Blocked IP addresses
 - Security rule triggers
@@ -205,17 +228,20 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ### **UptimeRobot Setup** (Recommended)
 
 **Monitors to Create:**
+
 1. **Main Site**: https://209.works
 2. **Health Endpoint**: https://209.works/api/health
 3. **API Endpoint**: https://209.works/api/jobs
 4. **Admin Dashboard**: https://209.works/admin
 
 **Alert Settings:**
+
 - Check interval: 5 minutes
 - Alert when down for: 2 minutes
 - Notification methods: Email + SMS
 
 ### **Status Page**
+
 - Public status page for users
 - Real-time incident updates
 - Historical uptime data
@@ -226,24 +252,28 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ### **Key Metrics Dashboard**
 
 **User Metrics:**
+
 - Daily/Monthly Active Users
 - User registration rate
 - User retention rate
 - Regional user distribution
 
 **Job Market Metrics:**
+
 - Job posting volume
 - Application conversion rate
 - Popular job categories
 - Regional job distribution
 
 **Revenue Metrics:**
+
 - Credit sales volume
 - Average transaction value
 - Customer lifetime value
 - Payment success rate
 
 **AI Usage Metrics:**
+
 - JobsGPT query volume
 - Average session length
 - User satisfaction scores
@@ -252,24 +282,28 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ## 🔧 **Implementation Checklist**
 
 ### **Phase 1: Basic Monitoring**
+
 - [ ] Set up Sentry error tracking
 - [ ] Configure Google Analytics 4
 - [ ] Enable health check endpoint
 - [ ] Set up basic uptime monitoring
 
 ### **Phase 2: Advanced Analytics**
+
 - [ ] Implement custom event tracking
 - [ ] Set up conversion goals
 - [ ] Configure user segmentation
 - [ ] Enable enhanced ecommerce
 
 ### **Phase 3: Performance Optimization**
+
 - [ ] Set up Lighthouse CI
 - [ ] Configure Core Web Vitals monitoring
 - [ ] Implement performance budgets
 - [ ] Set up automated alerts
 
 ### **Phase 4: Business Intelligence**
+
 - [ ] Create custom dashboards
 - [ ] Set up automated reports
 - [ ] Configure business alerts
@@ -278,6 +312,7 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ## 🚀 **Production Deployment**
 
 ### **Pre-Launch Checklist**
+
 - [ ] All monitoring tools configured
 - [ ] Alert thresholds set
 - [ ] Dashboard access verified
@@ -285,6 +320,7 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 - [ ] Documentation updated
 
 ### **Post-Launch Monitoring**
+
 - [ ] Monitor error rates first 24 hours
 - [ ] Verify analytics data collection
 - [ ] Check performance metrics
@@ -294,18 +330,21 @@ Analytics.trackPurchase(transactionId, amount, 'USD', items);
 ## 📞 **Support & Maintenance**
 
 ### **Daily Monitoring**
+
 - Check error rates and alerts
 - Review performance metrics
 - Monitor user activity
 - Verify system health
 
 ### **Weekly Reviews**
+
 - Analyze user behavior trends
 - Review performance reports
 - Check security events
 - Update monitoring thresholds
 
 ### **Monthly Analysis**
+
 - Business metrics review
 - Performance optimization
 - Security audit

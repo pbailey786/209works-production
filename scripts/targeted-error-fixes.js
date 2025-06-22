@@ -14,15 +14,21 @@ function targetedErrorFixes(content, filePath) {
   const lines = content.split('\n');
   const filteredLines = lines.filter(line => {
     const trimmed = line.trim();
-    
+
     // Remove lines that are just stray characters
     if (trimmed.match(/^[\}\)\];,]+$/)) return false;
     if (trimmed.match(/^[+\-*/=<>!&|]+$/)) return false;
-    if (trimmed === '}' || trimmed === ')' || trimmed === ']' || trimmed === ';') return false;
-    
+    if (
+      trimmed === '}' ||
+      trimmed === ')' ||
+      trimmed === ']' ||
+      trimmed === ';'
+    )
+      return false;
+
     return true;
   });
-  
+
   if (filteredLines.length !== lines.length) {
     content = filteredLines.join('\n');
     hasChanges = true;
@@ -50,33 +56,42 @@ function targetedErrorFixes(content, filePath) {
   content = content.replace(/\bnull\s*:/g, '"null":');
 
   // 6. Fix "Parameter declaration expected" - Basic function cleanup
-  content = content.replace(/function\s*\(\s*([^)]*)\s*\)/g, (match, params) => {
-    if (!params.trim()) return 'function()';
-    
-    // Simple parameter cleanup
-    const cleanParams = params
-      .split(/[,\s]+/)
-      .filter(p => p.trim() && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(p.trim()))
-      .join(', ');
-    
-    return `function(${cleanParams})`;
-  });
+  content = content.replace(
+    /function\s*\(\s*([^)]*)\s*\)/g,
+    (match, params) => {
+      if (!params.trim()) return 'function()';
+
+      // Simple parameter cleanup
+      const cleanParams = params
+        .split(/[,\s]+/)
+        .filter(p => p.trim() && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(p.trim()))
+        .join(', ');
+
+      return `function(${cleanParams})`;
+    }
+  );
 
   // 7. Fix "'{' expected" - Add missing braces
-  content = content.replace(/function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*([^{])/g, 'function $1() { $2');
+  content = content.replace(
+    /function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*([^{])/g,
+    'function $1() { $2'
+  );
 
   // 8. Fix "Property destructuring pattern expected" - Basic cleanup
-  content = content.replace(/const\s*\{\s*([^}]*)\s*\}\s*=/g, (match, props) => {
-    const cleanProps = props
-      .split(',')
-      .map(p => p.trim())
-      .filter(p => p && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(p))
-      .join(', ');
-    return `const { ${cleanProps} } =`;
-  });
+  content = content.replace(
+    /const\s*\{\s*([^}]*)\s*\}\s*=/g,
+    (match, props) => {
+      const cleanProps = props
+        .split(',')
+        .map(p => p.trim())
+        .filter(p => p && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(p))
+        .join(', ');
+      return `const { ${cleanProps} } =`;
+    }
+  );
 
   // 9. Fix "')' expected" - Simple parentheses fixes
-  content = content.replace(/\([^)]*$/gm, (match) => {
+  content = content.replace(/\([^)]*$/gm, match => {
     const openCount = (match.match(/\(/g) || []).length;
     const closeCount = (match.match(/\)/g) || []).length;
     if (openCount > closeCount) {
@@ -107,7 +122,10 @@ function targetedErrorFixes(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = targetedErrorFixes(content, filePath);
+    const { content: newContent, hasChanges } = targetedErrorFixes(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -122,18 +140,24 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
@@ -152,9 +176,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 

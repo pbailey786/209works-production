@@ -24,7 +24,7 @@ export class JobsPikrService {
       title: '',
       company: '',
       location: '',
-      description: description
+      description: description,
     };
   }
 

@@ -34,7 +34,7 @@ async function createAdminAccounts() {
   try {
     for (const adminData of ADMIN_ACCOUNTS) {
       console.log(`Creating admin account: ${adminData.email}`);
-      
+
       // Create user record
       const user = await prisma.user.create({
         data: {
@@ -77,7 +77,11 @@ async function createAdminAccounts() {
           bio: 'Administrator of the 209 Works job platform',
           location: 'Stockton, CA',
           experienceLevel: 'senior',
-          skills: ['Platform Management', 'User Support', 'System Administration'],
+          skills: [
+            'Platform Management',
+            'User Support',
+            'System Administration',
+          ],
           desiredSalaryMin: 100000,
           desiredSalaryMax: 150000,
           availability: 'full-time',
@@ -96,7 +100,8 @@ async function createAdminAccounts() {
     const sampleJob = await prisma.job.create({
       data: {
         title: 'Software Developer - Test Job',
-        description: 'This is a sample job posting for testing the 209 Works platform.',
+        description:
+          'This is a sample job posting for testing the 209 Works platform.',
         company: '209 Works',
         location: 'Stockton, CA',
         salaryMin: 70000,
@@ -105,7 +110,7 @@ async function createAdminAccounts() {
         experienceLevel: 'mid',
         skills: ['JavaScript', 'React', 'Node.js'],
         benefits: ['Health Insurance', 'Remote Work', '401k'],
-        requirements: ['3+ years experience', 'Bachelor\'s degree preferred'],
+        requirements: ['3+ years experience', "Bachelor's degree preferred"],
         applicationMethod: 'internal',
         status: 'active',
         featured: true,
@@ -118,34 +123,43 @@ async function createAdminAccounts() {
       },
     });
 
-    console.log(`✅ Created sample job: ${sampleJob.title} (ID: ${sampleJob.id})`);
+    console.log(
+      `✅ Created sample job: ${sampleJob.title} (ID: ${sampleJob.id})`
+    );
 
     console.log('\n🎉 Admin account setup complete!');
     console.log('\n📋 Admin Account Summary:');
-    
+
     for (const admin of ADMIN_ACCOUNTS) {
-      console.log(`   • ${admin.email} - ${admin.role} (${admin.credits} credits)`);
+      console.log(
+        `   • ${admin.email} - ${admin.role} (${admin.credits} credits)`
+      );
     }
 
     console.log('\n🔑 Next Steps:');
     console.log('1. Go to https://209.works/sign-up');
     console.log('2. Sign up with one of the admin emails above');
     console.log('3. Clerk will create the authentication account');
-    console.log('4. The system will automatically link to the database profile');
-    console.log('5. You\'ll have full admin access immediately');
+    console.log(
+      '4. The system will automatically link to the database profile'
+    );
+    console.log("5. You'll have full admin access immediately");
 
     console.log('\n⚠️  Important Notes:');
     console.log('• Admin accounts are pre-verified and have 1000 credits');
     console.log('• Both employer and job seeker profiles are created');
     console.log('• Sample job created for testing functionality');
     console.log('• All accounts have admin role permissions');
-
   } catch (error) {
     console.error('❌ Error creating admin accounts:', error);
-    
+
     if (error.code === 'P2002') {
-      console.log('\n💡 Tip: If you get unique constraint errors, the accounts may already exist.');
-      console.log('   Run the clean slate script first to delete existing accounts.');
+      console.log(
+        '\n💡 Tip: If you get unique constraint errors, the accounts may already exist.'
+      );
+      console.log(
+        '   Run the clean slate script first to delete existing accounts.'
+      );
     }
   } finally {
     await prisma.$disconnect();
@@ -171,11 +185,15 @@ async function verifyAdminAccounts() {
     }
 
     console.log(`✅ Found ${adminUsers.length} admin account(s):`);
-    
+
     for (const user of adminUsers) {
       console.log(`   • ${user.email} - ${user.credits} credits`);
-      console.log(`     - Employer profile: ${user.employerProfile ? '✅' : '❌'}`);
-      console.log(`     - Job seeker profile: ${user.jobSeekerProfile ? '✅' : '❌'}`);
+      console.log(
+        `     - Employer profile: ${user.employerProfile ? '✅' : '❌'}`
+      );
+      console.log(
+        `     - Job seeker profile: ${user.jobSeekerProfile ? '✅' : '❌'}`
+      );
     }
 
     return true;
@@ -190,7 +208,7 @@ async function verifyAdminAccounts() {
 // Command line interface
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.includes('--verify') || args.includes('-v')) {
     verifyAdminAccounts();
   } else if (args.includes('--help') || args.includes('-h')) {

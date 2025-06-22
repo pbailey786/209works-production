@@ -9,8 +9,9 @@ This guide will help you delete all existing user accounts and create fresh admi
 ## ⚠️ **WARNING: Data Deletion**
 
 **This process will permanently delete:**
+
 - All user accounts
-- All job applications  
+- All job applications
 - All saved jobs
 - All chat history
 - All user profiles
@@ -18,6 +19,7 @@ This guide will help you delete all existing user accounts and create fresh admi
 - All credit transactions
 
 **This will NOT delete:**
+
 - Job listings
 - Company data
 - System settings
@@ -30,6 +32,7 @@ This guide will help you delete all existing user accounts and create fresh admi
 ### **Step 1: Clean Slate Database Reset**
 
 **Option A: Using Supabase SQL Editor (Recommended)**
+
 1. Go to https://app.supabase.com
 2. Open your 209 Works project
 3. Go to SQL Editor
@@ -37,6 +40,7 @@ This guide will help you delete all existing user accounts and create fresh admi
 5. Click "Run" to execute
 
 **Option B: Using Local Script**
+
 ```bash
 # If you have local database access
 psql $DATABASE_URL -f scripts/reset-users-clean-slate.sql
@@ -50,6 +54,7 @@ node scripts/create-admin-accounts.js
 ```
 
 This will create:
+
 - Admin accounts in the database
 - Both employer and job seeker profiles
 - 1000 credits per admin account
@@ -83,7 +88,7 @@ The script creates these admin accounts:
    - Credits: 1000
    - Profiles: Employer + Job Seeker
 
-📧 pbailey786@gmail.com  
+📧 pbailey786@gmail.com
    - Role: Admin
    - Credits: 1000
    - Profiles: Employer + Job Seeker
@@ -96,6 +101,7 @@ The script creates these admin accounts:
 ## 🔧 **Troubleshooting**
 
 ### **If Database Reset Fails**
+
 ```sql
 -- Check what tables exist
 \dt
@@ -110,6 +116,7 @@ DELETE FROM users;
 ```
 
 ### **If Admin Creation Fails**
+
 ```bash
 # Check if accounts were created
 node scripts/create-admin-accounts.js --verify
@@ -119,16 +126,18 @@ node scripts/create-admin-accounts.js --verify
 ```
 
 ### **If Clerk Signup Fails**
+
 1. Check that your email is in the admin accounts list
 2. Try a different browser or incognito mode
 3. Check Clerk dashboard for any issues
 4. Verify environment variables are set
 
 ### **If Admin Access Denied**
+
 ```sql
 -- Manually set admin role in Supabase
-UPDATE users 
-SET role = 'admin' 
+UPDATE users
+SET role = 'admin'
 WHERE email = 'your-email@example.com';
 ```
 
@@ -151,6 +160,7 @@ After completing the process, verify:
 ## 📊 **Sample Data Included**
 
 The admin setup creates:
+
 - **Sample Job**: "Software Developer - Test Job"
 - **Admin Profiles**: Both employer and job seeker
 - **Credits**: 1000 credits per admin account
@@ -164,10 +174,11 @@ If something goes wrong:
 
 1. **Restore from Supabase backup** (if available)
 2. **Or re-run the scripts**:
+
    ```bash
    # Clean slate again
    # Run reset-users-clean-slate.sql in Supabase
-   
+
    # Recreate admin accounts
    node scripts/create-admin-accounts.js
    ```
@@ -177,6 +188,7 @@ If something goes wrong:
 ## 🎉 **Success!**
 
 After completing these steps, you'll have:
+
 - ✅ **Clean production database** with no old test accounts
 - ✅ **Fresh admin accounts** with full permissions
 - ✅ **Working authentication** via Clerk
@@ -190,6 +202,7 @@ After completing these steps, you'll have:
 ## 📞 **Need Help?**
 
 If you run into issues:
+
 1. Check the troubleshooting section above
 2. Verify environment variables in Netlify
 3. Check Supabase and Clerk dashboards for errors

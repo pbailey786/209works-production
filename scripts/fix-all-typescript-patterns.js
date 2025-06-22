@@ -9,9 +9,13 @@ const path = require('path');
 // Load the error analysis report
 let analysisReport = {};
 try {
-  analysisReport = JSON.parse(fs.readFileSync('typescript-error-analysis.json', 'utf8'));
+  analysisReport = JSON.parse(
+    fs.readFileSync('typescript-error-analysis.json', 'utf8')
+  );
 } catch (error) {
-  console.log('⚠️  No analysis report found. Run find-typescript-error-patterns.js first.');
+  console.log(
+    '⚠️  No analysis report found. Run find-typescript-error-patterns.js first.'
+  );
 }
 
 function fixArrayMethodErrors(content) {
@@ -25,36 +29,52 @@ function fixMissingNodeImports(content, filePath) {
   let hasChanges = false;
 
   // Check for missing fs import
-  if (content.includes('fs.') && !content.includes('import') && !content.includes('* as fs')) {
-    imports.push('import * as fs from \'fs\';');
+  if (
+    content.includes('fs.') &&
+    !content.includes('import') &&
+    !content.includes('* as fs')
+  ) {
+    imports.push("import * as fs from 'fs';");
     hasChanges = true;
   }
 
   // Check for missing path import
-  if (content.includes('path.') && !content.includes('import') && !content.includes('* as path')) {
-    imports.push('import * as path from \'path\';');
+  if (
+    content.includes('path.') &&
+    !content.includes('import') &&
+    !content.includes('* as path')
+  ) {
+    imports.push("import * as path from 'path';");
     hasChanges = true;
   }
 
   // Check for missing config import
-  if (content.includes('config()') && !content.includes('import') && !content.includes('config')) {
-    imports.push('import { config } from \'dotenv\';');
+  if (
+    content.includes('config()') &&
+    !content.includes('import') &&
+    !content.includes('config')
+  ) {
+    imports.push("import { config } from 'dotenv';");
     hasChanges = true;
   }
 
   if (hasChanges) {
     // Find the first import line or add at the top
-    const firstImportIndex = lines.findIndex(line => line.trim().startsWith('import'));
+    const firstImportIndex = lines.findIndex(line =>
+      line.trim().startsWith('import')
+    );
     if (firstImportIndex >= 0) {
       lines.splice(firstImportIndex, 0, ...imports, '');
     } else {
       // Add after any initial comments
       let insertIndex = 0;
-      while (insertIndex < lines.length && 
-             (lines[insertIndex].trim().startsWith('//') || 
-              lines[insertIndex].trim().startsWith('/*') || 
-              lines[insertIndex].trim().startsWith('*') ||
-              lines[insertIndex].trim() === '')) {
+      while (
+        insertIndex < lines.length &&
+        (lines[insertIndex].trim().startsWith('//') ||
+          lines[insertIndex].trim().startsWith('/*') ||
+          lines[insertIndex].trim().startsWith('*') ||
+          lines[insertIndex].trim() === '')
+      ) {
         insertIndex++;
       }
       lines.splice(insertIndex, 0, ...imports, '');
@@ -116,7 +136,7 @@ function fixReactImports(content) {
   // Fix malformed React imports
   return content.replace(
     /import \{ React, \{([^}]+)\} from 'react';/g,
-    'import React, { $1 } from \'react\';'
+    "import React, { $1 } from 'react';"
   );
 }
 
@@ -177,9 +197,11 @@ function main() {
   console.log('🔧 Starting comprehensive TypeScript error fixes...\n');
 
   const filesToFix = getFilesToFix();
-  
+
   if (filesToFix.length === 0) {
-    console.log('ℹ️  No files identified for fixing. Run find-typescript-error-patterns.js first.');
+    console.log(
+      'ℹ️  No files identified for fixing. Run find-typescript-error-patterns.js first.'
+    );
     return;
   }
 
@@ -205,7 +227,9 @@ function main() {
   console.log(`\n📊 Summary:`);
   console.log(`   Files processed: ${filesToFix.length}`);
   console.log(`   Files fixed: ${fixedCount}`);
-  console.log(`   Files unchanged: ${filesToFix.length - fixedCount - errorCount}`);
+  console.log(
+    `   Files unchanged: ${filesToFix.length - fixedCount - errorCount}`
+  );
   console.log(`   Errors: ${errorCount}`);
 
   if (fixedCount > 0) {
@@ -228,11 +252,14 @@ function main() {
       'Next.js 15 params structure',
       'Missing API exports',
       'Mock type mismatches',
-      'React import issues'
-    ]
+      'React import issues',
+    ],
   };
 
-  fs.writeFileSync('typescript-fix-summary.json', JSON.stringify(fixSummary, null, 2));
+  fs.writeFileSync(
+    'typescript-fix-summary.json',
+    JSON.stringify(fixSummary, null, 2)
+  );
   console.log('\n📄 Fix summary saved to: typescript-fix-summary.json');
 }
 
@@ -247,5 +274,5 @@ module.exports = {
   fixMissingApiExports,
   fixMockTypes,
   fixReactImports,
-  fixFile
+  fixFile,
 };

@@ -18,9 +18,9 @@ async function listUsers() {
         email: true,
         name: true,
         role: true,
-        createdAt: true
+        createdAt: true,
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
 
     if (users.length === 0) {
@@ -47,7 +47,6 @@ async function listUsers() {
         console.log(`   • ${emp.email} (${emp.name || 'No name'})`);
       });
     }
-
   } catch (error) {
     console.error('❌ Error listing users:', error);
   } finally {

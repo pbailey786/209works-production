@@ -13,36 +13,42 @@ function round4SyntaxCleanup(content, filePath) {
   // 1. Fix "';' expected" (59 instances) - Most common remaining error
   const lines = content.split('\n');
   const fixedLines = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     const trimmed = line.trim();
-    
+
     // Skip empty lines, comments, and lines that already end with semicolon
-    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.endsWith(';')) {
+    if (
+      !trimmed ||
+      trimmed.startsWith('//') ||
+      trimmed.startsWith('/*') ||
+      trimmed.endsWith(';')
+    ) {
       fixedLines.push(line);
       continue;
     }
-    
+
     // Add semicolon to lines that clearly need it
-    if (trimmed.match(/^(const|let|var)\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=/) ||
-        trimmed.match(/^import\s+/) ||
-        trimmed.match(/^export\s+/) ||
-        trimmed.match(/^return\s+/) ||
-        trimmed.match(/^throw\s+/) ||
-        trimmed.match(/^break$/) ||
-        trimmed.match(/^continue$/)) {
-      
+    if (
+      trimmed.match(/^(const|let|var)\s+[a-zA-Z_$][a-zA-Z0-9_$]*\s*=/) ||
+      trimmed.match(/^import\s+/) ||
+      trimmed.match(/^export\s+/) ||
+      trimmed.match(/^return\s+/) ||
+      trimmed.match(/^throw\s+/) ||
+      trimmed.match(/^break$/) ||
+      trimmed.match(/^continue$/)
+    ) {
       // Only add semicolon if line doesn't end with {, }, (, ), [, ], or ,
       if (!trimmed.match(/[{}\(\)\[\],]$/)) {
         line = line.replace(/\s*$/, ';');
         hasChanges = true;
       }
     }
-    
+
     fixedLines.push(line);
   }
-  
+
   content = fixedLines.join('\n');
 
   // 2. Fix "Unexpected keyword or identifier" (31 instances)
@@ -56,9 +62,18 @@ function round4SyntaxCleanup(content, filePath) {
   content = content.replace(/\b(type)\s+\1\b/g, '$1');
 
   // Fix keywords followed by unexpected identifiers
-  content = content.replace(/\bconst\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g, 'const $1 =');
-  content = content.replace(/\blet\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g, 'let $1 =');
-  content = content.replace(/\bvar\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g, 'var $1 =');
+  content = content.replace(
+    /\bconst\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g,
+    'const $1 ='
+  );
+  content = content.replace(
+    /\blet\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g,
+    'let $1 ='
+  );
+  content = content.replace(
+    /\bvar\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/g,
+    'var $1 ='
+  );
 
   // 3. Fix "Unexpected token. Did you mean `{'}'}` or `&rbrace;`?" (29 instances)
   // Fix malformed JSX and template literals
@@ -68,7 +83,7 @@ function round4SyntaxCleanup(content, filePath) {
 
   // 4. Fix "'}' expected" (16 instances)
   // Add missing closing braces
-  content = content.replace(/\{[^}]*$/gm, (match) => {
+  content = content.replace(/\{[^}]*$/gm, match => {
     const openCount = (match.match(/\{/g) || []).length;
     const closeCount = (match.match(/\}/g) || []).length;
     if (openCount > closeCount) {
@@ -113,7 +128,7 @@ function round4SyntaxCleanup(content, filePath) {
 
   // 10. Fix "')' expected" (4 instances)
   // Add missing closing parentheses
-  content = content.replace(/\([^)]*$/gm, (match) => {
+  content = content.replace(/\([^)]*$/gm, match => {
     const openCount = (match.match(/\(/g) || []).length;
     const closeCount = (match.match(/\)/g) || []).length;
     if (openCount > closeCount) {
@@ -125,52 +140,58 @@ function round4SyntaxCleanup(content, filePath) {
   // 11. Fix "'(' expected" (3 instances)
   // Add missing opening parentheses for function calls
   content = content.replace(/(\w+)\s*\)/g, '$1()');
-  content = content.replace(/function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\{/g, 'function $1() {');
+  content = content.replace(
+    /function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\{/g,
+    'function $1() {'
+  );
 
   // 12. Fix "Unterminated string literal" (1 instance)
   // Find and fix unterminated strings
   const stringLines = content.split('\n');
   const fixedStringLines = [];
-  
+
   for (let i = 0; i < stringLines.length; i++) {
     let line = stringLines[i];
-    
+
     // Check for unterminated single quotes
     const singleQuotes = (line.match(/'/g) || []).length;
     if (singleQuotes % 2 !== 0) {
       line += "'";
       hasChanges = true;
     }
-    
+
     // Check for unterminated double quotes
     const doubleQuotes = (line.match(/"/g) || []).length;
     if (doubleQuotes % 2 !== 0) {
       line += '"';
       hasChanges = true;
     }
-    
+
     // Check for unterminated template literals
     const backticks = (line.match(/`/g) || []).length;
     if (backticks % 2 !== 0) {
       line += '`';
       hasChanges = true;
     }
-    
+
     fixedStringLines.push(line);
   }
-  
+
   content = fixedStringLines.join('\n');
 
   // 13. Fix JSX closing tag issues
   // Fix "JSX element 'header' has no corresponding closing tag"
   // Fix "Expected corresponding JSX closing tag for 'div'"
-  content = content.replace(/<(header|div|span|p|h1|h2|h3|h4|h5|h6|section|article|main|nav|aside|footer)\s*([^>]*)>/g, (match, tag, attrs) => {
-    // If it's a self-closing tag, make sure it ends with />
-    if (attrs.includes('/')) {
-      return `<${tag} ${attrs.replace(/\s*\/\s*$/, '')} />`;
+  content = content.replace(
+    /<(header|div|span|p|h1|h2|h3|h4|h5|h6|section|article|main|nav|aside|footer)\s*([^>]*)>/g,
+    (match, tag, attrs) => {
+      // If it's a self-closing tag, make sure it ends with />
+      if (attrs.includes('/')) {
+        return `<${tag} ${attrs.replace(/\s*\/\s*$/, '')} />`;
+      }
+      return match;
     }
-    return match;
-  });
+  );
 
   // 14. Fix "Invalid character" (1 instance)
   // Remove invalid characters
@@ -200,7 +221,10 @@ function round4SyntaxCleanup(content, filePath) {
 function fixFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const { content: newContent, hasChanges } = round4SyntaxCleanup(content, filePath);
+    const { content: newContent, hasChanges } = round4SyntaxCleanup(
+      content,
+      filePath
+    );
 
     if (hasChanges) {
       fs.writeFileSync(filePath, newContent);
@@ -215,23 +239,31 @@ function fixFile(filePath) {
 
 function getAllTSFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTSFiles(fullPath, files);
-    } else if (stat.isFile() && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+    } else if (
+      stat.isFile() &&
+      (item.endsWith('.ts') || item.endsWith('.tsx'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 
 function main() {
-  console.log('🎯 Round 4 syntax cleanup - targeting specific error patterns...\n');
+  console.log(
+    '🎯 Round 4 syntax cleanup - targeting specific error patterns...\n'
+  );
 
   const allFiles = getAllTSFiles('src');
   console.log(`Found ${allFiles.length} TypeScript files to process...\n`);
@@ -245,9 +277,11 @@ function main() {
       console.log(`✅ Fixed: ${file}`);
       fixedCount++;
     }
-    
+
     if (processedCount % 100 === 0) {
-      console.log(`📊 Progress: ${processedCount}/${allFiles.length} files processed...`);
+      console.log(
+        `📊 Progress: ${processedCount}/${allFiles.length} files processed...`
+      );
     }
   }
 
@@ -257,7 +291,9 @@ function main() {
 
   if (fixedCount > 0) {
     console.log('\n🎯 Round 4 syntax cleanup complete!');
-    console.log('💡 Run "npm run type-check" to see the targeted improvements.');
+    console.log(
+      '💡 Run "npm run type-check" to see the targeted improvements.'
+    );
   } else {
     console.log('\n✨ No round 4 syntax fixes needed!');
   }

@@ -44,8 +44,13 @@ export async function POST(request: NextRequest) {
 function findAllApiRoutes() {
   try {
     // Use find command to get all route.ts files in api directory
-    const result = execSync('find src/app/api -name "route.ts" -type f', { encoding: 'utf8' });
-    return result.trim().split('\n').filter(line => line.length > 0);
+    const result = execSync('find src/app/api -name "route.ts" -type f', {
+      encoding: 'utf8',
+    });
+    return result
+      .trim()
+      .split('\n')
+      .filter(line => line.length > 0);
   } catch (error) {
     console.error('Error finding API routes:', error.message);
     return [];
@@ -55,9 +60,11 @@ function findAllApiRoutes() {
 function isReactComponent(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    return content.includes('export default function') && 
-           content.includes('return (') &&
-           content.includes('<div className=');
+    return (
+      content.includes('export default function') &&
+      content.includes('return (') &&
+      content.includes('<div className=')
+    );
   } catch (error) {
     return false;
   }
@@ -66,16 +73,16 @@ function isReactComponent(filePath) {
 function fixApiRoute(filePath) {
   try {
     console.log(`🔧 Fixing: ${filePath}`);
-    
+
     // Create backup
     const backupPath = filePath + '.backup';
     if (fs.existsSync(filePath)) {
       fs.copyFileSync(filePath, backupPath);
     }
-    
+
     // Write proper API route
     fs.writeFileSync(filePath, apiRouteTemplate);
-    
+
     return true;
   } catch (error) {
     console.error(`❌ Error fixing ${filePath}:`, error.message);
@@ -85,16 +92,16 @@ function fixApiRoute(filePath) {
 
 function main() {
   console.log('🔍 Finding all API route files...\n');
-  
+
   const apiRoutes = findAllApiRoutes();
   console.log(`Found ${apiRoutes.length} API route files\n`);
-  
+
   let fixedCount = 0;
   let totalCount = 0;
-  
+
   apiRoutes.forEach(routePath => {
     totalCount++;
-    
+
     if (isReactComponent(routePath)) {
       console.log(`🚨 Found React component in API route: ${routePath}`);
       if (fixApiRoute(routePath)) {
@@ -104,12 +111,12 @@ function main() {
       console.log(`✅ API route appears correct: ${routePath}`);
     }
   });
-  
+
   console.log(`\n📊 Summary:`);
   console.log(`   Total API routes: ${totalCount}`);
   console.log(`   Fixed: ${fixedCount}`);
   console.log(`   Already correct: ${totalCount - fixedCount}`);
-  
+
   if (fixedCount > 0) {
     console.log('\n🎯 Next steps:');
     console.log('   1. Run npm run build');

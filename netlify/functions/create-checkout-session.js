@@ -25,7 +25,7 @@ exports.handler = async (event, context) => {
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
       body: JSON.stringify({
-        error: 'Method not allowed. Use POST.'
+        error: 'Method not allowed. Use POST.',
       }),
     };
   }
@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
           'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
-          error: 'Payment system not configured properly'
+          error: 'Payment system not configured properly',
         }),
       };
     }
@@ -65,7 +65,9 @@ exports.handler = async (event, context) => {
       hasStarterPrice: !!process.env.STRIPE_PRICE_STARTER,
       hasStandardPrice: !!process.env.STRIPE_PRICE_STANDARD,
       hasProPrice: !!process.env.STRIPE_PRICE_PRO,
-      stripeKeyPrefix: process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.substring(0, 7) : 'missing',
+      stripeKeyPrefix: process.env.STRIPE_SECRET_KEY
+        ? process.env.STRIPE_SECRET_KEY.substring(0, 7)
+        : 'missing',
     };
 
     console.log('Environment check:', envCheck);
@@ -80,18 +82,13 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: 'Invalid JSON in request body' 
+        body: JSON.stringify({
+          error: 'Invalid JSON in request body',
         }),
       };
     }
 
-    const { 
-      plan, 
-      success_url, 
-      cancel_url,
-      customer_email 
-    } = requestBody;
+    const { plan, success_url, cancel_url, customer_email } = requestBody;
 
     // Validate required fields
     if (!plan) {
@@ -101,8 +98,8 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: 'Plan is required' 
+        body: JSON.stringify({
+          error: 'Plan is required',
         }),
       };
     }
@@ -116,8 +113,8 @@ exports.handler = async (event, context) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
         },
-        body: JSON.stringify({ 
-          error: `Invalid plan. Valid plans are: ${VALID_PLANS.join(', ')}` 
+        body: JSON.stringify({
+          error: `Invalid plan. Valid plans are: ${VALID_PLANS.join(', ')}`,
         }),
       };
     }
@@ -127,7 +124,9 @@ exports.handler = async (event, context) => {
 
     // If price ID is not configured, create a temporary price or return mock mode
     if (!priceId) {
-      console.error(`Missing environment variable: STRIPE_PRICE_${normalizedPlan.toUpperCase()}`);
+      console.error(
+        `Missing environment variable: STRIPE_PRICE_${normalizedPlan.toUpperCase()}`
+      );
 
       // Return mock mode response instead of failing
       const baseUrl = process.env.URL || 'https://209.works';
@@ -145,7 +144,7 @@ exports.handler = async (event, context) => {
           plan: normalizedPlan,
           returnUrl: mockReturnUrl,
           mock: true,
-          message: `Price configuration not found for plan: ${normalizedPlan}. Using mock mode.`
+          message: `Price configuration not found for plan: ${normalizedPlan}. Using mock mode.`,
         }),
       };
     }
@@ -168,7 +167,8 @@ exports.handler = async (event, context) => {
           quantity: 1,
         },
       ],
-      return_url: success_url || defaultSuccessUrl + '&session_id={CHECKOUT_SESSION_ID}',
+      return_url:
+        success_url || defaultSuccessUrl + '&session_id={CHECKOUT_SESSION_ID}',
       allow_promotion_codes: true,
       automatic_tax: {
         enabled: true,
@@ -199,7 +199,6 @@ exports.handler = async (event, context) => {
         returnUrl: success_url || defaultSuccessUrl,
       }),
     };
-
   } catch (error) {
     console.error('Stripe Checkout Session Error:', error);
     console.error('Error details:', {
@@ -217,7 +216,7 @@ exports.handler = async (event, context) => {
           'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
-          error: 'Card error: ' + error.message
+          error: 'Card error: ' + error.message,
         }),
       };
     }
@@ -230,7 +229,7 @@ exports.handler = async (event, context) => {
           'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({
-          error: 'Invalid request: ' + error.message
+          error: 'Invalid request: ' + error.message,
         }),
       };
     }
@@ -244,7 +243,8 @@ exports.handler = async (event, context) => {
       },
       body: JSON.stringify({
         error: 'Internal server error. Please try again.',
-        debug: process.env.NODE_ENV === 'development' ? error.message : undefined
+        debug:
+          process.env.NODE_ENV === 'development' ? error.message : undefined,
       }),
     };
   }

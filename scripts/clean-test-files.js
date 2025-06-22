@@ -147,19 +147,19 @@ export const mockFactories = {
 };
 
 export const a11yHelpers = {};
-export const performanceHelpers = {};`
+export const performanceHelpers = {};`,
 };
 
 function cleanTestFile(filePath) {
   try {
     const fileName = path.basename(filePath);
     const template = testTemplates[fileName];
-    
+
     if (template) {
       fs.writeFileSync(filePath, template);
       return true;
     }
-    
+
     // For other test files, create a minimal test
     const content = `/**
  * ${fileName} Tests
@@ -170,7 +170,7 @@ describe('${fileName.replace(/\.(test|spec)\.(ts|tsx)$/, '')}', () => {
     expect(true).toBe(true);
   });
 });`;
-    
+
     fs.writeFileSync(filePath, content);
     return true;
   } catch (error) {
@@ -181,18 +181,24 @@ describe('${fileName.replace(/\.(test|spec)\.(ts|tsx)$/, '')}', () => {
 
 function getAllTestFiles(dir, files = []) {
   const items = fs.readdirSync(dir);
-  
+
   for (const item of items) {
     const fullPath = path.join(dir, item);
     const stat = fs.statSync(fullPath);
-    
-    if (stat.isDirectory() && !['node_modules', '.next', '.git', 'dist'].includes(item)) {
+
+    if (
+      stat.isDirectory() &&
+      !['node_modules', '.next', '.git', 'dist'].includes(item)
+    ) {
       getAllTestFiles(fullPath, files);
-    } else if (stat.isFile() && (item.includes('.test.') || item.includes('.spec.'))) {
+    } else if (
+      stat.isFile() &&
+      (item.includes('.test.') || item.includes('.spec.'))
+    ) {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 }
 

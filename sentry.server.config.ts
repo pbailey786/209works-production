@@ -26,10 +26,7 @@ Sentry.init({
     }
     return event;
   },
-  integrations: [
-    Sentry.httpIntegration(),
-    Sentry.consoleIntegration(),
-  ],
+  integrations: [Sentry.httpIntegration(), Sentry.consoleIntegration()],
   release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.npm_package_version,
   initialScope: {
     tags: {
@@ -38,4 +35,4 @@ Sentry.init({
       region: process.env.VERCEL_REGION || 'local',
     },
   },
-}); 
+});

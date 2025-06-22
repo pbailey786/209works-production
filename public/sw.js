@@ -31,12 +31,12 @@ const CACHEABLE_APIS = [
 ];
 
 // Install event - cache static assets
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   console.log('[SW] Installing service worker...');
-  
+
   event.waitUntil(
     Promise.all([
-      caches.open(STATIC_CACHE).then((cache) => {
+      caches.open(STATIC_CACHE).then(cache => {
         console.log('[SW] Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       }),
@@ -44,21 +44,21 @@ self.addEventListener('install', (event) => {
       caches.open(API_CACHE),
     ])
   );
-  
+
   // Force activation of new service worker
   self.skipWaiting();
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   console.log('[SW] Activating service worker...');
-  
+
   event.waitUntil(
     Promise.all([
       // Clean up old caches
-      caches.keys().then((cacheNames) => {
+      caches.keys().then(cacheNames => {
         return Promise.all(
-          cacheNames.map((cacheName) => {
+          cacheNames.map(cacheName => {
             if (
               cacheName !== STATIC_CACHE &&
               cacheName !== DYNAMIC_CACHE &&
@@ -77,7 +77,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Fetch event - handle requests with caching strategies
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -110,7 +110,7 @@ async function handleApiRequest(request) {
   try {
     // Try network first
     const networkResponse = await fetch(request);
-    
+
     // Cache successful responses
     if (networkResponse.ok) {
       // Only cache GET requests for specific endpoints
@@ -118,17 +118,20 @@ async function handleApiRequest(request) {
         cache.put(request, networkResponse.clone());
       }
     }
-    
+
     return networkResponse;
   } catch (error) {
-    console.log('[SW] Network failed for API request, trying cache:', url.pathname);
-    
+    console.log(
+      '[SW] Network failed for API request, trying cache:',
+      url.pathname
+    );
+
     // Try cache fallback
     const cachedResponse = await cache.match(request);
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline response for critical APIs
     if (url.pathname.startsWith('/api/jobs')) {
       return new Response(
@@ -143,7 +146,7 @@ async function handleApiRequest(request) {
         }
       );
     }
-    
+
     throw error;
   }
 }
@@ -151,13 +154,13 @@ async function handleApiRequest(request) {
 // Handle static assets with Cache First strategy
 async function handleStaticAssets(request) {
   const cache = await caches.open(STATIC_CACHE);
-  
+
   // Try cache first
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
     return cachedResponse;
   }
-  
+
   // Fetch from network and cache
   try {
     const networkResponse = await fetch(request);
@@ -174,13 +177,13 @@ async function handleStaticAssets(request) {
 // Handle image requests with Cache First strategy
 async function handleImageRequest(request) {
   const cache = await caches.open(DYNAMIC_CACHE);
-  
+
   // Try cache first
   const cachedResponse = await cache.match(request);
   if (cachedResponse) {
     return cachedResponse;
   }
-  
+
   // Fetch from network and cache
   try {
     const networkResponse = await fetch(request);
@@ -201,32 +204,35 @@ async function handleImageRequest(request) {
 // Handle page requests with Network First strategy
 async function handlePageRequest(request) {
   const cache = await caches.open(DYNAMIC_CACHE);
-  
+
   try {
     // Try network first
     const networkResponse = await fetch(request);
-    
+
     // Cache successful responses
     if (networkResponse.ok) {
       cache.put(request, networkResponse.clone());
     }
-    
+
     return networkResponse;
   } catch (error) {
-    console.log('[SW] Network failed for page request, trying cache:', request.url);
-    
+    console.log(
+      '[SW] Network failed for page request, trying cache:',
+      request.url
+    );
+
     // Try cache fallback
     const cachedResponse = await cache.match(request);
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline page
     const offlineResponse = await cache.match('/offline');
     if (offlineResponse) {
       return offlineResponse;
     }
-    
+
     // Fallback offline HTML
     return new Response(
       `
@@ -272,9 +278,9 @@ async function handlePageRequest(request) {
 }
 
 // Background sync for form submissions
-self.addEventListener('sync', (event) => {
+self.addEventListener('sync', event => {
   console.log('[SW] Background sync triggered:', event.tag);
-  
+
   if (event.tag === 'job-application') {
     event.waitUntil(syncJobApplications());
   } else if (event.tag === 'job-search') {
@@ -287,7 +293,7 @@ async function syncJobApplications() {
   try {
     // Get pending applications from IndexedDB
     const pendingApplications = await getPendingApplications();
-    
+
     for (const application of pendingApplications) {
       try {
         const response = await fetch('/api/applications', {
@@ -295,7 +301,7 @@ async function syncJobApplications() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(application.data),
         });
-        
+
         if (response.ok) {
           await removePendingApplication(application.id);
           console.log('[SW] Synced job application:', application.id);
@@ -314,7 +320,7 @@ async function syncJobSearches() {
   try {
     // Get pending searches from IndexedDB
     const pendingSearches = await getPendingSearches();
-    
+
     for (const search of pendingSearches) {
       try {
         const response = await fetch('/api/search/history', {
@@ -322,7 +328,7 @@ async function syncJobSearches() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(search.data),
         });
-        
+
         if (response.ok) {
           await removePendingSearch(search.id);
           console.log('[SW] Synced job search:', search.id);
@@ -356,9 +362,9 @@ async function removePendingSearch(id) {
 }
 
 // Push notification handling
-self.addEventListener('push', (event) => {
+self.addEventListener('push', event => {
   console.log('[SW] Push notification received');
-  
+
   const options = {
     body: 'You have new job matches!',
     icon: '/apple-touch-icon.png',
@@ -381,35 +387,29 @@ self.addEventListener('push', (event) => {
       },
     ],
   };
-  
+
   if (event.data) {
     const data = event.data.json();
     options.body = data.body || options.body;
     options.data = { ...options.data, ...data };
   }
-  
-  event.waitUntil(
-    self.registration.showNotification('209 Works', options)
-  );
+
+  event.waitUntil(self.registration.showNotification('209 Works', options));
 });
 
 // Handle notification clicks
-self.addEventListener('notificationclick', (event) => {
+self.addEventListener('notificationclick', event => {
   console.log('[SW] Notification clicked:', event.action);
-  
+
   event.notification.close();
-  
+
   if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/jobs')
-    );
+    event.waitUntil(clients.openWindow('/jobs'));
   } else if (event.action === 'close') {
     // Just close the notification
   } else {
     // Default action - open the app
-    event.waitUntil(
-      clients.openWindow('/')
-    );
+    event.waitUntil(clients.openWindow('/'));
   }
 });
 

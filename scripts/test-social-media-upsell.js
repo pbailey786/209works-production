@@ -13,7 +13,7 @@ async function testSocialMediaUpsellFlow() {
   try {
     // Step 1: Find a test job with upsells enabled
     console.log('📝 Step 1: Finding test job with social media upsell...');
-    
+
     const testJob = await prisma.job.findFirst({
       where: {
         socialMediaShoutout: true,
@@ -26,14 +26,15 @@ async function testSocialMediaUpsellFlow() {
     if (!testJob) {
       console.log('❌ No test job found with social media upsell enabled');
       console.log('Creating a test job with social media upsell...');
-      
+
       // Create a test job
       const newJob = await prisma.job.create({
         data: {
           title: 'Senior Software Engineer - Test Job',
           company: 'Tech Innovations Inc',
           location: 'Modesto, CA',
-          description: 'Join our growing team as a Senior Software Engineer. We are looking for talented developers to help build the next generation of web applications.',
+          description:
+            'Join our growing team as a Senior Software Engineer. We are looking for talented developers to help build the next generation of web applications.',
           jobType: 'full_time',
           salaryMin: 80000,
           salaryMax: 120000,
@@ -45,7 +46,7 @@ async function testSocialMediaUpsellFlow() {
           region: '209',
         },
       });
-      
+
       console.log(`✅ Created test job: ${newJob.title} (ID: ${newJob.id})`);
       testJob = newJob;
     } else {
@@ -54,7 +55,7 @@ async function testSocialMediaUpsellFlow() {
 
     // Step 2: Check for existing Instagram posts
     console.log('\n📱 Step 2: Checking existing Instagram posts...');
-    
+
     const existingPosts = await prisma.instagramPost.findMany({
       where: {
         jobId: testJob.id,
@@ -64,8 +65,10 @@ async function testSocialMediaUpsellFlow() {
       },
     });
 
-    console.log(`Found ${existingPosts.length} existing Instagram posts for this job`);
-    
+    console.log(
+      `Found ${existingPosts.length} existing Instagram posts for this job`
+    );
+
     if (existingPosts.length > 0) {
       console.log('Latest post details:');
       const latestPost = existingPosts[0];
@@ -77,7 +80,7 @@ async function testSocialMediaUpsellFlow() {
 
     // Step 3: Test Instagram post creation
     console.log('\n🎨 Step 3: Testing Instagram post creation...');
-    
+
     // Create Instagram post directly via Prisma
     const newPost = await prisma.instagramPost.create({
       data: {
@@ -94,11 +97,13 @@ async function testSocialMediaUpsellFlow() {
 
     // Step 4: Test image generation
     console.log('\n🖼️ Step 4: Testing image generation...');
-    
+
     try {
       console.log('⚠️ Image generation test skipped in this version');
-      console.log('Image generation requires canvas package and proper TypeScript setup');
-      
+      console.log(
+        'Image generation requires canvas package and proper TypeScript setup'
+      );
+
       // Simulate successful image generation
       await prisma.instagramPost.update({
         where: { id: newPost.id },
@@ -108,14 +113,13 @@ async function testSocialMediaUpsellFlow() {
       });
 
       console.log('✅ Updated Instagram post with mock image URL');
-      
     } catch (imageError) {
       console.log(`⚠️ Image generation error: ${imageError.message}`);
     }
 
     // Step 5: Test scheduled post processing
     console.log('\n⏰ Step 5: Testing scheduled post processing...');
-    
+
     const scheduledPosts = await prisma.instagramPost.findMany({
       where: {
         status: 'scheduled',
@@ -124,7 +128,7 @@ async function testSocialMediaUpsellFlow() {
         },
       },
     });
-    
+
     console.log(`Found ${scheduledPosts.length} posts ready to be published`);
 
     if (scheduledPosts.length > 0) {
@@ -141,7 +145,7 @@ async function testSocialMediaUpsellFlow() {
 
     // Step 7: Analytics check
     console.log('\n📈 Step 7: Checking social media analytics...');
-    
+
     const totalPosts = await prisma.instagramPost.count();
     const publishedPostsCount = await prisma.instagramPost.count({
       where: { status: 'published' },
@@ -153,7 +157,6 @@ async function testSocialMediaUpsellFlow() {
     console.log(`Total Instagram posts: ${totalPosts}`);
     console.log(`Published: ${publishedPostsCount}`);
     console.log(`Scheduled: ${scheduledPostsCount}`);
-
   } catch (error) {
     console.error('❌ Error testing social media upsell flow:', error);
     console.error(error.stack);
@@ -191,7 +194,7 @@ function generateTestHashtags(job) {
     'JobAlert',
     'NowHiring',
     'CareerOpportunity',
-    'TechJobs'
+    'TechJobs',
   ];
 }
 
@@ -201,7 +204,7 @@ testSocialMediaUpsellFlow()
     console.log('\n🎉 Social media upsell flow test completed!');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('💥 Test failed:', error);
     process.exit(1);
   });
