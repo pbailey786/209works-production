@@ -90,6 +90,7 @@ module.exports = {
         sans: ['Oxanium', 'var(--font-sans)', 'sans-serif'],
         mono: ['Source Code Pro', 'var(--font-mono)', 'monospace'],
         serif: ['var(--font-serif)', 'serif'],
+        display: ['Oxanium', 'sans-serif'],
         oxanium: ['Oxanium', 'sans-serif'],
         'source-code': ['Source Code Pro', 'monospace'],
       },
