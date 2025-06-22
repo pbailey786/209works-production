@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../../app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
 import { SecurityLogger } from '../security/security-monitor';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // Environment configuration with validation
 const SecurityConfig = z
@@ -300,7 +300,8 @@ class AuthenticationValidator {
   static async validateUser(
     req: NextRequest
   ): Promise<SecureAuthContext['user']> {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
     if (!session?.user?.email) return null;
 
     const user = await prisma.user.findUnique({

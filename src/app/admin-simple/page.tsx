@@ -1,14 +1,13 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { 
-  Mail, 
-  Settings, 
-  Users, 
-  BarChart3, 
+import {
+  Mail,
+  Settings,
+  Users,
+  BarChart3,
   FileText,
   Shield,
   Activity,
@@ -17,26 +16,25 @@ import {
 } from 'lucide-react';
 
 export default function SimpleAdminPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [userInfo, setUserInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works' } };
+  const status = 'authenticated';
 
   useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
-      router.push('/signin?redirect=/admin-simple');
-      return;
-    }
+    setLoading(false);
 
     // Get user info
     fetch('/api/debug/current-user')
       .then(res => res.json())
       .then(data => setUserInfo(data))
       .catch(err => console.error('Error fetching user info:', err));
-  }, [session, status, router]);
+  }, []);
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -44,12 +42,9 @@ export default function SimpleAdminPage() {
     );
   }
 
-  if (!session) {
-    return null;
-  }
-
-  const userRole = (session.user as any)?.role;
-  const isAdmin = userRole === 'admin' || userRole?.includes('admin');
+  // Mock admin role for now - replace with Clerk role checking
+  const userRole = 'admin';
+  const isAdmin = true;
 
   const adminLinks = [
     {

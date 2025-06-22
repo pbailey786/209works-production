@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../../auth/authOptions';
 import { emailService } from '@/lib/email/email-service';
 import { templateManager } from '@/lib/email/template-manager';
 import { emailAgent } from '@/lib/agents/email-agent';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function GET(request: NextRequest) {
   try {
     // Check authentication and admin permissions
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
     if (!session?.user?.email || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }

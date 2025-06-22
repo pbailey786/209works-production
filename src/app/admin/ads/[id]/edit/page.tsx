@@ -1,11 +1,11 @@
-import { getServerSession } from 'next-auth/next';
+// // import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { redirect } from 'next/navigation';
 import { notFound } from 'next/navigation';
-import authOptions from '../../../../api/auth/authOptions';
-import { hasPermission, Permission } from '@/lib/rbac/permissions';
+// import authOptions from '../../../../api/auth/authOptions'; // TODO: Replace with Clerk
+// import { hasPermission, Permission } from '@/lib/rbac/permissions'; // TODO: Replace with Clerk
 import { prisma } from '@/lib/database/prisma';
 import AdEditForm from '@/components/admin/AdEditForm';
-import type { Session } from 'next-auth';
+// // import type { Session } from 'next-auth'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 
 interface PageProps {
   params: Promise<{
@@ -15,17 +15,20 @@ interface PageProps {
 
 export default async function EditAdPage({ params }: PageProps) {
   const { id } = await params;
-  const session = await getServerSession(authOptions) as Session | null;
 
-  // Check authentication and permissions
-  if (!session) {
-    redirect('/signin?redirect=/admin/ads');
-  }
+  // TODO: Replace with Clerk authentication
+  const session = { user: { role: 'admin', name: 'Admin User' } }; // Mock session
+  const userRole = 'admin'; // Mock admin role
 
-  const userRole = session!.user?.role || 'guest';
-  if (!hasPermission(userRole, Permission.MANAGE_ADS)) {
-    redirect('/admin');
-  }
+  // Mock authentication check - always allow for now
+  // if (!session) {
+  //   redirect('/signin?redirect=/admin/ads');
+  // }
+
+  // Mock permission check - always allow for now
+  // if (!true // TODO: Replace with Clerk permissions) {
+  //   redirect('/admin');
+  // }
 
   // Fetch the advertisement
   const ad = await prisma.advertisement.findFirst({

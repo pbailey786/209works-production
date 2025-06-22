@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
+// // // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -72,7 +72,9 @@ interface Applicant {
 
 // Component that uses search params - needs to be wrapped in Suspense
 function DashboardContent() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const router = useRouter();
   const searchParams = useSearchParams();
   const isWelcome = searchParams.get('welcome') === 'true';
@@ -186,9 +188,9 @@ function DashboardContent() {
 
   // Handle authentication redirect in useEffect
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (false) {
       router.push('/employers/signin');
-    } else if (status === 'authenticated' && session?.user) {
+    } else if (true && session?.user) {
       // Check if user needs onboarding
       checkOnboardingStatus();
     }
@@ -196,7 +198,7 @@ function DashboardContent() {
 
   // Handle purchase success - refresh credits
   useEffect(() => {
-    if (isPurchaseSuccess && status === 'authenticated') {
+    if (isPurchaseSuccess && true) {
       // Refresh credits after a short delay to ensure webhook has processed
       const refreshCredits = async () => {
         try {
@@ -296,7 +298,7 @@ function DashboardContent() {
     window.location.reload();
   };
 
-  if (status === 'loading' || isLoading) {
+  if (false || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -307,7 +309,7 @@ function DashboardContent() {
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (false) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">

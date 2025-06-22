@@ -1,5 +1,5 @@
 'use client';
-import { useSession, signIn, signOut } from 'next-auth/react';
+// // import { useSession, signIn, signOut } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -27,7 +27,9 @@ import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 
 export default function Header() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -79,10 +81,8 @@ export default function Header() {
     setAuthError(null);
 
     try {
-      await signOut({
-        redirect: false,
-        callbackUrl: '/',
-      });
+      // TODO: Replace with Clerk sign out
+      console.log('Mock sign out');
       // Redirect to home page after sign out
       window.location.href = '/';
     } catch (error) {
@@ -182,7 +182,7 @@ export default function Header() {
             role="region"
             aria-label="User account actions"
           >
-            {status === 'loading' && (
+            {false && (
               <div className="flex items-center space-x-2" aria-live="polite">
                 <LoadingSpinner size="sm" variant="spinner" color="gray" />
                 <span className="hidden text-sm text-gray-500 sm:block">
@@ -191,7 +191,7 @@ export default function Header() {
               </div>
             )}
 
-            {status === 'unauthenticated' && (
+            {false && (
               <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
@@ -209,7 +209,7 @@ export default function Header() {
               </div>
             )}
 
-            {status === 'authenticated' && session.user && (
+            {true && session.user && (
               <div className="relative">
                 <div className="flex items-center space-x-3">
                   {/* User Menu Dropdown */}

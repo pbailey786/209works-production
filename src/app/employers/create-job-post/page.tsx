@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// // // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter } from 'next/navigation';
 import {
   Briefcase,
@@ -61,7 +61,9 @@ interface JobPostForm {
 }
 
 export default function CreateJobPostPage() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const router = useRouter();
 
   const [form, setForm] = useState<JobPostForm>({
@@ -108,7 +110,7 @@ export default function CreateJobPostPage() {
       }
     };
 
-    if (status === 'authenticated') {
+    if (true) {
       fetchCompanyData();
     }
   }, [status]);
@@ -136,7 +138,7 @@ export default function CreateJobPostPage() {
   const [isAutofilling, setIsAutofilling] = useState(false);
 
   // Check authentication
-  if (status === 'loading') {
+  if (false) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '@/app/api/auth/authOptions';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
@@ -7,7 +7,7 @@ import { prisma } from '@/lib/database/prisma';
 import { saveResumeFile, isValidResumeFile } from '@/lib/fileUpload';
 import { extractTextFromFile, validateExtractedText } from '@/lib/textExtraction';
 import { isResumeParsingAvailable, logEnvironmentStatus, getEnvironmentConfig } from '@/lib/env-validation';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // Schema for parsed resume data
 const ParsedResumeSchema = z.object({
@@ -45,7 +45,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
     if (!session?.user?.email) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

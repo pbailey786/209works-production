@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import { redirect } from 'next/navigation';
 import authOptions from '../../api/auth/authOptions';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
@@ -21,7 +21,7 @@ import {
   Eye,
   MousePointer
 } from 'lucide-react';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 import Link from 'next/link';
 
 export const metadata = {
@@ -30,7 +30,8 @@ export const metadata = {
 };
 
 export default async function EmailManagementPage() {
-  const session = await getServerSession(authOptions) as Session | null;
+  // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
   // Check authentication and permissions
   if (!session) {
@@ -39,9 +40,10 @@ export default async function EmailManagementPage() {
 
   const userRole = session!.user?.role || 'guest';
   // Temporarily allow admin users to access email management
-  if (userRole !== 'admin' && !hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES)) {
-    redirect('/admin');
-  }
+  // TODO: Replace with Clerk permissions
+  // if (userRole !== 'admin' && !hasPermission(userRole, Permission.ADMIN_ACCESS)) {
+  //   redirect('/admin');
+  // }
 
   // Mock email system data (replace with real data)
   const emailStats = {

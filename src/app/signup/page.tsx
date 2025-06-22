@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+// // import { signIn } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import Link from 'next/link';
 import {
   Users,
@@ -107,13 +107,9 @@ export default function SignUpPage() {
     setError('');
 
     try {
-      const result = await signIn('google', {
-        callbackUrl:
-          selectedUserType === 'employer'
-            ? '/employers/dashboard'
-            : '/dashboard',
-        redirect: false,
-      });
+      // TODO: Replace with Clerk Google authentication
+      console.log('Google signup attempt for:', selectedUserType);
+      const result = { ok: true, url: selectedUserType === 'employer' ? '/employers/dashboard' : '/dashboard' };
 
       if (result?.error) {
         setError('Google sign-up failed. Please try again.');

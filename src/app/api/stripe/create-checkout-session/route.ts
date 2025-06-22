@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import { stripe, STRIPE_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { PricingTier, BillingInterval } from '@prisma/client';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function POST(request: NextRequest) {
   try {

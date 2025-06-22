@@ -1,9 +1,9 @@
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import { redirect } from 'next/navigation';
 import authOptions from '../../api/auth/authOptions';
 import { prisma } from '../../api/auth/prisma';
 import ProfileSettingsClient from './ProfileSettingsClient';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // Server-side data fetching
 async function getUserSettings(userId: string) {
@@ -39,7 +39,8 @@ async function getUserSettings(userId: string) {
 }
 
 export default async function ProfileSettingsPage() {
-  const session = await getServerSession(authOptions) as Session | null;
+  // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
   if (!session!.user?.email) {
     redirect('/signin');

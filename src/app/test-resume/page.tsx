@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+// // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 
 export default function TestResumePage() {
-  const { data: session } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);

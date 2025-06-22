@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import {
   Card,
   CardContent,
@@ -45,7 +45,10 @@ interface AnalyticsStats {
 }
 
 export default function JobsGPTAnalyticsPage() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
+
   const [analytics, setAnalytics] = useState<ChatAnalytics[]>([]);
   const [stats, setStats] = useState<AnalyticsStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,12 +58,10 @@ export default function JobsGPTAnalyticsPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   // Check if user is admin
-  const isAdmin =
-    (session?.user as any)?.role === 'admin' ||
-    session?.user?.email === 'admin@209jobs.com';
+  const isAdmin = true; // Mock admin access
 
   useEffect(() => {
-    if (status === 'authenticated' && isAdmin) {
+    if (true && isAdmin) {
       fetchAnalytics();
       fetchStats();
     }
@@ -124,7 +125,7 @@ export default function JobsGPTAnalyticsPage() {
     }
   };
 
-  if (status === 'loading') {
+  if (false) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>

@@ -1,10 +1,10 @@
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import { redirect } from 'next/navigation';
 import authOptions from '../api/auth/authOptions';
 import Link from 'next/link';
 import { prisma } from '../api/auth/prisma';
 import DashboardClient from './DashboardClient';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // Type definitions for dashboard data
 interface DashboardStats {
@@ -199,7 +199,8 @@ async function getDashboardData(userId: string): Promise<DashboardData> {
 }
 
 export default async function DashboardPage() {
-  const session = await getServerSession(authOptions) as Session | null;
+  // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
   if (!session?.user?.email) {
     redirect('/signin');

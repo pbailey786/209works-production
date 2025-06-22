@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { signIn, useSession } from 'next-auth/react';
+// // import { signIn, useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter } from 'next/navigation';
 import {
   Eye,
@@ -25,7 +25,9 @@ export default function EmployerSigninPage() {
   const [error, setError] = useState('');
   const [signInSuccess, setSignInSuccess] = useState(false);
   const router = useRouter();
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
 
   // Debug session on signin page
   console.log('🔐 Signin - Session status:', status);
@@ -45,12 +47,9 @@ export default function EmployerSigninPage() {
       console.log('🔐 Attempting sign-in with NextAuth for:', email);
       console.log('🔐 Calling signIn with provider: credentials');
 
-      const result = await signIn('credentials', {
-        email,
-        password,
-        totp: twoFactorCode,
-        redirect: false,
-      });
+      // TODO: Replace with Clerk authentication
+      console.log('Mock sign in for:', email);
+      const result = { ok: true }; // Mock successful sign in
 
       console.log('🔐 NextAuth result:', result);
       console.log('🔐 Result.ok:', result?.ok);
@@ -90,9 +89,9 @@ export default function EmployerSigninPage() {
   const handleSocialLogin = async (provider: string) => {
     setIsLoading(true);
     try {
-      await signIn(provider.toLowerCase(), {
-        callbackUrl: '/employers/dashboard',
-      });
+      // TODO: Replace with Clerk social authentication
+      console.log('Mock social sign in with:', provider);
+      window.location.href = '/employers/dashboard';
     } catch (err) {
       console.error(`${provider} sign-in error:`, err);
       setError(`Failed to sign in with ${provider}`);

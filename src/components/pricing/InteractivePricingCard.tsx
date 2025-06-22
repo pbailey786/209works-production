@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
+// // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter } from 'next/navigation';
 import { Check, Star, CreditCard, Zap, Shield, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,8 @@ export default function InteractivePricingCard({
   className = '',
 }: InteractivePricingCardProps) {
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
   const router = useRouter();
 
   const basePrice =

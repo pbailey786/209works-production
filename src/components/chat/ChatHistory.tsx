@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { formatDistanceToNow } from 'date-fns';
 import {
   Clock,
@@ -33,7 +33,8 @@ interface ChatHistoryProps {
 }
 
 export default function ChatHistory({ onLoadConversation, className = '' }: ChatHistoryProps) {
-  const { data: session } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

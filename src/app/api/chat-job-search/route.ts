@@ -11,7 +11,7 @@ import {
   type AISecurityContext,
   sanitizeUserData,
 } from '@/lib/middleware/ai-security';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../auth/authOptions';
 import { generateJobSearchResponse } from '@/lib/ai';
 

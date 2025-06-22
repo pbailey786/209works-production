@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -38,7 +38,8 @@ interface NotificationSettings {
 }
 
 export default function SimpleSettingsPage() {
-  const { data: session } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState('profile');

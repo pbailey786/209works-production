@@ -1,6 +1,6 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
+// // import { SessionProvider } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import React from 'react';
 
 export default function SessionProviderWrapper({
@@ -8,12 +8,13 @@ export default function SessionProviderWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  // Debug environment variables
-  console.log('🔧 SessionProvider - NODE_ENV:', process.env.NODE_ENV);
+  // TODO: Replace with Clerk provider when implemented
+  console.log('🔧 Mock SessionProvider - NODE_ENV:', process.env.NODE_ENV);
   console.log(
-    '🔧 SessionProvider - Current window origin:',
+    '🔧 Mock SessionProvider - Current window origin:',
     typeof window !== 'undefined' ? window.location.origin : 'server-side'
   );
 
-  return <SessionProvider basePath="/api/auth">{children}</SessionProvider>;
+  // Return children directly for now - replace with Clerk provider
+  return <>{children}</>;
 }

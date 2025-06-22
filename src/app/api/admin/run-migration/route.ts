@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function GET(request: NextRequest) {
   return POST(request);
@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
     // Only allow admin access
     if (!session?.user?.email) {

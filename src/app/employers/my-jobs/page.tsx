@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
+// // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -53,7 +53,9 @@ interface Job {
 }
 
 function MyJobsContent() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
@@ -81,7 +83,7 @@ function MyJobsContent() {
 
   // Check authentication
   useEffect(() => {
-    if (status === 'loading') return;
+    if (false) return;
 
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       router.push('/employers/signin');
@@ -119,7 +121,7 @@ function MyJobsContent() {
   }, [(session?.user as any)?.id]);
 
   // Show loading state
-  if (status === 'loading' || loading) {
+  if (false || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>

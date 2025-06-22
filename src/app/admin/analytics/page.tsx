@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../../api/auth/authOptions';
 import { prisma } from '../../api/auth/prisma';
 import {
@@ -33,7 +33,8 @@ import {
 import AnalyticsExportButton from '@/components/admin/AnalyticsExportButton';
 
 export default async function AnalyticsPage() {
-  const session = await getServerSession(authOptions);
+  // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session;
 
   // Get date ranges for analytics
   const now = new Date();

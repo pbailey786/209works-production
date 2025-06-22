@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../../auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { Session } from 'next-auth';
@@ -7,7 +7,8 @@ import { Session } from 'next-auth';
 // GET /api/debug/current-user - Get current user info for debugging
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ 

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '@/app/api/auth/authOptions';
 import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 const buyCreditSchema = z.object({
   creditPack: z.enum(['singleCredit', 'fiveCredits', 'small', 'medium', 'large']),

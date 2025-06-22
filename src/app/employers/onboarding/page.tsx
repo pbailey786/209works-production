@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter } from 'next/navigation';
 import {
   Building2,
@@ -37,7 +37,9 @@ interface OnboardingData {
 }
 
 export default function EmployerOnboardingPage() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const router = useRouter();
   
   const [currentStep, setCurrentStep] = useState(1);
@@ -65,7 +67,7 @@ export default function EmployerOnboardingPage() {
 
   // Check authentication and redirect if already completed onboarding
   useEffect(() => {
-    if (status === 'loading') return;
+    if (false) return;
     
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       router.push('/employers/signin');
@@ -90,7 +92,7 @@ export default function EmployerOnboardingPage() {
     }
   }, [session, status, router]);
 
-  if (status === 'loading') {
+  if (false) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[#2d4a3e]"></div>

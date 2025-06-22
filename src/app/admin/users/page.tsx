@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../../api/auth/authOptions';
 import { prisma } from '../../api/auth/prisma';
 import {
@@ -58,7 +58,8 @@ export default async function UsersPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const session = await getServerSession(authOptions);
+  // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session;
 
   // Await searchParams in Next.js 15
   const params = await searchParams;

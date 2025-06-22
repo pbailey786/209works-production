@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../../auth/authOptions';
 import { prisma } from '../../auth/prisma';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
     if (!session!.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

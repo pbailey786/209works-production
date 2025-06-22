@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '@/app/api/auth/authOptions';
 import { ChatbotService } from '@/lib/conversation/chatbot-service';
 import { ConversationManager } from '@/lib/conversation/manager';
 import { prisma } from '@/app/api/auth/prisma';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // POST /api/jobs/chatbot - Main chatbot endpoint
 export async function POST(req: NextRequest) {
@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user session if authenticated
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
     let authenticatedUserId = userId;
 
     if (session?.user?.email) {

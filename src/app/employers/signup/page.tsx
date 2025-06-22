@@ -2,7 +2,7 @@
 
 import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+// // import { signIn } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { Metadata } from 'next';
 import {
   Building2,
@@ -152,18 +152,8 @@ function SignupContent() {
       });
 
       if (response.ok) {
-        // Sign in the user after successful registration
-        const result = await signIn('credentials', {
-          email: form.email,
-          password: form.password,
-          redirect: false,
-        });
-
-        if (result?.ok) {
-          router.push('/employers/onboarding');
-        } else {
-          router.push('/employers/signin?registered=true');
-        }
+        // TODO: Replace with Clerk authentication
+        router.push('/employers/onboarding');
       } else {
         const data = await response.json();
         setErrors({
@@ -179,7 +169,8 @@ function SignupContent() {
   };
 
   const handleSocialSignup = (provider: string) => {
-    signIn(provider, { callbackUrl: '/employers/dashboard' });
+    // TODO: Replace with Clerk social authentication
+    console.log('Social signup with:', provider);
   };
 
   return (

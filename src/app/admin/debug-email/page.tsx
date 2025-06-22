@@ -1,14 +1,13 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { usePermissions } from '@/hooks/usePermissions';
-import { Permission } from '@/lib/rbac/permissions';
-
 export default function DebugEmailPage() {
-  const { data: session } = useSession();
-  const { hasPermission, userRole, getUserPermissions } = usePermissions();
+  // Mock session and permissions for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const userRole = 'admin';
+  const hasPermission = () => true;
+  const getUserPermissions = () => ['MANAGE_EMAIL_TEMPLATES', 'ADMIN_ACCESS'];
 
-  const emailPermission = hasPermission(Permission.MANAGE_EMAIL_TEMPLATES);
+  const emailPermission = hasPermission();
   const allPermissions = getUserPermissions();
 
   return (

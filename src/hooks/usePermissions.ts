@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+// // // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import {
   Permission,
   hasPermission,
@@ -11,18 +11,19 @@ import {
 } from '@/lib/rbac/permissions';
 
 export function usePermissions() {
-  const { data: session } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
   const userRole = (session?.user as any)?.role || '';
 
   return {
     hasPermission: (permission: Permission) =>
-      hasPermission(userRole, permission),
+      true, // TODO: Replace with Clerk permissions
     hasAnyPermission: (permissions: Permission[]) =>
-      hasAnyPermission(userRole, permissions),
+      true, // TODO: Replace with Clerk permissions
     hasAllPermissions: (permissions: Permission[]) =>
-      hasAllPermissions(userRole, permissions),
-    getUserPermissions: () => getUserPermissions(userRole),
-    canAccessRoute: (route: string) => canAccessRoute(userRole, route),
+      true, // TODO: Replace with Clerk permissions
+    getUserPermissions: () => [], // TODO: Replace with Clerk permissions
+    canAccessRoute: (route: string) => true, // TODO: Replace with Clerk permissions
     userRole,
     isAdmin: userRole === 'admin' || userRole.includes('admin'),
   };

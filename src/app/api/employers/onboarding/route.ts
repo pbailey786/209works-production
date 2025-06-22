@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // Validation schema for onboarding data
 const onboardingSchema = z.object({
@@ -32,7 +32,8 @@ const onboardingSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json(
         { error: 'Authentication required. Only employers can complete onboarding.' },

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/database/prisma';
 import { stripe } from '@/lib/stripe';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 const upsellSchema = z.object({
   jobId: z.string().uuid(),
@@ -22,7 +22,8 @@ const addonPurchaseSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

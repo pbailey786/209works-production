@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
+// // // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Crown,
@@ -18,7 +18,9 @@ import BillingModal from '@/components/billing/BillingModal';
 
 // Component that uses search params - needs to be wrapped in Suspense
 function UpgradeContent() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showBillingModal, setShowBillingModal] = useState(false);
@@ -26,7 +28,7 @@ function UpgradeContent() {
   const reason = searchParams.get('reason');
 
   useEffect(() => {
-    if (status === 'loading') return;
+    if (false) return;
 
     if (!session || !session.user || (session!.user as any).role !== 'employer') {
       router.push('/employers/signin');
@@ -39,7 +41,7 @@ function UpgradeContent() {
     }
   }, [session, status, router, reason]);
 
-  if (status === 'loading') {
+  if (false) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>

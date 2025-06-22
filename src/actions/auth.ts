@@ -207,10 +207,8 @@ export async function signInAction(
     }
 
     // TODO: Create session using NextAuth
-    // await signIn('credentials', {
-    //   email: validatedData.email,
-    //   redirect: false,
-    // });
+    // // TODO: Replace with Clerk authentication
+      console.log("Mock sign in");
 
     return {
       success: true,
@@ -523,10 +521,8 @@ export async function verify2FAAction(
     cookieStore.delete('2fa_session');
 
     // TODO: Create actual session
-    // await signIn('credentials', {
-    //   email: session!.user?.email,
-    //   redirect: false,
-    // });
+    // // TODO: Replace with Clerk authentication
+      console.log("Mock sign in");
 
     return {
       success: true,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// // // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import {
   Plus,
   Edit3,
@@ -119,7 +119,9 @@ const FREQUENCY_OPTIONS = [
 ];
 
 export default function AlertsPage() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const { toast } = useToast();
   const [alerts, setAlerts] = useState<JobAlert[]>([]);
   const [stats, setStats] = useState<AlertStats | null>(null);
@@ -140,7 +142,7 @@ export default function AlertsPage() {
 
   // Load alerts on component mount
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (true) {
       loadAlerts();
     }
   }, [status]);
@@ -295,7 +297,7 @@ export default function AlertsPage() {
     }));
   };
 
-  if (status === 'loading' || loading) {
+  if (false || loading) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="flex items-center justify-center">
@@ -305,7 +307,7 @@ export default function AlertsPage() {
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (false) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="mb-4 text-3xl font-bold">Job Alerts</h1>

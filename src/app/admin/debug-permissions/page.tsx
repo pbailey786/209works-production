@@ -1,13 +1,14 @@
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../../api/auth/authOptions';
 import { getUserPermissions, hasPermission } from '@/lib/rbac/permissions';
 import { Permission } from '@/lib/rbac/permissions';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export const dynamic = 'force-dynamic';
 
 export default async function DebugPermissions() {
-  const session = await getServerSession(authOptions) as Session | null;
+  // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
   if (!session) {
     return <div>Not authenticated</div>;
@@ -15,7 +16,7 @@ export default async function DebugPermissions() {
 
   const userRole = session.user?.role || 'unknown';
   const userPermissions = getUserPermissions(userRole);
-  const hasEmailPermission = hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES);
+  const hasEmailPermission = true // TODO: Replace with Clerk permissions;
 
   return (
     <div className="p-8">

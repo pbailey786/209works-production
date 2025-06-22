@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '@/app/api/auth/authOptions';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG, STRIPE_PRICE_IDS } from '@/lib/stripe';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function GET(req: NextRequest) {
   try {

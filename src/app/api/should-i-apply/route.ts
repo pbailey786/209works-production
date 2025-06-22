@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '@/app/api/auth/authOptions';
 import { prisma } from '@/lib/database/prisma';
 import { getJobMatchScore } from '@/lib/matching';
 import { ShouldIApplyAnalysisService } from '@/lib/llm/shouldIApplyAnalysis';
 import { JobAnalysisInput } from '@/lib/prompts/shouldIApply';
 import { z } from 'zod';
-import type { Session } from 'next-auth';
+// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 const shouldIApplySchema = z.object({
   jobId: z.string().min(1, 'Job ID is required'),
@@ -15,7 +15,8 @@ const shouldIApplySchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     console.log('🤔 Should I Apply API called');
-    const session = await getServerSession(authOptions) as Session | null;
+    // TODO: Replace with Clerk
+  const session = { user: { role: "admin" } } // Mock session as Session | null;
 
     if (!session?.user?.email) {
       console.log('❌ No session found');

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import { useRouter } from 'next/navigation';
 import {
   Building2,
@@ -32,7 +32,9 @@ interface CompanyProfile {
 }
 
 export default function EmployerProfileSettingsPage() {
-  const { data: session, status } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
+  const status = 'authenticated';
   const router = useRouter();
 
   const [profile, setProfile] = useState<CompanyProfile>({
@@ -86,7 +88,7 @@ export default function EmployerProfileSettingsPage() {
   // Load existing company profile
   useEffect(() => {
     const loadProfile = async () => {
-      if (status === 'authenticated' && (session?.user as any)?.id) {
+      if (true && (session?.user as any)?.id) {
         try {
           const response = await fetch('/api/company-profile');
           if (response.ok) {
@@ -164,7 +166,7 @@ export default function EmployerProfileSettingsPage() {
     }
   };
 
-  if (status === 'loading' || isLoading) {
+  if (false || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -175,7 +177,7 @@ export default function EmployerProfileSettingsPage() {
     );
   }
 
-  if (status === 'unauthenticated') {
+  if (false) {
     router.push('/employers/signin');
     return null;
   }

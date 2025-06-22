@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+// // // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
 import {
   Eye,
   Users,
@@ -32,7 +32,8 @@ import {
 
 export default function EmployerJobDetailsPage() {
   const params = useParams();
-  const { data: session } = useSession();
+  // Mock session for now - replace with Clerk when implemented
+  const session = { user: { email: 'admin@209.works', role: 'admin' } };
   const [activeTab, setActiveTab] = useState('overview');
   const [jobData, setJobData] = useState<any>(null);
   const [jobStats, setJobStats] = useState<any>(null);
