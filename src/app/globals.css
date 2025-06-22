@@ -357,7 +357,8 @@
 
   /* Neon Card */
   .neon-card {
-    @apply bg-card/50 relative overflow-hidden rounded-2xl p-6 backdrop-blur-xl;
+    @apply relative overflow-hidden rounded-2xl p-6 backdrop-blur-xl;
+    background: rgba(40, 72, 68, 0.5);
     border: 1px solid transparent;
     background-image:
       linear-gradient(var(--card), var(--card)),
@@ -483,8 +484,9 @@
 
   /* Ghost Button */
   .btn-ghost {
-    @apply btn text-foreground/80 hover:text-foreground;
+    @apply btn hover:text-foreground;
     background: transparent;
+    color: rgba(245, 174, 27, 0.8);
   }
 
   .btn-ghost:hover {
@@ -495,12 +497,16 @@
   /* Modern Glass Input */
   .input-glass {
     @apply relative flex h-12 w-full rounded-xl px-4 py-2 text-sm;
-    @apply placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
     @apply transition-all duration-300;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .input-glass::placeholder {
+    color: rgba(181, 23, 27, 0.6);
   }
 
   .input-glass:focus {
@@ -515,15 +521,20 @@
   /* Neon Input */
   .input-neon {
     @apply relative flex h-12 w-full rounded-xl px-4 py-2 text-sm;
-    @apply bg-background/50 backdrop-blur-sm;
-    @apply placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply backdrop-blur-sm;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
     @apply transition-all duration-300;
+    background: rgba(30, 10, 68, 0.5);
     border: 2px solid transparent;
     background-image:
       linear-gradient(var(--background), var(--background)),
       linear-gradient(135deg, var(--primary), var(--neon-blue));
     background-origin: border-box;
     background-clip: padding-box, border-box;
+  }
+  
+  .input-neon::placeholder {
+    color: rgba(181, 23, 27, 0.6);
   }
 
   .input-neon:focus {
@@ -617,15 +628,18 @@
   }
 
   .body-large {
-    @apply text-foreground/80 text-lg leading-relaxed;
+    @apply text-lg leading-relaxed;
+    color: rgba(245, 174, 27, 0.8);
   }
 
   .body {
-    @apply text-foreground/80 text-base leading-relaxed;
+    @apply text-base leading-relaxed;
+    color: rgba(245, 174, 27, 0.8);
   }
 
   .body-small {
-    @apply text-foreground/80 text-sm leading-relaxed;
+    @apply text-sm leading-relaxed;
+    color: rgba(245, 174, 27, 0.8);
   }
 
   /* Modern Grid with Gap Animations */
@@ -682,8 +696,9 @@
   }
 
   .form-label {
-    @apply text-foreground/80 text-sm font-semibold tracking-wide;
+    @apply text-sm font-semibold tracking-wide;
     @apply transition-all duration-300;
+    color: rgba(245, 174, 27, 0.8);
   }
 
   .form-group:focus-within .form-label {
