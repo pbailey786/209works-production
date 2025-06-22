@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import Link from 'next/link';
 import { isFeatureEnabled, FEATURES } from './feature-flags';
 
 interface FeatureGateProps {
@@ -48,18 +49,18 @@ export function DisabledFeature({
           <p className="text-sm text-gray-500">{expectedReturn}</p>
         </div>
         <div className="space-y-3">
-          <a 
+          <Link 
             href="/"
-            className="block w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors"
+            className="block w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors text-center"
           >
             Return Home
-          </a>
-          <a 
+          </Link>
+          <Link 
             href="/jobs"
-            className="block w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+            className="block w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors text-center"
           >
             Browse Jobs
-          </a>
+          </Link>
         </div>
       </div>
     </div>
