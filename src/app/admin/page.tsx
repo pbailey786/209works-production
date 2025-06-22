@@ -180,8 +180,8 @@ export default async function AdminDashboard() {
 
         {/* Feature Status */}
         <div className="mt-8 bg-white rounded-lg p-6 shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Feature Status (Phase 3)</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Feature Status (Phase 3 Complete)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
               <span className="text-sm font-medium text-green-700">Admin Dashboard</span>
               <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">ENABLED</span>
@@ -190,13 +190,31 @@ export default async function AdminDashboard() {
               <span className="text-sm font-medium text-green-700">Analytics</span>
               <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">ENABLED</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <span className="text-sm font-medium text-gray-600">AI Features</span>
-              <span className="text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded-full">PENDING</span>
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <span className="text-sm font-medium text-green-700">AI Features</span>
+              <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">ENABLED</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <span className="text-sm font-medium text-green-700">Employer Dashboard</span>
+              <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">ENABLED</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <span className="text-sm font-medium text-green-700">Payments</span>
+              <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">ENABLED</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <span className="text-sm font-medium text-gray-600">Payments</span>
-              <span className="text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded-full">PENDING</span>
+              <span className="text-sm font-medium text-gray-600">Social Media</span>
+              <span className="text-xs bg-gray-200 text-gray-500 px-2 py-1 rounded-full">OPTIONAL</span>
+            </div>
+          </div>
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium text-blue-700">
+                Platform Stabilization Complete: All core features restored with feature flag controls
+              </span>
             </div>
           </div>
         </div>
