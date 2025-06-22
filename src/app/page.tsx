@@ -1,355 +1,221 @@
+/**
+ * Phase 1 Simplified Homepage
+ * 
+ * A minimal, fast-loading version of the homepage with only core functionality
+ */
+
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MapPin,
-  Users,
-  Building2,
-  TrendingUp,
-  Heart,
-  Search,
-  ArrowRight,
-  Star,
-  CheckCircle,
-  Briefcase,
-  Clock,
-  Shield,
-  Zap,
-} from 'lucide-react';
+import { Search, ArrowRight, Heart, Shield, Zap, Briefcase } from 'lucide-react';
 
-import { LazyOnVisible } from '../components/ui/lazy-component';
-import { Skeleton } from '../components/ui/skeleton';
-import SEOHead from '../components/SEOHead';
-import DynamicHeroHeadlines from '../components/DynamicHeroHeadlines';
-
-// Lazy load heavy components
-const Analytics = React.lazy(() => import('../components/Analytics'));
-const Footer = React.lazy(() => import('../components/Footer'));
-
-export default function Home() {
-  const [loading, setLoading] = useState(false);
+export default function HomeSimple() {
+  const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
-  const handleSearch = (query: string) => {
-    setLoading(true);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const query = searchQuery.trim() || 'jobs in the 209 area';
+    router.push(`/jobs?q=${encodeURIComponent(query)}`);
+  };
 
-    // Use the actual query or default to general search
-    const searchQuery = query.trim() || 'jobs in the 209 area';
-
-    // Track search event for analytics
-    if (typeof window !== 'undefined' && window.trackJobSearch) {
-      window.trackJobSearch(searchQuery, '209 Area');
-    }
-
-    // Navigate to JobsGPT chat with the query (jobs page has the chat functionality)
-    router.push(`/jobs?q=${encodeURIComponent(searchQuery)}`);
+  const handleQuickSearch = (suggestion: string) => {
+    router.push(`/jobs?q=${encodeURIComponent(suggestion)}`);
   };
 
   return (
-    <>
-      <SEOHead />
-      <React.Suspense fallback={null}>
-        <Analytics />
-      </React.Suspense>
+    <div className="min-h-screen bg-white">
+      {/* Simple Navigation */}
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-xl">209</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">209 Works</h1>
+                <p className="text-sm text-gray-600">Central Valley Jobs</p>
+              </div>
+            </Link>
+            
+            <div className="hidden md:flex items-center space-x-6">
+              <Link href="/jobs" className="text-gray-700 hover:text-orange-600 font-medium">
+                Find Jobs
+              </Link>
+              <Link href="/employers" className="text-gray-700 hover:text-orange-600 font-medium">
+                Post Jobs
+              </Link>
+              <Link href="/contact" className="text-gray-700 hover:text-orange-600 font-medium">
+                Contact
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-      {/* Hero Section - Dark Green Background like Wise */}
-      <section className="relative overflow-hidden bg-[#2d4a3e] px-4 py-20">
-        <div className="relative mx-auto max-w-6xl text-center">
-          {/* Dynamic Headlines Component */}
-          <DynamicHeroHeadlines />
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-orange-50 to-orange-100 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Headline */}
+          <div className="mb-8">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
+              Jobs for the 209.
+              <span className="block text-orange-600">No Suits Required.</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
+              Built for the folks who work hard and don't mess around.
+              <span className="text-orange-600 font-semibold"> Real jobs that hit close to home.</span>
+            </p>
+          </div>
 
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-8"
-          >
-              <div className="mx-auto max-w-2xl">
-                <form
-                  onSubmit={e => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const query = formData.get('search') as string;
-                    handleSearch(query?.trim() || '');
-                  }}
-                  className="relative"
+          {/* Search Form */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <form onSubmit={handleSearch} className="relative">
+              <div className="bg-white rounded-xl border-2 border-orange-200 p-2 shadow-lg">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="What kind of work are you looking for?"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 text-lg border-0 rounded-lg focus:outline-none focus:ring-0"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span>Search Jobs</span>
+                    <Search className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            {/* Quick Search Suggestions */}
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {[
+                'Healthcare Jobs',
+                'Warehouse & Logistics', 
+                'Customer Service',
+                'Manufacturing'
+              ].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  onClick={() => handleQuickSearch(suggestion)}
+                  className="bg-white/70 border border-orange-200 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white hover:border-orange-300 transition-colors"
                 >
-                  <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-xl transition-all duration-300 hover:shadow-2xl">
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
-                        <input
-                          type="text"
-                          name="search"
-                          placeholder="What kind of work are you looking for?"
-                          className="w-full rounded-lg border-0 py-3 pl-12 pr-4 text-lg placeholder-gray-400 focus:outline-none focus:ring-0"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        className="flex items-center justify-center gap-2 rounded-lg bg-[#ff6b35] px-6 py-3 font-semibold text-white transition-all duration-200 hover:bg-[#e55a2b]"
-                      >
-                        <span>Search with AI</span>
-                        <Search className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </form>
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
 
-                {/* Quick Search Suggestions */}
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
-                  {[
-                    'Healthcare Jobs',
-                    'Warehouse & Logistics',
-                    'Customer Service',
-                    'Manufacturing',
-                  ].map(suggestion => (
-                    <button
-                      key={suggestion}
-                      onClick={() => handleSearch(suggestion)}
-                      className="rounded-full border border-white/30 bg-white/20 px-3 py-1 text-sm text-white transition-all duration-200 hover:border-white/50 hover:bg-white/30 hover:text-white"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <Link
-                href="/jobs"
-                className="inline-flex transform items-center gap-3 rounded-lg bg-[#ff6b35] px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:scale-105 hover:bg-[#e55a2b]"
-              >
-                <span>Explore our jobs</span>
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </motion.div>
+          {/* CTA Button */}
+          <Link
+            href="/jobs"
+            className="inline-flex items-center gap-3 bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg hover:bg-orange-700 transition-colors"
+          >
+            <span>Explore Jobs</span>
+            <ArrowRight className="h-5 w-5" />
+          </Link>
         </div>
       </section>
 
-      {/* Feature Cards Section - Like Wise's 4 cards */}
-      <LazyOnVisible
-        fallback={
-          <section className="bg-gray-50 py-20">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="text-center">
-                    <Skeleton className="mx-auto mb-6 h-16 w-16 rounded-full" />
-                    <Skeleton className="mb-4 h-6 w-32 mx-auto" />
-                    <Skeleton className="h-4 w-full mb-2" />
-                    <Skeleton className="h-4 w-3/4 mx-auto" />
-                  </div>
-                ))}
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Feature 1 */}
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="h-8 w-8 text-orange-600" />
               </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">24/7 Local Support</h3>
+              <p className="text-gray-600">
+                We're here to help. Get in touch with any questions about finding work in the 209.
+              </p>
             </div>
-          </section>
-        }
-      >
-      <section className="bg-gray-50 py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {/* Card 1: Local Support */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                <Heart className="h-8 w-8 text-gray-600" />
-              </div>
-              <h3 className="mb-4 text-xl font-semibold text-gray-900">
-                24/7 local support
-              </h3>
-              <p className="leading-relaxed text-gray-600">
-                We're here to help. Get in touch with any questions about
-                finding work in the 209.
-              </p>
-            </motion.div>
 
-            {/* Card 2: Verified Employers */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                <Shield className="h-8 w-8 text-gray-600" />
+            {/* Feature 2 */}
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-8 w-8 text-orange-600" />
               </div>
-              <h3 className="mb-4 text-xl font-semibold text-gray-900">
-                Verified employers
-              </h3>
-              <p className="leading-relaxed text-gray-600">
-                Test your integrations before going live with real Central
-                Valley businesses.
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Verified Employers</h3>
+              <p className="text-gray-600">
+                Work with real Central Valley businesses that are actually hiring.
               </p>
-            </motion.div>
+            </div>
 
-            {/* Card 3: Quick Applications */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                <Zap className="h-8 w-8 text-gray-600" />
+            {/* Feature 3 */}
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="h-8 w-8 text-orange-600" />
               </div>
-              <h3 className="mb-4 text-xl font-semibold text-gray-900">
-                Quick applications
-              </h3>
-              <p className="leading-relaxed text-gray-600">
-                Learn how to apply fast and make the most of our streamlined job
-                platform.
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Quick Applications</h3>
+              <p className="text-gray-600">
+                Apply fast with our streamlined job platform. No endless forms.
               </p>
-            </motion.div>
+            </div>
 
-            {/* Card 4: Career Tools */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                <Briefcase className="h-8 w-8 text-gray-600" />
+            {/* Feature 4 */}
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Briefcase className="h-8 w-8 text-orange-600" />
               </div>
-              <h3 className="mb-4 text-xl font-semibold text-gray-900">
-                Career tools
-              </h3>
-              <p className="leading-relaxed text-gray-600">
-                Easily create and manage your professional profile and career
-                journey.
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Career Tools</h3>
+              <p className="text-gray-600">
+                Build your profile and track your job search progress.
               </p>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
-      </LazyOnVisible>
 
-      {/* Bottom Section with Visual - Like Wise's puzzle piece section */}
-      <LazyOnVisible
-        fallback={
-          <section className="bg-white py-20">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="grid items-center gap-16 lg:grid-cols-2">
-                <Skeleton className="h-96 w-full rounded-2xl" />
-                <div className="space-y-6">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-12 w-48" />
+      {/* Simple Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold">209</span>
                 </div>
+                <span className="text-xl font-bold">209 Works</span>
               </div>
+              <p className="text-gray-400">
+                Your local job platform for the Central Valley. Built for people who work hard.
+              </p>
             </div>
-          </section>
-        }
-      >
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            {/* Left side - Visual placeholder */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              {/* Placeholder for puzzle piece visual - you can replace with actual image */}
-              <div className="flex h-96 w-full items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 via-blue-100 to-green-100">
-                <div className="text-center">
-                  <Building2 className="mx-auto mb-4 h-24 w-24 text-[#2d4a3e]" />
-                  <p className="font-medium text-gray-600">209 Area Visual</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right side - Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="mb-8 text-4xl font-bold leading-tight text-gray-900 sm:text-5xl">
-                Built for the 209. Made for the people who work here.
-              </h2>
-
-              <div className="mb-8 space-y-6">
-                <p className="text-lg leading-relaxed text-gray-600">
-                  Tired of job boards packed with scams, spam, and "remote
-                  opportunities" that are nowhere near you? 209 Works is a
-                  local-first job platform built for Central Valley workers and
-                  the businesses that actually hire them.
-                </p>
-
-                <p className="text-lg leading-relaxed text-gray-600">
-                  Whether you're a warehouse worker in Stockton, a dental
-                  assistant in Turlock, or a small business in Modesto trying to
-                  grow your team — this platform was made for you.
-                </p>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🔍</span>
-                    <span className="text-lg font-medium text-gray-700">
-                      Find real local jobs.
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">🤖</span>
-                    <span className="text-lg font-medium text-gray-700">
-                      Use AI tools to help you stand out.
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">📍</span>
-                    <span className="text-lg font-medium text-gray-700">
-                      Stay close to home.
-                    </span>
-                  </div>
-                </div>
-
-                <p className="text-lg font-medium leading-relaxed text-gray-600">
-                  No corporate noise. No fees for job seekers. Just work, right
-                  here in the 209.
-                </p>
-              </div>
-
-              <Link
-                href="/jobs"
-                className="inline-flex items-center gap-3 rounded-lg bg-[#ff6b35] px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:bg-[#e55a2b]"
-              >
-                <span>Start Your Search</span>
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </motion.div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Job Seekers</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/jobs" className="hover:text-white">Browse Jobs</Link></li>
+                <li><Link href="/contact" className="hover:text-white">Get Help</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Employers</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/employers" className="hover:text-white">Post a Job</Link></li>
+                <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 209 Works. Built for the 209.</p>
           </div>
         </div>
-      </section>
-      </LazyOnVisible>
-
-      {/* Footer */}
-      <React.Suspense fallback={<Skeleton className="h-64 w-full" />}>
-        <Footer />
-      </React.Suspense>
-    </>
+      </footer>
+    </div>
   );
 }
