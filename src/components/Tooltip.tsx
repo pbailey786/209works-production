@@ -1,1 +1,14 @@
-import React, { useState, useRef } from 'react'; interface TooltipProps { content: string; placement? "undefined": 'top' | 'right' | 'bottom' | 'left ', children: React.ReactNode; className? "undefined": string; } export const Tooltip: React.FC<TooltipProps> = ( { content, placement = 'top', children, ; className = '' }; ; ) } ) => { const [ visible, setVisibl ]e] = useState(false(); const ref = useRef<HTMLDivElement>(null(); const getPosition = () } { switch (placement() { case 'right': return 'left-full top-1/2 -translate-y-1/2 ml-2 ' case 'bottom': return 'top-full left-1/2 -translate-x-1/2 mt-2 ' case 'left': return 'right-full top-1/2 -translate-y-1/2 mr-2 ' case 'top': default:; ; return 'bottom-full left-1/2 -translate-x-1/2 mb-2'; } return ( // Note: Multiple root elements may need React.Fragment wrapping; <div; className= { `relative inline-block $ { classNae } ` } ref= { ref } ) onMouseEnter= { () => setVisible(true } ) } onMouseLeave= { () => setVisible(false } ) } onFocus= { () => setVisible(true } ) } onBlur= { () => setVisible(false } ) } tabIndex= { 0 } { children } { visible && (; <div; } className= { `pointer-events-none absolute z-2 0 rounded bg-gray-8 00 px-2 py-1 text-xs text-white opacity-1 00 shadow transition-opacity duration-1 50 $ { getPositio } ( } ` } role="tooltip"" " { content } </div /> </div>; export default Tooltip; ))))
+export default function TooltipPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Tooltip Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

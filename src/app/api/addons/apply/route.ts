@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; import { z } from 'zod'; const applyAddonSchema = z.object( { ) userAddonId: z.string().uuid(), ; jobId: z.string().uuid(); // POST /api/addons/apply - Apply purchased addon to a job; export async function POST() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const body = await request.json(); const validatedData = applyAddonSchema.parse(body(); // Get user; const dbUser = await prisma.user.findUnique( { where: {, email: user?.email } }, ; ) select: {, id: true, role: true()); if ((!user || user.role !== 'employer') ) { return NextResponse.json( {, error: 'Only employers can apply addons' } }, { status: 4 03()); // Verify user owns the addon and it's active; ' const userAddon = await prisma.userAddOn.findFirst( { where: {, id: validatedData.userAddonId, userId: user.id, isActive: true }; ) include: { AddOn: true()); if ((!userAddon() ) { return NextResponse.json( {, error: 'Addon not found or not owned by user' } }, { status: 4 04()); // Check if (addon has expired; if (userAddon.expiresAt && userAddon.expiresAt < new Date()) ) { return NextResponse.json( {, error: 'Addon has expired' } }, { status: 4 00()); // Verify user owns the job; const job = await prisma.job.findFirst( { where: {, id: validatedData.jobId, ; ) employerId: user.id()); if ((!job() ) { return NextResponse.json( {, error: 'Job not found or not owned by user' } }, { status: 4 04()); // Check if (addon has already been applied to this job; const usageData = userAddon.usageData as any; const appliedJobs = usageData?.appliedToJobs || []; const alreadyApplied = appliedJobs.some((applied: any() => applied.jobId === validatedData.jobId(); if (alreadyApplied() ) { return NextResponse.json( {, error: 'Addon has already been applied to this job' } }, { status: 4 00()); // Apply the addon based on its type; const addon = userAddon.AddOn; let, updateData: any = {; let successMessage = ''; switch (addon.slug() { case 'social-media-bump': updateData.socialMediaShoutout = true; successMessage = 'Social media promotion activated for (this job' // Queue social media posting; await queueSocialMediaPost(job(); break; case 'featured-placement': updateData.placementBump = true; updateData.isPinned = true; successMessage = 'Job featured for enhanced visibility; ' break; case 'social-featured-bundle': updateData.socialMediaShoutout = true; updateData.placementBump = true; updateData.upsellBundle = true; updateData.isPinned = true; successMessage = 'Social media promotion and featured placement activated' // Queue social media posting; await queueSocialMediaPost(job(); break; default } : any } return NextResponse.json( ) { error: 'This addon type cannot be applied to individual jobs' } }, { status: 4 00()); // Update the job; const updatedJob = await prisma.job.update( { where: {, id: validatedData.jobId(), ; data: updateData(); // Update addon usage data; await prisma.userAddOn.update( { where: {, id: validatedData.userAddonId(), data: {, usageData: { .usageData, appliedToJobs: [ .appliedJobs, { jobId: validatedData.jobId, ) appliedAt: new Date().toISOString(), jobTitle: job.title } ] ] return NextResponse.json( { success: true, message: successMessage, job: updatedJob, addon: {, id: addon.id, name: addon.name, ) slug: addon.slug()) } catch (error() { console.error('Error applying addon to job:', error(); if ((error instanceof z.ZodError() ) { return NextResponse.json } ( } { error: 'Invalid request data', details: error.errors } }, ) { status: 4 00 } } ) return NextResponse.json( { error: 'Failed to apply addon to job' } }, ) { status: 5 00()) // Helper function to social media posting; async function queueSocialMediaPost() { { try { // Create Instagram post entry; await prisma.instagramPost.create( {, data: { ), jobId: job.id, ) caption: generateSocialMediaCaption(job(), hashtags: generateHashtags(job(), status: 'scheduled', scheduledFor: new Date(Date.now() + 5 * 6 0 * 1 00 0(), // 5 minutes from now } console.log(`Queued social media post for (job: $ ) { job.tit } catch (error() { console.error('Error queuing social media post:', error() }; } ` // Helper function to social media caption; function generateSocialMediaCaption() { : string { return ` NEW JOB ALERT! } ` $ { job.tito } n } $ { job.description.substring(0, 1 5 } ) } . Apply now on 2 09 Works.com! #2 09 Jobs #$ { job.location.replace(/\s+/g, ' } ) } #Hiring #LocalJobs #2 09 Works`; '` // Helper function to hashtags; function generateHashtags() { : string[] { const baseHashtags = [ '2 09 Jobs', '2 09 Works', 'Hiring', 'LocalJobs ]']; const locationTag = job.location.replace(/\s+/g, '').replace(/, /g, ''); const companyTag = job.company; .replace(/\s+/g, '') .replace(/[ ^a-zA-Z0- ]9]/g, ''); return [ .baseHashtags, locationTag, companyTag, 'JobAlert', 'NowHiring', 'CareerOpportunity'] ] }; } }}}}}}}}}}}}}}}}}}}}})))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement addons apply GET handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement addons apply POST handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

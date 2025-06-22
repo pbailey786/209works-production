@@ -1,1 +1,10 @@
-export default function ResumeReviewPage() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <div className="mx-auto max-w-2 xl px-4 py-1 6 text-center">" " <h1 className="mb-4 text-3 xl font-bold">Resume Review Service</h1>" " <p className="text-gray-7 00">" " Get AI or human feedback on your resume to improve your chances. </p> </div> ) ); } }
+export default function ResumeReviewPage() {
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+      <h1 className="mb-4 text-3xl font-bold">Resume Review Service</h1>
+      <p className="text-gray-700">
+        Get AI or human feedback on your resume to improve your chances.
+      </p>
+    </div>
+  );
+}

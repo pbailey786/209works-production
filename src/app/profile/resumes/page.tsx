@@ -1,1 +1,14 @@
-import { redirect } from 'next/navigation'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; import ResumeManager from '@/components/resume/ResumeManager'; export default async function ResumesPage() { { const { userId } = await auth(); } if ((!userId() ) { redirect('/signin') }; } const user = await prisma.user.findUnique( { where: {, clerkId: userId(), ); if ((!user() ) { redirect('/signin') }; } if ((user.role !== 'jobseeker') ) { redirect('/dashboard') }; } return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="min-h-screen bg-gray-5 0">"" <div className="max-w-4 xl mx-auto px-4 py-8, sm:px-6, lg:px-8">"" <ResumeManager userId= { user.id } /> </div> </div> )))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

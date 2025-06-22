@@ -1,1 +1,14 @@
- import { cn } from '@/lib/utils'; export interface TextareaProps; extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {} const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>() { className, .props } }, ref() => {; return (; // Note: Multiple root elements may need React.Fragment wrapping; <textarea; className= { cn('flex min-h-[6 0, p ]x] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm, placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring, disabled:cursor-not-allowed, disabled:opacity-5 0', ; )) className; )) ref= { ref } { .props } />; Textarea.displayName = 'Textarea ' export { Textarea } } }; 
+export default function TextareaPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Textarea Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

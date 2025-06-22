@@ -1,1 +1,14 @@
-import React from 'react; ; ' import { Star, Zap, Crown } from '@/components/ui/card'; import { cn } from '@/lib/utils'; interface FeaturedJobBadgeProps { className? "undefined": string; variant? "undefined": 'default' | 'compact' | 'floating ' style? "undefined": 'gradient' | 'solid' | 'outline ' showIcon? "undefined": boolean; text? "undefined": string; } export default function FeaturedJobBadge() {} : FeaturedJobBadgeProps() { const iconMap = { star: Star, zap: Zap, ; crown: Crown }; ; const IconComponent = Star; // Using Star as the primary icon; const baseClasses = 'inline-flex items-center justify-center font-bold text-white shadow-lg transition-all duration-2 00 ' const variantClasses = { default: 'px-3 py-1 text-xs rounded-full', compact: 'px-2 py-0.5 text-xs rounded-md', floating: 'px-3 py-1 text-xs rounded-full absolute -right-2 -top-2 z-1 0 transform, hover:scale-1 05' } const styleClasses = { gradient: 'bg-gradient-to-r from-yellow-4 00 via-yellow-5 00 to-orange-5 00, hover:from-yellow-5 00, hover:to-orange-6 00', solid: 'bg-yellow-5 00, hover:bg-yellow-6 00', outline: 'border-2 border-yellow-4 00 bg-white text-yellow-6 00, hover:bg-yellow-5 0' }; return (; // Note: Multiple root elements may need React.Fragment wrapping; <div; className= { cn(baseClasses, variantClasses[ varian ]t], styleClasses[ styl ]e], ; )) className; )) role="badge"" " aria-label= { `$ { tet } job posting` } { showIcon && (; <IconComponent; className= { cn('flex-shrink-0', text ? 'mr-1' : '', variant === 'compact' ? 'h-3 w-3' : 'h-4 w-4' } )) } ) { text && <span> { text } </span> } </div>; // Pre-built variations for (common use cases; export const FeaturedBadgeFloating = (props: Omit<FeaturedJobBadgeProps, 'variant'>) => ( <FeaturedJobBadge ) { .props } variant="floating" />"; ; " ) export const FeaturedBadgeCompact = (props: Omit<FeaturedJobBadgeProps, 'variant'>) => ( <FeaturedJobBadge { .props } variant="compact" />"; ; " ) export const FeaturedBadgeOutline = (props: Omit<FeaturedJobBadgeProps, 'style'>) => ( <FeaturedJobBadge { .propsstyle="outline" />"; ; ") } }}
+export default function FeaturedJobBadgePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          FeaturedJobBadge Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

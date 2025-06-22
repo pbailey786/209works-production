@@ -1,1 +1,14 @@
-import { cn } from '@/lib/utils'; 'use client ' const Separator = React.forwardRef< React.ElementRef<typeof SeparatorPrimitive.Root>, React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root> >( ( { className, orientation = 'horizontal', decorative = true, .props } }, ; ; ref; )) ) => ( <SeparatorPrimitive.Root; ref= { ref } decorative= { decorative } orientation= { orientation } className= { cn('shrink-0 bg-border', orientation === 'horizontal' ? 'h-px w-full' : 'h-full w-px', ; )) className; )) { .props } Separator.displayName = SeparatorPrimitive.Root.displayName; export { Separator } } }; 
+export default function SeparatorPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Separator Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

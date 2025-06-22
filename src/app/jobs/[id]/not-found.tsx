@@ -1,1 +1,14 @@
- import Link from 'next/link' import { ExclamationTriangleIcon, MagnifyingGlassIco } } n } } from '@heroicons/react/2 4/outline '; export default function JobNotFound() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <div className="flex min-h-screen items-center justify-center bg-gray-5 0 px-4">" " <div className="w-full max-w-md text-center">" " <div className="mb-8">" " <ExclamationTriangleIcon className="mx-auto mb-4 h-2 4 w-2 4 text-gray-4 00" />" " <h1 className="mb-2 text-3 xl font-bold text-gray-9 00">" " Job Not Found; </h1> <p className="text-gray-6 00">" " Sorry, we couldn't find the job listing you're looking for. It may; have been removed or the link might be incorrect. </p> </div> <div className="space-y-4">" " <Link; href="/jobs"" " className="inline-flex w-full items-center justify-center rounded-lg border border-transparent bg-purple-7 00 px-6 py-3 text-base font-medium text-white transition hover: bg-purple-8 00 focus:outline-none focus:ring-2 focus:ring-purple-5 00 focus:ring-offset-2"" " <MagnifyingGlassIcon className="mr-2 h-5 w-5" />"; " Browse All Jobs; </Link> <Link; href="/"" " className="inline-flex w-full items-center justify-center rounded-lg border border-gray-3 00 bg-white px-6 py-3 text-base font-medium text-gray-7 00 transition, hover: bg-gray-5 0, focus:outline-none, focus:ring-2, focus:ring-purple-5 00, focus:ring-offset-2"" " >; Go Home; </Link> </div> <div className="mt-8 text-sm text-gray-5 00">" " <p> } Need help? { ' } } ' <Link; href="/contact"" " className="text-purple-7 00 hover:text-purple-8 00"" " >; Contact us; </Link> </p> </div> </div> </div> )
+export default function NotfoundPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Notfound Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

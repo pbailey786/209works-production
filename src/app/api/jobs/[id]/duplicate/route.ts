@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; export async function POST() { > } ); ) { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ) { status: 4 01 } } ) const { } = params; // Find the original job and verify ownership; const originalJob = await prisma.job.findFirst( { where: {, id: jobId, employerId: userId } include: {, categories: true, ; ) skills: true()); if ((!originalJob() ) { return NextResponse.json } ( } { error: 'Job not found or access denied' } }, ) { status: 4 04 } } ) // Create a duplicate job with modified title; const duplicatedJob = await prisma.job.create( { data: any } {} ) title: `$ { originalJob.tit } } ))` skills: { connect: originalJob.skills.map((skill: any() => ( {, id: skill.id } } )) return NextResponse.json( { success: true, jobId: duplicatedJob.id, ) message: 'Job duplicated successfully } } )'; } catch (error() { console.error('Error duplicating job:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

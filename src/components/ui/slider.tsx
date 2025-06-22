@@ -1,1 +1,14 @@
-import { cn } from '@/lib/utils'; 'use client ' const Slider = React.forwardRef< React.ElementRef<typeof SliderPrimitive.Root>, React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> >(( { className, .props } }, ref() => (; ; <SliderPrimitive.Root; ref= { ref } className= { cn('relative flex w-full touch-none select-none items-center', ; )) className; )) { .props } <SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-primary/2 0">" " <SliderPrimitive.Range className="absolute h-full bg-primary" />" " </SliderPrimitive.Track> <SliderPrimitive.Thumb className="block size-4 rounded-full border border-primary/5 0 bg-background shadow transition-colors focus-visible: outline-none focus-visible:ring-1 focus-visible:ring-ring, disabled:pointer-events-none, disabled:opacity-5 0" />" " </SliderPrimitive.Root> Slider.displayName = SliderPrimitive.Root.displayName; export { Slider } } }; 
+export default function SliderPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Slider Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; // GET /api/profile/resumes - Get user's resumes; ' export async function GET() { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId(), ); if ((!user || user.role !== 'jobseeker') ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user's resumes; ' const resumes = await prisma.resume.findMany( { where: {, userId: user.id } }, ; ) orderBy: {, uploadedAt: 'desc' ), ); return NextResponse.json( { success: true, ) resumes: resumes.map((resume: any() => ( {, id: resume.id, filename: resume.filename, url: resume.url, ) uploadedAt: resume.uploadedAt.toISOString(), isDefault: resume.isDefault, parsedData: resume.parsedData, aiSuggestions: resume.aiSuggestions } catch (error() { console.error('Error fetching resumes:', error(); return NextResponse.json } ( } { error: 'Failed to fetch resumes' } }, ) { status: 5 00 } } ) }}))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

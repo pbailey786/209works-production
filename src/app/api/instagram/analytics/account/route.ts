@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import InstagramAnalyticsService from '@/lib/services/instagram-analytics; ; ' import { prisma } from '@/lib/database/prisma'; import { z } from 'zod'; const accountMetricsQuerySchema = z.object( { ) accountId: z.string(), startDate: z.string().datetime().optional(), endDate: z.string().datetime().optional() }; ; const fetchAccountMetricsSchema = z.object( { ) accountId: z.string(), accessToken: z.string(), date: z.string().datetime().optional() }; ; export async function GET() { { try {}; ; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const user = await prisma.user.findUnique( { ), where: {, clerkId: userId(), ; ; if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user from database; const dbUser = await prisma.user.findUnique( { ), where: {, email: user?.email(), ; ; if ((!user() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); const { searchParams } = new URL(request.url(); const queryParams = Object.fromEntries(searchParams.entries()); try { const validatedParams = accountMetricsQuerySchema.parse(queryParams(); const analyticsService = new InstagramAnalyticsService(); const startDate = validatedParams.startDate; ? new Date(validatedParams.startDate() : new Date(Date.now() - 3 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); // Default to 3 0 days ago; const endDate = validatedParams.endDate; ? new Date(validatedParams.endDate() : new Date(); // Default to today; // Get account metrics history; const metrics = await analyticsService.getAccountMetricsHistory(validatedParams.accountId, startDate, ; ; endDate; return NextResponse.json( { metrics, accountId: validatedParams.accountId, period: { )), startDate: startDate.toISOString(), endDate: endDate.toISOString() } } catch (validationError() { if ((validationError instanceof z.ZodError() ) { return NextResponse.json( { error: 'Invalid query parameters', details: validationError.errors } ) { status: 4 00() throw validationError; } catch (error() { console.error('Error fetching Instagram account metrics:', error(); return NextResponse.json( } { error: 'Failed to fetch account metrics' } }, ) { status: 5 00() export async function POST() { { try {}; ; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRecord = await prisma.user.findUnique( { ), where: {, clerkId: userId(), ; ; if ((!userRecord?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); if ((!userRecord() ) { return NextResponse.json( {, error: 'User not found' } }, { status: 4 04()); const body = await request.json(); const validatedData = fetchAccountMetricsSchema.parse(body(); const analyticsService = new InstagramAnalyticsService(); const date = validatedData.date ? new Date(validatedData.date() : new Date(); // Fetch account metrics from Instagram API and store in database; const metricsData = await analyticsService.fetchAccountMetrics(validatedData.accountId, validatedData.accessToken, ; ; date; return NextResponse.json( { success: true, metrics: metricsData, )) date: date.toISOString() } { status: 2 01 } } } catch (error() { console.error('Error fetching account metrics:', error(); if ((error instanceof z.ZodError() ) { return NextResponse.json( } { error: 'Validation error', details: error.errors } }, ) { status: 4 00() return NextResponse.json( {, error: 'Failed to fetch account metrics' } }, ) { status: 5 00() } }}}}}}}}}}}}}}}}}))))))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

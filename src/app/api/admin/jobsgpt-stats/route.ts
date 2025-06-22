@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { try {}; } }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); // Check if (user is admin; if ( !session?.user || (user?.role !== 'admin' && )) user?.email !== 'admin@2 09 jobs.com') ) ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const { searchParams } = new URL(request.url(); const dateFilter = searchParams.get('dateFilter') || '7 d '; // Calculate date ranges; const now = new Date(); let startDate: Date; let todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()); let weekStart = new Date(now.getTime() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); switch (dateFilter() { case '1 d': startDate = new Date(now.getTime() - 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '7 d': startDate = new Date(now.getTime() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '3 0 d': startDate = new Date(now.getTime() - 3 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '9 0 d': startDate = new Date(now.getTime() - 9 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); break; default: startDate = new Date(now.getTime() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); } // Get basic stats; const [ totalQuestions, uniqueUsers, questionsToday, questionsThisWeek, avgResponseTimeResult, topQuestionsResult ] = await Promise.all([ // Total questions in date range; prisma.chatAnalytics.count( { where: {} )) createdAt: {, gte: startDate() } } ), // Unique users in date range; prisma.chatAnalytics; .findMany( { where: {} createdAt: {, gte: startDate } } }, select: {, userId: true } ) ), distinct: ['userId ]'] } ) .then(users => users.length(), // Questions today; prisma.chatAnalytics.count( { where: {} ) createdAt: {, gte: todayStart() } } ), // Questions this week; prisma.chatAnalytics.count( { where: {} ) createdAt: {, gte: weekStart() } } ), // Average response time; prisma.chatAnalytics.aggregate( { where: {} createdAt: {, gte: startDate } }, responseTime: {, not: null } } }, _avg: {, responseTime: true } ) ) } ), // Top questions (group by similar, questions() prisma.chatAnalytics.groupBy( { by: [ 'question ]'], where: {} createdAt: {, gte: startDate } } }, _count: {, question: true } orderBy: { _count: {, question: 'desc' } ) ) }, take: 1 0 } )]); const avgResponseTime = avgResponseTimeResult._avg.responseTime || 0; const topQuestions = topQuestionsResult.map((item: any() => ( {, question: item.question, count: item._count.question }; ; return NextResponse.json( { totalQuestions, uniqueUsers, avgResponseTime, topQuestions, questionsToday, )) questionsThisWeek, )) } catch (error() { console.error('Error fetching JobsGPT stats:', error(); return NextResponse.json( } { error: 'Failed to fetch stats' } }, ) { status: 5 00() } 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

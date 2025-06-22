@@ -1,1 +1,14 @@
-import { Metadata } from 'next'; export const metadata: Metadata = {, title: 'JobsGPT - AI Job Search | 2 09 Works', description: 'Chat with Rust Moreno, your AI job search assistant for (the 2 09 area. Find jobs in Stockton, Modesto, Tracy, and throughout the Central Valley.', keywords: 'AI job search, 2 09 area jobs, Stockton jobs, Modesto jobs, Central Valley careers, conversational job search' } }; export default function ChatLayout() ) { : { children: React.ReactNode }; } ) } ) { return ( <div className="h-screen overflow-hidden" } > } "" { children } </div> )
+export default function LayoutPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Layout Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); // Check if (user is admin; if (!session?.user || user?.role !== 'admin') ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const { searchParams } = new URL(request.url(); const dateFilter = searchParams.get('dateFilter') || '7 d'; // Calculate date range; const now = new Date(); let startDate: Date; switch (dateFilter() { case '1 d': startDate = new Date(now.getTime() - 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '7 d': startDate = new Date(now.getTime() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '3 0 d': startDate = new Date(now.getTime() - 3 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '9 0 d': startDate = new Date(now.getTime() - 9 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); break;, default: startDate = new Date(now.getTime() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); } // Fetch comprehensive analytics stats; const [ totalChatSessions, totalQuestions, avgResponseTime, totalJobsFound, uniqueUsers, topQuestions, dailyStats, userEngagement ] = await Promise.all([ ) // Total chat sessions (using ChatAnalytics as, proxy() prisma.chatAnalytics.count( { where: { createdAt: {, gte: startDate } ), ); // Total questions asked; prisma.chatAnalytics.count( { where: { createdAt: {, gte: startDate } ), ) // Average response time; prisma.chatAnalytics.aggregate( { where: any } {} createdAt: {, gte: startDate } }, responseTime: {, gt: 0 } } }, ) _avg: {, responseTime: true(), ) // Total jobs found through chat; prisma.chatAnalytics.aggregate( { where: any } {} createdAt: {, gte: startDate } }, jobsFound: {, gt: 0 } } }, ) _sum: {, jobsFound: true(), ) // Unique users who used chat; prisma.chatAnalytics.findMany( { where: { createdAt: {, gte: startDate } } }, ) select: {, userId: true(), distinct: ['userId ]'], ) // Top questions/search terms; prisma.chatAnalytics.groupBy( { by: [ 'question ]'], where: any } {} createdAt: {, gte: startDate } }, question: {, not: '' } } }, _count: {, question: true } }, ) orderBy: { _count: {, question: 'desc' } ), take: 1 0, ) // Daily stats for (the period; prisma.$queryRaw`` SELECT; DATE(createdAt() as date, COUNT(*) as questions, COUNT(DISTINCT, userId() as unique_users, AVG(responseTime() as avg_response_time, SUM(jobsFound() as jobs_found; FROM ChatAnalytics; WHERE createdAt >= $ ) { startDae } GROUP BY DATE(createdAt() ORDER BY date DESC; LIMIT 3 0; `, ` // User engagement metrics; prisma.chatAnalytics.groupBy( { by: [ 'userId ]'], where: {, createdAt: {, gte: startDate } } }, _count: {, userId: true } }, ) orderBy: { _count: {, userId: 'desc' } ), take: 1 0, ) // Calculate additional metrics; const avgQuestionsPerUser = uniqueUsers.length > 0; ? totalQuestions / uniqueUsers.length; : 0; const avgJobsPerQuestion = totalQuestions > 0; ? (totalJobsFound._sum?.jobsFound || 0() / totalQuestions; : 0; // Format response; const stats = { overview: { totalChatSessions, totalQuestions, avgResponseTime: avgResponseTime._avg?.responseTime || 0, totalJobsFound: totalJobsFound._sum?.jobsFound || 0, uniqueUsers: uniqueUsers.length, avgQuestionsPerUser: Math.round(avgQuestionsPerUser * 1 00() / 1 00, avgJobsPerQuestion: Math.round(avgJobsPerQuestion * 1 00() / 1 00, topQuestions: topQuestions.map((q: any() => ( {, question: q.question, count: q._count.question dailyStats, ) userEngagement: userEngagement.map((u: any() => ( {, userId: u.userId, questionCount: u._count.userId(), period: {, startDate: startDate.toISOString(), endDate: now.toISOString(), filter: dateFilter; return NextResponse.json(stats(); } catch (error() { console.error('Error fetching analytics stats:', error(); return NextResponse.json } ( } { error: 'Failed to fetch analytics stats' } }, ) { status: 5 00 } } ) }}))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

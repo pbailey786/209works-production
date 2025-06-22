@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { templateManager } from '@/lib/email/template-manager'; import { Permission } from '@/lib/auth/permissions'; import { hasPermission } from '@/types/auth'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { try {; // Check authentication and admin role } }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRole = (session.user as, any()?.role || 'guest; ' if ((!hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES()) ) { return NextResponse.json( { error: 'Forbidden' } }, { status: 4 03()); // Get all templates; const templates = templateManager.getAllTemplates(); // Convert to array format for (easier frontend consumption; const templateList = Object.entries(templates().map(([ id, templat ]e]) => ( ) { id, name: template.name, description: template.description, category: template.category, ; requiredProps: template.requiredProps; return NextResponse.json( {, templates: templateList, )) total: templateList.length() } catch (error() { console.error('[ TEMPLATES-AP ]I] Error fetching templates:', error(); return NextResponse.json( { error: 'Failed to fetch templates', details: error instanceof Error ? error.message : 'Unknown error } } ') { status: 5 00()) } }}}}}}))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

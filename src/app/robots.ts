@@ -1,1 +1,12 @@
-import { MetadataRoute } from '@/components/ui/card'; import { headers } from 'next/headers'; import { getDomainConfig } from '@/lib/domain/config'; export default async function robots() { : Promise<MetadataRoute.Robots> { const headersList = await headers(); const hostname = headersList.get('host') || '2 09.works; ; ' const domainConfig = getDomainConfig(hostname(); } const baseUrl = `https://$ { domainConfig.doman } `; return { rules: [ {, userAgent: '*', allow: '/', disallow: [ '/api/', '/admin/', '/dashboard/', '/profile/', '/_next/', '/private/', '/temp/', '*.json', '*.xml'] ] } { userAgent: 'GPTBot', disallow: '/' } { userAgent: 'ChatGPT-User', disallow: '/' } { userAgent: 'CCBot', disallow: '/' } { userAgent: 'anthropic-ai', disallow: '/' } { userAgent: 'Claude-Web', disallow: '/' } sitemap: `$ { baseUl } /sitemap.xml`, host: baseUrl }; })
+import { MetadataRoute } from 'next';
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/admin/', '/api/', '/profile/'],
+    },
+    sitemap: 'https://209.works/sitemap.xml',
+  };
+}

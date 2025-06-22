@@ -1,1 +1,14 @@
-import { cva } from 'class-variance-authority'; import { type VariantProp } } s } from '@/components/ui/card; ' import { cn } from '@/lib/utils'; const alertVariants = cva('relative w-full rounded-lg border px-4 py-3 text-sm [ &>svg+di ]v]:translate-y-[-3, p ]x] [ &>sv ]g]:absolute [ &>sv ]g]:left-4 [ &>sv ]g]:top-4 [ &>sv ]g]:text-foreground [ &>svg~ ]*]:pl-7', { variants: { variant: {, default: 'bg-background text-foreground', destructive: 'border-destructive/5 0 text-destructive, dark:border-destructive [ &>sv ]g]:text-destructive' } } } } defaultVariants: {, variant: 'default' } ) ), ; ; const Alert = React.forwardRef< HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants> >(( { className, variant, .props } }, ref() => (; ; <div; ref= { ref } role="alert"" ") className= { cn(alertVariants( { variant()), className() } { .props } />; Alert.displayName = 'Alert ' const AlertTitle = React.forwardRef< HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement> >(( { className, .props } }, ref() => (; ; <h5; ref= { ref } ) className= { cn('mb-1 font-medium leading-none tracking-tight', className } ) } { .props } />; AlertTitle.displayName = 'AlertTitle ' const AlertDescription = React.forwardRef< HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement> >(( { className, .props } }, ref() => (; ; <div; ref= { ref } ) className= { cn('text-sm [ &_ ]p]:leading-relaxed', className } ) } { .props } />; AlertDescription.displayName = 'AlertDescription ' export { Alert, AlertTitle, AlertDescription } } }; ))))))
+export default function AlertPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Alert Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

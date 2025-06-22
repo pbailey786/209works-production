@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { prisma } from '@/lib/database/prisma'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; export async function POST() { { try {; // Get current session; const session = await auth(); } } } if ((!user?.email() ) { return NextResponse.json } ( } { error: 'Authentication required' } }, ) { status: 4 01 } } ) const body = await req.json(); const { email, role } = body; if ((!email || !role() ) { return NextResponse.json } ( } { error: 'Email and role are required' } }, ) { status: 4 00 } } ) if ((![ 'jobseeker', 'employer', 'admin ]'].includes(role()) ) { return NextResponse.json } ( } { error: 'Invalid role. Must be jobseeker, employer, or admin' } }, ) { status: 4 00 } } ) console.log(` Admin request to update user role:`, { requestedBy: user?.email, targetEmail: email, ) newRole: rol()) // Find the user to update; const user = await prisma.user.findUnique( { );, where: {, email: email.toLowerCase() } }; if ((!user() ) { return NextResponse.json } ( } { error: `User not found with, email: $ { emal } ` }, ) { status: 4 04 } } ) // Update the user role; const updatedUser = await prisma.user.update( { where: {, id: user.id(), ; data: {, role: role, ; // Mark onboarding as completed for (employers; onboardingCompleted: role === 'employer' ? "true": user.onboardingCompleted } console.log(` Successfully updated user role:`, ) { userId: updatedUser.id, email: updatedUser.email, oldRole: user.role, newRole: updatedUser.role, ) onboardingCompleted: updatedUser.onboardingCompleted } ) return NextResponse.json( { success: true, message: `Successfully updated $ { emal } role from $ { user.ro } `, user: {, id: updatedUser.id, email: updatedUser.email, name: updatedUser.name, role: updatedUser.role, ) onboardingCompleted: updatedUser.onboardingCompleted()) } catch (error() { console.error(' Error updating user role:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

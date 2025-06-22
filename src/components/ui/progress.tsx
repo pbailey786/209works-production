@@ -1,1 +1,14 @@
-'use client ' import * as React from 'react ' import * as ProgressPrimitive from '@radix-ui/react-progress '; import { cn } from '@/lib/utils'; const Progress = React.forwardRef< React.ElementRef<typeof ProgressPrimitive.Root>, React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> >(( { className, value, .props } }, ref() => (; ; <ProgressPrimitive.Root; ref= { ref } className= { cn('relative h-2 w-full overflow-hidden rounded-full bg-primary/2 0', ; )) className; )) { .props } <ProgressPrimitive.Indicator; className="size-full flex-1 bg-primary transition-all"" " style= { { transform: `translateX(-$ { 1 00 - (value || )0 } } ` </ProgressPrimitive.Root>; Progress.displayName = ProgressPrimitive.Root.displayName; export { Progress } } }; )
+export default function ProgressPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Progress Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

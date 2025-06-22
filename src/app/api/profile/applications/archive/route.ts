@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; // PATCH /api/profile/applications/archive - Archive an application; export async function PATCH() { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user from database; const dbUser = await prisma.user.findUnique( { where: {, email: user?.email } }, ; ) select: {, id: true, role: true(), ); if ((!user() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); if ((user.role !== 'jobseeker') ) { return NextResponse.json } ( } { error: 'Only job seekers can archive applications' } }, ) { status: 4 03 } } ) const body = await req.json(); const { applicationId } = body; if ((!applicationId() ) { return NextResponse.json } ( } { error: 'Application ID is required' } }, ) { status: 4 00 } } ) // Verify the application belongs to this user; const application = await prisma.jobApplication.findUnique( { where: {, id: applicationId } }, ; ) select: {, userId: true, status: true(), ); if ((!application() ) { return NextResponse.json } ( } { error: 'Application not found' } }, ) { status: 4 04 } } ) if ((application.userId !== user.id() ) { return NextResponse.json } ( } { error: 'You can only archive your own applications' } }, ) { status: 4 03 } } ) // Update application status to archived; await prisma.jobApplication.update( { where: {, id: applicationId } }, ) data: {, status: 'archived' ), ) return NextResponse.json( { success: true, ) message: 'Application archived successfully' ) } catch (error() { console.error('Archive application error:', error(); return NextResponse.json } ( } { error: 'Failed to archive application' } }, ) { status: 5 00 } } ) 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

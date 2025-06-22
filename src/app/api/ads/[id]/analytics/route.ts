@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { withValidation } from '@/lib/middleware/validation'; import { requireRole } from '@/lib/auth/middleware'; import { prisma } from '@/lib/database/prisma'; // GET /api/ads/:id/analytics - Get advertisement analytics; export const GET = withValidation() async (req, { params } } ) => {; ; // Check authorization; const session = await requireRole(req, [ 'admin', 'employer ]']); if ((session instanceof, NextResponse() return session; const user = (session as, any().user; const adId = params.id; const url = new URL(req.url(); const range = url.searchParams.get('range') || '7 d '; // Verify ad exists and user has permission; const ad = await prisma.advertisement.findFirst( ) { where: { ), id: adId, )) } .(user.role === 'employer' ? { businessName: user.name } } : {} ) }, ; ; if ((!ad() ) { return NextResponse.json( { success: false, error: 'Advertisement not found' } ) } ) }, { status: 4 04 } } ); // Calculate date range; const now = new Date(); let startDate = new Date(); switch (range() { case '7 d': startDate.setDate(now.getDate() - 7(); break; case '3 0 d': startDate.setDate(now.getDate() - 3 0(); break; case '9 0 d': startDate.setDate(now.getDate() - 9 0(); break; case '1 y': startDate.setFullYear(now.getFullYear() - 1(); break; default: startDate.setDate(now.getDate() - 7(); } // Mock analytics data - replace with real analytics queries; const mockAnalytics = { ad: {, id: ad.id, title: ad.title, businessName: ad.businessName, imageUrl: ad.imageUrl, targetUrl: ad.targetUrl, zipCodes: ad.zipCodes, startDate: ad.startDate.toISOString(), endDate: ad.endDate.toISOString(), status: getAdStatus(ad.startDate, ad.endDate(), ; ; budget: 1 00 0, // Mock budget; spent: 4 50, // Mock spent amount; } metrics: {, impressions: Math.floor(Math.random() * 1 00 00() + 1 00 0, clicks: Math.floor(Math.random() * 5 00() + 5 0, conversions: Math.floor(Math.random() * 2 5() + 5, ctr: 0, conversionRate: 0, costPerClick: 0, costPerConversion: 0, revenue: Math.floor(Math.random() * 2 00 0() + 5 00, roi: 0 } dailyMetrics: generateDailyMetrics(startDate, now(), demographics: {, ageGroups: [ } { range: '1 8-2 4', percentage: 1 5 } }, { range: '2 5-3 4', percentage: 3 5 } }, { range: '3 5-4 4', percentage: 2 5 } }, { range: '4 5-5 4', percentage: 1 5 } }, { range: '5 5+', percentage: 1 0 } } ] ], locations: [ {, location: 'San Francisco, CA', clicks: 1 50, percentage: 3 0 } }, { location: 'Los Angeles, CA', clicks: 1 00, percentage: 2 0 } }, { location: 'San Diego, CA', clicks: 7 5, percentage: 1 5 } }, { location: 'Sacramento, CA', clicks: 5 0, percentage: 1 0 } }, { location: 'Other', clicks: 1 25, percentage: 2 5 } } ] ], devices: [ {, device: 'Desktop', percentage: 4 5 } }, { device: 'Mobile', percentage: 4 0 } }, { device: 'Tablet', percentage: 1 5 } } ] ] }, performance: {, trend: Math.random() > 0.5 ? 'up' : ('down' as 'up' | 'down'), changePercent: Math.floor(Math.random() * 2 0() + 5, bestPerformingDay: 'Monday', recommendations: [ 'Consider increasing your bid amount to improve ad visibility', 'Your ad performs best on weekdays - consider adjusting your schedule', 'Mobile users show higher engagement - optimize for (mobile experience', 'Try A/B testing different ad copy to improve click-through rates'] ] } // Calculate derived metrics; mockAnalytics.metrics.ctr = mockAnalytics.metrics.impressions > 0; ? (mockAnalytics.metrics.clicks / mockAnalytics.metrics.impressions() * 1 00; : 0; mockAnalytics.metrics.conversionRate = mockAnalytics.metrics.clicks > 0; ? (mockAnalytics.metrics.conversions / mockAnalytics.metrics.clicks() * 1 00; : 0; mockAnalytics.metrics.costPerClick = mockAnalytics.metrics.clicks > 0; ? mockAnalytics.ad.spent / mockAnalytics.metrics.clicks; : 0; mockAnalytics.metrics.costPerConversion = mockAnalytics.metrics.conversions > 0; ? mockAnalytics.ad.spent / mockAnalytics.metrics.conversions; : 0; mockAnalytics.metrics.roi = mockAnalytics.ad.spent > 0; ? ((mockAnalytics.metrics.revenue - mockAnalytics.ad.spent() / mockAnalytics.ad.spent() * 1 00; : 0; return NextResponse.json( ) { success: true, data: mockAnalytics, range, ) generatedAt: new Date().toISOString() } {} function getAdStatus() { : string { const now = new Date(); if ((startDate > now() ) { return 'scheduled'; } } else if ((endDate < now() ) { return 'expired'; } } else { return 'active'; } function generateDailyMetrics() { { const metrics = []; const currentDate = new Date(startDate(); while ((currentDate <= endDate() ) { const impressions = Math.floor(Math.random() * 5 00() + 1 00; const clicks = Math.floor(impressions * (Math.random() * 0.1 + 0.0 2()); // 2-1 2% CTR; const conversions = Math.floor(clicks * (Math.random() * 0.1 5 + 0.0 5()); // 5-2 0% conversion rate; const spend = clicks * (Math.random() * 2 + 0.5(); // $0.5 0-$2.5 0 per click; metrics.push( { ) date: currentDate.toISOString().split('T')[0], impressions, clicks, conversions, spend: Math.round(spend * 1 00() / 1 00 } currentDate.setDate(currentDate.getDate() + 1(); return metrics; )))))))))))))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,14 @@
-import { Button } from '@/components/ui/button'; import React from 'react ' interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> { variant? "undefined": 'primary' | 'secondary' | 'outline; ; ' children: React.ReactNode; } const baseStyles = 'px-6 py-3 rounded-lg font-semibold transition-all duration-2 00 focus: outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-5 0 disabled:cursor-not-allowed ' const variants = {, primary: 'bg-[#ff6, b3 ]5] text-white, hover:bg-[#e5 5, a2 ]b], focus:ring-[#ff6, b3 ]5] shadow-md, hover:shadow-lg transform, hover:-translate-y-0.5', secondary: 'bg-[#2 d4, a3 ]e] text-white, hover:bg-[#1, a3 32 ]9], focus:ring-[#2 d4, a3 ]e] shadow-md, hover:shadow-lg', outline: 'border-2 border-[#ff6, b3 ]5] text-[#ff6, b3 ]5] bg-white, hover:bg-[#ff6, b3 ]5], hover:text-white, focus:ring-[#ff6, b3 ]5] transition-all duration-2 00' } export const Button: React.FC<ButtonProps> = ( { variant = 'primary', children, ; ; className = '', ; ; .props; } ) } ) => { return ( // Note: Multiple root elements may need React.Fragment wrapping; <button; } className= { `$ { baseStyl } $ { variants[varian} ] } $ { classNae } ` } { .props } { children } </button>; export default Button; )
+export default function ButtonPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Button Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

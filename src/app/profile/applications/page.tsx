@@ -1,1 +1,14 @@
-import { redirect } from 'next/navigation'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; import ApplicationsClient from './ApplicationsClient '; export default async function ApplicationsPage() { {; ; const { userId } = await auth(); if ((!userId() ) { redirect('/signin'); } const user = await prisma.user.findUnique( { ) where: {, clerkId: userId(), ; ; if ((!user() ) { redirect('/signin?callbackUrl=/profile/applications'); } if ((user.role !== 'jobseeker') ) { redirect('/dashboard'); } return <ApplicationsClient userId= { user.id } />; }}}}))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

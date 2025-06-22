@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; import { z } from 'zod'; // Validation schemas; const updateSavedSearchSchema = z.object( { ) name: z.string().min(1().max(1 00().optional(), query: z.string().min(1().max(5 00().optional(), filters: z.record(z.any()).optional(), alertEnabled: z.boolean().optional(), ; isActive: z.boolean().optional(); // GET /api/saved-searches/[ i ]d] - Get a specific saved search; export async function GET() { > } ); ) { try } {}; const { userId } = auth(); if ((!userId() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ) { status: 4 01 } } ) const savedSearch = await prisma.savedSearch.findFirst( { where: {, id: params.id, ; ) userId }, ), ); if ((!savedSearch() ) { return NextResponse.json } ( } { error: 'Saved search not found' } }, ) { status: 4 04 } } ) return NextResponse.json( { success: true, savedSearch: { ) .savedSearch, ) filters: savedSearch.filters ? JSON.parse(savedSearch.filters() : null } catch (error() { console.error('Error fetching saved search:', error(); return NextResponse.json } ( } { error: 'Failed to fetch saved search' } }, ) { status: 5 00 } } ) // PUT /api/saved-searches/[ i ]d] - Update a saved search; export async function PUT() { > } ); ) { try } {}; const { userId } = auth(); if ((!userId() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ) { status: 4 01 } } ) const body = await req.json(); const updateData = updateSavedSearchSchema.parse(body(); // Check if (the saved search exists and belongs to the user; const existingSearch = await prisma.savedSearch.findFirst( ) { where: {, id: params.id, ; ) userId }, ), ); if ((!existingSearch() ) { return NextResponse.json } ( } { error: 'Saved search not found' } }, ) { status: 4 04 } } ) // If updating name, check for (duplicates; if ((updateData.name && updateData.name !== existingSearch.name() ) ) { const duplicateName = await prisma.savedSearch.findFirst( { where: { userId, name: updateData.name, ) isActive: true, id: {, not: params.id() }, ) if ((duplicateName() ) { return NextResponse.json } ( } { error: 'A saved search with this name already exists' } }, ) { status: 4 00 } } ) // Prepare update data; const updatePayload: any = { .updateData, ; updatedAt: new Date() }, ; if ((updateData.filters !== undefined() ) { updatePayload.filters = updateData.filters ? JSON.stringify(updateData.filters() : null; } // Update the saved search; const updatedSearch = await prisma.savedSearch.update( { where: {, id: params.id(), ; data: updatePayload, ); return NextResponse.json( { success: true, message: 'Saved search updated successfully', savedSearch: { ) .updatedSearch, ) filters: updatedSearch.filters ? JSON.parse(updatedSearch.filters() : null } catch (error() { console.error('Error updating saved search:', error(); if ((error instanceof z.ZodError() ) { return NextResponse.json } ( } { error: 'Invalid request data', details: error.errors } }, ) { status: 4 00 } } ) return NextResponse.json( { error: 'Failed to update saved search' } }, ) { status: 5 00()) // DELETE /api/saved-searches/[ i ]d] - Delete a saved search; export async function DELETE() { > } ); ) { try } {}; const { userId } = auth(); if ((!userId() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ) { status: 4 01 } } ) // Check if (the saved search exists and belongs to the user; const existingSearch = await prisma.savedSearch.findFirst( ) { where: {, id: params.id, ; ) userId }, ), ); if ((!existingSearch() ) { return NextResponse.json } ( } { error: 'Saved search not found' } }, ) { status: 4 04 } } ) // Soft delete by setting isActive to false; await prisma.savedSearch.update( { where: {, id: params.id(), data: {, isActive: false, ) updatedAt: new Date() return NextResponse.json( {, success: true, ) message: 'Saved search deleted successfully' ) } catch (error() { console.error('Error deleting saved search:', error(); return NextResponse.json } ( } { error: 'Failed to delete saved search' } }, ) { status: 5 00 } } ) 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

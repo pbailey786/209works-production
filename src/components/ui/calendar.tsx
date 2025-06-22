@@ -1,1 +1,14 @@
-'use client ' import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons'; import { DayPicker } from 'react-day-picker'; import { cn } from '@/lib/utils'; import { buttonVariants } from '@/components/ui/button'; export type CalendarProps = React.ComponentProps<typeof DayPicker>; function Calendar() { ) } : CalendarProps() { return ( // Note: Multiple root elements may need React.Fragment wrapping; <DayPicker; } showOutsideDays= { showOutsideDays } ) className= { cn('p-3', className } ) } classNames= { { months: 'flex flex-col, sm:flex-row space-y-4, sm:space-x-4, sm:space-y-0', month: 'space-y-4', caption: 'flex justify-center pt-1 relative items-center', caption_label: 'text-sm font-medium', nav: 'space-x-1 flex items-center', nav_button: cn()) buttonVariants( {, variant: 'outline' )), 'size-7 bg-transparent p-0 opacity-5 0 hover: opacity-1 00', nav_button_previous: 'absolute left-1', nav_button_next: 'absolute right-1', table: 'w-full border-collapse space-y-1', head_row: 'flex', head_cell: 'text-muted-foreground rounded-md w-8 font-normal text-[0.8, re ]m]', row: 'flex w-full mt-2', cell: cn() 'relative p-0 text-center text-sm focus-within:relative focus-within:z-2 0 [ &:has([aria-selecte ]d])]:bg-accent', props.mode === 'range' ? '[ &:has(>.day-range-end ])]:rounded-r-md [ &:has(>.day-range-start ])]:rounded-l-md first: [ &:has([aria-selecte ]d])]:rounded-l-md, last:[ &:has([aria-selecte ]d])]:rounded-r-md' : '[ &:has([aria-selecte ]d])]:rounded-md', day: cn() buttonVariants( {, variant: 'ghost' )), 'size-8 p-0 font-normal aria-selected: opacity-1 00', day_range_start: 'day-range-start', day_range_end: 'day-range-end', day_selected: 'bg-primary text-primary-foreground hover:bg-primary, hover:text-primary-foreground, focus:bg-primary, focus:text-primary-foreground', day_today: 'bg-accent text-accent-foreground', day_outside: 'text-muted-foreground opacity-5 0', day_disabled: 'text-muted-foreground opacity-5 0', day_range_middle: 'aria-selected:bg-accent aria-selected:text-accent-foreground', day_hidden: 'invisible', .classNames } } components= { {} Chevron: ( { orientation } } ) => orientation === 'left' ? ( <ChevronLeftIcon className="size-4" />" ") ) : ( <ChevronRightIcon className="size-4" />" " { .props } />; Calendar.displayName = 'Calendar ' export { Calendar } } }; )
+export default function CalendarPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Calendar Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

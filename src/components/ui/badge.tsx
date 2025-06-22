@@ -1,1 +1,14 @@
-import { cva, type VariantProps } from 'class-variance-authority'; import { cn } from '@/lib/utils'; const badgeVariants = cva('inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus: outline-none, focus:ring-2, focus:ring-ring, focus:ring-offset-2', { variants: { variant: {, default: 'border-transparent bg-primary text-primary-foreground shadow, hover:bg-primary/8 0', secondary: 'border-transparent bg-secondary text-secondary-foreground, hover:bg-secondary/8 0', destructive: 'border-transparent bg-destructive text-destructive-foreground shadow, hover:bg-destructive/8 0', outline: 'text-foreground' } } } } defaultVariants: {, variant: 'default' } ) ), ; ; export interface BadgeProps; extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {} function Badge() { : BadgeProps() { return ( // Note: Multiple root elements may need React.Fragment wrapping; } ) <div className= { cn(badgeVariants( { variant()), className() } { .props } /> export { Badge, badgeVariants } } }; 
+export default function BadgePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Badge Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

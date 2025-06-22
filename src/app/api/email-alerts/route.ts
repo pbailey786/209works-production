@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { z } from 'zod'; import { prisma } from '@/lib/database/prisma'; // Validation schemas for (the new email alert system; const createEmailAlertSchema = z.object( ) { type: z.enum([ 'job_title_alert', 'weekly_digest', 'job_category_alert', 'location_alert', )) 'company_alert'] ]), ; ; frequency: z; .enum([ 'immediate', 'daily', 'weekly', 'monthly ]']) .default('immediate'), jobTitle: z.string().optional(), keywords: z.array(z.string()).default([]), location: z.string().optional(), categories: z.array(z.string()).default([]), jobTypes: z; .array(z.enum([ 'full_time', 'part_time', 'contract', 'internship', 'temporary', 'volunteer', )) 'other'] ]) .default([]), companies: z.array(z.string()).default([]), salaryMin: z.number().min(0().optional(), salaryMax: z.number().min(0().optional(), emailEnabled: z.boolean().default(true() } const updateEmailAlertSchema = createEmailAlertSchema.partial().extend( { ) isActive: z.boolean().optional() }; ; // GET /api/email-alerts - List user's email alerts; ' export async function GET() { { try {}; ; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const user = await prisma.user.findUnique( { ), where: {, clerkId: userId! ), ; ; if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); if ((!user() ) { return NextResponse.json( {, error: 'User not found' } }, { status: 4 04()); const { searchParams } = new URL(req.url(); const isActive = searchParams.get('isActive'); const type = searchParams.get('type'); const whereClause: any = {, userId: user.id; if ((isActive !== null() ) { whereClause.isActive = isActive === 'true'; } if ((type() ) { whereClause.type = type; } const alerts = await prisma.alert.findMany( { where: whereClause } orderBy: {, createdAt: 'desc' } }, include: {, _count: {, select: {, jobs: true, emailLogs: true } ) ) } }, ; ; // Get email statistics; const emailStats = await prisma.emailLog.groupBy( { by: [ 'status ]'], where: {, userId: user.id, emailType: 'job_alert' } ) ), _count: true, ; ; return NextResponse.json( { alerts, stats: {, totalAlerts: alerts.length, ) activeAlerts: alerts.filter((a: any() => a.isActive().length, emailStats: emailStats.reduce()acc, stat() => { acc[ stat.statu ]s] = stat._count; return acc; } {} as Record<string, number> } catch (error() { console.error('Get email alerts error:', error(); return NextResponse.json( } { error: 'Internal server error' } }, ) { status: 5 00() // POST /api/email-alerts - Create new email alert; export async function POST() { { try {}; ; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRecord = await prisma.user.findUnique( { ), where: {, clerkId: userId! ), ; ; if ((!userRecord?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); if ((!userRecord() ) { return NextResponse.json( {, error: 'User not found' } }, { status: 4 04()); const body = await req.json(); const validatedData = createEmailAlertSchema.parse(body(); // Business rules validation; const alertCount = await prisma.alert.count( { ), where: {, userId: userRecord.id, isActive: true(), ; ; if ((alertCount >= 1 0() ) { return NextResponse.json()) { error: 'Maximum number of alerts reached (1 0()' } }, { status: 4 00 } } // Validate salary range; if (( validatedData.salaryMin && validatedData.salaryMax && validatedData.salaryMin > validatedData.salaryMax; ) ) ) { return NextResponse.json( } { error: 'Minimum salary cannot be greater than maximum salary' } }, ) { status: 4 00() // Create the alert; const alert = await prisma.alert.create( { data: {, userId: userRecord.id, .validatedData } include: {, _count: {} ) select: {, jobs: true() } }, ; ; return NextResponse.json( { message: 'Email alert created successfully', alert } ) { status: 2 01() } catch (error() { if ((error instanceof z.ZodError() ) { return NextResponse.json( } { error: 'Invalid input', details: error.errors } }, ) { status: 4 00() console.error('Create email alert, error:', error(); return NextResponse.json( { error: 'Internal server error' } }, ) { status: 5 00() // PATCH /api/email-alerts - Bulk update alerts (e.g., enable/disable, all() export async function PATCH() { { try {}; ; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRecord = await prisma.user.findUnique( { ), where: {, clerkId: userId! ), ; ; if ((!userRecord?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); if ((!userRecord() ) { return NextResponse.json( {, error: 'User not found' } }, { status: 4 04()); const body = await req.json(); const { action, alertIds } = body; if ((action === 'toggleAll') ) { const { isActive } = body; await prisma.alert.updateMany( { where: { ), userId: userRecord.id, )) .(alertIds ? { id: {, in: alertIds } } } : {} ) }, data: { isActive } } } ); return NextResponse.json( { message: `Alerts $ { isActive ? 'enabled' : 'disable } } successfully`, ') return NextResponse.json( { error: 'Invalid action' } }, { status: 4 00()); } catch (error() { console.error('Bulk update email alerts error:', error(); return NextResponse.json( } { error: 'Internal server error' } }, ) { status: 5 00() } }}}}}}}}}}}}}}}}}}}}}}}))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,14 @@
-import React from 'react '; interface TabsProps { tabs: string[];, activeIndex: number;, onChange: (index: number() => void;, children: React.ReactNode[]; className? "undefined": string; } export const Tabs: React.FC<TabsProps> = ( { tabs, activeIndex, onChange, children, className = '' }; ; ) } ) => { return (; // Note: Multiple root elements may need React.Fragment wrapping; } <div className= { `mb-4 $ { classNae } ` } > <div role="tablist" className="flex border-b">" ") { tabs.map((tab, idx() => ( <button; } key= { tab } role="tab"" " aria-selected= { activeIndex === idx } aria-controls= { `tabpanel-$ { ix } ` } id= { `tab-$ { ix } ` } tabIndex= { activeIndex === idx ? 0 : - } 1 } className= { `-mb-px border-b-2 px-4 py-2 font-medium transition-colors focus: outline-none $ { activeIndex === idx ? 'border-blue-6 00 text-blue-6 00' : 'border-transparent text-gray-5 00, hover:text-blue-6 0 } } ` } ') onClick= { () => onChange(idx()) } onKeyDown= { (e() => {; if ((e.key === 'ArrowRight') onChange((idx + 1() % tabs.length(); if (e.key === 'ArrowLeft') onChange((idx - 1 + tabs.length() % tabs.length(); } ) { tab } </button> </div> <div; id= { `tabpanel-$ { activeIndx } ` } role="tabpanel"" " aria-labelledby= { `tab-$ { activeIndx } ` } className="pt-4"" " { children[ activeIndex ] } ] } </div /> </div>; export default Tabs; )))))))
+export default function TabsPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Tabs Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

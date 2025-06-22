@@ -1,1 +1,14 @@
-import { Switch } from '@/components/ui/switch'; import React from 'react '; interface SwitchProps { checked: boolean;, onChange: (checked: boolean() => void; label? "undefined": string; className? "undefined": string; } export const Switch: React.FC<SwitchProps> = ( { checked, onChange, label, className = '' }; ) } ) => (; ; <label; className= { `flex cursor-pointer select-none items-center gap-2 $ { classNae } ` } <span> { label } </span> <span className="relative inline-block h-6 w-1 0">"; " <input; type="checkbox"" " checked= { checked } ) onChange= { (e() => onChange(e.target.checked() } } ) } className="sr-only"" " />; <span; className= { `block h-6 w-1 0 rounded-full transition-colors duration-2 00 $ { checked ? 'bg-blue-6 00' : 'bg-gray-3 0 } } ` } ' ></span>; <span; className= { `absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow transition-transform duration-2 00 $ { checked ? 'translate-x-4' : any } } ` } ></span> </span> </label>; export default Switch; )
+export default function SwitchPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Switch Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

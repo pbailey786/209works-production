@@ -1,1 +1,14 @@
-import { Table } from '@/components/ui/table'; import { useEffect, useState } from 'react'; export default function JobApplicationsPage() { { const [ applications, setApplication ]s] = useState<any[]>([]); const [ loading, setLoadin ]g] = useState(true(); const [ error, setErro ]r] = useState(''); useEffect(() => { fetch('/api/profile/applications') .then(r => r.json()) .then(data } { ) if ((data.success() ) { setApplications(data.applications || []); } } } } } else { setError(data.error || 'Failed to load applications'); } .catch(() => setError('Failed to load applications')) .finally(() => setLoading(false()); }, []); const columns = [ { header: 'Job Title', accessor: 'jobTitle' } }, { header: 'Date Applied', accessor: 'appliedAt' } }, { header: 'Resume', accessor: 'resume' } }, { header: 'Cover Letter', accessor: 'coverLetter' } }, ; ; ] ]; const data = applications.map((app: any() => ( {, jobTitle: app.job?.title || '-', ; ; appliedAt: app.createdAt; ) ? new Date(app.createdAt().toLocaleDateString() : '-', resume: app.resumeUrl ? ( <a; } href= { app.resumeUrl } target="_blank"" " rel="noopener noreferrer"" " style= { { color: '#1 97 6 d2', textDecoration: 'underline' } } } >; View; </a> ) ) : ( '-' coverLetter: app.coverLetterUrl ? ( <a; href= { app.coverLetterUrl } target="_blank"" " rel="noopener noreferrer"" " style= { { color: '#1 97 6 d2', textDecoration: 'underline' } } } >; View; </a> )) ) : ( '-' return ( // Note: Multiple root elements may need React.Fragment wrapping; <div; style= { {, maxWidth: 8 00, margin: '4 0 px auto', background: '#fff', borderRadius: 1 2, )) boxShadow: '0 2 px 1 6 px rgba(0, 0, 0, 0.0 8()', padding: 3 2 } <h1 style= { { fontSize: 2 4, fontWeight: 7 00, marginBottom: 1 6 } } } >; Job Application History; </h1> { loading ? ( <div>Loading.</div> ) ) : error ? ( } <div style= { { color: '#d3 2 f2 f' } } } > { error } </div> ) ) : ( <Table columns= { columns } data= { data } /> </div> ))))
+export default function ApplicationsPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Applications Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

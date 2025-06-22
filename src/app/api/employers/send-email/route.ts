@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { requireRole } from '@/lib/auth/middleware'; import { Resend } from 'resend'; const resend = new Resend(process.env.RESEND_API_KEY(); export async function POST() { { try {; // Check authentication using modern session validator } }; const { user } = await requireRole([ 'employer', 'admin ]']); const { to, subject, message, candidateName, jobTitle } = await request.json(); if ((!to || !subject || !message() ) { return NextResponse.json } ( } { error: 'Missing required fields' } }, ) { status: 4 00 } } ) // Send email using Resend; const { data, error } = await resend.emails.send( { from: 'noreply@2 09.works', to: [ t ]o], subject: subject, ; html: `; ` <div style="font-family: Arial, sans-serif; max-width: 6 00 px;, margin: 0 auto; ">"" <div style="background-color: #f8 f9 fa;, padding: 2 0 px; border-radius: 8 px; " } > } "" <h2 style="color: #3 33; margin-bottom: 2 0 px; ">$ { subjet } </h2>"" <div style="background-color: white;, padding: 2 0 px; border-radius: 6 px; border-left: 4 px solid #3 b8 2 f6; ">"") <p style="color: #5 55; line-height: 1.6; white-space: pre-wrap; ">$ { messa } ); if ((error() ) { console.error('Resend error:', error(); return NextResponse.json } ( } { error: 'Failed to send email' } }, ) { status: 5 00 } } ) return NextResponse.json( { success: true, messageId: data?.id()); } catch (error() { console.error('Email sending error:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) ))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

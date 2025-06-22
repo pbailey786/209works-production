@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { withValidation } from '@/lib/middleware/validation'; import { z } from 'zod'; // Mock FeaturedJobAnalyticsService for (build compatibility; const FeaturedJobAnalyticsService = ) { trackClick: async () => true, trackImpression: async () => true; import { prisma } from '@/lib/database/prisma'; // GET /api/jobs/[ i ]d]/analytics - Get analytics for (a specific job; export const GET = withValidation(async (req, ) { params, query()) => {}; // Check authorization; const session = await requireRole(req, [ 'admin', 'employer', 'jobseeker ]']); if ((session instanceof, NextResponse() return session; const user = (session as, any().user; // Params and user already available from above; const jobId = params?.id as string; if (!jobId() ) { return createErrorResponse(new ValidationError('Job ID is required')); } try { // Check if (job exists and verify ownership (unless, admin() const job = await prisma.job.findUnique( ) {} where: {, id: jobId } }, select: {, id: true, title: true, featured: true, employerId: true, employer: { select: {, id: true, ; ; name: true; } } } } ) if ((!job() ) { return createErrorResponse(new NotFoundError('Job')); } // Check permissions - must be job owner or admin; if ((user.role !== 'admin' && job.employerId !== user.id() ) { return createErrorResponse(new AuthorizationError('You can only view analytics for (your own jobs')); } if ((!job.featured() ) ) { return NextResponse.json( { success: true, data: {, message: 'Job is not featured, no analytics available', job: {, id: job.id, title: job.title, featured: false; } ) ), analytics: null; } } ); // Get analytics data; const analytics = await FeaturedJobAnalyticsService.getJobAnalytics(jobId(); if ((!analytics() ) { return NextResponse.json( { success: true, data: {, message: 'No analytics data found for (this job', job: ) {, id: job.id, title: job.title, featured: true; } ) ), analytics: null; } } ); return createSuccessResponse( { job: {, id: job.id, title: job.title, featured: true, employer: job.employer; } ) ), analytics: {, impressions: analytics.impressions, clicks: analytics.clicks, conversionRate: analytics.conversionRate, emailAlerts: analytics.emailAlerts, emailClicks: analytics.emailClicks, featuredAt: analytics.featuredAt, emailClickRate: analytics.emailAlerts > 0 ? ((analytics.emailClicks / analytics.emailAlerts() * 1 00().toFixed(2() : 0; } } catch (error() { console.error('Failed to get job analytics:', error(); } return NextResponse.json( { success: false, error: error instanceof Error ? error.message : "Unknown error" } }, { status: 5 00()); " " {, requiredRoles: [ 'employer', 'admin ]'] } rateLimit: {, enabled: true, type: 'authenticated' } }, logging: {, enabled: true } }, }))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

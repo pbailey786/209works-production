@@ -1,1 +1,32 @@
-'use client ' import { useEffect } from 'react'; import { Button } from '@/components/ui/button'; import { AlertTriangle, RefreshCw, Home } from 'lucide-react'; export default function GlobalError() {; reset: () => void; } ) { useEffect(() => { // Log the error to an error reporting service; console.error('Global error caught:', error(); } }, [ erro ]r]); return ( // Note: Multiple root elements may need React.Fragment wrapping; <html> <body> <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-red-5 0 to-pink-1 00 px-4, sm:px-6, lg:px-8">" " <div className="w-full max-w-md text-center">" " { /* Error Illustration * } / } <div className="mb-8">" " <div className="mx-auto mb-4 flex h-2 4 w-2 4 items-center justify-center rounded-full bg-red-1 00">" " <AlertTriangle className="h-1 2 w-1 2 text-red-6 00" />" " </div> <h1 className="mb-2 text-6 xl font-bold text-gray-9 00">5 00</h1>" " <h2 className="mb-4 text-2 xl font-semibold text-gray-7 00">" " Something went wrong; </h2> </div> { /* Error Message * } / } <div className="mb-8">" " <p className="mb-4 text-gray-6 00">" " We're experiencing some technical difficulties. Our team has; ' been notified and is working to fix the issue. </p> <p className="text-sm text-gray-5 00">" " Please try again in a few minutes or contact support if (the; problem persists. </p> </div> ) { /* Action Buttons * } / } <div className="space-y-4">" " <Button onClick= { rese } } t } className="w-full">" " <RefreshCw className="mr-2 h-4 w-4" />" " Try Again; </Button> <Button; variant="outline"" ") onClick= { () => (window.location.href = '/' } } ) } className="w-full"" " <Home className="mr-2 h-4 w-4" />"; " Go Home; </Button> </div> { /* Error Details (Development, Only() * } / } { process.env.NODE_ENV === 'development' && ( <details className="mt-8 text-left">" " <summary className="mb-2 cursor-pointer text-sm font-medium text-gray-7 00 hover: text-gray-9 00">" ") Error Details (Development() </summary> <div className="max-h-4 0 overflow-auto rounded bg-gray-1 00 p-3 font-mono text-xs text-gray-8 00">" " <p className="mb-1 font-semibold">Error, Message:</p> } " " <p className="mb-3"> { error.message } </p>" " { error.digest && ( <p className="mb-1 font-semibold">Error Digest:</p> } " " <p className="mb-3"> { error.digest } </p>" " <p className="mb-1 font-semibold">Stack Trace:</p>" " <pre className="whitespace-pre-wrap text-xs">" " { error.stack } </pre> </div> </details> { /* Contact Support * } / } <div className="mt-8 rounded-lg bg-white/5 0 p-4" />" " <p className="mb-2 text-sm text-gray-6 00">" " Need immediate assistance? </p> <a; href="/contact"" " className="text-sm font-medium text-red-6 00 underline hover:text-red-8 00"" " >; Contact our support team; </a> </div> </div> </div> </body> </html> ))) */
+'use client';
+
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    <html>
+      <body>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+              Something went wrong!
+            </h1>
+            <p className="text-gray-600 mb-4">
+              An unexpected error occurred.
+            </p>
+            <button
+              onClick={reset}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      </body>
+    </html>
+  );
+}

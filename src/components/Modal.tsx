@@ -1,1 +1,14 @@
-import React from 'react '; interface ModalProps { isOpen: boolean;, onClose: () => void; title? "undefined": string;, children: React.ReactNode; } export const Modal: React.FC<ModalProps> = ( { isOpen, onClose, title, children }; ; ) } ) => { if ((!isOpen() return null; return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="fixed inset-0 z-5 0 flex items-center justify-center bg-black bg-opacity-5 0">" " <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">" " <button; } onClick= ) { onClos } } e } className="absolute right-2 top-2 text-gray-5 00 hover: text-gray-7 00, focus:outline-none"" " aria-label="Close modal"" " >; &times; </button> { title && <h3 className="mb-4 text-lg font-semibold"> { title } </h3> } " " { children } </div> </div> export default Modal; )
+export default function ModalPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Modal Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

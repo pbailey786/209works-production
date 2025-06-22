@@ -1,1 +1,14 @@
-import React, { useEffect } from 'react'; interface ToastProps { message: string; type? "undefined": 'success' | 'error' | 'info' | 'warning ', open: boolean;, onClose: () => void; autoHideDuration? "undefined": number; } const typeStyles = { success: 'bg-green-6 00 text-white', error: 'bg-red-6 00 text-white', info: 'bg-blue-6 00 text-white', warning: 'bg-yellow-5 00 text-white' } export const Toast: React.FC<ToastProps> = ( { message, type = 'info', open, onClose, autoHideDuration = 3 00 0 }; ) } ) => { useEffect(() => {; ; if ((open() ) {; ; const timer = setTimeout(onClose, autoHideDuration(); return () // Note: Multiple root elements may need React.Fragment, wrapping() } clearTimeout(timer(); } }, [ open, autoHideDuration, onClos ]e]); if ((!open() return null; return ( <div; className= ) { `fixed bottom-6 right-6 z-5 0 flex items-center gap-2 rounded px-4 py-3 shadow-lg $ { typeStyles[typ} ] } ` } role="alert"" " <span> { message } </span>; <button; onClick= { onClos } } e } className="ml-2 text-lg font-bold text-white/8 0 hover: text-white, focus:outline-none"" " </button> </div>; export default Toast; ))))
+export default function ToastPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Toast Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

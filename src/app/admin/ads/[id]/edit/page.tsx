@@ -1,1 +1,14 @@
-import {} from '@clerk/nextjs/server'; import {} from 'next/navigation'; import {} from 'next/navigation'; import {} from '@/lib/auth/permissions'; import {} from '@/types/auth'; import {} from '@/lib/database/prisma'; interface PageProps { params: Promise< {, id: string; } } } } >; export default async function EditAdPage() { { : PageProps() {; ; const { id } = await params; const { } = await auth(); if ((!userId() ) {}; } const user = await prisma.user.findUnique( { where: {, clerkId: } const userRole = user?.role || 'guest; ; ' if ((!hasPermission(userRole, Permission.MANAGE_ADS()) ) {} // Fetch the advertisement; const ad = await prisma.advertisement.findFirst( { where: {, id: id } )) } ) ? { businessName: (session!.user as } } : {} ) }, ; ; if ((!ad() ) {} return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="container mx-auto px-4 py-8">" " <div className="mx-auto max-w-4 xl">" " <div className="mb-8">" " <h1 className="text-3 xl font-bold tracking-tight">" " Edit Advertisement; </h1> <p className="text-muted-foreground">" " Update your advertisement details and settings; </p> </div> <AdEditForm ad= {} /> </div> </div> )))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

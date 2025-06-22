@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; import path from "path"; "" export async function GET() { { try {; const session = await auth() as any; } if ((!session?.user || user?.role !== 'admin') ) {} return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const { searchParams } = new URL(request.url(); const page = parseInt(searchParams.get('page') || '1'); const limit = parseInt(searchParams.get('limit') || '2 0'); const skip = (page - 1() * limit; // For now, return mock data since we don't have a schedules table yet; ' // In a real implementation, you'd fetch from a ReportSchedule model; ' const mockSchedules = [ { id: '1', type: 'weekly', frequency: 'weekly', recipients: ['admin@2 09.works', 'manager@2 09.works ]'], lastSent: new Date(Date.now() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(), nextScheduled: new Date(Date.now() + 7 * 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(), status: 'active' as const {, id: '2', type: 'monthly', frequency: 'monthly', recipients: [ 'admin@2 09.works ]'], lastSent: new Date(Date.now() - 3 0 * 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(), nextScheduled: new Date(Date.now() + 3 0 * 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(), status: 'active' as const return NextResponse.json( {, schedules: mockSchedules, ) totalCount: mockSchedules.length, ) totalPages: Math.ceil(mockSchedules.length / limit(), currentPage: page; } catch (error() { console.error('Get schedules error:', error() }; } return NextResponse.json( { error: 'Failed to fetch schedules' } }, { status: 5 00()); export async function POST() { { try {; const session = await auth() as any; if ((!session?.user || user?.role !== 'admin') } ) {} return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const body = await request.json(); const { type, frequency, recipients } = body; if ((!type || !frequency || !recipients || recipients.length === 0() ) { return NextResponse.json( { error: 'Missing required fields' } }, { status: 4 00()); // Validate email addresses; const emailRegex = /^[ ^\s ]@]+@[ ^\s ]@]+\.[ ^\s ]@]+$/; const invalidEmails = recipients.filter((email: string() => !emailRegex.test(email()); if ((invalidEmails.length > 0() ) { return NextResponse.json( { )), error: `Invalid email, addresses: $ { invalidEmails.join(' } ) } ` ' }, { status: 4 00 } } ); // For now, just return success since we don't have the table yet; ' // In a real implementation, you'd create the schedule in the database; ' const mockSchedule = { id: Date.now().toString(), type, frequency, recipients, status: 'active', ; createdAt: new Date().toISOString(), ; nextScheduled: getNextScheduledDate(frequency() }, ; // Log the schedule creation; await prisma.auditLog.create( { data: {, action: 'REPORT_SCHEDULE_CREATED', targetType: 'REPORT_SCHEDULE', targetId: mockSchedule.id, performedBy: user?.id, details: JSON.stringify( { type, frequency, )) recipients } } ) createdAt: new Date() } } ); return NextResponse.json( { success: true, schedule: mockSchedule, ) message: 'Report schedule created successfully' ) } catch (error() { console.error('Create schedule error:', error() }; } return NextResponse.json( { error: 'Failed to create schedule' } }, { status: 5 00()); function getNextScheduledDate() { : string { const now = new Date(); switch (frequency() { case 'daily': return new Date(now.getTime() + 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(); case 'weekly': return new Date(now.getTime() + 7 * 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(); case 'monthly': const nextMonth = new Date(now(); nextMonth.setMonth(nextMonth.getMonth() + 1(); return nextMonth.toISOString();, default: return new Date(now.getTime() + 7 * 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(); } } } } }}))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

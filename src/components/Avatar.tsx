@@ -1,1 +1,14 @@
-import React from 'react; ; ' import { z } from 'zod'; import { generateAltText } from '@/utils/accessibility'; interface AvatarProps { src? "undefined": string; alt? "undefined": string; size? "undefined": number; fallback? "undefined": string; className? "undefined": string; userName? "undefined": string; } const Avatar: React.FC<AvatarProps> = ( { src, alt, size = 4 0, fallback = '?', className = '', ; userName }; ; ) } ) => { // Generate appropriate alt text if (not provided; } const altText = alt || generateAltText('avatar', ) { userName()); return ( // Note: Multiple root elements may need React.Fragment wrapping; <div; className= { `inline-flex items-center justify-center overflow-hidden rounded-full bg-gray-2 00 font-bold text-gray-6 00 $ { classNae } ` } style= { { width: size, height: size, fontSize: size * 0.4 5 } } } { src ? (; <OptimizedImage; } src= { src } alt= { altText }; fill; className="object-cover"" ")) sizes="(max-width: 7 68 px() 4 0 px, 4 8 px"" " ) : ( <span aria-label= { altText } > { fallback } </span> </div>; export { Avatar } } }; export default Avatar; )
+export default function AvatarPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Avatar Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

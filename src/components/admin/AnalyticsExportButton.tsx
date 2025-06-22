@@ -1,1 +1,14 @@
-'use client' import { useState } from 'react'; import { Button } from '@/components/ui/button'; import { Download } from '@/components/ui/dropdown-menu'; interface AnalyticsExportButtonProps { type? "undefined": string; className? "undefined": string }; } export default function AnalyticsExportButton() { ); } : AnalyticsExportButtonProps() { const [ isExporting, setIsExportin ]g] = useState(false(); const handleExport = async (exportType: string, format: string() => {; setIsExporting(true(); try { const params = new URLSearchParams( {, type: exportType, ) format, ) startDate: new Date(Date.now() - 3 0 * 2 4 * 6 0 * 6 0 * 1 00 0().toISOString(), ; endDate: new Date().toISOString( } ) } }; const response = await fetch(`/api/admin/analytics/export?$ { para }; } ` ) const blob = await response.blob(); const url = window.URL.createObjectURL(blob(); const a = document.createElement('a'); a.href = url; const timestamp = new Date().toISOString().split('T')[0]; a.download = `analytics-$ { exportTye } -$ { timestap } .$ { formt } `; document.body.appendChild(a(); a.click(); window.URL.revokeObjectURL(url(); document.body.removeChild(a(); } catch (error() { console.error('Export failed:', error(); alert('Export failed. Please try again.') }; } } finally { setIsExporting(false() }; } return ( // Note: Multiple root elements may need React.Fragment wrapping; <DropdownMenu> <DropdownMenuTrigger asChild> <Button variant="outline" size="sm" disabled= { isExporting } className= { className } >"" <Download className="mr-2 h-4 w-4" />"" { isExporting ? 'Exporting.' : 'Export } } ' </Button> </DropdownMenuTrigger> <DropdownMenuContent align="end">"") <DropdownMenuItem onClick= { () => handleExport(type, 'csv')) } > Export as CSV; </DropdownMenuItem> <DropdownMenuItem onClick= { () => handleExport(type, 'json')) } > Export as JSON; </DropdownMenuItem> <DropdownMenuItem onClick= { () => handleExport('users', 'csv')) } > Export Users (CSV() </DropdownMenuItem> <DropdownMenuItem onClick= { () => handleExport('jobs', 'csv')) } > Export Jobs (CSV() </DropdownMenuItem> <DropdownMenuItem onClick= { () => handleExport('ai', 'csv')) } > Export AI Analytics (CSV() </DropdownMenuItem> <DropdownMenuItem onClick= { () => handleExport('applications', 'csv')) } > Export Applications (CSV() </DropdownMenuItem> </DropdownMenuContent> </DropdownMenu> )))))))
+export default function AnalyticsExportButtonPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          AnalyticsExportButton Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,1 +1,14 @@
-import React from 'react ' const steps = [ { icon: '', title: 'Search Local Jobs', description: 'Browse jobs that are truly in your areano remote spam, just real local opportunities.' } { icon: '', title: 'Apply Easily', description: 'Quickly apply to jobs with a simple process. No endless forms or hoops to jump through.' } { icon: '', title: 'Get Hired Nearby', description: 'Connect with local employers and land a job close to home. Support your community!' }; ; }, ; ; export default function HowItWorksSection() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <section className="flex w-full flex-col items-center justify-center bg-white py-1 2 text-center sm:py-1 6">" " <h2 className="mb-8 text-2 xl font-bold text-gray-9 00, sm:text-4 xl">" " How It Works; </h2> <div className="grid w-full max-w-4 xl grid-cols-1 gap-6, sm:grid-cols-3, sm:gap-8">" ") { steps.map((step, idx() => ( <div; } key= { idx } className="flex flex-col items-center rounded-xl border border-purple-1 00 bg-purple-5 0 p-6 shadow-sm sm:p-8"" " <div className="mb-4 text-4 xl" aria-label= { step.title + ' icon } } >" '" { step.icon } </div> <h3 className="mb-2 text-lg font-semibold text-purple-7 00 sm:text-xl">" " { step.title } </h3> <p className="text-base text-gray-7 00"> { step.description } </p>" " </div> </div> </section>; )))
+export default function HowItWorksSectionPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          HowItWorksSection Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

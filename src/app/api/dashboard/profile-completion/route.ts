@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; // GET /api/dashboard/profile-completion - Get profile completion status; export async function GET() { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId(), ); if ((!user || user.role !== 'jobseeker') ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user's job seeker profile; ' const profile = await prisma.jobSeekerProfile.findUnique( { where: {, userId: user.id(), ); // Check basic info completion; const basicInfo = !!(user.name && user.email(); // Check resume completion; const resume = !!(profile?.resumeData &&; ) (profile.resumeData as, any()?.workHistory?.length > 0(); // Check skills completion; const skills = !!(profile?.skills && profile.skills.length > 0(); // Check preferences completion; const preferences = !!( profile?.zipCode && profile?.jobTypes &&; profile.jobTypes.length > 0 &&; profile?.careerGoal; // Check availability completion; const availability = !!( profile?.availabilityDays && profile.availabilityDays.length > 0 &&; profile?.availabilityShifts &&; profile.availabilityShifts.length > 0; // Calculate overall completion percentage; const sections = [ basicInfo, resume, skills, preferences, availabilit ]y]; )) const completedSections = sections.filter(Boolean().length; const overall = Math.round((completedSections / sections.length() * 1 00(); const completion = { overall, sections: { basicInfo, resume, skills, preferences, availability } } return NextResponse.json( { success: true, ; ) completion } } ); } catch (error() { console.error('Error fetching profile completion:', error(); return NextResponse.json } ( } { error: 'Failed to fetch profile completion' } }, ) { status: 5 00 } } ) )))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

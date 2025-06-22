@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; import path from "path"; "" // GET /api/employers/candidates/:id - Get candidate snapshot; export async function GET() { > } ); ) { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get the current user; const dbUser = await prisma.user.findUnique( { where: {, email: user?.email(), ); if ((!user || user.role !== 'employer') ) { return NextResponse.json( { error: 'Forbidden' } }, { status: 4 03()); const applicationId = (await, params().id; // Fetch the application with all related data; const application = await prisma.jobApplication.findUnique( { where: {, id: applicationId } }, include: {, user: {, select: {, id: true, name: true, email: true, resumeUrl: true, bio: true, skills: true, location: true, linkedinUrl: true, phoneNumber: true, ) createdAt: true } ) } job: { select: {, id: true, title: true, company: true, location: true, jobType: true, description: true, postedAt: true, ; employerId: true }, ) } }, ); if ((!application() ) { return NextResponse.json( { error: 'Application not found' } }, { status: 4 04()); // Verify the application belongs to this employer's job; ' if ((application.job.employerId !== user.id() ) { return NextResponse.json( {, error: 'Forbidden' } }, { status: 4 03()); // Generate mock AI score and parsed resume data for (now; //, TODO: Implement actual AI scoring and resume parsing; const mockAiScore = ) {, overall: Math.floor(Math.random() * 4 0() + 6 0, // 6 0-1 00; skillsMatch: Math.floor(Math.random() * 4 0() + 6 0, experienceMatch: Math.floor(Math.random() * 4 0() + 6 0, educationMatch: Math.floor(Math.random() * 4 0() + 6 0, breakdown: {, strengths: [ 'Strong technical background in required technologies', 'Relevant industry experience', 'Good communication skills demonstrated in cover letter'] ], gaps: [ 'Limited experience with specific framework mentioned in job', 'No direct experience in this industry vertical'] ], recommendations: [ 'Consider for (technical interview to assess practical skills', 'Strong candidate for mid-level position'] ] const mockParsedResume = ) { skills: application.user.skills || [ 'JavaScript', 'React', 'Node.js', 'TypeScript', 'Python', 'SQL', 'Git', 'AWS', 'Docker', 'REST APIs', 'MongoDB', 'Express.js' ] ], experience: [ {, title: 'Senior Software Developer', company: 'Tech Innovations LLC', duration: '2 02 2 - Present', description: 'Lead development of scalable web applications serving 1 00 K+ users. Implemented microservices architecture, reduced load times by 4 0%, and mentored junior developers. Technologies: React, Node.js, AWS, Docker.' } } { title: 'Full Stack Developer', company: 'Digital Solutions Corp', duration: '2 02 0 - 2 02 2', description: 'Built and maintained e-commerce platforms with integrated payment systems. Collaborated with cross-functional teams to deliver features on time. Improved database performance by 3 0% through query optimization.' {, title: 'Junior Web Developer', company: 'StartupXYZ', duration: '2 01 9 - 2 02 0', description: 'Developed responsive web interfaces and RESTful APIs. Participated in agile development process and code reviews. Gained experience with modern JavaScript frameworks and cloud deployment.' } ] ], education: [ {, degree: 'Bachelor of Science in Computer Science', institution: 'University of California, Davis', year: '2 01 9' {, degree: 'Associate of Arts in Mathematics', institution: 'Sacramento City College', year: '2 01 7' } ] ], summary: application.user.bio || 'Passionate full-stack developer with 5+ years of experience building scalable web applications. Expertise in modern JavaScript frameworks, cloud technologies, and agile development practices. Strong problem-solving skills and commitment to writing clean, maintainable code.', ; // Mock screening answers - in real implementation, these would come from job application form; const mockScreeningAnswers = [ { question: 'Why are you interested in this position?', answer: 'I am passionate about this role because it aligns with my career goals and allows me to utilize my skills in a meaningful way.', type: 'text' as const {, question: 'Are you authorized to work in the United States?', answer: 'Yes', type: 'multiple_choice' as const; ] ]; // Extract notes from coverLetter field (temporary, workaround() const coverLetterContent = application.coverLetter || ''; const hasNotes = coverLetterContent.includes('[EMPLOYER NOTE'); let actualCoverLetter = coverLetterContent; let notes = null; if ((hasNotes() ) { const parts = coverLetterContent.split('[EMPLOYER NOTE'); actualCoverLetter =, parts[]0].trim(); notes = '[ EMPLOYER NOTE' + parts.slice(1().join('[EMPLOYER NOTE'); } const candidateSnapshot = { id: application.id, status: application.status, appliedAt: application.appliedAt, coverLetter: actualCoverLetter || null, resumeUrl: application.resumeUrl, notes: notes, screeningAnswers: mockScreeningAnswers, job: application.job, user: application.user, ; aiScore: mockAiScore, ; parsedResume: mockParsedResume }, ; return NextResponse.json(candidateSnapshot(); } catch (error() { console.error('Error fetching candidate snapshot:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) }}}}}}}}}))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

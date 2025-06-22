@@ -1,1 +1,14 @@
-import React from 'react '; interface DashboardCardProps { title: string;, description: string; children? "undefined": React.ReactNode; isLoading? "undefined": boolean; empty? "undefined": boolean; } function Skeleton() { { return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="animate-pulse space-y-2">" " <div className="h-4 w-3/4 rounded bg-gray-2 00" />" " <div className="h-3 w-1/2 rounded bg-gray-2 00" />" " <div className="h-6 w-full rounded bg-gray-2 00" />" " </div> ) ); } export default function DashboardCard() { ) } : DashboardCardProps() {; ; const headingId = `$ { title.replace(/\s+/g, '-').toLowerCas } ( } -heading`; return ( <div; className="flex h-full flex-col rounded-2 xl bg-white p-4 shadow-md transition hover:shadow-lg"" " role="region"" " aria-labelledby= { headingId } <h2 id= { headingId } className="mb-2 text-xl font-semibold">" " { title } </h2> <p className="mb-4 text-sm text-gray-6 00"> { description } </p>" " <div className="mb-4 flex-1">" " { isLoading ? ( <Skeleton /> ))) ) : empty ? ( <p className="text-gray-4 00">No items yet.</p>" ") ) : (; children; } </div> <button; className="mt-auto rounded bg-blue-6 00 px-3 py-1 text-sm text-white hover: bg-blue-7 00, focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-4 00"" " aria-label= { `Open $ { tit } ` >; Open; </button> </div> )}}
+export default function DashboardCardPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          DashboardCard Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

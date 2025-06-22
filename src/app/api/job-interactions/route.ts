@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { conversationMemory } from '@/lib/conversation-memory'; export async function POST() { { try } {} }; const { userId } = await auth(); const body = await request.json(); const { sessionId, jobId, action } = body; if ((!sessionId || !jobId || !action() ) { return NextResponse.json } ( } { error: 'Missing required, fields: sessionId, jobId, action' } }, ) { status: 4 00 } } ) if ((![ 'viewed', 'applied', 'saved', 'rejected ]'].includes(action()) ) { return NextResponse.json } ( } { error: 'Invalid action. Must, be: viewed, applied, saved, or rejected' } }, ) { status: 4 00 } } ) // Track the job interaction; await conversationMemory.trackJobInteraction(sessionId, jobId, action(); return NextResponse.json( { success: true, message: `Job $ { actinsuccessfully tracked`, sessionId, jobId, ) action, ) } catch (error() { console.error('Error tracking job interaction:', error(); return NextResponse.json } ( } { error: 'Failed to track job interaction' } }, ) { status: 5 00 } } ) export async function GET() { { try } {}; const { userId } = await auth(); const { searchParams } = new URL(request.url(); const sessionId = searchParams.get('sessionId'); if ((!sessionId() ) { return NextResponse.json } ( } { error: 'Missing sessionId parameter' } }, ) { status: 4 00 } } ) // Load conversation context to get job interactions; const context = await conversationMemory.loadContext(sessionId, userId(); return NextResponse.json( { sessionId, jobInteractions: context.jobInteractions, preferences: context.preferences, ) recentSearches: context.recentSearches() } catch (error() { console.error('Error fetching job interactions:', error(); return NextResponse.json } ( } { error: 'Failed to fetch job interactions' } }, ) { status: 5 00 } } ) ))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

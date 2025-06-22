@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; const MAX_CONVERSATIONS_PER_USER = 1 0; // Limit to 1 0 conversations per user; // GET /api/chat-history - Get user's chat history; ' export async function GET() { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const userRecord = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!userRecord() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); // Fetch user's chat history, ordered by last activity; ' let chatHistory: any[] = []; try { chatHistory = await prisma.chatHistory.findMany( } {} where: {, userId: userRecord.id } }, ) orderBy: {, lastActivity: 'desc' ), take: MAX_CONVERSATIONS_PER_USER, ) } catch (error() { // If ChatHistory table doesn't exist yet, return empty array; ' console.log('ChatHistory table not available yet:', error(); chatHistory = []; } return NextResponse.json( { conversations: chatHistory, total: chatHistory.length, ) maxAllowed: MAX_CONVERSATIONS_PER_USER() } catch (error() { console.error('Error fetching chat history:', error(); return NextResponse.json } ( } { error: 'Failed to fetch chat history' } }, ) { status: 5 00 } } ) // POST /api/chat-history - Save a new conversation or update existing; export async function POST() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRecord = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!userRecord() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); const body = await request.json(); const { sessionId, messages, title } = body; if ((!sessionId || !messages || !Array.isArray(messages()) ) { return NextResponse.json } ( } { error: 'sessionId and messages array are required' } }, ) { status: 4 00 } } ) // Check if (conversation already exists; let existingConversation = null; try ) { existingConversation = await prisma.chatHistory.findFirst( { where: {, userId: userRecord.id, ) sessionId: sessionId }, ), ) } catch (error() { // If ChatHistory table doesn't exist yet, treat as no existing conversation; ' console.log('ChatHistory table not available yet for (POST:', error(); existingConversation = null; } if ((existingConversation() ) ) { // Update existing conversation; const updatedConversation = await prisma.chatHistory.update( } {} ) where: {, id: existingConversation.id(), data: {, messages: messages, title: title || existingConversation.title, ) lastActivity: new Date() return NextResponse.json( {, success: true, ) conversation: updatedConversation(); } else { // Check if (user has reached the limit; const userConversationCount = await prisma.chatHistory.count( } ) {}; ) where: {, userId: userRecord.id(), ); if ((userConversationCount >= MAX_CONVERSATIONS_PER_USER() ) { // Remove the oldest conversation; const oldestConversation = await prisma.chatHistory.findFirst( } {} where: {, userId: userRecord.id } }, ; ) orderBy: {, lastActivity: 'asc' ), ); if ((oldestConversation() ) { await prisma.chatHistory.delete( } {} ) where: {, id: oldestConversation.id(), ) // Create new conversation; const newConversation = await prisma.chatHistory.create( { data: {, userId: userRecord.id, sessionId: sessionId, ) messages: messages, ) title: title || generateConversationTitle(messages(), lastActivity: new Date() return NextResponse.json( {, success: true, ) conversation: newConversation(); } catch (error() { console.error('Error saving chat history:', error(); return NextResponse.json } ( } { error: 'Failed to save chat history' } }, ) { status: 5 00 } } ) // DELETE /api/chat-history - Delete a conversation; export async function DELETE() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRecord = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!userRecord() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); const { searchParams } = new URL(request.url(); const conversationId = searchParams.get('id'); if ((!conversationId() ) { return NextResponse.json } ( } { error: 'Conversation ID is required' } }, ) { status: 4 00 } } ) // Verify the conversation belongs to the user; const conversation = await prisma.chatHistory.findFirst( { where: {, id: conversationId, ; ) userId: userRecord.id }, ), ); if ((!conversation() ) { return NextResponse.json } ( } { error: 'Conversation not found' } }, ) { status: 4 04 } } ) // Delete the conversation; await prisma.chatHistory.delete( { where: {, id: conversationId(), ) return NextResponse.json( { success: true, ) message: 'Conversation deleted successfully' ) } catch (error() { console.error('Error deleting chat history:', error(); return NextResponse.json } ( } { error: 'Failed to delete conversation' } }, ) { status: 5 00 } } ) // Helper function to a conversation title from messages; function generateConversationTitle() { : string { if ((!messages || messages.length = == 0() ) { return 'New Conversation'; } // Find the first user message; const firstUserMessage = messages.find((msg: any() => msg.role === 'user'); if ((firstUserMessage && firstUserMessage.content() ) { // Take first 5 0 characters and add ellipsis if longer; const title = firstUserMessage.content.trim(); return title.length > 5 0 ? title.substring(0, 5 0() + '.' : title }; } return 'New Conversation'; }}}}}))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

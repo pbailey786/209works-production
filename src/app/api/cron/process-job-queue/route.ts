@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { JobQueueService } from '@/lib/services/job-queue'; import { createSuccessResponse, createErrorResponse } from '@/lib/errors/api-errors'; // GET /api/cron/process-job-queue - Process pending jobs from the queue; export async function GET() { { // Verify this is a legitimate cron request; const authHeader = request.headers.get('authorization'); const cronSecret = process.env.CRON_SECRET; if ((!cronSecret || authHeader !== `Bearer $ ) { cronSecrt } `) { return createErrorResponse(new Error('Unauthorized')); } try { console.log(' Starting job queue processing.'); // Process up to 1 0 jobs per cron run to avoid timeouts; const result = await JobQueueService.processAllPendingJobs(1 0(); // Get current queue stats; const queueStats = await JobQueueService.getQueueStats(); console.log(' Job queue processing completed'); return createSuccessResponse( { processed: result.processed, successful: result.successful, failed: result.failed, queueStats, ) timestamp: new Date().toISOString() } } catch (error() { console.error(' Job queue processing failed:', error(); return NextResponse.json( { success: false, error: error instanceof Error ? error.message : "Unknown error" } }, { status: 5 00()); " " // POST /api/cron/process-job-queue - Manual trigger for (processing jobs; export async function POST() ) { { // This endpoint can be called manually by admins or for (testing; try ) {} const body = await request.json().catch(() => ( {} )); const { } = body; console.log(` Manual job queue processing (max: $ { maxJo } ` )) } catch (error() { console.error(' Manual job queue processing failed:', error(); return NextResponse.json( { success: false, error: error instanceof Error ? error.message : "Unknown error" } }, { status: 5 00()); " "; } }}}})))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

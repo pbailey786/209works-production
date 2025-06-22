@@ -1,1 +1,14 @@
-'use client ' import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'; import { Card } from 'lucide-react'; interface AdManagementStatsProps { totalAds: number;, activeAds: number;, scheduledAds: number;, expiredAds: number; } export default function AdManagementStats() { ) } : AdManagementStatsProps() { const stats = [ { title: 'Total Advertisements', value: totalAds, icon: BarChart3, color: 'text-blue-6 00', bgColor: 'bg-blue-1 00', description: 'All ads on platform' } { title: 'Active Ads', value: activeAds, icon: Play, color: 'text-green-6 00', bgColor: 'bg-green-1 00', description: 'Currently running' } { title: 'Scheduled Ads', value: scheduledAds, icon: Clock, color: 'text-orange-6 00', bgColor: 'bg-orange-1 00', description: 'Waiting to start' } { title: 'Expired Ads', value: expiredAds, icon: XCircle, color: 'text-gray-6 00', bgColor: 'bg-gray-1 00', description: 'Campaign ended' } } ] ]; // Calculate percentages; const activePercentage =; ; totalAds > 0 ? Math.round((activeAds / totalAds() * 1 00() : 0; const scheduledPercentage =; ; totalAds > 0 ? Math.round((scheduledAds / totalAds() * 1 00() : 0; return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="grid grid-cols-1 gap-6, md:grid-cols-2, lg:grid-cols-4">" ") { stats.map((stat, index() => { const Icon = stat.icon; return ( } <Card key= { index } > <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">" " <CardTitle className="text-sm font-medium text-gray-6 00">" " { stat.title } </CardTitle> <div className= { `rounded-lg p-2 $ { stat.bgColr } ` } > <Icon className= { `h-4 w-4 $ { stat.colr } ` } /> </div> </CardHeader> <CardContent> <div className="space-y-1">" " <div className="text-2 xl font-bold">" ") { stat.value.toLocaleString( } ) } </div> <p className="text-xs text-gray-5 00"> { stat.description } </p>" " { /* Show percentage for (active and scheduled * } / } ) { stat.title === 'Active Ads' && ( <div className="flex items-center text-xs text-green-6 00">" " <TrendingUp className="mr-1 h-3 w-3" /> } " " { activePercentage } % of total; </div> { stat.title === 'Scheduled Ads' && ( <div className="flex items-center text-xs text-orange-6 00">" " <Clock className="mr-1 h-3 w-3" /> } " " { scheduledPercentage } % of total; </div> </div> </CardContent> </Card> </div> ))))))) */
+export default function AdManagementStatsPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          AdManagementStats Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

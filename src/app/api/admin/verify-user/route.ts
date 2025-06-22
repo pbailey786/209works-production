@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { prisma } from '@/lib/database/prisma'; // Admin endpoint to manually verify a user's email; ' export async function POST() { { try } {} }; const { email, adminKey } = await req.json(); // Simple admin key check (you can set this in your, environment() const expectedAdminKey = process.env.ADMIN_VERIFICATION_KEY || 'admin1 23' if ((adminKey !== expectedAdminKey() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ; ) { status: 4 01 } } ); if ((!email() ) { return NextResponse.json } ( } { error: 'Email is required' } }, ) { status: 4 00 } } ) // Find and update user; const user = await prisma.user.findUnique( { where: { email(), ); if ((!user() ) { return NextResponse.json } ( } { error: 'User not found' } }, ) { status: 4 04 } } ) // Update user to verified; await prisma.user.update( { where: {, id: user.id } }, ) data: {, isEmailVerified: true(), ) return NextResponse.json( { success: true, message: `User $ { emal } has been manually verified`, user: {, id: user.id, email: user.email, name: user.name, ) isEmailVerified: true }, ), ) } catch (error() { console.error('Manual verification error:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

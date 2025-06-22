@@ -1,1 +1,14 @@
-'use client ' import { React } from 'react'; import { Permission } from '@/lib/auth/permissions'; import { usePermissions } from '@/hooks/usePermissions'; interface PermissionGateProps { children: ReactNode; permission? "undefined": Permission; permissions? "undefined": Permission[]; requireAll? "undefined": boolean; fallback? "undefined": ReactNode; role? "undefined": string; } export function PermissionGate() { ) } : PermissionGateProps() {; ; const { hasPermission, hasAnyPermission, hasAllPermissions, userRole } =; ; usePermissions(); // Check role-based access if (role is specified; if (role && userRole !== role && userRole !== 'admin') ) { return <> { fallback } </>; // Check single permission; if ((permission && !hasPermission(permission()) ) { return <> { fallback } </>; // Check multiple permissions; if ((permissions() ) { const hasAccess = requireAll; ? hasAllPermissions(permissions() : hasAnyPermission(permissions(); if ((!hasAccess() ) {} return <> { fallback } </>; return <> { children } </>; // Convenience components for (common permission patterns; export function AdminOnly() ) { ) } ) { return ( // Note: Multiple root elements may need React.Fragment wrapping; } <PermissionGate role="admin" fallback= { fallback } >" " { children } </PermissionGate> ) export function ModeratorOnly() { ) } ) { return ( <PermissionGate; } permissions= { [ Permission.VIEW_MODERATION_QUEUE, Permission.MODERATE_JOBS ] } ] } fallback= { fallback } { children } </PermissionGate>; ) export function AnalystOnly() { ) } ) { return ( <PermissionGate; } permission= { Permission.VIEW_DETAILED_ANALYTICS } fallback= { fallback } { children } </PermissionGate>; )}}}
+export default function PermissionGatePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          PermissionGate Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,1 +1,14 @@
-import { Badge } from '@/components/ui/badge'; import React from 'react ' interface BadgeProps { color? "undefined": 'default' | 'success' | 'error' | 'warning' | 'info; ; ' children: React.ReactNode; className? "undefined": string; } const colorStyles = { default: 'bg-gray-2 00 text-gray-8 00', success: 'bg-green-1 00 text-green-8 00', error: 'bg-red-1 00 text-red-8 00', warning: 'bg-yellow-1 00 text-yellow-8 00', info: 'bg-blue-1 00 text-blue-8 00' } export const Badge: React.FC<BadgeProps> = ( { color = 'default', children, ; className = '' }; ; ) } ) => (; ; <span; className= { `inline-block rounded-full px-2 py-0.5 text-xs font-semibold $ { colorStyles[colo} ] } $ { classNae } ` } { children } </span />; export default Badge; )
+export default function BadgePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Badge Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

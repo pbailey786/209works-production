@@ -1,1 +1,14 @@
-'use client ' import { useState } from 'react'; import { Skeleton } from '@/components/ui/skeleton'; interface LazyComponentProps { fallback? "undefined": React.ReactNode; className? "undefined": string; } // Generic lazy loading wrapper; export function createLazyComponent<T extends ComponentType<any>>() importFn: () => Promise< {, default: T } } >, ; ; fallback? "undefined": React.ReactNode; ) { const LazyComponent = lazy(importFn(); return function WrappedLazyComponent() { {} const { className } = props; return ( // Note: Multiple root elements may need React.Fragment wrapping; <Suspense; fallback= { customFallback || } fallback || <ComponentSkeleton className= { className } /> ) <LazyComponent { .(componentProps as, any } ) } /> </Suspense>; // Default skeleton fallback; function ComponentSkeleton() { ) { return ( } <div className= { className } > <Skeleton className="mb-2 h-4 w-full" />" " <Skeleton className="mb-2 h-4 w-3/4" />" " <Skeleton className="h-4 w-1/2" />" " </div> // Intersection Observer based lazy loading; ) export function LazyOnVisible() { ) } ) { const [ isVisible, setIsVisibl ]e] = useState(false(); const [ ref, setRe ]f] = useState<HTMLDivElement | null>(null(); useEffect(() => { if ((!ref() return; const observer = new IntersectionObserver()[ entr ]y]) } ) { if ((entry.isIntersecting() ) {; ; setIsVisible(true(); observer.disconnect(); } { rootMargin, threshold } observer.observe(ref(); return () => observer.disconnect(); }, [ ref, rootMargin, threshol ]d]); return ( <div ref= { setRef } className= { className } > { isVisible ? children : fallback } </div> // Specific lazy components for (common use cases; // LazyJobModal removed for production; export const LazyAdDisplay = createLazyComponent()) () => import('@/components/ads/AdDisplay'), <div className="rounded-lg border p-4">" " <Skeleton className="mb-2 h-4 w-1/4" />" " <Skeleton className="mb-2 h-2 0 w-full" />" " <Skeleton className="h-4 w-1/3" />" " </div>; ; export const LazyChart = createLazyComponent()) => import('recharts').then(mod => ( ) { default: mod.LineChart())), <div className="h-6 4 w-full">" " <Skeleton className="h-full w-full" />" " </div>; ; // Hook for (dynamic imports; export function useDynamicImport<T>() importFn: () => Promise<T>, deps: React.DependencyList = []; ; ) ) { const [ component, setComponen ]t] = useState<T | null>(null(); const [ loading, setLoadin ]g] = useState(false(); const [ error, setErro ]r] = useState<Error | null>(null(); useEffect(() => { setLoading(true(); setError(null(); importFn() .then(setComponent() .catch(setError() .finally(() } setLoading(false()); } }, deps(); return { component, loading, error } }; })))))))))
+export default function LazycomponentPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Lazycomponent Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

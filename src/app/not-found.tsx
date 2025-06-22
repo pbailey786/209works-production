@@ -1,1 +1,14 @@
-'use client ' import { Button } from '@/components/ui/button'; import { Home, Search, ArrowLeft } from 'lucide-react'; import Link from 'next/link '; export default function NotFound() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-5 0 to-indigo-1 00 px-4, sm:px-6, lg:px-8">" " <div className="w-full max-w-md text-center"> } " " { /* 4 04 Illustration * } / } <div className="mb-8">" " <div className="mx-auto mb-4 flex h-2 4 w-2 4 items-center justify-center rounded-full bg-blue-1 00">" " <Search className="h-1 2 w-1 2 text-blue-6 00" />" " </div> <h1 className="mb-2 text-6 xl font-bold text-gray-9 00">4 04</h1>" " <h2 className="mb-4 text-2 xl font-semibold text-gray-7 00">" " Page Not Found; </h2> </div> { /* Error Message * } / } <div className="mb-8">" " <p className="mb-4 text-gray-6 00">" " Oops! The page you're looking for (doesn't exist or may have been; moved. </p> <p className="text-sm text-gray-5 00">" " Don't worry, we'll help you find your way back to finding great; jobs! </p> </div> ) { /* Action Buttons * } / } <div className="space-y-4">" " <Button asChild className="w-full">" " <Link href="/">" " <Home className="mr-2 h-4 w-4" />" " Go Home; </Link> </Button> <Button asChild variant="outline" className="w-full">" " <Link href="/jobs">" " <Search className="mr-2 h-4 w-4" />" " Browse Jobs; </Link> </Button> <Button; variant="ghost"" ") onClick= { () => window.history.back( } } ) } className="w-full"" " <ArrowLeft className="mr-2 h-4 w-4" />"; " Go Back; </Button> </div> { /* Additional Help * } / } <div className="mt-8 rounded-lg bg-white/5 0 p-4" />" " <p className="mb-2 text-sm text-gray-6 00">" " Still can't find what you're looking for? </p> <Link; href="/contact"" " className="text-sm font-medium text-blue-6 00 underline hover:text-blue-8 00"" " >; Contact our support team; </Link> </div> </div> </div> */
+export default function NotfoundPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Notfound Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

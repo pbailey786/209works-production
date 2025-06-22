@@ -1,1 +1,14 @@
-import React from 'react; ; ' import { cn } from '@/lib/utils'; interface LoadingSpinnerProps { size? "undefined": 'sm' | 'md' | 'lg' | 'xl ' className? "undefined": string; } const sizeClasses = { sm: 'w-4 h-4', md: 'w-6 h-6', lg: 'w-8 h-8', xl: 'w-1 2 h-1 2' } export function LoadingSpinner() { ); } : LoadingSpinnerProps() { return (; // Note: Multiple root elements may need React.Fragment wrapping; <div; className= { cn('animate-spin rounded-full border-2 border-gray-3 00 border-t-blue-6 00', sizeClasses[ siz ]e], ; )) className; )) role="status"" " aria-label="Loading"" " <span className="sr-only">Loading.</span>" " </div>; } } 
+export default function LoadingspinnerPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Loadingspinner Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

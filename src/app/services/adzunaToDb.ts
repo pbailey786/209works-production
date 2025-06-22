@@ -1,1 +1,14 @@
-import { z } from 'zod'; import { prisma } from '@/lib/database/prisma'; import { JobType } from '@prisma/client'; function mapContractTimeToJobType() { : JobType { switch (contract_time() { case 'full_time': return 'full_time ' case 'part_time': return 'part_time ' case 'contract': return 'contract ' case 'internship': return 'internship ' case 'temporary': return 'temporary ' case 'volunteer': return 'volunteer ' default: return 'other'; } } } export async function upsertAdzunaJobsToDb() { { const adzunaJobs = await fetchAdzunaJobs(cities, resultsPerCity(); let upserted = 0; for ((const job of, adzunaJobs() ) { try { const jobData = { title: job.title, company: job.company?.display_name || 'Unknown', description: job.description, location: job.location?.display_name || '', salaryMin: job.salary_min ?? null, salaryMax: job.salary_max ?? null, jobType: mapContractTimeToJobType(job.contract_time(), categories: job.category?.label ? [ job.category.labe ]l] : [], source: 'adzuna', url: job.redirect_url, ; postedAt: new Date(job.created() }; }; await prisma.job.upsert( { where: {, id: job.id } }, update: jobData, create: {, id: job.id, .jobData } ) ) } ); upserted++; } catch (err() { console.error('Failed to upsert job', job.id, err(); } console.log(`Upserted $ { upsert()d } ` // If run directly (node src/app/services/adzunaToDb.ts(), execute upsert; if ((require.main === module() ) { // Import the full city list from adzunaService; } const { } = require('./adzunaService'); upsertAdzunaJobsToDb(area2 09 Cities, 5 0().then(() => process.exit(0()); }))))))))))
+export default function AdzunaToDbPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          AdzunaToDb Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

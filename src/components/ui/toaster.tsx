@@ -1,1 +1,14 @@
-import { useToast } from '@/hooks/use-toast'; import { useToast } from '@/components/ui/toast'; export function Toaster() { {; ; const { toasts } = useToast(); return ( // Note: Multiple root elements may need React.Fragment wrapping; <ToastProvider> ) { toasts.map(function() { id, title, description, action, .props()) {} } return ( <Toast key= { id } { .props } > <div className="grid gap-1">" " { title && <ToastTitle> { title } </ToastTitle> } { description && ( } <ToastDescription> { description } </ToastDescription> </div> { action } <ToastClose /> </Toast> <ToastViewport /> </ToastProvider> ))}}}
+export default function ToasterPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Toaster Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

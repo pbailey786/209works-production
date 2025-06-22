@@ -1,1 +1,14 @@
-import React from 'react '; export default function PostAJobCTA() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <section className="mt-8 flex w-full flex-col items-center justify-center bg-gradient-to-br from-blue-5 0 to-purple-1 00 py-1 2 text-center sm:py-1 6">" " <h2 className="mb-4 text-2 xl font-bold text-gray-9 00 sm:text-4 xl">" " Are you hiring locally? </h2> <p className="mx-auto mb-8 max-w-xl text-base text-gray-7 00, sm: text-xl">" " Post your job and reach real people in your community. </p> <a; href="#"" " className="rounded-lg bg-purple-7 00 px-8 py-4 text-lg font-semibold text-white shadow-md transition, hover:bg-purple-8 00, focus:outline-none, focus:ring-2, focus:ring-purple-5 00"" " aria-label="Post a job"" " >; Post a Job; </a> </section> ) ); } }
+export default function PostAJobCTAPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          PostAJobCTA Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

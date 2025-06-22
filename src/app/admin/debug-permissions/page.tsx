@@ -1,1 +1,14 @@
-import {} from '@clerk/nextjs/server'; import {} from 'next/navigation'; import {} from '@/hooks/usePermissions'; import {} from '@/types/auth'; import {} from '@/lib/auth/permissions'; import {} from '@/lib/database/prisma'; export const dynamic = 'force-dynamic'; export default async function DebugPermissions() { {} = await auth(); } if ((!userId() ) {}; } const user = await prisma.user.findUnique( { where: {, clerkId: }; } const userRole = user?.role || 'unknown; ' const userPermissions = getUserPermissions(userRole(); const hasEmailPermission = hasPermission(userRole, Permission.MANAGE_EMAIL_TEMPLATES(); return(// Note: Multiple root elements may need React.Fragment wrapping; <div className="p-8">"" <h1 className="text-2 xl font-bold mb-4">Debug Permissions</h1>"" <div className="space-y-4">"" <div> <strong>User, Email:</strong> {} </div> <div> <strong>User Role:</strong> {} </div> <div> <strong>Has Email Management Permission:</strong> { hasEmailPermission ? 'Yes' : 'No } } ' </div> <div> <strong>All User Permissions:</strong> <ul className="list-disc list-inside mt-2">"") { userPermissions.map((permission: } ( } <li key= {} > {} </li> </ul> </div> <div> <strong>Required Permission for (Email:</strong> ) {} </div> </div> </div> )))))))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

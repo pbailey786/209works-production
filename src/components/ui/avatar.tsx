@@ -1,1 +1,14 @@
-'use client ' import { cn } from '@/lib/utils'; const Avatar = React.forwardRef< React.ElementRef<typeof AvatarPrimitive.Root>, React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> >(( { className, .props } }, ref() => (; ; <AvatarPrimitive.Root; ref= { ref } className= { cn('relative flex size-1 0 shrink-0 overflow-hidden rounded-full', ; )) className; )) { .props } Avatar.displayName = AvatarPrimitive.Root.displayName; const AvatarImage = React.forwardRef< React.ElementRef<typeof AvatarPrimitive.Image>, React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> >(( { className, .props } }, ref() => (; ; <AvatarPrimitive.Image; ref= { ref } ) className= { cn('aspect-square size-full', className } ) } { .props } />; AvatarImage.displayName = AvatarPrimitive.Image.displayName; const AvatarFallback = React.forwardRef< React.ElementRef<typeof AvatarPrimitive.Fallback>, React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback> >(( { className, .props } }, ref() => (; ; <AvatarPrimitive.Fallback; ref= { ref } className= { cn('flex size-full items-center justify-center rounded-full bg-muted', ; )) className; )) { .props } AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName; export { Avatar, AvatarImage, AvatarFallback } } }; ))
+export default function AvatarPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Avatar Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

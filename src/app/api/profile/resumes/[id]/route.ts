@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; import { unlink } from 'fs/promises'; import { join } from 'path'; import path from "path"; "" // DELETE /api/profile/resumes/[ i ]d] - Delete a resume; export async function DELETE() { > } ); ) { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId(), ); if ((!user || user.role !== 'jobseeker') ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const resumeId = params.id; // Get the resume to delete; const resume = await prisma.resume.findFirst( { where: {, id: resumeId, ; ) userId: user.id }, ), ); if ((!resume() ) { return NextResponse.json( { error: 'Resume not found' } }, { status: 4 04()); // Delete the file from disk; try { const filePath = path.join(process.cwd(), 'public', resume.url(); await unlink(filePath() }; } } catch (fileError() { console.error('Error deleting file:', fileError(); // Continue with database deletion even if (file deletion fails } // If this was the default resume, set another one as default; if (resume.isDefault() ) { const otherResume = await prisma.resume.findFirst( { where: {, userId: user.id, id: {, not: resumeId } } }, ) orderBy: {, uploadedAt: 'desc' ), ) if ((otherResume() ) { await prisma.resume.update( } {} where: {, id: otherResume.id } }, ) data: {, isDefault: true(), ) // Delete the resume record; await prisma.resume.delete( { where: {, id: resumeId(), ) return NextResponse.json( { success: true, ) message: 'Resume deleted successfully' ) } catch (error() { console.error('Error deleting resume:', error(); return NextResponse.json } ( } { error: 'Failed to delete resume' } }, ) { status: 5 00 } } ) }}})
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

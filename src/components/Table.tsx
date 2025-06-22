@@ -1,1 +1,14 @@
-import { Table } from '@/components/ui/table'; import React from 'react '; interface TableColumn { header: string;, accessor: string; } interface TableProps { columns: TableColumn[];, data: Record<string, any>[]; className? "undefined": string; } export const Table: React.FC<TableProps> = ( { columns, data, className = '' } ) } ) => ( <div className= { `overflow-x-auto $ { classNae } ` } > <table className="min-w-full rounded border border-gray-2 00">" " <thead className="bg-gray-1 00">" " <tr>; ) { columns.map((col: any() => (; ; <th; } key= { col.accessor } className="border-b border-gray-2 00 px-4 py-2 text-left font-semibold"" " { col.header } </th> </tr> </thead> <tbody> ) { data.map((row, i() => ( } <tr key= { i } className="even:bg-gray-5 0">" ") { columns.map((col: any() => (; <td; } key= { col.accessor } className="border-b border-gray-1 00 px-4 py-2"" " { row[ col.accessor ] } ] } </td> </tr> </tbody> </table> </div>; export default Table; ))))))
+export default function TablePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Table Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

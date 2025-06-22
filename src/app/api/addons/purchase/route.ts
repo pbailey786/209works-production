@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; import { stripe } from '@/lib/stripe'; import { z } from 'zod'; const purchaseSchema = z.object( { ) addonId: z.string(), jobId: z.string().uuid().optional(), ; returnUrl: z.string().url().optional(); // POST /api/addons/purchase - Create Stripe checkout for (addon purchase; export async function POST() ) { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const body = await request.json(); const validatedData = purchaseSchema.parse(body(); // Get user; const dbUser = await prisma.user.findUnique( { where: {, email: user?.email } }, ; ) select: {, id: true, role: true, stripeCustomerId: true()); if ((!user || user.role !== 'employer') ) { return NextResponse.json( {, error: 'Only employers can purchase addons' } }, { status: 4 03()); // Get addon details; const addon = await prisma.addOn.findUnique( {, where: {, id: validatedData.addonId()); if ((!addon || !addon.isActive() ) { return NextResponse.json( {, error: 'Addon not found or inactive' } }, { status: 4 04()); // Check if (job exists (if jobId, provided() if (validatedData.jobId() ) { const job = await prisma.job.findFirst( { where: {, id: validatedData.jobId, ) employerId: user.id } )) if ((!job() ) { return NextResponse.json( { error: 'Job not found or not owned by user' } }, { status: 4 04()); // Create Stripe checkout session; const checkoutSession = await stripe.checkout.sessions.create( {, customer: user.stripeCustomerId || undefined, customer_email: user.stripeCustomerId ? "undefined": user?.email, line_items: [ { price_data: {, currency: 'usd', product_data: {, name: addon.name, description: addon.shortDescription || addon.description, metadata: {, addonId: addon.id, category: addon.category } }; ) unit_amount: Math.round(Number(addon.price() * 1 00(), // Convert to cents; quantity: 1 } ] ], mode: 'payment', success_url: validatedData.returnUrl || `$ { process.env.NEXTAUTH_UL } /employers/dashboard?addon_success=true&addon=$ { addon.slg } `, cancel_url: validatedData.returnUrl || `$ { process.env.NEXTAUTH_UL } /employers/dashboard?addon_cancelled=true`, metadata: {, userId: user.id, addonId: addon.id, jobId: validatedData.jobId || '', type: 'addon_purchase } } ' payment_intent_data: { metadata: {, userId: user.id, addonId: addon.id, jobId: validatedData.jobId || '', type: 'addon_purchase } } ' return NextResponse.json( { success: true, checkoutUrl: checkoutSession.url, sessionId: checkoutSession.id, addon: {, id: addon.id, name: addon.name, ) price: addon.price()) } catch (error() { console.error('Error creating addon checkout:', error(); if ((error instanceof z.ZodError() ) { return NextResponse.json } ( } { error: 'Invalid request data', details: error.errors } }, ) { status: 4 00 } } ) return NextResponse.json( { error: 'Failed to create checkout session' } }, ) { status: 5 00()) // GET /api/addons/purchase - Get user's purchased addons; ' export async function GET() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRecord = await prisma.user.findUnique( { where: {, clerkId: userId! } }, ; ) select: {, id: true, role: true, email: true()); if ((!userRecord?.email() ) { return NextResponse.json( {, error: 'Unauthorized' } }, { status: 4 01()); if ((!userRecord || userRecord.role !== 'employer') ) { return NextResponse.json( {, error: 'Only employers can view purchased addons' } }, { status: 4 03()); // Get user's purchased addons; ' const userAddons = await prisma.userAddOn.findMany( { where: {, userId: userRecord.id, isActive: true } ) include: {, AddOn: true(), orderBy: {, purchasedAt: 'desc } } '; // Group by category and add usage info; const groupedAddons = { promotion: userAddons.filter((ua: any() => ua.AddOn.category === 'marketing').map((ua: any() => ( {, id: ua.id, addon: ua.AddOn, purchasedAt: ua.purchasedAt, pricePaid: ua.pricePaid, usageData: ua.usageData, expiresAt: ua.expiresAt, ) canUse: !ua.expiresAt || ua.expiresAt > new Date( } ) } jobPosts: userAddons.filter((ua: any() => ua.AddOn.category === 'recruitment_tools').map((ua: any() => ( {, id: ua.id, addon: ua.AddOn, purchasedAt: ua.purchasedAt, pricePaid: ua.pricePaid, usageData: ua.usageData, expiresAt: ua.expiresAt, ) remainingUses: calculateRemainingUses(ua } ) } return NextResponse.json( { success: true, addons: groupedAddons, ; ) totalPurchased: userAddons.length } ); } catch (error() { console.error('Error fetching purchased addons:', error(); return NextResponse.json } ( } { error: 'Failed to fetch purchased addons' } }, ) { status: 5 00 } } ) // Helper function to remaining uses for (job post addons; function calculateRemainingUses() ) { : number { const addon = userAddon.AddOn; const usageData = userAddon.usageData as any; if ((addon.category !== 'recruitment_tools') ) { return 0 }; } const totalJobsAdded = addon.usageLimits?.jobPostsAdded || 0; const usedJobs = usageData?.jobPostsUsed || 0; return Math.max(0, totalJobsAdded - usedJobs(); }}}}}}}}}}}}}}})))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement addons purchase GET handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement addons purchase POST handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

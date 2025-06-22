@@ -1,1 +1,14 @@
-import { Alert } from '@/components/ui/alert'; import React from 'react ' interface AlertProps { type? "undefined": 'success' | 'error' | 'warning' | 'info; ; ' title? "undefined": string; children: React.ReactNode; className? "undefined": string; } const typeStyles = { success: 'bg-green-1 00 text-green-8 00 border-green-3 00', error: 'bg-red-1 00 text-red-8 00 border-red-3 00', warning: 'bg-yellow-1 00 text-yellow-8 00 border-yellow-3 00', info: 'bg-blue-1 00 text-blue-8 00 border-blue-3 00' } export const Alert: React.FC<AlertProps> = ( { type = 'info', title, children, className = '' } ) } ) => { const getRole = () } { switch (type() { case 'error': return 'alert ' case 'warning':; return 'alert; ; ' default:; ; return 'status'; } return ( // Note: Multiple root elements may need React.Fragment wrapping; <div; className= { `mb-4 rounded border-l-4 p-4 $ { typeStyles[typ} ] } $ { classNae } ` } ) role= { getRole( } ) } aria-live= { type === 'error' || type === 'warning' ? 'assertive' : 'polite' } { title && <h3 className="mb-1 font-semibold"> { title } </h3> } " " <div> { children } </div> </div>; export default Alert; 
+export default function AlertPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Alert Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

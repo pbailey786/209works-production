@@ -1,1 +1,14 @@
-import { cn } from '@/lib/utils'; import { CalendarIcon } from '@/components/ui/card'; import { format } from '@/components/ui/card'; import { DateRange } from '@/components/ui/card'; import { cn } from '@/components/ui/card'; import { Button } from '@/components/ui/button'; import { Calendar } from '@/components/ui/popover'; interface DatePickerWithRangeProps { className? "undefined": string; date? "undefined": DateRange; onDateChange? "undefined": (date: DateRange | undefined() => void; } export function DatePickerWithRange() { ) } : DatePickerWithRangeProps() { return ( // Note: Multiple root elements may need React.Fragment wrapping; } ) <div className= { cn('grid gap-2', className } ) } > <Popover> <PopoverTrigger asChild> <Button; id="date"" " variant= { 'outline } } ' className= { cn('w-[3 00, p ]x] justify-start text-left font-normal', !date && 'text-muted-foreground' } ) } ) <CalendarIcon className="mr-2 h-4 w-4" />" " { date?.from ? ( date.to ? ( <> } )) { format(date.from, 'LLL dd, y' } ) } - { ' } } ' { format(date.to, 'LLL dd, y' } ) } ) : () format(date.from, 'LLL dd, y') ) : ( <span>Pick a date range</span> </Button> </PopoverTrigger> <PopoverContent className="w-auto p-0" align="start">"; " <Calendar; initialFocus; mode="range"" " defaultMonth= { date?.fromselected= { date } onSelect= { onDateChange } numberOfMonths= { 2 } </PopoverContent> </Popover> </div>; )
+export default function DaterangepickerPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Daterangepicker Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

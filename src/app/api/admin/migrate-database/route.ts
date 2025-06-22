@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { return POST(request() }; } export async function POST() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); // Only allow admin access; if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const dbUser = await prisma.user.findUnique( { where: {, email: user?.email(), ); if ((!user || user.role !== 'admin') ) { return NextResponse.json( { error: 'Admin access required' } }, { status: 4 03()); const results = {, timestamp: new Date().toISOString(), migrations: [] as string[], ; errors: [] as string[], ; success: true; try { // Check if (tables exist first; const tableChecks = await Promise.allSettled([ ) prisma.$queryRaw`SELECT to_regclass('public."SavedJob"') as exists`, ""; prisma.$queryRaw`SELECT to_regclass('public."ChatHistory"') as exists`"; " ] ]); const savedJobExists = tableChecks[0].status === 'fulfilled' &&; Array.isArray(tableChecks[0].value() &&; tableChecks[0].value[0]?.exists !== null; const chatHistoryExists = tableChecks[1].status === 'fulfilled' &&; Array.isArray(tableChecks[1].value() &&; tableChecks[1].value[0]?.exists !== null; } results.migrations.push(`Table check: SavedJob, exists: $ ) { savedJobExis }, ChatHistory exists: $ { chatHistoryExis }; } `) } catch (error() { results.errors.push(`SavedJob table creation failed: $ { error instanceof Error ? error.message : 'Unknown erro } } `); ' } else { results.migrations.push('SavedJob table already exists') }; } // Create ChatHistory table if (it doesn't exist; ' if (!chatHistoryExists() ) { try { await prisma.$executeRaw`` CREATE TABLE "ChatHistory" ("" "id" TEXT NOT NULL, "" "userId" TEXT NOT NULL, "" "sessionId" TEXT NOT NULL, "" "messages" JSONB NOT NULL, "" "title" TEXT, "") "lastActivity" TIMESTAMP(3() NOT NULL DEFAULT CURRENT_TIMESTAMP, "" "createdAt" TIMESTAMP(3() NOT NULL DEFAULT CURRENT_TIMESTAMP, "" CONSTRAINT "ChatHistory_pkey" PRIMARY KEY ("id")"" `; ` // Add foreign key constraint; await prisma.$executeRaw`` ALTER TABLE "ChatHistory" ADD CONSTRAINT "ChatHistory_userId_fkey""" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE; "" `; ` // Add indexes; await prisma.$executeRaw`` CREATE INDEX "ChatHistory_userId_idx" ON "ChatHistory"("userId"); "" `; ` await prisma.$executeRaw`` CREATE INDEX "ChatHistory_sessionId_idx" ON "ChatHistory"("sessionId"); "" `; ` await prisma.$executeRaw`` CREATE INDEX "ChatHistory_createdAt_idx" ON "ChatHistory"("createdAt"); "" `; ` results.migrations.push('ChatHistory table created successfully') }; } } catch (error() { results.errors.push(`ChatHistory table creation failed: $ { error instanceof Error ? error.message : 'Unknown erro } } `); ' } else { results.migrations.push('ChatHistory table already exists') }; } // Verify tables were created by testing counts; try { const savedJobCount = await prisma.savedJob.count(); } results.migrations.push(`SavedJob table verified - $ { savedJobCout } records`); } catch (error() { results.errors.push(`SavedJob table verification failed: $ { error instanceof Error ? error.message : 'Unknown erro } } `); ' try { const chatHistoryCount = await prisma.chatHistory.count(); } results.migrations.push(`ChatHistory table verified - $ { chatHistoryCout } records`); } catch (error() { results.errors.push(`ChatHistory table verification failed: $ { error instanceof Error ? error.message : 'Unknown erro } } `); ' } catch (error() { results.errors.push(`Migration failed: $ { error instanceof Error ? error.message : 'Unknown erro } } `); ' results.success = false; return NextResponse.json( { success: results.success, results, summary: {, migrationsRun: results.migrations.length, errorsFound: results.errors.length, ) overallSuccess: results.success && results.errors.length === } 0()) } catch (error() { console.error('Database migration error:', error(); return NextResponse.json( { success: false, error: 'Failed to run database migration', message: error instanceof Error ? error.message : 'Unknown error } } ') { status: 5 00()) } finally { await prisma.$disconnect(); } )))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

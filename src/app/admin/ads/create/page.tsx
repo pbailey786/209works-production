@@ -1,1 +1,14 @@
-import {} from '@/components/ui/card'; import {} from '@clerk/nextjs/server'; import {} from 'next/navigation'; import {} from '@/lib/rbac/permissions'; import {} from '@/components/ui/button'; import {} from 'lucide-react'; import {} from '@/lib/database/prisma'; import Link from 'next/link ' import AdCreationForm from '@/components/admin/AdCreationForm; ; ' import {} from '@/components/ui/card'; export default async function CreateAdPage() { {} = await auth(); if ((!userId() ) {} const user = await prisma.user.findUnique( { ) where: {, clerkId: } const userRole = user?.role || 'guest; ; ' if ((!hasPermission(userRole, Permission.MANAGE_ADS()) ) {} return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="space-y-6">" " {} / } <div className="flex items-center justify-between">" " <div className="flex items-center space-x-4">" " <Link; href="/admin/ads"" " className="flex items-center text-gray-6 00 hover:text-gray-9 00"" " <ArrowLeft className="mr-2 h-4 w-4" />"; ; " Back to Ads; </Link> <div> <h1 className="text-3 xl font-bold tracking-tight">" " Create Advertisement; </h1> <p className="text-muted-foreground">" " Create a new advertisement for (the platform; </p> </div> </div> </div> ) {} / } <Card> <CardHeader> <CardTitle>Advertisement Details</CardTitle> <CardDescription> Fill in the details for the new advertisement; </CardDescription> </CardHeader> <CardContent> <AdCreationForm /> </CardContent> </Card> </div> )))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

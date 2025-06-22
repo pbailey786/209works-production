@@ -1,1 +1,14 @@
-import React, { useState } from 'react'; interface ChatInputProps { onSendMessage: (message: string() => void; disabled? "undefined": boolean; isLoading? "undefined": boolean; placeholder? "undefined": string; } export default function ChatInput() {; } : ChatInputProps() { const [ message, setMessag ]e] = useState(''); const isDisabled = disabled || isLoading; const handleSubmit = (e: React.FormEvent() => {; ; e.preventDefault(); if ((message.trim() && !disabled() ) { onSendMessage(message.trim()); setMessage(''); } const handleKeyPress = (e: React.KeyboardEvent() => { if ((e.key === 'Enter' && !e.shiftKey() ) {; ; e.preventDefault(); handleSubmit(e(); } return ( // Note: Multiple root elements may need React.Fragment wrapping; <form onSubmit= { handleSubmit } className="flex gap-2 border-t p-4">" " <input; type="text"" " value= { message } ) onChange= { (e() => setMessage(e.target.value() } } ) } onKeyPress= { handleKeyPress } placeholder= { placeholder } disabled= { isDisabled } className="flex-1 rounded-lg border border-gray-3 00 px-3 py-2 focus: outline-none, focus:ring-2, focus:ring-green-5 00, disabled:opacity-5 0"" " />; <button; type="submit"" " disabled= { !message.trim() || isDisabled } className="rounded-lg bg-gradient-to-r from-blue-6 00 to-green-6 00 px-4 py-2 text-white hover: from-blue-7 00, hover:to-green-7 00, disabled:cursor-not-allowed, disabled:opacity-5 0"" " >; Send; </button> </form>; })))))))
+export default function ChatInputPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          ChatInput Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

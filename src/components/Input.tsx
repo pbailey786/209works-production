@@ -1,1 +1,14 @@
-import { Input } from '@/components/ui/input'; import React from 'react '; interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> { label? "undefined": string; error? "undefined": string; } export const Input: React.FC<InputProps> = ( { label, error, ; className = '', ; ; .props; } ) } ) => { return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="mb-4">" " { label && ( } <label className="mb-1 block font-medium text-gray-7 00"> { label } </label>" " <input; className= { `w-full rounded border px-3 py-2 focus: outline-none, focus:ring-2, focus:ring-blue-5 00 $ { error ? 'border-red-5 00' : 'border-gray-3 0 } } $ { classNae } ` } ' { .props } { error && <p className="mt-1 text-sm text-red-6 00"> { error } </p> } " " </div>; export default Input; ))
+export default function InputPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Input Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

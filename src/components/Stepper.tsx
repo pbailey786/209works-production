@@ -1,1 +1,14 @@
-import React from 'react '; interface StepperProps { steps: string[];, activeStep: number; className? "undefined": string; } export const Stepper: React.FC<StepperProps> = ( { steps, activeStep, className = '' } ) } ) => ( <div className= { `flex items-center gap-4 $ { classNae } ` } > ) { steps.map((label, idx() => ( }; <div key= { label } className="flex items-center gap-2">"; ; " <div; className= { `flex h-8 w-8 items-center justify-center rounded-full border-2 font-bold transition-colors $ { idx < activeStep ? 'border-blue-6 00 bg-blue-6 00 text-white' : idx === activeStep ? 'border-blue-6 00 bg-white text-blue-6 00' : 'border-gray-3 00 bg-white text-gray-4 0 } } ` } ' { idx + } 1 } </div />; <span; className= { `text-sm $ { idx <= activeStep ? 'text-blue-6 00' : 'text-gray-4 0 } } ` } ' { label } </span /> { idx < steps.length - 1 && <span className="h-0.5 w-8 bg-gray-3 00" / } /> } " " </div> </div>; export default Stepper; ))
+export default function StepperPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Stepper Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

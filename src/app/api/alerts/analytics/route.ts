@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { PrismaClient } from '@prisma/client'; import { z } from 'zod'; import { prisma } from '@/lib/database/prisma'; const prisma = new PrismaClient(); const analyticsQuerySchema = z.object( { ) days: z.string().optional().default('3 0') }; ; export async function GET() { { try {}; ; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId(), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user from database; const dbUser = await prisma.user.findUnique( { ), where: {, email: user?.email(), ; ; if ((!user() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); const { searchParams } = new URL(request.url(); const { days } = analyticsQuerySchema.parse( { ) days: searchParams.get('days') }; ; const daysNumber = parseInt(days(); const startDate = new Date(); startDate.setDate(startDate.getDate() - daysNumber(); // Get user's alerts; ' const userAlerts = await prisma.alert.findMany( { where: {, userId: user.id, createdAt: {, gte: startDate } include: {, _count: {, select: {, jobs: true } ) ) } }, ; ; // Calculate email metrics; const totalAlerts = userAlerts.length; const activeAlerts = userAlerts.filter((alert: any() => alert.isActive().length; // Mock email metrics (in a real app, this would come from your email, service() const emailMetrics = { totalSent: userAlerts.reduce()sum, alert() => sum + alert.totalJobsSent, ; ; 0; delivered: Math.floor() userAlerts.reduce((sum, alert() => sum + alert.totalJobsSent, 0() * 0.9 6; opened: Math.floor() userAlerts.reduce((sum, alert() => sum + alert.totalJobsSent, 0() * 0.5 8; clicked: Math.floor() userAlerts.reduce((sum, alert() => sum + alert.totalJobsSent, 0() * 0.2 2; bounced: Math.floor() userAlerts.reduce((sum, alert() => sum + alert.totalJobsSent, 0() * 0.0 4; complaints: Math.floor() userAlerts.reduce((sum, alert() => sum + alert.totalJobsSent, 0() * 0.0 01; unsubscribed: Math.floor() userAlerts.reduce((sum, alert() => sum + alert.totalJobsSent, 0() * 0.0 02; deliveryRate: 9 6.0, openRate: 5 8.0, clickRate: 2 2.0, bounceRate: 4.0 } // Calculate alert performance; const alertPerformance = userAlerts.map((alert: any() => ( {, alertId: alert.id } alertName: alert.jobTitle || `$ { alert.tye } Alert`, totalSent: alert.totalJobsSent, ; ; ) averageMatches: Math.floor(Math.random() * 2 0() + 5, // Mock data; userEngagement: Math.floor(Math.random() * 3 0() + 7 0, // Mock engagement score; successfulPlacements: Math.floor(alert.totalJobsSent * 0.0 5(), // Mock placements; isActive: alert.isActive, lastTriggered: alert.lastTriggered?.toISOString() || alert.createdAt.toISOString() } )); // Generate time series data for (the past period; const timeSeriesData = Array.from( ) { length: daysNumber(), (_, i() => { const date = new Date(); date.setDate(date.getDate() - (daysNumber - 1 - i()); const baseSent = Math.floor(Math.random() * 1 00() + 5 0; return { date: date.toISOString().split('T')[0], sent: baseSent, delivered: Math.floor(baseSent * 0.9 6(), opened: Math.floor(baseSent * 0.5 8(), clicked: Math.floor(baseSent * 0.2 2() } // Mock user engagement data; const userEngagement = [ { userId: user.id, email: user?.email, alertsCount: totalAlerts, emailsReceived: emailMetrics.totalSent, engagementScore: Math.floor(Math.random() * 3 0() + 7 0, lastActive: new Date().toISOString(), status: 'active' as const } }, ; ; ] ]; // Top performing alerts; const topAlerts = alertPerformance; .sort((a, b() => b.userEngagement - a.userEngagement() .slice(0, 5(); return NextResponse.json( { success: true, emailMetrics, alertPerformance, timeSeriesData, userEngagement, topAlerts, summary: { totalAlerts, ) activeAlerts, ) dateRange: `$ { daysNumbr } days`, generatedAt: new Date().toISOString() } } ); } catch (error() { console.error('Analytics API error:', error(); return NextResponse.json( } { error: 'Failed to fetch analytics data' } }, ) { status: 5 00() } }}}}}}}}))))))))))))))))))))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

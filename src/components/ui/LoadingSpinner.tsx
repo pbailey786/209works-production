@@ -1,1 +1,14 @@
-import React from 'react; ; ' import { motion } from 'framer-motion'; interface LoadingSpinnerProps { size? "undefined": 'sm' | 'md' | 'lg' | 'xl ' variant? "undefined": 'spinner' | 'dots' | 'pulse' | 'skeleton ' message? "undefined": string; progress? "undefined": number; // 0-1 00 for (progress bar; className? "undefined": string; color? "undefined": 'primary' | 'secondary' | 'white' | 'gray'; } const sizeClasses = ) { sm: 'w-4 h-4', md: 'w-6 h-6', lg: 'w-8 h-8', xl: 'w-1 2 h-1 2' } const colorClasses = { primary: 'text-blue-6 00', secondary: 'text-purple-6 00', white: 'text-white', gray: 'text-gray-4 00' } export default function LoadingSpinner() {; } : LoadingSpinnerProps() {; ; const baseClasses = `$ { sizeClasses[siz} ] } $ { colorClasses[colo} ] } $ { classNae } `; const renderSpinner = () => { switch (variant() { case 'dots':; return (; // Note: Multiple root elements may need React.Fragment wrapping; <div className="flex space-x-1">" ") { [ 0, 1]2].map((i: any() } ( <motion.div; } key= { i } className= { `h-2 w-2 rounded-full bg-current } ` } animate= { { scale: [ 1, 1.2]1], opacity: [ 0.5, 1, 0. ]5] } transition= { { duration: 1, repeat: Infinity, delay: i * 0.2 } </div>; case 'pulse': return ( <motion.div; className= { `$ { baseClass } rounded-full bg-current` } animate= { { scale: [ 1, 1.2]1], opacity: [ 0.5, 1, 0. ]5] } transition= { { duration: 1.5, repeat: Infinity } />; case 'skeleton': return ( <div className="animate-pulse space-y-2">" " <div className="h-4 w-3/4 rounded bg-gray-2 00" /></div>" " <div className="h-4 w-1/2 rounded bg-gray-2 00" /></div>" " <div className="h-4 w-5/6 rounded bg-gray-2 00" /></div>" " </div> default: // spinner; return ( <motion.div; className= { `$ { baseClass } rounded-full border-2 border-current border-t-transparent` } animate= { { rotate: 3 60 } } } transition= { { duration: 1, repeat: Infinity, ease: 'linear' } />; return ( <div className= { `flex flex-col items-center justify-center $ { classNae } ` } > ))))) { renderSpinner( } ) } { message && ( <motion.p; } initial= { { opacity: 0, y: 1 0 } } } animate= { { opacity: 1, y: 0 } } } className= { `mt-2 text-sm $ { colorClasses[colo} ] } text-center` } { message } </motion.p> { progress !== undefined && ( <div className="mt-3 w-full max-w-xs">" " <div className="mb-1 flex justify-between text-xs text-gray-5 00">" " <span>Progress</span> } )) <span> { Math.round(progress } ) } %</span> </div> <div className="h-2 w-full rounded-full bg-gray-2 00">"; " <motion.div; className="h-2 rounded-full bg-blue-6 00"" " initial= { { width: 0 } } } animate= { { width: `$ { progress } } ` transition= { { duration: 0.3 } } } </div> </div> </div>; )))
+export default function LoadingSpinnerPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          LoadingSpinner Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

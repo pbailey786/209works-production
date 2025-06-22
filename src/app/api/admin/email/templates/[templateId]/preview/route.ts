@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; import { TemplateManager } from '@/lib/email/template-manager'; export async function GET() { > } ); ) { try {; const session = await auth() as any; } if ((!user?.email() ) {} return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Check if (user is admin; const user = await prisma.user.findUnique( ) { where: {, email: user?.email } }, ; ) select: {, role: true(), ); if ((user?.role !== 'admin') ) { return NextResponse.json( { error: 'Forbidden' } }, { status: 4 03()); const resolvedParams = await params; const templateId = resolvedParams.templateId; const { searchParams } = new URL(request.url(); const format = searchParams.get('format') || 'json'; // Get template manager; const templateManager = new TemplateManager(); // Generate sample data based on template type; const sampleData = getSampleDataForTemplate(templateId(); try { // Render the template with sample data; const rendered = await templateManager.renderTemplate(templateId, sampleData(); if ((format === 'html') ) { // Return raw HTML for (new tab viewing; return new NextResponse(rendered.html, ) { headers: { ) 'Content-Type': 'text/html' ) // Return JSON with template data; return NextResponse.json( { templateId, subject: rendered.subject, html: rendered.html, ) sampleData } } ) } catch (templateError() { console.error('Template rendering error:', templateError(); return NextResponse.json( { error: 'Failed to render template', details: templateError instanceof Error ? templateError.message : 'Unknown error } } ') { status: 4 00()) } catch (error() { console.error('Preview error:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) function getSampleDataForTemplate() { { const baseData = { user: {, name: 'John Doe', email: 'john.doe@example.com', firstName: 'John', lastName: 'Doe', company: {, name: '2 09 Works', website: 'https://2 09.works', logo: 'https://2 09.works/logo.png', supportEmail: 'support@2 09.works', unsubscribeUrl: 'https://2 09.works/unsubscribe', switch (templateId() { case 'welcome': case 'welcome-job-seeker': return { .baseData, userName: 'John Doe', loginUrl: 'https://2 09.works/signin', unsubscribeUrl: 'https://2 09.works/unsubscribe', welcomeMessage: 'Welcome to 2 09 Works! We\'re excited to help you find your next opportunity in the Central Valley.', ' nextSteps: [ 'Complete your profile', 'Upload your resume', 'Start browsing jobs'] ] case 'welcome-employer': return { .baseData, companyName: 'Tech Solutions Inc.', contactName: 'Jane Smith', loginUrl: 'https://2 09.works/employers/signin', unsubscribeUrl: 'https://2 09.works/unsubscribe' case 'job-alert': return { .baseData, jobs: [ {, id: '1', title: 'Software Developer', company: 'Tech Solutions Inc.', location: 'Modesto, CA', salary: '$7 5, 0 00 - $9 5, 0 00', url: 'https://2 09.works/jobs/1', description: 'Join our growing team as a Software Developer.' {, id: '2', title: 'Marketing Manager', company: 'Local Business Co.', location: 'Stockton, CA', salary: '$6 0, 0 00 - $8 0, 0 00', url: 'https://2 09.works/jobs/2', description: 'Lead our marketing efforts in the Central Valley.' } ] ], searchCriteria: 'Software Developer in Modesto, CA', totalJobs: 1 5 }; case 'application-confirmation': return { .baseData, job: {, id: '1', title: 'Software Developer', company: 'Tech Solutions Inc.', location: 'Modesto, CA', url: 'https://2 09.works/jobs/1', applicationDate: new Date().toLocaleDateString(), applicationId: 'APP-2 02 4-0 01' }; case 'employer-welcome': return { .baseData, employer: {, name: 'Tech Solutions Inc.', contactName: 'Jane Smith', email: 'jane@techsolutions.com', dashboardUrl: 'https://2 09.works/employer/dashboard', postJobUrl: 'https://2 09.works/employer/post-job' }; case 'password-reset': return { .baseData, userName: 'John Doe', resetUrl: 'https://2 09.works/reset-password?token = sample-token', expiryTime: '2 4 hours' case 'weekly-digest': return { .baseData, userName: 'Sarah Johnson', jobs: [ {, id: '1', title: 'Marketing Manager', company: 'Local Business Inc', location: 'Modesto, CA', salary: '$6 0, 0 00 - $7 5, 0 00', url: 'https://2 09.works/jobs/1' {, id: '2', title: 'Registered Nurse', company: 'Central Valley Hospital', location: 'Turlock, CA', salary: '$7 0, 0 00 - $8 5, 0 00', url: 'https://2 09.works/jobs/2' {, id: '3', title: 'Elementary Teacher', company: 'Modesto City Schools', location: 'Modesto, CA', salary: '$5 5, 0 00 - $7 0, 0 00', url: 'https://2 09.works/jobs/3' } ] ], unsubscribeUrl: 'https://2 09.works/unsubscribe' }; case 'application-confirmation': return { .baseData, userName: 'Alex Rodriguez', jobTitle: 'Marketing Manager', companyName: 'Central Valley Marketing', applicationDate: new Date().toLocaleDateString(), jobUrl: 'https://2 09.works/jobs/1 23' case 'new-applicant': return { .baseData, employerName: 'Maria Garcia', jobTitle: 'Marketing Manager', applicantName: 'Alex Rodriguez', applicantEmail: 'alex.rodriguez@example.com', applicationDate: new Date().toLocaleDateString(), dashboardUrl: 'https://2 09.works/employers/dashboard' case 'job-posting-confirmation': return { .baseData, employerName: 'Maria Garcia', jobTitle: 'Marketing Manager', jobId: 'JOB-4 56', jobUrl: 'https://2 09.works/jobs/4 56', dashboardUrl: 'https://2 09.works/employers/dashboard' case 'system-notification': return { .baseData, title: 'System Maintenance Notice', message: 'We will be performing scheduled maintenance on our servers tonight from, 2:0 0 AM to, 4:0 0 AM PST. During this time, the platform may be temporarily unavailable.' } } case 'email-verification': return { .baseData, verificationUrl: 'https://2 09.works/verify-email?token = sample-token', expiryTime: '2 4 hours', default: return { .baseData, message: 'This is a sample email template preview.', title: 'Sample Email'; } } }}}}}}}}}}}}}}}}}}))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

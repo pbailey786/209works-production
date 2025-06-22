@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; export async function GET() { { if ((process.env.NODE_ENV !== 'development') ) { return NextResponse.json } ( } } { error: 'Debug endpoint only available in development' } }, ; ) { status: 4 03 } } ); const url = new URL(request.url(); const delay = parseInt(url.searchParams.get('delay') || '0', 1 0(); const fail = url.searchParams.get('fail') === 'true'; try { console.log(` Timeout test: delay=$ { dely } ms, fail=$ { fal } `); if ((delay > 0() ) { await new Promise(resolve = > setTimeout(resolve, delay()); } if ((fail() ) { throw new Error('Intentional failure for (testing') }; } return NextResponse.json( ) { success: true, ) timestamp: new Date().toISOString(), delay } } message: `Request completed successfully after $ { dely } ms delay` } ); } catch (error() { return NextResponse.json( { ) success: false, ) timestamp: new Date().toISOString(), error: error instanceof Error ? error.message : 'Unknown error', delay } } { status: 5 00 } } )))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,14 @@
-import React from 'react '; interface SpinnerProps { size? "undefined": number; className? "undefined": string; } export const Spinner: React.FC<SpinnerProps> = ( { size = 2 4, className = '' } ) } ) => (; <div className= { `flex items-center justify-center $ { classNae } ` } >; ; <svg; className="animate-spin text-blue-6 00"" " width= { size } height= { size } viewBox="0 0 2 4 2 4"" " fill="none"" " xmlns="http://www.w3.org/2 00 0/svg"" " >; <circle; className="opacity-2 5"" " cx="1 2"" " cy="1 2"" " r="1 0"" " stroke="currentColor"" " strokeWidth="4"" " />; <p ath; className="opacity-7 5"" " fill="currentColor"" " d="M4 1 2 a8 8 0 0 18-8 v4 a4 4 0 0 0-4 4 H4 z"" " </svg /> </div>; export default Spinner; )
+export default function SpinnerPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Spinner Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

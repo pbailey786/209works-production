@@ -1,1 +1,14 @@
-'use client' import React, { useState } from '@/components/ui/card'; import { Eye, EyeOff } from 'lucide-react'; interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> { label? "undefined": string; error? "undefined": string }; } export const PasswordInput: React.FC<PasswordInputProps> = ( { label, error, ; className = '', ; .props }; ) } ) => { const [ showPassword, setShowPasswor ]d] = useState(false(); const togglePasswordVisibility = () } {; setShowPassword(!showPassword(); } return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="mb-4">"" { label && } ( } <label className="mb-2 block text-sm font-medium text-gray-7 00"> { label } </label>"" <div className="relative">"" <input; type= { showPassword ? 'text' : 'password } } ' className= { `w-full rounded-lg border border-gray-3 00 px-4 py-3 pr-1 2 focus: border-transparent, focus:ring-2, focus:ring-[#2 d4, a3 ]e] $ { error ? 'border-red-5 00, focus:ring-red-5 00' : any } } $ { classNae } ` } { .props } />; <button; type="button""" onClick= { togglePasswordVisibilit } } y } className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-5 00 hover: text-gray-7 00, focus:outline-none, focus:text-[#2 d4, a3 ]e]""" tabIndex= { - } 1 } { showPassword ? ( <EyeOff className="h-5 w-5" />""))) ) : ( <Eye className="h-5 w-5" / } > } "" </button> </div> { error && <p className="mt-1 text-sm text-red-6 00"> { error } </p> } "" </div>; export default PasswordInput; )
+export default function PasswordInputPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          PasswordInput Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

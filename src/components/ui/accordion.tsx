@@ -1,1 +1,14 @@
-import { ChevronDownIcon } from '@/components/ui/card'; import { cn } from '@/lib/utils'; 'use client ' const Accordion = AccordionPrimitive.Root; const AccordionItem = React.forwardRef< React.ElementRef<typeof AccordionPrimitive.Item>, React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> >(( { className, .props } }, ref() => (; ; <AccordionPrimitive.Item; ref= { ref } ) className= { cn('border-b', className } ) } { .props } />; AccordionItem.displayName = 'AccordionItem ' const AccordionTrigger = React.forwardRef< React.ElementRef<typeof AccordionPrimitive.Trigger>, React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> >(( { className, children, .props } }, ref() => ( <AccordionPrimitive.Header className="flex">"; ; " <AccordionPrimitive.Trigger; ref= { ref } className= { cn('flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline [ &[data-state=ope ]n]>svg]:rotate-1 80', ; )) className; )) { .props } { children } <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform duration-2 00" />" " </AccordionPrimitive.Trigger> </AccordionPrimitive.Header> AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName; const AccordionContent = React.forwardRef< React.ElementRef<typeof AccordionPrimitive.Content>, React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> >(( { className, children, .props } }, ref() => (; ; <AccordionPrimitive.Content; ref= { ref } className= { cn('overflow-hidden text-sm data-[ state=close ]d]:animate-accordion-up data-[ state=ope ]n]:animate-accordion-down', ; )) className; )) { .props } <div className="pb-4 pt-0"> { children } </div>" " </AccordionPrimitive.Content> AccordionContent.displayName = AccordionPrimitive.Content.displayName; export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } } }; ))
+export default function AccordionPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Accordion Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

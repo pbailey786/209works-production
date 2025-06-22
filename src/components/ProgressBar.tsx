@@ -1,1 +1,14 @@
-import React from 'react '; interface ProgressBarProps { value: number; // 0-1 00; color? "undefined": string; className? "undefined": string; } export const ProgressBar: React.FC<ProgressBarProps> = ( { value, color = 'bg-blue-6 00', className = '' } ) } ) => (; <div className= { `h-4 w-full rounded bg-gray-2 00 $ { classNae } ` } >; ; <div; className= { `h-4 rounded $ { colr } transition-all duration-3 00` } ) style= { { width: `$ { Math.min(Math.max(value, 0(), 1 } 0 } %` } } ></div> <span className="mt-1 block text-right text-xs text-gray-7 00">" " { Math.round(value } ) } % </span> </div>; export default ProgressBar; )
+export default function ProgressBarPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          ProgressBar Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

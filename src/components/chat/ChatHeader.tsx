@@ -1,1 +1,14 @@
-import { XMarkIcon, SparklesIcon } from '@heroicons/react/2 4/outline'; interface JobGenieContextInfo { hasCompanyInfo: boolean;, hasKnowledgeBase: boolean;, knowledgeCategories: string[]; } interface ChatHeaderProps { onClose: () => void;, contextInfo: JobGenieContextInfo | null; } export default function ChatHeader() { : ChatHeaderProps() { return (; // Note: Multiple root elements may need React.Fragment wrapping; <div className="bg-gradient-to-r from-[#2 d4, a3 ]e] to-[#1 d3, a2 ]e] p-4 text-white">" " <div className="flex items-center justify-between">" " <div className="flex items-center space-x-2">" " <div className="rounded-full bg-[#9, fdf9 ]f]/2 0 p-1" />" " <SparklesIcon className="h-5 w-5 text-[#9, fdf9 ]f]" />" " </div> <div> <h3 className="font-semibold">JobsGPT</h3>" " <p className="text-xs opacity-9 0">Ask me about this job</p>" " </div> </div> <button; } onClick= { onClos } } e } className="rounded text-white/7 0 transition-colors hover: text-white, focus:outline-none, focus:ring-2, focus:ring-white/2 0"" " aria-label="Close chat"" " <XMarkIcon className="h-5 w-5" />" " </button> </div> { /* Context Indicator * } / } { contextInfo && ( <div className="mt-2 text-xs">" " <div className="flex items-center space-x-2 text-white/8 0" />" " <div className="h-2 w-2 rounded-full bg-[#9, fdf9 ]f]"></div>" " <span> } Connected { ' } }; ' { contextInfo.hasCompanyInfo; ? 'Company info loaded' } : 'Basic info loaded' } { contextInfo.hasKnowledgeBase && } ` $ { contextInfo.knowledgeCategories.lengh } knowledge categories` } </span> </div> </div> </div> )) */
+export default function ChatHeaderPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          ChatHeader Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

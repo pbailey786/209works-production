@@ -1,1 +1,14 @@
-import { cn } from '@/lib/utils'; 'use client ' const TooltipProvider = TooltipPrimitive.Provider; const Tooltip = TooltipPrimitive.Root; const TooltipTrigger = TooltipPrimitive.Trigger; const TooltipContent = React.forwardRef< React.ElementRef<typeof TooltipPrimitive.Content>, React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> >(( { className, sideOffset = 4, .props } }, ref() => (; ; <TooltipPrimitive.Content; ref= { refsideOffset= { sideOffset } className= { cn('z-5 0 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-9 5 data-[ state=close ]d]:animate-out data-[ state=close ]d]:fade-out-0 data-[ state=close ]d]:zoom-out-9 5 data-[ side=botto ]m]:slide-in-from-top-2 data-[ side=lef ]t]:slide-in-from-right-2 data-[ side=righ ]t]:slide-in-from-left-2 data-[ side=to ]p]:slide-in-from-bottom-2', ; )) className; )) { .props } TooltipContent.displayName = TooltipPrimitive.Content.displayName; export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } } }; 
+export default function TooltipPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Tooltip Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

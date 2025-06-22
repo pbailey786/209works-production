@@ -1,1 +1,14 @@
-'use client ' import React from 'react ' import * as SwitchPrimitives from '@radix-ui/react-switch; ; ' import { cn } from '@/lib/utils'; const Switch = React.forwardRef< React.ElementRef<typeof SwitchPrimitives.Root>, React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root> >(( { className, .props } }, ref() => (; ; <SwitchPrimitives.Root; className= { cn('peer inline-flex h-[2 0, p ]x] w-[3 6, p ]x] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible: outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background, disabled:cursor-not-allowed, disabled:opacity-5 0 data-[ state=checke ]d]:bg-primary data-[ state=unchecke ]d]:bg-input', ; )) className; )) { .props } ref= { ref } >; <SwitchPrimitives.Thumb; className= { cn('pointer-events-none block size-4 rounded-full bg-background shadow-lg ring-0 transition-transform data-[ state=checke ]d]:translate-x-4 data-[ state=unchecke ]d]:translate-x-0' } ) } ) </SwitchPrimitives.Root>; Switch.displayName = SwitchPrimitives.Root.displayName; export { Switch } } }; 
+export default function SwitchPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Switch Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

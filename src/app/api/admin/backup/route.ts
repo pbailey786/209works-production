@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; import { createServerSupabaseClient } from '@/lib/supabase/server'; import { createDatabaseBackup } from '@/lib/backup/database-backup'; interface BackupResult { success: boolean; backupId? "undefined": string; filename? "undefined": string; size? "undefined": number; tables? "undefined": Record<string, number>; error? "undefined": string; timestamp? "undefined": string }; } // GET - List all backups; export async function GET() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!session?.user || (session.user as, any().role !== 'admin') ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get backup records from database; const backups = await prisma.systemBackup.findMany( { orderBy: {, createdAt: 'desc' ), ; take: 5 0, // Last 5 0, backups(); return NextResponse.json( { success: true, ) backups: backups.map((backup: any() => ( {, id: backup.id, filename: backup.filename, size: backup.size, status: backup.status, type: backup.type, createdAt: backup.createdAt, metadata: backup.metadata() } catch (error() { console.error('Error fetching backups:', error(); return NextResponse.json } ( } { error: 'Failed to fetch backups' } }, ) { status: 5 00 } } ) // POST - Create new backup; export async function POST() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const dbUser = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!session?.user || (session.user as, any().role !== 'admin') ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const { } = await req.json(); const result = await createDatabaseBackup(type, (session.user as, any().id(); if ((result.success() ) { return NextResponse.json(result() }; } } else { return NextResponse.json(result, { status: 5 00()); } catch (error() { console.error('Error creating backup:', error(); return NextResponse.json } ( } { error: 'Failed to create backup' } }, ) { status: 5 00 } } ) // DELETE - Delete backup; export async function DELETE() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRecord = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!session?.user || (session.user as, any().role !== 'admin') ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const { searchParams } = new URL(req.url(); const backupId = searchParams.get('id'); if ((!backupId() ) { return NextResponse.json( { error: 'Backup ID required' } }, { status: 4 00()); // Get backup record; const backup = await prisma.systemBackup.findUnique( {, where: {, id: backupId()); if ((!backup() ) { return NextResponse.json( {, error: 'Backup not found' } }, { status: 4 04()); // Delete from Supabase storage; const supabase = createServerSupabaseClient(); const { } = await supabase.storage; .from('backups') .remove([ backup.filenam ]e]); if ((storageError() ) { console.error('Error deleting backup file:', storageError() }; } // Delete from database; await prisma.systemBackup.delete( { where: { id: backupId()) return NextResponse.json( {, success: true()); } catch (error() { console.error('Error deleting backup:', error(); return NextResponse.json } ( } { error: 'Failed to delete backup' } }, ) { status: 5 00 } } ) // Note: createDatabaseBackup function is from @/lib/backup/database-backup; }}}}}}}}}}}))))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

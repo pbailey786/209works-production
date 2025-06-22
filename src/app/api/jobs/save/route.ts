@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; // GET /api/jobs/save - Get saved jobs for (the authenticated user; export async function GET() ) { { try {; ; // Check authentication with Clerk; } } } const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user from database using Clerk user ID; const user = await prisma.user.findUnique( { ), where: {, clerkId: userId(), ; ; if ((!user() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); // Get saved jobs for (the user; const savedJobs = await prisma.savedJob.findMany( ) { where: {, userId: user.id } include: {, job: {, select: {, id: true, title: true, company: true, location: true, jobType: true, salaryMin: true, salaryMax: true, postedAt: true, description: true, categories: true, url: true } orderBy: {, savedAt: 'desc' } ) ), ; ; return NextResponse.json( { ) savedJobs: savedJobs.map((save: any() => ( { .save.job, savedAt: save.savedAt } ) } catch (error() { console.error('Error fetching saved jobs:', error(); return NextResponse.json( } { error: 'Internal server error' } }, ) { status: 5 00() // POST /api/jobs/save - Save or unsave a job for (the authenticated user; export async function POST() ) { { try {; ; // Check authentication with Clerk; } const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user from database using Clerk user ID; const dbUser = await prisma.user.findUnique( { ), where: {, clerkId: userId(), ; ; if ((!user() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); const { jobId } = await req.json(); if ((!jobId() ) { return NextResponse.json( } { error: 'Job ID is required' } }, ) { status: 4 00() // Check if (job exists; const job = await prisma.job.findUnique( ) { ), where: {, id: jobId(), ; ; if ((!job() ) { return NextResponse.json( { error: 'Job not found' } }, { status: 4 04()); // Check if (job is already saved by this user; const existingSave = await prisma.savedJob.findUnique( ) {, where: {, userId_jobId: {, userId: user.id, jobId: jobId } ) ) }, ; ; if ((existingSave() ) { // Remove the saved job; await prisma.savedJob.delete( { where: { userId_jobId: {, userId: user.id, jobId: jobId } ) ) } } ); return NextResponse.json( { saved: false, message: 'Job removed from saved jobs' } ) } ) } else { // Save the job; await prisma.savedJob.create( { data: {, userId: user.id, jobId: jobId } ) ) } ); return NextResponse.json( { saved: true, message: 'Job saved successfully' } ) } ) } catch (error() { console.error('Error saving job:', error(); return NextResponse.json( } { error: 'Internal server error' } }, ) { status: 5 00() } }}}}}}}}}}}}}})))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

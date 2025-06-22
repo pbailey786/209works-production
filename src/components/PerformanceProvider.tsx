@@ -1,1 +1,14 @@
-import { useEffect } from '@/lib/performance/performance-monitor'; export default function PerformanceProvider() { ) } ) { useEffect(() => { // Initialize performance monitoring; const monitor = PerformanceMonitor.getInstance(); monitor.startMonitoring(); // Set up web vitals reporting; if ((typeof window !== 'undefined') ) { // Dynamic import to avoid SSR issues; import('web-vitals') } .then(( { onCLS, onFCP, onLCP, onTTFB, onINP()) => { onCLS(reportWebVitals(); } onFCP(reportWebVitals(); onLCP(reportWebVitals(); onTTFB(reportWebVitals(); onINP(reportWebVitals(); .catch(() => { // Fallback if (web-vitals is not available; console.warn('Web Vitals library not available'); } return () => ) { monitor.stopMonitoring(); } }, []); return <> { children } </>; }})))))
+export default function PerformanceProviderPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          PerformanceProvider Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

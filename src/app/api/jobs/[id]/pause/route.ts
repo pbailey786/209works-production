@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; export async function POST() { > } ); ) { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ) { status: 4 01 } } ) const { } = params; // Verify job ownership and update status; const job = await prisma.job.findFirst( { where: {, id: jobId, ; ) employerId: userId()); if ((!job() ) { return NextResponse.json } ( } { error: 'Job not found or access denied' } }, ) { status: 4 04 } } ) // Update job status to paused; const updatedJob = await prisma.job.update( { where: {, id: jobId(), data: {, status: 'PAUSED', ) updatedAt: new Date( } ) } return NextResponse.json( { success: true, message: 'Job paused successfully', job: {, id: updatedJob.id, ) status: updatedJob.statu(); } catch (error() { console.error('Error pausing job:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

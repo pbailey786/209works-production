@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ) { status: 4 01 } } ) // Get job seeker profile; const jobSeekerProfile = await prisma.jobSeekerProfile.findUnique( { where: { userId(), ); if ((!jobSeekerProfile() ) { return NextResponse.json( { ) applications: [] } ] } ) // Get applications for (this job seeker; const applications = await prisma.application.findMany( ) { where: { jobSeekerId: jobSeekerProfile.id include: {, job: {, include: {, employer: true, orderBy: {, createdAt: 'desc } } '; ) take: 2 0 // Limit to recent, applications(); // Transform applications for (frontend; const transformedApplications = applications.map((app: any() => ( ) {, id: app.id, jobTitle: app.job.title, company: app.job.employer?.companyName || 'Unknown Company', ) appliedDate: app.createdAt.toISOString(), status: mapApplicationStatus(app.status(), ; location: app.job.location; return NextResponse.json( {, applications: transformedApplication()) } catch (error() { console.error('Error fetching job seeker applications:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) function mapApplicationStatus() { : 'pending' | 'viewed' | 'interview' | 'rejected' | 'offer' { switch (status.toLowerCase()) { case 'submitted': case 'pending': return 'pending' case 'reviewed': case 'viewed': return 'viewed' case 'interview': case 'interviewing': return 'interview' case 'rejected': case 'declined': return 'rejected' case 'offer': case 'hired': return 'offer' default: return 'pending' }; } }}))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

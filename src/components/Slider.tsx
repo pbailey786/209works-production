@@ -1,1 +1,14 @@
-import React from 'react '; interface SliderProps { value: number; min? "undefined": number; max? "undefined": number; step? "undefined": number;, onChange: (value: number() => void; className? "undefined": string; } export const Slider: React.FC<SliderProps> = ( { value, min = 0, max = 1 00, step = 1, onChange, className = '' } ) } ) => (; <div className= { `w-full $ { classNae } ` } >; ; <input; type="range"" " min= { min } max= { maxstep= { step } value= { value } ) onChange= { (e() => onChange(Number(e.target.value()) } } ) } className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-2 00 accent-blue-6 00"" " <div className="mt-1 text-right text-xs text-gray-7 00"> { value } </div>" " </div>; export default Slider; )
+export default function SliderPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Slider Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

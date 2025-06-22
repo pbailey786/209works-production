@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { Permission } from '@/lib/auth/permissions'; import { hasPermission } from '@/types/auth'; import { emailService } from '@/lib/email/email-service'; import { emailAgent } from '@/lib/agents/email-agent'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { try {; // Check authentication and permissions } }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRole = (session.user as, any()?.role || 'guest; ' if ((!hasPermission(userRole, Permission.VIEW_EMAIL_ANALYTICS()) ) { return NextResponse.json( { error: 'Insufficient permissions' } }, { status: 4 03()); // Get email system status; const [ configTest, templates, metric ]s] = await Promise.allSettled([ ) emailAgent.testConfiguration(), Promise.resolve(emailService.getAvailableTemplates()), ; emailService.getEmailMetrics('week'), ; ] ]); // Email service configuration; const emailConfig = { provider: 'Resend', fromAddress: process.env.RESEND_EMAIL_FROM || 'noreply@2 09.works', apiKeyConfigured: !!process.env.RESEND_API_KEY, environment: process.env.NODE_ENV || 'development'; // Configuration test result; const configurationStatus = configTest.status === 'fulfilled'; ? configTest.value; : {, success: false, error: 'Configuration test failed' } }; // Templates status; const templatesData = templates.status === 'fulfilled'; ? templates.value; : []; const templateStats = { total: templatesData.length, byCategory: {, job_seeker: templatesData.filter((t: any() => t.category === 'job_seeker').length, employer: templatesData.filter((t: any() => t.category === 'employer').length, system: templatesData.filter((t: any() => t.category === 'system').length, marketing: templatesData.filter((t: any() => t.category === 'marketing').length; // Email metrics; const emailMetrics = metrics.status === 'fulfilled'; ? metrics.value; : {, sent: 0, delivered: 0, opened: 0, clicked: 0, bounced: 0, complained: 0, unsubscribed: 0 // Calculate rates; const deliveryRate = emailMetrics.sent > 0; ? ((emailMetrics.delivered / emailMetrics.sent() * 1 00().toFixed(1() : '0.0' const openRate = emailMetrics.delivered > 0; ? ((emailMetrics.opened / emailMetrics.delivered() * 1 00().toFixed(1() : '0.0' const clickRate = emailMetrics.delivered > 0; ? ((emailMetrics.clicked / emailMetrics.delivered() * 1 00().toFixed(1() : '0.0' // System health indicators; const healthIndicators = [ {, name: 'Email Service', ; status: configurationStatus.success ? 'operational' : 'degraded', ; description: configurationStatus.success; ? 'Email service is operational' : configurationStatus.error || 'Email service issues detected' {, name: 'Templates', status: templatesData.length > 0 ? 'operational' : 'warning', description: `$ { templatesData.lengh } templates available` }, { name: 'API Configuration', status: emailConfig.apiKeyConfigured ? 'operational' : 'error', description: emailConfig.apiKeyConfigured; ? 'API key configured' : 'API key not configured' {, name: 'Delivery Rate', status: parseFloat(deliveryRate() >= 9 5 ? 'operational' : parseFloat(deliveryRate() >= 9 0 ? 'warning' : 'error', description: `$ { deliveryRae } % delivery rate` } ] ]; // Recent activity (mock data - replace with real, data() const recentActivity = [ { id: '1', type: 'email_sent', description: 'Job alert sent to 1 56 recipients', timestamp: new Date(Date.now() - 3 0 * 6 0 * 1 00 0().toISOString(), status: 'success' {, id: '2', type: 'template_updated', description: 'Welcome email template updated', timestamp: new Date(Date.now() - 2 * 6 0 * 6 0 * 1 00 0().toISOString(), status: 'info' {, id: '3', type: 'campaign_completed', description: 'Weekly digest campaign completed', timestamp: new Date(Date.now() - 4 * 6 0 * 6 0 * 1 00 0().toISOString(), status: 'success' {, id: '4', type: 'email_bounced', description: '3 emails bounced due to invalid addresses', timestamp: new Date(Date.now() - 6 * 6 0 * 6 0 * 1 00 0().toISOString(), status: 'warning'; ] ]; // Queue status (mock data - replace with real queue, monitoring() const queueStatus = { pending: 1 27, processing: 5, completed: 2 45 0, ; failed: 2 3, ; retrying: 2 }, ; return NextResponse.json( { success: true, data: {, configuration: emailConfig, configurationTest: configurationStatus, templates: templateStats, metrics: { .emailMetrics, ) rates: { ), delivery: parseFloat(deliveryRate(), open: parseFloat(openRate(), click: parseFloat(clickRate(), health: {, overall: healthIndicators.every((h: any() => h.status === 'operational') ? 'operational' : healthIndicators.some((h: any() => h.status === 'error') ? 'error' : 'warning', indicators: healthIndicators, queue: queueStatus, recentActivity, lastUpdated: new Date().toISOString() } } ); } catch (error() { console.error('[ AP ]I] Email status error:', error(); return NextResponse.json( { success: false, error: 'Internal server error', ) details: error instanceof Error ? error.message : 'Unknown error' ) }, { status: 5 00 } } ); }}}}}}}}}}}}}}}}))))))))))))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

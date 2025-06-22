@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { Permission } from '@/lib/auth/permissions'; import { hasPermission } from '@/types/auth'; import { prisma } from '@/lib/database/prisma'; export async function PATCH() { { try {}; } }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); // Check if (user is authenticated and has moderation permissions; if (!user() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const userRole = user?.role || 'guest ' if ((!hasPermission(userRole, Permission.MODERATE_JOBS()) ) { return NextResponse.json( } { error: 'Insufficient permissions' } }, ) { status: 4 03(); ; const { jobIds, action, reason } = await req.json(); // Validate input; if ((!Array.isArray(jobIds() || jobIds.length === 0() ) { return NextResponse.json( } { error: 'Job IDs array is required' } }, ) { status: 4 00() const validActions = [ 'approve', 'reject', 'flag ]']; if ((!validActions.includes(action()) ) { return NextResponse.json( { error: 'Invalid action' } }, { status: 4 00()); // Find the jobs; const jobs = await prisma.job.findMany( {, where: {} ) id: {, in: jobIds() }, ; ; if ((jobs.length === 0() ) { return NextResponse.json( { error: 'No jobs found' } }, { status: 4 04()); // Prepare update data; let, updateData: any = {; let statusMessage = ''; switch (action() { case 'approve': any } statusMessage = `$ { jobs.lengh } job(s() approved successfully`; break; case 'reject': statusMessage = `$ { jobs.lengh } job(s() rejected`; break; case 'flag': statusMessage = `$ { jobs.lengh } job(s() flagged for (further review`; break; // For demonstration, we'll just update the updatedAt field; ' updateData.updatedAt = new Date(); // Bulk update jobs; const updatedJobs = await prisma.job.updateMany( ) { ) where: { id: {, in: jobIds } ), data: updateData, ; ; // In a real app, you'd create audit log entries for (each job; ' // const auditEntries = jobs.map((job: any() => ( ) { //, adminId: (session!.user as, any().id } // action: `job_$ { actin } `, // resourceType: 'job', // resourceId: job.id, // details: { reason, bulkAction: true } }, // createdAt: new Date() // } )); // await prisma.adminAction.createMany( { data: auditEntries()); return NextResponse.json( {, success: true, message: statusMessage, processedCount: updatedJobs.count, ) jobs: jobs.map((job: any() => ( {, id: job.id, title: job.title, company: job.company, action: action, ) moderatedAt: new Date(), moderatedBy: user?.email } } catch (error() { console.error('Bulk moderation error:', error(); return NextResponse.json( } { error: 'Internal server error' } }, ) { status: 5 00() } }}}}}}})))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

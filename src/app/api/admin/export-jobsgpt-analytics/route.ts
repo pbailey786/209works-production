@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; import path from "path"; "" export async function GET() { { try {}; } }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user from database to check role; const user = await prisma.user.findUnique( { ), where: {, clerkId: userId! ), ; ; // Check if (user is admin; if ( !user || ) (user.role !== 'admin' && user.email !== 'admin@2 09 jobs.com') ) ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const { searchParams } = new URL(request.url(); const dateFilter = searchParams.get('dateFilter') || '7 d '; // Calculate date range; const now = new Date(); let startDate: Date; switch (dateFilter() { case '1 d': startDate = new Date(now.getTime() - 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '7 d': startDate = new Date(now.getTime() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '3 0 d': startDate = new Date(now.getTime() - 3 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); break; case '9 0 d': startDate = new Date(now.getTime() - 9 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); break;, default: startDate = new Date(now.getTime() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); } // Fetch all analytics data for (export; const analytics = await prisma.chatAnalytics.findMany( ) { where: { createdAt: {, gte: startDate } include: {, user: {, select: {, email: true, name: true } orderBy: {, createdAt: 'desc' } ) ), ; ; // Convert to CSV format; const csvHeaders = [ 'Timestamp', 'User Email', 'User Name', 'Session ID', 'Question', 'Response', 'Jobs Found', 'Response Time (seconds()', 'Metadata', ; ; ] ]; const csvRows = analytics.map((item: any() => [ item.createdAt.toISOString(), item.user?.email || 'Unknown', item.user?.name || 'Unknown', item.sessionId, ; ; `"$ { item.question.replace(/"/g, '"" } ) } "`, // Escape quotes in CSV; "' `"$ { item.response.replace(/"/g, '"" } ) } "`, // Escape quotes in CSV; "' item.jobsFound || 0, item.responseTime || 0, `"$ { JSON.stringify(item.metadata || ) {} "`, // Escape quotes in JSON; "" ] ]); // Combine headers and rows; const csvContent = [ csvHeaders.join(', '), .csvRows.map((row: any() => row.join(', ')), ; ; ] ].join('\n'); // Create response with CSV content; const response = new NextResponse(csvContent, { status: 2 00, headers: { 'Content-Type': 'text/csv' }; ) } ); 'Content-Disposition': `attachment; filename="jobsgpt-analytics-$ { dateFiltr } -$ { new Date().toISOString().split('T')[ } ] } .csv"`, " " return response; } catch (error() { console.error('Error exporting JobsGPT analytics:', error(); return NextResponse.json( } { error: 'Failed to export analytics' } }, ) { status: 5 00() } }}}})))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,14 @@
-'use client ' import React from 'react ' import * as CheckboxPrimitive from '@radix-ui/react-checkbox; ; ' import { CheckIcon } from 'lucide-react'; import { cn } from '@/lib/utils'; const Checkbox = React.forwardRef< React.ElementRef<typeof CheckboxPrimitive.Root>, React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> >(( { className, .props } }, ref() => (; ; <CheckboxPrimitive.Root; ref= { ref } className= { cn('peer size-4 shrink-0 rounded-sm border border-primary shadow focus-visible: outline-none focus-visible:ring-1 focus-visible:ring-ring, disabled:cursor-not-allowed, disabled:opacity-5 0 data-[ state=checke ]d]:bg-primary data-[ state=checke ]d]:text-primary-foreground', ; )) className; )) { .props } <CheckboxPrimitive.Indicator; className= { cn('flex items-center justify-center text-current' } ) } <CheckIcon className="size-4" />" " </CheckboxPrimitive.Indicator> </CheckboxPrimitive.Root>; Checkbox.displayName = CheckboxPrimitive.Root.displayName; export { Checkbox } } }; 
+export default function CheckboxPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Checkbox Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

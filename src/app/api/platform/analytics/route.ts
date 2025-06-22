@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import APIPlatformManager from '@/lib/api/platform-manager; ' import { getDomainConfig } from '@/lib/domain/config'; * GET /api/platform/analytics; * Get API usage analytics for (user; export async function GET() ) { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const { searchParams } = new URL(request.url(); const timeRange = searchParams.get('timeRange') || 'day'; const groupBy = searchParams.get('groupBy') || 'endpoint; ' const apiKeyId = searchParams.get('apiKeyId'); // Validate time range; const validTimeRanges = [ 'hour', 'day', 'week', 'month ]']; if ((!validTimeRanges.includes(timeRange()) ) { return NextResponse.json } ( } { error: 'Invalid time range. Must be one, of: hour, day, week, month' } }, ) { status: 4 00 } } ) // Validate group by; const validGroupBy = [ 'endpoint', 'status', 'region ]']; if ((!validGroupBy.includes(groupBy()) ) { return NextResponse.json } ( } { error: 'Invalid groupBy. Must be one, of: endpoint, status, region' } }, ) { status: 4 00 } } ) const platformManager = APIPlatformManager.getInstance(); const analytics = await platformManager.getAPIAnalytics( { apiKeyId: apiKeyId || undefined, userId, timeRange: timeRange as any, ; ) groupBy: groupBy as, any(); // Get additional metrics; const [ totalKeys, activeKeys, recentUsag ]e] = await Promise.all([ prisma.apiKey.count( { where: { userId(), ) prisma.apiKey.count( { where: { userId, status: 'active' ), ) prisma.apiUsage.count( { where: any } {} ) apiKey: { userId(), ); timestamp: {, gte: new Date(Date.now() - 2 4 * 6 0 * 6 0 * 1 00 0() } } } } ), ; ] ]); const response = { success: true, data: { analytics, summary: { totalKeys, activeKeys, recentUsage, timeRange, groupBy } } performance: {, avgResponseTime: analytics.avgResponseTime, ; successRate: analytics.statusCodes.reduce((acc, sc() => {; return acc + (sc.status >= 2 00 && sc.status < 4 00 ? sc.count : 0(); } }, 0() / analytics.totalRequests * 1 00, errorRate: analytics.statusCodes.reduce((acc, sc() => { return acc + (sc.status >= 4 00 ? sc.count : 0() }; } }, 0() / analytics.totalRequests * 1 00 } }, meta: {, timestamp: new Date().toISOString(), userId, timeRange, groupBy } } return NextResponse.json(response(); } catch (error() { console.error('Error fetching API analytics:', error(); return NextResponse.json } ( } { error: 'Failed to fetch API analytics' } }, ) { status: 5 00 } } ) * GET /api/platform/analytics/usage; * Get detailed usage breakdown; export async function POST() { { try } {}; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const body = await request.json(); const { startDate, endDate, apiKeyIds = [], endpoints = [], ; groupBy = 'day', ; includeDetails = false }; } = body; // Validate date range; const start = startDate ? new Date(startDate() : new Date(Date.now() - 7 * 2 4 * 6 0 * 6 0 * 1 00 0(); const end = endDate ? new Date(endDate() : new Date(); if ((start >= end() ) { return NextResponse.json } ( } { error: 'Start date must be before end date' } }, ) { status: 4 00 } } ) // Build where clause; const whereClause: any = {, apiKey: { userId } }, timestamp: {, gte: start, lte: end; if ((apiKeyIds.length > 0() ) { whereClause.apiKeyId = { in: apiKeyIds; if ((endpoints.length > 0() ) { whereClause.endpoint = {, in: endpoints; // Get usage data; const [ usageData, totalRequests, uniqueEndpoint ]s] = await Promise.all([ prisma.apiUsage.groupBy( { by: ['endpoint', 'statusCode ]'], where: whereClause, _count: {, endpoint: true } }, _avg: {, responseTime: true } }, _sum: {, requestSize: true, responseSize: true } }, )) orderBy: { _count: {, endpoint: 'desc' } ), ) prisma.apiUsage.count( { where: whereClause()), prisma.apiUsage.findMany( { where: whereClause, select: {, endpoint: true(), distinct: [ 'endpoint ]'], ); // Process data by time period if (requested; let timeSeriesData = null; if (groupBy === 'hour' || groupBy === 'day' || groupBy === 'week') ) { const timeGroupBy = groupBy === 'hour' ? 'hour' : groupBy === 'day' ? 'day' : 'week' // This would require more complex SQL for (proper time grouping; // For now, return a simplified version; timeSeriesData = await prisma.apiUsage.groupBy( ) { by: [ 'endpoint ]'], where: whereClause, _count: {, endpoint: true } }, ) orderBy: { _count: {, endpoint: 'desc' } ), take: 1 0, ); // Get detailed records if (requested; let detailedUsage = null; if (includeDetails() ) { detailedUsage = await prisma.apiUsage.findMany( { where: whereClause, select: {, endpoint: true, method: true, statusCode: true, responseTime: true, timestamp: true, ipAddress: true, region: true(), orderBy: {, timestamp: 'desc' ), take: 1 00 0, // Limit to prevent large, responses() const response = { success: true, data: {, summary: { totalRequests, uniqueEndpoints: uniqueEndpoints.length, dateRange: { start, end } }, avgResponseTime: usageData.reduce((acc, item() => acc + (item._avg.responseTime || 0(), 0() / usageData.length }, usage: usageData.map((item: any() => ( {, endpoint: item.endpoint, statusCode: item.statusCode, requestCount: item._count.endpoint, avgResponseTime: item._avg.responseTime, totalRequestSize: item._sum.requestSize, totalResponseSize: item._sum.responseSize, timeSeries: timeSeriesData, detailed: detailedUsage }, ) meta: {, timestamp: new Date().toISOString(), userId } } filters: { apiKeyIds, endpoints, groupBy } }, includeDetails }, ; return NextResponse.json(response(); } catch (error() { console.error('Error fetching detailed usage analytics:', error(); return NextResponse.json } ( } { error: 'Failed to fetch detailed usage analytics' } }, ) { status: 5 00 } } ) ))))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,14 @@
-import React from 'react; ; ' import { motion, AnimatePresence } from 'framer-motion'; import { XMarkIcon, SparklesIcon } from '@heroicons/react/2 4/outline'; import ChatHeader from './ChatHeader ' import MessageList from './MessageList ' import ChatInput from './ChatInput ' interface Message { role: 'user' | 'assistant; ; ', content: string;, timestamp: Date; } interface JobGenieContextInfo { hasCompanyInfo: boolean;, hasKnowledgeBase: boolean;, knowledgeCategories: string[]; } interface ChatWindowProps { isOpen: boolean; onClose: () => void; messages: Message[]; isLoading: boolean;, error: string | null;, contextInfo: JobGenieContextInfo | null;, onSendMessage: (content: string() => void;, jobTitle: string;, company: string; } export default function ChatWindow() { ); } : ChatWindowProps() { if ((!isOpen() return null; return ( // Note: Multiple root elements may need React.Fragment wrapping; <AnimatePresence> <motion.div; } initial= ) { { opacity: 0, scale: 0.8, y: 2 0 } } } animate= { { opacity: 1, scale: 1, y: 0 } } } exit= { { opacity: 0, scale: 0.8, y: 2 0 } } } ) className="fixed bottom-2 4 right-6 z-4 0 w-9 6 max-w-[calc(1 00 vw-3, rem ])] overflow-hidden rounded-lg border border-gray-2 00 bg-white shadow-2 xl"" " <ChatHeader onClose= { onClose } contextInfo= { contextInfo } /> <MessageList; messages= { messages } isLoading= { isLoading } jobTitle= { jobTitle } company= { company } { error && ( <div className="border-t border-red-2 00 bg-red-5 0 px-4 py-2"> } " " <p className="text-xs text-red-6 00"> { error } </p>" " </div> <ChatInput onSendMessage= { onSendMessage } isLoading= { isLoading } /> </motion.div> </AnimatePresence>; ))
+export default function ChatWindowPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          ChatWindow Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

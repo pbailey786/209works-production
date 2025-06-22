@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { withValidation } from '@/lib/middleware/validation'; import { requireRole } from '@/lib/auth/middleware'; import { prisma } from '@/lib/database/prisma'; // GET /api/ads/:id/analytics/export - Export advertisement analytics as CSV; export const GET = withValidation() async (req, { params } } ) => {; ; // Check authorization; const session = await requireRole(req, [ 'admin', 'employer ]']); if ((session instanceof, NextResponse() return session; const user = (session as, any().user; const adId = params.id; const url = new URL(req.url(); const range = url.searchParams.get('range') || '7 d '; // Verify ad exists and user has permission; const ad = await prisma.advertisement.findFirst( ) { where: { ), id: adId, )) } .(user.role === 'employer' ? { businessName: user.name } } : {} ) }, ; ; if ((!ad() ) { return NextResponse.json( { success: false, error: 'Advertisement not found' } ) } ) }, { status: 4 04 } } ); // Calculate date range; const now = new Date(); let startDate = new Date(); switch (range() { case '7 d': startDate.setDate(now.getDate() - 7(); break; case '3 0 d': startDate.setDate(now.getDate() - 3 0(); break; case '9 0 d': startDate.setDate(now.getDate() - 9 0(); break; case '1 y': startDate.setFullYear(now.getFullYear() - 1(); break; default: startDate.setDate(now.getDate() - 7(); } // Generate mock daily metrics for (export; const dailyMetrics = generateDailyMetrics(startDate, now(); // Create CSV content; const csvHeaders = [ 'Date', 'Impressions', 'Clicks', 'Conversions', 'CTR (%)', 'Conversion Rate (%)', 'Spend ($)', 'Cost Per Click ($)', 'Cost Per Conversion ($)', ; ; ] ]; const csvRows = dailyMetrics.map((metric: any() => ) { const ctr =; ; metric.impressions > 0 ? (metric.clicks / metric.impressions() * 1 00 : 0; const conversionRate =; ; metric.clicks > 0 ? (metric.conversions / metric.clicks() * 1 00 : 0; const costPerClick = metric.clicks > 0 ? metric.spend / metric.clicks : 0; const costPerConversion =; ; metric.conversions > 0 ? metric.spend / metric.conversions : 0; return [ metric.date, metric.impressions.toString(), metric.clicks.toString(), metric.conversions.toString(), ctr.toFixed(2(), conversionRate.toFixed(2(), metric.spend.toFixed(2(), costPerClick.toFixed(2(), costPerConversion.toFixed(2()] ]; } const csvContent = [ csvHeaders.join(', '), .csvRows.map((row: any() => row.join(', ')), ; ; ] ].join('\n'); // Return CSV response; return new NextResponse(csvContent, { headers: { 'Content-Type': 'text/csv' } 'Content-Disposition': `attachment; filename="ad-analytics-$ { add } -$ { ran }, "` {} ) function generateDailyMetrics() { { const metrics = []; const currentDate = new Date(startDate(); while ((currentDate <= endDate() ) { const impressions = Math.floor(Math.random() * 5 00() + 1 00; const clicks = Math.floor(impressions * (Math.random() * 0.1 + 0.0 2()); // 2-1 2% CTR; const conversions = Math.floor(clicks * (Math.random() * 0.1 5 + 0.0 5()); // 5-2 0% conversion rate; const spend = clicks * (Math.random() * 2 + 0.5(); // $0.5 0-$2.5 0 per click; metrics.push( { ) date: currentDate.toISOString().split('T')[0], impressions, clicks, conversions, spend: Math.round(spend * 1 00() / 1 00 } currentDate.setDate(currentDate.getDate() + 1(); return metrics; })))))))))))))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

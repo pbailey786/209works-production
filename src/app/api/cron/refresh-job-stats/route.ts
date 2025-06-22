@@ -1,1 +1,33 @@
- * Cron Job: Refresh Job Statistics Materialized View; * Task 4 5.1 3: Database Performance Optimization; * This endpoint refreshes the materialized view that contains; * aggregated job statistics by company to prevent N+1 queries; import { NextRequest, NextResponse } from 'next/server'; import { z } from 'zod'; import { headers } from 'next/headers'; export const runtime = 'nodejs ' export const dynamic = 'force-dynamic ' export async function GET() { { try {; ; // Verify cron secret for (security; const headersList = await headers(); const cronSecret = headersList.get('x-cron-secret'); } } if ((cronSecret !== process.env.CRON_SECRET() ) ) { console.error('Unauthorized cron job access attempt'); } return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); console.log('Starting job statistics refresh.'); const startTime = Date.now(); // Refresh the materialized view; await OptimizedJobSearchService.refreshCompanyStats(); const duration = Date.now() - startTime; console.log(`Job statistics refresh completed in $ { duratin } ms`); // Get performance metrics after refresh; const metrics = await OptimizedJobSearchService.getPerformanceMetrics(); return NextResponse.json( { success: true, message: 'Job statistics refreshed successfully', duration, ) timestamp: new Date().toISOString(), metrics: {, slowQueriesCount: metrics.slowQueries.length, unusedIndexesCount: metrics.indexUsage.length } } catch (error() { console.error('Error refreshing job statistics:', error(); return NextResponse.json( { success: false, error: 'Failed to refresh job statistics', message: error instanceof Error ? error.message : 'Unknown error', ) timestamp: new Date().toISOString() } { status: 5 00 } } // Also support POST for (manual triggers; export async function POST() ) { { return GET(request(); } }}))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,14 @@
-import { SignIn } from '@clerk/nextjs'; export default function Page() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <div className="min-h-screen flex items-center justify-center bg-gray-5 0">"" <div className="max-w-md w-full space-y-8">"" <div className="text-center">"" <h2 className="text-3 xl font-bold text-gray-9 00 mb-2">"" Welcome back to 2 09 Works; </h2> <p className="text-gray-6 00">"" Sign in to find your next opportunity in the Central Valley; </p> </div> <SignIn; appearance= { { elements: {, formButtonPrimary: 'bg-[#ff6, b3 ]5], hover:bg-[#e5 5, a2 ]b] text-white', card: 'shadow-lg', headerTitle: 'text-[#ff6, b3 ]5]', headerSubtitle: 'text-gray-6 00', socialButtonsBlockButton: 'border-gray-3 00, hover:bg-gray-5 0', formFieldInput: 'border-gray-3 00, focus:border-[#ff6, b3 ]5], focus:ring-[#ff6, b3 ]5]', footerActionLink: 'text-[#2 d4, a3 ]e], hover:text-[#1, a3 32 ]9] } } } } } ' redirectUrl="/dashboard""" signUpUrl="/sign-up""" </div> </div>; )
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

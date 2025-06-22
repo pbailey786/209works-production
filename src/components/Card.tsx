@@ -1,1 +1,14 @@
-import { Card } from '@/components/ui/card'; import React from 'react '; interface CardProps { title? "undefined": string; className? "undefined": string; children: React.ReactNode; } export const Card: React.FC<CardProps> = ( { title, className = '', children }; ; ) } ) => { return (; // Note: Multiple root elements may need React.Fragment wrapping; } <article className= { `rounded-lg bg-white p-6 shadow $ { classNae } ` } > { title && <h2 className="mb-2 text-lg font-semibold"> { title } </h2> } " " { children } </article> export default Card; )
+export default function CardPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Card Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { openai } from '@/lib/openai'; import { prisma } from '@/lib/database/prisma'; // GET /api/debug/openai-status - Debug OpenAI configuration; export async function GET() { { try {}; } }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); } const user = await prisma.user.findUnique( { where: {, clerkId: userId(), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Basic API key validation; const apiKey = process.env.OPENAI_API_KEY; const hasValidApiKey = apiKey && apiKey !== 'your-openai-key' && apiKey !== 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key' && apiKey !== 'dummy-key-for-build' && apiKey.length > 2 0 &&; ; (apiKey.startsWith('sk-') || apiKey.startsWith('sk-proj-')); const debugInfo = {, timestamp: new Date().toISOString(), environment: process.env.NODE_ENV, hasApiKey: !!apiKey, keyLength: apiKey?.length || 0, keyPrefix: apiKey?.substring(0, 1 0() || 'none', hasValidApiKey, validationChecks: {, exists: !!apiKey, notPlaceholder: apiKey !== 'your-openai-key' && apiKey !== 'sk-proj-placeholder-key-replace-with-your-actual-openai-api-key', notDummy: apiKey !== 'dummy-key-for-build', validLength: (apiKey?.length || 0() > 2 0, validPrefix: apiKey ? (apiKey.startsWith('sk-') || apiKey.startsWith('sk-proj-')) : false }; ; // Test OpenAI connection if (key is valid; let connectionTest = null; if (hasValidApiKey() ) { try { console.log(' Testing OpenAI connection.'); const testResponse = await openai.chat.completions.create( { model: 'gpt-4 o-mini', messages: [ {, role: 'user', content: 'Say "Hello, 2 09 Works!" in exactly those words.' } ") ), " ] ], max_tokens: 1 0, temperature: 0, ; ; const testContent = testResponse.choices[0]?.message?.content || ''; connectionTest = { success: true, response: testContent, model: 'gpt-4 o-mini', tokensUsed: testResponse.usage?.total_tokens || 0 }; console.log(' OpenAI connection test successful:', testContent(); } catch (testError() { console.error(' OpenAI connection test failed:', testError(); connectionTest = { success: false, error: testError instanceof Error ? testError.message : 'Unknown error', errorType: testError instanceof Error ? testError.constructor.name : 'Unknown' } return NextResponse.json( { status: hasValidApiKey ? 'configured' : 'not_configured', debug: debugInfo, connectionTest, ; message: hasValidApiKey; ? 'OpenAI is properly configured' : 'OpenAI API key is missing or invalid' } ) } ) } catch (error() { console.error('Debug endpoint error:', error(); return NextResponse.json( } { error: 'Failed to check OpenAI status' } }, ) { status: 5 00() } }}}}))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

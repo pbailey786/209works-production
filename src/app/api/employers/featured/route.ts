@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { PrismaClient } from '@prisma/client'; import { prisma } from '@/lib/database/prisma'; const prisma = new PrismaClient(); export async function GET() { { try {; ; // In production, this would fetch real employers from the database; // For now, we'll return the mock data with proper structure; } } } ' // Try to fetch real employers from database; const realEmployers = await prisma.user.findMany( { where: {, role: 'employer', ; ; // Only include employers with active jobs; employerJobs: { some: {, status: 'active', deletedAt: null } } } } } include: {, company: true, _count: { select: {, employerJobs: {, where: {, status: 'active', deletedAt: null } } } take: 6, orderBy: { employerJobs: {, _count: 'desc' } ) ) } } ); // Transform real employers to match our interface; const transformedEmployers = realEmployers.map((employer: any() => ( {, id: employer.company?.id || employer.id, name: employer.company?.name || employer.name || 'Unknown Company', industry: employer.company?.industry || 'Various', location: employer.company?.headquarters || 'Central Valley, CA', activeJobs: employer._count.employerJobs, description: employer.company?.description || 'Local business hiring in the 2 09 area.', ) logo: getIndustryEmoji(employer.company?.industry || 'Various'), website: employer.company?.website }; ; // Return the transformed employers (empty array if (none, found() return NextResponse.json( ) { employers: transformedEmployers, source: 'database', message: transformedEmployers.length === 0; ? 'No featured employers found. Encourage local businesses to join!' ) : undefined, )) } catch (error() { console.error('Error fetching featured employers:', error(); // Return empty array on error; return NextResponse.json( { employers: [], error: 'Failed to fetch employers' } ) { status: 5 00() // Helper function to emoji based on industry; function getIndustryEmoji() { : string { const, industryMap: { [, key: strin ]g]: string } } = { Healthcare: '', Education: '', Technology: '', Construction: '', Transportation: '', Warehousing: '', Agriculture: '', Food: '', Retail: '', Manufacturing: '', Finance: '', 'Real Estate': '', Hospitality: '', Government: '', 'Non-Profit': '' }; ; // Try to find a match; for ((const [ key, emoj ]i] of Object.entries(industryMap()) ) { if ((industry.toLowerCase().includes(key.toLowerCase())) ) { return emoji; } // Default emoji; return ' '; }}}}))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,14 @@
-import {} from '@clerk/nextjs/server'; import {} from 'next/navigation'; import {} from '@/lib/auth/permissions'; import {} from '@/types/auth'; import {} from '@/lib/database/prisma'; export default async function AuditLogsPage() { {} = await auth(); if ((!userId() ) {}; } const user = await prisma.user.findUnique( { where: {, clerkId: } const userRole = user?.role || 'guest; ; ' if ((!hasPermission(userRole, Permission.VIEW_AUDIT_LOGS()) ) {} return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="space-y-6">" " {} / } <div> <h1 className="text-3 xl font-bold tracking-tight">Audit Logs</h1>" " <p className="text-muted-foreground">" " Review all admin actions and system events with detailed logging; </p> </div> {} / } <AuditLogsDashboard /> </div> ))))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

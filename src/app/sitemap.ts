@@ -1,1 +1,30 @@
-import { MetadataRoute } from '@/components/ui/card'; import { headers } from 'next/headers'; import { getDomainConfig } from '@/lib/domain/config'; import { getAllDomain } } s } from '@/components/ui/card; ' import { PrismaClient } from '@prisma/client'; import { prisma } from '@/lib/database/prisma'; const prisma = new PrismaClient(); export default async function sitemap() { : Promise<MetadataRoute.Sitemap> { const headersList = await headers(); const hostname = headersList.get('host') || '2 09.works; ; ' const domainConfig = getDomainConfig(hostname(); } const baseUrl = `https://$ { domainConfig.doman } `; // Static pages for (each domain; const staticPages = [ ) { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 1 } { url: `$ { baseUl } /jobs`, lastModified: new Date(), changeFrequency: 'hourly' as const, priority: 0.9 }, { url: `$ { baseUl } /employers`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 }, { url: `$ { baseUl } /pricing`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 }, { url: `$ { baseUl } /about`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 }, { url: `$ { baseUl } /contact`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 }, { url: `$ { baseUl } /privacy`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.3 }, { url: `$ { baseUl } /terms`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.3 }, ; ; ] ]; try { // Get jobs for (this region (if (region filtering is, implemented() // For now, get all active jobs and filter by location if needed; const jobs = await prisma.job.findMany( ) ) { where: {; ; // Add region filtering when available; //, region: domainConfig.areaCode; } select: {, id: true, updatedAt: true, location: true } take: 1 00 00, // Limit for (performance; orderBy: ) {, updatedAt: 'desc' } ) ) } ); // Filter jobs by region based on location if (region field doesn't exist; ' const regionalJobs = jobs.filter((job: any() => ) { if ((!job.location() return false; return domainConfig.cities.some((city: any() } job.location.toLowerCase().includes(city.toLowerCase()) ); } // Generate job URLs; const jobPages = regionalJobs.map((job: any() => ( ) {, url: `$ { baseUl } /jobs/$ { job. } d } `, lastModified: job.updatedAt, changeFrequency: 'weekly' as const, priority: 0.8, ; ; return [ .staticPages, .jobPage ]s]; ) } catch (error() { console.error('Error generating sitemap:', error(); // Return static pages only if (database query fails; return staticPages; } } finally ) { await prisma.$disconnect(); } ))))))))
+import { MetadataRoute } from 'next';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    {
+      url: 'https://209.works',
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 1,
+    },
+    {
+      url: 'https://209.works/jobs',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: 'https://209.works/about',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
+      url: 'https://209.works/employers',
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+  ];
+}

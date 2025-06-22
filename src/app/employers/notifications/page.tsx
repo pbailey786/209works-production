@@ -1,1 +1,14 @@
-export default function EmployerNotificationsPage() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <div className="mx-auto max-w-4 xl px-4 py-8">" " <div className="text-center">" " <div className="mx-auto mb-6 flex h-2 4 w-2 4 items-center justify-center rounded-full bg-[#2 d4, a3 ]e]/1 0" />" " <span className="text-4 xl"></span>" " </div> <h1 className="mb-4 text-3 xl font-bold text-gray-9 00">Notification Center</h1>" " <p className="mb-8 text-lg text-gray-6 00">" " Stay updated with job applications, candidate activities, and platform updates. </p> <div className="rounded-xl border border-gray-2 00 bg-white p-8 shadow-sm">" " <div className="mb-6">" " <h2 className="text-xl font-semibold text-gray-9 00">No notifications yet</h2>" " <p className="mt-2 text-gray-6 00">" " When you have active job postings, you'll receive notifications about applications, ' candidate activities, and important updates here. </p> </div> <div className="flex flex-col gap-4 sm: flex-row sm:justify-center">" " <a; href="/employers/create-job-post"" " className="inline-flex items-center justify-center rounded-lg bg-[#2 d4, a3 ]e] px-6 py-3 font-semibold text-white transition-colors, hover:bg-[#1 d3, a2 ]e]"" " >; Post Your First Job; </a> <a; href="/employers/my-jobs"" " className="inline-flex items-center justify-center rounded-lg border border-gray-3 00 bg-white px-6 py-3 font-semibold text-gray-7 00 transition-colors, hover:bg-gray-5 0"" " >; View My Jobs; </a> </div> </div> <div className="mt-8 text-sm text-gray-5 00">" " <p>, Tip: Enable email notifications in your settings to stay updated on the go.</p> </div> </div> </div> ) } } 
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

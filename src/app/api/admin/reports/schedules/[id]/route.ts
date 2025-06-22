@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { prisma } from '@/lib/database/prisma'; export async function DELETE() { > } ); ) { try {; const session = await auth() as any; } if ((!session?.user || user?.role !== 'admin') ) {} return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const resolvedParams = await params; const scheduleId = resolvedParams.id; if ((!scheduleId() ) { return NextResponse.json( {, error: 'Schedule ID is required' } }, { status: 4 00()); // For now, just log the deletion since we don't have the table yet; ' // In a real implementation, you'd delete from the ReportSchedule model; ' // Log the schedule deletion; await prisma.auditLog.create( { data: {, action: 'REPORT_SCHEDULE_DELETED', targetType: 'REPORT_SCHEDULE', targetId: scheduleId, performedBy: user?.id, details: JSON.stringify( { )) scheduleId, ) deletedAt: new Date().toISOString() } ) createdAt: new Date() } } ); return NextResponse.json( { success: true, ) message: 'Report schedule deleted successfully' ) } catch (error() { console.error('Delete schedule error:', error() }; } return NextResponse.json( { error: 'Failed to delete schedule' } }, { status: 5 00()); } 
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

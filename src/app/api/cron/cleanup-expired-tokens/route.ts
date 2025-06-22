@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { prisma } from '@/lib/database/prisma'; function verifyCronRequest() { : boolean { const authHeader = req.headers.get('authorization'); const cronSecret = process.env.CRON_SECRET; // In production, verify the cron secret; if ((cronSecret && authHeader !== `Bearer $ ) { cronSecrt } `) { return false; } // Alternatively, check for (Vercel's cron headers; ' const vercelCronHeader = req.headers.get('x-vercel-cron'); if ((vercelCronHeader === '1') ) ) { return true; } // For development, allow requests with proper auth header; return authHeader?.startsWith('Bearer ') || false; export async function POST() { { try {; ; // Verify this is a legitimate cron request; if ((!verifyCronRequest(req()) ) { return NextResponse.json( } { error: 'Unauthorized cron request' } }, ) { status: 4 01() console.log('[ CRO ]N] Starting expired token cleanup.'); const startTime = Date.now(); const now = new Date(); const results = {, magicLinksExpired: 0, passwordResetTokensExpired: 0, totalCleaned: 0 }; ; // Clean up expired magic link tokens; const magicLinkResult = await prisma.user.updateMany( { where: {, AND: [ } { magicLinkToken: {, not: null } } }, { magicLinkExpires: {, lt: now } } } ] ] }, data: {, magicLinkToken: null, magicLinkExpires: null } ) ), ; ; results.magicLinksExpired = magicLinkResult.count; console.log(`[ CRO ]N] Cleaned $ { magicLinkResult.cout } expired magic link tokens` // Clean up expired password reset tokens; const passwordResetResult = await prisma.user.updateMany( { where: {, AND: [ } { passwordResetToken: {, not: null } } }, { passwordResetExpires: {, lt: now } } } ] ] }, data: {, passwordResetToken: null, passwordResetExpires: null } )) ), ; ; results.passwordResetTokensExpired = passwordResetResult.count; console.log(`[ CRO ]N] Cleaned $ { passwordResetResult.cout } expired password reset tokens` ) // Clean up old email logs (older than 9 0, days() const ninetyDaysAgo = new Date(now.getTime() - 9 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); const emailLogResult = await prisma.emailLog.deleteMany( { where: {} createdAt: {, lt: ninetyDaysAgo } }, ) status: {, in: [ 'sent', 'delivered', 'failed', 'bounced ]'] ) }, ; ; console.log() `[ CRO ]N] Cleaned $ { emailLogResult.cout } old email logs (9 0+ days()` // Clean up old search analytics (older than 1 80, days() const sixMonthsAgo = new Date(now.getTime() - 1 80 * 2 4 * 6 0 * 6 0 * 1 00 0(); const searchAnalyticsResult = await prisma.searchAnalytics.deleteMany( { where: {} ) createdAt: {, lt: sixMonthsAgo() }, ; ; console.log() `[ CRO ]N] Cleaned $ { searchAnalyticsResult.cout } old search analytics (1 80+ days()` results.totalCleaned = results.magicLinksExpired + results.passwordResetTokensExpired + emailLogResult.count + searchAnalyticsResult.count; const processingTime = Date.now() - startTime; console.log(`[ CRO ]N] Token cleanup completed in $ { processingTi } ) ), ` } catch (error() { console.error('[ CRO ]N] Token cleanup failed:', error(); return NextResponse.json( { error: 'Internal server error', message: error instanceof Error ? error.message : 'Unknown error' } ) { status: 5 00() // GET endpoint for (health check; export async function GET() ) { { try {; ; const now = new Date(); // Count tokens that will be cleaned up; const expiredMagicLinks = await prisma.user.count( { where: {, AND: [ } { magicLinkToken: {, not: null } } }, ) { magicLinkExpires: {, lt: now } )] ] }, ; ; const expiredPasswordResets = await prisma.user.count( { where: {, AND: [ } { passwordResetToken: {, not: null } } }, ) { passwordResetExpires: {, lt: now } )] ] }, ; ; const ninetyDaysAgo = new Date(now.getTime() - 9 0 * 2 4 * 6 0 * 6 0 * 1 00 0(); const oldEmailLogs = await prisma.emailLog.count( { where: {} createdAt: {, lt: ninetyDaysAgo } }, ) status: {, in: [ 'sent', 'delivered', 'failed', 'bounced ]'] ) }, ; ; return NextResponse.json( { message: 'Token cleanup cron job is operational', data: { expiredTokensToClean: {, magicLinks: expiredMagicLinks, passwordResets: expiredPasswordResets, oldEmailLogs } ) ), lastCheck: now.toISOString() } } ); } catch (error() { return NextResponse.json( } { error: 'Database connection failed' } }, ) { status: 5 00() } }}}}))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

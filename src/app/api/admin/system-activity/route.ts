@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { try } {} }; const { userId } = await auth(); if ((!userId() ) { return NextResponse.json } ( } { error: 'Unauthorized' } }, ) { status: 4 01 } } ) // Check if (user is admin (implement your own admin check, logic() // Get recent system activities; const activities = []; // Get recent user signups; const recentUsers = await prisma.user.findMany( ) { orderBy: {, createdAt: 'desc' } }, take: 5, select: {, id: true, email: true, ; ) createdAt: true }, )); recentUsers.forEach((user: any() => { activities.push( } {} id: `user_$ { user. } d } `, type: 'user_signup', ) description: `New user, registered: $ { user.emal } `, ) timestamp: user.createdAt.toISOString(), severity: 'success' // Get recent job postings; const recentJobs = await prisma.job.findMany( { orderBy: {, createdAt: 'desc' } }, take: 5, include: {, employer: true, select: {, id: true, title: true, createdAt: true, employer: { select: {, companyName: true() recentJobs.forEach((job: any() => { activities.push( } {} id: `job_$ { job. } d } `, type: 'job_posted', ) description: `New job, posted: $ { job.tity } } `, ) timestamp: job.createdAt.toISOString(), severity: 'info'; // Add some mock system events; const now = new Date(); const mockActivities = [ {, id: 'system_1', type: 'system', ; description: 'Database backup completed successfully', ; timestamp: new Date(now.getTime() - 3 0 * 6 0 * 1 00 0().toISOString(), // 3 0 minutes ago; severity: 'success } } ' { id: 'payment_1', type: 'payment', description: 'Credit, purchase: $9 9 package by employer', timestamp: new Date(now.getTime() - 4 5 * 6 0 * 1 00 0().toISOString(), // 4 5 minutes ago; severity: 'success } } ' { id: 'report_1', type: 'report', description: 'Job reported for (inappropriate content', timestamp: new Date(now.getTime() - 6 0 * 6 0 * 1 00 0().toISOString(), // 1 hour ago; severity: 'warning } } ' ] ]; activities.push(.mockActivities(); // Sort by timestamp (most recent, first() activities.sort((a, b() => new Date(b.timestamp().getTime() - new Date(a.timestamp().getTime()); return NextResponse.json( ) { ) activities: activities.slice(0, 1 0() // Return top 1 0 activities } } catch (error() { console.error('Error fetching admin system activity:', error(); return NextResponse.json } ( } { error: 'Internal server error' } }, ) { status: 5 00 } } ) ))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

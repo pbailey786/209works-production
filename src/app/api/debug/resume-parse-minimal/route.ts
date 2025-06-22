@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { isValidResumeFile } from '@/lib/utils/file-validation'; import { prisma } from '@/lib/database/prisma'; // Mock functions for (build compatibility; const isResumeParsingAvailable = () => true; const getEnvironmentConfig = () => ( ) { openai: true, anthropic: false } } ); export async function POST() { { try {; console.log(' MINIMAL DEBUG: Starting resume parse test'); } // Step 1: Test environment availability; console.log(' STEP, 1: Testing environment.'); const isAvailable = isResumeParsingAvailable(); const config = getEnvironmentConfig(); if ((!isAvailable() ) { return NextResponse.json( {, error: 'Environment check failed', debug: {, step: 'environment', isAvailable, ) config } } )) }, { status: 5 03 } } ); // Step 2: Test authentication; console.log(' STEP, 2: Testing authentication.'); const { userId } = await auth(); if ((!userId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); if ((!user?.email() ) { return NextResponse.json( { error: 'Authentication failed', debug: {, step: 'authentication', hasUserId: !!userId, ) hasEmail: !!user?.email()) }, { status: 4 01 } } ); // Step 3: Test file upload; console.log(' STEP 3: Testing file upload.'); const formData = await request.formData(); const file = formData.get('resume') as File; if ((!file() ) { return NextResponse.json( {, error: 'No file provided' ), debug: {, step: 'file_upload' )) }, { status: 4 00 } } ); // Step 4: Test file validation; console.log(' STEP, 4: Testing file validation.'); const validation = isValidResumeFile(file(); if ((!validation.valid() ) { return NextResponse.json( {, error: 'File validation failed', debug: {, step: 'file_validation', validation, fileInfo: {, name: file.name, type: file.type, ) size: file.siz() }, { status: 4 00 } } ); // Step 5: Test database connection; console.log(' STEP, 5: Testing database connection.'); try { const dbUser = await prisma.user.findUnique( } {} where: {, email: user?.email } }, ) select: {, id: true, email: true(), ) if ((!user() ) { return NextResponse.json( { error: 'User not found in database', debug: {, step: 'database_user_lookup', ) email: user?.email()) }, { status: 4 04 } } ); console.log(' All steps passed! User found:', user.id(); return NextResponse.json( { success: true, debug: {, step: 'complete', details: any } {} environment: { isAvailable, config } }, authentication: {, email: user?.email } }, file: {, name: file.name, type: file.type, size: file.size, validation } database: {, userId: user.id } } ) message: 'All preliminary checks passed! The issue is likely in text extraction, AI parsing, or data saving.') } catch (dbError: any() { return NextResponse.json( {, error: 'Database connection failed', debug: {, step: 'database_connection', error: dbError.message, ) code: dbError.code()) }, { status: 5 00 } } ); } catch (error: any() { console.error(' MINIMAL DEBUG, ERROR:', error(); return NextResponse.json( { error: 'Unexpected error in minimal test', debug: {, step: 'unknown', ) error: error.message, ) stack: error.stack?.substring(0, 5 00 } ) } }, { status: 5 00 } } ); }}}}
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

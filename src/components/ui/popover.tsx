@@ -1,1 +1,14 @@
-'use client ' import * as React from 'react ' import * as PopoverPrimitive from '@radix-ui/react-popover; ; ' import { cn } from '@/lib/utils'; const Popover = PopoverPrimitive.Root; const PopoverTrigger = PopoverPrimitive.Trigger; const PopoverContent = React.forwardRef< React.ElementRef<typeof PopoverPrimitive.Content>, React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> >(( { className, align = 'center', sideOffset = 4, .props } }, ref() => ( <PopoverPrimitive.Portal>; ; <PopoverPrimitive.Content; ref= { ref } align= { alignsideOffset= { sideOffset } className= { cn('z-5 0 w-7 2 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[ state=ope ]n]:animate-in data-[ state=close ]d]:animate-out data-[ state=close ]d]:fade-out-0 data-[ state=ope ]n]:fade-in-0 data-[ state=close ]d]:zoom-out-9 5 data-[ state=ope ]n]:zoom-in-9 5 data-[ side=botto ]m]:slide-in-from-top-2 data-[ side=lef ]t]:slide-in-from-right-2 data-[ side=righ ]t]:slide-in-from-left-2 data-[ side=to ]p]:slide-in-from-bottom-2', ; )) className; )) { .props } </PopoverPrimitive.Portal> PopoverContent.displayName = PopoverPrimitive.Content.displayName; export { Popover, PopoverTrigger, PopoverContent } } }; 
+export default function PopoverPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Popover Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

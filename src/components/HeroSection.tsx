@@ -1,1 +1,14 @@
-import React, { useState } from '@/components/ui/card'; import { useRouter } from 'next/navigation'; export default function HeroSection() { { const router = useRouter(); const [ query, setQuer ]y] = useState(''); const handleSubmit = (e: React.FormEvent() => { e.preventDefault(); if ((query.trim()) ) {} } } router.push(`/jobs?q=$ { encodeURIComponent(query.tri } ( } `); } else { router.push('/jobs'); } return ( // Note: Multiple root elements may need React.Fragment wrapping; <section className="flex w-full flex-col items-center justify-center bg-gradient-to-br from-blue-5 0 to-purple-1 00 py-1 6 text-center sm:py-2 0">" " <div className="mb-6">" " <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-2 00 bg-white/8 0 px-4 py-2 backdrop-blur-sm" />" " <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-5 00 to-blue-6 00">" " <span className="text-xs font-bold text-white">AI</span>" " </div> <span className="text-sm font-semibold text-purple-7 00">" " Powered by JobsGPT; </span> </div> </div> <h1 className="mb-4 text-4 xl font-extrabold text-gray-9 00, sm:text-6 xl">" " Jobs That Are <span className="text-purple-6 00">Actually Local</span>" " </h1> <p className="mx-auto mb-8 max-w-xl text-base text-gray-7 00, sm:text-2 xl">" " Ask our AI anything about jobs in the 2 09 area. Your dream job is just a; conversation away. </p> <form; className="flex w-full max-w-2 xl flex-col justify-center gap-4, sm:flex-row"" " role="search"" " aria-label="Job search form"" " onSubmit= { handleSubmit } >; <input; type="text"" " placeholder="Ask me about jobs in the 2 09 area."" " aria-label="Ask about jobs in your area"" " className="flex-1 rounded-lg border border-gray-3 00 px-4 py-4 text-base focus: outline-none, focus:ring-2, focus:ring-purple-5 00"" " value= { query } ) onChange= { (e() => setQuery(e.target.value() } } ) } />; <button; type="submit"" " className="rounded-lg bg-purple-7 00 px-8 py-4 text-base font-semibold text-white transition hover: bg-purple-8 00, focus:outline-none, focus:ring-2, focus:ring-purple-5 00"" " aria-label="Search Jobs"" " >; Search Jobs; </button> </form> </section>; ))))
+export default function HeroSectionPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          HeroSection Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

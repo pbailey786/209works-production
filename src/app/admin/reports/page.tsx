@@ -1,1 +1,14 @@
-import { auth } from '@clerk/nextjs/server'; import { redirect } from 'next/navigation'; import { Permission } from '@/lib/auth/permissions'; import { hasPermission } from '@/types/auth'; import { prisma } from '@/lib/database/prisma'; export default async function ReportsPage() { {; ; const { userId } = await auth(); if ((!userId() ) { redirect('/signin') }; } const user = await prisma.user.findUnique( { where: {, clerkId: userId! ), ); // Check authentication and permissions; if ((!user() ) { redirect('/signin?redirect=/admin/reports'); } const userRole = user?.role || 'guest; ; ' if ((!hasPermission(userRole, Permission.EXPORT_REPORTS()) ) { redirect('/admin'); } return ( // Note: Multiple root elements may need React.Fragment wrapping; <div className="space-y-6">" " { /* Header * } / } <div> <h1 className="text-3 xl font-bold tracking-tight">System Reports</h1>" " <p className="text-muted-foreground">" " Generate and export comprehensive reports on system activity, users, jobs, and performance; </p> </div> { /* Reports Export Dashboard * } / } <ReportsExportDashboard /> </div> )})) */
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

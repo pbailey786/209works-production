@@ -1,1 +1,14 @@
-import React from 'react ' const testimonials = [ { quote: 'I found my dream job just a few blocks from home. No more endless remote listings!', name: 'Sarah L.', role: 'Marketing Specialist' } { quote: 'As a local business, we finally reached real candidates in our area. Super easy to use!', name: 'Tom R.', role: 'Owner, Main Street Bakery' } { quote: 'The process was fast and simple. I love supporting my community and working close to home.', name: 'Jasmine P.', role: 'Graphic Designer' }; ; }, ; ; export default function TestimonialsSection() { { return (; // Note: Multiple root elements may need React.Fragment wrapping; <section className="flex w-full flex-col items-center justify-center bg-purple-5 0 py-1 2 text-center sm:py-1 6">" " <h2 className="mb-8 text-2 xl font-bold text-gray-9 00, sm:text-4 xl">" " What Locals Are Saying; </h2> <div className="grid w-full max-w-5 xl grid-cols-1 gap-6, sm:grid-cols-3, sm:gap-8">" ") { testimonials.map((t, idx() => ( <div; } key= { idx } className="flex flex-col items-center rounded-xl border border-purple-1 00 bg-white p-6 shadow-md sm:p-8"" " >; <div; className="mb-4 text-lg italic text-gray-7 00"" " aria-label= { `Testimonial from $ { t.nae } ` } { t.quote } </div /> <div className="font-semibold text-purple-7 00"> { t.name } </div>" " <div className="text-xs text-gray-5 00"> { t.role } </div>" " </div> </div> </section>; )}))
+export default function TestimonialsSectionPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          TestimonialsSection Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

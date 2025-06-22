@@ -1,1 +1,14 @@
-import {} from '@clerk/nextjs/server'; import {} from 'next/navigation'; import {} from '@/lib/rbac/permissions'; import AdAnalyticsDashboard from '@/components/admin/AdAnalyticsDashboard; ; ' import {} from '@/lib/database/prisma'; interface PageProps { params: Promise< {, id: string; } } } } >; export default async function AdAnalyticsPage() { { : PageProps() {; ; const { id } = await params; const { } = await auth(); if ((!userId() ) {}; } const user = await prisma.user.findUnique( { where: {, clerkId: } const userRole = user?.role || 'guest; ; ' if ((!hasPermission(userRole, Permission.MANAGE_ADS()) ) {} return <AdAnalyticsDashboard adId= {} />; })))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

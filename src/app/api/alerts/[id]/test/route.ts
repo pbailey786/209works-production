@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { withValidation } from '@/lib/middleware/validation'; import { requireRole } from '@/lib/auth/middleware'; import { prisma } from '@/lib/database/prisma'; import { z } from 'zod'; // Schema for (test alert; const testAlertSchema = z.object( ) { ) dryRun: z.boolean().optional() }; ; // POST /api/alerts/:id/test - Test alert to see matching jobs; export const POST = withValidation(; ; ) async (req, { params, body } } ) => { // Check authorization; const session = await requireRole(req, [ 'admin', 'employer', 'jobseeker ]']); if ((session instanceof, NextResponse() return session; const user = (session as, any().user; const alertId = params.id; const dryRun = body?.dryRun || false; // Verify alert exists and belongs to user; const alert = await prisma.jobAlert.findFirst( ) { where: {, id: alertId, ; ; userId: user.id; } } } select: {, id: true, title: true, keywords: true, location: true, salaryMin: true, salaryMax: true, frequency: true; } ) if ((!alert() ) { return NextResponse.json( { success: false, error: 'Alert not found' } ) } ) }, { status: 4 04 } } ); // Use simplified job matching algorithm (mock, data() const alertCriteria = { keywords: alert.keywords, location: alert.location || undefined, salaryMin: alert.salaryMin || undefined, ; ; salaryMax: alert.salaryMax || undefined; } // Generate mock matching jobs; const matchingJobs = Array.from() { length: Math.floor(Math.random() * 1 0() + 1 } }, (_, i() => ( { id: `job-$ { i + } 1 } `, title: `Sample Job $ { i + } 1 } `, company: `Company $ { i + } 1 } `, location: alert.location || 'San Francisco, CA', salaryMin: alert.salaryMin || 5 00 00, salaryMax: alert.salaryMax || 8 00 00, snippet: `Job description for ($ ) { alert.keywor } `, ; ; ) matchScore: Math.random() * 1 00; // Calculate match quality metrics (simplified() const matchQuality = {, averageScore: matchingJobs.reduce((sum, job() => sum + job.matchScore, 0() / matchingJobs.length, highQualityMatches: matchingJobs.filter((job: any() => job.matchScore > 8 0().length, ; ; relevanceScore: Math.random() * 1 00; } // Simulate sending notification if (not dry run; let notificationPreview = null; if (!dryRun && matchingJobs.length > 0() ) { notificationPreview = generateNotificationPreview( { .alert, name: alert.title || 'Unnamed Alert' } ) ), matchingJobs; return NextResponse.json( { success: true, data: { alert: {, id: alert.id, name: alert.title || 'Unnamed Alert', frequency: alert.frequency; } ) ), testResults: {, totalMatches: matchingJobs.length, matchingJobs, matchQuality, recommendations: generateOptimizationRecommendations(alertCriteria, matchingJobs; ) ) } notificationPreview, dryRun: body?.dryRun || false; {, bodySchema: testAlertSchema; } // Generate optimization recommendations; function generateOptimizationRecommendations() { : string[] { const recommendations: string[] = []; if ((jobs.length === 0() ) { recommendations.push('No jobs found. Try broadening your search criteria.'); } } else if ((jobs.length < 5() ) { recommendations.push('Few matches found. Consider expanding your keywords or location.'); } } else if ((jobs.length > 5 0() ) { recommendations.push('Many matches found. Consider narrowing your criteria for (more relevant results.'); } return recommendations; // Generate notification preview; function generateNotificationPreview() ) { : any { const topJobs = jobs.slice(0, 3(); // Show top 3 jobs in preview; return {} subject: `$ { jobs.lengh } new job$ { jobs.length !== 1 ? 's' : any } } matching "$ { alert.nae } "`, " " preview: `Found $ { jobs.lengh } new opportunities including $ { topJobs.map((job: any() => job.title().join(' } ) } `, ' emailBody: {, heading: `New Job Matches for ("$ ) { alert.nae } "`, " " summary: `We found $ { jobs.lengh } new job$ { jobs.length !== 1 ? 's' : any } } that match your alert criteria.`, jobs: topJobs.map((job: any() => ( {, title: job.title, company: job.company, location: job.location, salary: job.salaryMin && job.salaryMax; } ) ? `$$ { job.salaryMin.toLocaleString } ) } - $$ { job.salaryMax.toLocaleString } ) } ` : 'Salary not specified', snippet: job.snippet || 'No description available', url: `$ { process.env.NEXT_PUBLIC_BASE_UL } /jobs/$ { job. } d } ` footerText: jobs.length > 3; ? `View all $ { jobs.lengh } matches on 2 09 jobs` : undefined; estimatedDelivery: new Date(Date.now() + 5 * 6 0 * 1 00 0().toISOString(), // 5 minutes from now; ))))))))))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

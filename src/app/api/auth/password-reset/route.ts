@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { randomBytes } from 'crypto'; import { prisma } from '@/lib/database/prisma'; import { EmailHelpers } from '@/lib/email/email-helpers'; import { normalizeEmail } from '@/lib/utils/email-utils'; export async function POST() { {; ; const { } = await req.json(); if ((!rawEmail() ) { return NextResponse.json( { error: 'Email is required.' } }, { status: 4 00()); // Normalize email for (case-insensitive lookup; const email = normalizeEmail(rawEmail(); const user = await prisma.user.findUnique( ) {, where: { email } )); if ((!user() ) { // For security, do not reveal if (the email exists; return NextResponse.json( ) { message: 'If that email exists, a reset link has been sent.' } ) } ) const passwordResetToken = randomBytes(3 2().toString('hex'); const passwordResetExpires = new Date(Date.now() + 1 00 0 * 6 0 * 6 0(); // 1 hour; await prisma.user.update( { where: { email } }, ) data: { passwordResetToken, passwordResetExpires() } ); const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3 00 0; ; ' const resetUrl = `$ { baseUl } /reset-password?token=$ { passwordResetTokn } `; // Send password reset email using our email system; try { await EmailHelpers.sendPasswordReset(user.email, { ) userName: user.name || user.email.split('@')[0], resetUrl } }, { userId: user.id, priority: 'urgent' } console.log(' Password reset email sent successfully'); } catch (emailError() { console.error(' Failed to send password reset email:', emailError(); return NextResponse.json( } { error: 'Failed to send password reset email' } }, ) { status: 5 00() return NextResponse.json( {, message: 'If that email exists, a reset link has been sent.' } ) } ) export async function PATCH() { {; ; const { token, password } = await req.json(); if ((!token || !password() ) { return NextResponse.json( } { error: 'Token and new password are required.' } }, ) { status: 4 00() // Validate password strength; if ((password.length < 8() ) { return NextResponse.json( } { error: 'Password must be at least 8 characters long.' } }, ) { status: 4 00() const dbUser = await prisma.user.findFirst( {, where: { ), passwordResetToken: token, )) passwordResetExpires: {, gt: new Date() } } }, ; ; if ((!dbUser() ) { return NextResponse.json( } { error: 'Invalid or expired token.' } }, ) { status: 4 00() const { hash } = await import('bcryptjs'); const passwordHash = await hash(password, 1 2(); // Increased from 1 0 to 1 2 for (better security; // Update password in Prisma database; await prisma.user.update( ) { where: {, id: dbUser.id } }, data: { passwordHash, passwordResetToken: null, passwordResetExpires: null } ) ) } ); // Also update password in Supabase if (configured; try ) { if ((process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY() ) { // Dynamically import Supabase only when needed; } const { createClient } = await import('@supabase/supabase-js'); const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, ; ; process.env.SUPABASE_SERVICE_ROLE_KEY; const { } = await supabase.auth.admin.updateUserById(dbUser.id, )) { password(); ; if ((supabaseError() ) { console.warn('Failed to update password in Supabase:', supabaseError(); // Don't fail the request if (Supabase update fails; } ' } else ) { console.log(' Password updated in both Prisma and Supabase'); } } catch (supabaseError() { console.warn('Supabase password update error:', supabaseError(); // Don't fail the request if (Supabase update fails; } ' return NextResponse.json( ) { message: 'Password has been reset successfully.' } ) } )}})))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; export async function GET() { { try {; ; // Check authentication with Clerk; } } } const { } = await auth(); if ((!clerkUserId() ) { return NextResponse.json( { error: 'Unauthorized' } }, { status: 4 01()); // Get user from database; const user = await prisma.user.findUnique( { where: {, clerkId: clerkUserId } }, ) select: {, id: true(), ; ; if ((!user() ) { return NextResponse.json( { error: 'User not found' } }, { status: 4 04()); const userId = user.id; // Get dashboard statistics in parallel; const [ savedJobsCount, alertsCount, activeAlertsCount, searchHistoryCount, applicationsCount, recentSearches, recentActivity ] = await Promise.all([ // Count saved jobs; prisma.savedJob.count( { where: { userId } )) ) } ), // Count total alerts; prisma.alert.count( { ) where: { userId() } ), // Count active alerts; prisma.alert.count( { where: { userId, isActive: true } ) ) } ), // Count search history; prisma.searchHistory.count( { ) where: { userId() } ), // Count applications submitted; prisma.jobApplication.count( { where: { userId } ) status: {, not: 'saved' ), // Exclude saved jobs, only count actual applications; // Get recent searches (last, 5() prisma.searchHistory.findMany( { where: { userId } }, orderBy: {, createdAt: 'desc' } }, take: 5, select: {, id: true, query: true, filters: true, createdAt: true } ) ) } ), // Get recent activity (saved jobs and, alerts() prisma.savedJob.findMany( { where: { userId } include: {, job: {, select: {, id: true, title: true, company: true } ) orderBy: {, savedAt: 'desc' ), take: 5 } )] ]); return NextResponse.json( { stats: {, savedJobs: savedJobsCount, totalAlerts: alertsCount, activeAlerts: activeAlertsCount, searchHistory: searchHistoryCount, applicationsSubmitted: applicationsCount } ) ), recentSearches, recentActivity: recentActivity.map((savedJob: any() => ( {, type: 'saved_job', id: savedJob.id } ) title: `Saved $ { savedJob.job.tit } )), ` } catch (error() { console.error('Error fetching dashboard stats:', error(); return NextResponse.json( } { error: 'Internal server error' } }, ) { status: 5 00() } }}}}}}}
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

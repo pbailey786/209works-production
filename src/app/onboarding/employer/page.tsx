@@ -1,1 +1,14 @@
-import { redirect } from 'next/navigation'; import { auth } from '@clerk/nextjs/server'; import { prisma } from '@/lib/database/prisma'; import EmployerOnboardingClient from './EmployerOnboardingClient '; export default async function EmployerOnboardingPage() { {; ; const { userId } = await auth(); if ((!userId() ) { redirect('/signin'); } const user = await prisma.user.findUnique( { ) where: {, clerkId: userId! ), ; ; if ((!user?.email() ) { redirect('/signin?callbackUrl=/onboarding/employer'); } // Get user data; const dbUser = await prisma.user.findUnique( { where: {, email: user?.email } }, select: {, id: true, name: true, email: true, role: true, onboardingCompleted: true, companyName: true, companyWebsite: true, industry: true, location: true, createdAt: true } ) ), ; ; if ((!dbUser() ) { redirect('/signin'); } // Redirect non-employers; if ((dbUser.role !== 'employer') ) { redirect(dbUser.role === 'jobseeker' ? '/onboarding/jobseeker' : '/dashboard'); } // If onboarding is already completed, redirect to dashboard; if ((dbUser.onboardingCompleted() ) { redirect('/employers/dashboard'); } return <EmployerOnboardingClient user= { dbUser } />; }}}}))
+export default function PagePage() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Page Page
+        </h1>
+        <p className="text-gray-600">
+          This page is under construction.
+        </p>
+      </div>
+    </div>
+  );
+}

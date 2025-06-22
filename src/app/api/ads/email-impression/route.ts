@@ -1,1 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'; import { AdRotationService } from '@/lib/services/adRotationService'; export async function GET() { { try {}; } }; const { searchParams } = new URL(request.url(); const adId = searchParams.get('adId'); const emailId = searchParams.get('emailId'); const recipientId = searchParams.get('recipientId'); const source = searchParams.get('source') || 'email ' const placement = searchParams.get('placement') || 'inline '; if ((!adId() ) { // Return 1 x1 transparent pixel even for (invalid requests; return new NextResponse(Buffer.from( 'R0 lGODlhAQABAIAAAAAAAP///yH5 BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base6 4' ) { status: 2 00, headers: { 'Content-Type': 'image/gif', 'Cache-Control': 'no-cache, no-store, must-revalidate', Pragma: 'no-cache', Expires: '0' } } } } // Record the impression; )) try { await AdRotationService.recordImpression(adId, { )) sessionId: `email_$ { emailId || Date.now } ) } _$ { Math.random().toString(3 6().substr(2 } ) } `, userId: recipientId || undefined, page: `email/$ { emailId || 'unknow } } `, ' position: placement, userAgent: request.headers.get('user-agent') || 'Email Client', referrer: source } ); } catch (error() { console.error('Error recording email impression:', error(); // Still return pixel even if (tracking fails; } // Return 1 x1 transparent tracking pixel; return new NextResponse(Buffer.from( 'R0 lGODlhAQABAIAAAAAAAP///yH5 BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base6 4' ) { status: 2 00, headers: { 'Content-Type': 'image/gif', 'Cache-Control': 'no-cache, no-store, must-revalidate', Pragma: 'no-cache', Expires: '0' } )) } catch (error() { console.error('Error in email impression tracking:', error(); // Always return a tracking pixel, even on error; return new NextResponse(Buffer.from( 'R0 lGODlhAQABAIAAAAAAAP///yH5 BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base6 4' { status: 2 00, headers: { 'Content-Type': 'image/gif', 'Cache-Control': 'no-cache, no-store, must-revalidate', Pragma: 'no-cache', Expires: '0' } ))))))
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // TODO: Implement API handler
+    return NextResponse.json(
+      { message: 'API endpoint not implemented yet' },
+      { status: 501 }
+    );
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
