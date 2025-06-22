@@ -2,6 +2,7 @@
 
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
   ArrowRight,
@@ -17,6 +18,8 @@ import {
 } from 'lucide-react';
 
 export default function HomePage() {
+  const router = useRouter();
+
   // Handle case when Clerk is not available (during build)
   let isSignedIn = false;
   let user = null;
@@ -38,6 +41,19 @@ export default function HomePage() {
     region: 'Central Valley',
     cities: ['Stockton', 'Modesto', 'Tracy', 'Manteca', 'Lodi'],
   });
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchLocation, setSearchLocation] = useState('');
+
+  // Handle search submission
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    if (searchLocation) params.set('location', searchLocation);
+    router.push(`/search?${params.toString()}`);
+  };
 
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -106,66 +122,71 @@ export default function HomePage() {
       >
         <div className="container">
           <div className="flex items-center justify-between">
-            {/* Logo */}
+            {/* Bold Local Logo */}
             <Link href="/" className="group flex items-center space-x-4">
-              <div className="relative">
-                <div className="bg-gradient-primary absolute inset-0 rounded-2xl opacity-70 blur-xl transition-opacity duration-500 group-hover:opacity-100"></div>
-                <div className="bg-gradient-primary relative transform rounded-2xl p-3 transition-all duration-500 group-hover:scale-110">
-                  <span className="text-3xl font-black text-white">
-                    {domainConfig.areaCode}
-                  </span>
-                </div>
+              <div className="logo-badge group-hover:scale-110 transition-transform duration-300">
+                <span className="text-3xl font-black">
+                  {domainConfig.areaCode}
+                </span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground transition-colors duration-300 group-hover:text-primary">
+                <h1 className="text-2xl font-black text-foreground transition-colors duration-300 group-hover:text-primary logo-209">
                   {domainConfig.displayName}
                 </h1>
-                <p className="text-sm text-muted-foreground">
-                  Your Gateway to {domainConfig.region} Jobs
+                <p className="tagline-bold">
+                  Rep the 209. Get Hired.
                 </p>
               </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden items-center space-x-8 lg:flex">
+            {/* Enhanced Navigation */}
+            <div className="hidden items-center space-x-6 lg:flex">
               <Link
                 href="/jobs"
-                className="nav-item text-foreground/80 hover:text-foreground"
+                className="nav-item text-foreground/80 hover:text-foreground group"
+                title="👀 Find local gigs"
               >
+                <Search className="h-4 w-4" />
                 Find Jobs
               </Link>
               <Link
                 href="/employers"
-                className="nav-item text-foreground/80 hover:text-foreground"
+                className="nav-item text-foreground/80 hover:text-foreground group"
+                title="📣 Post your opening"
               >
+                <Briefcase className="h-4 w-4" />
                 Post Jobs
               </Link>
               <Link
                 href="/chat"
-                className="nav-item text-foreground/80 hover:text-foreground"
+                className="nav-item text-foreground/80 hover:text-foreground group"
+                title="🧠 Chat with JobsGPT"
               >
+                <Sparkles className="h-4 w-4" />
                 JobsGPT
               </Link>
               <Link
                 href="/about"
-                className="nav-item text-foreground/80 hover:text-foreground"
+                className="nav-item text-foreground/80 hover:text-foreground group"
+                title="🏠 About the 209"
               >
+                <Users className="h-4 w-4" />
                 About
               </Link>
 
               {!isSignedIn ? (
                 <div className="flex items-center space-x-4">
-                  <Link href="/sign-in" className="btn-glass">
+                  <Link href="/sign-in" className="btn-ghost">
                     Sign In
                   </Link>
-                  <Link href="/sign-up" className="btn-primary">
-                    Get Started
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Link href="/sign-up" className="btn-primary animate-pulse-glow">
+                    I Need a Job
+                    <Zap className="ml-2 h-4 w-4" />
                   </Link>
                 </div>
               ) : (
                 <Link href="/dashboard" className="btn-primary">
-                  Dashboard
+                  My Dashboard
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               )}
@@ -222,72 +243,115 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Main Title with Gradient Text */}
+          {/* Bold Local Title */}
           <h1 className="heading-1 animate-fade-in-up mb-6">
-            <span className="block text-foreground">
-              Find Your Dream Job in
+            <span className="block text-foreground font-black">
+              Stop Scrolling. Start Working
             </span>
-            <span className="gradient-text mt-2 block">
-              {domainConfig.region}
+            <span className="text-gradient mt-2 block">
+              — in the 209.
             </span>
           </h1>
 
-          {/* Tagline */}
-          <p className="animate-fade-in-up stagger-1 mx-auto mb-12 max-w-3xl text-xl text-muted-foreground md:text-2xl">
-            Built for the {domainConfig.areaCode}. Made for the people who work
-            here. Connect with local opportunities that matter.
+          {/* Local Tagline */}
+          <p className="animate-fade-in-up stagger-1 mx-auto mb-12 max-w-4xl text-xl text-foreground font-semibold md:text-2xl">
+            Made for the homies who work hard and rep the 209.
+            <span className="text-primary"> Let's get you hired.</span>
           </p>
 
-          {/* Modern Search Bar */}
+          {/* Local AI Chat Interface */}
           <div className="animate-fade-in-up stagger-2 mx-auto mb-12 max-w-4xl">
-            <div className="glass-card p-2">
-              <div className="flex flex-col gap-4 p-4 lg:flex-row">
-                <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 transform text-muted-foreground" />
+            <div className="chat-container p-8">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 bg-gradient-primary text-white px-6 py-3 rounded-full text-sm font-bold mb-6 shadow-glow">
+                  🧠 JobsGPT - Your 209 Career Buddy
+                </div>
+                <h3 className="text-3xl font-bold text-foreground mb-3">
+                  What kind of work you looking for?
+                </h3>
+                <p className="text-lg text-muted-foreground font-medium">
+                  Just ask like you're talking to a friend who knows every job in the Valley
+                </p>
+              </div>
+
+              <form onSubmit={handleSearch} className="space-y-6">
+                <div className="relative">
                   <input
                     type="text"
-                    placeholder="Job title, keywords, or company"
-                    className="input-glass w-full pl-12"
+                    placeholder="🛠️ 'Know any warehouse gigs in Stockton?' or 🏪 'Modesto retail work for weekends?'"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="chat-input w-full pr-20 text-lg"
                   />
+                  <button
+                    type="submit"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-primary text-white p-4 rounded-full hover:scale-110 transition-all shadow-glow animate-pulse-glow"
+                  >
+                    <Search className="h-6 w-6" />
+                  </button>
                 </div>
-                <div className="relative flex-1">
-                  <MapPin className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 transform text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder={`City in ${domainConfig.region}`}
-                    className="input-glass w-full pl-12"
-                  />
+
+                {/* Local Conversation Starters */}
+                <div className="flex flex-wrap gap-3 justify-center">
+                  {[
+                    "🛠️ Know any warehouse gigs in Stockton?",
+                    "🏪 Modesto retail work for weekends?",
+                    "💼 Office jobs that don't suck near Tracy?",
+                    "🏭 Manufacturing work in Manteca?",
+                    "🏥 Healthcare jobs in Lodi?"
+                  ].map((prompt, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => setSearchQuery(prompt.replace(/🛠️|🏪|💼|🏭|🏥/g, '').trim())}
+                      className="chat-prompt-button"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
                 </div>
-                <button className="btn-primary px-8">
-                  <Search className="mr-2 h-5 w-5" />
-                  Search Jobs
-                </button>
+              </form>
+
+              {/* Local Trust Indicators */}
+              <div className="flex items-center justify-center gap-8 mt-8 text-sm font-semibold">
+                <div className="flex items-center gap-2 text-green-600">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  209 Local Intel
+                </div>
+                <div className="flex items-center gap-2 text-blue-600">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  Real Jobs, Real Pay
+                </div>
+                <div className="flex items-center gap-2 text-orange-600">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                  No BS Advice
+                </div>
               </div>
             </div>
           </div>
 
-          {/* CTA Buttons */}
+          {/* Bold CTA Buttons */}
           <div className="animate-fade-in-up stagger-3 flex flex-col justify-center gap-6 sm:flex-row">
             {!isSignedIn ? (
               <>
-                <Link href="/jobs" className="btn-secondary group">
-                  <Briefcase className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
-                  Browse All Jobs
+                <Link href="/jobs" className="btn-secondary group text-lg px-8 py-4">
+                  <Briefcase className="mr-3 h-6 w-6 transition-transform group-hover:scale-110" />
+                  Browse Local Jobs
                 </Link>
-                <Link href="/sign-up" className="btn-accent group">
-                  <Sparkles className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
-                  Create Free Account
+                <Link href="/sign-up" className="btn-primary group text-lg px-8 py-4 animate-pulse-glow">
+                  <Zap className="mr-3 h-6 w-6 transition-transform group-hover:rotate-12" />
+                  Join the 209 Workforce
                 </Link>
               </>
             ) : (
               <>
-                <Link href="/dashboard" className="btn-primary group">
-                  <Zap className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
-                  Go to Dashboard
+                <Link href="/dashboard" className="btn-primary group text-lg px-8 py-4">
+                  <Zap className="mr-3 h-6 w-6 transition-transform group-hover:scale-110" />
+                  My Dashboard
                 </Link>
-                <Link href="/jobs" className="btn-secondary group">
-                  <Search className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
-                  Find Jobs
+                <Link href="/jobs" className="btn-secondary group text-lg px-8 py-4">
+                  <Search className="mr-3 h-6 w-6 transition-transform group-hover:scale-110" />
+                  Find Work
                 </Link>
               </>
             )}

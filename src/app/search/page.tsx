@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Search, MapPin, Filter, Briefcase, Clock, DollarSign } from 'lucide-react';
 
 interface Job {
@@ -16,6 +17,7 @@ interface Job {
 }
 
 export default function SearchPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -25,6 +27,25 @@ export default function SearchPage() {
     salaryRange: '',
     datePosted: ''
   });
+
+  // Initialize search from URL parameters
+  useEffect(() => {
+    const queryParam = searchParams.get('q');
+    const locationParam = searchParams.get('location');
+    const typeParam = searchParams.get('type');
+    const salaryParam = searchParams.get('salary');
+    const postedParam = searchParams.get('posted');
+
+    if (queryParam) setSearchQuery(queryParam);
+    if (locationParam) setLocation(locationParam);
+    if (typeParam || salaryParam || postedParam) {
+      setFilters({
+        jobType: typeParam || '',
+        salaryRange: salaryParam || '',
+        datePosted: postedParam || ''
+      });
+    }
+  }, [searchParams]);
 
   const searchJobs = async () => {
     setLoading(true);
@@ -51,9 +72,11 @@ export default function SearchPage() {
   };
 
   useEffect(() => {
-    // Load initial jobs
-    searchJobs();
-  }, []);
+    // Load initial jobs when search params are loaded
+    if (searchQuery || location || filters.jobType || filters.salaryRange || filters.datePosted) {
+      searchJobs();
+    }
+  }, [searchQuery, location, filters]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
