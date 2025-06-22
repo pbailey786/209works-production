@@ -665,8 +665,12 @@
 
   /* Feature Cards with Hover Effects */
   .feature-card {
-    @apply glass-card group cursor-pointer p-8;
+    @apply glass-card cursor-pointer p-8;
     transition: all var(--duration-slow) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .feature-card.group {
+    /* Apply group class separately since @apply doesn't work with group utility */
   }
 
   .feature-card:hover {
