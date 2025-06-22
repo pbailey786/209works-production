@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Search, MapPin, Filter, Briefcase, Clock, DollarSign } from 'lucide-react';
@@ -16,7 +16,7 @@ interface Job {
   description: string;
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
@@ -27,6 +27,10 @@ export default function SearchPage() {
     salaryRange: '',
     datePosted: ''
   });
+  const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [savedJobs, setSavedJobs] = useState<Set<string>>(new Set());
 
   // Initialize search from URL parameters
   useEffect(() => {
@@ -47,12 +51,14 @@ export default function SearchPage() {
     }
   }, [searchParams]);
 
-  const searchJobs = async () => {
+  const searchJobs = async (page = 1) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         q: searchQuery,
         location: location,
+        sort: sortBy,
+        page: page.toString(),
         ...(filters.jobType && { type: filters.jobType }),
         ...(filters.salaryRange && { salary: filters.salaryRange }),
         ...(filters.datePosted && { posted: filters.datePosted })
@@ -63,6 +69,8 @@ export default function SearchPage() {
 
       if (data.success) {
         setJobs(data.jobs || []);
+        setTotalPages(data.totalPages || 1);
+        setCurrentPage(page);
       }
     } catch (error) {
       console.error('Search error:', error);
@@ -74,13 +82,63 @@ export default function SearchPage() {
   useEffect(() => {
     // Load initial jobs when search params are loaded
     if (searchQuery || location || filters.jobType || filters.salaryRange || filters.datePosted) {
-      searchJobs();
+      searchJobs(1);
     }
-  }, [searchQuery, location, filters]);
+  }, [searchQuery, location, filters, sortBy]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    searchJobs();
+    searchJobs(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    searchJobs(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSortChange = (newSort: string) => {
+    setSortBy(newSort);
+    setCurrentPage(1);
+  };
+
+  const handleSaveJob = async (jobId: string) => {
+    try {
+      const response = await fetch('/api/jobs/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jobId }),
+      });
+
+      if (response.ok) {
+        setSavedJobs(prev => new Set([...prev, jobId]));
+      }
+    } catch (error) {
+      console.error('Error saving job:', error);
+    }
+  };
+
+  const handleUnsaveJob = async (jobId: string) => {
+    try {
+      const response = await fetch('/api/jobs/save', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jobId }),
+      });
+
+      if (response.ok) {
+        setSavedJobs(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(jobId);
+          return newSet;
+        });
+      }
+    } catch (error) {
+      console.error('Error unsaving job:', error);
+    }
   };
 
   return (
@@ -207,11 +265,16 @@ export default function SearchPage() {
 
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground">Sort by:</span>
-              <select className="px-3 py-1 border border-border rounded focus:ring-2 focus:ring-primary">
-                <option>Most Recent</option>
-                <option>Salary: High to Low</option>
-                <option>Salary: Low to High</option>
-                <option>Company A-Z</option>
+              <select 
+                value={sortBy}
+                onChange={(e) => handleSortChange(e.target.value)}
+                className="px-3 py-1 border border-border rounded focus:ring-2 focus:ring-primary"
+              >
+                <option value="newest">Most Recent</option>
+                <option value="salary-high">Salary: High to Low</option>
+                <option value="salary-low">Salary: Low to High</option>
+                <option value="company">Company A-Z</option>
+                <option value="relevance">Best Match</option>
               </select>
             </div>
           </div>
@@ -271,8 +334,15 @@ export default function SearchPage() {
                       >
                         View Details
                       </Link>
-                      <button className="px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
-                        Save Job
+                      <button 
+                        onClick={() => savedJobs.has(job.id) ? handleUnsaveJob(job.id) : handleSaveJob(job.id)}
+                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                          savedJobs.has(job.id)
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border hover:bg-muted'
+                        }`}
+                      >
+                        {savedJobs.has(job.id) ? 'Saved ✓' : 'Save Job'}
                       </button>
                     </div>
                   </div>
@@ -306,20 +376,50 @@ export default function SearchPage() {
           )}
 
           {/* Pagination */}
-          {jobs.length > 0 && (
+          {jobs.length > 0 && totalPages > 1 && (
             <div className="flex justify-center mt-12">
               <div className="flex items-center space-x-2">
-                <button className="px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50">
+                <button 
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Previous
                 </button>
-                <span className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">1</span>
-                <button className="px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
-                  2
-                </button>
-                <button className="px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
-                  3
-                </button>
-                <button className="px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors">
+                
+                {/* Page Numbers */}
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-2 rounded-lg transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-primary text-primary-foreground'
+                          : 'border border-border hover:bg-muted'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+                
+                <button 
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Next
                 </button>
               </div>
@@ -328,5 +428,17 @@ export default function SearchPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

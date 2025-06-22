@@ -45,6 +45,7 @@ export default function HomePage() {
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
@@ -179,9 +180,8 @@ export default function HomePage() {
                   <Link href="/sign-in" className="btn-ghost">
                     Sign In
                   </Link>
-                  <Link href="/sign-up" className="btn-primary animate-pulse-glow">
-                    I Need a Job
-                    <Zap className="ml-2 h-4 w-4" />
+                  <Link href="/sign-up" className="bg-gradient-accent text-white font-black text-lg px-8 py-4 rounded-full hover:scale-110 transition-all shadow-xl hover:shadow-glow animate-pulse-glow inline-flex items-center">
+                    I Need a Job ⚡
                   </Link>
                 </div>
               ) : (
@@ -194,7 +194,11 @@ export default function HomePage() {
 
             {/* Mobile Menu Button */}
             <div className="lg:hidden">
-              <button className="btn-glass p-3">
+              <button 
+                className="btn-glass p-3"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle mobile menu"
+              >
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -205,17 +209,88 @@ export default function HomePage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
+                    d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
                   />
                 </svg>
               </button>
             </div>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden">
+              <div className="px-4 pt-4 pb-6 space-y-4 bg-white/95 backdrop-blur-lg border-t border-border/50">
+                <Link
+                  href="/jobs"
+                  className="block px-3 py-2 text-foreground/80 hover:text-foreground font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Find Jobs
+                </Link>
+                <Link
+                  href="/employers"
+                  className="block px-3 py-2 text-foreground/80 hover:text-foreground font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Post Jobs
+                </Link>
+                <Link
+                  href="/chat"
+                  className="block px-3 py-2 text-foreground/80 hover:text-foreground font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  JobsGPT
+                </Link>
+                <Link
+                  href="/about"
+                  className="block px-3 py-2 text-foreground/80 hover:text-foreground font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  About
+                </Link>
+                <div className="pt-4 border-t border-border/50">
+                  {!isSignedIn ? (
+                    <div className="space-y-3">
+                      <Link
+                        href="/sign-in"
+                        className="block px-3 py-2 text-foreground/80 hover:text-foreground font-medium"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/sign-up"
+                        className="block w-full bg-gradient-accent text-white font-bold text-center py-3 px-4 rounded-full"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        I Need a Job ⚡
+                      </Link>
+                    </div>
+                  ) : (
+                    <Link
+                      href="/dashboard"
+                      className="block w-full bg-gradient-primary text-white font-bold text-center py-3 px-4 rounded-full"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      My Dashboard
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          </div>
         </div>
       </nav>
 
       {/* Hero Section with Gradient Mesh */}
-      <section className="hero-gradient relative flex min-h-screen items-center justify-center">
+      <section className="hero-gradient relative flex min-h-screen items-center justify-center overflow-hidden">
+        {/* Street Texture Background */}
+        <div className="street-texture"></div>
+        
+        {/* Local Graphics Background */}
+        <div className="local-graphics"></div>
+        
         {/* Geometric Shapes Background */}
         <div className="geometric-bg">
           <div
@@ -229,6 +304,14 @@ export default function HomePage() {
           <div
             className="shape shape-circle"
             style={{ bottom: '20%', left: '20%' }}
+          ></div>
+          <div
+            className="shape shape-triangle"
+            style={{ top: '40%', right: '8%', transform: 'rotate(90deg)' }}
+          ></div>
+          <div
+            className="shape shape-circle"
+            style={{ top: '80%', left: '70%', width: '80px', height: '80px' }}
           ></div>
         </div>
 
@@ -246,31 +329,31 @@ export default function HomePage() {
           {/* Bold Local Title */}
           <h1 className="heading-1 animate-fade-in-up mb-6">
             <span className="block text-foreground font-black">
-              Stop Scrolling. Start Working
+              Jobs for the 209.
             </span>
             <span className="text-gradient mt-2 block">
-              — in the 209.
+              No Suits Required.
             </span>
           </h1>
 
           {/* Local Tagline */}
-          <p className="animate-fade-in-up stagger-1 mx-auto mb-12 max-w-4xl text-xl text-foreground font-semibold md:text-2xl">
-            Made for the homies who work hard and rep the 209.
-            <span className="text-primary"> Let's get you hired.</span>
+          <p className="animate-fade-in-up stagger-1 mx-auto mb-12 max-w-4xl text-xl text-foreground font-bold md:text-2xl">
+            Built for the folks who work hard and don't mess around.
+            <span className="text-primary"> Real jobs that hit close to home.</span>
           </p>
 
           {/* Local AI Chat Interface */}
           <div className="animate-fade-in-up stagger-2 mx-auto mb-12 max-w-4xl">
             <div className="chat-container p-8">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 bg-gradient-primary text-white px-6 py-3 rounded-full text-sm font-bold mb-6 shadow-glow">
-                  🧠 JobsGPT - Your 209 Career Buddy
+                <div className="inline-flex items-center gap-2 bg-gradient-primary text-white px-6 py-3 rounded-full text-sm font-black mb-6 shadow-glow animate-pulse-glow">
+                  <span className="text-lg">🤝</span> JobsGPT - Your 209 Plug for Jobs
                 </div>
-                <h3 className="text-3xl font-bold text-foreground mb-3">
-                  What kind of work you looking for?
+                <h3 className="text-3xl font-black text-foreground mb-3">
+                  Yo, what kind of work you need?
                 </h3>
-                <p className="text-lg text-muted-foreground font-medium">
-                  Just ask like you're talking to a friend who knows every job in the Valley
+                <p className="text-lg text-muted-foreground font-bold">
+                  Text me like I'm your cousin who knows everybody hiring in the Valley
                 </p>
               </div>
 
@@ -278,14 +361,14 @@ export default function HomePage() {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="🛠️ 'Know any warehouse gigs in Stockton?' or 🏪 'Modesto retail work for weekends?'"
+                    placeholder="💬 Try: 'warehouse gigs in Stockton' or 'retail that pays good in Modesto'"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="chat-input w-full pr-20 text-lg"
+                    className="chat-input w-full pr-24 text-lg"
                   />
                   <button
                     type="submit"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-primary text-white p-4 rounded-full hover:scale-110 transition-all shadow-glow animate-pulse-glow"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-primary text-white p-4 rounded-full hover:scale-110 transition-all shadow-lg hover:shadow-glow animate-pulse-glow"
                   >
                     <Search className="h-6 w-6" />
                   </button>
@@ -294,16 +377,16 @@ export default function HomePage() {
                 {/* Local Conversation Starters */}
                 <div className="flex flex-wrap gap-3 justify-center">
                   {[
-                    "🛠️ Know any warehouse gigs in Stockton?",
-                    "🏪 Modesto retail work for weekends?",
-                    "💼 Office jobs that don't suck near Tracy?",
-                    "🏭 Manufacturing work in Manteca?",
-                    "🏥 Healthcare jobs in Lodi?"
+                    "🏗️ warehouse gigs that pay daily in Stockton",
+                    "🛒 weekend retail that doesn't suck in Modesto",
+                    "💼 office jobs near Tracy with actual benefits",
+                    "🚚 CDL driving gigs around Manteca",
+                    "🔧 mechanic shops hiring in Lodi"
                   ].map((prompt, index) => (
                     <button
                       key={index}
                       type="button"
-                      onClick={() => setSearchQuery(prompt.replace(/🛠️|🏪|💼|🏭|🏥/g, '').trim())}
+                      onClick={() => setSearchQuery(prompt.replace(/🏗️|🛒|💼|🚚|🔧/g, '').trim())}
                       className="chat-prompt-button"
                     >
                       {prompt}
@@ -313,18 +396,18 @@ export default function HomePage() {
               </form>
 
               {/* Local Trust Indicators */}
-              <div className="flex items-center justify-center gap-8 mt-8 text-sm font-semibold">
+              <div className="flex items-center justify-center gap-8 mt-8 text-sm font-black">
                 <div className="flex items-center gap-2 text-green-600">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  209 Local Intel
+                  <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse shadow-glow"></div>
+                  100% Valley Jobs
                 </div>
                 <div className="flex items-center gap-2 text-blue-600">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                  Real Jobs, Real Pay
+                  <div className="w-4 h-4 bg-blue-500 rounded-full animate-pulse shadow-glow"></div>
+                  No Cap, Just Facts
                 </div>
                 <div className="flex items-center gap-2 text-orange-600">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
-                  No BS Advice
+                  <div className="w-4 h-4 bg-orange-500 rounded-full animate-pulse shadow-glow"></div>
+                  Straight Talk Only
                 </div>
               </div>
             </div>
@@ -338,9 +421,9 @@ export default function HomePage() {
                   <Briefcase className="mr-3 h-6 w-6 transition-transform group-hover:scale-110" />
                   Browse Local Jobs
                 </Link>
-                <Link href="/sign-up" className="btn-primary group text-lg px-8 py-4 animate-pulse-glow">
-                  <Zap className="mr-3 h-6 w-6 transition-transform group-hover:rotate-12" />
-                  Join the 209 Workforce
+                <Link href="/sign-up" className="bg-gradient-accent text-white font-black text-xl px-10 py-5 rounded-full hover:scale-110 transition-all shadow-xl hover:shadow-glow animate-pulse-glow inline-flex items-center group">
+                  <span className="text-2xl mr-3">⚡</span>
+                  Let's Get You Paid
                 </Link>
               </>
             ) : (
@@ -584,31 +667,49 @@ export default function HomePage() {
                 within commuting distance, every employer is a neighbor.
               </p>
               <div className="flex space-x-4">
-                <Link href="#" className="btn-glass p-2">
+                <Link href="/contact" className="btn-glass p-2" title="Contact Us">
                   <svg
                     className="h-5 w-5"
-                    fill="currentColor"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                 </Link>
-                <Link href="#" className="btn-glass p-2">
+                <Link href="/about" className="btn-glass p-2" title="About Us">
                   <svg
                     className="h-5 w-5"
-                    fill="currentColor"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </Link>
-                <Link href="#" className="btn-glass p-2">
+                <Link href="/faq" className="btn-glass p-2" title="Help & FAQ">
                   <svg
                     className="h-5 w-5"
-                    fill="currentColor"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </Link>
               </div>
@@ -683,7 +784,7 @@ export default function HomePage() {
                 </li>
                 <li>
                   <Link
-                    href="/employers/analytics"
+                    href="/employers/dashboard"
                     className="text-muted-foreground transition-colors hover:text-primary"
                   >
                     Analytics

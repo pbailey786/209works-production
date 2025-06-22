@@ -8,8 +8,8 @@ interface PlaceholderPageProps {
 }
 
 export default function PlaceholderPage({
-  title = "Page Under Development",
-  description = "This page is currently being built. Check back soon!",
+  title = "Feature Coming Soon",
+  description = "This feature is being built with care for the 209 community. Check back soon!",
   showBackButton = true,
   className = ""
 }: PlaceholderPageProps) {

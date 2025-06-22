@@ -296,16 +296,29 @@
     color: hsl(var(--foreground));
   }
 
-  /* Local Chat Interface */
+  /* Local Chat Interface - Bold & Energetic */
   .chat-container {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 2px solid rgba(255, 107, 53, 0.2);
-    border-radius: 20px;
-    box-shadow: var(--shadow-xl), 0 0 30px rgba(255, 107, 53, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 249, 245, 0.95) 100%);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 3px solid rgba(255, 107, 53, 0.25);
+    border-radius: 32px;
+    box-shadow: 
+      0 20px 40px rgba(255, 107, 53, 0.15),
+      0 8px 16px rgba(0, 0, 0, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
     overflow: hidden;
     position: relative;
+    transform: perspective(1000px) rotateX(1deg);
+    transition: all 0.4s ease;
+  }
+
+  .chat-container:hover {
+    transform: perspective(1000px) rotateX(0deg) scale(1.01);
+    box-shadow: 
+      0 30px 60px rgba(255, 107, 53, 0.2),
+      0 12px 24px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
 
   .chat-container::before {
@@ -314,52 +327,87 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
+    height: 4px;
+    background: linear-gradient(90deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(var(--accent)) 50%, 
+      hsl(var(--primary)) 100%);
+    animation: gradientSlide 3s ease-in-out infinite;
+  }
+
+  @keyframes gradientSlide {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
   }
 
   .chat-input {
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(255, 107, 53, 0.2);
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
-    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.98);
+    border: 3px solid rgba(255, 107, 53, 0.15);
+    border-radius: 24px;
+    padding: 1.5rem 2rem;
+    font-size: 1.125rem;
     font-family: var(--font-sans);
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.05),
+      inset 0 1px 3px rgba(0, 0, 0, 0.02);
   }
 
   .chat-input:focus {
     outline: none;
     border-color: hsl(var(--primary));
     background: rgba(255, 255, 255, 1);
-    box-shadow: var(--shadow-lg), var(--shadow-glow);
-    transform: scale(1.01);
+    box-shadow: 
+      0 0 0 4px rgba(255, 107, 53, 0.1),
+      0 8px 24px rgba(255, 107, 53, 0.15),
+      inset 0 1px 3px rgba(0, 0, 0, 0.02);
+    transform: scale(1.02);
   }
 
   .chat-input::placeholder {
-    color: hsl(var(--muted-foreground));
+    color: hsl(var(--muted-foreground) / 0.7);
     font-weight: 500;
   }
 
   .chat-prompt-button {
-    background: rgba(255, 107, 53, 0.1);
-    border: 1px solid rgba(255, 107, 53, 0.3);
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 107, 53, 0.12) 100%);
+    border: 2px solid rgba(255, 107, 53, 0.2);
     color: hsl(var(--primary));
-    padding: 0.75rem 1.25rem;
-    border-radius: 12px;
+    padding: 0.875rem 1.5rem;
+    border-radius: 16px;
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 700;
     transition: all 0.3s ease;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chat-prompt-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 107, 53, 0.15);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
   }
 
   .chat-prompt-button:hover {
-    background: rgba(255, 107, 53, 0.2);
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 107, 53, 0.2) 100%);
     border-color: hsl(var(--primary));
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.15);
+  }
+
+  .chat-prompt-button:hover::before {
+    width: 300px;
+    height: 300px;
   }
 
   .chat-bubble-user {
@@ -860,29 +908,75 @@
   /* Shape Animations */
   .shape {
     position: absolute;
-    opacity: 0.1;
+    opacity: 0.15;
     animation: float 6s ease-in-out infinite;
   }
 
   .shape-circle {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     background: var(--gradient-primary);
+    box-shadow: 0 0 40px rgba(255, 107, 53, 0.2);
   }
 
   .shape-square {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     background: var(--gradient-accent);
     transform: rotate(45deg);
+    box-shadow: 0 0 40px rgba(245, 158, 11, 0.2);
   }
 
   .shape-triangle {
     width: 0;
     height: 0;
-    border-left: 40px solid transparent;
-    border-right: 40px solid transparent;
-    border-bottom: 70px solid hsl(var(--secondary));
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 90px solid hsl(var(--secondary));
+    filter: drop-shadow(0 0 20px rgba(45, 74, 62, 0.2));
+  }
+
+  /* Street-style Background Pattern */
+  .street-texture {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 107, 53, 0.05) 35px, rgba(255, 107, 53, 0.05) 70px),
+      repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(45, 74, 62, 0.05) 35px, rgba(45, 74, 62, 0.05) 70px);
+    pointer-events: none;
+  }
+
+  /* Local Graphics Background */
+  .local-graphics {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .local-graphics::before {
+    content: '209';
+    position: absolute;
+    top: -10%;
+    right: -5%;
+    font-size: 20rem;
+    font-weight: 900;
+    font-family: var(--font-display);
+    color: rgba(255, 107, 53, 0.03);
+    transform: rotate(-15deg);
+  }
+
+  .local-graphics::after {
+    content: 'VALLEY';
+    position: absolute;
+    bottom: -5%;
+    left: -5%;
+    font-size: 10rem;
+    font-weight: 900;
+    font-family: var(--font-display);
+    color: rgba(45, 74, 62, 0.03);
+    transform: rotate(15deg);
   }
 }

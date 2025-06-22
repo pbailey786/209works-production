@@ -83,7 +83,7 @@ export function LazyComponent({
 }
 
 // Helper function to create lazy components
-export function createLazyComponent<T = {}>(
+export function createLazyComponent<T extends Record<string, any> = {}>(
   importFn: () => Promise<{ default: ComponentType<T> }>,
   options: LazyComponentProps = {}
 ) {
