@@ -8,72 +8,74 @@
 
 @layer base {
   :root {
-    /* Modern Dark Theme - Primary Colors */
-    --background: oklch(0.1178 0.02 265);
-    --foreground: oklch(0.9567 0.01 106);
-    --card: oklch(0.1578 0.025 265);
-    --card-foreground: oklch(0.9567 0.01 106);
-    --popover: oklch(0.1378 0.025 265);
-    --popover-foreground: oklch(0.9567 0.01 106);
+    /* 209 Works Brand Colors - Professional Theme */
+    --background: #0a0a0a;
+    --foreground: #fafafa;
+    --card: #1a1a1a;
+    --card-foreground: #fafafa;
+    --popover: #1a1a1a;
+    --popover-foreground: #fafafa;
 
-    /* Vibrant Gradient Colors */
-    --primary: oklch(0.7016 0.2287 27.4816);
-    --primary-foreground: oklch(0.1 0.02 27);
-    --secondary: oklch(0.6955 0.1896 126.1858);
-    --secondary-foreground: oklch(0.1 0.02 126);
-    --accent: oklch(0.728 0.1993 283.7394);
-    --accent-foreground: oklch(0.1 0.02 283);
+    /* 209 Works Primary Brand Colors */
+    --primary: #ff6b35;
+    --primary-foreground: #ffffff;
+    --secondary: #2d4a3e;
+    --secondary-foreground: #ffffff;
+    --accent: #f5ae1b;
+    --accent-foreground: #000000;
 
-    /* Neon Accent Colors */
-    --neon-pink: oklch(0.7076 0.2475 346.4558);
-    --neon-blue: oklch(0.688 0.2093 245.7394);
-    --neon-purple: oklch(0.6482 0.2235 303.7492);
-    --neon-green: oklch(0.7423 0.1967 153.0145);
+    /* Professional Supporting Colors */
+    --success: #22c55e;
+    --success-foreground: #ffffff;
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+    --info: #3b82f6;
+    --info-foreground: #ffffff;
 
     /* Utility Colors */
-    --muted: oklch(0.2026 0.02 265);
-    --muted-foreground: oklch(0.7091 0.01 106);
-    --destructive: oklch(0.6576 0.2375 24.4558);
-    --destructive-foreground: oklch(0.9567 0.01 106);
-    --border: oklch(0.2313 0.02 265);
-    --input: oklch(0.2313 0.02 265);
-    --ring: var(--neon-blue);
+    --muted: #262626;
+    --muted-foreground: #a3a3a3;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #404040;
+    --input: #262626;
+    --ring: #ff6b35;
 
-    /* Gradient Definitions */
+    /* Professional Gradient Definitions */
     --gradient-primary: linear-gradient(
       135deg,
       var(--primary) 0%,
-      var(--neon-pink) 100%
+      #e55a2b 100%
     );
     --gradient-secondary: linear-gradient(
       135deg,
       var(--secondary) 0%,
-      var(--neon-green) 100%
+      #1e3329 100%
     );
     --gradient-accent: linear-gradient(
       135deg,
-      var(--neon-blue) 0%,
-      var(--neon-purple) 100%
+      var(--accent) 0%,
+      #d49516 100%
     );
-    --gradient-vibrant: linear-gradient(
+    --gradient-hero: linear-gradient(
       135deg,
-      var(--neon-pink) 0%,
-      var(--neon-blue) 50%,
-      var(--neon-purple) 100%
+      var(--primary) 0%,
+      var(--secondary) 50%,
+      var(--accent) 100%
     );
     --gradient-mesh:
-      radial-gradient(at 40% 20%, var(--neon-pink) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, var(--neon-purple) 0px, transparent 50%),
-      radial-gradient(at 40% 50%, var(--neon-blue) 0px, transparent 50%),
-      radial-gradient(at 80% 80%, var(--secondary) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, var(--primary) 0px, transparent 50%);
+      radial-gradient(at 40% 20%, rgba(255, 107, 53, 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(45, 74, 62, 0.1) 0px, transparent 50%),
+      radial-gradient(at 40% 50%, rgba(245, 174, 27, 0.1) 0px, transparent 50%),
+      radial-gradient(at 80% 80%, rgba(255, 107, 53, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(45, 74, 62, 0.05) 0px, transparent 50%);
 
     /* Chart Colors */
     --chart-1: var(--primary);
     --chart-2: var(--secondary);
     --chart-3: var(--accent);
-    --chart-4: var(--neon-pink);
-    --chart-5: var(--neon-blue);
+    --chart-4: var(--success);
+    --chart-5: var(--info);
 
     /* Sidebar */
     --sidebar: oklch(0.1378 0.025 265);
@@ -86,13 +88,13 @@
     --sidebar-ring: var(--ring);
 
     /* Fonts */
-    --font-sans: 'Inter', 'Oxanium', sans-serif;
+    --font-sans: 'Inter', sans-serif;
     --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
     --font-mono: 'Source Code Pro', monospace;
-    --font-display: 'Oxanium', sans-serif;
+    --font-display: 'Inter', sans-serif;
 
     /* Radius */
-    --radius: 12px;
+    --radius: 8px;
 
     /* Modern Shadows with Glow */
     --shadow-2xs:
@@ -117,13 +119,11 @@
       0px 40px 80px -20px rgba(0, 0, 0, 0.35),
       0px 28px 56px -20px rgba(0, 0, 0, 0.2);
 
-    /* Glow Effects */
-    --glow-sm: 0 0 10px rgba(255, 107, 53, 0.3);
-    --glow-md: 0 0 20px rgba(255, 107, 53, 0.4);
-    --glow-lg: 0 0 30px rgba(255, 107, 53, 0.5);
-    --glow-neon:
-      0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue),
-      0 0 60px var(--neon-blue);
+    /* Professional Glow Effects */
+    --glow-sm: 0 0 10px rgba(255, 107, 53, 0.2);
+    --glow-md: 0 0 20px rgba(255, 107, 53, 0.3);
+    --glow-lg: 0 0 30px rgba(255, 107, 53, 0.4);
+    --glow-accent: 0 0 15px rgba(245, 174, 27, 0.3);
 
     /* Animation Durations */
     --duration-fast: 150ms;
@@ -134,16 +134,16 @@
 
   /* Light theme overrides */
   .light {
-    --background: oklch(0.9852 0.01 106);
-    --foreground: oklch(0.1393 0.02 265);
-    --card: oklch(0.9952 0.005 106);
-    --card-foreground: oklch(0.1393 0.02 265);
-    --popover: oklch(0.9952 0.005 106);
-    --popover-foreground: oklch(0.1393 0.02 265);
-    --muted: oklch(0.9526 0.01 106);
-    --muted-foreground: oklch(0.4091 0.02 265);
-    --border: oklch(0.8713 0.01 106);
-    --input: oklch(0.8713 0.01 106);
+    --background: #ffffff;
+    --foreground: #0a0a0a;
+    --card: #f8f9fa;
+    --card-foreground: #0a0a0a;
+    --popover: #ffffff;
+    --popover-foreground: #0a0a0a;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --border: #e2e8f0;
+    --input: #f1f5f9;
 
     /* Adjusted shadows for light theme */
     --shadow-2xs:
@@ -335,44 +335,34 @@
 }
 
 @layer components {
-  /* Modern Glass Card */
+  /* Professional Glass Card */
   .glass-card {
-    @apply relative overflow-hidden rounded-2xl border border-white/10;
-    background: rgba(255, 255, 255, 0.02);
+    @apply relative overflow-hidden rounded-xl border border-white/10;
+    background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow:
-      0 8px 32px 0 rgba(0, 0, 0, 0.37),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-    transition: all var(--duration-normal) ease;
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.1);
+    transition: all 300ms ease;
   }
 
   .glass-card:hover {
     background: rgba(255, 255, 255, 0.05);
     transform: translateY(-2px);
-    box-shadow:
-      0 12px 40px 0 rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.15);
   }
 
-  /* Neon Card */
-  .neon-card {
-    @apply relative overflow-hidden rounded-2xl p-6 backdrop-blur-xl;
-    background: rgba(40, 72, 68, 0.5);
-    border: 1px solid transparent;
-    background-image:
-      linear-gradient(var(--card), var(--card)),
-      linear-gradient(135deg, var(--neon-pink), var(--neon-blue));
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    transition: all var(--duration-normal) ease;
+  /* Professional Feature Card */
+  .feature-card {
+    @apply relative overflow-hidden rounded-xl p-6 backdrop-blur-xl;
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition: all 300ms ease;
   }
 
-  .neon-card:hover {
-    transform: translateY(-4px);
-    box-shadow:
-      0 20px 40px -10px rgba(255, 107, 53, 0.3),
-      0 0 30px -10px var(--neon-blue);
+  .feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -4px rgba(255, 107, 53, 0.2);
+    border-color: var(--primary);
   }
 
   /* Modern Button Base */
@@ -407,50 +397,47 @@
     transform: translateX(100%);
   }
 
-  /* Gradient Primary Button */
+  /* Primary Button */
   .btn-primary {
     @apply btn font-semibold text-white;
-    background: var(--gradient-primary);
-    box-shadow: 0 4px 15px 0 rgba(255, 107, 53, 0.3);
+    background: var(--primary);
+    box-shadow: 0 2px 8px 0 rgba(255, 107, 53, 0.2);
   }
 
   .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 6px 20px 0 rgba(255, 107, 53, 0.4),
-      var(--glow-md);
+    background: #e55a2b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px 0 rgba(255, 107, 53, 0.3);
   }
 
   .btn-primary:active {
     transform: translateY(0);
   }
 
-  /* Gradient Secondary Button */
+  /* Secondary Button */
   .btn-secondary {
     @apply btn font-semibold text-white;
-    background: var(--gradient-secondary);
-    box-shadow: 0 4px 15px 0 rgba(45, 74, 62, 0.3);
+    background: var(--secondary);
+    box-shadow: 0 2px 8px 0 rgba(45, 74, 62, 0.2);
   }
 
   .btn-secondary:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 6px 20px 0 rgba(45, 74, 62, 0.4),
-      0 0 20px rgba(116, 233, 153, 0.4);
+    background: #1e3329;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px 0 rgba(45, 74, 62, 0.3);
   }
 
-  /* Neon Accent Button */
+  /* Accent Button */
   .btn-accent {
-    @apply btn font-semibold text-white;
-    background: var(--gradient-accent);
-    box-shadow: 0 4px 15px 0 rgba(110, 128, 255, 0.3);
+    @apply btn font-semibold text-black;
+    background: var(--accent);
+    box-shadow: 0 2px 8px 0 rgba(245, 174, 27, 0.2);
   }
 
   .btn-accent:hover {
-    transform: translateY(-2px);
-    box-shadow:
-      0 6px 20px 0 rgba(110, 128, 255, 0.4),
-      var(--glow-neon);
+    background: #d49516;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px 0 rgba(245, 174, 27, 0.3);
   }
 
   /* Glass Button */
@@ -494,54 +481,27 @@
     transform: translateY(-1px);
   }
 
-  /* Modern Glass Input */
+  /* Professional Glass Input */
   .input-glass {
-    @apply relative flex h-12 w-full rounded-xl px-4 py-2 text-sm;
+    @apply relative flex h-12 w-full rounded-lg px-4 py-2 text-sm;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
-    @apply transition-all duration-300;
-    background: rgba(255, 255, 255, 0.03);
+    @apply transition-all duration-200;
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border);
+    color: var(--foreground);
   }
-  
+
   .input-glass::placeholder {
-    color: rgba(181, 23, 27, 0.6);
+    color: var(--muted-foreground);
   }
 
   .input-glass:focus {
     @apply outline-none;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
     border-color: var(--primary);
-    box-shadow:
-      0 0 0 3px rgba(255, 107, 53, 0.1),
-      0 0 20px -5px rgba(255, 107, 53, 0.3);
-  }
-
-  /* Neon Input */
-  .input-neon {
-    @apply relative flex h-12 w-full rounded-xl px-4 py-2 text-sm;
-    @apply backdrop-blur-sm;
-    @apply disabled:cursor-not-allowed disabled:opacity-50;
-    @apply transition-all duration-300;
-    background: rgba(30, 10, 68, 0.5);
-    border: 2px solid transparent;
-    background-image:
-      linear-gradient(var(--background), var(--background)),
-      linear-gradient(135deg, var(--primary), var(--neon-blue));
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-  }
-  
-  .input-neon::placeholder {
-    color: rgba(181, 23, 27, 0.6);
-  }
-
-  .input-neon:focus {
-    @apply outline-none;
-    box-shadow:
-      0 0 20px -5px var(--primary),
-      0 0 30px -10px var(--neon-blue);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
   }
 
   /* Modern Navigation */
@@ -628,18 +588,15 @@
   }
 
   .body-large {
-    @apply text-lg leading-relaxed;
-    color: rgba(245, 174, 27, 0.8);
+    @apply text-lg leading-relaxed text-muted-foreground;
   }
 
   .body {
-    @apply text-base leading-relaxed;
-    color: rgba(245, 174, 27, 0.8);
+    @apply text-base leading-relaxed text-muted-foreground;
   }
 
   .body-small {
-    @apply text-sm leading-relaxed;
-    color: rgba(245, 174, 27, 0.8);
+    @apply text-sm leading-relaxed text-muted-foreground;
   }
 
   /* Modern Grid with Gap Animations */
@@ -700,9 +657,8 @@
   }
 
   .form-label {
-    @apply text-sm font-semibold tracking-wide;
+    @apply text-sm font-semibold tracking-wide text-foreground;
     @apply transition-all duration-300;
-    color: rgba(245, 174, 27, 0.8);
   }
 
   .form-group:focus-within .form-label {
