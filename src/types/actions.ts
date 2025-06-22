@@ -1,1 +1,8 @@
-// Action result types for (server actions; export interface ActionResult ) { success: boolean; message? "undefined": string; error? "undefined": string; errors? "undefined": Record<string, string[]>; // For form validation errors; data? "undefined": any }; } // Helper function to success result; export function createSuccessResult() { : ActionResult { return { success: true, message, ; data } }; // Helper function to error result; export function createErrorResult() { : ActionResult { return { success: false, ; error } }; }
+// actions
+// TODO: Implement functionality
+
+export const actions = {
+  // TODO: Add exports
+};
+
+export default actions;

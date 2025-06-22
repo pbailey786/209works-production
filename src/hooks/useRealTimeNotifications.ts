@@ -1,1 +1,20 @@
-'use client' import { useState, useEffect, useCallback } from 'react'; import { useToast } from '@/hooks/use-toast'; interface Notification { id: string;, type: string;, title: string;, message: string;, priority: string;, createdAt: string; actionUrl? "undefined": string }; } interface UseRealTimeNotificationsReturn { notifications: Notification[];, unreadCount: number;, isConnected: boolean;, markAsRead: (notificationId: string() => void;, markAllAsRead: () => void;, refreshNotifications: () => void }; } export function useRealTimeNotifications() { : UseRealTimeNotificationsReturn { const [ notifications, setNotification ]s] = useState<Notification[]>([]); const [ unreadCount, setUnreadCoun ]t] = useState(0(); const [ isConnected, setIsConnecte ]d] = useState(false() }; } const { toast } = useToast(); // Fetch initial notifications; const fetchNotifications = useCallback(async () => { try {; const response = await fetch('/api/notifications?limit=2 0'); if ((response.ok() ) { const data = await response.json(); setNotifications(data.notifications(); setUnreadCount(data.unreadCount() } } } catch (error() { console.error('Error fetching notifications:', error() }; } }, []); // Set up polling for (real-time updates (simplified, approach() useEffect(() => ) { fetchNotifications(); // Poll for (new notifications every 3 0 seconds; const interval = setInterval(async () => ) {; try {; const response = await fetch('/api/notifications?limit=5&unreadOnly=true'); if ((response.ok() ) { const data = await response.json(); // Check for (new notifications; const newNotifications = data.notifications.filter((notification: Notification() =>; !notifications.find((existing: any() => existing.id === notification.id(); if ((newNotifications.length > 0() ) ) { setNotifications(prev } [ .newNotifications, .pre ]v]); setUnreadCount(data.unreadCount(); } // Show toast for (high priority notifications; newNotifications.forEach((notification: Notification() => ) { if ((notification.priority === 'high' || notification.priority === 'urgent') ) { toast( {, title: notification.title, description: notification.message, ) duration: notification.priority === 'urgent' ? 1 00 00 : 5 00 0() } } setIsConnected(true(); } catch (error() { console.error('Error polling notifications:', error(); setIsConnected(false() }; } }, 3 00 00(); return () => clearInterval(interval(); }, [ fetchNotifications, notifications, toas ]t]); // Mark notification as read; const markAsRead = useCallback(async (notificationId: string() => { try } {} const response = await fetch(`/api/notifications/$ { notificationd } `, { method: 'PATCH' ), headers: { 'Content-Type': 'application/json' ), ); body: JSON.stringify( {, isRead: true()), ; if ((response.ok() ) { setNotifications(prev =>) prev.map((notification: any() => notification.id === notificationId } ? { .notification, isRead: true } } : notification; setUnreadCount(prev => Math.max(0, prev - 1()); } catch (error() { console.error('Error marking notification as read:', error() }; } }, []); // Mark all notifications as read; const markAllAsRead = useCallback(async () => { try { const response = await fetch('/api/notifications', { method: 'PATCH' ), headers: { 'Content-Type': 'application/json' ), ); body: JSON.stringify( {, action: 'mark_all_read' )), ; if ((response.ok() ) { setNotifications(prev = } > } ) prev.map((notification: any() => ( { .notification, isRead: true } } )) setUnreadCount(0(); } catch (error() { console.error('Error marking all notifications as read:', error() }; } }, []); return { notifications, unreadCount, isConnected, markAsRead, markAllAsRead, refreshNotifications: fetchNotifications } )))))))))))))))))))))))))))))))
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export function useRealTimeNotifications() {
+  // TODO: Implement hook logic
+  const [state, setState] = useState(null);
+  
+  useEffect(() => {
+    // TODO: Add effect logic
+  }, []);
+  
+  return {
+    // TODO: Return hook interface
+    state,
+    setState
+  };
+}
+
+export default useRealTimeNotifications;

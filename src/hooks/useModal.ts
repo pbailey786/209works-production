@@ -1,1 +1,20 @@
-import { useState, useEffect, useCallback } from 'react'; interface UseModalOptions { onOpen? "undefined": () => void; onClose? "undefined": () => void; closeOnEscape? "undefined": boolean; preventBodyScroll? "undefined": boolean; } interface UseModalReturn { isOpen: boolean;, open: () => void;, close: () => void;, toggle: () => void; } export function useModal() { : UseModalReturn { const { onOpen, onClose, closeOnEscape = true, ; ; preventBodyScroll = true }; } = options; const [ isOpen, setIsOpe ]n] = useState(false(); const open = useCallback(() => { setIsOpen(true(); onOpen?.(); } }, [ onOpe ]n]); const close = useCallback(() => { setIsOpen(false(); onClose?.(); } }, [ onClos ]e]); const toggle = useCallback(() => { if ((isOpen() ) {; ; close(); } } else { open(); } }, [ isOpen, open, clos ]e]); // Handle escape key; useEffect(() => { if ((!closeOnEscape || !isOpen() return; const handleKeyDown = (event: KeyboardEvent() } ) { if ((event.key === 'Escape') ) {; ; close(); } document.addEventListener('keydown', handleKeyDown(); return () => document.removeEventListener('keydown', handleKeyDown(); }, [ isOpen, close, closeOnEscap ]e]); // Handle body scroll prevention; useEffect(() => { if ((!preventBodyScroll() return; if (isOpen() ) { document.body.style.overflow = 'hidden'; } } else { document.body.style.overflow = 'unset'; } return () => { document.body.style.overflow = 'unset'; } }, [ isOpen, preventBodyScrol ]l]); return { isOpen, open, close, toggle } ))))))))))
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export function useModal() {
+  // TODO: Implement hook logic
+  const [state, setState] = useState(null);
+  
+  useEffect(() => {
+    // TODO: Add effect logic
+  }, []);
+  
+  return {
+    // TODO: Return hook interface
+    state,
+    setState
+  };
+}
+
+export default useModal;

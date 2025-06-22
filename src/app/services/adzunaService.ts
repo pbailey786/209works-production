@@ -1,14 +1,34 @@
-export default function AdzunaServicePage() {
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          AdzunaService Page
-        </h1>
-        <p className="text-gray-600">
-          This page is under construction.
-        </p>
-      </div>
-    </div>
-  );
+// AdzunaService - Job data import service
+// This service handles importing job data from Adzuna API
+
+export interface AdzunaJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  description: string;
+  salary_min?: number;
+  salary_max?: number;
+  url: string;
 }
+
+export class AdzunaService {
+  private apiKey: string;
+  private appId: string;
+
+  constructor() {
+    this.apiKey = process.env.ADZUNA_API_KEY || '';
+    this.appId = process.env.ADZUNA_APP_ID || '';
+  }
+
+  async searchJobs(query: string, location: string): Promise<AdzunaJob[]> {
+    // TODO: Implement Adzuna API integration
+    return [];
+  }
+
+  async importJobs(jobs: AdzunaJob[]): Promise<void> {
+    // TODO: Implement job import to database
+  }
+}
+
+export default AdzunaService;

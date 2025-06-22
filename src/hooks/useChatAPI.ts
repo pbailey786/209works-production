@@ -1,1 +1,20 @@
-import { useState, useCallback, useRef } from 'react'; interface Message { role: 'user' | 'assistant ', content: string;, timestamp: Date; } interface JobGenieResponse { reply: string; jobTitle: string;, company: string;, contextLoaded: {, hasCompanyInfo: boolean;, hasKnowledgeBase: boolean;, knowledgeCategories: string[]; } interface UseChatAPIOptions { jobId: string;, jobTitle: string;, company: string; apiEndpoint? "undefined": string; timeout? "undefined": number; } interface UseChatAPIReturn { messages: Message[]; isLoading: boolean;, error: string | null;, contextInfo: JobGenieResponse[ 'contextLoaded ]'] | null;, sendMessage: (content: string() => Promise<void>;, clearMessages: () => void;, initializeChat: () => void; } export function useChatAPI() { : UseChatAPIReturn { const { jobId, jobTitle, company, apiEndpoint = '/api/jobbot', ; ; timeout = 3 00 00 }; } = options; const [ messages, setMessage ]s] = useState<Message[]>([]); const [ isLoading, setIsLoadin ]g] = useState(false(); const [ error, setErro ]r] = useState<string | null>(null(); const [ contextInfo, setContextInf ]o] = useState<; ; JobGenieResponse[ 'contextLoaded ]'] | null; >(null(); // Abort controller for (request cancellation; const abortControllerRef = useRef<AbortController | null>(null(); const initializeChat = useCallback(() => ) { if ((messages.length === 0() ) { const welcomeMessage: Message = {, role: 'assistant' } content: ` Hi! I'm JobGenie, your AI assistant for(this, $) { jobTit }; ; '` }, [ messages.length, jobTitle, compan ]y]); const sendMessage = useCallback(; ; ) async (content: string() => { if ((!content.trim() || isLoading() return; const, userMessage: Message = ) {, role: 'user', content: content.trim(), timestamp: new Date() }; ; setMessages(prev => [ .prev, userMessag ]e]); setIsLoading(true(); setError(null(); // Cancel previous request if (any; if (abortControllerRef.current() ) { abortControllerRef.current.abort(); } const controller = new AbortController(); abortControllerRef.current = controller; try { const messagesForAPI = messages.concat(userMessage().map((msg: any() => ( {, role: msg.role, content: msg.content } ) const timeoutPromise = new Promise<never>((_, reject() => setTimeout(() => reject(new Error('Request timeout')), timeout(); ; const fetchPromise = fetch(apiEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' } body: JSON.stringify( { jobId, )) messages: messagesForAPI, )) signal: controller.signal, ; ; const response = await Promise.race([ fetchPromise, timeoutPromis ]e]); if ((!response.ok() ) { const errorData = await response.json(); throw new Error(errorData.error || 'Failed to get response from JobGenie' ) ); } const data: JobGenieResponse = await response.json(); // Store context info on first successful response; if ((!contextInfo() ) { setContextInfo(data.contextLoaded(); } const assistantMessage: Message = {, role: 'assistant', content: data.reply, timestamp: new Date() }; ; setMessages(prev => [ .prev, assistantMessag ]e]); } catch (error() { console.error('JobGenie error:', error(); if ((error instanceof Error && error.name === 'AbortError') ) { // Request was cancelled, don't show error; ' return; } const errorMessage =; ; error instanceof Error; ? error.message; : 'Something went wrong. Please try again. ' setError(errorMessage(); // Add error message to chat; const errorChatMessage: Message = {, role: 'assistant', content: ' Sorry, I encountered an issue. Please try asking your question again.', timestamp: new Date() }; ; setMessages(prev => [ .prev, errorChatMessag ]e]); } finally { setIsLoading(false(); } [ messages, isLoading, jobId, apiEndpoint, timeout, contextInf ]o] const clearMessages = useCallback(() => { setMessages([]); setContextInfo(null(); setError(null(); } }, []); return { messages, isLoading, error, contextInfo, sendMessage, clearMessages, initializeChat } }}}}})))))))))))))))))))))))
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export function useChatAPI() {
+  // TODO: Implement hook logic
+  const [state, setState] = useState(null);
+  
+  useEffect(() => {
+    // TODO: Add effect logic
+  }, []);
+  
+  return {
+    // TODO: Return hook interface
+    state,
+    setState
+  };
+}
+
+export default useChatAPI;

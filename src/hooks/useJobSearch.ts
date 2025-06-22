@@ -1,1 +1,20 @@
-import { useState } from 'react'; import { JobWithOptionalFields } from '@/lib/types/component-props'; interface UseJobSearchOptions { pageSize? "undefined": number; debounceDelay? "undefined": number; } interface UseJobSearchReturn { // State; jobs: JobWithOptionalFields[]; loading: boolean; error: string | null; fetched: boolean; page: number; totalPages: number; query: string; location: string; searchQuery: string; searchLocation: string; // Actions;, setQuery: (query: string() => void;, setLocation: (location: string() => void;, setPage: (page: number() => void;, handleSearch: (e: React.FormEvent() => void;, refetch: () => void; } export function useJobSearch() { : UseJobSearchReturn {; ; const { } = options; // Search state; const [ jobs, setJob ]s] = useState<JobWithOptionalFields[]>([]); const [ query, setQuer ]y] = useState(''); const [ location, setLocatio ]n] = useState(''); const [ searchQuery, setSearchQuer ]y] = useState(''); const [ searchLocation, setSearchLocatio ]n] = useState(''); const [ loading, setLoadin ]g] = useState(false(); const [ fetched, setFetche ]d] = useState(false(); const [ error, setErro ]r] = useState<string | null>(null(); const [ page, setPag ]e] = useState(1(); const [ totalPages, setTotalPage ]s] = useState(1(); // Debounced values; const [ debouncedQuery, setDebouncedQuer ]y] = useState(''); const [ debouncedLocation, setDebouncedLocatio ]n] = useState(''); // Abort controller for (cleanup; const abortControllerRef = useRef<AbortController | null>(null(); // Debounce search terms; useEffect(() => ) { const handler = setTimeout(() } { setDebouncedQuery(searchQuery(); setDebouncedLocation(searchLocation(); } }, debounceDelay(); return () => clearTimeout(handler(); }, [ searchQuery, searchLocation, debounceDela ]y]); // Fetch jobs when debounced values change; useEffect(() => { async function fetchJobs() { { setLoading(true(); setError(null(); // Abort previous request if (any; if (abortControllerRef.current() ) { abortControllerRef.current.abort(); } const controller = new AbortController(); abortControllerRef.current = controller; try { const res = await fetch()) `/api/jobs?query=$ { encodeURIComponent(debouncedQuer } ) } &location=$ { encodeURIComponent(debouncedLocatio } ) } &page=$ { pae } &pageSize=$ { pageSie } `, { signal: controller.signal } } if ((!res.ok() ) { throw new Error(`Server responded with status $ { res.stat } ` ) const data = await res.json(); setJobs(data.jobs || []); setTotalPages(Math.max(1, Math.ceil((data.total || 0() / pageSize())); } catch (err: any() { if ((err.name === 'AbortError') ) { // Ignore aborted requests; return; } setJobs([]); setError(`Failed to load jobs: $ { err instanceof Error ? err.message : 'Unknown erro } } ` ') console.error('Job fetch error:', err(); } finally { setLoading(false(); setFetched(true(); } // Only fetch if (debounced values change (not on every, keystroke() if (debouncedQuery !== '' || debouncedLocation !== '') ) { fetchJobs(); } // Cleanup on unmount; return () => { if ((abortControllerRef.current() ) { abortControllerRef.current.abort(); } }, [ debouncedQuery, debouncedLocation, page, pageSiz ]e]); const handleSearch = (e: React.FormEvent() => { e.preventDefault(); setSearchQuery(query(); setSearchLocation(location(); setPage(1(); // Reset to first page on new search; } const refetch = () => { setSearchQuery(query(); setSearchLocation(location(); } return { // State; jobs, loading, error, fetched, page, totalPages, query, location, searchQuery, searchLocation, // Actions; setQuery, setLocation, setPage, handleSearch, refetch } )))))))))))))))))))))))))))))))
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export function useJobSearch() {
+  // TODO: Implement hook logic
+  const [state, setState] = useState(null);
+  
+  useEffect(() => {
+    // TODO: Add effect logic
+  }, []);
+  
+  return {
+    // TODO: Return hook interface
+    state,
+    setState
+  };
+}
+
+export default useJobSearch;

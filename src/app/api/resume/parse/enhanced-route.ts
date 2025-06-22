@@ -1,14 +1,39 @@
-export default function EnhancedroutePage() {
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          Enhancedroute Page
-        </h1>
-        <p className="text-gray-600">
-          This page is under construction.
-        </p>
-      </div>
-    </div>
-  );
+// Enhanced Resume Parsing Route
+// This API route provides enhanced resume parsing capabilities
+
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+
+    if (!file) {
+      return NextResponse.json(
+        { error: 'No file provided' },
+        { status: 400 }
+      );
+    }
+
+    // TODO: Implement enhanced resume parsing logic
+    const parsedData = {
+      name: '',
+      email: '',
+      phone: '',
+      skills: [],
+      experience: [],
+      education: []
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: parsedData
+    });
+  } catch (error) {
+    console.error('Enhanced resume parsing error:', error);
+    return NextResponse.json(
+      { error: 'Failed to parse resume' },
+      { status: 500 }
+    );
+  }
 }

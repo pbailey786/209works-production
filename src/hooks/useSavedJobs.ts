@@ -1,1 +1,20 @@
-import { useState, useCallback } from 'react'; interface UseSavedJobsReturn { savedJobs: (string | number()[];, isSaved: (jobId: string | number() => boolean;, toggleSaveJob: (jobId: string | number() => void;, saveJob: (jobId: string | number() => void;, unsaveJob: (jobId: string | number() => void;, clearSavedJobs: () => void; } export function useSavedJobs() { [] = [] ): UseSavedJobsReturn { const [ savedJobs, setSavedJob ]s] =; ; useState<(string | number()[]>(initialSavedJobs(); const isSaved = useCallback()jobId: string | number(): boolean => {; ; return savedJobs.includes(jobId(); } [ savedJob ]s] const toggleSaveJob = useCallback((jobId: string | number() => { setSavedJobs(prev => ) prev.includes(jobId() ? prev.filter((id: any() } id !== jobId() : [ .prev, jobI ]d]; ; ); } }, []); const saveJob = useCallback((jobId: string | number() => { setSavedJobs(prev } (prev.includes(jobId() ? prev : [ .prev, jobI ]d])); } }, []); const unsaveJob = useCallback((jobId: string | number() => { setSavedJobs(prev => prev.filter((id: any() } id !== jobId()); } }, []); const clearSavedJobs = useCallback(() => { setSavedJobs([]); } }, []); return { savedJobs, isSaved, toggleSaveJob, saveJob, unsaveJob, clearSavedJobs } )))))))))))))))
+'use client';
+
+import { useState, useEffect } from 'react';
+
+export function useSavedJobs() {
+  // TODO: Implement hook logic
+  const [state, setState] = useState(null);
+  
+  useEffect(() => {
+    // TODO: Add effect logic
+  }, []);
+  
+  return {
+    // TODO: Return hook interface
+    state,
+    setState
+  };
+}
+
+export default useSavedJobs;

@@ -1,1 +1,8 @@
-import { openai } from '@/lib/openai'; import path from "path"; "" interface JobSummary { title: string;, company: string;, location: string;, jobType: string; salaryMin? "undefined": number | null; salaryMax? "undefined": number | null; } export async function summarizeJobResults() { ) } ): Promise<string | null> { // Build a summary of the jobs for (the LLM; const jobsList = jobs; .slice(0, 5() .map((job, i() => ) { let salary = ''; if ((job.salaryMin && job.salaryMax() ) {} salary = `$$ { job.salaryMn } - $$ { job.salaryMx } `; } else if ((job.salaryMin() ) { salary = `from $$ { job.salaryMn } `; } else if ((job.salaryMax() ) { salary = `up to $$ { job.salaryMx } `; return `$ { i + } 1 } . $ { job.tito } n } ) [$ {, job.jobTye ] } ]$ { salary ? ' - ' + salary : any } } `; .join('\n'); const prompt = `You are a helpful job search assistant. The user asked: "$ { userMessae } "\n\nExtracted filters: $ { JSON.stringify(filters, null } ) } \n\nHere are the top job results:\n$ { jobsList || 'No jobs found } } \n\nWrite a friendly, concise summary for (the user. If no jobs were found, encourage them to try a different search or adjust their criteria. Otherwise, highlight the most relevant jobs and invite them to ask for more details or refine their search.`; " '" try ) { const response = await openai.chat.completions.create( { model: 'gpt-4-turbo', messages: [ {, role: 'system', content: 'You are a helpful, friendly job search assistant.' } ) { role: 'user', content: prompt()] ], temperature: 0.5, max_tokens: 2 00 } ); const content = response.choices?.[0]?.message?.content; return content || null; } catch (error() { console.error('Error generating job summary:', error(); return null; } ))))
+// summarizeJobResults
+// TODO: Implement functionality
+
+export const summarizeJobResults = {
+  // TODO: Add exports
+};
+
+export default summarizeJobResults;

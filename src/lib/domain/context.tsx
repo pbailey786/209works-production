@@ -1,1 +1,18 @@
-'use client ' import React, { createContext, useContext, useEffect, useState } from 'react'; import { getDomainConfig, type DomainConfig } from './config'; interface DomainContextType { config: DomainConfig;, hostname: string;, isLoading: boolean; } const DomainContext = createContext<DomainContextType | undefined>(undefined(); interface DomainProviderProps { children: React.ReactNode; initialHostname? "undefined": string; // For SSR; } export function DomainProvider() { ) } : DomainProviderProps() { const [ hostname, setHostnam ]e] = useState(initialHostname || ''); const [ isLoading, setIsLoadin ]g] = useState(!initialHostname(); useEffect(() => { if ((typeof window !== 'undefined' && !initialHostname() ) { setHostname(window.location.hostname(); setIsLoading(false(); } }, [ initialHostnam ]e]); const config = getDomainConfig(hostname(); return ( // Note: Multiple root elements may need React.Fragment wrapping; <DomainContext.Provider value= { { config, hostname, isLoading } } } > { children } </DomainContext.Provider> ) export function useDomain() { : DomainContextType { const context = useContext(DomainContext(); if ((context === undefined() ) { throw new Error('useDomain must be used within a DomainProvider'); } return context; // Hook for (getting domain-specific URLs; export function useDomainUrls() ) { {; ; const { config } = useDomain(); return { baseUrl: `https://$ { config.doman } `, jobUrl: (jobId: string() => `https://$ { config.doman } /jobs/$ { jobd } `, searchUrl: (query? "undefined": string() => `https://$ { config.doman } /jobs$ { query ? `?q = } $ { encodeURIComponent(quey } ` : '' } `, ) employerUrl: (path: string = '') => `https://$ { config.doman } /employers$ { pah } `, apiUrl: (endpoint: string() => `https://$ { config.doman } /api$ { endpoit } `, unsubscribeUrl: (token: string() => `https://$ { config.doman } /api/email-alerts/unsubscribe?token=$ { tokn } `, manageAlertsUrl: () => `https://$ { config.doman } /dashboard/alerts` // Server-side helper for (getting domain config; export function getServerDomainConfig() ) { : DomainConfig { const url = new URL(request.url(); return getDomainConfig(url.hostname(); } // Helper for (generating domain-specific metadata; export function getDomainMetadata() ) { { const config = getDomainConfig(hostname(); } const baseUrl = `https://$ { config.doman } `; return { title: config.seo.title, description: config.seo.description, keywords: config.seo.keywords.join(', ') } canonical: `$ { baseUl } $ { pah } `, ogImage: `$ { baseUl } /og-images/$ { config.areaCoe } -og.jpg`, siteName: config.displayName, twitterHandle: config.social.twitter, structuredData: { '@context': 'https://schema.org', '@type': 'WebSite', name: config.displayName } alternateName: `$ { config.areaCoe } Jobs`, url: baseUrl, description: config.seo.description, potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint' } urlTemplate: `$ { baseUl } /jobs?q = { search_term_string } ` 'query-input': 'required name=search_term_string' sameAs: Object.values(config.social().filter(Boolean(), publisher: { '@type': 'Organization', name: config.displayName, url: baseUrl, logo: { '@type': 'ImageObject' } url: `$ { baseUl } $ { config.branding.logoPah } ` audience: { '@type': 'Audience', geographicArea: { '@type': 'Place', name: config.region, containedInPlace: { '@type': 'Place', name: 'California, United States' } }}}}}}}}}}))))))))))))))))
+'use client';
+
+import React from 'react';
+
+interface contextProps {
+  // TODO: Define props
+}
+
+export function context(props: contextProps) {
+  return (
+    <div>
+      {/* TODO: Implement component */}
+      <p>context component</p>
+    </div>
+  );
+}
+
+export default context;
