@@ -1,5 +1,6 @@
 'use client';
 
+// Force deployment - Fixed styling and content for all major pages
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
