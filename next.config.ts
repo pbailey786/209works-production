@@ -1,6 +1,5 @@
 import type { NextConfig } from 'next';
 import path from 'path';
-import webpack from 'webpack';
 
 const nextConfig: NextConfig = {
   // Security headers configuration
@@ -199,9 +198,10 @@ const nextConfig: NextConfig = {
       '@': path.resolve(__dirname, 'src'),
     };
 
-    // Exclude .backup files from compilation using IgnorePlugin
+    // Exclude .backup files from compilation using webpack's built-in IgnorePlugin
+    const { IgnorePlugin } = require('webpack');
     config.plugins.push(
-      new webpack.IgnorePlugin({
+      new IgnorePlugin({
         resourceRegExp: /\.backup$/,
       })
     );
