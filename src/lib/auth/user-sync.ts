@@ -7,8 +7,10 @@ import { prisma } from '@/lib/database/prisma';
  * Returns the user data
  */
 export async function ensureUserExists() {
+  let clerkUser: any = null;
+  
   try {
-    const clerkUser = await currentUser();
+    clerkUser = await currentUser();
     
     if (!clerkUser) {
       throw new Error('Not authenticated');
