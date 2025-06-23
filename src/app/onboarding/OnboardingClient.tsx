@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
+import RoleSelection from '@/components/onboarding/RoleSelection';
 
 interface User {
   id: string;
@@ -22,11 +23,45 @@ interface User {
 
 interface OnboardingClientProps {
   user: User;
+  clerkUserId: string;
 }
 
-export default function OnboardingClient({ user }: OnboardingClientProps) {
+export default function OnboardingClient({ user, clerkUserId }: OnboardingClientProps) {
   const router = useRouter();
   const [isCompleting, setIsCompleting] = useState(false);
+  const [currentUser, setCurrentUser] = useState(user);
+  const [showRoleSelection, setShowRoleSelection] = useState(
+    // Show role selection for new users (created today) who haven't completed onboarding
+    !user.onboardingCompleted && 
+    new Date(user.createdAt).toDateString() === new Date().toDateString()
+  );
+
+  const handleRoleSelected = async (role: 'jobseeker' | 'employer') => {
+    setIsCompleting(true);
+
+    try {
+      // Update user role in database
+      const response = await fetch('/api/auth/update-role', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update role');
+      }
+
+      // Update local state
+      setCurrentUser(prev => ({ ...prev, role }));
+      setShowRoleSelection(false);
+      setIsCompleting(false);
+    } catch (error) {
+      console.error('Error updating role:', error);
+      setIsCompleting(false);
+    }
+  };
 
   const handleOnboardingComplete = async () => {
     setIsCompleting(true);
@@ -39,7 +74,7 @@ export default function OnboardingClient({ user }: OnboardingClientProps) {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Redirect to appropriate dashboard
-      if (user.role === 'employer') {
+      if (currentUser.role === 'employer') {
         router.push('/employers/dashboard');
       } else {
         router.push('/dashboard');
@@ -50,7 +85,7 @@ export default function OnboardingClient({ user }: OnboardingClientProps) {
     }
   };
 
-  if (isCompleting) {
+  if (isCompleting && !showRoleSelection) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -66,9 +101,18 @@ export default function OnboardingClient({ user }: OnboardingClientProps) {
     );
   }
 
+  if (showRoleSelection) {
+    return (
+      <RoleSelection 
+        onRoleSelected={handleRoleSelected}
+        isLoading={isCompleting}
+      />
+    );
+  }
+
   return (
     <OnboardingWizard
-      userRole={user.role as 'jobseeker' | 'employer'}
+      userRole={currentUser.role as 'jobseeker' | 'employer'}
       onComplete={handleOnboardingComplete}
     />
   );

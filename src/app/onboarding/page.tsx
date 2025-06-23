@@ -1,21 +1,24 @@
 import { redirect } from 'next/navigation';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import OnboardingClient from './OnboardingClient';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export default async function OnboardingPage() {
-  // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
+  const clerkUser = await currentUser();
 
-  if (!session!.user?.email) {
-    redirect('/signin?callbackUrl=/onboarding');
+  if (!clerkUser) {
+    redirect('/sign-in?redirect_url=/onboarding');
   }
 
-  // Get user data
-  const user = await prisma.user.findUnique({
-    where: { email: session!.user?.email },
+  // Try to sync user or get existing user
+  const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
+  if (!userEmail) {
+    redirect('/sign-in');
+  }
+
+  // Get or create user data
+  let user = await prisma.user.findUnique({
+    where: { email: userEmail },
     select: {
       id: true,
       name: true,
@@ -34,8 +37,35 @@ export default async function OnboardingPage() {
     },
   });
 
+  // If user doesn't exist, create them with no role (will trigger role selection)
   if (!user) {
-    redirect('/signin');
+    const newUser = await prisma.user.create({
+      data: {
+        id: clerkUser.id,
+        email: userEmail,
+        name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
+        passwordHash: 'clerk_managed',
+        role: 'jobseeker', // Temporary default - will be updated by role selection
+        onboardingCompleted: false,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        onboardingCompleted: true,
+        location: true,
+        currentJobTitle: true,
+        experienceLevel: true,
+        skills: true,
+        preferredJobTypes: true,
+        companyWebsite: true,
+        companyName: true,
+        industry: true,
+        createdAt: true,
+      },
+    });
+    user = newUser;
   }
 
   // If onboarding is already completed, redirect to dashboard
@@ -43,12 +73,5 @@ export default async function OnboardingPage() {
     redirect(user.role === 'employer' ? '/employers/dashboard' : '/dashboard');
   }
 
-  // Redirect to role-specific onboarding
-  if (user.role === 'jobseeker') {
-    redirect('/onboarding/jobseeker');
-  } else if (user.role === 'employer') {
-    redirect('/onboarding/employer');
-  }
-
-  return <OnboardingClient user={user} />;
+  return <OnboardingClient user={user} clerkUserId={clerkUser.id} />;
 }
