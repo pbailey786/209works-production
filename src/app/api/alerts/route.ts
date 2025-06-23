@@ -26,40 +26,8 @@ import {
 } from '@/lib/cache/pagination';
 // import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
-// Validation schemas
-const createAlertSchema = z.object({
-  type: z.enum([
-    'job_title_alert',
-    'weekly_digest',
-    'job_category_alert',
-    'location_alert',
-    'company_alert',
-  ]),
-  frequency: z
-    .enum(['immediate', 'daily', 'weekly', 'monthly'])
-    .default('immediate'),
-  jobTitle: z.string().optional(),
-  keywords: z.array(z.string()).default([]),
-  location: z.string().optional(),
-  categories: z.array(z.string()).default([]),
-  jobTypes: z
-    .array(
-      z.enum([
-        'full_time',
-        'part_time',
-        'contract',
-        'internship',
-        'temporary',
-        'volunteer',
-        'other',
-      ])
-    )
-    .default([]),
-  companies: z.array(z.string()).default([]),
-  salaryMin: z.number().optional(),
-  salaryMax: z.number().optional(),
-  emailEnabled: z.boolean().default(true),
-});
+// Use the validation schema from the validations file
+const createAlertSchema = createAlertValidationSchema;
 
 // GET /api/alerts - List user's alerts
 export async function GET(req: NextRequest) {
@@ -67,17 +35,48 @@ export async function GET(req: NextRequest) {
     // Ensure user exists in database (auto-sync with Clerk)
     const user = await ensureUserExists();
 
-    const alerts = await prisma.alert.findMany({
+    const alerts = await prisma.jobAlert.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
-      include: {
-        _count: {
-          select: { jobs: true },
-        },
+      select: {
+        id: true,
+        title: true,
+        keywords: true,
+        location: true,
+        jobType: true,
+        salaryMin: true,
+        salaryMax: true,
+        isActive: true,
+        frequency: true,
+        lastTriggered: true,
+        totalJobsSent: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
-    return NextResponse.json({ alerts });
+    // Map JobAlert fields to match frontend expectations
+    const mappedAlerts = alerts.map(alert => ({
+      id: alert.id,
+      type: 'job_title_alert',
+      frequency: alert.frequency,
+      isActive: alert.isActive,
+      jobTitle: alert.title, // Map title to jobTitle for frontend
+      keywords: alert.keywords,
+      location: alert.location,
+      categories: [], // JobAlert doesn't have categories, default to empty
+      jobTypes: alert.jobType ? [alert.jobType] : [], // Convert singular to array
+      companies: [], // JobAlert doesn't have companies, default to empty
+      salaryMin: alert.salaryMin,
+      salaryMax: alert.salaryMax,
+      emailEnabled: true, // Default value
+      totalJobsSent: alert.totalJobsSent,
+      lastTriggered: alert.lastTriggered?.toISOString(),
+      createdAt: alert.createdAt.toISOString(),
+      updatedAt: alert.updatedAt.toISOString(),
+    }));
+
+    return NextResponse.json({ alerts: mappedAlerts });
   } catch (error) {
     console.error('Get alerts error:', error);
     return NextResponse.json(
@@ -282,9 +281,15 @@ const POST_API = withAPIMiddleware(
     performance.trackDatabaseQuery();
     const alert = await prisma.jobAlert.create({
       data: {
-        ...body!,
         userId: user!.id,
-        title: body!.name || 'Untitled Alert',
+        title: body!.jobTitle || 'Untitled Alert',
+        keywords: body!.keywords || [],
+        location: body!.location,
+        jobType: body!.jobTypes?.[0], // JobAlert model uses singular jobType, take first from array
+        salaryMin: body!.salaryMin,
+        salaryMax: body!.salaryMax,
+        isActive: body!.isActive ?? true,
+        frequency: body!.frequency || 'immediate',
         lastTriggered: null,
       },
       select: {

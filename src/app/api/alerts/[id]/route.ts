@@ -86,8 +86,29 @@ export const GET = withAPIMiddleware(
           ),
         };
 
+        // Map database fields to frontend expected fields
+        const mappedAlert = {
+          id: alert.id,
+          jobTitle: alert.title, // Map title to jobTitle
+          keywords: alert.keywords,
+          location: alert.location,
+          frequency: alert.frequency,
+          isActive: alert.isActive,
+          salaryMin: alert.salaryMin,
+          salaryMax: alert.salaryMax,
+          lastTriggered: alert.lastTriggered,
+          createdAt: alert.createdAt,
+          updatedAt: alert.updatedAt,
+          // Add frontend-expected fields with defaults
+          type: 'job_title_alert',
+          categories: [],
+          jobTypes: [],
+          companies: [],
+          emailEnabled: true,
+        };
+
         return createSuccessResponse({
-          ...alert,
+          ...mappedAlert,
           recentMatches,
           stats,
         });
@@ -129,12 +150,23 @@ export const PUT = withAPIMiddleware(
     // Prepare update data without id field
     const { id, ...updateData } = body as any;
     
+    // Map frontend fields to database fields
+    const mappedUpdateData: any = {};
+    if (updateData.jobTitle !== undefined) mappedUpdateData.title = updateData.jobTitle;
+    if (updateData.keywords !== undefined) mappedUpdateData.keywords = updateData.keywords;
+    if (updateData.location !== undefined) mappedUpdateData.location = updateData.location;
+    if (updateData.jobTypes !== undefined) mappedUpdateData.jobType = updateData.jobTypes?.[0]; // Take first from array
+    if (updateData.salaryMin !== undefined) mappedUpdateData.salaryMin = updateData.salaryMin;
+    if (updateData.salaryMax !== undefined) mappedUpdateData.salaryMax = updateData.salaryMax;
+    if (updateData.isActive !== undefined) mappedUpdateData.isActive = updateData.isActive;
+    if (updateData.frequency !== undefined) mappedUpdateData.frequency = updateData.frequency;
+    
     // Update the alert
     performance.trackDatabaseQuery();
     const updatedAlert = await prisma.jobAlert.update({
       where: { id: alertId },
       data: {
-        ...updateData,
+        ...mappedUpdateData,
         updatedAt: new Date(),
       },
       select: {
@@ -159,11 +191,32 @@ export const PUT = withAPIMiddleware(
       `user:${user!.id}`,
     ]);
 
+    // Map database response to frontend expected format
+    const mappedUpdatedAlert = {
+      id: updatedAlert.id,
+      jobTitle: updatedAlert.title, // Map title to jobTitle
+      keywords: updatedAlert.keywords,
+      location: updatedAlert.location,
+      frequency: updatedAlert.frequency,
+      isActive: updatedAlert.isActive,
+      salaryMin: updatedAlert.salaryMin,
+      salaryMax: updatedAlert.salaryMax,
+      lastTriggered: updatedAlert.lastTriggered,
+      createdAt: updatedAlert.createdAt,
+      updatedAt: updatedAlert.updatedAt,
+      // Add frontend-expected fields with defaults
+      type: 'job_title_alert',
+      categories: [],
+      jobTypes: [],
+      companies: [],
+      emailEnabled: true,
+    };
+
     // Re-estimate matches with new criteria
     const estimatedMatches = Math.floor(Math.random() * 50);
 
     return createSuccessResponse({
-      ...updatedAlert,
+      ...mappedUpdatedAlert,
       estimatedMatches,
       message: 'Alert updated successfully',
     });
