@@ -314,7 +314,7 @@ export default function AlertsPage() {
         <p className="mb-6 text-gray-700">
           Please sign in to manage your job alerts.
         </p>
-        <Button onClick={() => (window.location.href = '/signin')}>
+        <Button onClick={() => { if (typeof window !== 'undefined') window.location.href = '/sign-in'; }}>
           Sign In
         </Button>
       </div>
@@ -334,7 +334,7 @@ export default function AlertsPage() {
         <div className="flex items-center space-x-3">
           <Button
             variant="outline"
-            onClick={() => (window.location.href = '/alerts/analytics')}
+            onClick={() => { if (typeof window !== 'undefined') window.location.href = '/alerts/analytics'; }}
           >
             📊 Analytics
           </Button>

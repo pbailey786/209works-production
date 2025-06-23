@@ -117,19 +117,21 @@ export default function EmployerBulkUploadPage() {
     checkSubscriptionStatus();
 
     // Handle credit purchase success/cancel from URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('credit_purchase_success') === 'true') {
-      showSuccess('Credits purchased successfully! Your account has been updated.');
-      // Refresh credits after successful purchase
-      setTimeout(() => {
-        fetchUserCredits();
-      }, 1000);
-      // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname);
-    } else if (urlParams.get('credit_purchase_cancelled') === 'true') {
-      showError('Credit purchase was cancelled. You can try again anytime.');
-      // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname);
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('credit_purchase_success') === 'true') {
+        showSuccess('Credits purchased successfully! Your account has been updated.');
+        // Refresh credits after successful purchase
+        setTimeout(() => {
+          fetchUserCredits();
+        }, 1000);
+        // Clean up URL
+        window.history.replaceState({}, '', window.location.pathname);
+      } else if (urlParams.get('credit_purchase_cancelled') === 'true') {
+        showError('Credit purchase was cancelled. You can try again anytime.');
+        // Clean up URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }
     }
   }, []);
 
@@ -199,8 +201,8 @@ export default function EmployerBulkUploadPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           creditPack: 'fiveCredits', // Default to 5 credits pack
-          successUrl: `${window.location.origin}/employers/bulk-upload?credit_purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/bulk-upload?credit_purchase_cancelled=true`,
+          successUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/employers/bulk-upload?credit_purchase_success=true`,
+          cancelUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/employers/bulk-upload?credit_purchase_cancelled=true`,
         }),
       });
 
@@ -211,7 +213,9 @@ export default function EmployerBulkUploadPage() {
       }
 
       // Redirect to Stripe Checkout for payment processing
-      window.location.href = data.url;
+      if (typeof window !== 'undefined') {
+        window.location.href = data.url;
+      }
     } catch (error) {
       console.error('Credit purchase error:', error);
       showError(error instanceof Error ? error.message : 'Failed to initiate credit purchase. Please try again.');
@@ -603,7 +607,9 @@ export default function EmployerBulkUploadPage() {
 
   // Handle upgrade button click
   const handleUpgrade = () => {
-    window.location.href = '/employers/pricing';
+    if (typeof window !== 'undefined') {
+      window.location.href = '/employers/pricing';
+    }
   };
 
   // Download CSV template

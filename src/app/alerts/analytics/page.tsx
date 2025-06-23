@@ -277,7 +277,7 @@ export default function AlertAnalytics() {
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="mb-4 text-3xl font-bold">Alert Analytics</h1>
         <p className="mb-6 text-gray-700">Please sign in to view analytics.</p>
-        <Button onClick={() => (window.location.href = '/signin')}>
+        <Button onClick={() => { if (typeof window !== 'undefined') window.location.href = '/sign-in'; }}>
           Sign In
         </Button>
       </div>

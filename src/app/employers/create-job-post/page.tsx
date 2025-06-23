@@ -119,10 +119,13 @@ export default function CreateJobPostPage() {
 
   // Clean up URL parameters if any
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('purchase_success') === 'true') {
-      // Clean up URL
-      window.history.replaceState({}, document.title, window.location.pathname);
+    // Only run in browser environment
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('purchase_success') === 'true') {
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     }
   }, []);
 
