@@ -277,7 +277,7 @@ export default function AlertsPage() {
       companies: [],
       salaryMin: undefined,
       salaryMax: undefined,
-      frequency: 'daily',
+      frequency: 'weekly',
     });
   };
 
