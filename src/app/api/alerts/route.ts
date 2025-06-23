@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     const validatedData = createAlertSchema.parse(body);
 
     // Check if user already has maximum alerts (optional business rule)
-    const alertCount = await prisma.alert.count({
+    const alertCount = await prisma.jobAlert.count({
       where: { userId: user.id, isActive: true },
     });
 
@@ -108,14 +108,59 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const alert = await prisma.alert.create({
+    // Map frontend fields to JobAlert model fields
+    const alert = await prisma.jobAlert.create({
       data: {
         userId: user.id,
-        ...validatedData,
+        title: validatedData.jobTitle || 'Untitled Alert',
+        keywords: validatedData.keywords || [],
+        location: validatedData.location,
+        jobType: validatedData.jobTypes?.[0], // JobAlert uses singular jobType, take first from array
+        salaryMin: validatedData.salaryMin,
+        salaryMax: validatedData.salaryMax,
+        isActive: validatedData.isActive ?? true,
+        frequency: validatedData.frequency || 'immediate',
+        lastTriggered: null,
+      },
+      select: {
+        id: true,
+        title: true,
+        keywords: true,
+        location: true,
+        jobType: true,
+        salaryMin: true,
+        salaryMax: true,
+        isActive: true,
+        frequency: true,
+        lastTriggered: true,
+        totalJobsSent: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
-    return NextResponse.json({ alert }, { status: 201 });
+    // Map JobAlert response to match frontend expectations
+    const mappedAlert = {
+      id: alert.id,
+      type: 'job_title_alert',
+      frequency: alert.frequency,
+      isActive: alert.isActive,
+      jobTitle: alert.title, // Map title to jobTitle for frontend
+      keywords: alert.keywords,
+      location: alert.location,
+      categories: [], // JobAlert doesn't have categories, default to empty
+      jobTypes: alert.jobType ? [alert.jobType] : [], // Convert singular to array
+      companies: [], // JobAlert doesn't have companies, default to empty
+      salaryMin: alert.salaryMin,
+      salaryMax: alert.salaryMax,
+      emailEnabled: true, // Default value
+      totalJobsSent: alert.totalJobsSent,
+      lastTriggered: alert.lastTriggered?.toISOString(),
+      createdAt: alert.createdAt.toISOString(),
+      updatedAt: alert.updatedAt.toISOString(),
+    };
+
+    return NextResponse.json({ alert: mappedAlert }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
