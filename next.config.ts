@@ -190,21 +190,42 @@ const nextConfig: NextConfig = {
     strictNextHead: true,
   },
 
-  // Webpack configuration for security
-  webpack: (config, { isServer }) => {
+
+  // Environment variables validation (for security)
+  env: {
+    // Only expose safe environment variables to the client
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || '209Jobs',
+  },
+
+  // Disable source maps in production for security
+  productionBrowserSourceMaps: false,
+
+  // Only include specific file extensions as pages (exclude .backup files)
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+
+  // Exclude backup files from being processed entirely
+  exclude: [
+    '**/**.backup',
+    '**/*.backup/**',
+    'src/**/*.backup',
+  ],
+
+  // Webpack configuration for security and excluding backup files
+  webpack: (config, { isServer, webpack }) => {
     // Add path alias resolution
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, 'src'),
     };
 
-    // Exclude .backup files from compilation using webpack's built-in IgnorePlugin
-    const { IgnorePlugin } = require('webpack');
+    // Exclude .backup files from being processed multiple ways
     config.plugins.push(
-      new IgnorePlugin({
+      new webpack.IgnorePlugin({
         resourceRegExp: /\.backup$/,
       })
     );
+
 
     // Security-related webpack configurations
     if (!isServer) {
@@ -261,7 +282,6 @@ const nextConfig: NextConfig = {
     }
 
     // Suppress critical dependency warnings (simpler approach)
-    const originalWarn = config.infrastructureLogging?.level;
     config.infrastructureLogging = {
       level: 'error',
     };
@@ -296,19 +316,6 @@ const nextConfig: NextConfig = {
 
     return config;
   },
-
-  // Environment variables validation (for security)
-  env: {
-    // Only expose safe environment variables to the client
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || '209Jobs',
-  },
-
-  // Disable source maps in production for security
-  productionBrowserSourceMaps: false,
-
-  // Only include specific file extensions as pages (exclude .backup files)
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 };
 
 export default nextConfig;
