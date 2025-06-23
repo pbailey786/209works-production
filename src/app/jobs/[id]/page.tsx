@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 // import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import { cache } from 'react';
 import authOptions from '@/app/api/auth/authOptions';
-import { prisma } from '@/app/api/auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import JobDetailClient from './JobDetailClient';
 import { Job, JobType } from '@prisma/client';
 // import type { Session } from 'next-auth'; // TODO: Replace with Clerk
