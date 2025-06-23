@@ -142,10 +142,35 @@ export default function AlertsPage() {
     frequency: 'weekly' as const,
   });
 
-  // Load alerts on component mount
+  // Load alerts on component mount and check for pre-filled data
   useEffect(() => {
     if (true) {
       loadAlerts();
+      
+      // Check for pre-filled alert data from job page
+      const prefillData = sessionStorage.getItem('prefillAlert');
+      if (prefillData) {
+        try {
+          const alertData = JSON.parse(prefillData);
+          setNewAlert(prev => ({
+            ...prev,
+            ...alertData,
+          }));
+          setIsCreateDialogOpen(true);
+          sessionStorage.removeItem('prefillAlert'); // Clean up
+        } catch (error) {
+          console.error('Error parsing prefill data:', error);
+        }
+      }
+      
+      // Check for create query parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('create') === 'true') {
+        setIsCreateDialogOpen(true);
+        // Remove the query parameter from URL
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
     }
   }, [status]);
 
@@ -483,6 +508,42 @@ export default function AlertsPage() {
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Companies */}
+                  <div>
+                    <Label>Companies (Optional)</Label>
+                    <div className="mb-2 flex flex-wrap gap-2">
+                      {newAlert.companies.map(company => (
+                        <Badge
+                          key={company}
+                          variant="secondary"
+                          className="cursor-pointer"
+                          onClick={() => setNewAlert(prev => ({
+                            ...prev,
+                            companies: prev.companies.filter(c => c !== company),
+                          }))}
+                        >
+                          {company} ×
+                        </Badge>
+                      ))}
+                    </div>
+                    <Input
+                      placeholder="Add company name (press Enter)"
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const company = e.currentTarget.value.trim();
+                          if (company && !newAlert.companies.includes(company)) {
+                            setNewAlert(prev => ({
+                              ...prev,
+                              companies: [...prev.companies, company],
+                            }));
+                            e.currentTarget.value = '';
+                          }
+                        }
+                      }}
+                    />
                   </div>
 
                   {/* Salary Range */}

@@ -20,6 +20,7 @@ import {
   MegaphoneIcon,
   ArrowTrendingUpIcon,
   HomeIcon,
+  BellIcon,
 } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
@@ -85,6 +86,7 @@ export default function JobDetailClient({
   const [shouldIApplyOpen, setShouldIApplyOpen] = useState(false);
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
+  const [creatingAlert, setCreatingAlert] = useState(false);
 
   // Check if user has used "Should I Apply" feature before
   useEffect(() => {
@@ -210,6 +212,43 @@ export default function JobDetailClient({
       setSharing(false);
     }
   }, [job.title, job.company, clearError]);
+
+  // Handle create job alert with job details pre-filled
+  const handleCreateAlert = useCallback(async () => {
+    if (!isAuthenticated) {
+      setError('Please sign in to create job alerts');
+      clearError();
+      return;
+    }
+
+    setCreatingAlert(true);
+    setError(null);
+
+    try {
+      // Navigate to alerts page with pre-filled data
+      const alertData = {
+        jobTitle: job.title,
+        location: job.location,
+        jobTypes: [job.jobType],
+        categories: job.categories.slice(0, 3), // Limit to first 3 categories
+        salaryMin: job.salaryMin || undefined,
+        salaryMax: job.salaryMax || undefined,
+        companies: [job.company],
+      };
+
+      // Store in sessionStorage to pre-fill the alert form
+      sessionStorage.setItem('prefillAlert', JSON.stringify(alertData));
+      
+      // Navigate to alerts page
+      window.location.href = '/dashboard/alerts?create=true';
+    } catch (error) {
+      console.error('Error creating alert:', error);
+      setError('Failed to create alert. Please try again.');
+      clearError();
+    } finally {
+      setCreatingAlert(false);
+    }
+  }, [isAuthenticated, job.title, job.location, job.jobType, job.categories, job.salaryMin, job.salaryMax, job.company, clearError]);
 
   // Handle report job with improved error handling
   const handleReportJob = useCallback(async () => {
@@ -489,6 +528,18 @@ export default function JobDetailClient({
                       )}
                       {saving ? 'Saving...' : saved ? 'Saved' : 'Save Job'}
                     </button>
+
+                    {/* Create Alert Button - Only for authenticated non-owners */}
+                    {isAuthenticated && !isJobOwner && (
+                      <button
+                        onClick={handleCreateAlert}
+                        disabled={creatingAlert}
+                        className="group inline-flex items-center rounded-2xl border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-3 text-sm font-semibold text-orange-700 shadow-lg transition-all duration-200 hover:from-orange-100 hover:to-amber-100 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-orange-500/20 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <BellIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
+                        {creatingAlert ? 'Creating...' : 'Create Alert'}
+                      </button>
+                    )}
 
                     <button
                       onClick={handleShare}

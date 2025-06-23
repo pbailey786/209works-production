@@ -1,69 +1,86 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../auth/prisma';
-// @ts-ignore - NextAuth v4 JWT import issue
-// TODO: Replace with Clerk JWT
-// import { getToken } from 'next-auth/jwt';
+import { prisma } from '@/lib/database/prisma';
+import { ensureUserExists } from '@/lib/auth/user-sync';
 import { compare, hash } from 'bcryptjs';
 import fs from 'fs/promises';
 import path from 'path';
 
 export async function GET(req: NextRequest) {
-  // TODO: Replace with Clerk authentication
-    const token = { email: 'admin@209.works', sub: 'mock-user-id' }; // Mock token
-  if (!token || !token.email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  try {
+    console.log('👤 Profile API called');
+    
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
+    console.log('✅ User sync completed:', user.id);
+
+    // Get full user profile data
+    const fullUser = await prisma.user.findUnique({
+      where: { email: user.email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isEmailVerified: true,
+        resumeUrl: true,
+        profilePictureUrl: true,
+        location: true,
+        phoneNumber: true,
+        linkedinUrl: true,
+        currentJobTitle: true,
+        preferredJobTypes: true,
+        skills: true,
+        workAuthorization: true,
+        educationExperience: true,
+        isProfilePublic: true,
+      },
+    });
+
+    if (!fullUser) {
+      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ user: fullUser });
+  } catch (error) {
+    console.error('Profile API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
-  const user = await prisma.user.findUnique({
-    where: { email: token.email },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      isEmailVerified: true,
-      resumeUrl: true,
-      profilePictureUrl: true,
-      location: true,
-      phoneNumber: true,
-      linkedinUrl: true,
-      currentJobTitle: true,
-      preferredJobTypes: true,
-      skills: true,
-      workAuthorization: true,
-      educationExperience: true,
-      isProfilePublic: true,
-    },
-  });
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  }
-  return NextResponse.json({ user });
 }
 
 export async function PATCH(req: NextRequest) {
-  // TODO: Replace with Clerk authentication
-    const token = { email: 'admin@209.works', sub: 'mock-user-id' }; // Mock token
-  if (!token || !token.email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  const {
-    name,
-    currentPassword,
-    newPassword,
-    location,
-    phoneNumber,
-    linkedinUrl,
-    currentJobTitle,
-    preferredJobTypes,
-    skills,
-    workAuthorization,
-    educationExperience,
-    isProfilePublic,
-  } = await req.json();
-  const user = await prisma.user.findUnique({ where: { email: token.email } });
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 });
-  }
+  try {
+    console.log('📝 Profile update API called');
+    
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
+    console.log('✅ User sync completed:', user.id);
+
+    const {
+      name,
+      currentPassword,
+      newPassword,
+      location,
+      phoneNumber,
+      linkedinUrl,
+      currentJobTitle,
+      preferredJobTypes,
+      skills,
+      workAuthorization,
+      educationExperience,
+      isProfilePublic,
+    } = await req.json();
+
+    // Get full user data for password validation if needed
+    const fullUser = await prisma.user.findUnique({ 
+      where: { email: user.email } 
+    });
+    
+    if (!fullUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
   const updateData: any = {};
   if (name) updateData.name = name;
   if (location !== undefined) updateData.location = location;
@@ -87,7 +104,7 @@ export async function PATCH(req: NextRequest) {
         { status: 400 }
       );
     }
-    const isValid = await compare(currentPassword, user.passwordHash);
+    const isValid = await compare(currentPassword, fullUser.passwordHash);
     if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid current password' },
@@ -96,8 +113,20 @@ export async function PATCH(req: NextRequest) {
     }
     updateData.passwordHash = await hash(newPassword, 10);
   }
-  await prisma.user.update({ where: { email: token.email }, data: updateData });
+  
+  await prisma.user.update({ 
+    where: { email: user.email }, 
+    data: updateData 
+  });
+  
   return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Profile update error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {

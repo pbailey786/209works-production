@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
+import { ensureUserExists } from '@/lib/auth/user-sync';
 import { z } from 'zod';
 
 // Schema for updating application status
@@ -19,30 +20,14 @@ const updateApplicationSchema = z.object({
 // GET /api/profile/applications - Get user's job applications
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication with Clerk
-    const clerkUser = await currentUser();
-    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    console.log('📋 Profile applications API called');
+    
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
+    console.log('✅ User sync completed:', user.id, 'Role:', user.role);
 
-    const userEmail = clerkUser.emailAddresses[0].emailAddress;
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: userEmail },
-      select: { id: true, role: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    if (user.role !== 'jobseeker') {
-      return NextResponse.json(
-        { error: 'Only job seekers can view applications' },
-        { status: 403 }
-      );
-    }
+    // Note: We'll allow all users to view applications for now
+    // Later we can add role-specific filtering if needed
 
     // Get query parameters
     const url = new URL(req.url);
