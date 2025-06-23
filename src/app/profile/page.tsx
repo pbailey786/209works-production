@@ -50,6 +50,11 @@ export default function ProfilePage() {
   const [profilePicPreview, setProfilePicPreview] = useState<string | null>(
     null
   );
+  const [stats, setStats] = useState({
+    savedJobs: 0,
+    applications: 0,
+    alerts: 0,
+  });
   const [location, setLocation] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
@@ -71,6 +76,7 @@ export default function ProfilePage() {
   ];
 
   useEffect(() => {
+    // Load profile data
     fetch('/api/profile')
       .then(r => r.json())
       .then(data => {
@@ -89,6 +95,22 @@ export default function ProfilePage() {
           setEducationExperience(data.user.educationExperience || '');
           setIsProfilePublic(!!data.user.isProfilePublic);
         }
+      });
+
+    // Load dashboard stats for profile widgets
+    fetch('/api/dashboard/stats')
+      .then(r => r.json())
+      .then(data => {
+        if (data.stats) {
+          setStats({
+            savedJobs: data.stats.savedJobs || 0,
+            applications: data.stats.applicationsSubmitted || 0,
+            alerts: data.stats.activeAlerts || 0,
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error loading profile stats:', error);
       });
   }, []);
 
@@ -1007,7 +1029,7 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-blue-600">0</div>
+                      <div className="text-2xl font-bold text-blue-600">{stats.savedJobs}</div>
                     </div>
                     <div className="space-y-3">
                       <p className="text-sm text-gray-600">
@@ -1044,7 +1066,7 @@ export default function ProfilePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-green-600">0</div>
+                      <div className="text-2xl font-bold text-green-600">{stats.applications}</div>
                     </div>
                     <div className="space-y-3">
                       <p className="text-sm text-gray-600">
@@ -1082,7 +1104,7 @@ export default function ProfilePage() {
                         </div>
                       </div>
                       <div className="text-2xl font-bold text-yellow-600">
-                        0
+                        {stats.alerts}
                       </div>
                     </div>
                     <div className="space-y-3">

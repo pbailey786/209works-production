@@ -1,28 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '../../auth/authOptions';
-import { prisma } from '../../auth/prisma';
+import { ensureUserExists } from '@/lib/auth/user-sync';
+import { prisma } from '@/lib/database/prisma';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get current user by email
-    const currentUser = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-    });
-
-    if (!currentUser) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    console.log('📤 Profile upload API called');
+    
+    // Ensure user exists in database (auto-sync with Clerk)
+    const currentUser = await ensureUserExists();
+    console.log('✅ User sync completed:', currentUser.id);
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
