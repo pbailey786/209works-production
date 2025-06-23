@@ -525,16 +525,15 @@ function JobsContent() {
               )}
               
               {/* Dashboard Link */}
-              <Button
-                asChild
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Link href="/dashboard">
+              <Link href="/dashboard">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
                   <Home className="h-4 w-4" />
                   Back to Dashboard
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
