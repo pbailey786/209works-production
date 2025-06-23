@@ -1,47 +1,23 @@
-// TODO: Replace with Clerk middleware
-// import { withAuth } from 'next-auth/middleware';
-import { NextResponse, NextRequest } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  // TODO: Replace with Clerk token
-  const token = null; // Mock - no authentication for now
+const isProtectedRoute = createRouteMatcher([
+  '/onboarding(.*)',
+  '/dashboard(.*)',
+  '/employers/dashboard(.*)',
+  '/employers/create-job-post(.*)',
+  '/employers/my-jobs(.*)',
+  '/profile(.*)',
+]);
 
-    // TODO: Implement proper authentication middleware with Clerk
-    // For now, allow all routes since authentication is disabled
-
-    // Allow public routes
-    const publicRoutes = [
-      '/',
-      '/jobs',
-      '/chat',
-      '/signin',
-      '/signup',
-      '/contact',
-      '/about',
-      '/onboarding',
-      '/debug'
-    ];
-
-    const isPublicRoute = publicRoutes.some(route =>
-      pathname === route || pathname.startsWith(route + '/')
-    );
-
-    // For now, allow access to all routes during migration
-    // TODO: Re-implement proper authentication checks with Clerk
-
-    return NextResponse.next();
-}
+export default clerkMiddleware((auth, req) => {
+  if (isProtectedRoute(req)) auth().protect();
+});
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
 };
