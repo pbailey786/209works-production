@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import RoleSelection from '@/components/onboarding/RoleSelection';
@@ -35,6 +35,28 @@ export default function OnboardingClient({ user, clerkUserId }: OnboardingClient
     !user.onboardingCompleted && 
     new Date(user.createdAt).toDateString() === new Date().toDateString()
   );
+
+  // Ensure user is synced to database on component mount
+  useEffect(() => {
+    const ensureUserSynced = async () => {
+      try {
+        const response = await fetch('/api/auth/sync-user', {
+          method: 'POST',
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ User sync confirmed:', result.user?.email);
+        } else {
+          console.error('❌ User sync failed:', await response.json());
+        }
+      } catch (error) {
+        console.error('❌ User sync error:', error);
+      }
+    };
+
+    ensureUserSynced();
+  }, []);
 
   const handleRoleSelected = async (role: 'jobseeker' | 'employer') => {
     setIsCompleting(true);
