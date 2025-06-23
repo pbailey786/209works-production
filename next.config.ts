@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import path from 'path';
+import webpack from 'webpack';
 
 const nextConfig: NextConfig = {
   // Security headers configuration
@@ -198,6 +199,13 @@ const nextConfig: NextConfig = {
       '@': path.resolve(__dirname, 'src'),
     };
 
+    // Exclude .backup files from compilation using IgnorePlugin
+    config.plugins.push(
+      new webpack.IgnorePlugin({
+        resourceRegExp: /\.backup$/,
+      })
+    );
+
     // Security-related webpack configurations
     if (!isServer) {
       // Don't resolve 'fs' module on the client to prevent security issues
@@ -298,6 +306,9 @@ const nextConfig: NextConfig = {
 
   // Disable source maps in production for security
   productionBrowserSourceMaps: false,
+
+  // Only include specific file extensions as pages (exclude .backup files)
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 };
 
 export default nextConfig;
