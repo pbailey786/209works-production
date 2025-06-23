@@ -248,7 +248,7 @@ export const POST = withAPIMiddleware(
         ...body,
         employerId: user!.id,
         status: initialStatus,
-        title: body.title || body.name || 'Untitled Ad',
+        title: body.content?.title || body.name || 'Untitled Ad',
         businessName: body.content?.companyLogo || 'Unknown Business',
         imageUrl: body.content?.imageUrl || '',
         targetUrl: body.content?.ctaUrl || '',
