@@ -25,7 +25,7 @@ export default function SignUpPage() {
             borderRadius: '0.5rem',
           },
         }}
-        redirectUrl="/onboarding"
+        forceRedirectUrl="/onboarding"
         signInUrl="/sign-in"
       />
     </div>
