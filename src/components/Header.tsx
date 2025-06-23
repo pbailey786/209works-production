@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -20,19 +20,39 @@ import {
   Users,
   Building2,
 } from 'lucide-react';
-import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
+import dynamic from 'next/dynamic';
+import { FEATURES } from '@/lib/feature-flags';
 import Avatar from './Avatar';
 import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-import { FEATURES } from '@/lib/feature-flags';
+
+// Dynamic imports for Clerk components to avoid SSR issues
+const SignInButton = FEATURES.CLERK_AUTH ? 
+  dynamic(() => import('@clerk/nextjs').then(mod => ({ default: mod.SignInButton })), { ssr: false }) :
+  () => null;
+
+const SignUpButton = FEATURES.CLERK_AUTH ? 
+  dynamic(() => import('@clerk/nextjs').then(mod => ({ default: mod.SignUpButton })), { ssr: false }) :
+  () => null;
+
+const UserButton = FEATURES.CLERK_AUTH ? 
+  dynamic(() => import('@clerk/nextjs').then(mod => ({ default: mod.UserButton })), { ssr: false }) :
+  () => null;
 
 export default function Header() {
-  // Phase 4A: Use Clerk authentication if enabled
-  const clerkUser = useUser();
+  // Mock user for build time and when Clerk is disabled
+  const mockClerkUser = { 
+    isSignedIn: false, 
+    user: null, 
+    isLoaded: true 
+  };
   
-  // Create session object compatible with existing code
+  // Always use mock during build or when feature is disabled
+  const clerkUser = mockClerkUser;
+  
+  // Create session object compatible with existing code  
   const session = FEATURES.CLERK_AUTH && clerkUser.isSignedIn ? {
     user: {
       email: clerkUser.user.emailAddresses[0]?.emailAddress || '',
@@ -41,10 +61,10 @@ export default function Header() {
       id: clerkUser.user.id,
       image: clerkUser.user.imageUrl
     }
-  } : (FEATURES.CLERK_AUTH ? null : {
-    // Fallback: Mock session for development
+  } : {
+    // Always provide mock session for development/build
     user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id', image: null }
-  });
+  };
   
   const status = FEATURES.CLERK_AUTH ? 
     (clerkUser.isSignedIn ? 'authenticated' : 'unauthenticated') : 
