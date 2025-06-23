@@ -2,10 +2,10 @@
 import { redirect } from 'next/navigation';
 import authOptions from '../../../../api/auth/authOptions';
 import { prisma } from '../../../../api/auth/prisma';
-import JobModerationDetail from '@/components/admin/JobModerationDetail';
 import { hasPermission, Permission } from '@/lib/rbac/permissions';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import JobModerationClient from './JobModerationClient';
 // import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 interface PageProps {
@@ -83,37 +83,8 @@ export default async function JobModerationDetailPage({ params }: PageProps) {
       </div>
 
       {/* Job Moderation Detail Component */}
-      <JobModerationDetailClient job={job} />
+      <JobModerationClient job={job} />
     </div>
   );
 }
 
-// Client component wrapper to handle actions
-function JobModerationDetailClient({ job }: { job: any }) {
-  const handleModerationAction = async (action: string, reason?: string) => {
-    try {
-      const response = await fetch(`/api/admin/jobs/${job.id}/moderate`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action, reason }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert(result.message);
-        // Redirect back to moderation list
-        window.location.href = '/admin/moderation/jobs';
-      } else {
-        alert(result.error || 'An error occurred');
-      }
-    } catch (error) {
-      console.error('Error moderating job:', error);
-      alert('An error occurred while moderating the job');
-    }
-  };
-
-  return <JobModerationDetail job={job} onAction={handleModerationAction} />;
-}
