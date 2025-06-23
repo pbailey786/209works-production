@@ -119,13 +119,19 @@ export default function CreateJobPostPage() {
 
   // Clean up URL parameters if any
   useEffect(() => {
-    // Only run in browser environment
-    if (typeof window !== 'undefined') {
+    // Skip during build or if environment is not ready
+    if (typeof window === 'undefined' || (process.env.NODE_ENV === 'production' && process.env.NETLIFY)) {
+      return;
+    }
+    
+    try {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('purchase_success') === 'true') {
         // Clean up URL
         window.history.replaceState({}, document.title, window.location.pathname);
       }
+    } catch (error) {
+      console.error('Error cleaning up URL parameters:', error);
     }
   }, []);
 

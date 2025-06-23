@@ -320,6 +320,12 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
 // Enable static generation for popular job pages
 export async function generateStaticParams() {
+  // Skip static generation during build if database is not available
+  if (process.env.NODE_ENV === 'production' && process.env.NETLIFY) {
+    console.log('Skipping static params generation during Netlify build');
+    return [];
+  }
+  
   try {
     // Generate static pages for the most recent 50 jobs
     const recentJobs = await prisma.job.findMany({

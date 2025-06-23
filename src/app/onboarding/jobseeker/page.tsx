@@ -6,6 +6,26 @@ import JobSeekerOnboardingClient from './JobSeekerOnboardingClient';
 // import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export default async function JobSeekerOnboardingPage() {
+  // Skip database operations during build
+  if (process.env.NODE_ENV === 'production' && process.env.NETLIFY) {
+    const mockUser = {
+      id: 'build-mock-id',
+      name: 'Mock User',
+      email: 'mock@example.com',
+      role: 'jobseeker' as const,
+      onboardingCompleted: false,
+      location: null,
+      currentJobTitle: null,
+      experienceLevel: null,
+      skills: [],
+      preferredJobTypes: [],
+      phoneNumber: null,
+      resumeUrl: null,
+      createdAt: new Date(),
+    };
+    return <JobSeekerOnboardingClient user={mockUser} />;
+  }
+
   // TODO: Replace with Clerk
   const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
 
