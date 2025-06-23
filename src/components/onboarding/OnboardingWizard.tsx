@@ -299,9 +299,9 @@ export default function OnboardingWizard({
     switch (step.id) {
       case 'profile':
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Full Name *
               </label>
               <input
@@ -310,13 +310,13 @@ export default function OnboardingWizard({
                 onChange={e =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                 placeholder="Enter your full name"
               />
             </div>
             {userRole === 'jobseeker' && (
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
+                <label className="mb-3 block text-base font-semibold text-gray-800">
                   Current Job Title
                 </label>
                 <input
@@ -328,7 +328,7 @@ export default function OnboardingWizard({
                       currentJobTitle: e.target.value,
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                   placeholder="e.g., Software Engineer, Marketing Manager"
                 />
               </div>
@@ -338,9 +338,9 @@ export default function OnboardingWizard({
 
       case 'location':
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 {userRole === 'jobseeker'
                   ? 'Where are you looking for work?'
                   : 'Where is your company located?'}{' '}
@@ -352,7 +352,7 @@ export default function OnboardingWizard({
                 onChange={e =>
                   setFormData({ ...formData, location: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                 placeholder="City (e.g., Modesto, Stockton, Fresno)"
               />
             </div>
@@ -361,9 +361,9 @@ export default function OnboardingWizard({
 
       case 'experience':
         return userRole === 'jobseeker' ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Your Skills *
               </label>
               <textarea
@@ -377,7 +377,7 @@ export default function OnboardingWizard({
                       .filter(s => s.length > 0),
                   })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                 rows={3}
                 placeholder="e.g., JavaScript, Project Management, Customer Service"
               />
@@ -386,7 +386,7 @@ export default function OnboardingWizard({
               </p>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Years of Experience
               </label>
               <select
@@ -394,7 +394,7 @@ export default function OnboardingWizard({
                 onChange={e =>
                   setFormData({ ...formData, experienceLevel: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
               >
                 <option value="">Select experience level</option>
                 <option value="entry">Entry Level (0-2 years)</option>
@@ -405,9 +405,9 @@ export default function OnboardingWizard({
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Industry *
               </label>
               <select
@@ -415,7 +415,7 @@ export default function OnboardingWizard({
                 onChange={e =>
                   setFormData({ ...formData, industry: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
               >
                 <option value="">Select your industry</option>
                 <option value="agriculture">Agriculture</option>
@@ -433,9 +433,9 @@ export default function OnboardingWizard({
 
       case 'company':
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Company Name *
               </label>
               <input
@@ -444,12 +444,12 @@ export default function OnboardingWizard({
                 onChange={e =>
                   setFormData({ ...formData, companyName: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                 placeholder="Enter your company name"
               />
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Company Website
               </label>
               <input
@@ -458,7 +458,7 @@ export default function OnboardingWizard({
                 onChange={e =>
                   setFormData({ ...formData, companyWebsite: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                 placeholder="https://yourcompany.com"
               />
             </div>
@@ -467,9 +467,9 @@ export default function OnboardingWizard({
 
       case 'details':
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Company Size
               </label>
               <select
@@ -477,7 +477,7 @@ export default function OnboardingWizard({
                 onChange={e =>
                   setFormData({ ...formData, companySize: e.target.value })
                 }
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-6 py-4 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
               >
                 <option value="">Select company size</option>
                 <option value="1-10">1-10 employees</option>
@@ -493,14 +493,16 @@ export default function OnboardingWizard({
       case 'resume':
         return (
           <div className="space-y-6">
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <div className="rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
               <div className="flex items-start">
-                <FileText className="mr-2 mt-0.5 h-5 w-5 text-blue-600" />
+                <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
+                  <FileText className="h-6 w-6 text-blue-600" />
+                </div>
                 <div>
-                  <h4 className="mb-1 font-medium text-blue-900">
+                  <h4 className="mb-2 text-lg font-semibold text-blue-900">
                     Save time with resume upload
                   </h4>
-                  <p className="text-sm text-blue-800">
+                  <p className="text-blue-800">
                     Upload your resume and we'll automatically extract your
                     name, location, skills, and experience to fill out the next
                     steps.
@@ -509,7 +511,7 @@ export default function OnboardingWizard({
               </div>
             </div>
 
-            <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-blue-400">
+            <div className="rounded-3xl border-2 border-dashed border-gray-300 bg-gray-50/50 p-12 text-center transition-all duration-200 hover:border-blue-400 hover:bg-blue-50/50">
               <Upload className="mx-auto mb-4 h-12 w-12 text-gray-400" />
               <p className="mb-2 text-gray-600">Upload your resume</p>
               <p className="mb-4 text-sm text-gray-500">
@@ -532,11 +534,11 @@ export default function OnboardingWizard({
               />
               <label
                 htmlFor="resume-upload"
-                className={`inline-flex items-center rounded-lg px-6 py-3 transition-colors ${
+                className={`inline-flex items-center rounded-2xl px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 ${
                   isParsingResume
                     ? 'cursor-not-allowed bg-gray-400'
-                    : 'cursor-pointer bg-blue-600 hover:bg-blue-700'
-                } text-white`}
+                    : 'cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl'
+                }`}
               >
                 {isParsingResume ? (
                   <>
@@ -568,9 +570,9 @@ export default function OnboardingWizard({
 
       case 'preferences':
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-3 block text-base font-semibold text-gray-800">
                 Job Types You're Interested In
               </label>
               <div className="space-y-2">
@@ -609,23 +611,25 @@ export default function OnboardingWizard({
 
       case 'first-job':
         return (
-          <div className="space-y-4 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-              <Target className="h-8 w-8 text-blue-600" />
+          <div className="space-y-8 text-center">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+              <Target className="h-10 w-10 text-white" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900">
-              Ready to post your first job?
-            </h3>
-            <p className="text-gray-600">
-              Start attracting qualified candidates by posting your first job
-              listing.
-            </p>
+            <div>
+              <h3 className="mb-3 text-2xl font-bold text-gray-900">
+                Ready to post your first job?
+              </h3>
+              <p className="text-lg text-gray-600">
+                Start attracting qualified candidates by posting your first job
+                listing.
+              </p>
+            </div>
             <button
               onClick={() => router.push('/employers/create-job-post')}
-              className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
+              className="group inline-flex items-center rounded-2xl bg-gradient-to-r from-green-600 to-emerald-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-700 hover:to-emerald-800 hover:shadow-xl"
             >
-              Post a Job
-              <ArrowRight className="ml-2 h-4 w-4" />
+              Post Your First Job
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </button>
           </div>
         );
@@ -636,60 +640,75 @@ export default function OnboardingWizard({
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
-      <div className="w-full max-w-2xl">
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Welcome to 209.works!
-            </h2>
-            <span className="text-sm text-gray-500">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 px-4 py-12">
+      <div className="mx-auto w-full max-w-3xl">
+        {/* Apple-style Header */}
+        <div className="mb-12 text-center">
+          <h2 className="mb-2 text-4xl font-bold tracking-tight text-gray-900">
+            Welcome to 209 Works
+          </h2>
+          <p className="text-xl font-medium text-gray-600">
+            Let's set up your {userRole === 'jobseeker' ? 'job search' : 'hiring'} profile
+          </p>
+        </div>
+
+        {/* Apple-style Progress Dots */}
+        <div className="mb-12 flex justify-center">
+          <div className="flex space-x-3">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 w-8 rounded-full transition-all duration-300 ${
+                  index <= currentStep
+                    ? 'bg-blue-600'
+                    : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+          <div className="mt-4 text-center">
+            <span className="text-sm font-medium text-gray-500">
               Step {currentStep + 1} of {steps.length}
             </span>
           </div>
-          <div className="h-2 w-full rounded-full bg-gray-200">
-            <div
-              className="h-2 rounded-full bg-blue-600 transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-            />
-          </div>
         </div>
 
-        {/* Step Content */}
-        <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-          <div className="mb-6 flex items-center">
-            <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+        {/* Apple-style Card */}
+        <div className="mx-auto rounded-3xl border border-gray-200/60 bg-white/90 p-12 shadow-2xl backdrop-blur-sm">
+          {/* Apple-style Step Header */}
+          <div className="mb-10 text-center">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
               {React.createElement(steps[currentStep].icon, {
-                className: 'w-6 h-6 text-blue-600',
+                className: 'w-10 h-10 text-white',
               })}
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900">
-                {steps[currentStep].title}
-              </h3>
-              <p className="text-gray-600">{steps[currentStep].description}</p>
-            </div>
+            <h3 className="mb-3 text-3xl font-bold tracking-tight text-gray-900">
+              {steps[currentStep].title}
+            </h3>
+            <p className="text-lg text-gray-600">{steps[currentStep].description}</p>
           </div>
 
           {renderStepContent()}
 
-          {/* Navigation */}
-          <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
-            <button
-              onClick={handlePrevious}
-              disabled={currentStep === 0}
-              className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Previous
-            </button>
+          {/* Apple-style Navigation */}
+          <div className="mt-12 flex items-center justify-between">
+            {currentStep > 0 ? (
+              <button
+                onClick={handlePrevious}
+                className="group flex items-center rounded-full px-6 py-3 text-gray-600 transition-all duration-200 hover:bg-gray-100 hover:text-gray-800"
+              >
+                <ArrowLeft className="mr-2 h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                Previous
+              </button>
+            ) : (
+              <div></div>
+            )}
 
-            <div className="flex space-x-3">
+            <div className="flex space-x-4">
               {!steps[currentStep].required && (
                 <button
                   onClick={handleSkip}
-                  className="px-6 py-2 text-gray-600 hover:text-gray-800"
+                  className="rounded-full px-6 py-3 font-medium text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-gray-700"
                 >
                   Skip for now
                 </button>
@@ -697,45 +716,74 @@ export default function OnboardingWizard({
               <button
                 onClick={handleNext}
                 disabled={isLoading}
-                className="flex items-center rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                className="group relative overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? (
-                  'Saving...'
-                ) : currentStep === steps.length - 1 ? (
-                  'Complete Setup'
-                ) : (
-                  <>
-                    Next
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
+                <span className="relative z-10 flex items-center">
+                  {isLoading ? (
+                    <>
+                      <div className="mr-3 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      Saving...
+                    </>
+                  ) : currentStep === steps.length - 1 ? (
+                    <>
+                      Complete Setup
+                      <CheckCircle className="ml-2 h-5 w-5" />
+                    </>
+                  ) : (
+                    <>
+                      Continue
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </>
+                  )}
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100"></div>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Benefits Reminder */}
-        <div className="mt-8 rounded-lg bg-blue-50 p-6">
+        {/* Apple-style Benefits Card */}
+        <div className="mt-12 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
           <div className="flex items-start">
-            <Zap className="mr-3 mt-1 h-6 w-6 text-blue-600" />
+            <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
+              <Zap className="h-6 w-6 text-blue-600" />
+            </div>
             <div>
-              <h4 className="mb-2 font-medium text-blue-900">
+              <h4 className="mb-3 text-lg font-semibold text-blue-900">
                 {userRole === 'jobseeker'
-                  ? 'Complete your profile to:'
-                  : 'Complete setup to:'}
+                  ? 'Complete your profile to unlock:'
+                  : 'Complete setup to unlock:'}
               </h4>
-              <ul className="space-y-1 text-sm text-blue-800">
+              <ul className="space-y-2 text-blue-800">
                 {userRole === 'jobseeker' ? (
                   <>
-                    <li>• Get better job recommendations</li>
-                    <li>• Save and track job applications</li>
-                    <li>• Apply to jobs faster</li>
+                    <li className="flex items-center">
+                      <CheckCircle className="mr-2 h-4 w-4 text-blue-600" />
+                      Get better job recommendations
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="mr-2 h-4 w-4 text-blue-600" />
+                      Save and track job applications
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="mr-2 h-4 w-4 text-blue-600" />
+                      Apply to jobs faster
+                    </li>
                   </>
                 ) : (
                   <>
-                    <li>• Start posting job listings</li>
-                    <li>• Access candidate database</li>
-                    <li>• Use AI-powered matching</li>
+                    <li className="flex items-center">
+                      <CheckCircle className="mr-2 h-4 w-4 text-blue-600" />
+                      Start posting job listings
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="mr-2 h-4 w-4 text-blue-600" />
+                      Access candidate database
+                    </li>
+                    <li className="flex items-center">
+                      <CheckCircle className="mr-2 h-4 w-4 text-blue-600" />
+                      Use AI-powered matching
+                    </li>
                   </>
                 )}
               </ul>

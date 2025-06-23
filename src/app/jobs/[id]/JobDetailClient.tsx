@@ -261,7 +261,7 @@ export default function JobDetailClient({
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#9fdf9f]/5 via-white to-[#ff6b35]/5">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Error Notification */}
       {error && (
         <motion.div
@@ -289,79 +289,110 @@ export default function JobDetailClient({
         </motion.div>
       )}
 
-      {/* Breadcrumb Navigation */}
-      <nav className="border-b bg-white" aria-label="Breadcrumb">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <ol className="flex items-center space-x-2 text-sm text-gray-500">
+      {/* Apple-style Breadcrumb Navigation */}
+      <nav className="border-b border-gray-200/60 bg-white/80 backdrop-blur-md" aria-label="Breadcrumb">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <ol className="flex items-center space-x-3 text-sm">
             <li>
               <Link
                 href="/"
-                className="rounded hover:text-[#2d4a3e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
+                className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Home
               </Link>
             </li>
             <li aria-hidden="true">
-              <ChevronRightIcon className="h-4 w-4" />
+              <ChevronRightIcon className="h-4 w-4 text-gray-400" />
             </li>
             <li>
               <Link
                 href="/jobs"
-                className="rounded hover:text-[#2d4a3e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
+                className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Jobs
               </Link>
             </li>
             <li aria-hidden="true">
-              <ChevronRightIcon className="h-4 w-4" />
+              <ChevronRightIcon className="h-4 w-4 text-gray-400" />
             </li>
             <li aria-current="page">
-              <span className="truncate font-medium text-[#2d4a3e]">{job.title}</span>
+              <span className="truncate rounded-full bg-blue-100 px-3 py-1 font-semibold text-blue-800">{job.title}</span>
             </li>
           </ol>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2d4a3e] via-[#1d3a2e] to-[#2d4a3e] text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* Apple-style Hero Section */}
+      <div className="relative overflow-hidden bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#9fdf9f]/20">
-              <BriefcaseIcon className="h-8 w-8 text-[#9fdf9f]" />
+            {/* Company Logo Placeholder / Icon */}
+            <div className="mb-8 inline-flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-2xl">
+              <BriefcaseIcon className="h-12 w-12 text-white" />
             </div>
-            <h1 className="mb-4 text-4xl font-bold md:text-5xl">
+            
+            {/* Job Title */}
+            <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 md:text-6xl">
               {job.title}
             </h1>
-            <div className="mb-6 flex items-center justify-center text-xl text-[#9fdf9f]/90">
-              <BuildingOfficeIcon className="mr-2 h-6 w-6" />
-              <span>{job.company}</span>
+            
+            {/* Company Name */}
+            <div className="mb-8 flex items-center justify-center">
+              <div className="rounded-2xl bg-gray-100 px-6 py-3">
+                <div className="flex items-center text-xl font-semibold text-gray-800">
+                  <BuildingOfficeIcon className="mr-3 h-6 w-6 text-gray-600" />
+                  <span>{job.company}</span>
+                </div>
+              </div>
             </div>
 
-            {/* Key Job Info */}
+            {/* Key Job Info Cards */}
             <div className="mx-auto max-w-4xl">
-              <div className="grid grid-cols-1 gap-4 text-[#9fdf9f]/80 md:grid-cols-3">
-                <div className="flex items-center justify-center">
-                  <MapPinIcon className="mr-2 h-5 w-5" />
-                  <span>{job.location}</span>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-sm">
+                  <div className="flex items-center justify-center">
+                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
+                      <MapPinIcon className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-gray-500">Location</div>
+                      <div className="text-lg font-semibold text-gray-900">{job.location}</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center justify-center">
-                  <BriefcaseIcon className="mr-2 h-5 w-5" />
-                  <span>{formattedJobType}</span>
+                
+                <div className="rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-6 shadow-sm">
+                  <div className="flex items-center justify-center">
+                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
+                      <BriefcaseIcon className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-gray-500">Type</div>
+                      <div className="text-lg font-semibold text-gray-900">{formattedJobType}</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center justify-center">
-                  <CurrencyDollarIcon className="mr-2 h-5 w-5" />
-                  <span>{salaryDisplay}</span>
+                
+                <div className="rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-6 shadow-sm">
+                  <div className="flex items-center justify-center">
+                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100">
+                      <CurrencyDollarIcon className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-gray-500">Salary</div>
+                      <div className="text-lg font-semibold text-gray-900">{salaryDisplay}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Posted Date */}
-            <div className="mt-6 flex items-center justify-center text-sm text-[#9fdf9f]/70">
+            <div className="mt-8 inline-flex items-center rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600">
               <CalendarIcon className="mr-2 h-4 w-4" />
               <span>Posted {formattedDate}</span>
             </div>
@@ -376,19 +407,19 @@ export default function JobDetailClient({
             <motion.article
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
+              className="overflow-hidden rounded-3xl border border-gray-200/60 bg-white/90 shadow-2xl backdrop-blur-sm"
             >
-              {/* Quick Actions Bar */}
-              <div className="border-b border-gray-200 bg-gray-50 p-6">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex flex-wrap gap-3">
+              {/* Apple-style Quick Actions Bar */}
+              <div className="border-b border-gray-200/60 bg-gradient-to-r from-gray-50 to-slate-50 p-8">
+                <div className="flex flex-wrap items-center justify-between gap-6">
+                  <div className="flex flex-wrap gap-4">
                     {/* Edit Button for Job Owner */}
                     {isJobOwner && (
                       <Link
                         href={`/employers/job/${job.id}/edit`}
-                        className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                        className="group inline-flex items-center rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:ring-offset-2"
                       >
-                        <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         Edit Job
@@ -400,13 +431,13 @@ export default function JobDetailClient({
                       <div className="relative group">
                         <button
                           onClick={handleShouldIApplyOpen}
-                          className="inline-flex items-center rounded-lg bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 relative"
+                          className="group relative inline-flex items-center rounded-2xl bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-purple-700 hover:to-purple-800 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:ring-offset-2"
                         >
-                          <SparklesIcon className="mr-2 h-4 w-4" />
+                          <SparklesIcon className="mr-3 h-5 w-5 transition-transform group-hover:rotate-12" />
                           Should I Apply?
                           {/* AI Badge with first-time indicator */}
-                          <span className={`absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold text-white ${
-                            isFirstTimeUser ? 'bg-red-500 animate-pulse' : 'bg-purple-500'
+                          <span className={`absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white ${
+                            isFirstTimeUser ? 'bg-red-500 animate-pulse' : 'bg-orange-500'
                           }`}>
                             {isFirstTimeUser ? 'NEW' : 'AI'}
                           </span>
@@ -431,16 +462,16 @@ export default function JobDetailClient({
                     <button
                       onClick={handleSaveJob}
                       disabled={saving}
-                      className={`inline-flex items-center rounded-lg px-4 py-3 text-sm font-medium shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      className={`group inline-flex items-center rounded-2xl px-6 py-3 text-sm font-semibold shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-offset-2 ${
                         saved
-                          ? 'border border-green-200 bg-green-100 text-green-700 hover:bg-green-200 focus:ring-green-500'
-                          : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:shadow-lg focus:ring-[#2d4a3e]'
+                          ? 'border-2 border-green-200 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 hover:from-green-200 hover:to-emerald-200 focus:ring-green-500/20'
+                          : 'border-2 border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:shadow-xl focus:ring-gray-500/20'
                       } ${saving ? 'cursor-not-allowed opacity-50' : ''}`}
                     >
                       {saved ? (
-                        <BookmarkSolidIcon className="mr-2 h-4 w-4" />
+                        <BookmarkSolidIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                       ) : (
-                        <BookmarkIcon className="mr-2 h-4 w-4" />
+                        <BookmarkIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                       )}
                       {saving ? 'Saving...' : saved ? 'Saved' : 'Save Job'}
                     </button>
@@ -448,22 +479,22 @@ export default function JobDetailClient({
                     <button
                       onClick={handleShare}
                       disabled={sharing}
-                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-md transition-all hover:bg-gray-50 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="group inline-flex items-center rounded-2xl border-2 border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-lg transition-all duration-200 hover:bg-gray-50 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-gray-500/20 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      <ShareIcon className="mr-2 h-4 w-4" />
+                      <ShareIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                       {sharing ? 'Sharing...' : 'Share'}
                     </button>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    {/* Social Share Buttons */}
+                    {/* Apple-style Social Share Buttons */}
                     <a
                       href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this ${job.title} position at ${job.company} in ${job.location}`)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&hashtags=209jobs,hiring,${job.location.replace(/\s+/g, '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white transition-colors hover:bg-gray-800"
+                      className="group flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white shadow-lg transition-all duration-200 hover:bg-gray-800 hover:shadow-xl hover:scale-110"
                     >
-                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                       </svg>
                     </a>
@@ -472,18 +503,18 @@ export default function JobDetailClient({
                       href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition-colors hover:bg-blue-700"
+                      className="group flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-xl hover:scale-110"
                     >
-                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                       </svg>
                     </a>
 
                     <button
                       onClick={() => setReportModalOpen(true)}
-                      className="flex items-center justify-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
+                      className="group flex items-center justify-center rounded-2xl border-2 border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-lg transition-all duration-200 hover:bg-red-100 hover:shadow-xl"
                     >
-                      <ExclamationTriangleIcon className="mr-1 h-4 w-4" />
+                      <ExclamationTriangleIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                       Report
                     </button>
                   </div>
@@ -651,58 +682,66 @@ export default function JobDetailClient({
             </motion.article>
           </div>
 
-          {/* Sidebar */}
+          {/* Apple-style Sidebar */}
           <aside className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
+            <div className="sticky top-8 space-y-8">
               {/* Job Summary Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg"
+                className="rounded-3xl border border-gray-200/60 bg-white/90 p-8 shadow-2xl backdrop-blur-sm"
               >
-                <h3 className="mb-4 text-lg font-bold text-gray-900">Job Summary</h3>
-                <dl className="space-y-4">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Location</dt>
-                    <dd className="mt-1 flex items-center text-sm text-gray-900">
-                      <MapPinIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                <h3 className="mb-6 text-xl font-bold text-gray-900">Job Summary</h3>
+                <dl className="space-y-6">
+                  <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
+                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Location</dt>
+                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100">
+                        <MapPinIcon className="h-4 w-4 text-blue-600" />
+                      </div>
                       {job.location}
                     </dd>
                   </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Job Type</dt>
-                    <dd className="mt-1 flex items-center text-sm text-gray-900">
-                      <BriefcaseIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                  <div className="rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-4">
+                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Job Type</dt>
+                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-green-100">
+                        <BriefcaseIcon className="h-4 w-4 text-green-600" />
+                      </div>
                       {formattedJobType}
                     </dd>
                   </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Salary</dt>
-                    <dd className="mt-1 flex items-center text-sm text-gray-900">
-                      <CurrencyDollarIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                  <div className="rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-4">
+                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Salary</dt>
+                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100">
+                        <CurrencyDollarIcon className="h-4 w-4 text-orange-600" />
+                      </div>
                       {salaryDisplay}
                     </dd>
                   </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Posted</dt>
-                    <dd className="mt-1 flex items-center text-sm text-gray-900">
-                      <CalendarIcon className="mr-2 h-4 w-4 text-[#2d4a3e]" />
+                  <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Posted</dt>
+                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-purple-100">
+                        <CalendarIcon className="h-4 w-4 text-purple-600" />
+                      </div>
                       {formattedDate}
                     </dd>
                   </div>
                 </dl>
               </motion.div>
 
-              {/* Related Jobs */}
+              {/* Apple-style Related Jobs */}
               {relatedJobs.length > 0 && (
                 <motion.section
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg"
+                  className="rounded-3xl border border-gray-200/60 bg-white/90 p-8 shadow-2xl backdrop-blur-sm"
                 >
-                  <h3 className="mb-4 text-lg font-bold text-gray-900">
+                  <h3 className="mb-6 text-xl font-bold text-gray-900">
                     Similar Jobs
                   </h3>
                   <ul className="space-y-4">
@@ -710,7 +749,7 @@ export default function JobDetailClient({
                       <li key={relatedJob.id}>
                         <Link
                           href={`/jobs/${relatedJob.id}`}
-                          className="block rounded-xl border border-gray-100 p-4 transition-all hover:border-[#2d4a3e]/20 hover:bg-[#2d4a3e]/5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#2d4a3e]"
+                          className="group block rounded-2xl border-2 border-gray-100 bg-gradient-to-br from-gray-50 to-slate-50 p-6 transition-all duration-200 hover:border-blue-200 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                         >
                           <h4 className="mb-2 font-semibold text-gray-900">
                             {relatedJob.title}
@@ -737,10 +776,10 @@ export default function JobDetailClient({
                   </ul>
                   <Link
                     href="/jobs"
-                    className="mt-6 inline-flex items-center rounded-lg bg-[#2d4a3e] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#1d3a2e] focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2"
+                    className="group mt-6 inline-flex items-center rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:ring-offset-2"
                   >
                     View All Jobs
-                    <ChevronRightIcon className="ml-2 h-4 w-4" />
+                    <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </motion.section>
               )}

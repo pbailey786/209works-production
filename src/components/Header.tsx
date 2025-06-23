@@ -42,9 +42,9 @@ const UserButton = FEATURES.CLERK_AUTH ?
   () => null;
 
 export default function Header() {
-  // For build time, we always use mock session
-  // Since Clerk hooks can't be called during SSR/build, we'll handle real auth client-side only
-  const session = {
+  // Temporarily disable complex auth logic to fix DOM errors
+  // Use simple mock state for stability
+  const session = FEATURES.CLERK_AUTH ? null : {
     user: { 
       email: 'admin@209.works', 
       role: 'admin', 
@@ -54,16 +54,7 @@ export default function Header() {
     }
   };
   
-  // Mock clerk user state for compatibility
-  const clerkUser = { 
-    isSignedIn: false, 
-    user: null, 
-    isLoaded: true 
-  };
-  
-  const status = FEATURES.CLERK_AUTH ? 
-    (clerkUser.isSignedIn ? 'authenticated' : 'unauthenticated') : 
-    'authenticated';
+  const status = session ? 'authenticated' : 'unauthenticated';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -225,27 +216,8 @@ export default function Header() {
               </div>
             )}
 
-            {/* Phase 4A: Clerk Authentication Buttons */}
-            {FEATURES.CLERK_AUTH && status === 'unauthenticated' && (
-              <div className="flex items-center space-x-2">
-                <SignInButton mode="modal">
-                  <Button
-                    variant="ghost"
-                    className="text-gray-700 hover:text-[#2d4a3e]"
-                  >
-                    Sign In
-                  </Button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <Button className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]">
-                    Sign Up
-                  </Button>
-                </SignUpButton>
-              </div>
-            )}
-
-            {/* Fallback: Regular sign in/up links when Clerk is disabled */}
-            {!FEATURES.CLERK_AUTH && status === 'unauthenticated' && (
+            {/* Simplified Auth Buttons */}
+            {status === 'unauthenticated' && (
               <div className="flex items-center space-x-2">
                 <Button
                   asChild
@@ -263,21 +235,10 @@ export default function Header() {
               </div>
             )}
 
-            {/* Phase 4A: User Menu - Clerk or Mock */}
+            {/* Simplified User Menu */}
             {session?.user && (
               <div className="relative">
-                {FEATURES.CLERK_AUTH ? (
-                  <UserButton 
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-10 h-10"
-                      }
-                    }}
-                    userProfileMode="modal"
-                    afterSignOutUrl="/"
-                  />
-                ) : (
-                  <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3">
                   {/* User Menu Dropdown */}
                   <div className="relative">
                     <Button
@@ -383,7 +344,6 @@ export default function Header() {
                     </AnimatePresence>
                   </div>
                 </div>
-                )}
               </div>
             )}
 

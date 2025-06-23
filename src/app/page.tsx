@@ -26,121 +26,140 @@ export default function HomeSimple() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-50 to-orange-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Headline */}
-          <div className="mb-8">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-              Jobs for the 209.
-              <span className="block text-orange-600">No Suits Required.</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
-              Built for the folks who work hard and don't mess around.
-              <span className="text-orange-600 font-semibold"> Real jobs that hit close to home.</span>
-            </p>
-          </div>
-
-          {/* Search Form */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <form onSubmit={handleSearch} className="relative">
-              <div className="bg-white rounded-xl border-2 border-orange-200 p-2 shadow-lg">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="What kind of work are you looking for?"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-12 pr-4 py-3 text-lg border-0 rounded-lg focus:outline-none focus:ring-0"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <span>Search Jobs</span>
-                    <Search className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </form>
-
-            {/* Quick Search Suggestions */}
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {[
-                'Healthcare Jobs',
-                'Warehouse & Logistics', 
-                'Customer Service',
-                'Manufacturing'
-              ].map((suggestion) => (
-                <button
-                  key={suggestion}
-                  onClick={() => handleQuickSearch(suggestion)}
-                  className="bg-white/70 border border-orange-200 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-white hover:border-orange-300 transition-colors"
-                >
-                  {suggestion}
-                </button>
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Apple-style Hero Section */}
+      <section className="relative overflow-hidden bg-white py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            {/* Hero Icon */}
+            <div className="mx-auto mb-12 flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-2xl">
+              <Briefcase className="h-16 w-16 text-white" />
             </div>
-          </div>
+            
+            {/* Headline */}
+            <div className="mb-12">
+              <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl">
+                Jobs for the 209.
+                <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  No Suits Required.
+                </span>
+              </h1>
+              <p className="mx-auto max-w-4xl text-xl font-medium text-gray-600 sm:text-2xl">
+                Built for the folks who work hard and don't mess around.
+                <span className="block text-blue-600"> Real jobs that hit close to home.</span>
+              </p>
+            </div>
 
-          {/* CTA Button */}
-          <Link
-            href="/jobs"
-            className="inline-flex items-center gap-3 bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-lg hover:bg-orange-700 transition-colors"
-          >
-            <span>Explore Jobs</span>
-            <ArrowRight className="h-5 w-5" />
-          </Link>
+            {/* Apple-style Search Form */}
+            <div className="mx-auto mb-12 max-w-3xl">
+              <form onSubmit={handleSearch} className="relative">
+                <div className="rounded-3xl border border-gray-200/60 bg-white/90 p-3 shadow-2xl backdrop-blur-sm">
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-6 top-1/2 h-6 w-6 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="What kind of work are you looking for?"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 py-4 pl-14 pr-6 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:scale-105"
+                    >
+                      <span>Search Jobs</span>
+                      <Search className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              {/* Apple-style Quick Search Suggestions */}
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
+                {[
+                  'Healthcare Jobs',
+                  'Warehouse & Logistics', 
+                  'Customer Service',
+                  'Manufacturing'
+                ].map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => handleQuickSearch(suggestion)}
+                    className="rounded-full border-2 border-gray-200 bg-white/80 px-6 py-2 font-medium text-gray-700 backdrop-blur-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:scale-105"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Apple-style CTA Button */}
+            <Link
+              href="/jobs"
+              className="group inline-flex items-center gap-4 rounded-3xl bg-gradient-to-r from-purple-600 to-purple-700 px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-300 hover:from-purple-700 hover:to-purple-800 hover:shadow-3xl hover:scale-105"
+            >
+              <span>Explore Jobs</span>
+              <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {/* Apple-style Features Section */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Why Choose 209 Works?
+            </h2>
+            <p className="mx-auto max-w-2xl text-xl text-gray-600">
+              Built for the Central Valley, by people who understand the 209.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {/* Feature 1 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="h-8 w-8 text-orange-600" />
+            <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-red-500 to-pink-600 shadow-lg">
+                <Heart className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">24/7 Local Support</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">24/7 Local Support</h3>
               <p className="text-gray-600">
                 We're here to help. Get in touch with any questions about finding work in the 209.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-8 w-8 text-orange-600" />
+            <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+                <Shield className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Verified Employers</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Verified Employers</h3>
               <p className="text-gray-600">
                 Work with real Central Valley businesses that are actually hiring.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Zap className="h-8 w-8 text-orange-600" />
+            <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-yellow-500 to-orange-600 shadow-lg">
+                <Zap className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Quick Applications</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Quick Applications</h3>
               <p className="text-gray-600">
                 Apply fast with our streamlined job platform. No endless forms.
               </p>
             </div>
 
             {/* Feature 4 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Briefcase className="h-8 w-8 text-orange-600" />
+            <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+                <Briefcase className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Career Tools</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Career Tools</h3>
               <p className="text-gray-600">
                 Build your profile and track your job search progress.
               </p>
@@ -149,41 +168,76 @@ export default function HomeSimple() {
         </div>
       </section>
 
-      {/* Simple Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Apple-style Footer */}
+      <footer className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 py-16 text-white">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
             <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">209</span>
+              <div className="mb-6 flex items-center space-x-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+                  <span className="text-xl font-bold text-white">209</span>
                 </div>
-                <span className="text-xl font-bold">209 Works</span>
+                <span className="text-2xl font-bold">209 Works</span>
               </div>
-              <p className="text-gray-400">
+              <p className="text-lg text-gray-300">
                 Your local job platform for the Central Valley. Built for people who work hard.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Job Seekers</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/jobs" className="hover:text-white">Browse Jobs</Link></li>
-                <li><Link href="/contact" className="hover:text-white">Get Help</Link></li>
+              <h4 className="mb-6 text-xl font-bold">Job Seekers</h4>
+              <ul className="space-y-3 text-gray-300">
+                <li>
+                  <Link 
+                    href="/jobs" 
+                    className="group inline-flex items-center rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                  >
+                    Browse Jobs
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/contact" 
+                    className="group inline-flex items-center rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                  >
+                    Get Help
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Employers</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/employers" className="hover:text-white">Post a Job</Link></li>
-                <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
+              <h4 className="mb-6 text-xl font-bold">Employers</h4>
+              <ul className="space-y-3 text-gray-300">
+                <li>
+                  <Link 
+                    href="/employers" 
+                    className="group inline-flex items-center rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                  >
+                    Post a Job
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/contact" 
+                    className="group inline-flex items-center rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:text-white"
+                  >
+                    Contact Us
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 209 Works. Built for the 209.</p>
+          <div className="mt-12 border-t border-gray-700/50 pt-8 text-center">
+            <p className="text-lg text-gray-400">
+              &copy; 2025 209 Works. Built for the 209.
+            </p>
           </div>
         </div>
       </footer>

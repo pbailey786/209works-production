@@ -189,15 +189,16 @@ export async function POST(req: NextRequest) {
 // GET endpoint to check onboarding status
 export async function GET(req: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
+    const clerkUser = await currentUser();
 
-    if (!session!.user?.email) {
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
     const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: userEmail },
       select: {
         id: true,
         name: true,
