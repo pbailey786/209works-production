@@ -268,7 +268,21 @@ export default function Header() {
                         avatarBox: "w-10 h-10"
                       }
                     }}
-                  />
+                  >
+                    <UserButton.MenuItems>
+                      <UserButton.Link
+                        label="Dashboard"
+                        labelIcon={<BarChart3 className="w-4 h-4" />}
+                        href="/dashboard"
+                      />
+                      <UserButton.Link
+                        label="Profile"
+                        labelIcon={<User className="w-4 h-4" />}
+                        href="/profile"
+                      />
+                      <UserButton.Action label="manageAccount" />
+                    </UserButton.MenuItems>
+                  </UserButton>
                 ) : (
                   <div className="relative">
                     <Button

@@ -746,120 +746,220 @@ export default function ProfilePage() {
               </form>
             </motion.div>
 
-            {/* Resume Management Card */}
+            {/* Enhanced Resume & Documents Management */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg"
             >
-              <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+              <div className="border-b border-gray-200 bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <DocumentTextIcon className="mr-3 h-6 w-6 text-purple-600" />
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Resume Management
+                    <DocumentTextIcon className="mr-3 h-6 w-6 text-white" />
+                    <h2 className="text-xl font-bold text-white">
+                      Resume & Documents
                     </h2>
                   </div>
-                  {resumeUrl && (
-                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
-                      <CheckCircleIcon className="mr-1 h-4 w-4" />
-                      Uploaded
-                    </span>
-                  )}
+                  <div className="flex items-center space-x-2">
+                    {resumeUrl && (
+                      <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">
+                        <CheckCircleIcon className="mr-1 h-4 w-4" />
+                        Resume Ready
+                      </span>
+                    )}
+                    <button className="inline-flex items-center rounded-lg bg-white/20 px-3 py-1 text-sm font-medium text-white transition-colors hover:bg-white/30">
+                      <PlusIcon className="mr-1 h-4 w-4" />
+                      Add Document
+                    </button>
+                  </div>
                 </div>
               </div>
 
               <div className="p-6">
-                {resumeUrl ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-4">
-                      <div className="flex items-center">
-                        <DocumentTextIcon className="mr-3 h-8 w-8 text-green-600" />
-                        <div>
-                          <h3 className="font-medium text-gray-900">
-                            Current Resume
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Ready for job applications
-                          </p>
+                {/* Resume Section */}
+                <div className="mb-8">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">Resume</h3>
+                    <span className="text-sm text-gray-500">Primary application document</span>
+                  </div>
+                  
+                  {resumeUrl ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between rounded-lg border-2 border-green-200 bg-green-50 p-4">
+                        <div className="flex items-center">
+                          <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
+                            <DocumentTextIcon className="h-6 w-6 text-green-600" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-gray-900">
+                              Current Resume
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              Ready for job applications • PDF format
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Uploaded: {new Date().toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <a
+                            href={resumeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center rounded-lg border border-green-300 bg-white px-3 py-2 text-green-700 transition-colors hover:bg-green-50"
+                          >
+                            <EyeIcon className="mr-1 h-4 w-4" />
+                            View
+                          </a>
+                          <button className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-700 transition-colors hover:bg-gray-50">
+                            <PencilIcon className="mr-1 h-4 w-4" />
+                            Replace
+                          </button>
+                          <button
+                            onClick={handleResumeDelete}
+                            disabled={resumeLoading}
+                            className="inline-flex items-center rounded-lg bg-red-600 px-3 py-2 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex space-x-3">
-                        <a
-                          href={resumeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center rounded-lg border border-green-300 bg-white px-4 py-2 text-green-700 transition-colors hover:bg-green-50"
-                        >
-                          <EyeIcon className="mr-2 h-4 w-4" />
-                          View
-                        </a>
+                      
+                      {/* Resume Analytics */}
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="rounded-lg bg-blue-50 p-3 text-center">
+                          <div className="text-2xl font-bold text-blue-600">12</div>
+                          <div className="text-sm text-blue-700">Applications</div>
+                        </div>
+                        <div className="rounded-lg bg-green-50 p-3 text-center">
+                          <div className="text-2xl font-bold text-green-600">8</div>
+                          <div className="text-sm text-green-700">Views</div>
+                        </div>
+                        <div className="rounded-lg bg-purple-50 p-3 text-center">
+                          <div className="text-2xl font-bold text-purple-600">3</div>
+                          <div className="text-sm text-purple-700">Downloads</div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+                      <DocumentTextIcon className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+                      <h4 className="mb-2 text-lg font-semibold text-gray-900">
+                        Upload Your Resume
+                      </h4>
+                      <p className="mb-6 text-gray-600">
+                        Stand out to employers with a professional resume. We support PDF, DOC, and DOCX formats.
+                      </p>
+
+                      <form onSubmit={handleResumeUpload} className="space-y-4">
+                        <input
+                          type="file"
+                          name="resume"
+                          accept="application/pdf,.doc,.docx"
+                          className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-50 file:px-6 file:py-3 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
+                        />
                         <button
-                          onClick={handleResumeDelete}
+                          type="submit"
                           disabled={resumeLoading}
-                          className="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                          className="flex w-full items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
                         >
                           {resumeLoading ? (
                             <>
                               <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                              Deleting...
+                              Uploading...
                             </>
                           ) : (
                             <>
-                              <TrashIcon className="mr-2 h-4 w-4" />
-                              Delete
+                              <CloudArrowUpIcon className="mr-2 h-4 w-4" />
+                              Upload Resume
                             </>
                           )}
+                        </button>
+                      </form>
+                    </div>
+                  )}
+                </div>
+
+                {/* Cover Letters Section */}
+                <div className="mb-8">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">Cover Letters</h3>
+                    <button className="inline-flex items-center rounded-lg bg-purple-600 px-3 py-2 text-sm text-white transition-colors hover:bg-purple-700">
+                      <PlusIcon className="mr-1 h-4 w-4" />
+                      Create New
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
+                      <div className="flex items-center">
+                        <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                          <DocumentTextIcon className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">General Cover Letter</h4>
+                          <p className="text-sm text-gray-600">Universal template for most applications</p>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button className="text-blue-600 hover:text-blue-700">
+                          <EyeIcon className="h-4 w-4" />
+                        </button>
+                        <button className="text-gray-600 hover:text-gray-700">
+                          <PencilIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
+                      <div className="flex items-center">
+                        <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
+                          <DocumentTextIcon className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Tech Industry Cover Letter</h4>
+                          <p className="text-sm text-gray-600">Specialized for technology positions</p>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button className="text-blue-600 hover:text-blue-700">
+                          <EyeIcon className="h-4 w-4" />
+                        </button>
+                        <button className="text-gray-600 hover:text-gray-700">
+                          <PencilIcon className="h-4 w-4" />
                         </button>
                       </div>
                     </div>
                   </div>
-                ) : (
-                  <div className="py-8 text-center">
-                    <DocumentTextIcon className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-                    <h3 className="mb-2 text-lg font-medium text-gray-900">
-                      No Resume Uploaded
-                    </h3>
-                    <p className="mb-6 text-gray-600">
-                      Upload your resume to start applying for jobs
-                    </p>
+                </div>
 
-                    <form onSubmit={handleResumeUpload} className="space-y-4">
-                      <input
-                        type="file"
-                        name="resume"
-                        accept="application/pdf,.doc,.docx"
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-50 file:px-6 file:py-3 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
-                      />
-                      <button
-                        type="submit"
-                        disabled={resumeLoading}
-                        className="flex w-full items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
-                      >
-                        {resumeLoading ? (
-                          <>
-                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <CloudArrowUpIcon className="mr-2 h-4 w-4" />
-                            Upload Resume
-                          </>
-                        )}
-                      </button>
-                    </form>
+                {/* Application Preferences */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h3 className="mb-3 font-semibold text-gray-900">Application Preferences</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-700">Auto-attach resume to applications</span>
+                      <input type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-700">Include cover letter by default</span>
+                      <input type="checkbox" className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-700">Track application status</span>
+                      <input type="checkbox" defaultChecked className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500" />
+                    </div>
                   </div>
-                )}
+                </div>
 
+                {/* Status Messages */}
                 {resumeError && (
                   <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
                     <div className="flex items-center">
                       <ExclamationTriangleIcon className="mr-2 h-5 w-5 text-red-400" />
-                      <span className="text-sm text-red-800">
-                        {resumeError}
-                      </span>
+                      <span className="text-sm text-red-800">{resumeError}</span>
                     </div>
                   </div>
                 )}
@@ -868,9 +968,7 @@ export default function ProfilePage() {
                   <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4">
                     <div className="flex items-center">
                       <CheckCircleIcon className="mr-2 h-5 w-5 text-green-400" />
-                      <span className="text-sm text-green-800">
-                        {resumeSuccess}
-                      </span>
+                      <span className="text-sm text-green-800">{resumeSuccess}</span>
                     </div>
                   </div>
                 )}

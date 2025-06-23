@@ -41,20 +41,37 @@ export const alertCriteriaSchema = z.object({
     .optional(),
 });
 
-// Create alert schema
+// Create alert schema (matches frontend usage)
 export const createAlertSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().max(500).optional(),
-  criteria: alertCriteriaSchema,
+  type: z.string().optional().default('job_title_alert'),
   frequency: alertFrequencySchema,
-  isActive: z.boolean().default(true),
-  maxResults: z.number().min(1).max(50).default(10), // Max jobs per alert
+  jobTitle: z.string().optional(),
+  keywords: z.array(z.string()).optional().default([]),
+  location: z.string().optional(),
+  categories: z.array(z.string()).optional().default([]),
+  jobTypes: z.array(z.string()).optional().default([]),
+  companies: z.array(z.string()).optional().default([]),
+  salaryMin: z.number().optional(),
+  salaryMax: z.number().optional(),
+  emailEnabled: z.boolean().optional().default(true),
+  isActive: z.boolean().optional().default(true),
 });
 
-// Update alert schema
-export const updateAlertSchema = createAlertSchema.partial().extend({
-  id: z.string().uuid(),
-});
+// Update alert schema - allow partial updates without id field
+export const updateAlertSchema = z.object({
+  type: z.string().optional(),
+  frequency: alertFrequencySchema.optional(),
+  jobTitle: z.string().optional(),
+  keywords: z.array(z.string()).optional(),
+  location: z.string().optional(),
+  categories: z.array(z.string()).optional(),
+  jobTypes: z.array(z.string()).optional(),
+  companies: z.array(z.string()).optional(),
+  salaryMin: z.number().optional(),
+  salaryMax: z.number().optional(),
+  emailEnabled: z.boolean().optional(),
+  isActive: z.boolean().optional(),
+}).strict(); // Reject unknown fields like 'id'
 
 // Alert query parameters
 export const alertQuerySchema = z.object({

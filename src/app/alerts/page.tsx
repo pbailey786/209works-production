@@ -334,18 +334,6 @@ export default function AlertsPage() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Link href="/dashboard">
-            <Button variant="outline">
-              <Home className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
-          </Link>
-          <Button
-            variant="outline"
-            onClick={() => { if (typeof window !== 'undefined') window.location.href = '/alerts/analytics'; }}
-          >
-            📊 Analytics
-          </Button>
           <Dialog
             open={isCreateDialogOpen}
             onOpenChange={setIsCreateDialogOpen}

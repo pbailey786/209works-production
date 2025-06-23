@@ -79,9 +79,9 @@ export default function SimpleJobSeekerDashboard() {
         if (response.ok) {
           const data = await response.json();
           setStats({
-            savedJobs: data.savedJobs || 0,
-            activeAlerts: data.activeAlerts || 0,
-            applicationsSent: data.applicationsSubmitted || 0,
+            savedJobs: data.stats?.savedJobs || 0,
+            activeAlerts: data.stats?.activeAlerts || 0,
+            applicationsSent: data.stats?.applicationsSubmitted || 0,
           });
         }
         
@@ -161,9 +161,9 @@ export default function SimpleJobSeekerDashboard() {
       };
     } else {
       return {
-        title: "Keep your profile updated",
-        subtitle: "Make sure employers can find you",
-        action: "Update Profile",
+        title: "Unlock More Opportunities",
+        subtitle: "Complete your profile to get noticed by top employers",
+        action: "Update Profile to Get More Jobs",
         href: "/profile",
         icon: User,
       };
@@ -201,26 +201,37 @@ export default function SimpleJobSeekerDashboard() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         
-        {/* Smart Next Step - Apple style prominent action */}
-        <div className="bg-gradient-to-r from-[#2d4a3e] to-[#ff6b35] rounded-2xl p-8 text-white mb-8">
-          <div className="flex items-center justify-between">
+        {/* Enhanced Smart Next Step - Bold call-to-action banner */}
+        <div className="relative bg-gradient-to-br from-[#2d4a3e] via-[#1d3a2e] to-[#ff6b35] rounded-3xl p-8 text-white mb-8 shadow-2xl overflow-hidden">
+          {/* Decorative background elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+          
+          <div className="relative flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-                <NextStepIcon className="w-6 h-6" />
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-6 shadow-lg border border-white/20">
+                <NextStepIcon className="w-8 h-8 text-white drop-shadow-sm" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold mb-1">{nextStep.title}</h2>
-                <p className="text-white/80">{nextStep.subtitle}</p>
+                <h2 className="text-3xl font-bold mb-2 text-white drop-shadow-sm tracking-tight">
+                  {nextStep.title}
+                </h2>
+                <p className="text-xl text-white/90 font-medium">
+                  {nextStep.subtitle}
+                </p>
               </div>
             </div>
             <Link
               href={nextStep.href}
-              className="inline-flex items-center px-6 py-3 bg-white text-[#2d4a3e] rounded-xl font-medium hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center px-8 py-4 bg-white text-[#2d4a3e] rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 transform"
             >
               {nextStep.action}
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="w-5 h-5 ml-3" />
             </Link>
           </div>
+          
+          {/* Subtle accent line */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         </div>
 
         {/* Simple Stats - Only what matters */}
@@ -361,8 +372,8 @@ export default function SimpleJobSeekerDashboard() {
                 <User className="w-5 h-5 text-[#2d4a3e]" />
               </div>
               <div>
-                <h4 className="font-medium text-gray-900 mb-1">Update Profile</h4>
-                <p className="text-sm text-gray-600">Keep your info current</p>
+                <h4 className="font-medium text-gray-900 mb-1">🚀 Unlock More Jobs</h4>
+                <p className="text-sm text-gray-600">Complete profile = 3x more visibility</p>
               </div>
             </div>
           </Link>

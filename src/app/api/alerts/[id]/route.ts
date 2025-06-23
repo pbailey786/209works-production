@@ -7,7 +7,7 @@ import {
   NotFoundError,
   AuthorizationError,
 } from '@/lib/errors/api-errors';
-import { prisma } from '../../auth/prisma';
+import { prisma } from '@/lib/database/prisma';
 import {
   generateCacheKey,
   CACHE_PREFIXES,
@@ -126,13 +126,15 @@ export const PUT = withAPIMiddleware(
       throw new NotFoundError('Alert not found');
     }
 
+    // Prepare update data without id field
+    const { id, ...updateData } = body as any;
+    
     // Update the alert
     performance.trackDatabaseQuery();
     const updatedAlert = await prisma.jobAlert.update({
       where: { id: alertId },
       data: {
-        ...body,
-        id: undefined, // Remove id from update data
+        ...updateData,
         updatedAt: new Date(),
       },
       select: {
