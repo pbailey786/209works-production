@@ -30,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -372,6 +373,9 @@ export default function AlertsPage() {
             <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Create New Job Alert</DialogTitle>
+                <DialogDescription>
+                  Set up customized job alerts to get notified when positions matching your criteria become available.
+                </DialogDescription>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
                   <p className="text-sm text-blue-800">
                     📧 <strong>Weekly Email Alerts:</strong> All your job alerts will be sent to your registered email address in a single weekly digest. Multiple alerts = more job matches in one email!

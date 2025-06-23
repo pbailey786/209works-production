@@ -229,7 +229,7 @@ export default function ProfilePage() {
     // Show preview
     setProfilePicPreview(URL.createObjectURL(file));
     const formData = new FormData();
-    formData.append('profilePicture', file);
+    formData.append('file', file);
     try {
       formData.append('type', 'profile');
       const res = await fetch('/api/profile/upload', {
@@ -904,55 +904,30 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                {/* Cover Letters Section */}
+                {/* Cover Letter Section */}
                 <div className="mb-8">
                   <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Cover Letters</h3>
-                    <button className="inline-flex items-center rounded-lg bg-purple-600 px-3 py-2 text-sm text-white transition-colors hover:bg-purple-700">
-                      <PlusIcon className="mr-1 h-4 w-4" />
-                      Create New
-                    </button>
+                    <h3 className="text-lg font-semibold text-gray-900">Cover Letter</h3>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
-                      <div className="flex items-center">
-                        <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-                          <DocumentTextIcon className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">General Cover Letter</h4>
-                          <p className="text-sm text-gray-600">Universal template for most applications</p>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-700">
-                          <EyeIcon className="h-4 w-4" />
-                        </button>
-                        <button className="text-gray-600 hover:text-gray-700">
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
-                      </div>
+                  <div className="rounded-lg border border-gray-200 p-6">
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Default Cover Letter Template
+                      </label>
+                      <textarea
+                        placeholder="Write your cover letter template here. You can customize this for each application..."
+                        rows={8}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
+                      />
                     </div>
-                    
-                    <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
-                      <div className="flex items-center">
-                        <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
-                          <DocumentTextIcon className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">Tech Industry Cover Letter</h4>
-                          <p className="text-sm text-gray-600">Specialized for technology positions</p>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-700">
-                          <EyeIcon className="h-4 w-4" />
-                        </button>
-                        <button className="text-gray-600 hover:text-gray-700">
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
-                      </div>
+                    <div className="flex space-x-3">
+                      <button className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700">
+                        Save Cover Letter
+                      </button>
+                      <button className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
+                        Preview
+                      </button>
                     </div>
                   </div>
                 </div>
