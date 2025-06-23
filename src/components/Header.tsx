@@ -244,21 +244,21 @@ export default function Header() {
               </div>
             )}
 
-            {/* Fallback: Mock authentication buttons */}
-            {!FEATURES.CLERK_AUTH && (
+            {/* Fallback: Regular sign in/up links when Clerk is disabled */}
+            {!FEATURES.CLERK_AUTH && status === 'unauthenticated' && (
               <div className="flex items-center space-x-2">
                 <Button
+                  asChild
                   variant="ghost"
-                  onClick={handleSignIn}
                   className="text-gray-700 hover:text-[#2d4a3e]"
                 >
-                  Sign In (Mock)
+                  <Link href="/sign-in">Sign In</Link>
                 </Button>
                 <Button
                   asChild
                   className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
                 >
-                  <Link href="/signup">Sign Up (Mock)</Link>
+                  <Link href="/sign-up">Sign Up</Link>
                 </Button>
               </div>
             )}
