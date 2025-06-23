@@ -5,6 +5,9 @@ import { prisma } from '../../api/auth/prisma';
 import ProfileSettingsClient from './ProfileSettingsClient';
 // import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
+// Disable static generation for this page due to authentication requirements
+export const dynamic = 'force-dynamic';
+
 // Server-side data fetching
 async function getUserSettings(userId: string) {
   try {
@@ -47,16 +50,23 @@ export default async function ProfileSettingsPage() {
   }
 
   // Get user by email since (session!.user as any).id doesn't exist by default
-  const user = await prisma.user.findUnique({
-    where: { email: session!.user?.email },
-    select: { id: true },
-  });
+  let user, userSettings;
+  try {
+    user = await prisma.user.findUnique({
+      where: { email: session!.user?.email },
+      select: { id: true },
+    });
 
-  if (!user) {
+    if (!user) {
+      redirect('/signin');
+    }
+
+    userSettings = await getUserSettings(user.id);
+  } catch (dbError) {
+    console.error('Database connection error in profile settings:', dbError);
+    // During build, redirect to sign-in if database is unavailable
     redirect('/signin');
   }
-
-  const userSettings = await getUserSettings(user.id);
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -125,10 +125,13 @@ export default function CreateJobPostPage() {
     }
     
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('purchase_success') === 'true') {
-        // Clean up URL
-        window.history.replaceState({}, document.title, window.location.pathname);
+      // Only access window in browser environment
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('purchase_success') === 'true') {
+          // Clean up URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
       }
     } catch (error) {
       console.error('Error cleaning up URL parameters:', error);
