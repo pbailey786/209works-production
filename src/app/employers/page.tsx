@@ -42,7 +42,7 @@ export default function EmployerLandingPage() {
       icon: '⚡',
       title: 'Quick Setup',
       description: 'Get started in minutes with our streamlined process',
-      href: '/employers/signup',
+      href: '/sign-up',
     },
   ];
 
@@ -200,7 +200,7 @@ export default function EmployerLandingPage() {
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Link
-              href="/employers/signup"
+              href="/sign-up"
               className="rounded-lg bg-[#ff6b35] px-8 py-3 text-lg font-semibold text-white transition-colors duration-200 hover:bg-[#e55a2b]"
             >
               Get Started Free

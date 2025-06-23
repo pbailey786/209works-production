@@ -329,7 +329,7 @@ export default function AboutPage() {
                   Search Jobs Now
                 </Button>
               </Link>
-              <Link href="/employers/signup">
+              <Link href="/sign-up">
                 <Button
                   size="lg"
                   variant="outline"

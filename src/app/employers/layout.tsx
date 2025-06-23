@@ -110,7 +110,7 @@ export default function EmployerLayout({ children }: EmployerLayoutProps) {
   const breadcrumbs = generateBreadcrumbs();
 
   return (
-    <RoleGuard allowedRoles={['employer', 'admin']} redirectTo="/employers/signin">
+    <RoleGuard allowedRoles={['employer', 'admin']} redirectTo="/sign-in">
       <div className="min-h-screen bg-gray-50">
       <div className="flex">
         {/* Sidebar Navigation */}

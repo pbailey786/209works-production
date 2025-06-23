@@ -50,7 +50,7 @@ function ResetPasswordContent() {
         setMessage(data.message || 'Password has been reset successfully.');
         // Redirect to sign in after 3 seconds
         setTimeout(() => {
-          router.push('/signin?message=Password reset successful. Please sign in with your new password.');
+          router.push('/sign-in?message=Password reset successful. Please sign in with your new password.');
         }, 3000);
       } else {
         setMessage(data.error || 'Something went wrong.');
@@ -176,7 +176,7 @@ function ResetPasswordContent() {
             {!success && (
               <div className="mt-8 text-center">
                 <Link
-                  href="/signin"
+                  href="/sign-in"
                   className="inline-flex items-center text-sm text-[#2d4a3e] hover:text-[#1d3a2e] transition-colors"
                 >
                   <ArrowLeft className="mr-1 h-4 w-4" />

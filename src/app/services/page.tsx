@@ -98,7 +98,7 @@ const services = [
           'Retention insights',
         ],
         cta: 'Find Talent',
-        href: '/employers/signup',
+        href: '/sign-up',
         icon: Target,
       },
       {
@@ -387,7 +387,7 @@ export default function ServicesPage() {
                   Find Jobs
                 </Button>
               </Link>
-              <Link href="/employers/signup">
+              <Link href="/sign-up">
                 <Button
                   size="lg"
                   variant="outline"

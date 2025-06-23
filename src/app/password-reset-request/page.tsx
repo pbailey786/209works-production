@@ -131,7 +131,7 @@ export default function PasswordResetRequestPage() {
 
             <div className="mt-8 text-center">
               <Link
-                href="/signin"
+                href="/sign-in"
                 className="inline-flex items-center text-sm text-[#2d4a3e] hover:text-[#1d3a2e] transition-colors"
               >
                 <ArrowLeft className="mr-1 h-4 w-4" />

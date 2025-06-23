@@ -112,7 +112,7 @@ function VerifyEmailContent() {
                   </div>
                 </div>
 
-                <Link href="/signin">
+                <Link href="/sign-in">
                   <Button className="w-full">
                     Go to Sign In
                   </Button>
@@ -188,7 +188,7 @@ function VerifyEmailContent() {
                   <div className="text-sm text-gray-500">
                     Already verified?{' '}
                     <Link 
-                      href="/signin" 
+                      href="/sign-in" 
                       className="text-[#2d4a3e] hover:text-[#1d3a2e] font-medium"
                     >
                       Sign in here

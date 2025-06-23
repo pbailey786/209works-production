@@ -492,7 +492,7 @@ export default function TermsPage() {
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <a
-              href="/signup"
+              href="/sign-up"
               className="rounded-lg bg-[#ff6b35] px-8 py-3 font-medium text-white transition-colors hover:bg-[#e55a2b]"
             >
               Get Started
