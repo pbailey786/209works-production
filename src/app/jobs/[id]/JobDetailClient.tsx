@@ -163,6 +163,8 @@ export default function JobDetailClient({
 
       const data = await response.json();
       setSaved(!saved); // Toggle the saved state
+      setError(saved ? 'Job removed from saved jobs!' : 'Saved!');
+      setTimeout(() => setError(null), 2000); // Shorter notification
     } catch (error) {
       console.error('Error saving job:', error);
       setError(
@@ -240,7 +242,7 @@ export default function JobDetailClient({
       sessionStorage.setItem('prefillAlert', JSON.stringify(alertData));
       
       // Navigate to alerts page
-      window.location.href = '/dashboard/alerts?create=true';
+      window.location.href = '/alerts?create=true';
     } catch (error) {
       console.error('Error creating alert:', error);
       setError('Failed to create alert. Please try again.');

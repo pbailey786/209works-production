@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
         id: true, 
         location: true, 
         skills: true, 
-        experienceLevel: true,
         preferredJobTypes: true,
         currentJobTitle: true
       },
@@ -166,7 +165,6 @@ export async function GET(req: NextRequest) {
       userProfile: {
         location: user.location,
         skills: user.skills,
-        experienceLevel: user.experienceLevel,
         preferredJobTypes: user.preferredJobTypes
       }
     });

@@ -25,10 +25,11 @@ export async function GET(req: NextRequest) {
       recentSearches,
       recentActivity,
     ] = await Promise.all([
-      // Count saved jobs
-      prisma.savedJob.count({
+      // Count saved jobs (stored as JobApplication with status 'saved')
+      prisma.jobApplication.count({
         where: {
           userId,
+          status: 'saved',
         },
       }),
 
@@ -72,9 +73,10 @@ export async function GET(req: NextRequest) {
       }),
 
       // Get recent activity (saved jobs and alerts)
-      prisma.savedJob.findMany({
+      prisma.jobApplication.findMany({
         where: {
           userId,
+          status: 'saved',
         },
         include: {
           job: {
@@ -85,7 +87,7 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        orderBy: { savedAt: 'desc' },
+        orderBy: { appliedAt: 'desc' },
         take: 5,
       }),
     ]);
@@ -103,7 +105,7 @@ export async function GET(req: NextRequest) {
         type: 'saved_job',
         id: savedJob.id,
         title: `Saved ${savedJob.job.title} at ${savedJob.job.company}`,
-        timestamp: savedJob.savedAt,
+        timestamp: savedJob.appliedAt,
         jobId: savedJob.job.id,
       })),
     });
