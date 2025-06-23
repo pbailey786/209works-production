@@ -1,20 +1,32 @@
 'use client';
 
-// // import { SessionProvider } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
 import React from 'react';
+import { ClerkProvider } from '@clerk/nextjs';
+import { FEATURES } from '@/lib/feature-flags';
 
 export default function SessionProviderWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // TODO: Replace with Clerk provider when implemented
-  console.log('🔧 Mock SessionProvider - NODE_ENV:', process.env.NODE_ENV);
-  console.log(
-    '🔧 Mock SessionProvider - Current window origin:',
-    typeof window !== 'undefined' ? window.location.origin : 'server-side'
-  );
+  // Phase 4A: Use real Clerk authentication if enabled
+  if (FEATURES.CLERK_AUTH) {
+    return (
+      <ClerkProvider
+        publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
+        appearance={{
+          baseTheme: undefined,
+          variables: {
+            colorPrimary: '#ea580c', // Orange-600 to match site theme
+          },
+        }}
+      >
+        {children}
+      </ClerkProvider>
+    );
+  }
 
-  // Return children directly for now - replace with Clerk provider
+  // Fallback: Mock session (for development/testing)
+  console.log('🔧 Mock SessionProvider - Clerk auth disabled');
   return <>{children}</>;
 }

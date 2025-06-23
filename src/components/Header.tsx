@@ -1,5 +1,5 @@
 'use client';
-// // import { useSession, signIn, signOut } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -20,16 +20,35 @@ import {
   Users,
   Building2,
 } from 'lucide-react';
+import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import Avatar from './Avatar';
 import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import { FEATURES } from '@/lib/feature-flags';
 
 export default function Header() {
-  // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id', image: null } };
-  const status = 'authenticated';
+  // Phase 4A: Use Clerk authentication if enabled
+  const clerkUser = useUser();
+  
+  // Create session object compatible with existing code
+  const session = FEATURES.CLERK_AUTH && clerkUser.isSignedIn ? {
+    user: {
+      email: clerkUser.user.emailAddresses[0]?.emailAddress || '',
+      role: clerkUser.user.publicMetadata?.role || 'jobseeker',
+      name: clerkUser.user.fullName || clerkUser.user.firstName || 'User',
+      id: clerkUser.user.id,
+      image: clerkUser.user.imageUrl
+    }
+  } : (FEATURES.CLERK_AUTH ? null : {
+    // Fallback: Mock session for development
+    user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id', image: null }
+  });
+  
+  const status = FEATURES.CLERK_AUTH ? 
+    (clerkUser.isSignedIn ? 'authenticated' : 'unauthenticated') : 
+    'authenticated';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -191,27 +210,59 @@ export default function Header() {
               </div>
             )}
 
-            {false && (
+            {/* Phase 4A: Clerk Authentication Buttons */}
+            {FEATURES.CLERK_AUTH && status === 'unauthenticated' && (
+              <div className="flex items-center space-x-2">
+                <SignInButton mode="modal">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-700 hover:text-[#2d4a3e]"
+                  >
+                    Sign In
+                  </Button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <Button className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]">
+                    Sign Up
+                  </Button>
+                </SignUpButton>
+              </div>
+            )}
+
+            {/* Fallback: Mock authentication buttons */}
+            {!FEATURES.CLERK_AUTH && (
               <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
                   onClick={handleSignIn}
                   className="text-gray-700 hover:text-[#2d4a3e]"
                 >
-                  Sign In
+                  Sign In (Mock)
                 </Button>
                 <Button
                   asChild
                   className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
                 >
-                  <Link href="/signup">Sign Up</Link>
+                  <Link href="/signup">Sign Up (Mock)</Link>
                 </Button>
               </div>
             )}
 
-            {true && session.user && (
+            {/* Phase 4A: User Menu - Clerk or Mock */}
+            {session?.user && (
               <div className="relative">
-                <div className="flex items-center space-x-3">
+                {FEATURES.CLERK_AUTH ? (
+                  <UserButton 
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-10 h-10"
+                      }
+                    }}
+                    userProfileMode="modal"
+                    afterSignOutUrl="/"
+                  />
+                ) : (
+                  <div className="flex items-center space-x-3">
                   {/* User Menu Dropdown */}
                   <div className="relative">
                     <Button
@@ -317,6 +368,7 @@ export default function Header() {
                     </AnimatePresence>
                   </div>
                 </div>
+                )}
               </div>
             )}
 

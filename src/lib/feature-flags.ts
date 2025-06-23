@@ -61,6 +61,9 @@ export const FEATURES = {
   MULTI_REGION: process.env.NEXT_PUBLIC_ENABLE_REGIONS === 'true',
   REGIONAL_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_REGIONS === 'true',
   
+  // Authentication System - Phase 4A
+  CLERK_AUTH: process.env.NEXT_PUBLIC_ENABLE_CLERK_AUTH === 'true',
+  
 } as const;
 
 /**
