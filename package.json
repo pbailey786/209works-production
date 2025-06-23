@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
+    "@clerk/nextjs": "^6.22.0",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.0.1",
     "@napi-rs/canvas": "^0.1.70",
