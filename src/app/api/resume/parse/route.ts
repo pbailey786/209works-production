@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { openai } from '@/lib/openai';
 import { z } from 'zod';
 import { prisma } from '@/lib/database/prisma';
@@ -45,9 +44,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-    if (!session?.user?.email) {
+    // Get current user from Clerk
+    const user = await currentUser();
+    if (!user?.emailAddresses[0]?.emailAddress) {
       console.log('❌ Unauthorized: No session or email');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -76,18 +75,19 @@ export async function POST(request: NextRequest) {
     console.log('✅ File validation passed');
 
     // Get user ID for file naming
-    console.log('🔍 Looking up user:', session.user.email);
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+    const userEmail = user.emailAddresses[0].emailAddress;
+    console.log('🔍 Looking up user:', userEmail);
+    const dbUser = await prisma.user.findUnique({
+      where: { email: userEmail },
       select: { id: true },
     });
 
-    if (!user) {
-      console.log('❌ User not found in database:', session.user.email);
+    if (!dbUser) {
+      console.log('❌ User not found in database:', userEmail);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    console.log('✅ User found:', user.id);
+    console.log('✅ User found:', dbUser.id);
 
     // Extract text from file using enhanced text extraction
     console.log('🔍 Starting enhanced text extraction...');
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
     console.log('🔍 Saving resume file to Supabase Storage...');
     let resumeUrl;
     try {
-      resumeUrl = await saveResumeFile(file, user.id);
+      resumeUrl = await saveResumeFile(file, dbUser.id);
       console.log('✅ Resume file saved to Supabase:', resumeUrl);
     } catch (fileError: any) {
       console.error('❌ File save failed:', fileError.message);
@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
     console.log('🔍 Updating user in database...');
     try {
       await prisma.user.update({
-        where: { id: user.id },
+        where: { id: dbUser.id },
         data: {
           // Update resume URL if file was saved successfully
           ...(resumeUrl && { resumeUrl }),
