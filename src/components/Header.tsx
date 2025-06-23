@@ -53,9 +53,9 @@ export default function Header() {
   const clerkUser = mockClerkUser;
   
   // Create session object compatible with existing code  
-  const session = FEATURES.CLERK_AUTH && clerkUser.isSignedIn ? {
+  const session = FEATURES.CLERK_AUTH && clerkUser.isSignedIn && clerkUser.user ? {
     user: {
-      email: clerkUser.user.emailAddresses[0]?.emailAddress || '',
+      email: clerkUser.user.emailAddresses?.[0]?.emailAddress || '',
       role: clerkUser.user.publicMetadata?.role || 'jobseeker',
       name: clerkUser.user.fullName || clerkUser.user.firstName || 'User',
       id: clerkUser.user.id,

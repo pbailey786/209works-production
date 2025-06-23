@@ -204,13 +204,6 @@ const nextConfig: NextConfig = {
   // Only include specific file extensions as pages (exclude .backup files)
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 
-  // Exclude backup files from being processed entirely
-  exclude: [
-    '**/**.backup',
-    '**/*.backup/**',
-    'src/**/*.backup',
-  ],
-
   // Webpack configuration for security and excluding backup files
   webpack: (config, { isServer, webpack }) => {
     // Add path alias resolution
