@@ -46,6 +46,13 @@ export async function ensureUserExists() {
     return newUser;
   } catch (error) {
     console.error('❌ Error ensuring user exists:', error);
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'Unknown error');
+    console.error('❌ Clerk user data:', clerkUser ? {
+      id: clerkUser.id,
+      email: clerkUser.emailAddresses[0]?.emailAddress,
+      firstName: clerkUser.firstName,
+      lastName: clerkUser.lastName
+    } : 'No Clerk user');
     throw error;
   }
 }

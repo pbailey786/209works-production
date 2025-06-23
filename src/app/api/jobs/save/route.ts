@@ -1,27 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
+import { ensureUserExists } from '@/lib/auth/user-sync';
 
 // GET /api/jobs/save - Get saved jobs for the authenticated user
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
 
     // Get saved jobs for the user
     const savedJobs = await prisma.savedJob.findMany({
@@ -68,21 +54,8 @@ export async function GET(req: NextRequest) {
 // POST /api/jobs/save - Save or unsave a job for the authenticated user
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    // TODO: Replace with Clerk
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
 
     const { jobId } = await req.json();
 

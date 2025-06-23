@@ -162,8 +162,12 @@ export async function GET(req: NextRequest) {
 
   } catch (error) {
     console.error('Error fetching job recommendations:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'Unknown error');
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
