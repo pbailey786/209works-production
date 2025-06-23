@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // Schema for saving search history
 const saveSearchSchema = z.object({
@@ -20,16 +18,17 @@ const getSearchHistorySchema = z.object({
 // GET /api/search-history - Get user's search history
 export async function GET(req: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
       select: { id: true, role: true },
     });
 
@@ -85,16 +84,17 @@ export async function GET(req: NextRequest) {
 // POST /api/search-history - Save a search query
 export async function POST(req: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
       select: { id: true, role: true },
     });
 
@@ -186,16 +186,17 @@ export async function POST(req: NextRequest) {
 // DELETE /api/search-history - Clear search history
 export async function DELETE(req: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
       select: { id: true, role: true },
     });
 

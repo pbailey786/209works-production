@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv:*)",
+      "Bash(git config:*)",
+      "Bash(pgrep:*)",
+      "Bash(npm install)",
+      "Bash(timeout 60s npm run build:*)",
+      "Bash(timeout 30s npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run dev:*)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)"
+    ],
+    "deny": []
+  }
+}

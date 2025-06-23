@@ -1,24 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 const MAX_CONVERSATIONS_PER_USER = 10; // Limit to 10 conversations per user
 
 // GET /api/chat-history - Get user's chat history
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
     // Get the current user
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
     });
 
     if (!user) {
@@ -56,16 +55,17 @@ export async function GET(request: NextRequest) {
 // POST /api/chat-history - Save a new conversation or update existing
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
     // Get the current user
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
     });
 
     if (!user) {
@@ -160,16 +160,17 @@ export async function POST(request: NextRequest) {
 // DELETE /api/chat-history - Delete a conversation
 export async function DELETE(request: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
     // Get the current user
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
     });
 
     if (!user) {

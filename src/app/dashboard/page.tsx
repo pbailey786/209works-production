@@ -13,6 +13,9 @@ import {
   MapPin,
   Clock,
   DollarSign,
+  FileText,
+  History,
+  MessageSquare,
 } from 'lucide-react';
 
 interface SimpleStats {
@@ -31,6 +34,29 @@ interface RecentJob {
   type: string;
 }
 
+interface SearchHistoryItem {
+  id: string;
+  query: string;
+  createdAt: string;
+}
+
+interface ChatHistoryItem {
+  id: string;
+  title: string;
+  lastActivity: string;
+  sessionId: string;
+}
+
+interface ApplicationItem {
+  id: string;
+  job: {
+    title: string;
+    company: string;
+  };
+  status: string;
+  appliedAt: string;
+}
+
 export default function SimpleJobSeekerDashboard() {
   const [stats, setStats] = useState<SimpleStats>({
     savedJobs: 0,
@@ -39,6 +65,9 @@ export default function SimpleJobSeekerDashboard() {
   });
 
   const [recentJobs, setRecentJobs] = useState<RecentJob[]>([]);
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
+  const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
+  const [recentApplications, setRecentApplications] = useState<ApplicationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load data
@@ -61,6 +90,27 @@ export default function SimpleJobSeekerDashboard() {
         if (jobsResponse.ok) {
           const jobsData = await jobsResponse.json();
           setRecentJobs(jobsData.recommendations || []);
+        }
+
+        // Fetch search history (last 5 searches)
+        const searchResponse = await fetch('/api/search-history?limit=5');
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          setSearchHistory(searchData.searchHistory || []);
+        }
+
+        // Fetch chat history (last 3 conversations)
+        const chatResponse = await fetch('/api/chat-history');
+        if (chatResponse.ok) {
+          const chatData = await chatResponse.json();
+          setChatHistory((chatData.conversations || []).slice(0, 3));
+        }
+
+        // Fetch recent applications (last 3)
+        const applicationsResponse = await fetch('/api/profile/applications?tab=applied&limit=3');
+        if (applicationsResponse.ok) {
+          const applicationsData = await applicationsResponse.json();
+          setRecentApplications(applicationsData.applications || []);
         }
       } catch (error) {
         console.error('Error loading dashboard:', error);
@@ -322,6 +372,121 @@ export default function SimpleJobSeekerDashboard() {
               </div>
             </div>
           </Link>
+        </div>
+
+        {/* Activity History Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          
+          {/* Search History */}
+          {searchHistory.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-gray-900 text-sm flex items-center">
+                    <History className="w-4 h-4 mr-2 text-[#2d4a3e]" />
+                    Recent Searches
+                  </h3>
+                  <Link
+                    href="/search-history"
+                    className="text-xs text-[#2d4a3e] hover:text-[#1d3a2e]"
+                  >
+                    View all →
+                  </Link>
+                </div>
+              </div>
+              <div className="p-3 space-y-2">
+                {searchHistory.slice(0, 3).map((search) => (
+                  <div key={search.id} className="text-sm">
+                    <div className="text-gray-900 truncate font-medium">
+                      "{search.query}"
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(search.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Chat History */}
+          {chatHistory.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-gray-900 text-sm flex items-center">
+                    <MessageSquare className="w-4 h-4 mr-2 text-[#ff6b35]" />
+                    Recent Chats
+                  </h3>
+                  <Link
+                    href="/chat"
+                    className="text-xs text-[#2d4a3e] hover:text-[#1d3a2e]"
+                  >
+                    View all →
+                  </Link>
+                </div>
+              </div>
+              <div className="p-3 space-y-2">
+                {chatHistory.map((chat) => (
+                  <Link
+                    key={chat.id}
+                    href={`/chat/${chat.sessionId}`}
+                    className="block text-sm hover:bg-gray-50 p-1 rounded"
+                  >
+                    <div className="text-gray-900 truncate font-medium">
+                      {chat.title}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(chat.lastActivity).toLocaleDateString()}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Applications */}
+          {recentApplications.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-gray-900 text-sm flex items-center">
+                    <FileText className="w-4 h-4 mr-2 text-[#9fdf9f]" />
+                    Recent Applications
+                  </h3>
+                  <Link
+                    href="/profile/applications"
+                    className="text-xs text-[#2d4a3e] hover:text-[#1d3a2e]"
+                  >
+                    View all →
+                  </Link>
+                </div>
+              </div>
+              <div className="p-3 space-y-2">
+                {recentApplications.map((app) => (
+                  <div key={app.id} className="text-sm">
+                    <div className="text-gray-900 truncate font-medium">
+                      {app.job.title}
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      {app.job.company}
+                    </div>
+                    <div className="text-xs text-gray-500 flex items-center justify-between">
+                      <span>{new Date(app.appliedAt).toLocaleDateString()}</span>
+                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+                        app.status === 'applied' ? 'bg-blue-100 text-blue-800' :
+                        app.status === 'interview' ? 'bg-yellow-100 text-yellow-800' :
+                        app.status === 'hired' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {app.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Quick Help - Minimal but accessible */}

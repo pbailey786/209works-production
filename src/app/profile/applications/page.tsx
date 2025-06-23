@@ -1,26 +1,28 @@
 import { redirect } from 'next/navigation';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import { authOptions } from '@/lib/auth';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import ApplicationsClient from './ApplicationsClient';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
+
+// Disable static generation for this authenticated page
+export const dynamic = 'force-dynamic';
 
 export default async function ApplicationsPage() {
-  // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-
-  if (!session!.user?.email) {
-    redirect('/signin?callbackUrl=/profile/applications');
+  // Check authentication with Clerk
+  const clerkUser = await currentUser();
+  if (!clerkUser?.emailAddresses[0]?.emailAddress) {
+    redirect('/sign-in?redirect_url=/profile/applications');
   }
+
+  const userEmail = clerkUser.emailAddresses[0].emailAddress;
 
   // Get user data
   const user = await prisma.user.findUnique({
-    where: { email: session!.user?.email },
+    where: { email: userEmail },
     select: { id: true, role: true },
   });
 
   if (!user) {
-    redirect('/signin');
+    redirect('/sign-in');
   }
 
   if (user.role !== 'jobseeker') {
