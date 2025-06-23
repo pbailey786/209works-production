@@ -42,28 +42,23 @@ const UserButton = FEATURES.CLERK_AUTH ?
   () => null;
 
 export default function Header() {
-  // Mock user for build time and when Clerk is disabled
-  const mockClerkUser = { 
+  // For build time, we always use mock session
+  // Since Clerk hooks can't be called during SSR/build, we'll handle real auth client-side only
+  const session = {
+    user: { 
+      email: 'admin@209.works', 
+      role: 'admin', 
+      name: 'Mock User', 
+      id: 'mock-user-id', 
+      image: null 
+    }
+  };
+  
+  // Mock clerk user state for compatibility
+  const clerkUser = { 
     isSignedIn: false, 
     user: null, 
     isLoaded: true 
-  };
-  
-  // Always use mock during build or when feature is disabled
-  const clerkUser = mockClerkUser;
-  
-  // Create session object compatible with existing code  
-  const session = FEATURES.CLERK_AUTH && clerkUser.isSignedIn && clerkUser.user ? {
-    user: {
-      email: clerkUser.user.emailAddresses?.[0]?.emailAddress || '',
-      role: clerkUser.user.publicMetadata?.role || 'jobseeker',
-      name: clerkUser.user.fullName || clerkUser.user.firstName || 'User',
-      id: clerkUser.user.id,
-      image: clerkUser.user.imageUrl
-    }
-  } : {
-    // Always provide mock session for development/build
-    user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id', image: null }
   };
   
   const status = FEATURES.CLERK_AUTH ? 
