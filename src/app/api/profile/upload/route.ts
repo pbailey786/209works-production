@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    if (!type || !['profile', 'resume'].includes(type)) {
+    if (!type || !['profile', 'resume', 'cover_letter'].includes(type)) {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
     }
 
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-    } else if (type === 'resume') {
+    } else if (type === 'resume' || type === 'cover_letter') {
       const allowedTypes = [
         'application/pdf',
         'application/msword',
@@ -79,7 +79,9 @@ export async function POST(req: NextRequest) {
     const updateData =
       type === 'profile'
         ? { profilePictureUrl: publicUrl }
-        : { resumeUrl: publicUrl };
+        : type === 'resume'
+        ? { resumeUrl: publicUrl }
+        : { coverLetterUrl: publicUrl };
 
     const updatedUser = await prisma.user.update({
       where: { id: currentUser.id },
@@ -88,11 +90,12 @@ export async function POST(req: NextRequest) {
         id: true,
         profilePictureUrl: true,
         resumeUrl: true,
+        coverLetterUrl: true,
       },
     });
 
     return NextResponse.json({
-      message: `${type === 'profile' ? 'Profile picture' : 'Resume'} uploaded successfully`,
+      message: `${type === 'profile' ? 'Profile picture' : type === 'resume' ? 'Resume' : 'Cover letter'} uploaded successfully`,
       url: publicUrl,
       user: updatedUser,
     });

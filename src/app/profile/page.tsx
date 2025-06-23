@@ -55,6 +55,10 @@ export default function ProfilePage() {
     applications: 0,
     alerts: 0,
   });
+  const [coverLetterUrl, setCoverLetterUrl] = useState<string | null>(null);
+  const [coverLetterLoading, setCoverLetterLoading] = useState(false);
+  const [coverLetterError, setCoverLetterError] = useState('');
+  const [coverLetterSuccess, setCoverLetterSuccess] = useState('');
   const [location, setLocation] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
@@ -85,6 +89,7 @@ export default function ProfilePage() {
           setName(data.user.name || '');
           setResumeUrl(data.user.resumeUrl || null);
           setProfilePictureUrl(data.user.profilePictureUrl || null);
+          setCoverLetterUrl(data.user.coverLetterUrl || null);
           setLocation(data.user.location || '');
           setPhoneNumber(data.user.phoneNumber || '');
           setLinkedinUrl(data.user.linkedinUrl || '');
@@ -218,7 +223,7 @@ export default function ProfilePage() {
     setProfilePicSuccess('');
     const form = e.target as HTMLFormElement;
     const fileInput = form.elements.namedItem(
-      'profilePicture'
+      'file'
     ) as HTMLInputElement;
     if (!fileInput.files || fileInput.files.length === 0) {
       setProfilePicError('Please select an image file.');
@@ -256,6 +261,41 @@ export default function ProfilePage() {
       setProfilePicPreview(URL.createObjectURL(e.target.files[0]));
     } else {
       setProfilePicPreview(null);
+    }
+  }
+
+  async function handleCoverLetterUpload(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCoverLetterLoading(true);
+    setCoverLetterError('');
+    setCoverLetterSuccess('');
+    const form = e.target as HTMLFormElement;
+    const fileInput = form.elements.namedItem('coverLetter') as HTMLInputElement;
+    if (!fileInput.files || fileInput.files.length === 0) {
+      setCoverLetterError('Please select a cover letter file.');
+      setCoverLetterLoading(false);
+      return;
+    }
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'cover_letter');
+    try {
+      const res = await fetch('/api/profile/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setCoverLetterUrl(data.url);
+        setCoverLetterSuccess('Cover letter uploaded successfully.');
+      } else {
+        setCoverLetterError(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      setCoverLetterError('Upload failed');
+    } finally {
+      setCoverLetterLoading(false);
     }
   }
 
@@ -420,7 +460,7 @@ export default function ProfilePage() {
                   <form onSubmit={handleProfilePicUpload} className="space-y-3">
                     <input
                       type="file"
-                      name="profilePicture"
+                      name="file"
                       accept="image/*"
                       className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
                       onChange={handleProfilePicChange}
@@ -907,29 +947,93 @@ export default function ProfilePage() {
                 {/* Cover Letter Section */}
                 <div className="mb-8">
                   <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Cover Letter</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Cover Letter Template</h3>
                   </div>
                   
-                  <div className="rounded-lg border border-gray-200 p-6">
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Default Cover Letter Template
-                      </label>
-                      <textarea
-                        placeholder="Write your cover letter template here. You can customize this for each application..."
-                        rows={8}
-                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
-                      />
+                  {/* Show existing cover letter if uploaded */}
+                  {coverLetterUrl ? (
+                    <div className="rounded-lg border border-gray-200 p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center">
+                          <div className="mr-3 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
+                            <DocumentTextIcon className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">Cover Letter Template</h4>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Uploaded: {new Date().toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <a
+                            href={coverLetterUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center rounded-lg border border-green-300 bg-white px-3 py-2 text-green-700 transition-colors hover:bg-green-50"
+                          >
+                            <EyeIcon className="mr-1 h-4 w-4" />
+                            View
+                          </a>
+                          <button className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-700 transition-colors hover:bg-gray-50">
+                            <PencilIcon className="mr-1 h-4 w-4" />
+                            Replace
+                          </button>
+                          <button
+                            className="inline-flex items-center rounded-lg bg-red-600 px-3 py-2 text-white transition-colors hover:bg-red-700"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex space-x-3">
-                      <button className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700">
-                        Save Cover Letter
-                      </button>
-                      <button className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">
-                        Preview
-                      </button>
+                  ) : (
+                    <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+                      <DocumentTextIcon className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+                      <h4 className="mb-2 text-lg font-semibold text-gray-900">
+                        Upload Cover Letter Template
+                      </h4>
+                      <p className="mb-6 text-gray-600">
+                        Upload a cover letter template that you can customize for different applications. We support PDF, DOC, and DOCX formats.
+                      </p>
+
+                      <form onSubmit={handleCoverLetterUpload} className="space-y-4">
+                        <input
+                          type="file"
+                          name="coverLetter"
+                          accept="application/pdf,.doc,.docx"
+                          className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-50 file:px-6 file:py-3 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
+                        />
+                        <button
+                          type="submit"
+                          disabled={coverLetterLoading}
+                          className="flex w-full items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
+                        >
+                          {coverLetterLoading ? (
+                            <>
+                              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                              Uploading...
+                            </>
+                          ) : (
+                            <>
+                              <CloudArrowUpIcon className="mr-2 h-4 w-4" />
+                              Upload Cover Letter
+                            </>
+                          )}
+                        </button>
+                      </form>
+                      {coverLetterError && (
+                        <div className="mt-2 text-sm text-red-600">
+                          {coverLetterError}
+                        </div>
+                      )}
+                      {coverLetterSuccess && (
+                        <div className="mt-2 text-sm text-green-600">
+                          {coverLetterSuccess}
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Application Preferences */}
