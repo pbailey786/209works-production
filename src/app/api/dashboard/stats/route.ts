@@ -5,11 +5,17 @@ import { ensureUserExists } from '@/lib/auth/user-sync';
 
 export async function GET(req: NextRequest) {
   try {
+    console.log('📊 Dashboard stats API called');
+    
     // Ensure user exists in database (auto-sync with Clerk)
+    console.log('🔄 Starting user sync...');
     const user = await ensureUserExists();
+    console.log('✅ User sync completed:', user.id);
+    
     const userId = user.id;
 
     // Get dashboard statistics in parallel
+    console.log('🔍 Fetching dashboard statistics for user:', userId);
     const [
       savedJobsCount,
       alertsCount,

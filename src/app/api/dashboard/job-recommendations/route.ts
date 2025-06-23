@@ -5,10 +5,15 @@ import { ensureUserExists } from '@/lib/auth/user-sync';
 
 export async function GET(req: NextRequest) {
   try {
+    console.log('🔍 Job recommendations API called');
+    
     // Ensure user exists in database (auto-sync with Clerk)
+    console.log('🔄 Starting user sync...');
     const baseUser = await ensureUserExists();
+    console.log('✅ User sync completed:', baseUser.id);
     
     // Get user from database with profile info for recommendations
+    console.log('🔍 Looking up user profile...');
     const user = await prisma.user.findUnique({
       where: { email: baseUser.email },
       select: { 
@@ -22,12 +27,17 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
+      console.error('❌ User not found after sync:', baseUser.email);
       return NextResponse.json({ error: 'User not found after sync' }, { status: 500 });
     }
+
+    console.log('✅ User profile found:', user.id);
 
     // Get URL params
     const { searchParams } = new URL(req.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 50); // Max 50
+    
+    console.log('🔍 Building job query with limit:', limit);
 
     // Build recommendations query based on user profile
     const whereConditions: any[] = [
@@ -73,6 +83,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get recommended jobs
+    console.log('🔍 Querying jobs with conditions:', whereConditions.length);
     const recommendations = await prisma.job.findMany({
       where: {
         AND: whereConditions

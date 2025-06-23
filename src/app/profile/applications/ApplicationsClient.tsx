@@ -13,6 +13,7 @@ import {
   Bookmark,
   Archive,
   CheckCircle,
+  Home,
 } from 'lucide-react';
 
 interface Application {
@@ -162,9 +163,16 @@ export default function ApplicationsClient({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
+      {/* Header with Dashboard Link */}
+      <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900">My jobs</h1>
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm"
+        >
+          <Home className="h-4 w-4" />
+          Back to Dashboard
+        </Link>
       </div>
 
       {/* Tabs */}

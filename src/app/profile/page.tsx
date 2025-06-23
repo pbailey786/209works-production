@@ -24,6 +24,7 @@ import {
   ShieldCheckIcon,
   CloudArrowUpIcon,
   PaperAirplaneIcon,
+  HomeIcon,
 } from '@heroicons/react/24/outline';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -262,6 +263,13 @@ export default function ProfilePage() {
               </p>
             </div>
             <div className="flex items-center space-x-3">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm"
+              >
+                <HomeIcon className="h-4 w-4" />
+                Back to Dashboard
+              </Link>
               <span
                 className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
                   isProfilePublic

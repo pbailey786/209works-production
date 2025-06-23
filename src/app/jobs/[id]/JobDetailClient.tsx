@@ -19,6 +19,7 @@ import {
   PaperAirplaneIcon,
   MegaphoneIcon,
   ArrowTrendingUpIcon,
+  HomeIcon,
 } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
@@ -289,36 +290,49 @@ export default function JobDetailClient({
         </motion.div>
       )}
 
-      {/* Apple-style Breadcrumb Navigation */}
+      {/* Apple-style Breadcrumb Navigation with Dashboard Link */}
       <nav className="border-b border-gray-200/60 bg-white/80 backdrop-blur-md" aria-label="Breadcrumb">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <ol className="flex items-center space-x-3 text-sm">
-            <li>
+          <div className="flex items-center justify-between">
+            <ol className="flex items-center space-x-3 text-sm">
+              <li>
+                <Link
+                  href="/"
+                  className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Home
+                </Link>
+              </li>
+              <li aria-hidden="true">
+                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+              </li>
+              <li>
+                <Link
+                  href="/jobs"
+                  className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Jobs
+                </Link>
+              </li>
+              <li aria-hidden="true">
+                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
+              </li>
+              <li aria-current="page">
+                <span className="truncate rounded-full bg-blue-100 px-3 py-1 font-semibold text-blue-800">{job.title}</span>
+              </li>
+            </ol>
+            
+            {/* Dashboard Link for Job Seekers */}
+            {isAuthenticated && userRole === 'jobseeker' && !isJobOwner && (
               <Link
-                href="/"
-                className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                href="/dashboard"
+                className="group inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                Home
+                <HomeIcon className="mr-2 h-4 w-4 text-gray-500 transition-transform group-hover:scale-110" />
+                Back to Dashboard
               </Link>
-            </li>
-            <li aria-hidden="true">
-              <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-            </li>
-            <li>
-              <Link
-                href="/jobs"
-                className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Jobs
-              </Link>
-            </li>
-            <li aria-hidden="true">
-              <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-            </li>
-            <li aria-current="page">
-              <span className="truncate rounded-full bg-blue-100 px-3 py-1 font-semibold text-blue-800">{job.title}</span>
-            </li>
-          </ol>
+            )}
+          </div>
         </div>
       </nav>
 

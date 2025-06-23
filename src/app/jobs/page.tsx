@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -13,6 +14,7 @@ import {
   X,
   ChevronDown,
   SlidersHorizontal,
+  Home,
 } from 'lucide-react';
 import Card from '../../components/Card';
 import Input from '../../components/Input';
@@ -510,16 +512,30 @@ function JobsContent() {
               Powered by AI. Focused on Central California.
             </p>
 
-            {hasSearched && (
+            <div className="flex items-center justify-center gap-4">
+              {hasSearched && (
+                <Button
+                  variant="outline"
+                  onClick={handleNewSearch}
+                  className="flex items-center gap-2"
+                >
+                  <Search className="h-4 w-4" />
+                  New Search
+                </Button>
+              )}
+              
+              {/* Dashboard Link */}
               <Button
+                asChild
                 variant="outline"
-                onClick={handleNewSearch}
                 className="flex items-center gap-2"
               >
-                <Search className="h-4 w-4" />
-                New Search
+                <Link href="/dashboard">
+                  <Home className="h-4 w-4" />
+                  Back to Dashboard
+                </Link>
               </Button>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -1201,6 +1217,15 @@ function SimpleJobSearch() {
             <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600">
               Search for opportunities in Stockton, Modesto, Tracy, and the Central Valley.
             </p>
+            
+            {/* Dashboard Link */}
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+            >
+              <Home className="h-4 w-4" />
+              Back to Dashboard
+            </Link>
           </div>
         </div>
       </div>

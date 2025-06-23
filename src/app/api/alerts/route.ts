@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
-import { prisma } from '../auth/prisma';
+import { currentUser } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
+import { ensureUserExists } from '@/lib/auth/user-sync';
 import { z } from 'zod';
 import { withAPIMiddleware } from '@/lib/middleware/api';
 import {
@@ -64,20 +64,8 @@ const createAlertSchema = z.object({
 // GET /api/alerts - List user's alerts
 export async function GET(req: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
 
     const alerts = await prisma.alert.findMany({
       where: { userId: user.id },
@@ -102,20 +90,8 @@ export async function GET(req: NextRequest) {
 // POST /api/alerts - Create new alert
 export async function POST(req: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
 
     const body = await req.json();
     const validatedData = createAlertSchema.parse(body);

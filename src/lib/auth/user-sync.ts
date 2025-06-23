@@ -22,9 +22,11 @@ export async function ensureUserExists() {
     }
 
     // Check if user already exists in database
+    console.log('🔍 Checking for existing user with email:', userEmail);
     let existingUser = await prisma.user.findUnique({
       where: { email: userEmail },
     });
+    console.log('🔍 Existing user check result:', existingUser ? 'Found' : 'Not found');
 
     if (existingUser) {
       return existingUser;
