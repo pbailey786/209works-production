@@ -24,6 +24,7 @@ model User {
   twoFactorEnabled     Boolean                    @default(false)
   twoFactorSecret      String?
   resumeUrl            String?
+  coverLetterUrl       String?
   profilePictureUrl    String?
   currentJobTitle      String?
   experienceLevel      String?

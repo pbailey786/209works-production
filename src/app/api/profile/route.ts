@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
         role: true,
         isEmailVerified: true,
         resumeUrl: true,
+        coverLetterUrl: true,
         profilePictureUrl: true,
         location: true,
         phoneNumber: true,
