@@ -612,7 +612,7 @@ export default function OnboardingWizard({
       case 'first-job':
         return (
           <div className="space-y-8 text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
               <Target className="h-10 w-10 text-white" />
             </div>
             <div>
@@ -626,7 +626,7 @@ export default function OnboardingWizard({
             </div>
             <button
               onClick={() => router.push('/employers/create-job-post')}
-              className="group inline-flex items-center rounded-2xl bg-gradient-to-r from-green-600 to-emerald-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-green-700 hover:to-emerald-800 hover:shadow-xl"
+              className="group inline-flex items-center rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-indigo-800 hover:shadow-xl"
             >
               Post Your First Job
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />

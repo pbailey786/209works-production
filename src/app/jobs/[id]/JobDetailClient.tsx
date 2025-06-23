@@ -270,8 +270,8 @@ export default function JobDetailClient({
           exit={{ opacity: 0, y: -50 }}
           className={`fixed right-4 top-4 z-50 max-w-sm rounded-lg p-4 shadow-lg ${
             error.includes('copied') || error.includes('success')
-              ? 'border-green-200 bg-green-100 text-green-800'
-              : 'border-red-200 bg-red-100 text-red-800'
+              ? 'border-blue-200 bg-blue-100 text-blue-800'
+              : 'border-gray-200 bg-gray-100 text-gray-800'
           } border`}
           role="alert"
           aria-live="assertive"
@@ -365,10 +365,10 @@ export default function JobDetailClient({
                   </div>
                 </div>
                 
-                <div className="rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-6 shadow-sm">
+                <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-sm">
                   <div className="flex items-center justify-center">
-                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                      <BriefcaseIcon className="h-5 w-5 text-green-600" />
+                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
+                      <BriefcaseIcon className="h-5 w-5 text-blue-600" />
                     </div>
                     <div className="text-left">
                       <div className="text-sm font-medium text-gray-500">Type</div>
@@ -377,10 +377,10 @@ export default function JobDetailClient({
                   </div>
                 </div>
                 
-                <div className="rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-6 shadow-sm">
+                <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 p-6 shadow-sm">
                   <div className="flex items-center justify-center">
-                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100">
-                      <CurrencyDollarIcon className="h-5 w-5 text-orange-600" />
+                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100">
+                      <CurrencyDollarIcon className="h-5 w-5 text-indigo-600" />
                     </div>
                     <div className="text-left">
                       <div className="text-sm font-medium text-gray-500">Salary</div>
@@ -431,13 +431,13 @@ export default function JobDetailClient({
                       <div className="relative group">
                         <button
                           onClick={handleShouldIApplyOpen}
-                          className="group relative inline-flex items-center rounded-2xl bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-purple-700 hover:to-purple-800 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:ring-offset-2"
+                          className="group relative inline-flex items-center rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-indigo-700 hover:to-indigo-800 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 focus:ring-offset-2"
                         >
                           <SparklesIcon className="mr-3 h-5 w-5 transition-transform group-hover:rotate-12" />
                           Should I Apply?
                           {/* AI Badge with first-time indicator */}
                           <span className={`absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white ${
-                            isFirstTimeUser ? 'bg-red-500 animate-pulse' : 'bg-orange-500'
+                            isFirstTimeUser ? 'bg-blue-500 animate-pulse' : 'bg-indigo-500'
                           }`}>
                             {isFirstTimeUser ? 'NEW' : 'AI'}
                           </span>
@@ -464,7 +464,7 @@ export default function JobDetailClient({
                       disabled={saving}
                       className={`group inline-flex items-center rounded-2xl px-6 py-3 text-sm font-semibold shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-offset-2 ${
                         saved
-                          ? 'border-2 border-green-200 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 hover:from-green-200 hover:to-emerald-200 focus:ring-green-500/20'
+                          ? 'border-2 border-blue-200 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 hover:from-blue-200 hover:to-indigo-200 focus:ring-blue-500/20'
                           : 'border-2 border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:shadow-xl focus:ring-gray-500/20'
                       } ${saving ? 'cursor-not-allowed opacity-50' : ''}`}
                     >
@@ -512,7 +512,7 @@ export default function JobDetailClient({
 
                     <button
                       onClick={() => setReportModalOpen(true)}
-                      className="group flex items-center justify-center rounded-2xl border-2 border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-lg transition-all duration-200 hover:bg-red-100 hover:shadow-xl"
+                      className="group flex items-center justify-center rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 shadow-lg transition-all duration-200 hover:bg-gray-100 hover:shadow-xl"
                     >
                       <ExclamationTriangleIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
                       Report
@@ -548,19 +548,19 @@ export default function JobDetailClient({
                     <h3 className="mb-3 text-sm font-semibold text-gray-900 uppercase tracking-wide">Promotion Features</h3>
                     <div className="flex flex-wrap gap-2">
                       {(job.socialMediaShoutout || job.upsellBundle) && (
-                        <span className="inline-flex items-center rounded-full border border-pink-200 bg-gradient-to-r from-pink-100 to-purple-100 px-4 py-2 text-sm font-medium text-pink-700">
+                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-gradient-to-r from-blue-100 to-indigo-100 px-4 py-2 text-sm font-medium text-blue-700">
                           <MegaphoneIcon className="mr-2 h-4 w-4" />
                           Social Media Promoted
                         </span>
                       )}
                       {(job.placementBump || job.upsellBundle) && (
-                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-gradient-to-r from-blue-100 to-green-100 px-4 py-2 text-sm font-medium text-blue-700">
+                        <span className="inline-flex items-center rounded-full border border-indigo-200 bg-gradient-to-r from-indigo-100 to-blue-100 px-4 py-2 text-sm font-medium text-indigo-700">
                           <ArrowTrendingUpIcon className="mr-2 h-4 w-4" />
                           Priority Placement
                         </span>
                       )}
                       {job.upsellBundle && (
-                        <span className="inline-flex items-center rounded-full border border-orange-200 bg-gradient-to-r from-yellow-100 to-orange-100 px-4 py-2 text-sm font-medium text-orange-700">
+                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-gradient-to-r from-blue-100 to-indigo-100 px-4 py-2 text-sm font-medium text-blue-700">
                           <SparklesIcon className="mr-2 h-4 w-4" />
                           Premium Promotion
                         </span>
@@ -703,29 +703,29 @@ export default function JobDetailClient({
                       {job.location}
                     </dd>
                   </div>
-                  <div className="rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-4">
+                  <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
                     <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Job Type</dt>
                     <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-green-100">
-                        <BriefcaseIcon className="h-4 w-4 text-green-600" />
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100">
+                        <BriefcaseIcon className="h-4 w-4 text-blue-600" />
                       </div>
                       {formattedJobType}
                     </dd>
                   </div>
-                  <div className="rounded-2xl bg-gradient-to-br from-orange-50 to-yellow-50 p-4">
+                  <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 p-4">
                     <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Salary</dt>
                     <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100">
-                        <CurrencyDollarIcon className="h-4 w-4 text-orange-600" />
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-100">
+                        <CurrencyDollarIcon className="h-4 w-4 text-indigo-600" />
                       </div>
                       {salaryDisplay}
                     </dd>
                   </div>
-                  <div className="rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+                  <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
                     <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Posted</dt>
                     <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-purple-100">
-                        <CalendarIcon className="h-4 w-4 text-purple-600" />
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100">
+                        <CalendarIcon className="h-4 w-4 text-blue-600" />
                       </div>
                       {formattedDate}
                     </dd>
@@ -800,7 +800,7 @@ export default function JobDetailClient({
             {reportSubmitted ? (
               <div className="text-center">
                 <CheckIcon
-                  className="mx-auto mb-4 h-12 w-12 text-green-500"
+                  className="mx-auto mb-4 h-12 w-12 text-blue-500"
                   aria-hidden="true"
                 />
                 <h3
@@ -849,7 +849,7 @@ export default function JobDetailClient({
                     disabled={
                       !reportReason.trim() || reportReason.trim().length < 10
                     }
-                    className="flex-1 rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex-1 rounded-lg bg-gray-600 px-4 py-2 font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Submit Report
                   </button>

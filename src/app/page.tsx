@@ -40,7 +40,7 @@ export default function HomeSimple() {
             <div className="mb-12">
               <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl">
                 Jobs for the 209.
-                <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                   No Suits Required.
                 </span>
               </h1>
@@ -98,7 +98,7 @@ export default function HomeSimple() {
             {/* Apple-style CTA Button */}
             <Link
               href="/jobs"
-              className="group inline-flex items-center gap-4 rounded-3xl bg-gradient-to-r from-purple-600 to-purple-700 px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-300 hover:from-purple-700 hover:to-purple-800 hover:shadow-3xl hover:scale-105"
+              className="group inline-flex items-center gap-4 rounded-3xl bg-gradient-to-r from-blue-600 to-blue-700 px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-300 hover:from-blue-700 hover:to-blue-800 hover:shadow-3xl hover:scale-105"
             >
               <span>Explore Jobs</span>
               <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2" />
@@ -123,7 +123,7 @@ export default function HomeSimple() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             {/* Feature 1 */}
             <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-red-500 to-pink-600 shadow-lg">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
                 <Heart className="h-10 w-10 text-white" />
               </div>
               <h3 className="mb-4 text-xl font-bold text-gray-900">24/7 Local Support</h3>
@@ -134,7 +134,7 @@ export default function HomeSimple() {
 
             {/* Feature 2 */}
             <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
                 <Shield className="h-10 w-10 text-white" />
               </div>
               <h3 className="mb-4 text-xl font-bold text-gray-900">Verified Employers</h3>
@@ -145,7 +145,7 @@ export default function HomeSimple() {
 
             {/* Feature 3 */}
             <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-yellow-500 to-orange-600 shadow-lg">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg">
                 <Zap className="h-10 w-10 text-white" />
               </div>
               <h3 className="mb-4 text-xl font-bold text-gray-900">Quick Applications</h3>
@@ -156,7 +156,7 @@ export default function HomeSimple() {
 
             {/* Feature 4 */}
             <div className="group rounded-3xl border border-gray-200/60 bg-white/90 p-8 text-center shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg">
                 <Briefcase className="h-10 w-10 text-white" />
               </div>
               <h3 className="mb-4 text-xl font-bold text-gray-900">Career Tools</h3>
