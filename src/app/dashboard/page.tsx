@@ -225,32 +225,41 @@ export default function SimpleJobSeekerDashboard() {
 
         {/* Simple Stats - Only what matters */}
         <div className="grid grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 border border-gray-100">
+          <Link
+            href="/profile/applications?tab=saved"
+            className="bg-white rounded-xl p-6 border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+          >
             <div className="text-center">
               <div className="text-3xl font-bold text-[#2d4a3e] mb-1">
                 {stats.savedJobs}
               </div>
               <div className="text-sm text-gray-600">Saved Jobs</div>
             </div>
-          </div>
+          </Link>
           
-          <div className="bg-white rounded-xl p-6 border border-gray-100">
+          <Link
+            href="/alerts"
+            className="bg-white rounded-xl p-6 border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+          >
             <div className="text-center">
               <div className="text-3xl font-bold text-[#ff6b35] mb-1">
                 {stats.activeAlerts}
               </div>
               <div className="text-sm text-gray-600">Active Alerts</div>
             </div>
-          </div>
+          </Link>
           
-          <div className="bg-white rounded-xl p-6 border border-gray-100">
+          <Link
+            href="/profile/applications?tab=applied"
+            className="bg-white rounded-xl p-6 border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+          >
             <div className="text-center">
               <div className="text-3xl font-bold text-[#9fdf9f] mb-1">
                 {stats.applicationsSent}
               </div>
               <div className="text-sm text-gray-600">Applications Sent</div>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Recent Job Recommendations - Simple and clean */}

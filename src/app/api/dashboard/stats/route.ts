@@ -1,27 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
+import { ensureUserExists } from '@/lib/auth/user-sync';
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication with Clerk
-    const clerkUser = await currentUser();
-    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userEmail = clerkUser.emailAddresses[0].emailAddress;
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: userEmail },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
+    // Ensure user exists in database (auto-sync with Clerk)
+    const user = await ensureUserExists();
     const userId = user.id;
 
     // Get dashboard statistics in parallel

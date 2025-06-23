@@ -1,20 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
+import { ensureUserExists } from '@/lib/auth/user-sync';
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication with Clerk
-    const clerkUser = await currentUser();
-    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userEmail = clerkUser.emailAddresses[0].emailAddress;
-
+    // Ensure user exists in database (auto-sync with Clerk)
+    const baseUser = await ensureUserExists();
+    
     // Get user from database with profile info for recommendations
     const user = await prisma.user.findUnique({
-      where: { email: userEmail },
+      where: { email: baseUser.email },
       select: { 
         id: true, 
         location: true, 
@@ -26,7 +22,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found after sync' }, { status: 500 });
     }
 
     // Get URL params

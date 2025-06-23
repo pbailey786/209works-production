@@ -101,15 +101,15 @@ const JOB_TYPES = [
 
 const FREQUENCY_OPTIONS = [
   {
-    value: 'immediate',
-    label: 'Immediate',
-    description: 'Get notified as soon as new jobs match',
+    value: 'weekly',
+    label: 'Weekly (Recommended)',
+    description: 'Weekly email alerts every Monday - Best for most users',
   },
   { value: 'daily', label: 'Daily', description: 'Daily digest at 9 AM' },
   {
-    value: 'weekly',
-    label: 'Weekly',
-    description: 'Weekly summary every Monday',
+    value: 'immediate',
+    label: 'Immediate',
+    description: 'Get notified as soon as new jobs match',
   },
   {
     value: 'monthly',
@@ -137,7 +137,7 @@ export default function AlertsPage() {
     companies: [] as string[],
     salaryMin: undefined as number | undefined,
     salaryMax: undefined as number | undefined,
-    frequency: 'daily' as const,
+    frequency: 'weekly' as const,
   });
 
   // Load alerts on component mount
@@ -351,6 +351,11 @@ export default function AlertsPage() {
             <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Create New Job Alert</DialogTitle>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                  <p className="text-sm text-blue-800">
+                    📧 <strong>Weekly Email Alerts:</strong> All your job alerts will be sent to your registered email address in a single weekly digest. Multiple alerts = more job matches in one email!
+                  </p>
+                </div>
               </DialogHeader>
               <div className="space-y-6">
                 {/* Basic Information */}
@@ -434,7 +439,7 @@ export default function AlertsPage() {
                     <Label htmlFor="location">Location</Label>
                     <Input
                       id="location"
-                      placeholder="City, State or ZIP code"
+                      placeholder="e.g., Modesto, Stockton, Fresno"
                       value={newAlert.location}
                       onChange={e =>
                         setNewAlert(prev => ({
@@ -443,6 +448,9 @@ export default function AlertsPage() {
                         }))
                       }
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Enter city name only (we focus on California's Central Valley)
+                    </p>
                   </div>
 
                   {/* Job Types */}

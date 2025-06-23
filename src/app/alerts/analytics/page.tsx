@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// // // // import { useSession } from 'next-auth/react'; // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk // TODO: Replace with Clerk
+import { useUser } from '@clerk/nextjs';
+import { redirect } from 'next/navigation';
+import { FEATURES } from '@/lib/feature-flags';
+import { useToast } from '@/hooks/use-toast';
 import {
   BarChart,
   Bar,
@@ -102,9 +105,48 @@ interface UserEngagement {
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 export default function AlertAnalytics() {
-  // Mock session for now - replace with Clerk when implemented
-  const session = { user: { email: 'admin@209.works', role: 'admin', name: 'Mock User', id: 'mock-user-id' } };
-  const status = 'authenticated';
+  // Check authentication and role - only admins can access analytics
+  const { user: clerkUser, isLoaded } = FEATURES.CLERK_AUTH ? useUser() : { user: null, isLoaded: true };
+  
+  // Create session object for compatibility
+  const session = FEATURES.CLERK_AUTH 
+    ? (clerkUser ? {
+        user: { 
+          email: clerkUser.emailAddresses[0]?.emailAddress,
+          role: clerkUser.publicMetadata?.role || 'jobseeker',
+          name: clerkUser.fullName || clerkUser.firstName,
+          id: clerkUser.id 
+        }
+      } : null)
+    : { 
+        user: { 
+          email: 'admin@209.works', 
+          role: 'admin', 
+          name: 'Mock User', 
+          id: 'mock-user-id' 
+        }
+      };
+
+  const status = session ? 'authenticated' : 'unauthenticated';
+
+  // Redirect if not authenticated or not admin
+  useEffect(() => {
+    if (isLoaded && (!session?.user || session.user.role !== 'admin')) {
+      window.location.href = '/dashboard';
+    }
+  }, [isLoaded, session]);
+
+  // Show loading while checking auth
+  if (!isLoaded || !session?.user || session.user.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[#2d4a3e] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking access permissions...</p>
+        </div>
+      </div>
+    );
+  }
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState('30');
