@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { FEATURES } from '@/lib/feature-flags';
-import { useToast } from '@/hooks/use-toast';
 import {
   BarChart,
   Bar,
