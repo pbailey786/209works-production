@@ -27,32 +27,32 @@ import LoadingSpinner from './ui/LoadingSpinner';
 import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
-
-// Dynamic imports for Clerk components to avoid SSR issues
-const SignInButton = FEATURES.CLERK_AUTH ? 
-  dynamic(() => import('@clerk/nextjs').then(mod => ({ default: mod.SignInButton })), { ssr: false }) :
-  () => null;
-
-const SignUpButton = FEATURES.CLERK_AUTH ? 
-  dynamic(() => import('@clerk/nextjs').then(mod => ({ default: mod.SignUpButton })), { ssr: false }) :
-  () => null;
-
-const UserButton = FEATURES.CLERK_AUTH ? 
-  dynamic(() => import('@clerk/nextjs').then(mod => ({ default: mod.UserButton })), { ssr: false }) :
-  () => null;
+import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 
 export default function Header() {
-  // Temporarily disable complex auth logic to fix DOM errors
-  // Use simple mock state for stability
-  const session = FEATURES.CLERK_AUTH ? null : {
-    user: { 
-      email: 'admin@209.works', 
-      role: 'admin', 
-      name: 'Mock User', 
-      id: 'mock-user-id', 
-      image: null 
-    }
-  };
+  // Use Clerk authentication if enabled, otherwise fall back to mock
+  const { user: clerkUser, isLoaded } = FEATURES.CLERK_AUTH ? useUser() : { user: null, isLoaded: true };
+  
+  // Create session object for compatibility
+  const session = FEATURES.CLERK_AUTH 
+    ? (clerkUser ? {
+        user: { 
+          email: clerkUser.emailAddresses[0]?.emailAddress,
+          role: clerkUser.publicMetadata?.role || 'jobseeker',
+          name: clerkUser.fullName || clerkUser.firstName,
+          id: clerkUser.id,
+          image: clerkUser.imageUrl 
+        }
+      } : null)
+    : {
+        user: { 
+          email: 'admin@209.works', 
+          role: 'admin', 
+          name: 'Mock User', 
+          id: 'mock-user-id', 
+          image: null 
+        }
+      };
   
   const status = session ? 'authenticated' : 'unauthenticated';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -219,27 +219,57 @@ export default function Header() {
             {/* Simplified Auth Buttons */}
             {status === 'unauthenticated' && (
               <div className="flex items-center space-x-2">
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="text-gray-700 hover:text-[#2d4a3e]"
-                >
-                  <Link href="/sign-in">Sign In</Link>
-                </Button>
-                <Button
-                  asChild
-                  className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
-                >
-                  <Link href="/sign-up">Sign Up</Link>
-                </Button>
+                {FEATURES.CLERK_AUTH ? (
+                  <>
+                    <SignInButton mode="modal">
+                      <Button
+                        variant="ghost"
+                        className="text-gray-700 hover:text-[#2d4a3e]"
+                      >
+                        Sign In
+                      </Button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <Button
+                        className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
+                      >
+                        Sign Up
+                      </Button>
+                    </SignUpButton>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      asChild
+                      variant="ghost"
+                      className="text-gray-700 hover:text-[#2d4a3e]"
+                    >
+                      <Link href="/sign-in">Sign In</Link>
+                    </Button>
+                    <Button
+                      asChild
+                      className="bg-[#ff6b35] text-white hover:bg-[#e55a2b]"
+                    >
+                      <Link href="/sign-up">Sign Up</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             )}
 
-            {/* Simplified User Menu */}
+            {/* User Menu */}
             {session?.user && (
-              <div className="relative">
-                <div className="flex items-center space-x-3">
-                  {/* User Menu Dropdown */}
+              <div className="flex items-center space-x-3">
+                {FEATURES.CLERK_AUTH ? (
+                  <UserButton 
+                    afterSignOutUrl="/"
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-10 h-10"
+                      }
+                    }}
+                  />
+                ) : (
                   <div className="relative">
                     <Button
                       variant="ghost"
@@ -278,21 +308,24 @@ export default function Header() {
                           animate={{ opacity: 1, scale: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.95, y: -10 }}
                           transition={{ duration: 0.2 }}
-                          className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-gray-200 bg-white py-2 shadow-lg"
+                          className="absolute right-0 top-12 z-50 w-64 rounded-xl border border-gray-100 bg-white py-2 shadow-lg ring-1 ring-black/5"
                           role="menu"
-                          aria-label="User account menu"
+                          aria-orientation="vertical"
+                          aria-labelledby="user-menu"
                         >
                           {/* User Info */}
-                          <div className="border-b border-gray-100 px-4 py-3">
-                            <p className="truncate text-sm font-medium text-gray-900">
+                          <div className="px-4 py-3">
+                            <p className="text-sm font-medium text-gray-900">
                               {session.user.name || 'User'}
                             </p>
-                            <p className="truncate text-xs text-gray-500">
+                            <p className="text-sm text-gray-500 truncate">
                               {session.user?.email}
                             </p>
                           </div>
 
-                          {/* Menu Items */}
+                          <hr className="my-2 border-gray-100" />
+
+                          {/* Navigation Links */}
                           {userNavigation.map(item => {
                             const Icon = item.icon;
                             return (
@@ -309,10 +342,7 @@ export default function Header() {
                             );
                           })}
 
-                          <hr
-                            className="my-2 border-gray-100"
-                            role="separator"
-                          />
+                          <hr className="my-2 border-gray-100" />
 
                           <button
                             onClick={() => {
@@ -325,11 +355,7 @@ export default function Header() {
                           >
                             {isSigningOut ? (
                               <>
-                                <LoadingSpinner
-                                  size="sm"
-                                  variant="spinner"
-                                  color="gray"
-                                />
+                                <LoadingSpinner size="sm" variant="spinner" color="gray" />
                                 Signing Out...
                               </>
                             ) : (
@@ -343,7 +369,7 @@ export default function Header() {
                       )}
                     </AnimatePresence>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
