@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
         id: user.id,
         email: user.emailAddresses[0]?.emailAddress || '',
         name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User',
+        passwordHash: 'clerk_managed', // Placeholder since Clerk handles authentication
         role: 'jobseeker', // Default role - can be changed during onboarding
         onboardingCompleted: false,
         createdAt: new Date(),
