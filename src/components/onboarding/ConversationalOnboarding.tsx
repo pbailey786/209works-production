@@ -95,7 +95,7 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
             setCurrentStep('chat');
           } else {
             addMessage(
-              `Nice to meet you, ${nameInput}! Now, do you have a resume you'd like to upload? This helps me find you the best job matches.`,
+              `Nice to meet you, ${nameInput}! Do you have a resume you'd like to upload? This helps me find you better job matches, but you can skip this step if you don't have one.`,
               'assistant',
               'resume_upload'
             );
