@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import {
   TrophyIcon,
   StarIcon,
@@ -449,6 +450,9 @@ export default function AchievementBadges({
   size = 'md',
   className = ''
 }: AchievementBadgesProps) {
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+  const [tooltipTimer, setTooltipTimer] = useState<NodeJS.Timeout | null>(null);
+
   if (!FEATURES.PROFILE_GAMIFICATION) {
     return null;
   }
@@ -466,6 +470,36 @@ export default function AchievementBadges({
     : displayAchievements;
 
   const totalPoints = unlockedAchievements.reduce((sum, achievement) => sum + achievement.points, 0);
+
+  // Handle tooltip show/hide with timer
+  const showTooltip = (achievementId: string) => {
+    if (tooltipTimer) {
+      clearTimeout(tooltipTimer);
+    }
+    setActiveTooltip(achievementId);
+    
+    // Auto-hide after 3 seconds
+    const timer = setTimeout(() => {
+      setActiveTooltip(null);
+    }, 3000);
+    setTooltipTimer(timer);
+  };
+
+  const hideTooltip = () => {
+    if (tooltipTimer) {
+      clearTimeout(tooltipTimer);
+    }
+    setActiveTooltip(null);
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (tooltipTimer) {
+        clearTimeout(tooltipTimer);
+      }
+    };
+  }, [tooltipTimer]);
 
   // Minimal clean design with small badges
   return (
@@ -505,9 +539,13 @@ export default function AchievementBadges({
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 whileHover={{ scale: 1.1 }}
-                className={`relative group cursor-pointer ${
+                whileTap={{ scale: 0.95 }}
+                className={`relative cursor-pointer ${
                   isUnlocked ? '' : 'opacity-40'
                 }`}
+                onClick={() => showTooltip(achievement.id)}
+                onMouseEnter={() => showTooltip(achievement.id)}
+                onMouseLeave={() => hideTooltip()}
               >
                 {/* Small Badge Circle */}
                 <div className={`
@@ -534,48 +572,70 @@ export default function AchievementBadges({
                   )}
                 </div>
 
-                {/* Hover Tooltip Card */}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30 whitespace-nowrap min-w-[200px]">
-                  {/* Achievement Header */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="font-semibold text-gray-900">{achievement.name}</div>
-                    {isUnlocked && (
-                      <div className="flex items-center space-x-1">
-                        <span className="text-xs font-medium text-yellow-600">+{achievement.points}</span>
-                        <div className={`w-2 h-2 rounded-full ${
-                          achievement.rarity === 'legendary' ? 'bg-gradient-to-r from-yellow-400 to-orange-500' :
-                          achievement.rarity === 'epic' ? 'bg-purple-500' :
-                          achievement.rarity === 'rare' ? 'bg-blue-500' :
-                          achievement.rarity === 'uncommon' ? 'bg-green-500' :
-                          'bg-gray-400'
-                        }`} />
+                {/* Mobile-Optimized Tooltip Card */}
+                <AnimatePresence>
+                  {activeTooltip === achievement.id && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className="fixed left-1/2 top-20 -translate-x-1/2 mx-auto max-w-sm z-50 md:absolute md:bottom-full md:left-1/2 md:transform md:-translate-x-1/2 md:mb-3 md:inset-auto md:max-w-none"
+                      style={{ width: '280px', maxWidth: 'calc(100vw - 2rem)' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-xl min-w-[200px] md:whitespace-nowrap">
+                        {/* Close button for mobile */}
+                        <button
+                          onClick={hideTooltip}
+                          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-600 md:hidden"
+                        >
+                          ✕
+                        </button>
+                        
+                        {/* Achievement Header */}
+                        <div className="flex items-center justify-between mb-2 pr-8 md:pr-0">
+                          <div className="font-semibold text-gray-900">{achievement.name}</div>
+                          {isUnlocked && (
+                            <div className="flex items-center space-x-1">
+                              <span className="text-xs font-medium text-yellow-600">+{achievement.points}</span>
+                              <div className={`w-2 h-2 rounded-full ${
+                                achievement.rarity === 'legendary' ? 'bg-gradient-to-r from-yellow-400 to-orange-500' :
+                                achievement.rarity === 'epic' ? 'bg-purple-500' :
+                                achievement.rarity === 'rare' ? 'bg-blue-500' :
+                                achievement.rarity === 'uncommon' ? 'bg-green-500' :
+                                'bg-gray-400'
+                              }`} />
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Description */}
+                        <div className="text-xs text-gray-600 mb-2 whitespace-normal">
+                          {isUnlocked ? achievement.description : achievement.hint}
+                        </div>
+                        
+                        {/* Category & Rarity */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="capitalize text-gray-500">{achievement.category}</span>
+                          <span className={`capitalize font-medium ${
+                            achievement.rarity === 'legendary' ? 'text-orange-600' :
+                            achievement.rarity === 'epic' ? 'text-purple-600' :
+                            achievement.rarity === 'rare' ? 'text-blue-600' :
+                            achievement.rarity === 'uncommon' ? 'text-green-600' :
+                            'text-gray-600'
+                          }`}>
+                            {achievement.rarity}
+                          </span>
+                        </div>
+                        
+                        {/* Tooltip Arrow - Desktop only */}
+                        <div className="hidden md:block absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-white" />
+                        <div className="hidden md:block absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-200 mt-px" />
                       </div>
-                    )}
-                  </div>
-                  
-                  {/* Description */}
-                  <div className="text-xs text-gray-600 mb-2">
-                    {isUnlocked ? achievement.description : achievement.hint}
-                  </div>
-                  
-                  {/* Category & Rarity */}
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="capitalize text-gray-500">{achievement.category}</span>
-                    <span className={`capitalize font-medium ${
-                      achievement.rarity === 'legendary' ? 'text-orange-600' :
-                      achievement.rarity === 'epic' ? 'text-purple-600' :
-                      achievement.rarity === 'rare' ? 'text-blue-600' :
-                      achievement.rarity === 'uncommon' ? 'text-green-600' :
-                      'text-gray-600'
-                    }`}>
-                      {achievement.rarity}
-                    </span>
-                  </div>
-                  
-                  {/* Tooltip Arrow */}
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-white" />
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-200 mt-px" />
-                </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             );
           })}
@@ -587,7 +647,10 @@ export default function AchievementBadges({
         <div className="mt-3 text-center">
           <span className="text-xs text-gray-500">
             {unlockedOnly ? 
-              `+${Math.max(0, unlockedAchievements.length - maxDisplay)} more unlocked` :
+              Math.max(0, unlockedAchievements.length - maxDisplay) > 0 ? 
+                `+${Math.max(0, unlockedAchievements.length - maxDisplay)} more unlocked` :
+                `${unlockedAchievements.length}/${allAchievements.length} unlocked`
+              :
               `+${allAchievements.length - maxDisplay} more achievements`
             }
           </span>
