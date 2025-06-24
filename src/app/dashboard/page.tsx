@@ -16,7 +16,10 @@ import {
   FileText,
   History,
   MessageSquare,
+  Eye,
+  Save,
 } from 'lucide-react';
+import SkillSuggestionCard from '../../components/profile/SkillSuggestionCard';
 
 interface SimpleStats {
   savedJobs: number;
@@ -68,7 +71,14 @@ export default function SimpleJobSeekerDashboard() {
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([]);
   const [recentApplications, setRecentApplications] = useState<ApplicationItem[]>([]);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Save state management
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null);
+  const [showStoryBuilder, setShowStoryBuilder] = useState(false);
 
   // Load data
   useEffect(() => {
@@ -112,6 +122,13 @@ export default function SimpleJobSeekerDashboard() {
           const applicationsData = await applicationsResponse.json();
           setRecentApplications(applicationsData.applications || []);
         }
+
+        // Fetch profile data for .works resume
+        const profileResponse = await fetch('/api/profile');
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          setProfile(profileData.user);
+        }
       } catch (error) {
         console.error('Error loading dashboard:', error);
       } finally {
@@ -121,6 +138,82 @@ export default function SimpleJobSeekerDashboard() {
 
     fetchData();
   }, []);
+
+  // Save profile data
+  const saveProfile = async () => {
+    if (!profile || !hasUnsavedChanges) return;
+    
+    setSaveStatus('saving');
+    
+    try {
+      const response = await fetch('/api/profile/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // Add any profile fields that might be edited on dashboard
+          profileStrength: profile.profileStrength,
+          skills: profile.skills,
+          // Add other fields as needed
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save profile');
+      }
+
+      setHasUnsavedChanges(false);
+      setSaveStatus('saved');
+      
+      // Clear saved status after 3 seconds
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Save error:', error);
+      setSaveStatus('error');
+      
+      // Clear error status after 5 seconds
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 5000);
+    }
+  };
+
+  // Auto-save effect
+  useEffect(() => {
+    if (hasUnsavedChanges) {
+      // Clear existing timer
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+      
+      // Set new auto-save timer for 30 seconds
+      const timer = setTimeout(() => {
+        saveProfile();
+      }, 30000);
+      
+      setAutoSaveTimer(timer);
+    }
+    
+    // Cleanup timer on unmount
+    return () => {
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+    };
+  }, [hasUnsavedChanges, profile]);
+
+  // Manual save handler
+  const handleManualSave = () => {
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+      setAutoSaveTimer(null);
+    }
+    saveProfile();
+  };
 
   if (loading) {
     return (
@@ -133,45 +226,6 @@ export default function SimpleJobSeekerDashboard() {
     );
   }
 
-  // Smart next step logic
-  const getNextStep = () => {
-    if (stats.savedJobs === 0 && stats.applicationsSent === 0) {
-      return {
-        title: "Start your job search",
-        subtitle: "Find opportunities in the Central Valley",
-        action: "Search Jobs",
-        href: "/jobs",
-        icon: Search,
-      };
-    } else if (stats.activeAlerts === 0) {
-      return {
-        title: "Set up job alerts",
-        subtitle: "Get notified when new jobs match your criteria",
-        action: "Create Alert",
-        href: "/alerts",
-        icon: Bell,
-      };
-    } else if (stats.savedJobs > 0) {
-      return {
-        title: `${stats.savedJobs} saved jobs waiting`,
-        subtitle: "Review and apply to your saved opportunities",
-        action: "View Saved Jobs",
-        href: "/profile/applications?tab=saved",
-        icon: Heart,
-      };
-    } else {
-      return {
-        title: "Unlock More Opportunities",
-        subtitle: "Complete your profile to get noticed by top employers",
-        action: "Update Profile to Get More Jobs",
-        href: "/profile",
-        icon: User,
-      };
-    }
-  };
-
-  const nextStep = getNextStep();
-  const NextStepIcon = nextStep.icon;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -201,38 +255,136 @@ export default function SimpleJobSeekerDashboard() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         
-        {/* Enhanced Smart Next Step - Bold call-to-action banner */}
-        <div className="relative bg-gradient-to-br from-[#2d4a3e] via-[#1d3a2e] to-[#ff6b35] rounded-3xl p-8 text-white mb-8 shadow-2xl overflow-hidden">
+        {/* .works Resume Builder Hero */}
+        <div className="relative bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 rounded-3xl p-8 text-white mb-8 shadow-2xl overflow-hidden">
           {/* Decorative background elements */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
           
-          <div className="relative flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-6 shadow-lg border border-white/20">
-                <NextStepIcon className="w-8 h-8 text-white drop-shadow-sm" />
-              </div>
-              <div>
-                <h2 className="text-3xl font-bold mb-2 text-white drop-shadow-sm tracking-tight">
-                  {nextStep.title}
-                </h2>
-                <p className="text-xl text-white/90 font-medium">
-                  {nextStep.subtitle}
-                </p>
+          <div className="relative">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-6 shadow-lg border border-white/20">
+                  <Sparkles className="w-8 h-8 text-white drop-shadow-sm" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold mb-2 text-white drop-shadow-sm tracking-tight">
+                    Build Your .works Resume
+                  </h2>
+                  <p className="text-xl text-white/90 font-medium">
+                    AI-powered career story that gets you hired in the 209
+                  </p>
+                </div>
               </div>
             </div>
-            <Link
-              href={nextStep.href}
-              className="inline-flex items-center px-8 py-4 bg-white text-[#2d4a3e] rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 transform"
-            >
-              {nextStep.action}
-              <ArrowRight className="w-5 h-5 ml-3" />
-            </Link>
+
+            {/* Progress Bar */}
+            {profile && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center">
+                    <span className="text-white/90 font-medium">Story Progress</span>
+                    {hasUnsavedChanges && (
+                      <span className="ml-2 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <span className="text-white/90 font-medium">{profile.profileStrength || 0}% Complete</span>
+                    {saveStatus === 'saving' && (
+                      <span className="text-yellow-300 text-sm">Saving...</span>
+                    )}
+                    {saveStatus === 'saved' && (
+                      <span className="text-green-300 text-sm">✓ Saved</span>
+                    )}
+                    {saveStatus === 'error' && (
+                      <span className="text-red-300 text-sm">⚠ Save failed</span>
+                    )}
+                  </div>
+                </div>
+                <div className="w-full bg-white/20 rounded-full h-3 backdrop-blur-sm">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-500 shadow-lg"
+                    style={{ width: `${profile.profileStrength || 0}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-4">
+              <button 
+                onClick={() => setShowStoryBuilder(!showStoryBuilder)}
+                className="inline-flex items-center px-8 py-4 bg-white text-purple-700 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 transform"
+              >
+                <Sparkles className="w-5 h-5 mr-3" />
+                {showStoryBuilder ? 'Hide Builder' : 'Continue Building'}
+              </button>
+              
+              <Link
+                href="/profile"
+                className="inline-flex items-center px-6 py-4 bg-white/20 backdrop-blur-sm text-white rounded-2xl font-semibold hover:bg-white/30 transition-all duration-200 border border-white/20"
+              >
+                <Eye className="w-5 h-5 mr-2" />
+                View Story
+              </Link>
+
+              <Link
+                href="/profile"
+                className="inline-flex items-center px-6 py-4 bg-white/20 backdrop-blur-sm text-white rounded-2xl font-semibold hover:bg-white/30 transition-all duration-200 border border-white/20"
+              >
+                <User className="w-5 h-5 mr-2" />
+                View Profile
+              </Link>
+
+              <button 
+                onClick={handleManualSave}
+                disabled={saveStatus === 'saving' || (!hasUnsavedChanges && saveStatus !== 'error')}
+                className={`inline-flex items-center px-4 py-4 rounded-2xl font-semibold transition-all duration-200 border ${
+                  saveStatus === 'saving' 
+                    ? 'bg-yellow-500/20 border-yellow-400/30 text-yellow-200' 
+                    : saveStatus === 'saved'
+                    ? 'bg-green-500/20 border-green-400/30 text-green-200'
+                    : saveStatus === 'error'
+                    ? 'bg-red-500/20 border-red-400/30 text-red-200 hover:bg-red-500/30'
+                    : hasUnsavedChanges
+                    ? 'bg-green-500/20 border-green-400/30 text-white hover:bg-green-500/30'
+                    : 'bg-gray-500/20 border-gray-400/30 text-gray-300 cursor-not-allowed'
+                } backdrop-blur-sm`}
+              >
+                {saveStatus === 'saving' ? (
+                  <ArrowRight className="w-5 h-5 animate-spin" />
+                ) : saveStatus === 'saved' ? (
+                  <CheckCircle className="w-5 h-5" />
+                ) : saveStatus === 'error' ? (
+                  <Save className="w-5 h-5" />
+                ) : (
+                  <Save className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
           
           {/* Subtle accent line */}
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         </div>
+
+        {/* .works Story Builder Component */}
+        {showStoryBuilder && profile && (
+          <div className="mb-8">
+            <SkillSuggestionCard 
+              user={profile}
+              onSkillAdd={(skill) => {
+                // Add skill to profile and mark as unsaved
+                setProfile((prev: any) => ({
+                  ...prev,
+                  skills: [...(prev?.skills || []), skill]
+                }));
+                setHasUnsavedChanges(true);
+              }}
+              className="shadow-xl"
+            />
+          </div>
+        )}
 
         {/* Simple Stats - Only what matters */}
         <div className="grid grid-cols-3 gap-6 mb-8">
@@ -362,7 +514,22 @@ export default function SimpleJobSeekerDashboard() {
         )}
 
         {/* Quick Actions - Minimal grid */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <Link
+            href="/alerts"
+            className="bg-white rounded-xl border border-gray-100 p-6 hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-[#ff6b35]/10 rounded-lg flex items-center justify-center mr-4">
+                <Bell className="w-5 h-5 text-[#ff6b35]" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-1">Job Alerts</h4>
+                <p className="text-sm text-gray-600">Never miss new opportunities</p>
+              </div>
+            </div>
+          </Link>
+
           <Link
             href="/profile"
             className="bg-white rounded-xl border border-gray-100 p-6 hover:bg-gray-50 transition-colors"
@@ -372,8 +539,8 @@ export default function SimpleJobSeekerDashboard() {
                 <User className="w-5 h-5 text-[#2d4a3e]" />
               </div>
               <div>
-                <h4 className="font-medium text-gray-900 mb-1">🚀 Unlock More Jobs</h4>
-                <p className="text-sm text-gray-600">Complete profile = 3x more visibility</p>
+                <h4 className="font-medium text-gray-900 mb-1">Complete Profile</h4>
+                <p className="text-sm text-gray-600">3x more visibility to employers</p>
               </div>
             </div>
           </Link>
@@ -383,8 +550,8 @@ export default function SimpleJobSeekerDashboard() {
             className="bg-white rounded-xl border border-gray-100 p-6 hover:bg-gray-50 transition-colors"
           >
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-[#ff6b35]/10 rounded-lg flex items-center justify-center mr-4">
-                <CheckCircle className="w-5 h-5 text-[#ff6b35]" />
+              <div className="w-10 h-10 bg-[#9fdf9f]/10 rounded-lg flex items-center justify-center mr-4">
+                <CheckCircle className="w-5 h-5 text-[#9fdf9f]" />
               </div>
               <div>
                 <h4 className="font-medium text-gray-900 mb-1">Applications</h4>

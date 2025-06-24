@@ -20,7 +20,8 @@
       "Bash(npx prisma db push:*)",
       "Bash(git commit:*)",
       "Bash(cp:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)"
     ],
     "deny": []
   }
