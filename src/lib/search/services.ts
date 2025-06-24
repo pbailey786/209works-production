@@ -311,10 +311,33 @@ export class EnhancedJobSearchService {
       });
     }
 
+    // HYPERLOCAL FILTERING: Enhanced remote/local handling
     if (filters.remote === 'true') {
       conditions.push({ isRemote: true });
     } else if (filters.remote === 'false') {
       conditions.push({ isRemote: false });
+    } else {
+      // DEFAULT BEHAVIOR: Prioritize local/hybrid over purely remote
+      // Only show remote jobs that have local presence in Central Valley
+      conditions.push({
+        OR: [
+          { isRemote: false }, // Local jobs
+          { 
+            AND: [
+              { isRemote: true }, // Hybrid/remote jobs that also have local presence
+              {
+                OR: [
+                  { areaCodes: { hasSome: ['209', '916', '510'] } }, // Central Valley area codes
+                  { city: { in: ['Stockton', 'Modesto', 'Tracy', 'Manteca', 'Lodi', 'Turlock', 'Merced', 'Sacramento', 'Oakland', 'San Jose'] } },
+                  { location: { contains: 'Central Valley', mode: 'insensitive' } },
+                  { location: { contains: '209', mode: 'insensitive' } },
+                  { targetCities: { hasSome: ['Stockton', 'Modesto', 'Tracy', 'Manteca'] } }
+                ]
+              }
+            ]
+          }
+        ]
+      });
     }
 
     // Salary filters

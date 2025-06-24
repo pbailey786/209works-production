@@ -11,6 +11,8 @@ export const SEARCH_CONFIG = {
     locationMatch: 6,
     skillsMatch: 12,
     recency: 3,
+    localBonus: 15, // Bonus for local (non-remote) jobs
+    hyperlocalBonus: 25, // Extra bonus for 209 area jobs
   },
 
   // Full-text search configuration
@@ -249,7 +251,7 @@ export class TextProcessor {
 
 // Relevance scoring algorithms
 export class RelevanceScorer {
-  // Calculate relevance score for a job against search query
+  // Calculate relevance score for a job against search query with local prioritization
   static scoreJob(
     job: any,
     query: string,
@@ -257,15 +259,18 @@ export class RelevanceScorer {
   ): number {
     // Input validation
     if (!job || typeof job !== 'object') return 0.1;
-    if (!query || typeof query !== 'string' || !query.trim()) return 1; // Default score for no query
+    if (!query || typeof query !== 'string' || !query.trim()) {
+      // For no query, prioritize local jobs in base scoring
+      return this.calculateLocalityScore(job);
+    }
 
     try {
       const queryTerms = TextProcessor.extractKeywords(query);
-      if (queryTerms.length === 0) return 1;
+      if (queryTerms.length === 0) return this.calculateLocalityScore(job);
 
       let totalScore = 0;
 
-      // Simple scoring for now
+      // Text-based scoring
       const jobTitle = job.title || '';
       if (jobTitle.toLowerCase().includes(query.toLowerCase())) {
         totalScore += SEARCH_CONFIG.weights.titleMatch;
@@ -276,11 +281,56 @@ export class RelevanceScorer {
         totalScore += SEARCH_CONFIG.weights.descriptionMatch;
       }
 
+      const jobCompany = job.company || '';
+      if (jobCompany.toLowerCase().includes(query.toLowerCase())) {
+        totalScore += SEARCH_CONFIG.weights.companyMatch;
+      }
+
+      // HYPERLOCAL SCORING: Add locality bonuses
+      totalScore += this.calculateLocalityScore(job);
+
       return Math.max(totalScore, 0.1); // Minimum score
     } catch (error) {
       console.error('Error calculating job score:', error);
       return 0.1; // Fallback score
     }
+  }
+
+  // Calculate score bonus based on job locality
+  private static calculateLocalityScore(job: any): number {
+    let localityScore = 1; // Base score
+
+    // If it's not remote, give it a local bonus
+    if (!job.isRemote) {
+      localityScore += SEARCH_CONFIG.weights.localBonus;
+    }
+
+    // Extra bonus for hyperlocal 209 area jobs
+    const location = (job.location || '').toLowerCase();
+    const company = (job.company || '').toLowerCase();
+    const areaCodes = job.areaCodes || [];
+    const city = (job.city || '').toLowerCase();
+    const targetCities = job.targetCities || [];
+
+    const is209Area = 
+      areaCodes.includes('209') ||
+      location.includes('209') ||
+      location.includes('stockton') ||
+      location.includes('modesto') ||
+      location.includes('tracy') ||
+      location.includes('manteca') ||
+      location.includes('central valley') ||
+      city.includes('stockton') ||
+      city.includes('modesto') ||
+      city.includes('tracy') ||
+      city.includes('manteca') ||
+      targetCities.some(city => ['stockton', 'modesto', 'tracy', 'manteca'].includes(city.toLowerCase()));
+
+    if (is209Area) {
+      localityScore += SEARCH_CONFIG.weights.hyperlocalBonus;
+    }
+
+    return localityScore;
   }
 }
 

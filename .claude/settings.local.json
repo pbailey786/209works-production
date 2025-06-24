@@ -18,7 +18,8 @@
       "Bash(grep:*)",
       "Bash(mkdir:*)",
       "Bash(npx prisma db push:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

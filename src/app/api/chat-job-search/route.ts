@@ -126,9 +126,11 @@ function extractBasicFilters(
     industry = 'retail';
   }
 
-  // Extract remote preference
-  const isRemote =
-    message.includes('remote') || message.includes('work from home');
+  // Extract remote preference and local preference
+  const isRemote = message.includes('remote') || message.includes('work from home');
+  const isLocalPreferred = message.includes('local') || message.includes('nearby') || 
+    message.includes('in-person') || message.includes('on-site') || 
+    message.includes('commute') || message.includes('drive to work');
 
   // Handle sorting/ranking requests with more variety
   let sortBy = 'relevance';
@@ -168,6 +170,7 @@ function extractBasicFilters(
     role,
     industry,
     isRemote,
+    isLocalPreferred,
     sortBy,
     other: userMessage,
     previousJobs, // Include previous jobs for context
@@ -193,7 +196,7 @@ function extractBasicFilters(
   };
 }
 
-// Build job query with enhanced sorting
+// Build job query with enhanced sorting and local prioritization
 function buildJobQueryFromFilters(filters: any) {
   const query: any = {
     status: 'active',
@@ -204,6 +207,39 @@ function buildJobQueryFromFilters(filters: any) {
   query.AND.push({
     OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
   });
+
+  // HYPERLOCAL FILTERING: Prioritize local/hybrid over remote
+  const userRequestsRemote = filters.isRemote === true || 
+    (filters.other && filters.other.toLowerCase().includes('remote'));
+  const userPreferencesLocal = filters.isLocalPreferred === true;
+  
+  if (!userRequestsRemote) {
+    if (userPreferencesLocal) {
+      // User explicitly wants local jobs - exclude all remote
+      query.AND.push({ isRemote: false });
+    } else {
+      // Default hyperlocal filtering - exclude purely remote, allow hybrid with local presence
+      query.AND.push({
+        OR: [
+          { isRemote: false }, // Local jobs
+          { 
+            AND: [
+              { isRemote: true }, // Hybrid/remote jobs that also have local presence
+              {
+                OR: [
+                  { areaCodes: { hasSome: ['209', '916', '510'] } }, // Central Valley area codes
+                  { city: { in: ['Stockton', 'Modesto', 'Tracy', 'Manteca', 'Lodi', 'Turlock', 'Merced', 'Sacramento', 'Oakland', 'San Jose'] } },
+                  { location: { contains: 'Central Valley', mode: 'insensitive' } },
+                  { location: { contains: '209', mode: 'insensitive' } },
+                  { targetCities: { hasSome: ['Stockton', 'Modesto', 'Tracy', 'Manteca'] } }
+                ]
+              }
+            ]
+          }
+        ]
+      });
+    }
+  }
 
   // If we have previous jobs and this is a sorting request, filter to those jobs
   if (
@@ -287,29 +323,59 @@ function buildJobQueryFromFilters(filters: any) {
   return query;
 }
 
-// Get sort order for Prisma - fixed to use proper Prisma orderBy format
-function getSortOrder(sortBy: string) {
+// Get sort order for Prisma with local prioritization
+function getSortOrder(sortBy: string, userRequestsRemote: boolean = false) {
+  const localPrioritySort = [
+    { isRemote: 'asc' as const }, // Local jobs first (false < true)
+  ];
+
   switch (sortBy) {
     case 'salary_desc':
-      // Sort by max salary first, then min salary, both descending
-      return [
+      // Sort by local priority, then max salary, then min salary
+      return userRequestsRemote ? [
         { salaryMax: 'desc' as const },
         { salaryMin: 'desc' as const },
-        { postedAt: 'desc' as const }, // Fallback sort
+        { postedAt: 'desc' as const },
+      ] : [
+        ...localPrioritySort,
+        { salaryMax: 'desc' as const },
+        { salaryMin: 'desc' as const },
+        { postedAt: 'desc' as const },
       ];
     case 'salary_asc':
-      // Sort by min salary first, then max salary, both ascending
-      return [
+      // Sort by local priority, then min salary, then max salary
+      return userRequestsRemote ? [
         { salaryMin: 'asc' as const },
         { salaryMax: 'asc' as const },
-        { postedAt: 'desc' as const }, // Fallback sort
+        { postedAt: 'desc' as const },
+      ] : [
+        ...localPrioritySort,
+        { salaryMin: 'asc' as const },
+        { salaryMax: 'asc' as const },
+        { postedAt: 'desc' as const },
       ];
     case 'date_desc':
-      return [{ postedAt: 'desc' as const }];
+      return userRequestsRemote ? [
+        { postedAt: 'desc' as const }
+      ] : [
+        ...localPrioritySort,
+        { postedAt: 'desc' as const }
+      ];
     case 'date_asc':
-      return [{ postedAt: 'asc' as const }];
+      return userRequestsRemote ? [
+        { postedAt: 'asc' as const }
+      ] : [
+        ...localPrioritySort,
+        { postedAt: 'asc' as const }
+      ];
     default:
-      return [{ postedAt: 'desc' as const }];
+      // Default relevance sort: local first, then most recent
+      return userRequestsRemote ? [
+        { postedAt: 'desc' as const }
+      ] : [
+        ...localPrioritySort,
+        { postedAt: 'desc' as const }
+      ];
   }
 }
 
@@ -464,9 +530,11 @@ export const POST = withAISecurity(
         filters.job_type = normalizeJobType(filters.job_type);
       }
 
-      // Build and execute job query
+      // Build and execute job query with local prioritization
       const jobQuery = buildJobQueryFromFilters(filters);
-      const sortOrder = getSortOrder(filters.sortBy || 'relevance');
+      const userRequestsRemote = filters.isRemote === true || 
+        (filters.other && filters.other.toLowerCase().includes('remote'));
+      const sortOrder = getSortOrder(filters.sortBy || 'relevance', userRequestsRemote);
 
       // Debug logging
       console.log('Job query:', JSON.stringify(jobQuery, null, 2));
@@ -764,28 +832,38 @@ function generateBasicResponse(
   }
 
   let response = '';
+  const localJobCount = jobs.filter(job => !job.isRemote).length;
+  const hybridJobCount = jobs.filter(job => job.isRemote).length;
 
   if (isCitySearch && !isFollowUp && filters.location) {
-    // More casual city search response
+    // More casual city search response with local emphasis
     if (jobs.length > 10) {
-      response = `Nice! Found ${jobs.length} jobs in ${filters.location} 🎯 Lots of options!`;
+      response = `Nice! Found ${jobs.length} local jobs in ${filters.location} 🎯 Lots of options!`;
     } else if (jobs.length > 5) {
-      response = `Found ${jobs.length} jobs in ${filters.location}! Some good options here.`;
+      response = `Found ${jobs.length} local jobs in ${filters.location}! Some good options here.`;
     } else {
-      response = `Found ${jobs.length} jobs in ${filters.location}. Here's what's available!`;
+      response = `Found ${jobs.length} local jobs in ${filters.location}. Here's what's available!`;
     }
   } else {
-    // Shorter, friendlier responses
-    if (jobs.length > 10) {
-      response = `Found ${jobs.length} jobs! 🔥`;
+    // Shorter, friendlier responses with local context
+    if (filters.isLocalPreferred) {
+      response = `Found ${jobs.length} local jobs for you! 🏢`;
+    } else if (jobs.length > 10) {
+      response = localJobCount > 0 ? 
+        `Found ${jobs.length} jobs! 🔥 ${localJobCount} are right here locally.` :
+        `Found ${jobs.length} jobs! 🔥`;
     } else if (jobs.length > 5) {
-      response = `Found ${jobs.length} jobs matching that.`;
+      response = localJobCount > 0 ? 
+        `Found ${jobs.length} jobs (${localJobCount} local, ${hybridJobCount} hybrid/remote).` :
+        `Found ${jobs.length} jobs matching that.`;
     } else {
-      response = `Found ${jobs.length} jobs for you!`;
+      response = localJobCount > 0 ? 
+        `Found ${jobs.length} jobs - ${localJobCount} local, ${hybridJobCount} with remote options.` :
+        `Found ${jobs.length} jobs for you!`;
     }
 
-    if (filters.location) {
-      response += ` All in ${filters.location}.`;
+    if (filters.location && !filters.isLocalPreferred) {
+      response += ` All in ${filters.location} area.`;
     }
   }
 
@@ -926,17 +1004,27 @@ function generateBasicConversationalResponse(
   return "I'm here to help with jobs in the 209! What would you like to know?";
 }
 
-// Generate response when no jobs are found - Much shorter and friendlier
+// Generate response when no jobs are found - Much shorter and friendlier with local suggestions
 function generateNoJobsFoundResponse(
   userMessage: string,
   filters: any,
   conversationHistory: any[]
 ): string {
   const location = filters.location;
+  const isLocalRequest = filters.isLocalPreferred;
+  const isRemoteRequest = filters.isRemote;
 
-  if (location) {
-    return `Hmm, no matches for "${userMessage}" in ${location} right now 🤔 We're still building up our job database. Try searching for "warehouse jobs" or "healthcare" - those are big here! Or check nearby cities like Stockton or Modesto?`;
+  if (isRemoteRequest) {
+    return `No remote matches for "${userMessage}" right now 🤔 But there are lots of local opportunities in the 209 area! Want me to show you local jobs instead? Most pay just as well and you save on gas! 💰`;
   }
 
-  return `No matches for "${userMessage}" yet 😅 We're still adding jobs to the database. Try "warehouse jobs" or "customer service" - those are popular in the 209! What type of work are you most interested in?`;
+  if (location) {
+    return `Hmm, no local matches for "${userMessage}" in ${location} right now 🤔 Try "warehouse jobs" or "healthcare" - those are huge locally! Or I can check nearby cities like Stockton, Modesto, or Tracy?`;
+  }
+
+  if (isLocalRequest) {
+    return `No local matches for "${userMessage}" yet 😅 Try "warehouse jobs", "healthcare", or "customer service" - those are big in the 209 area! What type of local work interests you most?`;
+  }
+
+  return `No matches for "${userMessage}" yet 😅 We focus on local Central Valley jobs. Try "warehouse jobs" or "customer service" - those are popular locally! What type of work are you most interested in?`;
 }
