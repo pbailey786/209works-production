@@ -14,6 +14,7 @@ import {
 // import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../auth/authOptions';
 import { generateJobSearchResponse } from '@/lib/ai';
+import OpenAI from 'openai';
 
 // Type definitions for conversation messages
 interface ConversationMessage {
@@ -398,6 +399,7 @@ export const POST = withAISecurity(
         conversationHistory = [],
         userProfile = null,
         sessionId = null,
+        isOnboarding = false,
       } = body;
 
       if (!userMessage || typeof userMessage !== 'string') {
@@ -491,6 +493,79 @@ export const POST = withAISecurity(
         process.env.ANTHROPIC_API_KEY !== 'your-anthropic-key';
 
       const hasValidApiKey = hasValidOpenAIKey || hasValidAnthropicKey;
+
+      // Handle onboarding mode - focus on gathering information, not searching
+      if (isOnboarding) {
+        try {
+          // Generate a conversational onboarding response without job search
+          const onboardingPrompt = `You are a friendly career advisor helping someone during onboarding. 
+          The user said: "${userMessage}"
+          
+          Previous conversation:
+          ${conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
+          
+          Your goal is to:
+          1. Acknowledge what they said
+          2. Ask ONE specific follow-up question to learn more about their job preferences
+          3. Keep it conversational and friendly
+          4. Focus on gathering info about: work environment preferences, schedule flexibility, career goals, or specific industries
+          5. Do NOT search for jobs or mention specific job listings
+          6. Keep your response under 100 words
+          
+          Respond naturally as if having a conversation.`;
+
+          let response;
+          if (hasValidOpenAIKey) {
+            const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+            const completion = await openai.chat.completions.create({
+              model: 'gpt-3.5-turbo',
+              messages: [
+                { role: 'system', content: 'You are a friendly career advisor helping during job seeker onboarding.' },
+                { role: 'user', content: onboardingPrompt }
+              ],
+              max_tokens: 150,
+              temperature: 0.7,
+            });
+            response = completion.choices[0].message.content || 'Tell me more about what kind of work environment you prefer.';
+          } else {
+            // Fallback responses for onboarding without AI
+            const fallbacks = [
+              "That's helpful to know! What kind of schedule works best for you - traditional hours, flexible, or shift work?",
+              "I understand. Do you prefer working independently or as part of a team?",
+              "Good to know! What's most important to you in your next job - growth opportunities, work-life balance, or something else?",
+              "Thanks for sharing! Are there any specific companies or industries you're particularly interested in?",
+            ];
+            response = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+          }
+
+          return NextResponse.json({
+            response,
+            jobs: [], // No jobs during onboarding
+            followUpQuestions: [],
+            filters: {},
+            metadata: {
+              totalResults: 0,
+              isOnboarding: true,
+              conversationLength: conversationHistory.length,
+              timestamp: new Date().toISOString(),
+            },
+          });
+        } catch (error) {
+          console.error('Onboarding response error:', error);
+          // Fallback response
+          return NextResponse.json({
+            response: "Thanks for sharing that! What else is important to you in your next job?",
+            jobs: [],
+            followUpQuestions: [],
+            filters: {},
+            metadata: {
+              totalResults: 0,
+              isOnboarding: true,
+              error: true,
+            },
+          });
+        }
+      }
 
       let filters;
       if (hasValidApiKey) {

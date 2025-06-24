@@ -131,14 +131,69 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
         setResumeUploaded(true);
         addMessage(`✅ Resume uploaded: ${file.name}`, 'user');
         
-        setTimeout(() => {
+        // Parse the resume to extract information
+        setTimeout(async () => {
           addMessage(
-            `Perfect! I've got your resume. Now let's talk about what kind of work you're looking for. What type of job interests you? (warehouse, healthcare, customer service, etc.)`,
-            'assistant',
-            'chat'
+            `Let me take a look at your resume...`,
+            'assistant'
           );
+          
+          try {
+            const parseFormData = new FormData();
+            parseFormData.append('file', file);
+            
+            const parseResponse = await fetch('/api/profile/parse-resume', {
+              method: 'POST',
+              body: parseFormData
+            });
+            
+            if (parseResponse.ok) {
+              const parseData = await parseResponse.json();
+              const resumeInfo = parseData.data;
+              
+              // Create a personalized message based on resume content
+              let message = `Great! I've reviewed your resume. `;
+              
+              if (resumeInfo.experience?.totalYears) {
+                message += `I see you have ${resumeInfo.experience.totalYears} years of experience`;
+                if (resumeInfo.jobTitles?.length > 0) {
+                  message += ` as a ${resumeInfo.jobTitles[0]}`;
+                }
+                message += `. `;
+              }
+              
+              if (resumeInfo.skills?.length > 0) {
+                const topSkills = resumeInfo.skills.slice(0, 3).join(', ');
+                message += `Your skills in ${topSkills} are impressive! `;
+              }
+              
+              if (resumeInfo.industries?.length > 0) {
+                message += `With your background in ${resumeInfo.industries[0]}, `;
+              }
+              
+              message += `I can help you find similar roles or explore new opportunities. What type of work environment are you looking for? Do you prefer working in a team or independently?`;
+              
+              addMessage(message, 'assistant', 'chat');
+            } else {
+              // Fallback if parsing fails
+              addMessage(
+                `I've saved your resume! Now let's talk about what kind of work you're looking for. What type of job interests you most?`,
+                'assistant',
+                'chat'
+              );
+            }
+          } catch (parseError) {
+            console.error('Resume parsing error:', parseError);
+            // Fallback message
+            addMessage(
+              `Perfect! I've got your resume. Now let's talk about what kind of work you're looking for. What type of job interests you?`,
+              'assistant',
+              'chat'
+            );
+          }
+          
           setCurrentStep('chat');
-        }, 1000);
+        }, 1500);
       } else {
         setUploadError(data.error || 'Upload failed');
       }
@@ -171,19 +226,25 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
     setIsLoading(true);
 
     try {
-      // Use the same chat API as homepage
+      // Use the same chat API as homepage with timeout for mobile
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
       const response = await fetch('/api/chat-job-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userMessage,
-          conversationHistory: messages.map(m => ({
+          conversationHistory: messages.slice(-5).map(m => ({ // Only last 5 messages to reduce payload
             role: m.role,
             content: m.content
           })),
           isOnboarding: true
-        })
+        }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
@@ -205,6 +266,27 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
               completeOnboarding();
             }, 2000);
           }, 1500);
+        }
+      } else {
+        // Handle non-ok responses more gracefully
+        console.error('Chat API error:', response.status, response.statusText);
+        
+        // For mobile/onboarding, skip to completion if API fails
+        if (messages.filter(m => m.type === 'chat').length >= 1) {
+          addMessage(
+            `Thanks for sharing! I've got enough information to get you started. Let me set up your profile now.`,
+            'assistant',
+            'completion'
+          );
+          setCurrentStep('complete');
+          setTimeout(() => completeOnboarding(), 2000);
+        } else {
+          // First message failed, ask a simpler question
+          addMessage(
+            `Let me ask you something simpler - are you looking for full-time or part-time work?`,
+            'assistant',
+            'chat'
+          );
         }
       }
     } catch (error) {
@@ -254,20 +336,20 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
         </div>
 
         {/* Messages */}
-        <div className="h-96 overflow-y-auto p-6 space-y-4">
+        <div className="h-96 overflow-y-auto p-4 sm:p-6 space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
                   message.role === 'user'
                     ? 'bg-blue-500 text-white'
                     : 'bg-gray-100 text-gray-900'
                 }`}
               >
-                <p className="text-sm">{message.content}</p>
+                <p className="text-sm break-words">{message.content}</p>
               </div>
             </div>
           ))}
@@ -288,10 +370,10 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
         </div>
 
         {/* Input Area */}
-        <div className="border-t p-6">
+        <div className="border-t p-4 sm:p-6">
           {currentStep === 'name' && (
             <div className="space-y-4">
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <div className="flex-1">
                   <input
                     type="text"
@@ -299,14 +381,14 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
                     onChange={(e) => setNameInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleNameSubmit()}
                     placeholder="Enter your name..."
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                    className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                     disabled={isLoading}
                   />
                 </div>
                 <button
                   onClick={handleNameSubmit}
                   disabled={!nameInput.trim() || isLoading}
-                  className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                  className="px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 w-full sm:w-auto"
                 >
                   <UserIcon className="h-4 w-4" />
                   <span>Continue</span>
@@ -320,7 +402,7 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf,.doc,.docx,.txt,.rtf,.odt,.png,.jpg,.jpeg"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) handleResumeUpload(file);
@@ -328,7 +410,7 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
                 className="hidden"
               />
               
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isLoading}
@@ -341,7 +423,7 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
                 <button
                   onClick={handleSkipResume}
                   disabled={isLoading}
-                  className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50"
+                  className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 sm:w-auto w-full"
                 >
                   Skip for now
                 </button>
@@ -352,26 +434,26 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
               )}
               
               <p className="text-xs text-gray-500 text-center">
-                Supported formats: PDF, DOC, DOCX (max 5MB)
+                Supported formats: PDF, DOC, DOCX, TXT, RTF, ODT, PNG, JPG (max 5MB)
               </p>
             </div>
           )}
 
           {currentStep === 'chat' && (
-            <div className="flex space-x-3">
+            <div className="flex space-x-2 sm:space-x-3">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleChatMessage()}
                 placeholder="Tell me about the work you're looking for..."
-                className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                className="flex-1 rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                 disabled={isLoading}
               />
               <button
                 onClick={handleChatMessage}
                 disabled={!chatInput.trim() || isLoading}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 <PaperAirplaneIcon className="h-4 w-4" />
               </button>

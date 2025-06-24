@@ -52,10 +52,17 @@ export async function POST(req: NextRequest) {
         'application/pdf',
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain',
+        'text/rtf',
+        'application/rtf',
+        'application/vnd.oasis.opendocument.text',
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
       ];
       if (!allowedTypes.includes(file.type)) {
         return NextResponse.json(
-          { error: 'Invalid resume format. Please use PDF, DOC, or DOCX.' },
+          { error: 'Invalid file format. Please use PDF, DOC, DOCX, TXT, RTF, ODT, PNG, or JPG.' },
           { status: 400 }
         );
       }
