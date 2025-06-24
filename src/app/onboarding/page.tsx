@@ -48,17 +48,19 @@ export default async function OnboardingPage() {
       redirect('/sign-in?redirect_url=/onboarding');
     }
 
-    // If user doesn't exist, create them with no role (will trigger role selection)
+    // If user doesn't exist, create them and force onboarding
     if (!user) {
       try {
+        console.log('🆕 Creating new user from OAuth signup:', userEmail);
         const newUser = await prisma.user.create({
           data: {
             id: clerkUser.id,
             email: userEmail,
             name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
             passwordHash: 'clerk_managed',
-            role: 'jobseeker', // Temporary default - will be updated by role selection
-            onboardingCompleted: false,
+            role: 'jobseeker', // Default role - can be changed in onboarding
+            onboardingCompleted: false, // Always false for new users
+            createdAt: new Date(), // Explicitly set creation time
           },
           select: {
             id: true,

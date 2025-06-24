@@ -31,10 +31,18 @@ export default function OnboardingClient({ user, clerkUserId }: OnboardingClient
   const router = useRouter();
   const [isCompleting, setIsCompleting] = useState(false);
   const [currentUser, setCurrentUser] = useState(user);
+  
+  // Debug logging
+  console.log('🔍 OnboardingClient - User data:', {
+    email: user.email,
+    onboardingCompleted: user.onboardingCompleted,
+    role: user.role,
+    createdAt: user.createdAt,
+  });
+  
   const [showRoleSelection, setShowRoleSelection] = useState(
-    // Show role selection for new users (created today) who haven't completed onboarding
-    !user.onboardingCompleted && 
-    new Date(user.createdAt).toDateString() === new Date().toDateString()
+    // Show role selection for users who haven't completed onboarding
+    !user.onboardingCompleted
   );
   
   // Use conversational onboarding instead of form-based
