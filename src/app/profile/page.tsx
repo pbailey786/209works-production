@@ -30,6 +30,7 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import ProfileCompletionTracker from '../../components/profile/ProfileCompletionTracker';
 import AchievementBadges from '../../components/profile/AchievementBadges';
+import SkillSuggestionCard from '../../components/profile/SkillSuggestionCard';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -468,6 +469,21 @@ export default function ProfilePage() {
                     layout="minimal"
                     size="sm"
                     showPoints={false}
+                  />
+                </div>
+
+                {/* AI Skill Suggestions */}
+                <div className="mt-6 border-t border-gray-200 pt-6">
+                  <SkillSuggestionCard 
+                    user={profile}
+                    onSkillAdd={(skill) => {
+                      // Add the suggested skill to the user's skills
+                      const currentSkills = skills ? skills.split(',').map(s => s.trim()) : [];
+                      if (!currentSkills.includes(skill)) {
+                        const newSkills = [...currentSkills, skill].join(', ');
+                        setSkills(newSkills);
+                      }
+                    }}
                   />
                 </div>
 
