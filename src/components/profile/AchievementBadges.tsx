@@ -95,36 +95,36 @@ const iconMap = {
   building: { outline: BuildingOfficeIcon, solid: BuildingOfficeIconSolid }
 };
 
-const rarityStyles = {
+const rarityColors = {
   common: {
-    gradient: 'from-slate-400 via-slate-500 to-slate-600',
-    glow: 'shadow-slate-300/50',
-    border: 'border-slate-300',
-    text: 'text-slate-800'
+    bg: 'bg-gray-100',
+    icon: 'text-gray-600',
+    border: 'border-gray-300',
+    accent: 'bg-gray-500'
   },
   uncommon: {
-    gradient: 'from-green-400 via-green-500 to-green-600',
-    glow: 'shadow-green-300/50',
-    border: 'border-green-300',
-    text: 'text-green-800'
+    bg: 'bg-green-50',
+    icon: 'text-green-600',
+    border: 'border-green-200',
+    accent: 'bg-green-500'
   },
   rare: {
-    gradient: 'from-blue-400 via-blue-500 to-blue-600',
-    glow: 'shadow-blue-300/50',
-    border: 'border-blue-300',
-    text: 'text-blue-800'
+    bg: 'bg-blue-50',
+    icon: 'text-blue-600',
+    border: 'border-blue-200',
+    accent: 'bg-blue-500'
   },
   epic: {
-    gradient: 'from-purple-400 via-purple-500 to-purple-600',
-    glow: 'shadow-purple-300/50',
-    border: 'border-purple-300',
-    text: 'text-purple-800'
+    bg: 'bg-purple-50',
+    icon: 'text-purple-600',
+    border: 'border-purple-200',
+    accent: 'bg-purple-500'
   },
   legendary: {
-    gradient: 'from-yellow-400 via-orange-500 to-red-500',
-    glow: 'shadow-yellow-300/50',
-    border: 'border-yellow-400',
-    text: 'text-yellow-900'
+    bg: 'bg-gradient-to-br from-yellow-50 to-orange-50',
+    icon: 'text-orange-600',
+    border: 'border-yellow-300',
+    accent: 'bg-gradient-to-r from-yellow-500 to-orange-500'
   }
 };
 
@@ -434,7 +434,7 @@ interface AchievementBadgesProps {
   unlockedOnly?: boolean;
   maxDisplay?: number;
   showPoints?: boolean;
-  layout?: 'grid' | 'horizontal';
+  layout?: 'minimal' | 'detailed';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -445,7 +445,7 @@ export default function AchievementBadges({
   unlockedOnly = false,
   maxDisplay,
   showPoints = true,
-  layout = 'horizontal',
+  layout = 'minimal',
   size = 'md',
   className = ''
 }: AchievementBadgesProps) {
@@ -467,168 +467,36 @@ export default function AchievementBadges({
 
   const totalPoints = unlockedAchievements.reduce((sum, achievement) => sum + achievement.points, 0);
 
-  if (layout === 'horizontal') {
-    return (
-      <div className={className}>
-        {/* Points Display */}
-        {showPoints && unlockedAchievements.length > 0 && (
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <TrophyIconSolid className="mr-2 h-5 w-5 text-yellow-600" />
-              <span className="font-semibold text-gray-900">
-                {totalPoints} Achievement Points
-              </span>
-            </div>
-            <span className="text-sm text-gray-500">
-              {unlockedAchievements.length}/{allAchievements.length} unlocked
-            </span>
-          </div>
-        )}
-
-        {/* Horizontal Scrollable Achievement List */}
-        <div className="overflow-x-auto">
-          <div className="flex space-x-4 pb-2">
-            <AnimatePresence>
-              {achievementsToShow.map((achievement) => {
-                const isUnlocked = achievement.condition(user, stats);
-                const IconComponent = iconMap[achievement.icon]?.[isUnlocked ? 'solid' : 'outline'] || TrophyIcon;
-                const rarityStyle = rarityStyles[achievement.rarity];
-
-                return (
-                  <motion.div
-                    key={achievement.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    whileHover={{ scale: 1.05 }}
-                    className={`relative group cursor-pointer flex-shrink-0 ${
-                      isUnlocked ? '' : 'opacity-60'
-                    }`}
-                    title={isUnlocked ? achievement.description : achievement.hint}
-                  >
-                    <div className={`
-                      flex flex-col items-center p-4 rounded-2xl border-2 transition-all duration-300 min-w-[120px] max-w-[140px]
-                      ${isUnlocked 
-                        ? `bg-gradient-to-br ${rarityStyle.gradient} ${rarityStyle.border} hover:shadow-lg hover:${rarityStyle.glow} text-white border-opacity-50`
-                        : 'bg-gray-100 border-gray-200 hover:bg-gray-200 text-gray-500'
-                      }
-                      relative overflow-hidden
-                    `}>
-                      {/* Glossy overlay */}
-                      {isUnlocked && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent rounded-2xl" />
-                      )}
-                      
-                      {/* Icon */}
-                      <div className="relative z-10 mb-3">
-                        <IconComponent className={`h-8 w-8 ${
-                          isUnlocked ? 'text-white drop-shadow-lg' : 'text-gray-400'
-                        }`} />
-                      </div>
-
-                      {/* Achievement Name */}
-                      <div className={`relative z-10 text-xs font-bold text-center leading-tight mb-2 ${
-                        isUnlocked ? 'text-white drop-shadow' : 'text-gray-600'
-                      }`}>
-                        {achievement.name}
-                      </div>
-
-                      {/* Points Badge */}
-                      {showPoints && isUnlocked && (
-                        <div className="absolute -top-2 -right-2 z-20">
-                          <div className="bg-yellow-400 text-yellow-900 rounded-full px-2 py-1 text-xs font-bold shadow-lg border-2 border-yellow-300">
-                            {achievement.points}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Rarity Gems */}
-                      {isUnlocked && achievement.rarity !== 'common' && (
-                        <div className="absolute bottom-2 right-2 z-10">
-                          <div className={`h-2 w-2 rounded-full ${
-                            achievement.rarity === 'legendary' ? 'bg-yellow-300 shadow-yellow-300/50' :
-                            achievement.rarity === 'epic' ? 'bg-purple-300 shadow-purple-300/50' :
-                            achievement.rarity === 'rare' ? 'bg-blue-300 shadow-blue-300/50' :
-                            'bg-green-300 shadow-green-300/50'
-                          } shadow-lg`} />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Enhanced Tooltip */}
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-gray-900 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30 whitespace-nowrap max-w-xs shadow-xl">
-                      <div className="font-semibold mb-1">{achievement.name}</div>
-                      <div className="text-gray-300">
-                        {isUnlocked ? achievement.description : achievement.hint}
-                      </div>
-                      {isUnlocked && (
-                        <div className="text-yellow-400 font-semibold mt-1">
-                          +{achievement.points} points
-                        </div>
-                      )}
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Achievement Categories Legend */}
-        {!unlockedOnly && (
-          <div className="mt-4 flex flex-wrap gap-4 text-xs text-gray-600">
-            <div className="flex items-center">
-              <div className="mr-1 h-2 w-2 rounded-full bg-blue-400" />
-              Profile
-            </div>
-            <div className="flex items-center">
-              <div className="mr-1 h-2 w-2 rounded-full bg-green-400" />
-              Activity
-            </div>
-            <div className="flex items-center">
-              <div className="mr-1 h-2 w-2 rounded-full bg-pink-400" />
-              Social
-            </div>
-            <div className="flex items-center">
-              <div className="mr-1 h-2 w-2 rounded-full bg-purple-400" />
-              Engagement
-            </div>
-            <div className="flex items-center">
-              <div className="mr-1 h-2 w-2 rounded-full bg-yellow-400" />
-              Milestone
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Grid layout (original design for comparison)
+  // Minimal clean design with small badges
   return (
     <div className={className}>
-      {/* Points Display */}
+      {/* Summary Stats */}
       {showPoints && unlockedAchievements.length > 0 && (
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <TrophyIconSolid className="mr-2 h-5 w-5 text-yellow-600" />
-            <span className="font-semibold text-gray-900">
-              {totalPoints} Achievement Points
-            </span>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center">
+              <TrophyIconSolid className="mr-2 h-4 w-4 text-yellow-600" />
+              <span className="text-sm font-semibold text-gray-700">
+                {totalPoints} points
+              </span>
+            </div>
+            <div className="text-sm text-gray-500">
+              {unlockedAchievements.length} unlocked
+            </div>
           </div>
-          <span className="text-sm text-gray-500">
-            {unlockedAchievements.length}/{allAchievements.length} unlocked
-          </span>
+          <div className="text-xs text-gray-400">
+            {allAchievements.length} total
+          </div>
         </div>
       )}
 
-      {/* Achievement Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+      {/* Achievement Badges - Clean Grid */}
+      <div className="flex flex-wrap gap-2">
         <AnimatePresence>
           {achievementsToShow.map((achievement) => {
             const isUnlocked = achievement.condition(user, stats);
             const IconComponent = iconMap[achievement.icon]?.[isUnlocked ? 'solid' : 'outline'] || TrophyIcon;
-            const rarityStyle = rarityStyles[achievement.rarity];
+            const rarityStyle = rarityColors[achievement.rarity];
 
             return (
               <motion.div
@@ -636,45 +504,95 @@ export default function AchievementBadges({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.1 }}
                 className={`relative group cursor-pointer ${
-                  isUnlocked ? '' : 'opacity-50'
+                  isUnlocked ? '' : 'opacity-40'
                 }`}
-                title={isUnlocked ? achievement.description : achievement.hint}
               >
+                {/* Small Badge Circle */}
                 <div className={`
-                  flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200
+                  w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all duration-200
                   ${isUnlocked 
-                    ? `bg-gradient-to-br ${rarityStyle.gradient} ${rarityStyle.border} hover:shadow-lg hover:${rarityStyle.glow} text-white` 
+                    ? `${rarityStyle.bg} ${rarityStyle.border} shadow-sm hover:shadow-md` 
                     : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                   }
                 `}>
-                  {/* Icon */}
-                  <div className="mb-2">
-                    <IconComponent className={`h-8 w-8 ${
-                      isUnlocked ? 'text-white' : 'text-gray-400'
-                    }`} />
-                  </div>
-
-                  {/* Achievement Name */}
-                  <div className={`text-xs font-medium text-center leading-tight ${
-                    isUnlocked ? 'text-white' : 'text-gray-500'
-                  }`}>
-                    {achievement.name}
-                  </div>
-
-                  {/* Points Badge */}
-                  {showPoints && isUnlocked && (
-                    <div className="absolute -top-1 -right-1 rounded-full bg-yellow-400 px-1.5 py-0.5 text-xs font-bold text-yellow-900">
-                      {achievement.points}
+                  <IconComponent className={`w-4 h-4 ${
+                    isUnlocked ? rarityStyle.icon : 'text-gray-400'
+                  }`} />
+                  
+                  {/* Rarity Indicator */}
+                  {isUnlocked && achievement.rarity !== 'common' && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full border border-white shadow-sm">
+                      <div className={`w-full h-full rounded-full ${
+                        achievement.rarity === 'legendary' ? 'bg-gradient-to-r from-yellow-400 to-orange-500' :
+                        achievement.rarity === 'epic' ? 'bg-purple-500' :
+                        achievement.rarity === 'rare' ? 'bg-blue-500' :
+                        'bg-green-500'
+                      }`} />
                     </div>
                   )}
+                </div>
+
+                {/* Hover Tooltip Card */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-white border border-gray-200 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30 whitespace-nowrap min-w-[200px]">
+                  {/* Achievement Header */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="font-semibold text-gray-900">{achievement.name}</div>
+                    {isUnlocked && (
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs font-medium text-yellow-600">+{achievement.points}</span>
+                        <div className={`w-2 h-2 rounded-full ${
+                          achievement.rarity === 'legendary' ? 'bg-gradient-to-r from-yellow-400 to-orange-500' :
+                          achievement.rarity === 'epic' ? 'bg-purple-500' :
+                          achievement.rarity === 'rare' ? 'bg-blue-500' :
+                          achievement.rarity === 'uncommon' ? 'bg-green-500' :
+                          'bg-gray-400'
+                        }`} />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Description */}
+                  <div className="text-xs text-gray-600 mb-2">
+                    {isUnlocked ? achievement.description : achievement.hint}
+                  </div>
+                  
+                  {/* Category & Rarity */}
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="capitalize text-gray-500">{achievement.category}</span>
+                    <span className={`capitalize font-medium ${
+                      achievement.rarity === 'legendary' ? 'text-orange-600' :
+                      achievement.rarity === 'epic' ? 'text-purple-600' :
+                      achievement.rarity === 'rare' ? 'text-blue-600' :
+                      achievement.rarity === 'uncommon' ? 'text-green-600' :
+                      'text-gray-600'
+                    }`}>
+                      {achievement.rarity}
+                    </span>
+                  </div>
+                  
+                  {/* Tooltip Arrow */}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-white" />
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-200 mt-px" />
                 </div>
               </motion.div>
             );
           })}
         </AnimatePresence>
       </div>
+
+      {/* Show More Indicator */}
+      {maxDisplay && allAchievements.length > maxDisplay && (
+        <div className="mt-3 text-center">
+          <span className="text-xs text-gray-500">
+            {unlockedOnly ? 
+              `+${Math.max(0, unlockedAchievements.length - maxDisplay)} more unlocked` :
+              `+${allAchievements.length - maxDisplay} more achievements`
+            }
+          </span>
+        </div>
+      )}
     </div>
   );
 }

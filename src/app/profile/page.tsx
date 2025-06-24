@@ -464,8 +464,8 @@ export default function ProfilePage() {
                     user={profile} 
                     stats={stats}
                     unlockedOnly={true}
-                    maxDisplay={6}
-                    layout="horizontal"
+                    maxDisplay={8}
+                    layout="minimal"
                     size="sm"
                     showPoints={false}
                   />
