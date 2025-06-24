@@ -208,6 +208,7 @@ export const FEATURES = {
 
 - **Current**: Clerk authentication with feature flag protection
 - **URLs**: `/sign-in` and `/sign-up` (with hyphens)
+- **OAuth Flow**: Both sign-in and sign-up redirect to `/auth-redirect` which handles onboarding logic
 - **Environment Variables**:
   ```
   NEXT_PUBLIC_ENABLE_CLERK_AUTH=true
@@ -215,8 +216,8 @@ export const FEATURES = {
   CLERK_SECRET_KEY=sk_test_...
   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-  NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-  NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/auth-redirect
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/auth-redirect
   ```
 
 ### Database Schema
