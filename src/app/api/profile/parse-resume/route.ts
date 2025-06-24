@@ -1,8 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureUserExists } from '@/lib/auth/user-sync';
 import { getChatCompletion } from '@/lib/openai';
-import pdf from 'pdf-parse';
-import mammoth from 'mammoth';
+
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
+// Dynamic imports to avoid build-time issues
+let pdf: any;
+let mammoth: any;
+
+// Initialize libraries only when needed
+async function initLibraries() {
+  if (!pdf) {
+    pdf = (await import('pdf-parse')).default;
+  }
+  if (!mammoth) {
+    mammoth = await import('mammoth');
+  }
+}
 
 // File type definitions
 const SUPPORTED_FILE_TYPES = {
@@ -106,6 +121,9 @@ export async function POST(req: NextRequest) {
     let extractedText = '';
 
     try {
+      // Initialize libraries dynamically
+      await initLibraries();
+      
       // Extract text based on file type
       if (fileType === 'pdf') {
         const buffer = Buffer.from(await file.arrayBuffer());
