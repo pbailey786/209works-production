@@ -1,65 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '../../auth/authOptions';
-import { prisma } from '../../auth/prisma';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
-import { normalizeEmail } from '@/lib/utils/email-utils';
+import { currentUser } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/database/prisma';
+import { ensureUserExists } from '@/lib/auth/user-sync';
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-    if (!session!.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get current user by email
+    // Ensure user exists in database (auto-sync with Clerk)
+    const baseUser = await ensureUserExists();
+    
+    // Get current user from database
     const currentUser = await prisma.user.findUnique({
-      where: { email: session!.user?.email },
+      where: { email: baseUser.email },
     });
 
     if (!currentUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const { name, email, bio, location, phone, website, companyWebsite } =
-      await req.json();
+    const { 
+      name, 
+      email, 
+      bio, 
+      location, 
+      phone, 
+      website, 
+      companyWebsite,
+      skills,
+      profileStrength
+    } = await req.json();
 
-    // Validate required fields
-    if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
-    }
-
-    // Normalize email for case-insensitive comparison
-    const normalizedEmail = normalizeEmail(email);
-    const normalizedSessionEmail = normalizeEmail(session!.user?.email || '');
-
-    // Check if email is already taken by another user
-    if (normalizedEmail !== normalizedSessionEmail) {
-      const existingUser = await prisma.user.findUnique({
-        where: { email: normalizedEmail },
-      });
-
-      if (existingUser && existingUser.id !== currentUser.id) {
-        return NextResponse.json(
-          { error: 'Email is already taken' },
-          { status: 400 }
-        );
-      }
-    }
+    // Update data object with only provided fields
+    const updateData: any = {};
+    
+    if (name !== undefined) updateData.name = name;
+    if (bio !== undefined) updateData.bio = bio;
+    if (location !== undefined) updateData.location = location;
+    if (phone !== undefined) updateData.phoneNumber = phone;
+    if (companyWebsite !== undefined) updateData.companyWebsite = companyWebsite;
+    if (skills !== undefined) updateData.skills = skills;
+    if (profileStrength !== undefined) updateData.profileStrength = profileStrength;
 
     // Update user profile
     const updatedUser = await prisma.user.update({
       where: { id: currentUser.id },
-      data: {
-        name: name || null,
-        email: normalizedEmail,
-        bio: bio || null,
-        location: location || null,
-        phoneNumber: phone || null, // Use phoneNumber field
-        companyWebsite: companyWebsite || null,
-      },
+      data: updateData,
       select: {
         id: true,
         name: true,
@@ -68,6 +52,8 @@ export async function POST(req: NextRequest) {
         location: true,
         phoneNumber: true,
         companyWebsite: true,
+        skills: true,
+        profileStrength: true,
       },
     });
 

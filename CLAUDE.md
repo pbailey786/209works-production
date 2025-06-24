@@ -80,6 +80,7 @@ npm run queue:status          # Check email queue status
 ### Key Features
 
 - **AI-Powered Job Search**: Conversational interface with JobsGPT
+- **"Should I Apply?" AI Matching**: Personalized job fit analysis with local insights
 - **Vector Semantic Search**: Advanced job matching using embeddings
 - **Hyperlocal Intelligence**: Deep knowledge of Central Valley region
 - **Multi-Area Support**: 209, 916, 510, NorCal regions
@@ -202,6 +203,7 @@ src/
 ✅ **Job Seekers Can:**
 - Create compelling profiles with gamification
 - Get AI-powered skill suggestions
+- Use "Should I Apply?" AI job matching analysis
 - Build .works career stories
 - Search and apply for jobs
 - Track applications and saved jobs
@@ -264,6 +266,8 @@ src/
 ### **Current:** Phase 5A+ (Profile Enhancement) - Almost Done ✅
 - Profile gamification ✅
 - AI skill suggestions ✅
+- "Should I Apply?" AI job matching ✅
+- .works resume builder on dashboard ✅
 - Testing and refinement
 
 ### **Next 11 Weeks:**

@@ -21,6 +21,35 @@ import {
 } from 'lucide-react';
 import SkillSuggestionCard from '../../components/profile/SkillSuggestionCard';
 
+// Calculate profile strength based on profile completeness
+function calculateProfileStrength(profile: any): number {
+  if (!profile) return 0;
+  
+  let score = 0;
+  const maxScore = 100;
+  
+  // Basic info (40 points)
+  if (profile.name) score += 10;
+  if (profile.email) score += 10;
+  if (profile.location) score += 10;
+  if (profile.bio) score += 10;
+  
+  // Skills (30 points)
+  if (profile.skills && profile.skills.length > 0) {
+    score += Math.min(30, profile.skills.length * 5); // 5 points per skill, max 30
+  }
+  
+  // Experience (20 points)
+  if (profile.currentJobTitle) score += 10;
+  if (profile.educationExperience) score += 10;
+  
+  // Additional info (10 points)
+  if (profile.phoneNumber) score += 5;
+  if (profile.profilePicture) score += 5;
+  
+  return Math.min(score, maxScore);
+}
+
 interface SimpleStats {
   savedJobs: number;
   activeAlerts: number;
@@ -127,7 +156,11 @@ export default function SimpleJobSeekerDashboard() {
         const profileResponse = await fetch('/api/profile');
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
-          setProfile(profileData.user);
+          const profileWithStrength = {
+            ...profileData.user,
+            profileStrength: profileData.user.profileStrength || calculateProfileStrength(profileData.user)
+          };
+          setProfile(profileWithStrength);
         }
       } catch (error) {
         console.error('Error loading dashboard:', error);
@@ -155,6 +188,9 @@ export default function SimpleJobSeekerDashboard() {
           // Add any profile fields that might be edited on dashboard
           profileStrength: profile.profileStrength,
           skills: profile.skills,
+          name: profile.name,
+          bio: profile.bio,
+          location: profile.location,
           // Add other fields as needed
         }),
       });
@@ -375,10 +411,19 @@ export default function SimpleJobSeekerDashboard() {
               user={profile}
               onSkillAdd={(skill) => {
                 // Add skill to profile and mark as unsaved
-                setProfile((prev: any) => ({
-                  ...prev,
-                  skills: [...(prev?.skills || []), skill]
-                }));
+                setProfile((prev: any) => {
+                  const newSkills = [...(prev?.skills || []), skill];
+                  const newProfileStrength = calculateProfileStrength({
+                    ...prev,
+                    skills: newSkills
+                  });
+                  
+                  return {
+                    ...prev,
+                    skills: newSkills,
+                    profileStrength: newProfileStrength
+                  };
+                });
                 setHasUnsavedChanges(true);
               }}
               className="shadow-xl"
