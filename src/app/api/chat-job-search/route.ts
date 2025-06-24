@@ -15,6 +15,7 @@ import {
 import authOptions from '../auth/authOptions';
 import { generateJobSearchResponse } from '@/lib/ai';
 import Anthropic from '@anthropic-ai/sdk';
+import { OpenAI } from 'openai';
 
 // Type definitions for conversation messages
 interface ConversationMessage {
