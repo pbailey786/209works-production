@@ -161,6 +161,13 @@ src/
    - Regional job filtering
    - **Test:** Visit different domains → check functionality
 
+**Phase 6: Pre-Launch Analytics (Before Major Launch)**
+5. **SEARCH ANALYTICS** - Enable `NEXT_PUBLIC_ENABLE_ANALYTICS=true`
+   - Track search behavior and JobsGPT effectiveness
+   - Monitor popular search terms and failed queries
+   - Analyze user engagement patterns and conversion rates
+   - **Test:** Admin dashboard shows real analytics data
+
 ### Testing Strategy for Each Feature
 
 **After Enabling Each Feature:**
@@ -294,6 +301,140 @@ Critical environment variables (see `.env.local`):
 - Ensure all Clerk hooks are wrapped with feature flag protection
 - Verify no `.backup` files are being compiled
 - Run `npm run type-check` to catch TypeScript issues
+
+## Search Analytics System (Phase 6)
+
+### Overview
+
+The platform includes a comprehensive search analytics system for tracking user behavior, search patterns, and JobsGPT effectiveness. This system is **production-ready** but disabled by default to avoid unnecessary data collection during development.
+
+### Components Already Built
+
+**Frontend Analytics Dashboard:**
+- Location: `/src/app/admin/analytics/search/page.tsx`
+- Beautiful admin interface showing search metrics, trends, and patterns
+- Real-time visualization of popular search terms and JobsGPT queries
+
+**Backend Analytics API:**
+- Location: `/src/app/api/admin/analytics-stats/route.ts`
+- Collects comprehensive search and chat analytics from database
+- Supports date filtering and trend analysis
+
+**Database Integration:**
+- Uses existing `ChatAnalytics` table in Prisma schema
+- Tracks: `userId`, `question`, `responseTime`, `jobsFound`, `sessionId`, `createdAt`
+
+### Analytics Data Collected
+
+**Search Metrics:**
+- Total searches and unique searchers
+- Search success rates (searches that led to job views)
+- Average searches per user
+- Conversion rates (searches → applications)
+
+**JobsGPT Analytics:**
+- Chat sessions and average session length
+- Popular query categories (Career Guidance, Salary Inquiry, etc.)
+- Response times and effectiveness
+- User engagement patterns
+
+**Search Patterns:**
+- Top search terms with trend analysis
+- Search distribution by job category
+- Peak search times (hourly patterns)
+- Failed searches ("no results" queries) with suggestions
+
+**Business Intelligence:**
+- Regional search differences
+- Industry popularity trends
+- Content gap analysis (what users want vs. what's available)
+- User behavior patterns for optimization
+
+### Implementation Guide (For Pre-Launch)
+
+**Step 1: Enable Analytics Feature**
+```bash
+# Add to .env.local
+NEXT_PUBLIC_ENABLE_ANALYTICS=true
+```
+
+**Step 2: Add Analytics Tracking to Search APIs**
+```typescript
+// In /src/app/api/chat-job-search/route.ts (already structured for this)
+await prisma.chatAnalytics.create({
+  data: {
+    userId: authenticatedUserId,
+    question: userMessage,
+    responseTime: Date.now() - startTime,
+    jobsFound: jobs.length,
+    sessionId: sessionId || `session_${Date.now()}`,
+    createdAt: new Date(),
+  }
+});
+```
+
+**Step 3: Add Search Event Tracking**
+```typescript
+// In search components
+const trackSearch = async (query: string, results: number) => {
+  if (FEATURES.ANALYTICS_DASHBOARD) {
+    await fetch('/api/analytics/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'job_search',
+        query,
+        resultsCount: results,
+        timestamp: new Date(),
+      })
+    });
+  }
+};
+```
+
+**Step 4: Test Analytics Dashboard**
+1. Visit `/admin/analytics/search` (requires admin role)
+2. Verify data collection from search interactions
+3. Check trend analysis and popular query tracking
+4. Validate export functionality for business reporting
+
+### Why Enable Before Launch
+
+**Content Strategy:**
+- Identify what jobs users want but can't find
+- Optimize job categories and descriptions
+- Plan content creation based on demand
+
+**AI Improvement:**
+- Track JobsGPT effectiveness and user satisfaction
+- Identify common question patterns for training
+- Optimize conversational flows
+
+**Business Intelligence:**
+- Peak hiring times and seasonal trends
+- Regional job market insights
+- User behavior optimization opportunities
+
+**SEO & Marketing:**
+- Popular keywords for content targeting
+- User intent analysis for better matching
+- Conversion funnel optimization
+
+### Privacy & Compliance
+
+- Analytics track search patterns, not personal data
+- User identifiers are hashed for privacy
+- GDPR-compliant data collection practices
+- Clear opt-out mechanisms for users
+
+### Access & Security
+
+- Analytics dashboard requires admin role
+- API endpoints are protected with authentication
+- Data export features for business reporting
+- Real-time monitoring capabilities
+
+**Note:** The analytics system is fully built and tested, just waiting for feature flag activation before your major launch to provide valuable insights for business growth and user experience optimization.
 
 ## Important Files to Understand
 

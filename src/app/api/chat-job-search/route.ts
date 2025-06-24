@@ -502,7 +502,7 @@ export const POST = withAISecurity(
           The user said: "${userMessage}"
           
           Previous conversation:
-          ${conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
+          ${conversationHistory.map((msg: ConversationMessage) => `${msg.role}: ${msg.content}`).join('\n')}
           
           Your goal is to:
           1. Acknowledge what they said
