@@ -457,6 +457,20 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
+                {/* Profile Completion Tracker */}
+                {profile && (
+                  <div className="mb-6">
+                    <ProfileCompletionTracker user={profile} />
+                  </div>
+                )}
+
+                {/* Achievement Badges */}
+                {profile && (
+                  <div className="mb-6">
+                    <AchievementBadges user={profile} />
+                  </div>
+                )}
+
                 {/* Quick Actions */}
                 <div className="space-y-3">
                   <Link

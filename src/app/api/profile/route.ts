@@ -34,6 +34,10 @@ export async function GET(req: NextRequest) {
         workAuthorization: true,
         educationExperience: true,
         isProfilePublic: true,
+        // Gamification fields
+        achievements: true,
+        profileStrength: true,
+        lastActivityDate: true,
       },
     });
 
@@ -72,6 +76,10 @@ export async function PATCH(req: NextRequest) {
       workAuthorization,
       educationExperience,
       isProfilePublic,
+      // Gamification fields
+      achievements,
+      profileStrength,
+      lastActivityDate,
     } = await req.json();
 
     // Get full user data for password validation if needed
@@ -98,6 +106,10 @@ export async function PATCH(req: NextRequest) {
     updateData.educationExperience = educationExperience;
   if (isProfilePublic !== undefined)
     updateData.isProfilePublic = isProfilePublic;
+  // Gamification fields
+  if (achievements !== undefined) updateData.achievements = achievements;
+  if (profileStrength !== undefined) updateData.profileStrength = profileStrength;
+  if (lastActivityDate !== undefined) updateData.lastActivityDate = lastActivityDate;
   if (newPassword) {
     if (!currentPassword) {
       return NextResponse.json(

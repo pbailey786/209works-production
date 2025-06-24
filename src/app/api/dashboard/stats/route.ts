@@ -22,6 +22,9 @@ export async function GET(req: NextRequest) {
       activeAlertsCount,
       searchHistoryCount,
       applicationsCount,
+      chatSessionsCount,
+      profileViewsCount,
+      userProfile,
       recentSearches,
       recentActivity,
     ] = await Promise.all([
@@ -56,6 +59,24 @@ export async function GET(req: NextRequest) {
         where: {
           userId,
           status: { not: 'saved' }, // Exclude saved jobs, only count actual applications
+        },
+      }),
+
+      // Count chat sessions (for gamification)
+      prisma.chatAnalytics.count({
+        where: { userId },
+      }),
+
+      // Count profile views (mock for now - could be implemented with analytics)
+      Promise.resolve(0), // Placeholder for profile views
+
+      // Get user profile for gamification data
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          achievements: true,
+          profileStrength: true,
+          lastActivityDate: true,
         },
       }),
 
@@ -99,6 +120,12 @@ export async function GET(req: NextRequest) {
         activeAlerts: activeAlertsCount,
         searchHistory: searchHistoryCount,
         applicationsSubmitted: applicationsCount,
+        // Gamification stats
+        chatSessions: chatSessionsCount,
+        profileViews: profileViewsCount,
+        achievements: userProfile?.achievements || [],
+        profileStrength: userProfile?.profileStrength || 0,
+        lastActivityDate: userProfile?.lastActivityDate,
       },
       recentSearches,
       recentActivity: recentActivity.map(savedJob => ({
