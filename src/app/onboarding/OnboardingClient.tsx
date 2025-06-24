@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import RoleSelection from '@/components/onboarding/RoleSelection';
+import ConversationalOnboarding from '@/components/onboarding/ConversationalOnboarding';
 
 interface User {
   id: string;
@@ -35,6 +36,9 @@ export default function OnboardingClient({ user, clerkUserId }: OnboardingClient
     !user.onboardingCompleted && 
     new Date(user.createdAt).toDateString() === new Date().toDateString()
   );
+  
+  // Use conversational onboarding instead of form-based
+  const [useConversationalOnboarding] = useState(true);
 
   // Ensure user is synced to database on component mount
   useEffect(() => {
@@ -132,9 +136,38 @@ export default function OnboardingClient({ user, clerkUserId }: OnboardingClient
     );
   }
 
+  // Use conversational onboarding instead of form-based
+  if (useConversationalOnboarding) {
+    return (
+      <ConversationalOnboarding
+        user={{
+          id: currentUser.id,
+          name: currentUser.name,
+          email: currentUser.email,
+          role: currentUser.role
+        }}
+        onComplete={handleOnboardingComplete}
+      />
+    );
+  }
+
+  // OLD FORM-BASED ONBOARDING (commented out but kept for future use)
+  // return (
+  //   <OnboardingWizard
+  //     userRole={currentUser.role as 'jobseeker' | 'employer'}
+  //     onComplete={handleOnboardingComplete}
+  //   />
+  // );
+
+  // Fallback to conversational (this shouldn't happen with current logic)
   return (
-    <OnboardingWizard
-      userRole={currentUser.role as 'jobseeker' | 'employer'}
+    <ConversationalOnboarding
+      user={{
+        id: currentUser.id,
+        name: currentUser.name,
+        email: currentUser.email,
+        role: currentUser.role
+      }}
       onComplete={handleOnboardingComplete}
     />
   );
