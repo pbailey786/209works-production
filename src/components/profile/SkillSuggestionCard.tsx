@@ -159,22 +159,27 @@ export default function SkillSuggestionCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <SparklesIconSolid className="h-6 w-6 text-white mr-3" />
-            <div>
-              <h3 className="text-xl font-bold text-white">Skill Development Center</h3>
-              <p className="text-purple-100 text-sm">Professional skills to boost your career in the 209</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xl font-bold text-white">Build Your .works Resume</h3>
+              <p className="text-purple-100 text-sm">AI-powered skills & story builder for Central Valley employers</p>
             </div>
           </div>
           <button
             onClick={generateSuggestions}
             disabled={loading}
-            className="flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
+            className="flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium transition-colors disabled:opacity-50 flex-shrink-0 whitespace-nowrap"
           >
             {loading ? (
               <ArrowPathIcon className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <LightBulbIconSolid className="h-4 w-4 mr-2" />
             )}
-            {loading ? 'Analyzing...' : suggestions ? 'Refresh' : 'Get Suggestions'}
+            <span className="hidden sm:inline">
+              {loading ? 'Analyzing...' : suggestions ? 'Refresh' : 'Get Suggestions'}
+            </span>
+            <span className="sm:hidden">
+              {loading ? '...' : suggestions ? '↻' : 'Start'}
+            </span>
           </button>
         </div>
       </div>
@@ -211,10 +216,12 @@ export default function SkillSuggestionCard({
           <div className="text-center py-12">
             <SparklesIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Enhance Your Professional Profile
+              Create Your .works Career Story
             </h4>
-            <p className="text-gray-600 mb-4">
-              Get personalized skill recommendations to strengthen your resume and stand out to Central Valley employers
+            <p className="text-gray-600 mb-4 max-w-lg mx-auto">
+              Our AI analyzes your experience and suggests skills that Central Valley employers actually want. 
+              Build a compelling career narrative that goes beyond a traditional resume - 
+              show employers not just what you've done, but who you are and where you're going.
             </p>
             <button
               onClick={generateSuggestions}

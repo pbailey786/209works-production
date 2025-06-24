@@ -71,6 +71,11 @@ export const FEATURES = {
   CAREER_STORYTELLING: process.env.NEXT_PUBLIC_ENABLE_CAREER_STORYTELLING === 'true',
   CAREER_PREDICTOR: process.env.NEXT_PUBLIC_ENABLE_CAREER_PREDICTOR === 'true',
   
+  // .works Story System - Phase 5B
+  STORY_BUILDER: process.env.NEXT_PUBLIC_ENABLE_STORY_BUILDER === 'true',
+  EMPLOYER_STORY_VIEW: process.env.NEXT_PUBLIC_ENABLE_EMPLOYER_STORIES === 'true',
+  STORY_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_STORY_ANALYTICS === 'true',
+  
 } as const;
 
 /**
