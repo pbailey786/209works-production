@@ -1,7 +1,7 @@
 /**
- * Phase 1 Simplified Homepage
+ * Phase 1 Simplified Homepage with AI Chat Search
  * 
- * A minimal, fast-loading version of the homepage with only core functionality
+ * A minimal, fast-loading version of the homepage with AI-powered job search
  */
 
 'use client';
@@ -10,6 +10,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, ArrowRight, Heart, Shield, Zap, Briefcase } from 'lucide-react';
+import HomepageChat from '@/components/HomepageChat';
+import { FEATURES } from '@/lib/feature-flags';
 
 export default function HomeSimple() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,50 +52,57 @@ export default function HomeSimple() {
               </p>
             </div>
 
-            {/* Apple-style Search Form */}
-            <div className="mx-auto mb-12 max-w-3xl">
-              <form onSubmit={handleSearch} className="relative">
-                <div className="rounded-3xl border border-gray-200/60 bg-white/90 p-3 shadow-2xl backdrop-blur-sm">
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-6 top-1/2 h-6 w-6 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="What kind of work are you looking for?"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 py-4 pl-14 pr-6 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:scale-105"
-                    >
-                      <span>Search Jobs</span>
-                      <Search className="h-5 w-5 transition-transform group-hover:scale-110" />
-                    </button>
-                  </div>
-                </div>
-              </form>
-
-              {/* Apple-style Quick Search Suggestions */}
-              <div className="mt-8 flex flex-wrap justify-center gap-3">
-                {[
-                  'Healthcare Jobs',
-                  'Warehouse & Logistics', 
-                  'Customer Service',
-                  'Manufacturing'
-                ].map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    onClick={() => handleQuickSearch(suggestion)}
-                    className="rounded-full border-2 border-gray-200 bg-white/80 px-6 py-2 font-medium text-gray-700 backdrop-blur-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:scale-105"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
+            {/* AI-Powered Job Search */}
+            {FEATURES.AI_CHAT ? (
+              <div className="mx-auto mb-12">
+                <HomepageChat />
               </div>
-            </div>
+            ) : (
+              /* Fallback to regular search if AI is disabled */
+              <div className="mx-auto mb-12 max-w-3xl">
+                <form onSubmit={handleSearch} className="relative">
+                  <div className="rounded-3xl border border-gray-200/60 bg-white/90 p-3 shadow-2xl backdrop-blur-sm">
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-6 top-1/2 h-6 w-6 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="What kind of work are you looking for?"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 py-4 pl-14 pr-6 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:scale-105"
+                      >
+                        <span>Search Jobs</span>
+                        <Search className="h-5 w-5 transition-transform group-hover:scale-110" />
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                {/* Apple-style Quick Search Suggestions */}
+                <div className="mt-8 flex flex-wrap justify-center gap-3">
+                  {[
+                    'Healthcare Jobs',
+                    'Warehouse & Logistics', 
+                    'Customer Service',
+                    'Manufacturing'
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => handleQuickSearch(suggestion)}
+                      className="rounded-full border-2 border-gray-200 bg-white/80 px-6 py-2 font-medium text-gray-700 backdrop-blur-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:scale-105"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Apple-style CTA Button */}
             <Link

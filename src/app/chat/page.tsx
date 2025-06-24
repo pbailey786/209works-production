@@ -282,22 +282,22 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
   const handleApplyToJob = async (jobId: string) => {
     // Track the interaction
     await trackJobInteraction(jobId, 'applied');
-    // Send a message to the chat for application assistance
-    handleSendMessage(`I want to apply to job ${jobId}. Can you help me with the application process?`);
+    // Open job page in new window
+    window.open(`/jobs/${jobId}`, '_blank');
   };
 
   const handleViewJobDetails = async (jobId: string) => {
     // Track the interaction
     await trackJobInteraction(jobId, 'viewed');
-    // Send a message to the chat for more details
-    handleSendMessage(`Tell me more details about job ${jobId}`);
+    // Open job page in new window
+    window.open(`/jobs/${jobId}`, '_blank');
   };
 
   const handleSaveJob = async (jobId: string) => {
     // Track the interaction
     await trackJobInteraction(jobId, 'saved');
-    // Show confirmation
-    alert('Job saved! I\'ll remember your interest in this position.');
+    // Open job page in new window so they can save it
+    window.open(`/jobs/${jobId}`, '_blank');
   };
 
   // Voice input handlers
