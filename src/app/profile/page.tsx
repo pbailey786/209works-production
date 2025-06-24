@@ -70,7 +70,7 @@ export default function ProfilePage() {
   const [workAuthorization, setWorkAuthorization] = useState('');
   const [educationExperience, setEducationExperience] = useState('');
   const [isProfilePublic, setIsProfilePublic] = useState(false);
-  const jobTypeOptions = ['full-time', 'part-time', 'remote', 'contract'];
+  const jobTypeOptions = ['full-time', 'part-time', 'contract'];
   // Tab state for job tracking widgets
   const [activeTab, setActiveTab] = useState('Saved Jobs');
   const tabs = [
@@ -465,6 +465,7 @@ export default function ProfilePage() {
                     stats={stats}
                     unlockedOnly={true}
                     maxDisplay={6}
+                    layout="horizontal"
                     size="sm"
                     showPoints={false}
                   />

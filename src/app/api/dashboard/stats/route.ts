@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
-import { ensureUserExists } from '@/lib/auth/user-sync';
+import { prisma } from '../../../../lib/database/prisma';
+import { ensureUserExists } from '../../../../lib/auth/user-sync';
 
 export async function GET(req: NextRequest) {
   try {
