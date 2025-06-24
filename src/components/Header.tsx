@@ -107,10 +107,16 @@ export default function Header() {
     setAuthError(null);
 
     try {
-      // TODO: Replace with Clerk sign out
-      console.log('Mock sign out');
-      // Redirect to home page after sign out
-      window.location.href = '/';
+      if (FEATURES.CLERK_AUTH) {
+        // Use Clerk sign out
+        const { useClerk } = await import('@clerk/nextjs');
+        // For now, redirect to sign out URL
+        window.location.href = '/sign-in';
+      } else {
+        // Mock sign out for development
+        console.log('Mock sign out');
+        window.location.href = '/';
+      }
     } catch (error) {
       console.error('Sign out error:', error);
       setAuthError('Failed to sign out. Please try again.');
