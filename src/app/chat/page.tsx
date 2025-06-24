@@ -115,7 +115,7 @@ export default function ChatPage() {
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Hi there! I'm **Rust Moreno**, your AI job search assistant for the 209 area.
+          content: `Hi there! I'm your AI job search assistant for the 209 area.
 
 I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy, Manteca, and throughout the Central Valley.
 
@@ -222,7 +222,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
       {
         id: 'welcome',
         role: 'assistant',
-        content: `Hi there! I'm **Rust Moreno**, your AI job search assistant for the 209 area.
+        content: `Hi there! I'm your AI job search assistant for the 209 area.
 
 I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy, Manteca, and throughout the Central Valley.
 
@@ -392,7 +392,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
                 <SparklesIcon className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h2 className="text-sm font-medium text-gray-900">Rust Moreno</h2>
+                <h2 className="text-sm font-medium text-gray-900">JobsGPT</h2>
                 <p className="text-xs text-gray-500">209 Area Job Search Assistant</p>
               </div>
             </div>
@@ -424,7 +424,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
                         <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                         <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
-                      <span className="text-sm text-gray-500 ml-2">Rust is thinking...</span>
+                      <span className="text-sm text-gray-500 ml-2">Thinking...</span>
                     </div>
                   ) : (
                     <div className="prose prose-sm max-w-none">
@@ -556,7 +556,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
               </div>
             </div>
             <p className="mt-2 text-xs text-gray-500 text-center">
-              Rust may display inaccurate info, so double-check responses.
+              JobsGPT may display inaccurate info, so double-check responses.
               {speechSupported && <span> Voice input processes locally on your device.</span>}
               <a href="/privacy" className="text-orange-600 hover:underline ml-1">Your Privacy & Central AI</a>
             </p>

@@ -62,6 +62,7 @@ export default function Header() {
 
   const navigation = [
     { name: 'Find Jobs', href: '/jobs', icon: Search },
+    ...(FEATURES.AI ? [{ name: 'JobsGPT', href: '/chat', icon: Sparkles }] : []),
     { name: 'For Employers', href: '/employers', icon: Building2 },
     { name: 'About', href: '/about', icon: Heart },
     { name: 'Contact', href: '/contact', icon: FileText },

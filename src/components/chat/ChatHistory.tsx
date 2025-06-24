@@ -41,11 +41,16 @@ export default function ChatHistory({ onLoadConversation, className = '' }: Chat
   const [expandedConversation, setExpandedConversation] = useState<string | null>(null);
 
   useEffect(() => {
-    if (session?.user) {
-      fetchChatHistory();
-    } else {
-      setIsLoading(false);
-    }
+    // Temporarily disable chat history to prevent API errors
+    setIsLoading(false);
+    setConversations([]);
+    
+    // TODO: Re-enable when chat history API is stable
+    // if (session?.user) {
+    //   fetchChatHistory();
+    // } else {
+    //   setIsLoading(false);
+    // }
   }, [session]);
 
   const fetchChatHistory = async () => {
