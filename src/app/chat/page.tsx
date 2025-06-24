@@ -33,11 +33,18 @@ interface Message {
   metadata?: any;
 }
 
+// Import the ChatHistory component's interface to ensure compatibility
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
 interface ChatConversation {
   id: string;
   sessionId: string;
   title: string;
-  messages: Message[];
+  messages: ChatMessage[];
   lastActivity: string;
   createdAt: string;
 }
@@ -228,7 +235,18 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
   };
 
   const loadConversation = (conversation: ChatConversation) => {
-    setMessages(conversation.messages);
+    // Convert ChatMessage[] to Message[]
+    const convertedMessages: Message[] = conversation.messages.map((msg, index) => ({
+      id: `loaded-${index}-${Date.now()}`,
+      role: msg.role,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp),
+      typing: false,
+      jobs: [],
+      metadata: {}
+    }));
+    
+    setMessages(convertedMessages);
     setCurrentSessionId(conversation.sessionId);
     setSidebarOpen(false); // Close sidebar on mobile after loading
   };
