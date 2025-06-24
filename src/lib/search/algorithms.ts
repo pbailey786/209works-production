@@ -324,7 +324,7 @@ export class RelevanceScorer {
       city.includes('modesto') ||
       city.includes('tracy') ||
       city.includes('manteca') ||
-      targetCities.some(city => ['stockton', 'modesto', 'tracy', 'manteca'].includes(city.toLowerCase()));
+      targetCities.some((targetCity: string) => ['stockton', 'modesto', 'tracy', 'manteca'].includes(targetCity.toLowerCase()));
 
     if (is209Area) {
       localityScore += SEARCH_CONFIG.weights.hyperlocalBonus;
