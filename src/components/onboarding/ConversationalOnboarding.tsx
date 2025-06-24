@@ -230,7 +230,7 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
               const industry = resumeInfo.industries?.[0] || '';
               
               // Combine relevant info into skills array
-              const displaySkills = [];
+              const displaySkills: string[] = [];
               if (experience) displaySkills.push(experience);
               if (industry && industry !== experience) displaySkills.push(industry);
               displaySkills.push(...skills.slice(0, 3));

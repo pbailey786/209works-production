@@ -69,6 +69,11 @@ model User {
   lockedUntil          DateTime?
   mfaVerified          Boolean                    @default(false)
   stripeCustomerId     String?                    @unique
+  
+  // Profile Gamification Fields - Phase 5A+
+  achievements         String[]                   @default([]) // Array of achievement IDs: ["resume_detective", "skill_master", etc.]
+  profileStrength      Int                        @default(0) // 0-100 calculated profile completion score
+  lastActivityDate     DateTime?                  // Track user engagement for achievements
   alerts               Alert[]
   auditLogs            AuditLog[]
   emailAlerts          EmailAlert[]

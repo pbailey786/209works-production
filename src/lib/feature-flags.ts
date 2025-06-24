@@ -64,6 +64,13 @@ export const FEATURES = {
   // Authentication System - Phase 4A
   CLERK_AUTH: process.env.NEXT_PUBLIC_ENABLE_CLERK_AUTH === 'true',
   
+  // Profile Enhancement Features - Phase 5A+
+  PROFILE_GAMIFICATION: process.env.NEXT_PUBLIC_ENABLE_PROFILE_GAMIFICATION === 'true',
+  AI_SKILL_SUGGESTIONS: process.env.NEXT_PUBLIC_ENABLE_AI_SKILL_SUGGESTIONS === 'true',
+  LOCAL_INSIGHTS: process.env.NEXT_PUBLIC_ENABLE_LOCAL_INSIGHTS === 'true',
+  CAREER_STORYTELLING: process.env.NEXT_PUBLIC_ENABLE_CAREER_STORYTELLING === 'true',
+  CAREER_PREDICTOR: process.env.NEXT_PUBLIC_ENABLE_CAREER_PREDICTOR === 'true',
+  
 } as const;
 
 /**

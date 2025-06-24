@@ -28,6 +28,8 @@ import {
 } from '@heroicons/react/24/outline';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import ProfileCompletionTracker from '../../components/profile/ProfileCompletionTracker';
+import AchievementBadges from '../../components/profile/AchievementBadges';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -453,6 +455,19 @@ export default function ProfilePage() {
                     </div>
                     <ArrowTopRightOnSquareIcon className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
                   </Link>
+                </div>
+
+                {/* Achievement Showcase */}
+                <div className="mt-6 border-t border-gray-200 pt-6">
+                  <h3 className="mb-4 font-semibold text-gray-900">Recent Achievements</h3>
+                  <AchievementBadges 
+                    user={profile} 
+                    stats={stats}
+                    unlockedOnly={true}
+                    maxDisplay={6}
+                    size="sm"
+                    showPoints={false}
+                  />
                 </div>
 
                 {/* Profile Picture Upload */}
@@ -1196,54 +1211,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  {/* Profile Completion Widget */}
-                  <div className="rounded-xl border border-[#9fdf9f]/30 bg-[#9fdf9f]/10 p-6">
-                    <div className="mb-4 flex items-center justify-between">
-                      <div className="flex items-center">
-                        <UserCircleIcon className="mr-3 h-8 w-8 text-[#2d4a3e]" />
-                        <div>
-                          <h3 className="font-semibold text-gray-900">
-                            Profile Strength
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            Complete your profile
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-2xl font-bold text-[#2d4a3e]">
-                        {Math.round(
-                          (((name ? 1 : 0) +
-                            (location ? 1 : 0) +
-                            (currentJobTitle ? 1 : 0) +
-                            (skills ? 1 : 0) +
-                            (resumeUrl ? 1 : 0)) /
-                            5) *
-                            100
-                        )}
-                        %
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="h-2 w-full rounded-full bg-gray-200">
-                        <div
-                          className="h-2 rounded-full bg-[#2d4a3e] transition-all duration-300"
-                          style={{
-                            width: `${Math.round(
-                              (((name ? 1 : 0) +
-                                (location ? 1 : 0) +
-                                (currentJobTitle ? 1 : 0) +
-                                (skills ? 1 : 0) +
-                                (resumeUrl ? 1 : 0)) /
-                                5) *
-                                100
-                            )}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <p className="text-sm text-gray-600">
-                        A complete profile gets more employer attention
-                      </p>
-                    </div>
+                  {/* Enhanced Profile Completion Tracker */}
+                  <div className="md:col-span-2">
+                    <ProfileCompletionTracker user={profile} />
                   </div>
                 </div>
               </div>
