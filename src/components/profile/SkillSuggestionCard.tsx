@@ -160,8 +160,8 @@ export default function SkillSuggestionCard({
           <div className="flex items-center">
             <SparklesIconSolid className="h-6 w-6 text-white mr-3" />
             <div>
-              <h3 className="text-xl font-bold text-white">AI Skill Suggestions</h3>
-              <p className="text-purple-100 text-sm">Personalized recommendations for your career growth</p>
+              <h3 className="text-xl font-bold text-white">Skill Development Center</h3>
+              <p className="text-purple-100 text-sm">Professional skills to boost your career in the 209</p>
             </div>
           </div>
           <button
@@ -211,10 +211,10 @@ export default function SkillSuggestionCard({
           <div className="text-center py-12">
             <SparklesIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Discover Your Skill Potential
+              Enhance Your Professional Profile
             </h4>
             <p className="text-gray-600 mb-4">
-              Get AI-powered skill recommendations tailored to the Central Valley job market
+              Get personalized skill recommendations to strengthen your resume and stand out to Central Valley employers
             </p>
             <button
               onClick={generateSuggestions}
@@ -318,7 +318,7 @@ export default function SkillSuggestionCard({
                         </div>
 
                         {/* Skill Reason */}
-                        <p className="text-gray-700 text-sm mb-3">{suggestion.reason}</p>
+                        <p className="text-gray-700 text-sm mb-3 break-words">{suggestion.reason}</p>
 
                         {/* Expanded Details */}
                         <AnimatePresence>
@@ -344,9 +344,9 @@ export default function SkillSuggestionCard({
                                   </h5>
                                   <ul className="text-sm text-gray-600 space-y-1">
                                     {suggestion.learningResources.map((resource, idx) => (
-                                      <li key={idx} className="flex items-center">
-                                        <span className="w-1 h-1 bg-gray-400 rounded-full mr-2" />
-                                        {resource}
+                                      <li key={idx} className="flex items-start">
+                                        <span className="w-1 h-1 bg-gray-400 rounded-full mr-2 mt-2 flex-shrink-0" />
+                                        <span className="break-words">{resource}</span>
                                       </li>
                                     ))}
                                   </ul>

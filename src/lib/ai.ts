@@ -1,4 +1,5 @@
 import { OpenAI } from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
 // Email notification utility
 async function sendFailoverNotification(
@@ -115,10 +116,51 @@ export async function getChatCompletionWithFallback(
     throw new Error('Messages must be a non-empty array');
   }
 
-  // Try OpenAI first
+  // Try Anthropic (Claude) first - it's more conversational
+  if (hasValidAnthropicKey()) {
+    try {
+      console.log('Trying Anthropic (Claude)...');
+      const client = getAnthropicClient();
+
+      if (client) {
+        // Convert messages to Claude format
+        const claudeMessages = messages.map(msg => ({
+          role: msg.role === 'system' ? 'user' : msg.role,
+          content: msg.content
+        }));
+
+        const response = await Promise.race([
+          client.messages.create({
+            model: 'claude-3-haiku-20240307',
+            max_tokens: maxTokens,
+            temperature,
+            system: systemPrompt || 'You are a helpful assistant.',
+            messages: claudeMessages
+          }),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Anthropic timeout')), timeout)
+          )
+        ]) as any;
+
+        const content = response.content?.[0]?.text;
+        if (content) {
+          console.log('Anthropic (Claude) success');
+          return content;
+        }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Anthropic failed, trying OpenAI:', errorMessage);
+
+      // Send notification about Anthropic failure
+      await sendFailoverNotification('anthropic', errorMessage, 'Chat Completion');
+    }
+  }
+
+  // Try OpenAI as backup
   if (hasValidOpenAIKey()) {
     try {
-      console.log('Trying OpenAI...');
+      console.log('Trying OpenAI (backup)...');
 
       const chatMessages = systemPrompt
         ? [{ role: 'system', content: systemPrompt }, ...messages]
@@ -134,56 +176,19 @@ export async function getChatCompletionWithFallback(
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error('OpenAI timeout')), timeout)
         )
-      ]) as any;
+        ]) as any;
 
       const content = response.choices?.[0]?.message?.content;
       if (content) {
-        console.log('OpenAI success');
+        console.log('OpenAI success (backup used)');
         return content;
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('OpenAI failed, trying Anthropic:', errorMessage);
-
-      // Send notification about OpenAI failure
-      await sendFailoverNotification('openai', errorMessage, 'Chat Completion');
-    }
-  }
-
-  // Try Anthropic as backup
-  if (hasValidAnthropicKey()) {
-    try {
-      console.log('Trying Anthropic...');
-      const client = getAnthropicClient();
-
-      if (client) {
-        // Get the last user message
-        const userMessage = messages[messages.length - 1]?.content || '';
-
-        const response = await Promise.race([
-          client.messages.create({
-            model: 'claude-3-haiku-20240307',
-            max_tokens: maxTokens,
-            system: systemPrompt || 'You are a helpful assistant.',
-            messages: [{ role: 'user', content: userMessage }]
-          }),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Anthropic timeout')), timeout)
-          )
-        ]) as any;
-
-        const content = response.content?.[0]?.text;
-        if (content) {
-          console.log('Anthropic success (backup used)');
-          return content;
-        }
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Anthropic failed:', errorMessage);
+      console.error('OpenAI backup failed:', errorMessage);
 
       // Send notification about both providers failing
-      await sendFailoverNotification('anthropic', errorMessage, 'Chat Completion (Backup)');
+      await sendFailoverNotification('openai', errorMessage, 'Chat Completion (Backup)');
     }
   }
 
@@ -198,27 +203,27 @@ export async function generateJobSearchResponse(
   jobResults: any[] = [],
   filters: any = {}
 ): Promise<string> {
-  const systemPrompt = `You're a friendly work buddy helping people find jobs in the 209 area (Central Valley). Keep responses SHORT and conversational like text messages from a friend.
+  const systemPrompt = `You're basically a cool local friend who really knows the 209 job scene. Keep it super casual and helpful - like you're texting a buddy about work opportunities.
 
-209 area basics:
-- Cities: Stockton, Modesto, Tracy, Manteca, Lodi, Turlock
-- Big industries: warehouses, healthcare, agriculture, manufacturing
-- Way cheaper than Bay Area, still close to everything
+The 209 lowdown:
+- Main spots: Stockton, Modesto, Tracy, Manteca, Lodi, Turlock
+- Big employers: Amazon warehouses, hospitals, farms, factories
+- Living's way more affordable than the Bay, but still close enough to commute if needed
 
-Your style:
-- Talk like texting a friend - short, casual, helpful
-- Use emojis occasionally 
-- Keep responses under 2-3 sentences max
-- Be encouraging but real
-- Give quick, practical advice
-- Don't be formal or wordy
+Your vibe:
+- Text like you're actually friends with them
+- Keep it real short - 2-3 sentences tops
+- Drop an emoji here and there but don't overdo it
+- Be encouraging but honest (like if the job market's tough, say it)
+- If they're struggling, give them a quick pep talk
+- Skip the formal stuff - just be helpful
 
-Current context:
-- Found ${jobResults.length} jobs
-- Location: ${filters.location || 'any'}
-- Job type: ${filters.job_type || 'any'}
+Right now:
+- Found ${jobResults.length} jobs matching their search
+- Looking in: ${filters.location || 'anywhere in the 209'}
+- Job type: ${filters.job_type || 'any type'}
 
-If no jobs found, briefly mention 209 Works is building the database and suggest they check back.`;
+If we don't have jobs yet, just say something like "Still building up listings in that area, but check back soon!" Keep it light.`;
 
   // Build conversation context
   const messages = [];

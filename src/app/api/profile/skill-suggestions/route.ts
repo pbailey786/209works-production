@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ensureUserExists } from '@/lib/auth/user-sync';
 import { prisma } from '@/lib/database/prisma';
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize Anthropic client for Claude
+const anthropic = process.env.ANTHROPIC_API_KEY ? new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+}) : null;
 
 export async function POST(req: NextRequest) {
   try {
     console.log('🎯 AI Skill Suggestions API called');
     
+    // Check if Claude is available
+    if (!anthropic) {
+      return NextResponse.json({ 
+        error: 'AI service temporarily unavailable. Please try again later.' 
+      }, { status: 503 });
+    }
+
     // Ensure user exists in database
     const currentUser = await ensureUserExists();
     console.log('✅ User sync completed:', currentUser.id);
@@ -35,8 +43,8 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    // Create AI prompt for skill suggestions
-    const prompt = `You are an AI career advisor specializing in the Central Valley (209 area) job market. Analyze the following user profile and provide personalized skill suggestions.
+    // Create AI prompt for skill suggestions with casual tone
+    const prompt = `Hey! I'm a career advisor who knows the Central Valley job scene like the back of my hand. Let me check out this profile and hook them up with some solid skill recommendations.
 
 USER PROFILE:
 - Current Role: ${targetRole || userProfile?.currentJobTitle || 'Not specified'}
@@ -46,7 +54,7 @@ USER PROFILE:
 - Location: ${userProfile?.location || 'Central Valley, CA'}
 - Resume Content: ${resumeContent || 'Not provided'}
 
-Please provide skill suggestions in this exact JSON format:
+Give me skill suggestions in this exact JSON format (but write the actual advice in a friendly, conversational tone - like you're talking to a friend about their career):
 {
   "suggestedSkills": [
     {
@@ -71,28 +79,25 @@ Please provide skill suggestions in this exact JSON format:
   }
 }
 
-Focus on skills relevant to Central Valley employers like agriculture tech, logistics, healthcare, manufacturing, and emerging tech sectors. Limit to 8-12 most impactful suggestions.`;
+Keep it real - focus on skills that Central Valley employers actually want. Think ag tech, logistics, healthcare, manufacturing, and the tech scene that's growing here. Give me 8-12 skills that'll actually make a difference for their career. Be encouraging but honest about what it takes to level up in the 209.`;
 
-    console.log('🤖 Calling OpenAI for skill suggestions...');
+    console.log('🤖 Calling Claude for skill suggestions...');
     
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    const completion = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307', // Fast and cost-effective
       messages: [
-        {
-          role: 'system',
-          content: 'You are an expert career advisor with deep knowledge of the Central Valley California job market. Always respond with valid JSON only.'
-        },
         {
           role: 'user',
           content: prompt
         }
       ],
-      temperature: 0.7,
+      system: `You're a chill but knowledgeable career advisor who really gets the Central Valley job market. You know what employers here are looking for and you keep it 100 with job seekers. Always respond with valid JSON only, but make the content inside conversational and encouraging - like you're helping out a friend.`,
+      temperature: 0.8, // Slightly higher for more personality
       max_tokens: 2000,
     });
 
-    const aiResponse = completion.choices[0]?.message?.content;
-    console.log('✅ OpenAI response received');
+    const aiResponse = completion.content[0]?.type === 'text' ? completion.content[0].text : null;
+    console.log('✅ Claude response received');
 
     if (!aiResponse) {
       throw new Error('No response from AI');

@@ -14,7 +14,7 @@ import {
 // import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../auth/authOptions';
 import { generateJobSearchResponse } from '@/lib/ai';
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
 // Type definitions for conversation messages
 interface ConversationMessage {

@@ -403,6 +403,47 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {/* Profile Picture Upload */}
+              <div className="border-t border-gray-200 px-6 py-4">
+                <h4 className="mb-3 text-sm font-medium text-gray-700">Update Profile Photo</h4>
+                <form onSubmit={handleProfilePicUpload} className="space-y-3">
+                  <input
+                    type="file"
+                    name="file"
+                    accept="image/*"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
+                    onChange={handleProfilePicChange}
+                  />
+                  <button
+                    type="submit"
+                    disabled={profilePicLoading}
+                    className="flex w-full items-center justify-center rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
+                  >
+                    {profilePicLoading ? (
+                      <>
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <CloudArrowUpIcon className="mr-2 h-4 w-4" />
+                        Update Photo
+                      </>
+                    )}
+                  </button>
+                </form>
+                {profilePicError && (
+                  <div className="mt-2 text-sm text-red-600">
+                    {profilePicError}
+                  </div>
+                )}
+                {profilePicSuccess && (
+                  <div className="mt-2 text-sm text-green-600">
+                    {profilePicSuccess}
+                  </div>
+                )}
+              </div>
+
               {/* Profile Stats */}
               <div className="p-6">
                 <div className="mb-6 grid grid-cols-2 gap-4">
@@ -487,45 +528,6 @@ export default function ProfilePage() {
                   />
                 </div>
 
-                {/* Profile Picture Upload */}
-                <div className="mt-6 border-t border-gray-200 pt-6">
-                  <form onSubmit={handleProfilePicUpload} className="space-y-3">
-                    <input
-                      type="file"
-                      name="file"
-                      accept="image/*"
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-purple-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-purple-700 hover:file:bg-purple-100"
-                      onChange={handleProfilePicChange}
-                    />
-                    <button
-                      type="submit"
-                      disabled={profilePicLoading}
-                      className="flex w-full items-center justify-center rounded-lg bg-purple-600 px-4 py-2 text-white transition-colors hover:bg-purple-700 disabled:opacity-50"
-                    >
-                      {profilePicLoading ? (
-                        <>
-                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <CloudArrowUpIcon className="mr-2 h-4 w-4" />
-                          Update Photo
-                        </>
-                      )}
-                    </button>
-                  </form>
-                  {profilePicError && (
-                    <div className="mt-2 text-sm text-red-600">
-                      {profilePicError}
-                    </div>
-                  )}
-                  {profilePicSuccess && (
-                    <div className="mt-2 text-sm text-green-600">
-                      {profilePicSuccess}
-                    </div>
-                  )}
-                </div>
               </div>
             </motion.div>
           </div>
