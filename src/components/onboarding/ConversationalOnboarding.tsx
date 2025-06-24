@@ -7,7 +7,10 @@ import {
   DocumentArrowUpIcon,
   CheckCircleIcon,
   SparklesIcon,
-  UserIcon
+  UserIcon,
+  ForwardIcon,
+  ArrowRightIcon,
+  PencilSquareIcon
 } from '@heroicons/react/24/outline';
 
 interface ConversationalOnboardingProps {
@@ -22,21 +25,26 @@ interface ConversationalOnboardingProps {
 
 interface Message {
   id: string;
-  role: 'assistant' | 'user';
+  role: 'assistant' | 'user' | 'system';
   content: string;
   timestamp: Date;
-  type?: 'name_input' | 'resume_upload' | 'chat' | 'completion';
+  type?: 'welcome' | 'name_input' | 'resume_upload' | 'skills_confirm' | 'chat' | 'completion' | 'suggestions';
+  actions?: Array<{ label: string; action: string; primary?: boolean }>;
+  skills?: string[];
 }
 
 export default function ConversationalOnboarding({ user, onComplete }: ConversationalOnboardingProps) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [currentStep, setCurrentStep] = useState<'name' | 'resume' | 'chat' | 'complete'>('name');
+  const [currentStep, setCurrentStep] = useState<'welcome' | 'name' | 'resume' | 'skills' | 'chat' | 'complete'>('welcome');
+  const [stepNumber, setStepNumber] = useState(1);
   const [nameInput, setNameInput] = useState('');
   const [chatInput, setChatInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [resumeUploaded, setResumeUploaded] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [extractedSkills, setExtractedSkills] = useState<string[]>([]);
+  const [userName, setUserName] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,35 +53,94 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Initialize with welcome message
+  // Initialize with narrative welcome message
   useEffect(() => {
     const welcomeMessage: Message = {
       id: 'welcome',
       role: 'assistant',
       content: user.role === 'employer' 
-        ? `Welcome to 209 Works! I'm here to help you find great talent for your business. Let's start by getting your name.`
-        : `Welcome to 209 Works! I'm here to help you find amazing jobs in the 209 area. Let's start by getting your name.`,
+        ? `Hey there 👋 I'm your personal hiring AI — here to connect you with the best local talent.\n\nLet's get you set up real quick so I can do the heavy lifting. Sound good?`
+        : `Hey there 👋 I'm your personal job-finder AI — here to match you with the best local jobs.\n\nLet's get you set up real quick so I can do the heavy lifting. Sound good?`,
       timestamp: new Date(),
-      type: 'name_input'
+      type: 'welcome',
+      actions: [
+        { label: "Let's go", action: 'start', primary: true },
+        { label: 'Skip setup', action: 'skip' }
+      ]
     };
     setMessages([welcomeMessage]);
   }, [user.role]);
 
-  const addMessage = (content: string, role: 'assistant' | 'user', type?: string) => {
+  const addMessage = (content: string, role: 'assistant' | 'user' | 'system', type?: string, actions?: any[], skills?: string[]) => {
     const message: Message = {
       id: Date.now().toString(),
       role,
       content,
       timestamp: new Date(),
-      type: type as any
+      type: type as any,
+      actions,
+      skills
     };
     setMessages(prev => [...prev, message]);
+  };
+
+  const handleAction = (action: string) => {
+    switch (action) {
+      case 'start':
+        addMessage("Let's go", 'user');
+        setTimeout(() => {
+          addMessage(
+            "Cool! First things first — what should I call you?",
+            'assistant',
+            'name_input'
+          );
+          setCurrentStep('name');
+          setStepNumber(2);
+        }, 500);
+        break;
+      
+      case 'skip':
+        addMessage("Skip setup", 'user');
+        completeOnboarding();
+        break;
+      
+      case 'remind_later':
+        addMessage("Remind me later", 'user');
+        completeOnboarding();
+        break;
+      
+      case 'confirm_skills':
+        addMessage("Yep!", 'user');
+        setTimeout(() => {
+          addMessage(
+            "Perfect! Now I can start matching jobs for you. Want to try asking me something like...\n\n• \"Find me full-time warehouse jobs nearby\"\n• \"What matches my experience?\"\n• \"Any jobs that pay over $20/hour?\"",
+            'assistant',
+            'suggestions'
+          );
+          setCurrentStep('chat');
+          setStepNumber(4);
+        }, 500);
+        break;
+      
+      case 'edit_skills':
+        addMessage("Make some edits", 'user');
+        setTimeout(() => {
+          addMessage(
+            "Let's refine your skills. Tell me what skills you'd like to add or remove, or describe your ideal role and location.",
+            'assistant',
+            'chat'
+          );
+          setCurrentStep('chat');
+        }, 500);
+        break;
+    }
   };
 
   const handleNameSubmit = async () => {
     if (!nameInput.trim()) return;
 
     addMessage(nameInput, 'user');
+    setUserName(nameInput);
     setIsLoading(true);
 
     try {
@@ -88,18 +155,24 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
         setTimeout(() => {
           if (user.role === 'employer') {
             addMessage(
-              `Great to meet you, ${nameInput}! Now, what's your company name and what roles are you looking to fill?`,
+              `Nice to meet you, ${nameInput}. I'll keep things quick.\n\nNow, what's your company name and what roles are you looking to fill?`,
               'assistant',
               'chat'
             );
             setCurrentStep('chat');
+            setStepNumber(3);
           } else {
             addMessage(
-              `Nice to meet you, ${nameInput}! Do you have a resume you'd like to upload? This helps me find you better job matches, but you can skip this step if you don't have one.`,
+              `Nice to meet you, ${nameInput}. I'll keep things quick.\n\nTo give you the most relevant job matches, I can scan your resume and extract your skills, experience, and preferences. Want to upload it?\n\n✅ You can always skip for now\n✅ I'll never share your info with employers unless you apply`,
               'assistant',
-              'resume_upload'
+              'resume_upload',
+              [
+                { label: 'Upload resume', action: 'upload', primary: true },
+                { label: 'Skip for now', action: 'skip_resume' }
+              ]
             );
             setCurrentStep('resume');
+            setStepNumber(3);
           }
         }, 500);
       }
@@ -129,12 +202,12 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
 
       if (response.ok) {
         setResumeUploaded(true);
-        addMessage(`✅ Resume uploaded: ${file.name}`, 'user');
+        addMessage(`Uploaded: ${file.name}`, 'user');
         
         // Parse the resume to extract information
         setTimeout(async () => {
           addMessage(
-            `Let me take a look at your resume...`,
+            `Scanning... 🔍`,
             'assistant'
           );
           
@@ -151,48 +224,53 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
               const parseData = await parseResponse.json();
               const resumeInfo = parseData.data;
               
-              // Create a personalized message based on resume content
-              let message = `Great! I've reviewed your resume. `;
+              // Extract skills for display
+              const skills = resumeInfo.skills || [];
+              const experience = resumeInfo.experience?.positions?.[0]?.title || resumeInfo.jobTitles?.[0] || '';
+              const industry = resumeInfo.industries?.[0] || '';
               
-              if (resumeInfo.experience?.totalYears) {
-                message += `I see you have ${resumeInfo.experience.totalYears} years of experience`;
-                if (resumeInfo.jobTitles?.length > 0) {
-                  message += ` as a ${resumeInfo.jobTitles[0]}`;
-                }
-                message += `. `;
-              }
+              // Combine relevant info into skills array
+              const displaySkills = [];
+              if (experience) displaySkills.push(experience);
+              if (industry && industry !== experience) displaySkills.push(industry);
+              displaySkills.push(...skills.slice(0, 3));
               
-              if (resumeInfo.skills?.length > 0) {
-                const topSkills = resumeInfo.skills.slice(0, 3).join(', ');
-                message += `Your skills in ${topSkills} are impressive! `;
-              }
+              setExtractedSkills(displaySkills.slice(0, 5));
               
-              if (resumeInfo.industries?.length > 0) {
-                message += `With your background in ${resumeInfo.industries[0]}, `;
-              }
-              
-              message += `I can help you find similar roles or explore new opportunities. What type of work environment are you looking for? Do you prefer working in a team or independently?`;
-              
-              addMessage(message, 'assistant', 'chat');
+              setTimeout(() => {
+                addMessage(
+                  `Got it! Looks like you have experience in:`,
+                  'assistant',
+                  'skills_confirm',
+                  [
+                    { label: 'Yep!', action: 'confirm_skills', primary: true },
+                    { label: 'Make some edits', action: 'edit_skills' }
+                  ],
+                  displaySkills.slice(0, 5)
+                );
+                setCurrentStep('skills');
+              }, 1500);
             } else {
               // Fallback if parsing fails
               addMessage(
-                `I've saved your resume! Now let's talk about what kind of work you're looking for. What type of job interests you most?`,
+                `Perfect! I've saved your resume. Now I can start matching jobs for you. Want to try asking me something like...\n\n• \"Find me full-time jobs nearby\"\n• \"What matches my experience?\"\n• \"Any jobs that pay over $20/hour?\"`,
                 'assistant',
-                'chat'
+                'suggestions'
               );
+              setCurrentStep('chat');
+              setStepNumber(4);
             }
           } catch (parseError) {
             console.error('Resume parsing error:', parseError);
             // Fallback message
             addMessage(
-              `Perfect! I've got your resume. Now let's talk about what kind of work you're looking for. What type of job interests you?`,
+              `Great! I've got your resume. Now I can start matching jobs for you. Want to try asking me something like...\n\n• \"Find me jobs that match my skills\"\n• \"What's available in my area?\"\n• \"Show me full-time opportunities\"`,
               'assistant',
-              'chat'
+              'suggestions'
             );
+            setCurrentStep('chat');
+            setStepNumber(4);
           }
-          
-          setCurrentStep('chat');
         }, 1500);
       } else {
         setUploadError(data.error || 'Upload failed');
@@ -205,15 +283,16 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
   };
 
   const handleSkipResume = () => {
-    addMessage("I don't have a resume right now", 'user');
+    addMessage("Skip for now", 'user');
     
     setTimeout(() => {
       addMessage(
-        `No problem! I can help you find jobs without a resume, and later we can even help you create one. Let's talk about what kind of work you're looking for. What type of job interests you?`,
+        `No problem! I can help you find jobs without a resume, and later we can even help you create one.\n\nNow I can start matching jobs for you. Want to try asking me something like...\n\n• \"Find me entry-level jobs nearby\"\n• \"What warehouse jobs are available?\"\n• \"Show me jobs that don't require experience\"`,
         'assistant',
-        'chat'
+        'suggestions'
       );
       setCurrentStep('chat');
+      setStepNumber(4);
     }, 500);
   };
 
@@ -250,12 +329,12 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
         const data = await response.json();
         addMessage(data.response, 'assistant', 'chat');
 
-        // After a few exchanges, complete onboarding
-        const chatMessages = messages.filter(m => m.type === 'chat').length;
-        if (chatMessages >= 3) {
+        // After first real job search query, complete onboarding
+        const chatMessages = messages.filter(m => m.type === 'chat' || m.type === 'suggestions').length;
+        if (chatMessages >= 1) {
           setTimeout(() => {
             addMessage(
-              `Great! I've learned a lot about what you're looking for. Your profile is all set up. Let's take you to your dashboard where you can start exploring jobs!`,
+              `Great! I've found some matches for you. Your profile is all set up — let's take you to your dashboard where you can explore all available jobs and save your favorites! 🎉`,
               'assistant',
               'completion'
             );
@@ -272,27 +351,18 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
         console.error('Chat API error:', response.status, response.statusText);
         
         // For mobile/onboarding, skip to completion if API fails
-        if (messages.filter(m => m.type === 'chat').length >= 1) {
-          addMessage(
-            `Thanks for sharing! I've got enough information to get you started. Let me set up your profile now.`,
-            'assistant',
-            'completion'
-          );
-          setCurrentStep('complete');
-          setTimeout(() => completeOnboarding(), 2000);
-        } else {
-          // First message failed, ask a simpler question
-          addMessage(
-            `Let me ask you something simpler - are you looking for full-time or part-time work?`,
-            'assistant',
-            'chat'
-          );
-        }
+        addMessage(
+          `Thanks for that info! I've got what I need to help you find great jobs. Let me take you to your dashboard now! 🎉`,
+          'assistant',
+          'completion'
+        );
+        setCurrentStep('complete');
+        setTimeout(() => completeOnboarding(), 2000);
       }
     } catch (error) {
       console.error('Error in chat:', error);
       addMessage(
-        `I'm having trouble right now, but let's get you started! Your profile is set up and ready to go.`,
+        `I'm having a connection issue, but no worries! Your profile is set up and ready. Let's get you to your dashboard! 🎉`,
         'assistant',
         'completion'
       );
@@ -319,37 +389,92 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
     }
   };
 
+  const totalSteps = 4;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-2xl">
-          <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
-              <SparklesIcon className="h-6 w-6" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
+                <SparklesIcon className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Your Personal Job-Finder AI</h1>
+                <p className="text-blue-100">Let's get you matched with great local jobs</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold">Welcome to 209 Works!</h1>
-              <p className="text-blue-100">Let's get you set up in just a few steps</p>
-            </div>
+            {currentStep !== 'welcome' && currentStep !== 'complete' && (
+              <div className="text-sm text-blue-100">
+                Step {stepNumber} of {totalSteps}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Progress Bar */}
+        {currentStep !== 'welcome' && currentStep !== 'complete' && (
+          <div className="px-6 pt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(stepNumber / totalSteps) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Messages */}
         <div className="h-96 overflow-y-auto p-4 sm:p-6 space-y-4">
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+            <div key={message.id}>
               <div
-                className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
-                  message.role === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-900'
-                }`}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <p className="text-sm break-words">{message.content}</p>
+                <div
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
+                    message.role === 'user'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-900'
+                  }`}
+                >
+                  <p className="text-sm break-words whitespace-pre-line">{message.content}</p>
+                  
+                  {/* Display extracted skills */}
+                  {message.skills && message.skills.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {message.skills.map((skill, index) => (
+                        <span 
+                          key={index}
+                          className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Action buttons */}
+                  {message.actions && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {message.actions.map((action, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleAction(action.action)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            action.primary
+                              ? 'bg-blue-500 text-white hover:bg-blue-600'
+                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -383,6 +508,7 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
                     placeholder="Enter your name..."
                     className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                     disabled={isLoading}
+                    autoFocus
                   />
                 </div>
                 <button
@@ -390,8 +516,8 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
                   disabled={!nameInput.trim() || isLoading}
                   className="px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 w-full sm:w-auto"
                 >
-                  <UserIcon className="h-4 w-4" />
                   <span>Continue</span>
+                  <ArrowRightIcon className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -412,18 +538,21 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
               
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <button
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    handleAction('upload');
+                    fileInputRef.current?.click();
+                  }}
                   disabled={isLoading}
-                  className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 border-2 border-dashed border-blue-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
-                  <DocumentArrowUpIcon className="h-5 w-5 text-blue-500" />
-                  <span className="text-blue-600 font-medium">Upload Resume</span>
+                  <DocumentArrowUpIcon className="h-5 w-5" />
+                  <span className="font-medium">Upload Resume</span>
                 </button>
                 
                 <button
                   onClick={handleSkipResume}
                   disabled={isLoading}
-                  className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 sm:w-auto w-full"
+                  className="px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 sm:w-auto w-full"
                 >
                   Skip for now
                 </button>
@@ -439,16 +568,17 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
             </div>
           )}
 
-          {currentStep === 'chat' && (
+          {(currentStep === 'chat' || currentStep === 'skills') && (
             <div className="flex space-x-2 sm:space-x-3">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleChatMessage()}
-                placeholder="Tell me about the work you're looking for..."
+                placeholder="Ask me about jobs..."
                 className="flex-1 rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                 disabled={isLoading}
+                autoFocus
               />
               <button
                 onClick={handleChatMessage}
@@ -466,6 +596,18 @@ export default function ConversationalOnboarding({ user, onComplete }: Conversat
                 <CheckCircleIcon className="h-6 w-6" />
                 <span className="font-medium">Setup Complete!</span>
               </div>
+            </div>
+          )}
+
+          {/* Skip/Remind Later Option */}
+          {currentStep !== 'welcome' && currentStep !== 'complete' && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => handleAction('remind_later')}
+                className="text-sm text-gray-500 hover:text-gray-700 underline"
+              >
+                Remind me later
+              </button>
             </div>
           )}
         </div>
