@@ -44,21 +44,39 @@ export default function SimpleEmployerDashboard() {
     // Check if user has completed onboarding
     const checkOnboarding = async () => {
       try {
+        console.log('🔍 DASHBOARD - Checking onboarding status...');
         const response = await fetch('/api/auth/user-status');
         if (response.ok) {
           const data = await response.json();
-          if (!data.user?.onboardingCompleted) {
+          console.log('🔍 DASHBOARD - User status:', data.user);
+          
+          if (!data.user) {
+            console.log('❌ DASHBOARD - No user found, redirecting to onboarding');
             router.push('/onboarding');
             return;
           }
+          
+          if (!data.user?.onboardingCompleted) {
+            console.log('❌ DASHBOARD - Onboarding not completed, redirecting to onboarding');
+            router.push('/onboarding');
+            return;
+          }
+          
           if (data.user?.role !== 'employer') {
+            console.log('❌ DASHBOARD - User is not employer, redirecting to job seeker dashboard');
             router.push('/dashboard');
             return;
           }
+          
+          console.log('✅ DASHBOARD - All checks passed, loading dashboard');
+        } else {
+          console.log('❌ DASHBOARD - Failed to get user status, redirecting to onboarding');
+          router.push('/onboarding');
+          return;
         }
         setOnboardingChecked(true);
       } catch (error) {
-        console.error('Error checking onboarding:', error);
+        console.error('❌ DASHBOARD - Error checking onboarding:', error);
         router.push('/onboarding');
       }
     };
