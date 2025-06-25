@@ -1,6 +1,16 @@
 import { SignIn } from '@clerk/nextjs';
+import { currentUser } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  // Check if user is already authenticated
+  const user = await currentUser();
+  
+  if (user) {
+    // User is already signed in, redirect to auth-redirect for proper routing
+    redirect('/auth-redirect');
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <SignIn
