@@ -84,12 +84,12 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       console.log('✅ MIDDLEWARE - Onboarding completed, allowing access');
 
       // If trying to access employer routes but not an employer, redirect to appropriate dashboard
-      if (req.nextUrl.pathname.startsWith('/employers') && user.role !== 'employer' && user.role !== 'admin') {
+      if (user && req.nextUrl.pathname.startsWith('/employers') && user.role !== 'employer' && user.role !== 'admin') {
         return NextResponse.redirect(new URL('/dashboard', req.url));
       }
 
       // If trying to access job seeker dashboard but is an employer, redirect to employer dashboard
-      if (req.nextUrl.pathname === '/dashboard' && user.role === 'employer') {
+      if (user && req.nextUrl.pathname === '/dashboard' && user.role === 'employer') {
         return NextResponse.redirect(new URL('/employers/dashboard', req.url));
       }
     } catch (error) {
