@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     // Update user role in database (create if doesn't exist)
     const updatedUser = await prisma.user.upsert({
       where: { email: userEmail },
-      update: { role },
+      update: { role, onboardingCompleted: true },
       create: {
         id: user.id,
         email: userEmail,
