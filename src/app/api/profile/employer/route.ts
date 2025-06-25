@@ -7,16 +7,8 @@ import { z } from 'zod';
 const employerProfileSchema = z.object({
   companyName: z.string().min(1, 'Company name is required').max(100),
   industryType: z.string().min(1, 'Industry type is required'),
-  logoUrl: z.string().optional(),
   location: z.string().min(1, 'Location is required').max(200),
-  hiresTeens: z.boolean().default(false),
-  hiresSeniors: z.boolean().default(false),
-  providesTraining: z.boolean().default(false),
-  requiresBackgroundCheck: z.boolean().default(false),
-  jobRolesCommon: z.array(z.string()).default([]),
-  postingPrefersAi: z.boolean().default(false),
-  contactMethod: z.enum(['email', 'phone', 'dashboard_only']).default('email'),
-  hiringGoal: z.enum(['urgently_hiring', 'seasonal', 'always_hiring']),
+  businessDescription: z.string().min(1, 'Business description is required').max(500),
 });
 
 export async function POST(req: NextRequest) {
@@ -76,18 +68,7 @@ export async function POST(req: NextRequest) {
       companyName: validatedData.companyName,
       industry: validatedData.industryType,
       location: validatedData.location,
-      companyLogo: validatedData.logoUrl || null,
-      // Store employer preferences in JSON fields or create a separate EmployerProfile model
-      employerPreferences: {
-        hiresTeens: validatedData.hiresTeens,
-        hiresSeniors: validatedData.hiresSeniors,
-        providesTraining: validatedData.providesTraining,
-        requiresBackgroundCheck: validatedData.requiresBackgroundCheck,
-        jobRolesCommon: validatedData.jobRolesCommon,
-        postingPrefersAi: validatedData.postingPrefersAi,
-        contactMethod: validatedData.contactMethod,
-        hiringGoal: validatedData.hiringGoal,
-      },
+      companyDescription: validatedData.businessDescription,
       updatedAt: new Date(),
     };
 
@@ -105,8 +86,7 @@ export async function POST(req: NextRequest) {
         companyName: true,
         industry: true,
         location: true,
-        companyLogo: true,
-        employerPreferences: true,
+        companyDescription: true,
       },
     });
 
@@ -180,10 +160,9 @@ export async function GET(req: NextRequest) {
         companyName: true,
         industry: true,
         location: true,
-        companyLogo: true,
+        companyDescription: true,
         companyWebsite: true,
         companySize: true,
-        employerPreferences: true,
         onboardingCompleted: true,
         createdAt: true,
       },

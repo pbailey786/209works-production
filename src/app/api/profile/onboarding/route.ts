@@ -30,6 +30,8 @@ const onboardingSchema = z.object({
   industry: z.string().optional(),
   industryType: z.string().optional(), // Alternative field name from employer form
   companySize: z.string().optional(),
+  businessDescription: z.string().optional(),
+  companyDescription: z.string().optional(), // Alternative field name
   
   // Additional employer onboarding fields
   logoUrl: z.string().optional(),
@@ -120,6 +122,7 @@ export async function POST(req: NextRequest) {
       updateData.industry = validatedData.industryType || validatedData.industry || null;
       updateData.companySize = validatedData.companySize || null;
       updateData.companyLogo = validatedData.logoUrl || null;
+      updateData.companyDescription = validatedData.businessDescription || validatedData.companyDescription || null;
       
       // Store employer preferences
       if (validatedData.hiresTeens !== undefined || 
@@ -171,6 +174,7 @@ export async function POST(req: NextRequest) {
         industry: true,
         companySize: true,
         companyWebsite: true,
+        companyDescription: true,
         employerOnboardingCompleted: true,
         employerPreferences: true,
       },
