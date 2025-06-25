@@ -30,14 +30,40 @@ export default function OnboardingPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to complete onboarding');
+        // If API times out, try to continue anyway and check status
+        console.log('API timeout/error, checking status separately...');
       }
 
-      // Small delay to ensure database write completes
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for database write to complete (even if API times out)
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Force a page refresh to clear any cached middleware checks
-      window.location.href = role === 'employer' ? '/employers/dashboard' : '/dashboard';
+      // Check if onboarding actually completed
+      const statusResponse = await fetch('/api/auth/user-status');
+      if (statusResponse.ok) {
+        const statusData = await statusResponse.json();
+        if (statusData.user?.onboardingCompleted) {
+          // Success! Go to dashboard
+          window.location.href = role === 'employer' ? '/employers/dashboard' : '/dashboard';
+          return;
+        }
+      }
+
+      // If still not completed, try once more
+      console.log('Onboarding not completed, retrying...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Final check
+      const finalCheck = await fetch('/api/auth/user-status');
+      if (finalCheck.ok) {
+        const finalData = await finalCheck.json();
+        if (finalData.user?.onboardingCompleted) {
+          window.location.href = role === 'employer' ? '/employers/dashboard' : '/dashboard';
+          return;
+        }
+      }
+
+      // If still failing, show error
+      throw new Error('Onboarding completion failed - please try again');
     } catch (error) {
       console.error('Onboarding error:', error);
       setLoading(false);

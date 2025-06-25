@@ -49,6 +49,12 @@ export async function POST(request: NextRequest) {
         role,
         onboardingCompleted: true,
       },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        onboardingCompleted: true,
+      },
     });
 
     console.log(`✅ Database updated! User: ${userEmail}, Role: ${updatedUser.role}, Onboarding: ${updatedUser.onboardingCompleted}`);
