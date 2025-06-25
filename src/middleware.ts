@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 
 // Routes that require authentication
@@ -32,9 +33,17 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   // If user is authenticated and accessing protected route, check onboarding
   if (userId && isProtectedRoute(req) && !isPublicRoute(req)) {
     try {
-      // Get user's onboarding status
+      // Get Clerk user to get email
+      const clerkUser = await currentUser();
+      const userEmail = clerkUser?.emailAddresses[0]?.emailAddress;
+      
+      if (!userEmail) {
+        return NextResponse.redirect(new URL('/sign-in', req.url));
+      }
+
+      // Get user's onboarding status by email
       const user = await prisma.user.findUnique({
-        where: { id: userId },
+        where: { email: userEmail },
         select: { onboardingCompleted: true, role: true },
       });
 
