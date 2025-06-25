@@ -3,24 +3,36 @@ import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 
 export async function POST(request: NextRequest) {
+  console.log('🚀 ONBOARDING API CALLED - Starting...');
+  
   try {
+    console.log('🔍 Getting current user from Clerk...');
     const clerkUser = await currentUser();
     
     if (!clerkUser) {
+      console.log('❌ No Clerk user found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    
+    console.log('✅ Clerk user found:', clerkUser.emailAddresses[0]?.emailAddress);
 
+    console.log('📝 Parsing request body...');
     const body = await request.json();
     const { role } = body;
+    console.log('🎯 Role selected:', role);
 
     if (!role || !['jobseeker', 'employer'].includes(role)) {
+      console.log('❌ Invalid role provided:', role);
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
     const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
     if (!userEmail) {
+      console.log('❌ No email found in Clerk user');
       return NextResponse.json({ error: 'No email found' }, { status: 400 });
     }
+    
+    console.log('💾 Updating database for:', userEmail);
 
     // Update user with role and mark onboarding as completed
     const updatedUser = await prisma.user.upsert({
@@ -39,7 +51,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log(`✅ Onboarding completed for ${userEmail} as ${role}`);
+    console.log(`✅ Database updated! User: ${userEmail}, Role: ${updatedUser.role}, Onboarding: ${updatedUser.onboardingCompleted}`);
 
     return NextResponse.json({ 
       success: true, 
@@ -51,7 +63,9 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ Onboarding completion error:', error);
+    console.error('❌ ONBOARDING ERROR - Full details:', error);
+    console.error('❌ Error message:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
