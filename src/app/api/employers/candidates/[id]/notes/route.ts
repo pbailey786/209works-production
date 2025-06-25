@@ -16,11 +16,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userEmail = clerkUser.emailAddresses[0].emailAddress; // Mock session as Session | null;
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
 
     // Get the current user from database
     const user = await prisma.user.findUnique({

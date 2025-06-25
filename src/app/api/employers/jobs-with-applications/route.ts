@@ -11,18 +11,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userEmail = clerkUser.emailAddresses[0].emailAddress; // Mock session as Session | null;
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
 
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Get the current user from database
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
 
-    const userRole = (session.user as any).role;
-    if (userRole !== 'employer' && userRole !== 'admin') {
+    if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = user.id;
 
     // Fetch jobs with their applications using Prisma
     const jobs = await prisma.job.findMany({
