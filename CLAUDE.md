@@ -243,6 +243,36 @@ src/
 - Enterprise features for large employers
 - **Goal:** $25K+ monthly, platform differentiation
 
+### **Phase 9: Mobile Experience (Optional - Month 6+)**
+*Lowest priority - only if web mobile experience proves insufficient*
+
+**9A: Progressive Web App (2-3 days)**
+- Add service worker for offline functionality
+- Create web app manifest for "install" capability
+- Enable push notifications for job alerts
+- **Goal:** App-like experience in mobile browsers
+
+**9B: Mobile UI Optimization (1-2 weeks)**
+- Touch-optimized job browsing interface
+- Simplified mobile navigation
+- Optimized "Should I Apply?" mobile flow
+- Mobile-first job application process
+- **Goal:** Seamless mobile web experience
+
+**9C: Native Mobile App (2-3 months - OPTIONAL)**
+*Only pursue if significant mobile user demand and budget allows*
+- React Native with Expo for job seeker app
+- Focus on core workflows: browse, search, apply, track
+- Maintain employer functionality desktop-only
+- App store deployment (iOS/Android)
+- **Goal:** Native mobile app for job seekers
+
+**Important Notes:**
+- **Web-first approach:** Most users can accomplish everything through mobile browser
+- **Employer desktop-only:** Complex workflows (job posting, applicant management) stay on desktop
+- **Data precedence:** Only pursue if analytics show significant mobile usage gaps
+- **Resource allocation:** Only consider after $25K+ monthly revenue is stable
+
 ### Testing Strategy for Each Feature
 
 **After Enabling Each Feature:**
@@ -285,6 +315,12 @@ Complete job board platform with:
 - ✅ **Cash Flow:** Payment system ready for immediate revenue
 
 **This approach = Launch with confidence, not scrambling to add features after launch!**
+
+### **Far Future: Mobile (Month 6+ - OPTIONAL)**
+- **Phase 9:** Mobile experience only if web mobile proves insufficient
+- **Decision point:** Based on user analytics and revenue stability ($25K+ monthly)
+- **Strategy:** Web-first approach - most users can use mobile browser effectively
+- **Scope:** Job seekers only - employers stay desktop-focused
 
 ## Important Implementation Details
 

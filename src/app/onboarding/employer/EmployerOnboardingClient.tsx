@@ -78,7 +78,7 @@ export default function EmployerOnboardingClient({ user }: EmployerOnboardingCli
     companyName: user.companyName || '',
     industryType: user.industry || '',
     logoUrl: '',
-    location: user.location || '',
+    location: '', // Always start with empty location to avoid pre-filling
     hiresTeens: false,
     hiresSeniors: false,
     providesTraining: false,
@@ -138,7 +138,8 @@ export default function EmployerOnboardingClient({ user }: EmployerOnboardingCli
           throw new Error('Failed to complete onboarding');
         }
         
-        router.push('/employers/dashboard');
+        // Force a page reload to ensure auth state is updated
+        window.location.href = '/employers/dashboard';
       } else {
         throw new Error('Failed to save profile');
       }
