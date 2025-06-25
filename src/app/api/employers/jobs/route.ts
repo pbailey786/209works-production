@@ -1,31 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '../../auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-    if (!session || !session.user || (session!.user as any).role !== 'employer') {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+
+    // Get the current user from database
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
       return NextResponse.json(
         {
           error: 'Authentication required. Only employers can view their jobs.',
         },
-        { status: 401 }
+        { status: 403 }
       );
     }
 
     const { searchParams } = new URL(req.url);
-    const employerId = searchParams.get('employerId') || (session!.user as any).id;
+    const employerId = searchParams.get('employerId') || user.id;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const status = searchParams.get('status');
 
     // Ensure the employer can only see their own jobs
-    if (employerId !== (session!.user as any).id) {
+    if (employerId !== user.id) {
       return NextResponse.json(
         { error: 'You can only view your own jobs.' },
         { status: 403 }

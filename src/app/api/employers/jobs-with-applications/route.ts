@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '../../auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userEmail = clerkUser.emailAddresses[0].emailAddress; // Mock session as Session | null;
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

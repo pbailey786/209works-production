@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { Session } from 'next-auth';
 
@@ -10,19 +9,25 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userEmail = clerkUser.emailAddresses[0].emailAddress; // Mock session as Session | null;
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get the current user
+    // Get the current user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
     });
 
-    if (!user || user.role !== 'employer') {
+    if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
