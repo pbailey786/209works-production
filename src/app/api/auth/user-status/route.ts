@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
         email: true,
         role: true,
         onboardingCompleted: true,
+        employerOnboardingCompleted: true,
       },
     });
 

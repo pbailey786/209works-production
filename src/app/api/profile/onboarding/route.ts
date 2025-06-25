@@ -28,7 +28,20 @@ const onboardingSchema = z.object({
     { message: 'Must be a valid URL or empty' }
   ),
   industry: z.string().optional(),
+  industryType: z.string().optional(), // Alternative field name from employer form
   companySize: z.string().optional(),
+  
+  // Additional employer onboarding fields
+  logoUrl: z.string().optional(),
+  hiresTeens: z.boolean().optional(),
+  hiresSeniors: z.boolean().optional(),
+  providesTraining: z.boolean().optional(),
+  requiresBackgroundCheck: z.boolean().optional(),
+  jobRolesCommon: z.array(z.string()).optional(),
+  postingPrefersAi: z.boolean().optional(),
+  contactMethod: z.enum(['email', 'phone', 'dashboard_only']).optional(),
+  hiringGoal: z.enum(['urgently_hiring', 'seasonal', 'always_hiring']).optional(),
+  employerOnboardingCompleted: z.boolean().optional(),
 
   // Onboarding tracking
   onboardingCompleted: z.boolean().default(true),
@@ -104,8 +117,35 @@ export async function POST(req: NextRequest) {
     } else if (user.role === 'employer') {
       updateData.companyName = validatedData.companyName || null;
       updateData.companyWebsite = validatedData.companyWebsite || null;
-      updateData.industry = validatedData.industry || null;
+      updateData.industry = validatedData.industryType || validatedData.industry || null;
       updateData.companySize = validatedData.companySize || null;
+      updateData.companyLogo = validatedData.logoUrl || null;
+      
+      // Store employer preferences
+      if (validatedData.hiresTeens !== undefined || 
+          validatedData.hiresSeniors !== undefined ||
+          validatedData.providesTraining !== undefined ||
+          validatedData.requiresBackgroundCheck !== undefined ||
+          validatedData.jobRolesCommon ||
+          validatedData.postingPrefersAi !== undefined ||
+          validatedData.contactMethod ||
+          validatedData.hiringGoal) {
+        updateData.employerPreferences = {
+          hiresTeens: validatedData.hiresTeens || false,
+          hiresSeniors: validatedData.hiresSeniors || false,
+          providesTraining: validatedData.providesTraining || false,
+          requiresBackgroundCheck: validatedData.requiresBackgroundCheck || false,
+          jobRolesCommon: validatedData.jobRolesCommon || [],
+          postingPrefersAi: validatedData.postingPrefersAi || false,
+          contactMethod: validatedData.contactMethod || 'email',
+          hiringGoal: validatedData.hiringGoal || '',
+        };
+      }
+      
+      // Mark employer onboarding as completed if specified
+      if (validatedData.employerOnboardingCompleted) {
+        updateData.employerOnboardingCompleted = true;
+      }
     }
 
     console.log('📝 Update data:', updateData);
@@ -131,6 +171,8 @@ export async function POST(req: NextRequest) {
         industry: true,
         companySize: true,
         companyWebsite: true,
+        employerOnboardingCompleted: true,
+        employerPreferences: true,
       },
     });
 

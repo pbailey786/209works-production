@@ -124,11 +124,19 @@ export default function EmployerOnboardingClient({ user }: EmployerOnboardingCli
 
       if (response.ok) {
         // Mark onboarding as completed
-        await fetch('/api/profile/onboarding', {
+        const onboardingResponse = await fetch('/api/profile/onboarding', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ onboardingCompleted: true }),
+          body: JSON.stringify({ 
+            onboardingCompleted: true,
+            employerOnboardingCompleted: true,
+            ...formData 
+          }),
         });
+        
+        if (!onboardingResponse.ok) {
+          throw new Error('Failed to complete onboarding');
+        }
         
         router.push('/employers/dashboard');
       } else {

@@ -35,11 +35,13 @@ export async function POST(request: NextRequest) {
     console.log('💾 Updating database for:', userEmail);
 
     // Update user with role and mark onboarding as completed
+    // For employers, don't mark onboarding as complete yet - they need to fill out company info
     const updatedUser = await prisma.user.upsert({
       where: { email: userEmail },
       update: {
         role,
-        onboardingCompleted: true,
+        onboardingCompleted: role === 'jobseeker' ? true : false,
+        employerOnboardingCompleted: false, // Always false initially for employers
       },
       create: {
         id: clerkUser.id,
@@ -47,7 +49,8 @@ export async function POST(request: NextRequest) {
         name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
         passwordHash: 'clerk_managed',
         role,
-        onboardingCompleted: true,
+        onboardingCompleted: role === 'jobseeker' ? true : false,
+        employerOnboardingCompleted: false,
       },
       select: {
         id: true,

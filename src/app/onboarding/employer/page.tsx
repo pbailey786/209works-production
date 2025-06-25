@@ -1,21 +1,20 @@
 import { redirect } from 'next/navigation';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import EmployerOnboardingClient from './EmployerOnboardingClient';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export default async function EmployerOnboardingPage() {
-  // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-
-  if (!session?.user?.email) {
-    redirect('/signin?callbackUrl=/onboarding/employer');
+  const clerkUser = await currentUser();
+  
+  if (!clerkUser?.emailAddresses[0]?.emailAddress) {
+    redirect('/sign-in?redirect_url=/onboarding/employer');
   }
+  
+  const userEmail = clerkUser.emailAddresses[0].emailAddress;
 
   // Get user data
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: userEmail },
     select: {
       id: true,
       name: true,
@@ -27,11 +26,12 @@ export default async function EmployerOnboardingPage() {
       industry: true,
       location: true,
       createdAt: true,
+      employerOnboardingCompleted: true,
     },
   });
 
   if (!user) {
-    redirect('/signin');
+    redirect('/sign-in');
   }
 
   // Redirect non-employers
@@ -39,8 +39,8 @@ export default async function EmployerOnboardingPage() {
     redirect(user.role === 'jobseeker' ? '/onboarding/jobseeker' : '/dashboard');
   }
 
-  // If onboarding is already completed, redirect to dashboard
-  if (user.onboardingCompleted) {
+  // If employer onboarding is already completed, redirect to dashboard
+  if ((user as any).employerOnboardingCompleted) {
     redirect('/employers/dashboard');
   }
 

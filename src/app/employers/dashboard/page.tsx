@@ -56,9 +56,9 @@ export default function SimpleEmployerDashboard() {
             return;
           }
           
-          if (!data.user?.onboardingCompleted) {
-            console.log('❌ DASHBOARD - Onboarding not completed, redirecting to onboarding');
-            router.push('/onboarding');
+          if (!data.user?.onboardingCompleted || !data.user?.employerOnboardingCompleted) {
+            console.log('❌ DASHBOARD - Employer onboarding not completed, redirecting to employer onboarding');
+            router.push('/onboarding/employer');
             return;
           }
           

@@ -47,10 +47,17 @@ export default function OnboardingPage() {
             const statusData = await statusResponse.json();
             console.log('📊 Status data:', statusData);
             
-            if (statusData.user?.onboardingCompleted && statusData.user?.role === role) {
-              console.log('✅ Onboarding completed! Redirecting...');
-              window.location.href = role === 'employer' ? '/employers/dashboard' : '/dashboard';
-              return;
+            if (statusData.user?.role === role) {
+              console.log('✅ Role set successfully! Redirecting...');
+              // For employers, go to employer onboarding form
+              // For job seekers, go to dashboard if onboarding is complete
+              if (role === 'employer') {
+                window.location.href = '/onboarding/employer';
+                return;
+              } else if (statusData.user?.onboardingCompleted) {
+                window.location.href = '/dashboard';
+                return;
+              }
             }
           }
         } catch (statusError) {

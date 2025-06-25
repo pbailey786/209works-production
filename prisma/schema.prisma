@@ -74,6 +74,9 @@ model User {
   achievements         String[]                   @default([]) // Array of achievement IDs: ["resume_detective", "skill_master", etc.]
   profileStrength      Int                        @default(0) // 0-100 calculated profile completion score
   lastActivityDate     DateTime?                  // Track user engagement for achievements
+  
+  // Employer preferences for Phase 5B
+  employerPreferences  Json?                      // JSON object storing employer hiring preferences
   alerts               Alert[]
   auditLogs            AuditLog[]
   emailAlerts          EmailAlert[]
