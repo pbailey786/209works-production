@@ -36,6 +36,7 @@ export default async function SignUpPage() {
           },
         }}
         forceRedirectUrl="/auth-redirect"
+        signInFallbackRedirectUrl="/auth-redirect"
         signInUrl="/sign-in"
       />
     </div>

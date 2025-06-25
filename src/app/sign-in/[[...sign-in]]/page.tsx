@@ -35,7 +35,7 @@ export default async function SignInPage() {
             borderRadius: '0.5rem',
           },
         }}
-        fallbackRedirectUrl="/auth-redirect"
+        forceRedirectUrl="/auth-redirect"
         signUpUrl="/sign-up"
       />
     </div>

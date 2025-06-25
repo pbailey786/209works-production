@@ -6,10 +6,14 @@ import { prisma } from '@/lib/database/prisma';
 export const dynamic = 'force-dynamic';
 
 export default async function AuthRedirectPage() {
+  console.log('🚀 AUTH-REDIRECT: Starting auth redirect flow');
+  
   try {
     const clerkUser = await currentUser();
+    console.log('🚀 AUTH-REDIRECT: Clerk user exists?', !!clerkUser);
 
     if (!clerkUser) {
+      console.log('❌ AUTH-REDIRECT: No Clerk user, redirecting to sign-in');
       redirect('/sign-in');
     }
 

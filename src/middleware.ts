@@ -112,8 +112,9 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
 export const config = {
   matcher: [
-    '/((?!.*\\..*|_next).*)', 
-    '/', 
-    '/(api|trpc)(.*)'
+    // Skip all internal paths and auth-related paths
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Exclude Clerk webhooks and internal routes
+    '/((?!api/clerk|api/webhooks).*)',
   ],
 };
