@@ -33,12 +33,11 @@ export default function OnboardingPage() {
         throw new Error('Failed to complete onboarding');
       }
 
-      // Redirect to appropriate dashboard
-      if (role === 'employer') {
-        router.push('/employers/dashboard');
-      } else {
-        router.push('/dashboard');
-      }
+      // Small delay to ensure database write completes
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Force a page refresh to clear any cached middleware checks
+      window.location.href = role === 'employer' ? '/employers/dashboard' : '/dashboard';
     } catch (error) {
       console.error('Onboarding error:', error);
       setLoading(false);
