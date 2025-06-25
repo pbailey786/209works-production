@@ -24,6 +24,7 @@ export default async function AuthRedirectPage() {
       select: {
         id: true,
         onboardingCompleted: true,
+        employerOnboardingCompleted: true,
         role: true,
       },
     });
@@ -43,13 +44,29 @@ export default async function AuthRedirectPage() {
         select: {
           id: true,
           onboardingCompleted: true,
+          employerOnboardingCompleted: true,
           role: true,
         },
       });
     }
 
-    // Always redirect to dashboard - the dashboard will check onboarding status
-    console.log('✅ Redirecting to dashboard for user:', userEmail, 'role:', user.role);
+    // Check onboarding status and redirect accordingly
+    console.log('✅ Checking onboarding for user:', userEmail, 'role:', user.role, 'onboarding:', user.onboardingCompleted);
+    
+    // If user hasn't completed basic onboarding, send to role selection
+    if (!user.onboardingCompleted) {
+      console.log('→ Redirecting to onboarding (role selection)');
+      redirect('/onboarding');
+    }
+    
+    // For employers, check employer-specific onboarding
+    if (user.role === 'employer' && !user.employerOnboardingCompleted) {
+      console.log('→ Redirecting to employer onboarding');
+      redirect('/onboarding/employer');
+    }
+    
+    // Otherwise, redirect to appropriate dashboard
+    console.log('→ Redirecting to dashboard');
     if (user.role === 'employer') {
       redirect('/employers/dashboard');
     } else {

@@ -51,15 +51,34 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
       // Get user's onboarding status by email
       const user = await prisma.user.findUnique({
         where: { email: userEmail },
-        select: { onboardingCompleted: true, role: true },
+        select: { 
+          onboardingCompleted: true, 
+          employerOnboardingCompleted: true,
+          role: true 
+        },
       });
 
-      console.log('🔍 MIDDLEWARE - Database user:', user ? `exists (onboarding: ${user.onboardingCompleted}, role: ${user.role})` : 'not found');
+      console.log('🔍 MIDDLEWARE - Database user:', user ? `exists (onboarding: ${user.onboardingCompleted}, employer: ${user.employerOnboardingCompleted}, role: ${user.role})` : 'not found');
 
-      // If user doesn't exist or onboarding not completed, redirect to onboarding
+      // If user doesn't exist or basic onboarding not completed, redirect to onboarding
       if (!user || !user.onboardingCompleted) {
-        console.log('❌ MIDDLEWARE - Onboarding not completed, redirecting to /onboarding');
-        return NextResponse.redirect(new URL('/onboarding', req.url));
+        // Don't redirect if we're already on the onboarding page
+        if (!req.nextUrl.pathname.startsWith('/onboarding')) {
+          console.log('❌ MIDDLEWARE - Onboarding not completed, redirecting to /onboarding');
+          return NextResponse.redirect(new URL('/onboarding', req.url));
+        }
+      }
+      
+      // Special handling for employer routes
+      if (req.nextUrl.pathname.startsWith('/employers') && user?.role === 'employer') {
+        // Check if employer onboarding is completed
+        if (!user.employerOnboardingCompleted) {
+          // Don't redirect if we're already on the employer onboarding page
+          if (!req.nextUrl.pathname.startsWith('/onboarding/employer')) {
+            console.log('❌ MIDDLEWARE - Employer onboarding not completed, redirecting to /onboarding/employer');
+            return NextResponse.redirect(new URL('/onboarding/employer', req.url));
+          }
+        }
       }
       
       console.log('✅ MIDDLEWARE - Onboarding completed, allowing access');

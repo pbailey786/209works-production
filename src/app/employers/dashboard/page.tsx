@@ -32,7 +32,7 @@ export default function SimpleEmployerDashboard() {
   const [loading, setLoading] = useState(true);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  // Check onboarding status first
+  // Simple auth check - middleware handles onboarding verification
   useEffect(() => {
     if (!isLoaded) return;
     
@@ -40,48 +40,9 @@ export default function SimpleEmployerDashboard() {
       router.push('/sign-in');
       return;
     }
-
-    // Check if user has completed onboarding
-    const checkOnboarding = async () => {
-      try {
-        console.log('🔍 DASHBOARD - Checking onboarding status...');
-        const response = await fetch('/api/auth/user-status');
-        if (response.ok) {
-          const data = await response.json();
-          console.log('🔍 DASHBOARD - User status:', data.user);
-          
-          if (!data.user) {
-            console.log('❌ DASHBOARD - No user found, redirecting to onboarding');
-            router.push('/onboarding');
-            return;
-          }
-          
-          if (!data.user?.onboardingCompleted || !data.user?.employerOnboardingCompleted) {
-            console.log('❌ DASHBOARD - Employer onboarding not completed, redirecting to employer onboarding');
-            router.push('/onboarding/employer');
-            return;
-          }
-          
-          if (data.user?.role !== 'employer') {
-            console.log('❌ DASHBOARD - User is not employer, redirecting to job seeker dashboard');
-            router.push('/dashboard');
-            return;
-          }
-          
-          console.log('✅ DASHBOARD - All checks passed, loading dashboard');
-        } else {
-          console.log('❌ DASHBOARD - Failed to get user status, redirecting to onboarding');
-          router.push('/onboarding');
-          return;
-        }
-        setOnboardingChecked(true);
-      } catch (error) {
-        console.error('❌ DASHBOARD - Error checking onboarding:', error);
-        router.push('/onboarding');
-      }
-    };
-
-    checkOnboarding();
+    
+    // Middleware has already verified onboarding, so we can proceed
+    setOnboardingChecked(true);
   }, [user, isLoaded, router]);
 
   // Load data only after onboarding is verified
