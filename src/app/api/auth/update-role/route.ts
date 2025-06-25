@@ -16,10 +16,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
     }
 
-    // Update user role in database
-    const updatedUser = await prisma.user.update({
-      where: { email: user.emailAddresses[0]?.emailAddress },
-      data: { role },
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+    if (!userEmail) {
+      return NextResponse.json({ error: 'No email found' }, { status: 400 });
+    }
+
+    // Update user role in database (create if doesn't exist)
+    const updatedUser = await prisma.user.upsert({
+      where: { email: userEmail },
+      update: { role },
+      create: {
+        id: user.id,
+        email: userEmail,
+        name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User',
+        passwordHash: 'clerk_managed',
+        role,
+        onboardingCompleted: false,
+      },
       select: {
         id: true,
         email: true,

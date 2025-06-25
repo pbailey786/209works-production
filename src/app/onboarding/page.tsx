@@ -1,100 +1,158 @@
-import { redirect } from 'next/navigation';
-import { currentUser } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/database/prisma';
-import OnboardingClient from './OnboardingClient';
+'use client';
 
-// Disable static generation for this page due to authentication requirements
-export const dynamic = 'force-dynamic';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { Briefcase, Users, CheckCircle } from 'lucide-react';
 
-export default async function OnboardingPage() {
-  try {
-    const clerkUser = await currentUser();
+export default function OnboardingPage() {
+  const [selectedRole, setSelectedRole] = useState<'jobseeker' | 'employer' | null>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { user } = useUser();
 
-    if (!clerkUser) {
-      redirect('/sign-in?redirect_url=/onboarding');
-    }
-
-    // Try to sync user or get existing user
-    const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
-    if (!userEmail) {
-      redirect('/sign-in');
-    }
-
-    // Get or create user data (with build-time protection)
-    let user;
+  const handleRoleSelection = async (role: 'jobseeker' | 'employer') => {
+    if (!user) return;
+    
+    setLoading(true);
+    
     try {
-      user = await prisma.user.findUnique({
-        where: { email: userEmail },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          onboardingCompleted: true,
-          location: true,
-          currentJobTitle: true,
-          experienceLevel: true,
-          skills: true,
-          preferredJobTypes: true,
-          companyWebsite: true,
-          companyName: true,
-          industry: true,
-          createdAt: true,
+      const response = await fetch('/api/onboarding/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          role,
+          userId: user.id,
+          email: user.emailAddresses[0]?.emailAddress,
+        }),
       });
-    } catch (dbError) {
-      console.error('Database connection error in onboarding:', dbError);
-      // If database is unavailable (like during build), redirect to sign-in
-      redirect('/sign-in?redirect_url=/onboarding');
-    }
 
-    // If user doesn't exist, create them and force onboarding
-    if (!user) {
-      try {
-        console.log('🆕 Creating new user from OAuth signup:', userEmail);
-        const newUser = await prisma.user.create({
-          data: {
-            id: clerkUser.id,
-            email: userEmail,
-            name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
-            passwordHash: 'clerk_managed',
-            role: 'jobseeker', // Default role - can be changed in onboarding
-            onboardingCompleted: false, // Always false for new users
-            createdAt: new Date(), // Explicitly set creation time
-          },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            onboardingCompleted: true,
-            location: true,
-            currentJobTitle: true,
-            experienceLevel: true,
-            skills: true,
-            preferredJobTypes: true,
-            companyWebsite: true,
-            companyName: true,
-            industry: true,
-            createdAt: true,
-          },
-        });
-        user = newUser;
-      } catch (createError) {
-        console.error('Error creating user in onboarding:', createError);
-        redirect('/sign-in?redirect_url=/onboarding');
+      if (!response.ok) {
+        throw new Error('Failed to complete onboarding');
       }
-    }
 
-    // If onboarding is already completed, redirect to dashboard
-    if (user.onboardingCompleted) {
-      redirect(user.role === 'employer' ? '/employers/dashboard' : '/dashboard');
+      // Redirect to appropriate dashboard
+      if (role === 'employer') {
+        router.push('/employers/dashboard');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Onboarding error:', error);
+      setLoading(false);
     }
+  };
 
-    return <OnboardingClient user={user} clerkUserId={clerkUser.id} />;
-  } catch (error) {
-    console.error('Onboarding page error:', error);
-    // If there's any error, redirect to sign-in
-    redirect('/sign-in?redirect_url=/onboarding');
-  }
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="max-w-2xl w-full">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Welcome to 209.works! 👋
+          </h1>
+          <p className="text-xl text-gray-600">
+            Choose your path to get started in the Central Valley job market
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Job Seeker Option */}
+          <div 
+            onClick={() => setSelectedRole('jobseeker')}
+            className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-200 ${
+              selectedRole === 'jobseeker' 
+                ? 'border-blue-500 bg-blue-50 shadow-lg transform scale-105' 
+                : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-blue-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Job Seeker</h2>
+              <p className="text-gray-600 mb-4">
+                Find your next opportunity in the 209 area with AI-powered job matching and career tools
+              </p>
+              <ul className="text-sm text-gray-500 space-y-2">
+                <li>✓ Smart job recommendations</li>
+                <li>✓ AI-powered "Should I Apply?" feature</li>
+                <li>✓ .works resume builder</li>
+                <li>✓ Skills & career guidance</li>
+              </ul>
+              {selectedRole === 'jobseeker' && (
+                <div className="mt-4 flex items-center justify-center text-blue-600">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  <span className="font-medium">Selected</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Employer Option */}
+          <div 
+            onClick={() => setSelectedRole('employer')}
+            className={`cursor-pointer p-8 rounded-2xl border-2 transition-all duration-200 ${
+              selectedRole === 'employer' 
+                ? 'border-green-500 bg-green-50 shadow-lg transform scale-105' 
+                : 'border-gray-200 bg-white hover:border-green-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Briefcase className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Employer</h2>
+              <p className="text-gray-600 mb-4">
+                Post jobs and find top talent in the Central Valley with our AI-powered hiring platform
+              </p>
+              <ul className="text-sm text-gray-500 space-y-2">
+                <li>✓ AI-optimized job posts</li>
+                <li>✓ Smart applicant matching</li>
+                <li>✓ Candidate management tools</li>
+                <li>✓ Local talent insights</li>
+              </ul>
+              {selectedRole === 'employer' && (
+                <div className="mt-4 flex items-center justify-center text-green-600">
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  <span className="font-medium">Selected</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Continue Button */}
+        {selectedRole && (
+          <div className="text-center mt-8">
+            <button
+              onClick={() => handleRoleSelection(selectedRole)}
+              disabled={loading}
+              className={`px-8 py-4 rounded-xl font-semibold text-white text-lg transition-all duration-200 ${
+                selectedRole === 'employer'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-blue-600 hover:bg-blue-700'
+              } disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105`}
+            >
+              {loading ? (
+                <div className="flex items-center">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Setting up your account...
+                </div>
+              ) : (
+                `Continue as ${selectedRole === 'employer' ? 'Employer' : 'Job Seeker'}`
+              )}
+            </button>
+          </div>
+        )}
+
+        <div className="text-center mt-6">
+          <p className="text-sm text-gray-500">
+            You can always change your role later in your account settings
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
