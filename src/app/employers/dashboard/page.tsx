@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import {
   Plus,
   Users,
@@ -18,6 +20,8 @@ interface SimpleStats {
 }
 
 export default function SimpleEmployerDashboard() {
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
   const [stats, setStats] = useState<SimpleStats>({
     activeJobs: 0,
     totalApplications: 0,
@@ -26,9 +30,46 @@ export default function SimpleEmployerDashboard() {
 
   const [recentJobs, setRecentJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  // Load data
+  // Check onboarding status first
   useEffect(() => {
+    if (!isLoaded) return;
+    
+    if (!user) {
+      router.push('/sign-in');
+      return;
+    }
+
+    // Check if user has completed onboarding
+    const checkOnboarding = async () => {
+      try {
+        const response = await fetch('/api/auth/user-status');
+        if (response.ok) {
+          const data = await response.json();
+          if (!data.user?.onboardingCompleted) {
+            router.push('/onboarding');
+            return;
+          }
+          if (data.user?.role !== 'employer') {
+            router.push('/dashboard');
+            return;
+          }
+        }
+        setOnboardingChecked(true);
+      } catch (error) {
+        console.error('Error checking onboarding:', error);
+        router.push('/onboarding');
+      }
+    };
+
+    checkOnboarding();
+  }, [user, isLoaded, router]);
+
+  // Load data only after onboarding is verified
+  useEffect(() => {
+    if (!onboardingChecked) return;
+    
     const fetchData = async () => {
       try {
         // Fetch simplified stats
@@ -56,7 +97,7 @@ export default function SimpleEmployerDashboard() {
     };
 
     fetchData();
-  }, []);
+  }, [onboardingChecked]);
 
   if (loading) {
     return (
