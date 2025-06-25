@@ -52,7 +52,7 @@ interface AIConfig {
 }
 
 // Initialize OpenAI client
-const openai = new OpenAI({
+export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || 'dummy-key',
   timeout: 30000,
   maxRetries: 2,
