@@ -25,6 +25,12 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   console.log('🔍 MIDDLEWARE - URL:', req.nextUrl.pathname);
   
+  // Skip middleware completely for auth-redirect to prevent loops
+  if (req.nextUrl.pathname.startsWith('/auth-redirect')) {
+    console.log('✅ MIDDLEWARE - Skipping auth-redirect');
+    return NextResponse.next();
+  }
+  
   const { userId } = await auth();
   console.log('🔍 MIDDLEWARE - User ID:', userId ? 'exists' : 'none');
   
@@ -85,6 +91,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
 
       // If trying to access employer routes but not an employer, redirect to appropriate dashboard
       if (user && req.nextUrl.pathname.startsWith('/employers') && user.role !== 'employer' && user.role !== 'admin') {
+        console.log('❌ MIDDLEWARE - Non-employer accessing employer routes, redirecting to dashboard');
         return NextResponse.redirect(new URL('/dashboard', req.url));
       }
 
