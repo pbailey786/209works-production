@@ -48,13 +48,7 @@ export default async function AuthRedirectPage() {
       });
     }
 
-    // If onboarding not completed, redirect to onboarding
-    if (!user.onboardingCompleted) {
-      console.log('🎯 Redirecting to onboarding for user:', userEmail);
-      redirect('/onboarding');
-    }
-
-    // If onboarding completed, redirect to appropriate dashboard
+    // Always redirect to dashboard - the dashboard will check onboarding status
     console.log('✅ Redirecting to dashboard for user:', userEmail, 'role:', user.role);
     if (user.role === 'employer') {
       redirect('/employers/dashboard');
