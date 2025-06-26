@@ -35,7 +35,7 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
     {
       id: '1',
       role: 'assistant',
-      content: "✨ Hi! I'm your Job Genie! I'll help you create the perfect job post for the Central Valley. What position are you looking to fill?",
+      content: "👋 Hey there! I'm your Job Genie - think of me as your experienced hiring manager who's been helping Central Valley businesses find great local talent for over 20 years.\n\nI'll help you create a job post that actually attracts the right candidates and cuts down on those applications that waste your time.\n\nLet's start simple - what position are you looking to fill?",
       timestamp: new Date()
     }
   ]);
@@ -89,9 +89,18 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
 
       const data = await response.json();
       
+      // Debug logging
+      console.log('AI Response Data:', data);
+      console.log('Current Job Data:', jobData);
+      
       // Update job data
       if (data.jobData) {
-        setJobData(prev => ({ ...prev, ...data.jobData }));
+        console.log('Updating job data with:', data.jobData);
+        setJobData(prev => {
+          const newData = { ...prev, ...data.jobData };
+          console.log('New job data state:', newData);
+          return newData;
+        });
       }
 
       // Add AI response
@@ -218,123 +227,141 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
       </div>
 
       {/* Job Preview Panel - Right Side */}
-      <div className="w-96 bg-gray-50 rounded-xl shadow-lg p-6 overflow-y-auto">
+      <div className="w-96 bg-gray-50 rounded-xl shadow-lg p-6 flex flex-col">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <FileText className="w-5 h-5 mr-2 text-blue-600" />
           Job Details Preview
         </h3>
 
-        {Object.keys(jobData).length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Briefcase className="w-8 h-8 text-gray-400" />
+        {/* Job Details Display */}
+        <div className="space-y-4 flex-1 overflow-y-auto">
+          {Object.keys(jobData).length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Briefcase className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500 text-sm">Job details will appear here as you chat with the Job Genie</p>
             </div>
-            <p className="text-gray-500">Job details will appear here as you chat with the Job Genie</p>
+          ) : (
+            <div className="space-y-4">
+              {/* Title */}
+              {jobData.title && (
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-start space-x-2">
+                    <Briefcase className="w-5 h-5 text-blue-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">Position</p>
+                      <p className="text-lg font-semibold text-gray-900">{jobData.title}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Location */}
+              {jobData.location && (
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-start space-x-2">
+                    <MapPin className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">Location</p>
+                      <p className="text-base text-gray-900">{jobData.location}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Salary */}
+              {jobData.salary && (
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-start space-x-2">
+                    <DollarSign className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">Salary</p>
+                      <p className="text-base text-gray-900">{jobData.salary}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Job Type & Schedule */}
+              {(jobData.jobType || jobData.schedule) && (
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-start space-x-2">
+                    <Clock className="w-5 h-5 text-purple-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600">Type & Schedule</p>
+                      <p className="text-base text-gray-900">
+                        {jobData.jobType && <span>{jobData.jobType}</span>}
+                        {jobData.jobType && jobData.schedule && <span> • </span>}
+                        {jobData.schedule && <span>{jobData.schedule}</span>}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Requirements */}
+              {jobData.requirements && (
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-start space-x-2">
+                    <CheckCircle className="w-5 h-5 text-orange-600 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-600 mb-1">Requirements</p>
+                      <p className="text-sm text-gray-700">{jobData.requirements}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Deal Breakers */}
+              {jobData.dealBreakers && jobData.dealBreakers.length > 0 && (
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-600 mb-2">Deal Breakers</p>
+                  <ul className="space-y-1">
+                    {jobData.dealBreakers.map((item, idx) => (
+                      <li key={idx} className="text-sm text-red-700 flex items-start">
+                        <span className="mr-2">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Build Job Ad Button - Always visible at bottom */}
+        <div className="pt-4 mt-auto">
+          <button
+            onClick={handleBuildJobAd}
+            disabled={!hasEnoughData}
+            className={`w-full flex items-center justify-center space-x-2 px-6 py-3 rounded-lg transition-all shadow-lg ${
+              hasEnoughData 
+                ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 transform hover:scale-[1.02]' 
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <FileText className="w-5 h-5" />
+            <span className="font-medium">Build Job Ad</span>
+            <ArrowRight className="w-5 h-5" />
+          </button>
+          <p className="text-xs text-gray-600 text-center mt-2">
+            {hasEnoughData 
+              ? 'You can edit everything in the next step' 
+              : 'Need job title, salary, and description/requirements to continue'
+            }
+          </p>
+          {/* Debug info for development */}
+          <div className="text-xs text-gray-400 mt-1 text-center">
+            Debug: {JSON.stringify({
+              title: !!jobData.title,
+              salary: !!jobData.salary, 
+              desc: !!jobData.description,
+              req: !!jobData.requirements
+            })}
           </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Title */}
-            {jobData.title && (
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="flex items-start space-x-2">
-                  <Briefcase className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">Position</p>
-                    <p className="text-lg font-semibold text-gray-900">{jobData.title}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Location */}
-            {jobData.location && (
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="flex items-start space-x-2">
-                  <MapPin className="w-5 h-5 text-green-600 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">Location</p>
-                    <p className="text-base text-gray-900">{jobData.location}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Salary */}
-            {jobData.salary && (
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="flex items-start space-x-2">
-                  <DollarSign className="w-5 h-5 text-green-600 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">Salary</p>
-                    <p className="text-base text-gray-900">{jobData.salary}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Job Type & Schedule */}
-            {(jobData.jobType || jobData.schedule) && (
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="flex items-start space-x-2">
-                  <Clock className="w-5 h-5 text-purple-600 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">Type & Schedule</p>
-                    <p className="text-base text-gray-900">
-                      {jobData.jobType && <span>{jobData.jobType}</span>}
-                      {jobData.jobType && jobData.schedule && <span> • </span>}
-                      {jobData.schedule && <span>{jobData.schedule}</span>}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Requirements */}
-            {jobData.requirements && (
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="flex items-start space-x-2">
-                  <CheckCircle className="w-5 h-5 text-orange-600 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600 mb-1">Requirements</p>
-                    <p className="text-sm text-gray-700">{jobData.requirements}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Deal Breakers */}
-            {jobData.dealBreakers && jobData.dealBreakers.length > 0 && (
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <p className="text-sm font-medium text-gray-600 mb-2">Deal Breakers</p>
-                <ul className="space-y-1">
-                  {jobData.dealBreakers.map((item, idx) => (
-                    <li key={idx} className="text-sm text-red-700 flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Build Job Ad Button */}
-            {hasEnoughData && (
-              <div className="pt-4">
-                <button
-                  onClick={handleBuildJobAd}
-                  className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all transform hover:scale-[1.02] shadow-lg"
-                >
-                  <FileText className="w-5 h-5" />
-                  <span className="font-medium">Build Job Ad</span>
-                  <ArrowRight className="w-5 h-5" />
-                </button>
-                <p className="text-xs text-gray-600 text-center mt-2">
-                  You can edit everything in the next step
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
