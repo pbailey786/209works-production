@@ -28,7 +28,6 @@ import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
 
 export default function Header() {
   // Use Clerk authentication if enabled, otherwise fall back to mock
