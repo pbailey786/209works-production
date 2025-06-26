@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { openai } from '@/lib/ai';
 
+// Set max duration for Netlify functions
+export const maxDuration = 30;
+
 interface Message {
   role: 'assistant' | 'user';
   content: string;
@@ -48,15 +51,15 @@ CENTRAL VALLEY CONTEXT:
 - Typical wages: $15-25/hr for entry level, $25-40/hr for skilled trades
 
 RESPONSE FORMAT:
-Always respond with JSON containing:
+During conversation, respond with JSON:
 {
   "response": "Your conversational response to the user",
   "jobData": { extracted job data so far },
-  "isComplete": boolean (true when you have enough info for a complete job post),
+  "isComplete": false,
   "nextSteps": "What to ask next" 
 }
 
-Job is complete when you have: title, basic description, salary range, key requirements, and contact preference.`;
+When job is complete (have title, description, salary, requirements, contact), set isComplete to true and format the complete job data in the response as a nicely formatted job post (not raw JSON).`;
 
 export async function POST(req: NextRequest) {
   try {

@@ -32,7 +32,7 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
     {
       id: '1',
       role: 'assistant',
-      content: "Hi! I'm here to help you create the perfect job post for the Central Valley. What position are you looking to fill?",
+      content: "✨ Hi! I'm your Job Genie! I'll help you create the perfect job post for the Central Valley. What position are you looking to fill?",
       timestamp: new Date()
     }
   ]);
@@ -127,8 +127,8 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
             <Bot className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">AI Job Creation Assistant</h2>
-            <p className="text-sm text-gray-600">Let's create your perfect job post together</p>
+            <h2 className="text-lg font-semibold text-gray-900">Job Genie 🧞‍♂️</h2>
+            <p className="text-sm text-gray-600">Your magical job posting assistant</p>
           </div>
         </div>
         
@@ -166,7 +166,56 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
                   <User className="w-5 h-5 text-blue-100 mt-0.5 flex-shrink-0" />
                 )}
                 <div className="flex-1">
-                  <p className="whitespace-pre-wrap">{message.content}</p>
+                  {message.role === 'assistant' && message.content.includes('"title"') && message.content.includes('"description"') ? (
+                    // Format JSON job data nicely
+                    <div className="space-y-3">
+                      <p className="font-semibold text-blue-900 mb-2">✨ Here's your job posting:</p>
+                      {(() => {
+                        try {
+                          const jobData = JSON.parse(message.content);
+                          return (
+                            <div className="bg-white rounded-lg p-4 border border-gray-200">
+                              <h3 className="font-bold text-lg mb-2">{jobData.title}</h3>
+                              <div className="space-y-2 text-sm">
+                                <p><span className="font-medium">📍 Location:</span> {jobData.location}</p>
+                                <p><span className="font-medium">💼 Type:</span> {jobData.type || jobData.jobType}</p>
+                                <p><span className="font-medium">💰 Salary:</span> {jobData.salary}</p>
+                                {jobData.schedule && <p><span className="font-medium">🕐 Schedule:</span> {jobData.schedule}</p>}
+                                <div className="mt-3">
+                                  <p className="font-medium mb-1">📝 Description:</p>
+                                  <p className="text-gray-700">{jobData.description}</p>
+                                </div>
+                                {jobData.requirements && (
+                                  <div className="mt-3">
+                                    <p className="font-medium mb-1">✅ Requirements:</p>
+                                    <p className="text-gray-700">{jobData.requirements}</p>
+                                  </div>
+                                )}
+                                {jobData.responsibilities && Array.isArray(jobData.responsibilities) && (
+                                  <div className="mt-3">
+                                    <p className="font-medium mb-1">📋 Responsibilities:</p>
+                                    <ul className="list-disc list-inside text-gray-700">
+                                      {jobData.responsibilities.map((resp: string, idx: number) => (
+                                        <li key={idx}>{resp}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                <p className="mt-3"><span className="font-medium">📧 Contact:</span> {jobData.contact || jobData.contactMethod}</p>
+                              </div>
+                            </div>
+                          );
+                        } catch (e) {
+                          return <p className="whitespace-pre-wrap">{message.content}</p>;
+                        }
+                      })()}
+                      <p className="text-sm text-gray-600 mt-2">
+                        👆 This is a preview of your job post. You can review and edit it in the next step!
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap">{message.content}</p>
+                  )}
                   <p className={`text-xs mt-1 ${
                     message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
                   }`}>
