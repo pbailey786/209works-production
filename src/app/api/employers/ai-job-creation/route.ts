@@ -12,6 +12,7 @@ interface Message {
 
 interface JobData {
   title?: string;
+  company?: string;
   description?: string;
   requirements?: string;
   salary?: string;
@@ -21,6 +22,8 @@ interface JobData {
   dealBreakers?: string[];
   priorities?: string[];
   contactMethod?: string;
+  schedule?: string;
+  benefits?: string;
 }
 
 const SYSTEM_PROMPT = `You are an expert job posting assistant for 209.works, a hyperlocal job board serving California's Central Valley (209 area code). Your goal is to help employers create effective job posts through natural conversation.

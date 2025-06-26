@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, ArrowRight, FileText } from 'lucide-react';
+import { Send, Bot, User, ArrowRight, FileText, MapPin, DollarSign, Clock, CheckCircle, Briefcase } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -12,6 +12,7 @@ interface Message {
 
 interface JobData {
   title?: string;
+  company?: string;
   description?: string;
   requirements?: string;
   salary?: string;
@@ -21,6 +22,8 @@ interface JobData {
   dealBreakers?: string[];
   priorities?: string[];
   contactMethod?: string;
+  schedule?: string;
+  benefits?: string;
 }
 
 interface AIJobCreationChatProps {
@@ -114,192 +117,224 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
     }
   };
 
-  const handleReviewJob = () => {
+  const handleBuildJobAd = () => {
     onJobComplete(jobData);
   };
 
+  // Check if we have enough data to show the build button
+  const hasEnoughData = jobData.title && jobData.salary && (jobData.description || jobData.requirements);
+
   return (
-    <div className="max-w-4xl mx-auto h-[600px] flex flex-col bg-white rounded-xl shadow-lg">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-xl">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <Bot className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Job Genie 🧞‍♂️</h2>
-            <p className="text-sm text-gray-600">Your magical job posting assistant</p>
+    <div className="max-w-7xl mx-auto h-[800px] flex gap-6">
+      {/* Main Chat Area - Left Side */}
+      <div className="flex-1 flex flex-col bg-white rounded-xl shadow-lg">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-blue-50 to-purple-50 rounded-t-xl">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <Bot className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Job Genie 🧞‍♂️</h2>
+              <p className="text-sm text-gray-600">Your magical job posting assistant</p>
+            </div>
           </div>
         </div>
-        
-        {isComplete && (
-          <button
-            onClick={handleReviewJob}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <FileText className="w-4 h-4" />
-            <span>Review Job Post</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        )}
-      </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {messages.map((message) => (
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                message.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
-              }`}
+              key={message.id}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className="flex items-start space-x-2">
-                {message.role === 'assistant' && (
-                  <Bot className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                )}
-                {message.role === 'user' && (
-                  <User className="w-5 h-5 text-blue-100 mt-0.5 flex-shrink-0" />
-                )}
-                <div className="flex-1">
-                  {message.role === 'assistant' && message.content.includes('"title"') && message.content.includes('"description"') ? (
-                    // Format JSON job data nicely
-                    <div className="space-y-3">
-                      <p className="font-semibold text-blue-900 mb-2">✨ Here's your job posting:</p>
-                      {(() => {
-                        try {
-                          const jobData = JSON.parse(message.content);
-                          return (
-                            <div className="bg-white rounded-lg p-4 border border-gray-200">
-                              <h3 className="font-bold text-lg mb-2">{jobData.title}</h3>
-                              <div className="space-y-2 text-sm">
-                                <p><span className="font-medium">📍 Location:</span> {jobData.location}</p>
-                                <p><span className="font-medium">💼 Type:</span> {jobData.type || jobData.jobType}</p>
-                                <p><span className="font-medium">💰 Salary:</span> {jobData.salary}</p>
-                                {jobData.schedule && <p><span className="font-medium">🕐 Schedule:</span> {jobData.schedule}</p>}
-                                <div className="mt-3">
-                                  <p className="font-medium mb-1">📝 Description:</p>
-                                  <p className="text-gray-700">{jobData.description}</p>
-                                </div>
-                                {jobData.requirements && (
-                                  <div className="mt-3">
-                                    <p className="font-medium mb-1">✅ Requirements:</p>
-                                    <p className="text-gray-700">{jobData.requirements}</p>
-                                  </div>
-                                )}
-                                {jobData.responsibilities && Array.isArray(jobData.responsibilities) && (
-                                  <div className="mt-3">
-                                    <p className="font-medium mb-1">📋 Responsibilities:</p>
-                                    <ul className="list-disc list-inside text-gray-700">
-                                      {jobData.responsibilities.map((resp: string, idx: number) => (
-                                        <li key={idx}>{resp}</li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )}
-                                <p className="mt-3"><span className="font-medium">📧 Contact:</span> {jobData.contact || jobData.contactMethod}</p>
-                              </div>
-                            </div>
-                          );
-                        } catch (e) {
-                          return <p className="whitespace-pre-wrap">{message.content}</p>;
-                        }
-                      })()}
-                      <p className="text-sm text-gray-600 mt-2">
-                        👆 This is a preview of your job post. You can review and edit it in the next step!
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+              <div
+                className={`max-w-[70%] rounded-2xl px-5 py-3 ${
+                  message.role === 'user'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-900'
+                }`}
+              >
+                <div className="flex items-start space-x-3">
+                  {message.role === 'assistant' && (
+                    <Bot className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                   )}
-                  <p className={`text-xs mt-1 ${
-                    message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
-                  }`}>
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                  {message.role === 'user' && (
+                    <User className="w-5 h-5 text-blue-100 mt-0.5 flex-shrink-0" />
+                  )}
+                  <div className="flex-1">
+                    <p className="whitespace-pre-wrap text-base leading-relaxed">{message.content}</p>
+                    <p className={`text-xs mt-2 ${
+                      message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                    }`}>
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-2xl px-4 py-3">
-              <div className="flex items-center space-x-2">
-                <Bot className="w-5 h-5 text-blue-600" />
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 rounded-2xl px-5 py-3">
+                <div className="flex items-center space-x-3">
+                  <Bot className="w-5 h-5 text-blue-600" />
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                  </div>
                 </div>
               </div>
             </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <div className="border-t p-4">
+          <div className="flex items-center space-x-3">
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+              disabled={isLoading}
+            />
+            <button
+              onClick={handleSend}
+              disabled={isLoading || !inputValue.trim()}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Send className="w-5 h-5" />
+            </button>
           </div>
-        )}
-        
-        <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      {/* Job Data Preview */}
-      {Object.keys(jobData).length > 0 && (
-        <div className="border-t bg-gray-50 p-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Job Details Collected:</h4>
-          <div className="flex flex-wrap gap-2">
+      {/* Job Preview Panel - Right Side */}
+      <div className="w-96 bg-gray-50 rounded-xl shadow-lg p-6 overflow-y-auto">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <FileText className="w-5 h-5 mr-2 text-blue-600" />
+          Job Details Preview
+        </h3>
+
+        {Object.keys(jobData).length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Briefcase className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500">Job details will appear here as you chat with the Job Genie</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Title */}
             {jobData.title && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                Title: {jobData.title}
-              </span>
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <div className="flex items-start space-x-2">
+                  <Briefcase className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600">Position</p>
+                    <p className="text-lg font-semibold text-gray-900">{jobData.title}</p>
+                  </div>
+                </div>
+              </div>
             )}
+
+            {/* Location */}
+            {jobData.location && (
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <div className="flex items-start space-x-2">
+                  <MapPin className="w-5 h-5 text-green-600 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600">Location</p>
+                    <p className="text-base text-gray-900">{jobData.location}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Salary */}
             {jobData.salary && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                Salary: {jobData.salary}
-              </span>
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <div className="flex items-start space-x-2">
+                  <DollarSign className="w-5 h-5 text-green-600 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600">Salary</p>
+                    <p className="text-base text-gray-900">{jobData.salary}</p>
+                  </div>
+                </div>
+              </div>
             )}
-            {jobData.urgency && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-                Urgency: {jobData.urgency}
-              </span>
+
+            {/* Job Type & Schedule */}
+            {(jobData.jobType || jobData.schedule) && (
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <div className="flex items-start space-x-2">
+                  <Clock className="w-5 h-5 text-purple-600 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600">Type & Schedule</p>
+                    <p className="text-base text-gray-900">
+                      {jobData.jobType && <span>{jobData.jobType}</span>}
+                      {jobData.jobType && jobData.schedule && <span> • </span>}
+                      {jobData.schedule && <span>{jobData.schedule}</span>}
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
-            {jobData.contactMethod && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800">
-                Contact: {jobData.contactMethod}
-              </span>
+
+            {/* Requirements */}
+            {jobData.requirements && (
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <div className="flex items-start space-x-2">
+                  <CheckCircle className="w-5 h-5 text-orange-600 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-600 mb-1">Requirements</p>
+                    <p className="text-sm text-gray-700">{jobData.requirements}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Deal Breakers */}
+            {jobData.dealBreakers && jobData.dealBreakers.length > 0 && (
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <p className="text-sm font-medium text-gray-600 mb-2">Deal Breakers</p>
+                <ul className="space-y-1">
+                  {jobData.dealBreakers.map((item, idx) => (
+                    <li key={idx} className="text-sm text-red-700 flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Build Job Ad Button */}
+            {hasEnoughData && (
+              <div className="pt-4">
+                <button
+                  onClick={handleBuildJobAd}
+                  className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all transform hover:scale-[1.02] shadow-lg"
+                >
+                  <FileText className="w-5 h-5" />
+                  <span className="font-medium">Build Job Ad</span>
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+                <p className="text-xs text-gray-600 text-center mt-2">
+                  You can edit everything in the next step
+                </p>
+              </div>
             )}
           </div>
-        </div>
-      )}
-
-      {/* Input */}
-      <div className="border-t p-4">
-        <div className="flex space-x-3">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your response..."
-            disabled={isLoading}
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-          />
-          <button
-            onClick={handleSend}
-            disabled={!inputValue.trim() || isLoading}
-            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-          >
-            <Send className="w-4 h-4" />
-            <span>Send</span>
-          </button>
-        </div>
-        
-        <p className="text-xs text-gray-500 mt-2">
-          Press Enter to send • The AI will guide you through creating the perfect job post
-        </p>
+        )}
       </div>
     </div>
   );

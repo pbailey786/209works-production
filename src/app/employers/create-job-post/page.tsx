@@ -6,9 +6,11 @@ import { useRouter } from 'next/navigation';
 import JobPostingMethodSelector from '@/components/employers/JobPostingMethodSelector';
 import AIJobCreationChat from '@/components/employers/AIJobCreationChat';
 import CSVBulkUpload from '@/components/employers/CSVBulkUpload';
+import JobAdBuilder from '@/components/employers/JobAdBuilder';
 
 interface JobData {
   title?: string;
+  company?: string;
   description?: string;
   requirements?: string;
   salary?: string;
@@ -18,9 +20,11 @@ interface JobData {
   dealBreakers?: string[];
   priorities?: string[];
   contactMethod?: string;
+  schedule?: string;
+  benefits?: string;
 }
 
-type JobPostingStep = 'method-selection' | 'ai-chat' | 'csv-upload' | 'traditional-form' | 'preview' | 'credits' | 'published';
+type JobPostingStep = 'method-selection' | 'ai-chat' | 'csv-upload' | 'traditional-form' | 'job-builder' | 'preview' | 'credits' | 'published';
 
 export default function CreateJobPostPage() {
   const { user, isLoaded } = useUser();
@@ -42,7 +46,7 @@ export default function CreateJobPostPage() {
         const parsedData = JSON.parse(data);
         setJobData(parsedData);
         setSelectedMethod('traditional-form');
-        setCurrentStep('preview');
+        setCurrentStep('job-builder');
         // Clean up URL
         router.replace('/employers/create-job-post', { scroll: false });
       } catch (error) {
@@ -86,13 +90,28 @@ export default function CreateJobPostPage() {
   // Handle AI chat completion
   const handleAIJobComplete = (data: JobData) => {
     setJobData(data);
-    setCurrentStep('preview');
+    setCurrentStep('job-builder');
   };
 
   // Handle CSV bulk upload completion
   const handleCSVJobsProcessed = (jobs: any[]) => {
     setBulkJobs(jobs);
     setCurrentStep('preview');
+  };
+
+  // Handle job builder completion
+  const handleJobBuilderComplete = (finalJobData: JobData) => {
+    setJobData(finalJobData);
+    setCurrentStep('preview');
+  };
+
+  // Handle job builder back
+  const handleJobBuilderBack = () => {
+    if (selectedMethod === 'ai-chat') {
+      setCurrentStep('ai-chat');
+    } else {
+      setCurrentStep('method-selection');
+    }
   };
 
   // Handle job preview completion (individual job)
@@ -118,6 +137,15 @@ export default function CreateJobPostPage() {
       
       case 'csv-upload':
         return <CSVBulkUpload onJobsProcessed={handleCSVJobsProcessed} />;
+      
+      case 'job-builder':
+        return (
+          <JobAdBuilder 
+            initialData={jobData}
+            onBack={handleJobBuilderBack}
+            onContinue={handleJobBuilderComplete}
+          />
+        );
       
       case 'preview':
         if (bulkJobs.length > 0) {
@@ -175,7 +203,7 @@ export default function CreateJobPostPage() {
               </div>
               <div className="mt-8 text-center space-x-4">
                 <button
-                  onClick={() => setCurrentStep(selectedMethod === 'ai-chat' ? 'ai-chat' : 'method-selection')}
+                  onClick={() => setCurrentStep('job-builder')}
                   className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
                   ← Back to Edit
