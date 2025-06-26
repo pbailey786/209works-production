@@ -6,8 +6,6 @@ import { prisma } from '@/lib/database/prisma';
 export const dynamic = 'force-dynamic';
 
 export default async function AuthRedirectPage() {
-  console.log('🚀 AUTH-REDIRECT: Starting auth redirect flow');
-  
   let clerkUser;
   let userEmail;
   let user;
@@ -15,31 +13,20 @@ export default async function AuthRedirectPage() {
   try {
     // Step 1: Check Clerk user
     clerkUser = await currentUser();
-    console.log('🚀 AUTH-REDIRECT: Clerk user exists?', !!clerkUser);
-    console.log('🚀 AUTH-REDIRECT: Clerk user ID:', clerkUser?.id);
 
     if (!clerkUser) {
-      console.log('❌ AUTH-REDIRECT: No Clerk user, redirecting to sign-in');
-      redirect('/sign-in');
-      return; // This won't execute, but TypeScript needs it
-    }
-
-    userEmail = clerkUser.emailAddresses[0]?.emailAddress;
-    console.log('🚀 AUTH-REDIRECT: User email:', userEmail);
-    
-    if (!userEmail) {
-      console.log('❌ AUTH-REDIRECT: No email found, redirecting to sign-in');
       redirect('/sign-in');
       return;
     }
 
-    // Step 2: Test database connection
-    console.log('🚀 AUTH-REDIRECT: Testing database connection...');
-    await prisma.$connect();
-    console.log('✅ AUTH-REDIRECT: Database connected successfully');
+    userEmail = clerkUser.emailAddresses[0]?.emailAddress;
+    
+    if (!userEmail) {
+      redirect('/sign-in');
+      return;
+    }
 
-    // Step 3: Try to find user
-    console.log('🚀 AUTH-REDIRECT: Looking up user in database...');
+    // Step 2: Try to find user
     user = await prisma.user.findUnique({
       where: { email: userEmail },
       select: {
@@ -50,11 +37,9 @@ export default async function AuthRedirectPage() {
         role: true,
       },
     });
-    console.log('🚀 AUTH-REDIRECT: Database lookup result:', user);
 
-    // Step 4: Create user if needed
+    // Step 3: Create user if needed
     if (!user) {
-      console.log('🆕 AUTH-REDIRECT: Creating new user...');
       user = await prisma.user.create({
         data: {
           id: clerkUser.id,
@@ -72,32 +57,24 @@ export default async function AuthRedirectPage() {
           role: true,
         },
       });
-      console.log('🆕 AUTH-REDIRECT: User created:', user);
     }
 
-    // Step 5: Check onboarding status
-    console.log('✅ AUTH-REDIRECT: User data:', {
-      email: user.email,
-      role: user.role,
-      onboarding: user.onboardingCompleted,
-      employerOnboarding: user.employerOnboardingCompleted
-    });
+    // Step 4: Update Clerk metadata with current role for consistency
+    if (clerkUser.publicMetadata?.role !== user.role) {
+      // This will be handled by a webhook in production
+      // For now, we'll rely on the database as the source of truth
+    }
     
-    // Step 6: Determine redirect destination
+    // Step 5: Determine redirect destination
     if (!user.onboardingCompleted) {
-      console.log('→ AUTH-REDIRECT: Redirecting to onboarding (role selection)');
       redirect('/onboarding');
     } else if (user.role === 'employer' && !user.employerOnboardingCompleted) {
-      console.log('→ AUTH-REDIRECT: Redirecting to employer onboarding');
       redirect('/onboarding/employer');
     } else if (user.role === 'employer') {
-      console.log('→ AUTH-REDIRECT: Redirecting to employer dashboard');
       redirect('/employers/dashboard');
     } else if (user.role === 'admin') {
-      console.log('→ AUTH-REDIRECT: Redirecting to admin dashboard');
       redirect('/admin/dashboard');
     } else {
-      console.log('→ AUTH-REDIRECT: Redirecting to job seeker dashboard');
       redirect('/dashboard');
     }
     

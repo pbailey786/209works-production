@@ -28,31 +28,48 @@ import ErrorDisplay from './ui/ErrorDisplay';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
+import { useEffect, useState } from 'react';
 
 export default function Header() {
   // Use Clerk authentication if enabled, otherwise fall back to mock
   const { user: clerkUser, isLoaded } = FEATURES.CLERK_AUTH ? useUser() : { user: null, isLoaded: true };
+  const [userRole, setUserRole] = useState<string>('jobseeker');
+  const [roleLoading, setRoleLoading] = useState(true);
   
-  // Create session object for compatibility
+  // Fetch user role from database to ensure consistency
+  useEffect(() => {
+    if (FEATURES.CLERK_AUTH && clerkUser?.emailAddresses[0]?.emailAddress) {
+      fetch('/api/user/profile')
+        .then(res => res.json())
+        .then(data => {
+          if (data.user?.role) {
+            setUserRole(data.user.role);
+          }
+        })
+        .catch(err => {
+          console.error('Failed to fetch user role:', err);
+          setUserRole('jobseeker'); // Default fallback
+        })
+        .finally(() => {
+          setRoleLoading(false);
+        });
+    } else {
+      setRoleLoading(false);
+    }
+  }, [clerkUser?.emailAddresses[0]?.emailAddress]);
+  
+  // Create session object for compatibility - use database role, not Clerk metadata
   const session = FEATURES.CLERK_AUTH 
     ? (clerkUser ? {
         user: { 
           email: clerkUser.emailAddresses[0]?.emailAddress,
-          role: clerkUser.publicMetadata?.role || 'jobseeker',
+          role: userRole, // Use role from database
           name: clerkUser.fullName || clerkUser.firstName,
           id: clerkUser.id,
           image: clerkUser.imageUrl 
         }
       } : null)
-    : {
-        user: { 
-          email: 'admin@209.works', 
-          role: 'admin', 
-          name: 'Mock User', 
-          id: 'mock-user-id', 
-          image: null 
-        }
-      };
+    : null; // No mock user - force proper auth flow
   
   const status = session ? 'authenticated' : 'unauthenticated';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

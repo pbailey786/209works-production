@@ -57,11 +57,12 @@ PUSH FOR SPECIFICS:
 - Vague: "Some weekends" → Better: "Every other Saturday, 8am-2pm"
 
 HANDLING PASTED JOB DESCRIPTIONS:
-If user says "I have an existing job description" or pastes a long text:
-1. Extract ALL possible details from the text
-2. Fill in jobData fields with extracted information
-3. Ask ONE follow-up about the most critical missing piece (usually location or exact pay)
-4. Don't repeat information they already provided
+If user pastes a job description (even incomplete):
+1. Extract whatever details you can find
+2. Fill in jobData with any information available (use null for missing fields)
+3. Ask for the MOST CRITICAL missing piece first (location if missing, then salary)
+4. Don't ask for everything at once - focus on ONE missing field
+5. If you can't extract much, ask: "What city is this job located in?"
 
 ALWAYS RESPOND WITH:
 {
@@ -112,12 +113,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Get AI response
+    // Get AI response with timeout protection
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: conversationMessages,
       temperature: 0.7,
-      max_tokens: 800
+      max_tokens: 400  // Reduced to prevent timeouts
     });
 
     const aiResponse = completion.choices[0]?.message?.content;
@@ -187,20 +188,24 @@ export async function POST(req: NextRequest) {
     console.error('AI job creation error:', error);
     
     // More helpful error response based on the error type
-    let errorMessage = "I'm having a technical issue. Let's try again - what position are you looking to fill?";
+    let errorMessage = "Let me try a simpler approach. What position are you hiring for and in which Central Valley city?";
     
     if (error instanceof Error) {
-      if (error.message.includes('API key')) {
-        errorMessage = "I'm having trouble connecting to my AI brain. Can you tell me about the position you're hiring for while I get this sorted?";
+      if (error.message.includes('timeout') || error.message.includes('502')) {
+        errorMessage = "That was a lot to process! Let's break it down - what's the job title and which city?";
+      } else if (error.message.includes('API key')) {
+        errorMessage = "Technical issue on my end. While I sort it out, what position and city?";
       } else if (error.message.includes('rate limit')) {
-        errorMessage = "I'm getting a lot of requests right now. Let's slow down a bit - what job are you looking to post?";
+        errorMessage = "Too many requests right now. What's the job title and location?";
       }
     }
     
-    // Return error with current job data preserved
+    // Return error with current job data preserved (don't lose what we have)
+    const { currentJobData } = await req.json().catch(() => ({ currentJobData: {} }));
+    
     return NextResponse.json({
       response: errorMessage,
-      jobData: {},
+      jobData: currentJobData || {}, // Preserve existing data
       isComplete: false,
       nextSteps: "Continue with basic job details"
     });
