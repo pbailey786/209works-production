@@ -28,6 +28,8 @@ interface JobData {
 
 const SYSTEM_PROMPT = `You are a veteran hiring manager and job coach for 209.works, the Central Valley's premier hyperlocal job board. With 20+ years of experience in the 209 region, you help local employers create compelling job posts that attract the right candidates.
 
+You must respond in JSON format only.
+
 YOUR PERSONA:
 - Experienced hiring manager who knows the Central Valley job market inside-out
 - Friendly but professional, like talking to a trusted business advisor
@@ -64,30 +66,25 @@ IMPORTANT RULES:
 - Keep responses conversational, not robotic
 - Extract job details progressively and return them in jobData
 
-CRITICAL: You MUST respond with valid JSON only. No other text before or after the JSON.
+RESPONSE FORMAT: Try to respond with JSON when possible, but natural conversation is okay too.
 
-RESPONSE FORMAT - ALWAYS return exactly this JSON structure:
+If you can, use this JSON format:
 {
-  "response": "Your conversational response as an experienced hiring manager",
+  "response": "Your friendly response as an experienced hiring manager",
   "jobData": {
-    "title": "extracted job title or empty string if not discussed",
-    "location": "specific Central Valley city or empty string if not discussed", 
-    "salary": "wage range discussed or empty string if not discussed",
-    "jobType": "full-time/part-time/contract or empty string if not discussed",
-    "description": "role description gathered so far or empty string if not discussed",
-    "requirements": "requirements discussed or empty string if not discussed",
-    "schedule": "work schedule if discussed or empty string if not discussed",
-    "benefits": "benefits mentioned or empty string if not discussed",
-    "contactMethod": "how to apply or empty string if not discussed"
+    "title": "job title if mentioned",
+    "location": "Central Valley city if mentioned", 
+    "salary": "wage range if discussed",
+    "jobType": "full-time/part-time if mentioned",
+    "description": "what the job involves if described",
+    "requirements": "qualifications if discussed"
   },
-  "isComplete": false,
-  "nextSteps": "What information still needed"
+  "isComplete": false
 }
 
-IMPORTANT: 
-- Always include ALL fields in jobData, use empty strings for undiscussed items
-- Set isComplete to true only when you have: title, location, salary, basic description, requirements, and contact method
-- Extract and update jobData progressively with each response`;
+If JSON is too complex, just respond naturally and I'll extract the job details from your conversation.
+
+Keep responses friendly and focused on one question at a time. Help them think about what makes a good job post for Central Valley workers.`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -120,8 +117,7 @@ export async function POST(req: NextRequest) {
       model: 'gpt-4',
       messages: conversationMessages,
       temperature: 0.7,
-      max_tokens: 800,
-      response_format: { type: "json_object" }
+      max_tokens: 800
     });
 
     const aiResponse = completion.choices[0]?.message?.content;
@@ -133,14 +129,39 @@ export async function POST(req: NextRequest) {
     // Try to parse JSON response
     let parsedResponse;
     try {
-      parsedResponse = JSON.parse(aiResponse);
+      // Look for JSON in the response (sometimes AI adds text before/after)
+      const jsonMatch = aiResponse.match(/\{.*\}/s);
+      const jsonString = jsonMatch ? jsonMatch[0] : aiResponse;
+      
+      parsedResponse = JSON.parse(jsonString);
       console.log('✅ AI Response parsed successfully:', parsedResponse);
+      
+      // Ensure jobData exists
+      if (!parsedResponse.jobData) {
+        parsedResponse.jobData = {};
+      }
+      
     } catch (parseError) {
-      console.log('❌ AI Response parsing failed, using fallback:', aiResponse);
-      // Fallback if AI doesn't return proper JSON
+      console.log('❌ AI Response parsing failed:', parseError);
+      console.log('Raw AI response:', aiResponse);
+      
+      // Extract job info from natural language response using simple patterns
+      const extractedData: any = {};
+      
+      // Simple extraction patterns
+      const titleMatch = aiResponse.match(/(?:position|job|role|title).*?(?:is|:)\s*([^.\n]+)/i);
+      if (titleMatch) extractedData.title = titleMatch[1].trim();
+      
+      const salaryMatch = aiResponse.match(/(?:\$[\d,]+-?\$?[\d,]*|[\d,]+\s*(?:per hour|\/hour|hourly|per year|annually))/i);
+      if (salaryMatch) extractedData.salary = salaryMatch[0].trim();
+      
+      const locationMatch = aiResponse.match(/(?:in|at|location)\s*([A-Za-z\s,]+)(?:,\s*CA|California)?/i);
+      if (locationMatch) extractedData.location = locationMatch[1].trim();
+      
+      // Fallback response
       parsedResponse = {
         response: aiResponse,
-        jobData: currentJobData || {},
+        jobData: { ...currentJobData, ...extractedData },
         isComplete: false,
         nextSteps: "Continue gathering job details"
       };
@@ -172,12 +193,23 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('AI job creation error:', error);
     
-    // Fallback response
+    // More helpful error response based on the error type
+    let errorMessage = "I'm having a technical issue. Let's try again - what position are you looking to fill?";
+    
+    if (error instanceof Error) {
+      if (error.message.includes('API key')) {
+        errorMessage = "I'm having trouble connecting to my AI brain. Can you tell me about the position you're hiring for while I get this sorted?";
+      } else if (error.message.includes('rate limit')) {
+        errorMessage = "I'm getting a lot of requests right now. Let's slow down a bit - what job are you looking to post?";
+      }
+    }
+    
+    // Return error with current job data preserved
     return NextResponse.json({
-      response: "I'm sorry, I encountered an error. Could you please tell me more about the position you're looking to fill?",
+      response: errorMessage,
       jobData: {},
       isComplete: false,
-      nextSteps: "Restart conversation"
+      nextSteps: "Continue with basic job details"
     });
   }
 }
