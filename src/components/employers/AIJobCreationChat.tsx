@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, ArrowRight, FileText, MapPin, DollarSign, Clock, CheckCircle, Briefcase } from 'lucide-react';
+import { Send, Bot, User, ArrowRight, FileText, MapPin, DollarSign, Clock, CheckCircle, Briefcase, FileUp, X } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -35,7 +35,7 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
     {
       id: '1',
       role: 'assistant',
-      content: "👋 Hey there! I'm your Job Genie - think of me as your experienced hiring manager who's been helping Central Valley businesses find great local talent for over 20 years.\n\nI'll help you create a job post that actually attracts the right candidates and cuts down on those applications that waste your time.\n\nLet's start simple - what position are you looking to fill?",
+      content: "I'll help you create a job post that attracts qualified Central Valley candidates. What position are you hiring for and in which city?",
       timestamp: new Date()
     }
   ]);
@@ -44,6 +44,7 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
   const [isLoading, setIsLoading] = useState(false);
   const [jobData, setJobData] = useState<JobData>({});
   const [isComplete, setIsComplete] = useState(false);
+  const [showPasteArea, setShowPasteArea] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -89,18 +90,9 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
 
       const data = await response.json();
       
-      // Debug logging
-      console.log('AI Response Data:', data);
-      console.log('Current Job Data:', jobData);
-      
       // Update job data
       if (data.jobData) {
-        console.log('Updating job data with:', data.jobData);
-        setJobData(prev => {
-          const newData = { ...prev, ...data.jobData };
-          console.log('New job data state:', newData);
-          return newData;
-        });
+        setJobData(prev => ({ ...prev, ...data.jobData }));
       }
 
       // Add AI response
@@ -226,6 +218,13 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
               disabled={isLoading}
             />
             <button
+              onClick={() => setShowPasteArea(!showPasteArea)}
+              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex-shrink-0"
+              title="Paste existing job description"
+            >
+              <FileUp className="w-5 h-5" />
+            </button>
+            <button
               onClick={handleSend}
               disabled={isLoading || !inputValue.trim()}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
@@ -233,6 +232,34 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
               <Send className="w-5 h-5" />
             </button>
           </div>
+          
+          {/* Paste Document Area */}
+          {showPasteArea && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h4 className="font-medium text-gray-900">Paste Job Description</h4>
+                  <p className="text-sm text-gray-600">Have an existing job description? Paste it here and I'll extract the details.</p>
+                </div>
+                <button
+                  onClick={() => setShowPasteArea(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <textarea
+                placeholder="Paste your job description here..."
+                className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                onChange={(e) => {
+                  if (e.target.value.trim()) {
+                    setInputValue(`I have an existing job description to analyze:\n\n${e.target.value}`);
+                    setShowPasteArea(false);
+                  }
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -362,15 +389,6 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
               : 'Need job title, salary, and description/requirements to continue'
             }
           </p>
-          {/* Debug info for development */}
-          <div className="text-xs text-gray-400 mt-1 text-center">
-            Debug: {JSON.stringify({
-              title: !!jobData.title,
-              salary: !!jobData.salary, 
-              desc: !!jobData.description,
-              req: !!jobData.requirements
-            })}
-          </div>
         </div>
       </div>
     </div>

@@ -28,18 +28,11 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const employerId = searchParams.get('employerId') || user.id;
+    // Always use the authenticated user's ID, ignore employerId param for security
+    const employerId = user.id;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const status = searchParams.get('status');
-
-    // Ensure the employer can only see their own jobs
-    if (employerId !== user.id) {
-      return NextResponse.json(
-        { error: 'You can only view your own jobs.' },
-        { status: 403 }
-      );
-    }
 
     const where: any = {
       employerId: employerId,
