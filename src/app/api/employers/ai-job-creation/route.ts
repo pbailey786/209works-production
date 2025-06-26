@@ -59,44 +59,100 @@ export async function POST(req: NextRequest) {
     }
 
     const { messages, currentJobData } = await req.json();
+    const lastUserMessage = messages[messages.length - 1]?.content || '';
     
-    // Build conversation context
-    const conversationMessages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...messages.map((msg: Message) => ({
-        role: msg.role,
-        content: msg.content
-      }))
-    ];
+    // Try AI first, but fallback to rule-based system if it fails
+    let aiResponse = null;
+    
+    try {
+      // Quick AI attempt with very short timeout
+      const completion = await Promise.race([
+        openai.chat.completions.create({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: lastUserMessage }
+          ],
+          temperature: 0.7,
+          max_tokens: 100
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('AI timeout')), 8000) // 8 second timeout
+        )
+      ]) as any;
 
-    // Add current job data context if exists
-    if (currentJobData && Object.keys(currentJobData).length > 0) {
-      conversationMessages.push({
-        role: 'system',
-        content: `Current job data collected: ${JSON.stringify(currentJobData, null, 2)}`
+      aiResponse = completion.choices?.[0]?.message?.content;
+    } catch (aiError) {
+      console.log('AI failed, using fallback system');
+      // Use rule-based fallback below
+    }
+    
+    // Rule-based fallback system if AI fails
+    if (!aiResponse) {
+      const newJobData = { ...currentJobData };
+      let response = "What position are you hiring for?";
+      
+      // Extract basic info from user message
+      const message = lastUserMessage.toLowerCase();
+      
+      // Extract job title
+      if (!newJobData.title && message.length > 10) {
+        // Simple patterns for job titles
+        const titlePatterns = [
+          /hiring.*?(?:for|a)\s+([^,.\n]+)/i,
+          /looking for.*?(?:a|an)\s+([^,.\n]+)/i,
+          /need.*?(?:a|an)\s+([^,.\n]+)/i,
+          /position.*?(?:for|as)\s+([^,.\n]+)/i
+        ];
+        
+        for (const pattern of titlePatterns) {
+          const match = lastUserMessage.match(pattern);
+          if (match) {
+            newJobData.title = match[1].trim();
+            break;
+          }
+        }
+      }
+      
+      // Extract location
+      const locations = ['stockton', 'modesto', 'fresno', 'merced', 'turlock', 'tracy', 'manteca'];
+      for (const loc of locations) {
+        if (message.includes(loc)) {
+          newJobData.location = loc.charAt(0).toUpperCase() + loc.slice(1) + ', CA';
+          break;
+        }
+      }
+      
+      // Extract salary
+      const salaryMatch = lastUserMessage.match(/\$?(\d+)[-–]?\$?(\d+)?\s*(?:per\s+)?(?:hour|hr|hourly)/i);
+      if (salaryMatch) {
+        if (salaryMatch[2]) {
+          newJobData.salary = `$${salaryMatch[1]}-${salaryMatch[2]}/hour`;
+        } else {
+          newJobData.salary = `$${salaryMatch[1]}/hour`;
+        }
+      }
+      
+      // Determine next question
+      if (!newJobData.title) {
+        response = "What position are you hiring for?";
+      } else if (!newJobData.location) {
+        response = `What Central Valley city is this ${newJobData.title} position in?`;
+      } else if (!newJobData.salary) {
+        response = `What's the hourly pay range for this ${newJobData.title} position?`;
+      } else {
+        response = `What will this ${newJobData.title} person do day-to-day?`;
+      }
+      
+      return NextResponse.json({
+        response,
+        jobData: newJobData,
+        isComplete: false,
+        nextSteps: "Continue gathering job details"
       });
     }
 
-    // Get AI response with aggressive timeout protection
-    const completion = await Promise.race([
-      openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',  // Faster model
-        messages: conversationMessages,
-        temperature: 0.7,
-        max_tokens: 150  // Even smaller
-      }),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('AI timeout')), 15000) // 15 second timeout
-      )
-    ]) as any;
-
-    const aiResponse = completion.choices?.[0]?.message?.content;
-    
-    if (!aiResponse) {
-      throw new Error('No response from AI');
-    }
-
-    // Try to parse JSON response
+    // Try to parse AI response
     let parsedResponse;
     try {
       // Look for JSON in the response (sometimes AI adds text before/after)
@@ -111,8 +167,7 @@ export async function POST(req: NextRequest) {
       }
       
     } catch (parseError) {
-      
-      // Extract job info from natural language response using simple patterns
+      // Use rule-based extraction if JSON parsing fails
       const extractedData: any = {};
       
       // Simple extraction patterns
