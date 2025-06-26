@@ -64,25 +64,30 @@ IMPORTANT RULES:
 - Keep responses conversational, not robotic
 - Extract job details progressively and return them in jobData
 
-RESPONSE FORMAT - ALWAYS return valid JSON:
+CRITICAL: You MUST respond with valid JSON only. No other text before or after the JSON.
+
+RESPONSE FORMAT - ALWAYS return exactly this JSON structure:
 {
   "response": "Your conversational response as an experienced hiring manager",
   "jobData": {
-    "title": "extracted job title",
-    "location": "specific Central Valley city", 
-    "salary": "wage range discussed",
-    "jobType": "full-time/part-time/contract",
-    "description": "role description gathered so far",
-    "requirements": "requirements discussed",
-    "schedule": "work schedule if discussed",
-    "benefits": "benefits mentioned",
-    "contactMethod": "how to apply"
+    "title": "extracted job title or empty string if not discussed",
+    "location": "specific Central Valley city or empty string if not discussed", 
+    "salary": "wage range discussed or empty string if not discussed",
+    "jobType": "full-time/part-time/contract or empty string if not discussed",
+    "description": "role description gathered so far or empty string if not discussed",
+    "requirements": "requirements discussed or empty string if not discussed",
+    "schedule": "work schedule if discussed or empty string if not discussed",
+    "benefits": "benefits mentioned or empty string if not discussed",
+    "contactMethod": "how to apply or empty string if not discussed"
   },
   "isComplete": false,
   "nextSteps": "What information still needed"
 }
 
-Set isComplete to true only when you have: title, location, salary, basic description, requirements, and contact method.`;
+IMPORTANT: 
+- Always include ALL fields in jobData, use empty strings for undiscussed items
+- Set isComplete to true only when you have: title, location, salary, basic description, requirements, and contact method
+- Extract and update jobData progressively with each response`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -115,7 +120,8 @@ export async function POST(req: NextRequest) {
       model: 'gpt-4',
       messages: conversationMessages,
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 800,
+      response_format: { type: "json_object" }
     });
 
     const aiResponse = completion.choices[0]?.message?.content;
@@ -128,7 +134,9 @@ export async function POST(req: NextRequest) {
     let parsedResponse;
     try {
       parsedResponse = JSON.parse(aiResponse);
+      console.log('✅ AI Response parsed successfully:', parsedResponse);
     } catch (parseError) {
+      console.log('❌ AI Response parsing failed, using fallback:', aiResponse);
       // Fallback if AI doesn't return proper JSON
       parsedResponse = {
         response: aiResponse,
@@ -143,6 +151,10 @@ export async function POST(req: NextRequest) {
       ...currentJobData,
       ...parsedResponse.jobData
     };
+    
+    console.log('📊 Current job data:', currentJobData);
+    console.log('📊 Parsed job data:', parsedResponse.jobData);
+    console.log('📊 Updated job data:', updatedJobData);
 
     // Check if we have minimum required fields for completion
     const requiredFields = ['title', 'salary', 'urgency'];

@@ -46,7 +46,7 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
   const [isComplete, setIsComplete] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -204,21 +204,31 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
 
         {/* Input */}
         <div className="border-t p-4">
-          <div className="flex items-center space-x-3">
-            <input
+          <div className="flex items-end space-x-3">
+            <textarea
               ref={inputRef}
-              type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+              rows={1}
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base resize-none overflow-hidden"
+              style={{
+                minHeight: '48px',
+                maxHeight: '120px',
+                height: 'auto'
+              }}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+              }}
               disabled={isLoading}
             />
             <button
               onClick={handleSend}
               disabled={isLoading || !inputValue.trim()}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
             >
               <Send className="w-5 h-5" />
             </button>
