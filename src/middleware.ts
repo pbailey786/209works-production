@@ -38,11 +38,11 @@ export default clerkMiddleware(async (authFunc, req: NextRequest) => {
     return NextResponse.redirect(new URL('/sign-in', req.url));
   }
 
-  // For authenticated users accessing protected routes, redirect to auth-redirect
-  // Let auth-redirect handle all the complex onboarding logic with database access
-  if (userId && isProtectedRoute(req) && !isPublicRoute(req)) {
-    console.log('🔍 MIDDLEWARE - Authenticated user accessing protected route, redirecting to auth-redirect for onboarding check');
-    return NextResponse.redirect(new URL('/auth-redirect', req.url));
+  // For authenticated users, just allow them through
+  // The individual pages will handle any onboarding checks
+  if (userId) {
+    console.log('✅ MIDDLEWARE - User authenticated, allowing access');
+    return NextResponse.next();
   }
 
   console.log('✅ MIDDLEWARE - Allowing request to continue');
