@@ -78,14 +78,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Get AI response with aggressive timeout protection
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: conversationMessages,
-      temperature: 0.7,
-      max_tokens: 200  // Further reduced to prevent timeouts
-    });
+    const completion = await Promise.race([
+      openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',  // Faster model
+        messages: conversationMessages,
+        temperature: 0.7,
+        max_tokens: 150  // Even smaller
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('AI timeout')), 15000) // 15 second timeout
+      )
+    ]) as any;
 
-    const aiResponse = completion.choices[0]?.message?.content;
+    const aiResponse = completion.choices?.[0]?.message?.content;
     
     if (!aiResponse) {
       throw new Error('No response from AI');
@@ -155,12 +160,12 @@ export async function POST(req: NextRequest) {
     let errorMessage = "Let me try a simpler approach. What position are you hiring for and in which Central Valley city?";
     
     if (error instanceof Error) {
-      if (error.message.includes('timeout') || error.message.includes('502')) {
-        errorMessage = "That was a lot to process! Let's break it down - what's the job title and which city?";
+      if (error.message.includes('timeout') || error.message.includes('502') || error.message.includes('AI timeout')) {
+        errorMessage = "Let's keep it simple - what job title and which Central Valley city?";
       } else if (error.message.includes('API key')) {
-        errorMessage = "Technical issue on my end. While I sort it out, what position and city?";
+        errorMessage = "Technical issue. What position and city?";
       } else if (error.message.includes('rate limit')) {
-        errorMessage = "Too many requests right now. What's the job title and location?";
+        errorMessage = "System busy. Job title and location?";
       }
     }
     
