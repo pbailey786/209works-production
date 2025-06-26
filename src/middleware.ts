@@ -1,6 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 
 // Routes that require authentication
@@ -22,7 +22,7 @@ const isPublicRoute = createRouteMatcher([
   '/api(.*)',
 ]);
 
-export default clerkMiddleware(async (auth, req: NextRequest) => {
+export default clerkMiddleware(async (authFunc, req: NextRequest) => {
   console.log('🔍 MIDDLEWARE - URL:', req.nextUrl.pathname);
   
   // Skip middleware completely for auth-redirect to prevent loops
@@ -31,7 +31,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.next();
   }
   
-  const { userId } = await auth();
+  const { userId } = await authFunc();
   console.log('🔍 MIDDLEWARE - User ID:', userId ? 'exists' : 'none');
   
   // If accessing protected route without auth, redirect to sign-in
@@ -44,19 +44,9 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   if (userId && isProtectedRoute(req) && !isPublicRoute(req)) {
     console.log('🔍 MIDDLEWARE - Checking onboarding for protected route');
     try {
-      // Get Clerk user to get email
-      const clerkUser = await currentUser();
-      const userEmail = clerkUser?.emailAddresses[0]?.emailAddress;
-      console.log('🔍 MIDDLEWARE - User email:', userEmail);
-      
-      if (!userEmail) {
-        console.log('❌ MIDDLEWARE - No email found, redirecting to sign-in');
-        return NextResponse.redirect(new URL('/sign-in', req.url));
-      }
-
-      // Get user's onboarding status by email
+      // Get user's onboarding status by Clerk ID
       const user = await prisma.user.findUnique({
-        where: { email: userEmail },
+        where: { id: userId },
         select: { 
           onboardingCompleted: true, 
           employerOnboardingCompleted: true,

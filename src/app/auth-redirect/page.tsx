@@ -1,83 +1,105 @@
 import { redirect } from 'next/navigation';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 
-// This page handles post-authentication redirects and ensures proper onboarding
+// Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
 export default async function AuthRedirectPage() {
   console.log('🚀 AUTH-REDIRECT: Starting auth redirect flow');
   
+  // Use auth() instead of currentUser() for more reliable auth check
+  const { userId } = await auth();
+  console.log('🚀 AUTH-REDIRECT: User ID:', userId);
+  
+  if (!userId) {
+    console.log('❌ AUTH-REDIRECT: No user ID, redirecting to sign-in');
+    redirect('/sign-in');
+  }
+  
   try {
-    const clerkUser = await currentUser();
-    console.log('🚀 AUTH-REDIRECT: Clerk user exists?', !!clerkUser);
-
-    if (!clerkUser) {
-      console.log('❌ AUTH-REDIRECT: No Clerk user, redirecting to sign-in');
-      redirect('/sign-in');
-    }
-
-    const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
-    if (!userEmail) {
-      redirect('/sign-in');
-    }
-
-    // Get or create user
+    // Get user from database by Clerk ID
     let user = await prisma.user.findUnique({
-      where: { email: userEmail },
+      where: { id: userId },
       select: {
         id: true,
+        email: true,
         onboardingCompleted: true,
         employerOnboardingCompleted: true,
         role: true,
       },
     });
-
-    // If user doesn't exist, create them
+    
+    console.log('🚀 AUTH-REDIRECT: Database user:', user);
+    
+    // If user doesn't exist in database, create them
     if (!user) {
-      console.log('🆕 Creating new user from auth redirect:', userEmail);
+      console.log('🆕 AUTH-REDIRECT: Creating new user with ID:', userId);
+      
+      // Get user details from Clerk
+      const clerkResponse = await fetch(`https://api.clerk.com/v1/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+        },
+      });
+      
+      if (!clerkResponse.ok) {
+        console.error('❌ AUTH-REDIRECT: Failed to fetch Clerk user');
+        redirect('/sign-in');
+      }
+      
+      const clerkUser = await clerkResponse.json();
+      const email = clerkUser.email_addresses?.[0]?.email_address;
+      
+      if (!email) {
+        console.error('❌ AUTH-REDIRECT: No email found for user');
+        redirect('/sign-in');
+      }
+      
+      // Create user in database
       user = await prisma.user.create({
         data: {
-          id: clerkUser.id,
-          email: userEmail,
-          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
+          id: userId,
+          email: email,
+          name: `${clerkUser.first_name || ''} ${clerkUser.last_name || ''}`.trim() || 'User',
           passwordHash: 'clerk_managed',
           role: 'jobseeker',
           onboardingCompleted: false,
         },
         select: {
           id: true,
+          email: true,
           onboardingCompleted: true,
           employerOnboardingCompleted: true,
           role: true,
         },
       });
     }
-
-    // Check onboarding status and redirect accordingly
-    console.log('✅ Checking onboarding for user:', userEmail, 'role:', user.role, 'onboarding:', user.onboardingCompleted, 'employerOnboarding:', user.employerOnboardingCompleted);
     
-    // If user hasn't completed basic onboarding, send to role selection
+    // Determine where to redirect based on onboarding status
     if (!user.onboardingCompleted) {
-      console.log('→ Redirecting to onboarding (role selection)');
+      console.log('→ AUTH-REDIRECT: Redirecting to onboarding (role selection)');
       redirect('/onboarding');
     }
     
-    // For employers, check employer-specific onboarding
     if (user.role === 'employer' && !user.employerOnboardingCompleted) {
-      console.log('→ Redirecting to employer onboarding - employerOnboardingCompleted:', user.employerOnboardingCompleted);
+      console.log('→ AUTH-REDIRECT: Redirecting to employer onboarding');
       redirect('/onboarding/employer');
     }
     
-    // Otherwise, redirect to appropriate dashboard
-    console.log('→ All onboarding complete, redirecting to dashboard');
+    // All onboarding complete, redirect to appropriate dashboard
+    console.log('→ AUTH-REDIRECT: All onboarding complete, redirecting to dashboard');
     if (user.role === 'employer') {
       redirect('/employers/dashboard');
+    } else if (user.role === 'admin') {
+      redirect('/admin/dashboard');
     } else {
       redirect('/dashboard');
     }
+    
   } catch (error) {
-    console.error('❌ Auth redirect error:', error);
-    redirect('/sign-in');
+    console.error('❌ AUTH-REDIRECT: Error:', error);
+    // On error, redirect to home page instead of sign-in to avoid loops
+    redirect('/');
   }
 }

@@ -14,6 +14,8 @@ export default function SessionProviderWrapper({
     return (
       <ClerkProvider
         publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}
+        signInFallbackRedirectUrl="/auth-redirect"
+        signUpFallbackRedirectUrl="/auth-redirect"
         appearance={{
           baseTheme: undefined,
           variables: {
