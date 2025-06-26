@@ -8,41 +8,62 @@ export const dynamic = 'force-dynamic';
 export default async function AuthRedirectPage() {
   console.log('🚀 AUTH-REDIRECT: Starting auth redirect flow');
   
+  let clerkUser;
+  let userEmail;
+  let user;
+  
   try {
     // Step 1: Check Clerk user
-    const clerkUser = await currentUser();
+    clerkUser = await currentUser();
     console.log('🚀 AUTH-REDIRECT: Clerk user exists?', !!clerkUser);
     console.log('🚀 AUTH-REDIRECT: Clerk user ID:', clerkUser?.id);
 
     if (!clerkUser) {
       console.log('❌ AUTH-REDIRECT: No Clerk user, redirecting to sign-in');
       redirect('/sign-in');
+      return; // This won't execute, but TypeScript needs it
     }
 
-    const userEmail = clerkUser.emailAddresses[0]?.emailAddress;
+    userEmail = clerkUser.emailAddresses[0]?.emailAddress;
     console.log('🚀 AUTH-REDIRECT: User email:', userEmail);
     
     if (!userEmail) {
       console.log('❌ AUTH-REDIRECT: No email found, redirecting to sign-in');
       redirect('/sign-in');
+      return;
     }
 
     // Step 2: Test database connection
     console.log('🚀 AUTH-REDIRECT: Testing database connection...');
-    try {
-      await prisma.$connect();
-      console.log('✅ AUTH-REDIRECT: Database connected successfully');
-    } catch (dbError) {
-      console.error('❌ AUTH-REDIRECT: Database connection failed:', dbError);
-      // For now, let's continue and see what happens
-    }
+    await prisma.$connect();
+    console.log('✅ AUTH-REDIRECT: Database connected successfully');
 
     // Step 3: Try to find user
     console.log('🚀 AUTH-REDIRECT: Looking up user in database...');
-    let user;
-    try {
-      user = await prisma.user.findUnique({
-        where: { email: userEmail },
+    user = await prisma.user.findUnique({
+      where: { email: userEmail },
+      select: {
+        id: true,
+        email: true,
+        onboardingCompleted: true,
+        employerOnboardingCompleted: true,
+        role: true,
+      },
+    });
+    console.log('🚀 AUTH-REDIRECT: Database lookup result:', user);
+
+    // Step 4: Create user if needed
+    if (!user) {
+      console.log('🆕 AUTH-REDIRECT: Creating new user...');
+      user = await prisma.user.create({
+        data: {
+          id: clerkUser.id,
+          email: userEmail,
+          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
+          passwordHash: 'clerk_managed',
+          role: 'jobseeker',
+          onboardingCompleted: false,
+        },
         select: {
           id: true,
           email: true,
@@ -51,38 +72,7 @@ export default async function AuthRedirectPage() {
           role: true,
         },
       });
-      console.log('🚀 AUTH-REDIRECT: Database lookup result:', user);
-    } catch (lookupError) {
-      console.error('❌ AUTH-REDIRECT: Database lookup failed:', lookupError);
-      throw lookupError;
-    }
-
-    // Step 4: Create user if needed
-    if (!user) {
-      console.log('🆕 AUTH-REDIRECT: Creating new user...');
-      try {
-        user = await prisma.user.create({
-          data: {
-            id: clerkUser.id,
-            email: userEmail,
-            name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
-            passwordHash: 'clerk_managed',
-            role: 'jobseeker',
-            onboardingCompleted: false,
-          },
-          select: {
-            id: true,
-            email: true,
-            onboardingCompleted: true,
-            employerOnboardingCompleted: true,
-            role: true,
-          },
-        });
-        console.log('🆕 AUTH-REDIRECT: User created:', user);
-      } catch (createError) {
-        console.error('❌ AUTH-REDIRECT: User creation failed:', createError);
-        throw createError;
-      }
+      console.log('🆕 AUTH-REDIRECT: User created:', user);
     }
 
     // Step 5: Check onboarding status
@@ -93,12 +83,31 @@ export default async function AuthRedirectPage() {
       employerOnboarding: user.employerOnboardingCompleted
     });
     
-    // For debugging, let's temporarily redirect everyone to the job seeker dashboard
-    console.log('🧪 AUTH-REDIRECT: DEBUGGING - redirecting to job seeker dashboard');
-    redirect('/dashboard');
+    // Step 6: Determine redirect destination
+    if (!user.onboardingCompleted) {
+      console.log('→ AUTH-REDIRECT: Redirecting to onboarding (role selection)');
+      redirect('/onboarding');
+    } else if (user.role === 'employer' && !user.employerOnboardingCompleted) {
+      console.log('→ AUTH-REDIRECT: Redirecting to employer onboarding');
+      redirect('/onboarding/employer');
+    } else if (user.role === 'employer') {
+      console.log('→ AUTH-REDIRECT: Redirecting to employer dashboard');
+      redirect('/employers/dashboard');
+    } else if (user.role === 'admin') {
+      console.log('→ AUTH-REDIRECT: Redirecting to admin dashboard');
+      redirect('/admin/dashboard');
+    } else {
+      console.log('→ AUTH-REDIRECT: Redirecting to job seeker dashboard');
+      redirect('/dashboard');
+    }
     
   } catch (error) {
-    console.error('❌ AUTH-REDIRECT: Error occurred:', error);
+    // Don't catch redirect errors
+    if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
+      throw error; // Re-throw redirect errors
+    }
+    
+    console.error('❌ AUTH-REDIRECT: Actual error occurred:', error);
     
     // Log the full error details
     if (error instanceof Error) {
@@ -107,7 +116,7 @@ export default async function AuthRedirectPage() {
       console.error('❌ AUTH-REDIRECT: Error stack:', error.stack);
     }
     
-    // Return a simple error page instead of redirecting
+    // Return a simple error page for real errors
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
