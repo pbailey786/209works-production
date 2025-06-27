@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { openai } from '@/lib/ai';
+import { findJobTemplate, generateJobDescription } from '@/lib/ai/job-knowledge-base';
+import { JobLearningSystem } from '@/lib/ai/job-learning-system';
 
 // Set max duration for Netlify functions
 export const maxDuration = 30;
@@ -26,30 +28,40 @@ interface JobData {
   benefits?: string;
 }
 
-const SYSTEM_PROMPT = `You are an expert Central Valley hiring manager. Be direct and efficient.
+const SYSTEM_PROMPT = `You are an experienced Central Valley hiring manager with 20+ years experience. You help employers write amazing job posts.
 
-CRITICAL: Respond in JSON format only. Include ALL job data in every response.
+CONVERSATION STYLE:
+- Be friendly and encouraging
+- Extract ALL info from EVERY message
+- NEVER repeat questions
+- When you have job + location + pay, create a complete job posting with headline and description
 
-Ask ONE question at a time. Focus on LOCAL jobs only (no remote).
+EXACT CONVERSATION FLOW:
+Message 1: "I need to hire a janitor at my church in Modesto."
+Response 1: "Got it! Let's make sure we attract someone dependable and local. What's the starting hourly pay and shift schedule?"
 
-If user pastes job description, extract all possible details immediately.
+Message 2: "$18/hr. 6pm to 10pm, Mon–Fri."
+Response 2: "Great. Here's a starting headline:
+Evening Janitor Needed – Steady Part-Time Work in Modesto
+And here's a draft for the description:
+'Join a friendly church community as our evening janitor. Keep our facilities clean and welcoming. $18/hr. Steady Mon–Fri hours. No experience required — just a good attitude!'"
+
+CRITICAL: Look at ALL previous messages in the conversation, not just the latest one. Extract job title, location, salary, and schedule from ANY message in the conversation history.
 
 JSON format:
 {
-  "response": "Brief question (max 15 words)",
+  "response": "Your friendly, encouraging response",
   "jobData": {
-    "title": "job title or null",
-    "location": "Central Valley city or null", 
-    "salary": "$X-Y/hour or null",
-    "description": "duties or null",
-    "requirements": "must-haves or null",
-    "schedule": "hours/days or null",
-    "contactMethod": "how to apply or null"
+    "title": "extracted job title",
+    "location": "extracted city, CA", 
+    "salary": "extracted pay",
+    "description": "compelling job description",
+    "requirements": "realistic requirements",
+    "schedule": "extracted schedule",
+    "benefits": "appealing benefits"
   },
-  "isComplete": false
-}
-
-Priority order: 1) title/location 2) salary 3) description 4) requirements`;
+  "isComplete": true when you have enough to create a complete job post
+}`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -61,6 +73,12 @@ export async function POST(req: NextRequest) {
     const { messages, currentJobData } = await req.json();
     const lastUserMessage = messages[messages.length - 1]?.content || '';
     
+    // Build conversation history for AI
+    const conversationHistory = messages.map((msg: Message) => ({
+      role: msg.role === 'assistant' ? 'assistant' : 'user',
+      content: msg.content
+    }));
+    
     // Try AI first, but fallback to rule-based system if it fails
     let aiResponse = null;
     
@@ -71,13 +89,13 @@ export async function POST(req: NextRequest) {
           model: 'gpt-3.5-turbo',
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: lastUserMessage }
+            ...conversationHistory
           ],
-          temperature: 0.7,
-          max_tokens: 100
+          temperature: 0.3, // Lower temperature for more consistent responses
+          max_tokens: 300   // More tokens for complete responses
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('AI timeout')), 8000) // 8 second timeout
+          setTimeout(() => reject(new Error('AI timeout')), 5000) // 5 second timeout
         )
       ]) as any;
 
@@ -92,21 +110,25 @@ export async function POST(req: NextRequest) {
       const newJobData = { ...currentJobData };
       let response = "What position are you hiring for?";
       
-      // Extract basic info from user message
+      // Look at ENTIRE conversation to understand context
+      const allMessages = messages.map((m: Message) => m.content).join(' ').toLowerCase();
       const message = lastUserMessage.toLowerCase();
       
-      // Extract job title
-      if (!newJobData.title && message.length > 10) {
-        // Simple patterns for job titles
+      console.log('AI failed, using fallback. Current data:', currentJobData);
+      console.log('All messages:', allMessages);
+      console.log('Last message:', lastUserMessage);
+      
+      // Extract from ENTIRE conversation (not just last message)
+      
+      // Extract job title from any message
+      if (!newJobData.title) {
         const titlePatterns = [
-          /hiring.*?(?:for|a)\s+([^,.\n]+)/i,
-          /looking for.*?(?:a|an)\s+([^,.\n]+)/i,
-          /need.*?(?:a|an)\s+([^,.\n]+)/i,
-          /position.*?(?:for|as)\s+([^,.\n]+)/i
+          /(?:hire|need|looking for)\s+(?:a|an)?\s*([a-z\s]+?)(?:\s+at|\s+in|\s+for|$)/i,
+          /^([a-z\s]+?)(?:\s+at|\s+in)/i
         ];
         
         for (const pattern of titlePatterns) {
-          const match = lastUserMessage.match(pattern);
+          const match = allMessages.match(pattern);
           if (match) {
             newJobData.title = match[1].trim();
             break;
@@ -114,34 +136,105 @@ export async function POST(req: NextRequest) {
         }
       }
       
-      // Extract location
-      const locations = ['stockton', 'modesto', 'fresno', 'merced', 'turlock', 'tracy', 'manteca'];
-      for (const loc of locations) {
-        if (message.includes(loc)) {
-          newJobData.location = loc.charAt(0).toUpperCase() + loc.slice(1) + ', CA';
-          break;
+      // Extract location from any message
+      if (!newJobData.location) {
+        const locations = ['stockton', 'modesto', 'fresno', 'merced', 'turlock', 'tracy', 'manteca', 'lodi', 'oakdale'];
+        for (const loc of locations) {
+          if (allMessages.includes(loc)) {
+            newJobData.location = loc.charAt(0).toUpperCase() + loc.slice(1) + ', CA';
+            break;
+          }
         }
       }
       
-      // Extract salary
-      const salaryMatch = lastUserMessage.match(/\$?(\d+)[-–]?\$?(\d+)?\s*(?:per\s+)?(?:hour|hr|hourly)/i);
-      if (salaryMatch) {
-        if (salaryMatch[2]) {
-          newJobData.salary = `$${salaryMatch[1]}-${salaryMatch[2]}/hour`;
+      // Extract salary from any message
+      if (!newJobData.salary) {
+        const salaryMatch = allMessages.match(/\$?(\d+(?:\.\d+)?)\s*(?:[-–]?\s*\$?(\d+(?:\.\d+)?))?\s*(?:per\s+)?(?:hour|hr|hourly|\/hr)/i);
+        if (salaryMatch) {
+          if (salaryMatch[2]) {
+            newJobData.salary = `$${salaryMatch[1]}-${salaryMatch[2]}/hour`;
+          } else {
+            newJobData.salary = `$${salaryMatch[1]}/hour`;
+          }
+        }
+      }
+      
+      // Extract schedule from any message
+      if (!newJobData.schedule) {
+        const scheduleMatch = allMessages.match(/(\d+)\s*(?:pm|am)\s*(?:to|-)?\s*(\d+)\s*(?:pm|am)(?:\s*,?\s*(?:mon|tue|wed|thu|fri|sat|sun)[\w\s,–-]*)?/i);
+        if (scheduleMatch) {
+          newJobData.schedule = scheduleMatch[0];
         } else {
-          newJobData.salary = `$${salaryMatch[1]}/hour`;
+          // Try to match day patterns separately
+          const dayMatch = allMessages.match(/(?:mon|tue|wed|thu|fri|sat|sun)[\w\s,–-]*/i);
+          if (dayMatch) {
+            newJobData.schedule = dayMatch[0];
+          }
         }
       }
       
-      // Determine next question
-      if (!newJobData.title) {
-        response = "What position are you hiring for?";
-      } else if (!newJobData.location) {
-        response = `What Central Valley city is this ${newJobData.title} position in?`;
-      } else if (!newJobData.salary) {
-        response = `What's the hourly pay range for this ${newJobData.title} position?`;
+      // If we have the basics, generate a complete job description
+      if (newJobData.title && newJobData.location && newJobData.salary) {
+        const template = findJobTemplate(newJobData.title);
+        
+        if (template) {
+          // Use template to fill in missing details
+          newJobData.description = template.typicalDuties.slice(0, 5).join('\n• ');
+          newJobData.requirements = template.typicalRequirements.slice(0, 4).join('\n• ');
+          newJobData.benefits = template.typicalBenefits.slice(0, 3).join(', ');
+          
+          response = `Great! I've created a job posting for your ${newJobData.title} position in ${newJobData.location} at ${newJobData.salary}. ` +
+                    `I've added typical duties and requirements based on similar positions. You can edit everything in the next step!`;
+          
+          return NextResponse.json({
+            response,
+            jobData: newJobData,
+            isComplete: true,
+            nextSteps: "Ready to build job ad"
+          });
+        }
+      }
+      
+      console.log('After extraction:', newJobData);
+      
+      // Smart questioning based on what we have - NEVER repeat questions
+      const isFirstMessage = messages.length <= 1;
+      const askedForSalary = allMessages.includes('pay') || allMessages.includes('salary') || allMessages.includes('schedule');
+      
+      if (!newJobData.title && !newJobData.location) {
+        response = "I'll help you create a job post that attracts qualified Central Valley candidates. What position are you hiring for and in which city?";
+      } else if (newJobData.title && newJobData.location && !newJobData.salary && !askedForSalary) {
+        response = `Got it! Let's make sure we attract someone dependable and local. What's the starting hourly pay and shift schedule?`;
+      } else if (!newJobData.salary && askedForSalary) {
+        // They were asked for salary but we couldn't extract it - be more specific
+        response = `I need the hourly rate to create your job post. For example: "$18/hr" or "$15-20/hour"`;
       } else {
-        response = `What will this ${newJobData.title} person do day-to-day?`;
+        // We have enough to create a job posting - generate it like the example
+        const template = findJobTemplate(newJobData.title);
+        if (template) {
+          // Generate headline based on job type and schedule
+          const isEvening = newJobData.schedule?.includes('pm') || newJobData.schedule?.includes('evening');
+          const timeDescriptor = isEvening ? 'Evening' : newJobData.schedule ? 'Part-Time' : 'Steady';
+          const headline = `${timeDescriptor} ${newJobData.title} Needed – Steady ${newJobData.schedule ? 'Part-Time' : ''} Work in ${newJobData.location.replace(', CA', '')}`.replace(/\s+/g, ' ');
+          
+          // Generate description in your exact style
+          const workplace = newJobData.title.toLowerCase().includes('janitor') && lastUserMessage.includes('church') ? 'church community' : 'team';
+          const description = `"Join a friendly ${workplace} as our ${isEvening ? 'evening' : ''} ${newJobData.title.toLowerCase()}. ${template.typicalDuties[0].toLowerCase()}. ${newJobData.salary}. ${newJobData.schedule ? newJobData.schedule + ' hours' : 'Steady hours'}. No experience required — just a good attitude!"`;
+          
+          newJobData.description = '• ' + template.typicalDuties.slice(0, 4).join('\n• ');
+          newJobData.requirements = '• ' + template.typicalRequirements.slice(0, 3).join('\n• ');
+          
+          response = `Great. Here's a starting headline:\n${headline}\n\nAnd here's a draft for the description:\n${description}`;
+          
+          return NextResponse.json({
+            response,
+            jobData: newJobData,
+            isComplete: true,
+            nextSteps: "Ready to build job ad"
+          });
+        }
+        
+        response = `Perfect! I have the basics for your ${newJobData.title} position. Let me create a job posting for you.`;
       }
       
       return NextResponse.json({
@@ -195,18 +288,47 @@ export async function POST(req: NextRequest) {
       ...parsedResponse.jobData
     };
 
+    // If AI gave us the basics but no description, use knowledge base
+    if (updatedJobData.title && updatedJobData.location && updatedJobData.salary) {
+      const template = findJobTemplate(updatedJobData.title);
+      
+      if (template && !updatedJobData.description) {
+        updatedJobData.description = '• ' + template.typicalDuties.slice(0, 5).join('\n• ');
+      }
+      
+      if (template && !updatedJobData.requirements) {
+        updatedJobData.requirements = '• ' + template.typicalRequirements.slice(0, 4).join('\n• ');
+      }
+      
+      if (template && !updatedJobData.benefits) {
+        updatedJobData.benefits = template.typicalBenefits.slice(0, 3).join(', ');
+      }
+      
+      if (!updatedJobData.schedule && template) {
+        updatedJobData.schedule = template.typicalSchedule;
+      }
+    }
+
     // Check if we have minimum required fields for completion
-    const requiredFields = ['title', 'salary', 'urgency'];
+    const requiredFields = ['title', 'salary', 'location'];
     const hasRequiredFields = requiredFields.every(field => 
       updatedJobData[field as keyof JobData]
     );
 
-    return NextResponse.json({
-      response: parsedResponse.response,
-      jobData: updatedJobData,
-      isComplete: hasRequiredFields && parsedResponse.isComplete,
-      nextSteps: parsedResponse.nextSteps
-    });
+    // Enhance with learned insights
+    const enhancedResponse = await JobLearningSystem.enhanceJobGenieResponse(
+      updatedJobData.title || '',
+      updatedJobData.location || '',
+      updatedJobData.salary || '',
+      {
+        response: parsedResponse.response || "I've gathered your job details. Ready to create your job post!",
+        jobData: updatedJobData,
+        isComplete: hasRequiredFields,
+        nextSteps: hasRequiredFields ? "Ready to build job ad" : "Continue gathering details"
+      }
+    );
+
+    return NextResponse.json(enhancedResponse);
 
   } catch (error) {
     console.error('AI job creation error:', error);

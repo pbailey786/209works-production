@@ -47,7 +47,9 @@
     "queue:test": "ts-node -r tsconfig-paths/register -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/test-email-queue.ts",
     "deploy:chat-history": "node scripts/deploy-chat-history.js",
     "debug:applications": "node scripts/debug-job-applications.js",
-    "cleanup:test-data": "node scripts/cleanup-test-data.js"
+    "cleanup:test-data": "node scripts/cleanup-test-data.js",
+    "learning:run": "ts-node -r tsconfig-paths/register -O \"{\\\"module\\\":\\\"commonjs\\\"}\" src/scripts/job-learning-cron.ts",
+    "learning:status": "curl -H \"Authorization: Bearer ${ADMIN_SECRET}\" http://localhost:3000/api/admin/learning-pipeline"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
