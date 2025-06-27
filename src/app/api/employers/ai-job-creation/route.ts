@@ -43,7 +43,7 @@ YOUR CONVERSATION FLOW:
 2. If you have job/location but need pay info, ask conversationally: "Nice! [Job] positions are always in demand around [City]. What's the pay range you're thinking, and what's the schedule like?"
 
 3. When you have enough basics, you can:
-   - Ask about how people should apply ("How do you want folks to reach out - email, phone, or through our site?")
+   - Ask about how people should apply ("How should people apply? If email, what's your email address? Or do you prefer phone calls or applications through our website?")
    - Ask about special requirements ("Anything specific you're looking for, or any deal-breakers?")
    - Ask about what makes this job appealing ("What would make someone excited to work there?")
 
@@ -60,7 +60,7 @@ IMPORTANT:
 
 Return JSON with conversational response and extracted data:
 {
-  "response": "Your natural, conversational response as Margaret",
+  "response": "Your natural, conversational response as an AI assistant",
   "jobData": { "title": "", "location": "", "salary": "", "schedule": "", "contactMethod": "", "description": "", "requirements": "" },
   "isComplete": true when you have enough to create a complete job post
 }`;
@@ -126,13 +126,28 @@ export async function POST(req: NextRequest) {
       if (!newJobData.title) {
         const titlePatterns = [
           /(?:hire|need|looking for)\s+(?:a|an)?\s*([a-z\s]+?)(?:\s+at|\s+in|\s+for|$)/i,
-          /^([a-z\s]+?)(?:\s+at|\s+in)/i
+          /^([a-z\s]+?)(?:\s+at|\s+in)/i,
+          /janitor/i,
+          /custodian/i,
+          /cleaner/i,
+          /driver/i,
+          /warehouse/i,
+          /cashier/i,
+          /receptionist/i,
+          /cook/i,
+          /server/i,
+          /mechanic/i
         ];
         
         for (const pattern of titlePatterns) {
           const match = allMessages.match(pattern);
           if (match) {
-            newJobData.title = match[1].trim();
+            if (typeof match[1] === 'string') {
+              newJobData.title = match[1].trim();
+            } else if (match[0]) {
+              // For simple job title matches like "janitor"
+              newJobData.title = match[0].trim();
+            }
             break;
           }
         }
@@ -177,12 +192,19 @@ export async function POST(req: NextRequest) {
       
       // Extract contact method from any message
       if (!newJobData.contactMethod) {
-        if (allMessages.includes('email') || allMessages.includes('@')) {
-          newJobData.contactMethod = 'email';
+        // Look for email addresses first (most specific)
+        const emailMatch = allMessages.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+        if (emailMatch) {
+          newJobData.contactMethod = emailMatch[0];
         } else if (allMessages.includes('phone') || allMessages.includes('call')) {
-          newJobData.contactMethod = 'phone';
+          // Look for phone numbers
+          const phoneMatch = allMessages.match(/\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})/);
+          newJobData.contactMethod = phoneMatch ? phoneMatch[0] : 'phone';
         } else if (allMessages.includes('website') || allMessages.includes('online') || allMessages.includes('apply here')) {
           newJobData.contactMethod = 'website';
+        } else if (allMessages.includes('email')) {
+          // Only set generic 'email' if no actual email address found
+          newJobData.contactMethod = 'email';
         }
       }
       
@@ -228,8 +250,10 @@ export async function POST(req: NextRequest) {
         response = "Hi! I'm an AI assistant that'll help you write a job post that attracts good local folks. What position are you looking to fill, and where's it located?";
       } else if (newJobData.title && newJobData.location && !newJobData.salary && !askedForSalary) {
         response = `Nice! ${newJobData.title} positions are always in demand around ${newJobData.location.replace(', CA', '')}. What's the pay range you're thinking, and what's the schedule like?`;
+      } else if (newJobData.title && newJobData.location && newJobData.salary && newJobData.contactMethod === 'email' && !newJobData.contactMethod.includes('@')) {
+        response = `Perfect! I just need your actual email address so people can apply. What email should they use?`;
       } else if (newJobData.title && newJobData.location && newJobData.salary && !newJobData.contactMethod && !askedForContact) {
-        response = `Great info! How do you want folks to reach out about this ${newJobData.title} position - email, phone, or just through our website?`;
+        response = `Great info! How should people apply for this ${newJobData.title} position? If email, what's your email address? Or do you prefer phone calls or applications through our website?`;
       } else if (!newJobData.salary && askedForSalary) {
         response = `I need the hourly rate to create your job post. Something like "$18/hr" or "$15-20/hour" works perfect.`;
       } else if (message.includes('need anything else') || message.includes('anything else') || message.includes('that all')) {
@@ -241,20 +265,22 @@ export async function POST(req: NextRequest) {
       } else {
         // We have enough to create a job posting - generate it like the example
         const template = findJobTemplate(newJobData.title);
-        if (template) {
+        if (template && newJobData.title && newJobData.location) {
           // Generate headline based on job type and schedule
+          const cleanTitle = newJobData.title.charAt(0).toUpperCase() + newJobData.title.slice(1).toLowerCase();
+          const cleanLocation = newJobData.location.replace(', CA', '');
           const isEvening = newJobData.schedule?.includes('pm') || newJobData.schedule?.includes('evening');
           const timeDescriptor = isEvening ? 'Evening' : newJobData.schedule ? 'Part-Time' : 'Steady';
-          const headline = `${timeDescriptor} ${newJobData.title} Needed – Steady ${newJobData.schedule ? 'Part-Time' : ''} Work in ${newJobData.location.replace(', CA', '')}`.replace(/\s+/g, ' ');
+          const headline = `${timeDescriptor} ${cleanTitle} Needed – Steady Work in ${cleanLocation}`.replace(/\s+/g, ' ');
           
           // Generate description in your exact style
-          const workplace = newJobData.title.toLowerCase().includes('janitor') && lastUserMessage.includes('church') ? 'church community' : 'team';
-          const description = `"Join a friendly ${workplace} as our ${isEvening ? 'evening' : ''} ${newJobData.title.toLowerCase()}. ${template.typicalDuties[0].toLowerCase()}. ${newJobData.salary}. ${newJobData.schedule ? newJobData.schedule + ' hours' : 'Steady hours'}. No experience required — just a good attitude!"`;
+          const workplace = cleanTitle.toLowerCase().includes('janitor') && lastUserMessage.includes('church') ? 'church community' : 'team';
+          const description = `"Join a friendly ${workplace} as our ${isEvening ? 'evening' : ''} ${cleanTitle.toLowerCase()}. ${template.typicalDuties[0].toLowerCase()}. ${newJobData.salary}. ${newJobData.schedule ? newJobData.schedule + ' hours' : 'Steady hours'}. No experience required — just a good attitude!"`;
           
           newJobData.description = '• ' + template.typicalDuties.slice(0, 4).join('\n• ');
           newJobData.requirements = '• ' + template.typicalRequirements.slice(0, 3).join('\n• ');
           
-          response = `Perfect! I've got everything I need. Here's what I'm thinking for your posting:\n\n**${headline}**\n\n${description}\n\nI've also added the typical duties and requirements that work well for ${newJobData.title} positions around here. You can edit everything in the next step - just hit 'Build Job Ad' when you're ready!`;
+          response = `Perfect! I've got everything I need. Here's what I'm thinking for your posting:\n\n**${headline}**\n\n${description}\n\nI've also added the typical duties and requirements that work well for ${cleanTitle} positions around here. You can edit everything in the next step - just hit 'Build Job Ad' when you're ready!`;
           
           return NextResponse.json({
             response,

@@ -94,7 +94,7 @@ export default function Header() {
       return [
         { name: 'Dashboard', href: '/employers/dashboard', icon: BarChart3 },
         { name: 'My Jobs', href: '/employers/my-jobs', icon: FileText },
-        { name: 'Post Job', href: '/employers/create-job-post', icon: Building2 },
+        { name: 'Post Job', href: '/employers/post-job', icon: Building2 },
         { name: 'Settings', href: '/employers/settings', icon: Settings },
       ];
     } else if (userRole === 'admin') {
