@@ -8,7 +8,7 @@ export default function EmployerLandingPage() {
       title: 'Targeted Job Posting',
       description:
         'Post jobs that reach qualified candidates in the Central Valley',
-      href: '/employers/create-job-post',
+      href: '/employers/post-job',
     },
     // AI features only shown if enabled
     ...(FEATURES.AI_CHAT ? [{

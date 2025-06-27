@@ -136,7 +136,7 @@ export default function SimpleEmployerDashboard() {
               </p>
             </div>
             <Link
-              href="/employers/create-job-post"
+              href="/employers/post-job"
               className="inline-flex items-center px-6 py-3 bg-[#2d4a3e] text-white rounded-xl font-medium hover:bg-[#1d3a2e] transition-colors shadow-sm"
             >
               <Plus className="w-5 h-5 mr-2" />

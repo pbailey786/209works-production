@@ -190,7 +190,7 @@ export function DomainLayout({ children }: DomainLayoutProps) {
               <ul className="space-y-2">
                 <li>
                   <Link
-                    href="/employers/create-job-post"
+                    href="/employers/post-job"
                     className="text-gray-600 hover:text-gray-900"
                   >
                     Post a Job

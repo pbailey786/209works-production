@@ -625,7 +625,7 @@ export default function OnboardingWizard({
               </p>
             </div>
             <button
-              onClick={() => router.push('/employers/create-job-post')}
+              onClick={() => router.push('/employers/post-job')}
               className="group inline-flex items-center rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-indigo-800 hover:shadow-xl"
             >
               Post Your First Job

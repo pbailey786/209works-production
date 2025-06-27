@@ -37,7 +37,7 @@ const Footer = () => {
       title: 'For Employers',
       icon: Building2,
       links: [
-        { name: 'Post a Job', href: '/employers/create-job-post' },
+        { name: 'Post a Job', href: '/employers/post-job' },
         { name: 'Local Business Signup', href: '/signup/local-business' },
         { name: 'Chamber Partnership', href: '/signup/chamber-partner' },
         { name: 'Employer Dashboard', href: '/employers/dashboard' },
