@@ -261,9 +261,9 @@ export default function PostJobPage() {
             <p className="text-gray-600">Review and edit as needed, then publish to reach Central Valley job seekers</p>
           </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left Side - Form */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Left Side - Form */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="space-y-6">
               {/* Job Title */}
               <div>
@@ -394,10 +394,10 @@ export default function PostJobPage() {
                 {isReady ? 'Ready to publish!' : 'Fill in required fields to continue'}
               </p>
             </div>
-          </div>
+            </div>
 
-          {/* Right Side - Live Preview */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
+            {/* Right Side - Live Preview */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Eye className="w-5 h-5 mr-2 text-green-600" />
               How It Looks to Central Valley Job Seekers
@@ -489,6 +489,7 @@ export default function PostJobPage() {
                 )}
               </div>
             )}
+          </div>
           </div>
         </div>
         
