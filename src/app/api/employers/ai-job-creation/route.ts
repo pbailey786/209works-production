@@ -38,7 +38,9 @@ STEP 3: If you have job title AND location AND salary, create complete job posti
 "Great. Here's a starting headline:
 [Job Type] Needed – Steady Work in [City]
 And here's a draft for the description:
-'[Compelling description with salary and schedule]. No experience required — just a good attitude!'"
+'[Compelling description with salary and schedule]. No experience required — just a good attitude!'
+
+I've also added typical duties and qualifications based on similar successful posts. You can edit everything in the next step - just click 'Build Job Ad' when ready!"
 
 CRITICAL RULES:
 1. ONLY use the 3 responses above - don't ask other questions
@@ -310,6 +312,20 @@ export async function POST(req: NextRequest) {
     const hasRequiredFields = requiredFields.every(field => 
       updatedJobData[field as keyof JobData]
     );
+
+    // If we have enough for a complete job posting, ensure we have duties and requirements
+    if (hasRequiredFields && updatedJobData.title) {
+      const template = findJobTemplate(updatedJobData.title);
+      if (template && !updatedJobData.description) {
+        updatedJobData.description = '• ' + template.typicalDuties.slice(0, 5).join('\n• ');
+      }
+      if (template && !updatedJobData.requirements) {
+        updatedJobData.requirements = '• ' + template.typicalRequirements.slice(0, 4).join('\n• ');
+      }
+      if (template && !updatedJobData.benefits) {
+        updatedJobData.benefits = template.typicalBenefits.slice(0, 3).join(', ');
+      }
+    }
 
     // Enhance with learned insights
     const enhancedResponse = await JobLearningSystem.enhanceJobGenieResponse(
