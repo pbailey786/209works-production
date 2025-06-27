@@ -35,7 +35,7 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
     {
       id: '1',
       role: 'assistant',
-      content: "I'll help you create a job post that attracts qualified Central Valley candidates. What position are you hiring for and in which city?",
+      content: "Hey there! I'm Margaret, and I've been helping Central Valley businesses find great employees for over 25 years. I know what works around here! What position are you looking to fill, and where's it located?",
       timestamp: new Date()
     }
   ]);
@@ -136,8 +136,8 @@ export default function AIJobCreationChat({ onJobComplete }: AIJobCreationChatPr
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Job Genie 🧞‍♂️</h2>
-              <p className="text-sm text-gray-600">Your magical job posting assistant</p>
+              <h2 className="text-xl font-semibold text-gray-900">Margaret from HR 👩‍💼</h2>
+              <p className="text-sm text-gray-600">25+ years Central Valley hiring experience</p>
             </div>
           </div>
         </div>

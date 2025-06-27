@@ -28,37 +28,41 @@ interface JobData {
   benefits?: string;
 }
 
-const SYSTEM_PROMPT = `You are a Central Valley hiring expert. Follow this EXACT conversation pattern:
+const SYSTEM_PROMPT = `You're Margaret, a retired HR director with 25+ years in the Central Valley. You're friendly, experienced, and know what works for local hiring. You help employers write job posts that actually get good applicants.
 
-STEP 1: If missing job title OR location, ask: "I'll help you create a job post that attracts qualified Central Valley candidates. What position are you hiring for and in which city?"
+PERSONALITY:
+- Warm and conversational, like chatting with a neighbor
+- Experienced but not stuffy - you've "seen it all"
+- Give practical advice based on what works locally
+- Ask follow-up questions naturally when helpful
+- Be encouraging and supportive
 
-STEP 2: If you have job title AND location BUT missing salary/schedule, ask: "Got it! Let's make sure we attract someone dependable and local. What's the starting hourly pay and shift schedule?"
+YOUR CONVERSATION FLOW:
+1. If missing basics (job title/location), ask naturally: "Hey there! I'm here to help you write a job post that'll attract good local folks. What position are you looking to fill, and where's it located?"
 
-STEP 3: If you have job title AND location AND salary, create complete job posting with headline and description like this:
-"Great. Here's a starting headline:
-[Job Type] Needed – Steady Work in [City]
-And here's a draft for the description:
-'[Compelling description with salary and schedule]. No experience required — just a good attitude!'
+2. If you have job/location but need pay info, ask conversationally: "Nice! [Job] positions are always in demand around [City]. What's the pay range you're thinking, and what's the schedule like?"
 
-I've also added typical duties and qualifications based on similar successful posts. You can edit everything in the next step - just click 'Build Job Ad' when ready!"
+3. When you have enough basics, you can:
+   - Ask about how people should apply ("How do you want folks to reach out - email, phone, or through our site?")
+   - Ask about special requirements ("Anything specific you're looking for, or any deal-breakers?")
+   - Ask about what makes this job appealing ("What would make someone excited to work there?")
 
-CRITICAL RULES:
-1. ONLY use the 3 responses above - don't ask other questions
-2. Extract information from ALL messages in conversation history
-3. Never ask for "requirements" or "duties" - generate them automatically
-4. Always generate complete job posting when you have title + location + salary
+4. When ready to create the job post, be enthusiastic: "Perfect! I've got everything I need. Here's what I'm thinking for your posting..." then create headline and description.
 
-Look at entire conversation to extract:
-- Job title from phrases like "hire a janitor"
-- Location from city names like "Modesto" 
-- Salary from "$18/hr" format
-- Schedule from "6pm to 10pm, Mon-Fri" format
+5. Answer follow-up questions naturally and helpfully
 
-Return JSON:
+IMPORTANT:
+- Be flexible - don't follow a rigid script
+- Extract info from entire conversation 
+- Have natural back-and-forth conversations
+- Always ask about contact method (email, phone, etc.)
+- Generate duties/requirements automatically from your experience
+
+Return JSON with conversational response and extracted data:
 {
-  "response": "One of the 3 exact responses above",
-  "jobData": { "title": "", "location": "", "salary": "", "schedule": "", "description": "", "requirements": "" },
-  "isComplete": true if you have title + location + salary
+  "response": "Your natural, conversational response as Margaret",
+  "jobData": { "title": "", "location": "", "salary": "", "schedule": "", "contactMethod": "", "description": "", "requirements": "" },
+  "isComplete": true when you have enough to create a complete job post
 }`;
 
 export async function POST(req: NextRequest) {
@@ -171,6 +175,17 @@ export async function POST(req: NextRequest) {
         }
       }
       
+      // Extract contact method from any message
+      if (!newJobData.contactMethod) {
+        if (allMessages.includes('email') || allMessages.includes('@')) {
+          newJobData.contactMethod = 'email';
+        } else if (allMessages.includes('phone') || allMessages.includes('call')) {
+          newJobData.contactMethod = 'phone';
+        } else if (allMessages.includes('website') || allMessages.includes('online') || allMessages.includes('apply here')) {
+          newJobData.contactMethod = 'website';
+        }
+      }
+      
       // If we have the basics, generate a complete job description
       if (newJobData.title && newJobData.location && newJobData.salary) {
         const template = findJobTemplate(newJobData.title);
@@ -195,17 +210,34 @@ export async function POST(req: NextRequest) {
       
       console.log('After extraction:', newJobData);
       
-      // Smart questioning based on what we have - NEVER repeat questions
+      // Smart questioning based on what we have - conversational style
       const isFirstMessage = messages.length <= 1;
       const askedForSalary = allMessages.includes('pay') || allMessages.includes('salary') || allMessages.includes('schedule');
+      const askedForContact = allMessages.includes('apply') || allMessages.includes('contact') || allMessages.includes('reach out');
       
-      if (!newJobData.title && !newJobData.location) {
-        response = "I'll help you create a job post that attracts qualified Central Valley candidates. What position are you hiring for and in which city?";
+      // Handle greetings and casual conversation
+      const casualGreetings = ['hey', 'hi', 'hello', 'heyo', 'howdy', 'sup'];
+      const isGreeting = casualGreetings.some(greeting => message.includes(greeting));
+      const complaintsAboutRigid = message.includes('rigid') || message.includes('strict') || message.includes('checklist') || allMessages.includes('straight to it') || allMessages.includes('no hi hello');
+      
+      if (isGreeting && (!newJobData.title || !newJobData.location)) {
+        response = "Well hello there! Nice to meet you! I'm Margaret - been helping folks hire around the Central Valley for ages. So, what kind of position are you looking to fill, and where at?";
+      } else if (complaintsAboutRigid) {
+        response = "Ha! You caught me being too businesslike - occupational hazard after 25 years in HR! Let me dial it back a notch. So what's the position you're hiring for? I promise to be more human about this!";
+      } else if (!newJobData.title && !newJobData.location) {
+        response = "Hey there! I'm here to help you write a job post that'll attract good local folks. What position are you looking to fill, and where's it located?";
       } else if (newJobData.title && newJobData.location && !newJobData.salary && !askedForSalary) {
-        response = `Got it! Let's make sure we attract someone dependable and local. What's the starting hourly pay and shift schedule?`;
+        response = `Nice! ${newJobData.title} positions are always in demand around ${newJobData.location.replace(', CA', '')}. What's the pay range you're thinking, and what's the schedule like?`;
+      } else if (newJobData.title && newJobData.location && newJobData.salary && !newJobData.contactMethod && !askedForContact) {
+        response = `Great info! How do you want folks to reach out about this ${newJobData.title} position - email, phone, or just through our website?`;
       } else if (!newJobData.salary && askedForSalary) {
-        // They were asked for salary but we couldn't extract it - be more specific
-        response = `I need the hourly rate to create your job post. For example: "$18/hr" or "$15-20/hour"`;
+        response = `I need the hourly rate to create your job post. Something like "$18/hr" or "$15-20/hour" works perfect.`;
+      } else if (message.includes('need anything else') || message.includes('anything else') || message.includes('that all')) {
+        if (newJobData.title && newJobData.location && newJobData.salary) {
+          response = `Actually, we're pretty much set! I could ask about benefits or specific requirements, but honestly, for most ${newJobData.title} positions around ${newJobData.location.replace(', CA', '')}, what you've told me is perfect. Want me to put together the job posting now?`;
+        } else {
+          response = `Well, I'd love to get the contact info - how should people apply? Email, phone, or through the website?`;
+        }
       } else {
         // We have enough to create a job posting - generate it like the example
         const template = findJobTemplate(newJobData.title);
@@ -222,7 +254,7 @@ export async function POST(req: NextRequest) {
           newJobData.description = '• ' + template.typicalDuties.slice(0, 4).join('\n• ');
           newJobData.requirements = '• ' + template.typicalRequirements.slice(0, 3).join('\n• ');
           
-          response = `Great. Here's a starting headline:\n${headline}\n\nAnd here's a draft for the description:\n${description}`;
+          response = `Perfect! I've got everything I need. Here's what I'm thinking for your posting:\n\n**${headline}**\n\n${description}\n\nI've also added the typical duties and requirements that work well for ${newJobData.title} positions around here. You can edit everything in the next step - just hit 'Build Job Ad' when you're ready!`;
           
           return NextResponse.json({
             response,
