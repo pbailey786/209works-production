@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { MapPin, DollarSign, Briefcase, User, Sparkles, Eye } from 'lucide-react';
+import { Sparkles, Zap, ArrowRight, Edit, MapPin, DollarSign, Briefcase, User, Eye } from 'lucide-react';
 
 interface JobData {
   title: string;
@@ -12,12 +12,18 @@ interface JobData {
   description: string;
   requirements: string;
   contactMethod: string;
+  schedule?: string;
+  benefits?: string;
 }
+
+type GenerationState = 'input' | 'generating' | 'editing' | 'publishing';
 
 export default function PostJobPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   
+  const [currentState, setCurrentState] = useState<GenerationState>('input');
+  const [prompt, setPrompt] = useState('');
   const [jobData, setJobData] = useState<JobData>({
     title: '',
     location: '',
@@ -26,10 +32,11 @@ export default function PostJobPage() {
     requirements: '',
     contactMethod: ''
   });
-  
+  const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [showAIHelp, setShowAIHelp] = useState(false);
-  const [lastTypingTime, setLastTypingTime] = useState(0);
+  
+  // Check if form is ready to publish
+  const isReady = jobData.title && jobData.location && jobData.salary && jobData.contactMethod;
 
   // Authentication check
   if (!isLoaded) {
@@ -45,81 +52,50 @@ export default function PostJobPage() {
     return null;
   }
 
-  // Smart autofill suggestions based on job title
-  const getSalaryAutofill = (title: string): string => {
-    const lowTitle = title.toLowerCase();
-    if (lowTitle.includes('cashier') || lowTitle.includes('retail')) return '$14-16/hr';
-    if (lowTitle.includes('warehouse') || lowTitle.includes('driver')) return '$17-20/hr';
-    if (lowTitle.includes('janitor') || lowTitle.includes('cleaner')) return '$15-18/hr';
-    if (lowTitle.includes('cook') || lowTitle.includes('kitchen')) return '$16-19/hr';
-    if (lowTitle.includes('receptionist') || lowTitle.includes('office')) return '$15-18/hr';
-    if (lowTitle.includes('mechanic')) return '$20-25/hr';
-    if (lowTitle.includes('server') || lowTitle.includes('waitress')) return '$12/hr + tips';
-    return '';
-  };
-
-  // Auto-suggest location based on common Central Valley cities
-  const getLocationSuggestions = (input: string): string[] => {
-    const cities = ['Stockton, CA', 'Modesto, CA', 'Fresno, CA', 'Merced, CA', 'Turlock, CA', 'Tracy, CA', 'Manteca, CA', 'Lodi, CA'];
-    return cities.filter(city => city.toLowerCase().includes(input.toLowerCase())).slice(0, 3);
-  };
-
-  // Handle input changes
-  const handleInputChange = (field: keyof JobData, value: string) => {
-    setJobData(prev => ({ ...prev, [field]: value }));
-    setLastTypingTime(Date.now());
-    
-    // Smart autofill for salary when title changes
-    if (field === 'title' && value && !jobData.salary) {
-      const suggestedSalary = getSalaryAutofill(value);
-      if (suggestedSalary) {
-        setJobData(prev => ({ ...prev, salary: suggestedSalary }));
-      }
+  // Generate complete job posting from prompt
+  const generateJobPost = async () => {
+    if (!prompt.trim()) {
+      alert('Please describe the job you need to post');
+      return;
     }
-    
-    // Show AI help after pause on description
-    if (field === 'description' && !value) {
-      setTimeout(() => {
-        if (Date.now() - lastTypingTime > 2000 && jobData.title && !jobData.description) {
-          setShowAIHelp(true);
-        }
-      }, 2500);
-    }
-  };
 
-  // Generate AI description
-  const generateAIDescription = async () => {
-    if (!jobData.title) return;
-    
-    setShowAIHelp(false);
+    setIsGenerating(true);
+    setCurrentState('generating');
+
     try {
-      const response = await fetch('/api/employers/generate-description', {
+      const response = await fetch('/api/employers/magic-job-creation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          title: jobData.title, 
-          location: jobData.location,
-          salary: jobData.salary 
-        })
+        body: JSON.stringify({ prompt: prompt.trim() })
       });
-      
+
       if (response.ok) {
         const data = await response.json();
-        setJobData(prev => ({ 
-          ...prev, 
-          description: data.description,
-          requirements: data.requirements || prev.requirements
-        }));
+        setJobData(data.jobData);
+        setCurrentState('editing');
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Failed to generate job post');
+        setCurrentState('input');
       }
     } catch (error) {
-      console.error('Failed to generate AI description:', error);
+      console.error('Failed to generate job post:', error);
+      alert('Failed to generate job post. Please try again.');
+      setCurrentState('input');
+    } finally {
+      setIsGenerating(false);
     }
+  };
+
+  // Handle input changes in edit mode
+  const handleInputChange = (field: keyof JobData, value: string) => {
+    setJobData(prev => ({ ...prev, [field]: value }));
   };
 
   // Publish job
   const handlePublish = async () => {
-    if (!jobData.title || !jobData.location || !jobData.salary) {
-      alert('Please fill in job title, location, and salary');
+    if (!jobData.title || !jobData.location || !jobData.salary || !jobData.contactMethod) {
+      alert('Please fill in job title, location, salary, and contact method');
       return;
     }
     
@@ -146,16 +122,144 @@ export default function PostJobPage() {
     }
   };
 
-  // Check if form is ready
-  const isReady = jobData.title && jobData.location && jobData.salary;
+  // Go back to start over
+  const startOver = () => {
+    setCurrentState('input');
+    setPrompt('');
+    setJobData({
+      title: '',
+      location: '',
+      salary: '',
+      description: '',
+      requirements: '',
+      contactMethod: ''
+    });
+  };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Post a Job</h1>
-          <p className="text-gray-600 mt-2">Reach thousands of job seekers in the Central Valley</p>
+  // Render different states
+  if (currentState === 'input') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="max-w-4xl mx-auto p-8 text-center">
+          <div className="mb-8">
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-full p-4">
+                <Sparkles className="w-12 h-12 text-white" />
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 mb-4">Magic Job Creator</h1>
+            <p className="text-xl text-gray-600">Describe your job need in plain English. Our AI will create a professional posting instantly.</p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
+            <div className="mb-6">
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="e.g. We need a warehouse worker in Stockton for $18/hr, day shift, must be reliable and able to lift 50lbs. No experience needed, we'll train."
+                className="w-full h-32 px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-0 resize-none"
+                maxLength={500}
+              />
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-sm text-gray-500">{prompt.length}/500 characters</span>
+                <div className="flex gap-2">
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">✨ Include salary</span>
+                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">📍 Mention location</span>
+                  <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">⏰ Add schedule</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={generateJobPost}
+              disabled={!prompt.trim() || isGenerating}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-semibold py-4 px-8 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
+            >
+              {isGenerating ? (
+                <>
+                  <div className="w-6 h-6 animate-spin rounded-full border-b-2 border-white"></div>
+                  <span>Creating magic...</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-6 h-6" />
+                  <span>Generate Job Post</span>
+                  <ArrowRight className="w-6 h-6" />
+                </>
+              )}
+            </button>
+
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>AI writes professional description</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>Adds Central Valley market rates</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>Includes local business touches</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 text-gray-500">
+            <p className="text-sm">🌾 Optimized for Central Valley • Stockton • Modesto • Fresno • Tracy</p>
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  if (currentState === 'generating') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mb-8">
+            <div className="relative">
+              <div className="w-32 h-32 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto flex items-center justify-center animate-pulse">
+                <Sparkles className="w-16 h-16 text-white" />
+              </div>
+              <div className="absolute inset-0 w-32 h-32 border-4 border-blue-200 rounded-full animate-spin mx-auto"></div>
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Creating Your Job Post...</h2>
+          <p className="text-lg text-gray-600 mb-8">Our AI is crafting a professional posting that attracts great Central Valley candidates</p>
+          <div className="max-w-md mx-auto">
+            <div className="space-y-3 text-left text-gray-600">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>Analyzing your requirements...</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                <span>Adding Central Valley market insights...</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                <span>Writing professional description...</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+                <span>Finalizing job details...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentState === 'editing') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="mb-8 text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">✨ Your Job Post is Ready!</h1>
+            <p className="text-gray-600">Review and edit as needed, then publish to reach Central Valley job seekers</p>
+          </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Side - Form */}
@@ -210,23 +314,17 @@ export default function PostJobPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Job Description
-                  {showAIHelp && (
-                    <button
-                      onClick={generateAIDescription}
-                      className="ml-2 text-sm text-blue-600 hover:text-blue-700 inline-flex items-center"
-                    >
-                      <Sparkles className="w-3 h-3 mr-1" />
-                      Need help? Generate one!
-                    </button>
-                  )}
                 </label>
                 <textarea
                   value={jobData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Describe the main duties and responsibilities..."
+                  placeholder="e.g. 'Join our family-owned business in Stockton. We need a reliable warehouse worker for day shift. You'll load trucks, manage inventory, and work with a tight-knit team. Great for someone who wants steady work close to home.'"
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">💡 Tip: Mention local benefits like "close to home," "family-owned," or "Central Valley roots"</span>
+                </div>
               </div>
 
               {/* Requirements */}
@@ -253,14 +351,21 @@ export default function PostJobPage() {
                   type="text"
                   value={jobData.contactMethod}
                   onChange={(e) => handleInputChange('contactMethod', e.target.value)}
-                  placeholder="email@company.com or (555) 123-4567"
+                  placeholder="your-email@company.com or (555) 123-4567"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <div className="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-xs text-blue-800">
+                    📧 <strong>Email applications:</strong> Candidates will apply through 209jobs AND we'll forward their application to your email<br/>
+                    📱 <strong>Phone applications:</strong> Candidates will call you directly<br/>
+                    🌟 <strong>Bonus:</strong> All applications get saved to your employer dashboard for easy tracking
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Publish Button */}
-            <div className="mt-8 pt-6 border-t">
+            {/* Action Buttons */}
+            <div className="mt-8 pt-6 border-t space-y-3">
               <button
                 onClick={handlePublish}
                 disabled={!isReady || isPublishing}
@@ -278,7 +383,14 @@ export default function PostJobPage() {
                   </>
                 )}
               </button>
-              <p className="text-xs text-gray-500 text-center mt-2">
+              <button
+                onClick={startOver}
+                disabled={isPublishing}
+                className="w-full px-6 py-2 text-sm border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                ← Start Over with New Prompt
+              </button>
+              <p className="text-xs text-gray-500 text-center">
                 {isReady ? 'Ready to publish!' : 'Fill in required fields to continue'}
               </p>
             </div>
@@ -288,7 +400,7 @@ export default function PostJobPage() {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <Eye className="w-5 h-5 mr-2 text-green-600" />
-              Live Preview
+              How It Looks to Central Valley Job Seekers
             </h3>
 
             {!jobData.title ? (
@@ -340,13 +452,76 @@ export default function PostJobPage() {
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <h4 className="font-semibold text-green-900 mb-1">How to Apply</h4>
                     <p className="text-green-800">{jobData.contactMethod}</p>
+                    <div className="mt-3 pt-3 border-t border-green-200">
+                      <div className="flex items-center justify-between">
+                        <button className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                          📝 Apply on 209jobs
+                        </button>
+                        <span className="text-xs text-green-700">+ Employer gets email too</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Central Valley Specific Features Preview */}
+                {jobData.title && jobData.location && (
+                  <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-900 mb-2">🌟 209jobs Exclusive Features</h4>
+                    <div className="space-y-2 text-sm text-blue-800">
+                      <div className="flex items-center space-x-2">
+                        <span>🧭</span>
+                        <span>Commute time from major Central Valley cities</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span>💭</span>
+                        <span>"Should I Apply?" AI matching for this position</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span>📚</span>
+                        <span>Option to include .works career story</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span>🏆</span>
+                        <span>Profile gamification for local job seekers</span>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
             )}
           </div>
         </div>
+        
+        {/* Start Over Fab Button - Bottom Right */}
+        <div className="fixed bottom-6 right-6">
+          <button
+            onClick={startOver}
+            disabled={isPublishing}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all text-sm disabled:opacity-50"
+          >
+            ✨ New Prompt
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Publishing state (simple loading screen)
+  if (currentState === 'publishing') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mb-8">
+            <div className="w-32 h-32 bg-gradient-to-r from-green-600 to-blue-600 rounded-full mx-auto flex items-center justify-center animate-pulse">
+              <Sparkles className="w-16 h-16 text-white" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Publishing Your Job...</h2>
+          <p className="text-lg text-gray-600">Your job post will be live in seconds!</p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }

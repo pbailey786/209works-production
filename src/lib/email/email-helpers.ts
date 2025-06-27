@@ -56,6 +56,18 @@ export interface NewApplicantData {
   dashboardUrl?: string;
 }
 
+export interface DirectApplicationData {
+  jobTitle: string;
+  companyName: string;
+  applicantName: string;
+  applicantEmail: string;
+  applicantResume?: string;
+  coverLetter?: string;
+  additionalInfo?: string;
+  applicationDate: string;
+  jobUrl: string;
+}
+
 /**
  * Email helpers for common email scenarios
  */
@@ -157,6 +169,21 @@ export class EmailHelpers {
   }
 
   /**
+   * Send direct application to employer's email (for jobs posted with email contact)
+   */
+  static async sendDirectApplicationToEmployer(
+    to: string,
+    data: DirectApplicationData,
+    options: EmailServiceOptions = {}
+  ): Promise<EmailResult> {
+    return emailService.sendTemplatedEmail('direct-application', to, data, {
+      priority: 'high',
+      tags: [{ name: 'type', value: 'direct-application' }],
+      ...options,
+    });
+  }
+
+  /**
    * Send bulk job alerts to multiple recipients
    */
   static async sendBulkJobAlerts(
@@ -244,6 +271,7 @@ export const {
   sendPasswordReset,
   sendApplicationConfirmation,
   sendNewApplicantNotification,
+  sendDirectApplicationToEmployer,
   sendBulkJobAlerts,
   sendBulkWeeklyDigests,
   sendJobPostingConfirmation,

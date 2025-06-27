@@ -61,11 +61,16 @@ export async function POST(req: NextRequest) {
       console.log('Embedding generation failed, job will still be published');
     }
 
-    // Create job posting
+    // Create job posting with contact info embedded in description for now
+    let finalDescription = description?.trim() || '';
+    if (contactMethod?.trim()) {
+      finalDescription += `\n\nHow to Apply: ${contactMethod.trim()}`;
+    }
+
     const job = await prisma.job.create({
       data: {
         title: title.trim(),
-        description: description?.trim() || '',
+        description: finalDescription,
         requirements: requirements?.trim() || '',
         location: location.trim(),
         company: user.companyName || 'Company',

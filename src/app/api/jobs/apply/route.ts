@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
       console.error('📧 Failed to send application confirmation email:', emailError);
     }
 
-    // Send notification email to employer if job has an employerId
+    // Send notification email to employer if job has an employerId OR direct contact email
     if (job.employerId) {
       try {
         const employer = await prisma.user.findUnique({
@@ -133,6 +133,43 @@ export async function POST(request: NextRequest) {
         }
       } catch (emailError) {
         console.error('📧 Failed to send employer notification email:', emailError);
+      }
+    }
+
+    // Also send to direct contact email if provided (for jobs posted with email contact)
+    const jobWithContact = await prisma.job.findUnique({
+      where: { id: validatedData.jobId },
+      select: { 
+        url: true, // This is where we store external URLs
+        description: true // Contact info might be in description for now
+      }
+    });
+
+    // For now, we'll extract email from the job URL or description field
+    // TODO: Add proper contact fields to Job model in future migration
+    let contactEmail = null;
+    if (jobWithContact?.description) {
+      const emailMatch = jobWithContact.description.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+      contactEmail = emailMatch?.[0];
+    }
+
+    if (contactEmail) {
+      try {
+        // Send application directly to employer's email
+        await EmailHelpers.sendDirectApplicationToEmployer(contactEmail, {
+          jobTitle: job.title,
+          companyName: job.company || 'Your Company',
+          applicantName: user.name || user.email.split('@')[0],
+          applicantEmail: user.email,
+          applicantResume: validatedData.resumeUrl || user.resumeUrl || undefined,
+          coverLetter: validatedData.coverLetter,
+          additionalInfo: validatedData.additionalInfo,
+          applicationDate: new Date().toLocaleDateString(),
+          jobUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${job.id}`,
+        });
+        console.log('📧 Direct application email sent to employer contact');
+      } catch (emailError) {
+        console.error('📧 Failed to send direct application email:', emailError);
       }
     }
 
