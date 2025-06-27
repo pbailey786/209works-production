@@ -145,12 +145,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // For now, we'll extract email from the job URL or description field
-    // TODO: Add proper contact fields to Job model in future migration
+    // Extract contact email from hidden tag in description
     let contactEmail = null;
     if (jobWithContact?.description) {
-      const emailMatch = jobWithContact.description.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-      contactEmail = emailMatch?.[0];
+      const contactMatch = jobWithContact.description.match(/\[CONTACT_EMAIL:([^\]]+)\]/);
+      contactEmail = contactMatch?.[1];
     }
 
     if (contactEmail) {

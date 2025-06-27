@@ -34,6 +34,8 @@ export default function PostJobPage() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [quickPrompt, setQuickPrompt] = useState('');
+  const [isQuickGenerating, setIsQuickGenerating] = useState(false);
   
   // Check if form is ready to publish
   const isReady = jobData.title && jobData.location && jobData.salary && jobData.contactMethod;
@@ -122,10 +124,38 @@ export default function PostJobPage() {
     }
   };
 
+  // Quick generate from preview area
+  const handleQuickGenerate = async () => {
+    if (!quickPrompt.trim()) return;
+    
+    setIsQuickGenerating(true);
+    try {
+      const response = await fetch('/api/employers/magic-job-creation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: quickPrompt.trim() })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setJobData(data.jobData);
+        setQuickPrompt('');
+      } else {
+        alert('Failed to generate. Please try again.');
+      }
+    } catch (error) {
+      console.error('Quick generate failed:', error);
+      alert('Failed to generate. Please try again.');
+    } finally {
+      setIsQuickGenerating(false);
+    }
+  };
+
   // Go back to start over
   const startOver = () => {
     setCurrentState('input');
     setPrompt('');
+    setQuickPrompt('');
     setJobData({
       title: '',
       location: '',
@@ -452,10 +482,35 @@ export default function PostJobPage() {
 
             {/* Right Side - Live Preview */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Eye className="w-5 h-5 mr-2 text-green-600" />
-              How It Looks to Central Valley Job Seekers
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Eye className="w-5 h-5 mr-2 text-green-600" />
+                Preview
+              </h3>
+              
+              {/* Quick Prompt Area */}
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={quickPrompt}
+                  onChange={(e) => setQuickPrompt(e.target.value)}
+                  placeholder="Quick prompt..."
+                  className="text-sm px-3 py-1 border border-gray-300 rounded-lg w-40 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleQuickGenerate();
+                    }
+                  }}
+                />
+                <button
+                  onClick={handleQuickGenerate}
+                  disabled={!quickPrompt.trim() || isQuickGenerating}
+                  className="text-sm px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isQuickGenerating ? '...' : '✨'}
+                </button>
+              </div>
+            </div>
 
             {!jobData.title ? (
               <div className="text-center py-12">
@@ -501,21 +556,25 @@ export default function PostJobPage() {
                   </div>
                 )}
 
-                {/* Contact */}
-                {jobData.contactMethod && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-green-900 mb-1">How to Apply</h4>
-                    <p className="text-green-800">{jobData.contactMethod}</p>
-                    <div className="mt-3 pt-3 border-t border-green-200">
-                      <div className="flex items-center justify-between">
-                        <button className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                          📝 Apply on 209jobs
-                        </button>
-                        <span className="text-xs text-green-700">+ Employer gets email too</span>
-                      </div>
+                {/* Apply Button - No Contact Info Shown */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-green-900 mb-1">Ready to Apply?</h4>
+                      <p className="text-green-800 text-sm">Submit your application through 209jobs</p>
                     </div>
+                    <button className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                      📝 Apply Now
+                    </button>
                   </div>
-                )}
+                  {jobData.contactMethod && (
+                    <div className="mt-3 pt-3 border-t border-green-200">
+                      <span className="text-xs text-green-700">
+                        ✉️ Applications go to our CRM + employer gets email notification
+                      </span>
+                    </div>
+                  )}
+                </div>
 
                 {/* Central Valley Specific Features Preview */}
                 {jobData.title && jobData.location && (

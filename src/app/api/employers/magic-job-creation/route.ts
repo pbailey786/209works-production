@@ -44,7 +44,8 @@ Include:
 - What you'll be doing (4-6 bullet points max, use "You'll be:" format)
 - Must be comfortable with (physical/environment expectations)
 - Nice to have qualifications (keep realistic, mention bilingual as plus if relevant)
-- How to apply section with clear next steps
+
+DO NOT include "How to Apply" sections - applications will be handled through the platform.
 
 Return ONLY a JSON object with these exact fields:
 {
@@ -89,6 +90,14 @@ Return ONLY a JSON object with these exact fields:
       // Validate required fields
       if (!jobData.title || !jobData.location || !jobData.salary) {
         throw new Error('AI response missing required fields');
+      }
+
+      // Clean the description to remove "How to Apply" sections
+      if (jobData.description) {
+        jobData.description = jobData.description
+          .replace(/How to Apply:.*$/gms, '')
+          .replace(/Ready to start ASAP\?.*$/gms, '')
+          .trim();
       }
 
       return NextResponse.json({
@@ -267,12 +276,8 @@ Nice to have: Related work experience, strong work ethic, bilingual skills.`
   
   const description = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
   
-  // Add application instructions
-  const fullDescription = `${description}
-
-How to Apply: Send your resume to ${contactMethod} or ${contactMethod.includes('@') ? 'call us' : 'email us'} to schedule an interview. We typically respond within 2-3 business days. 
-
-Ready to start ASAP? ${contactMethod.includes('@') ? 'Mention "ready now" in your email subject line.' : 'Let us know when you call!'}`;
+  // Don't add application instructions - will be handled by the platform
+  const fullDescription = description;
   
   return {
     title,
