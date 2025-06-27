@@ -20,30 +20,43 @@ export async function POST(req: NextRequest) {
     }
 
     // Enhanced AI prompt for Central Valley specific job generation
-    const systemPrompt = `You are a veteran hiring manager with 20+ years of experience in California's Central Valley region (209, 916, 510 area codes). You specialize in creating job postings that attract local candidates who want stable work close to home.
+    const systemPrompt = `Your job is to write helpful, friendly job descriptions for working-class folks in California's Central Valley. Don't be corporate. Don't be too casual. Think 'Craigslist meets Indeed.'
 
-Generate a complete job posting from the user's description. Focus on:
-- Central Valley market rates and local business culture
-- Family-friendly, stable employment messaging  
-- Specific location within Stockton, Modesto, Fresno, Tracy, or nearby cities
-- Realistic salary ranges for the region
-- Clear requirements without being overly demanding
+You're a veteran hiring manager who knows the Central Valley (209, 916, 510 areas) inside and out. Write job posts that:
+- Sound professional yet conversational
+- Include real-world details and clear expectations
+- Target local workers who want steady jobs with supportive teams
+- Are under 400 words total
+- Feel legitimate and informative without being dry
+
+Always mention:
+- Commute context ("Easy drive from Highway 99", "Great for Stockton/Manteca locals")
+- Work environment details (outdoor? standing? early shifts?)
+- What makes this job stable and worthwhile
+- Clear next steps for applying`;
+
+    const userPrompt = `Write a job post for: ${prompt.trim()}
+
+The tone should be friendly but professional, targeting Central Valley workers who want a steady job, a supportive team, and clear expectations.
+
+Include:
+- A 2-sentence company intro (make one up if none provided, keep it local and authentic)
+- What you'll be doing (4-6 bullet points max, use "You'll be:" format)
+- Must be comfortable with (physical/environment expectations)
+- Nice to have qualifications (keep realistic, mention bilingual as plus if relevant)
+- How to apply section with clear next steps
 
 Return ONLY a JSON object with these exact fields:
 {
-  "title": "Professional job title",
-  "location": "Specific city, CA (e.g., Stockton, CA)",
-  "salary": "Hourly or annual rate (e.g., $17-19/hr or $35,000-40,000/year)",
-  "description": "2-3 paragraph description emphasizing local benefits and company culture",
-  "requirements": "Bullet-pointed requirements (realistic for Central Valley market)",
-  "contactMethod": "Professional email or phone number format",
-  "schedule": "Work schedule details (optional)",
-  "benefits": "Benefits offered (optional)"
-}
-
-Make it sound professional but approachable, emphasizing local roots and family-friendly workplace.`;
-
-    const userPrompt = `Create a job posting for: ${prompt.trim()}`;
+  "title": "Specific job title (not generic)",
+  "location": "City, CA",
+  "salary": "$XX-XX/hr or annual",
+  "description": "The complete job post text with all sections",
+  "requirements": "Extracted key requirements as bullet points",
+  "contactMethod": "Email or phone from the prompt",
+  "schedule": "Shift details if mentioned",
+  "benefits": "Any benefits mentioned"
+}`;
 
     try {
       // Try OpenAI first
@@ -105,30 +118,34 @@ Make it sound professional but approachable, emphasizing local roots and family-
   }
 }
 
-// Rule-based fallback job generation
+// Rule-based fallback job generation with improved format
 function generateFallbackJob(prompt: string): any {
   const lowerPrompt = prompt.toLowerCase();
   
   // Extract title from prompt
   let title = 'General Worker';
-  if (lowerPrompt.includes('warehouse')) title = 'Warehouse Associate';
-  else if (lowerPrompt.includes('cashier')) title = 'Cashier';
-  else if (lowerPrompt.includes('driver')) title = 'Driver';
-  else if (lowerPrompt.includes('retail') || lowerPrompt.includes('sales')) title = 'Sales Associate';
-  else if (lowerPrompt.includes('office') || lowerPrompt.includes('admin')) title = 'Administrative Assistant';
-  else if (lowerPrompt.includes('cook') || lowerPrompt.includes('kitchen')) title = 'Kitchen Staff';
-  else if (lowerPrompt.includes('clean')) title = 'Cleaner';
-  else if (lowerPrompt.includes('security')) title = 'Security Guard';
+  let jobType = 'general';
+  if (lowerPrompt.includes('warehouse')) { title = 'Warehouse Associate'; jobType = 'warehouse'; }
+  else if (lowerPrompt.includes('cashier')) { title = 'Cashier'; jobType = 'retail'; }
+  else if (lowerPrompt.includes('driver')) { title = 'Delivery Driver'; jobType = 'driver'; }
+  else if (lowerPrompt.includes('retail') || lowerPrompt.includes('sales')) { title = 'Sales Associate'; jobType = 'retail'; }
+  else if (lowerPrompt.includes('office') || lowerPrompt.includes('admin')) { title = 'Administrative Assistant'; jobType = 'office'; }
+  else if (lowerPrompt.includes('cook') || lowerPrompt.includes('kitchen')) { title = 'Line Cook'; jobType = 'kitchen'; }
+  else if (lowerPrompt.includes('clean')) { title = 'Janitor/Cleaner'; jobType = 'cleaning'; }
+  else if (lowerPrompt.includes('security')) { title = 'Security Officer'; jobType = 'security'; }
+  else if (lowerPrompt.includes('forklift')) { title = 'Forklift Operator'; jobType = 'warehouse'; }
   
   // Extract location
   let location = 'Stockton, CA';
   if (lowerPrompt.includes('modesto')) location = 'Modesto, CA';
   else if (lowerPrompt.includes('fresno')) location = 'Fresno, CA';
   else if (lowerPrompt.includes('tracy')) location = 'Tracy, CA';
+  else if (lowerPrompt.includes('lathrop')) location = 'Lathrop, CA';
+  else if (lowerPrompt.includes('manteca')) location = 'Manteca, CA';
   else if (lowerPrompt.includes('sacramento')) location = 'Sacramento, CA';
   
-  // Extract salary or use defaults
-  let salary = '$16-18/hr';
+  // Extract salary or use defaults based on job type
+  let salary = '$16-19/hr';
   const salaryMatch = prompt.match(/\$(\d+(?:\.\d+)?)/);
   if (salaryMatch) {
     const amount = parseFloat(salaryMatch[1]);
@@ -137,24 +154,134 @@ function generateFallbackJob(prompt: string): any {
     } else {
       salary = `$${amount}/hr`;
     }
+  } else {
+    // Default salaries by job type
+    if (jobType === 'warehouse') salary = '$17-20/hr';
+    else if (jobType === 'driver') salary = '$18-22/hr';
+    else if (jobType === 'office') salary = '$18-21/hr';
+    else if (jobType === 'security') salary = '$16-19/hr';
   }
   
   // Extract contact method if provided
-  let contactMethod = 'careers@company.com';
+  let contactMethod = 'hr@localcompany.com';
   const emailMatch = prompt.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
   const phoneMatch = prompt.match(/\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
   if (emailMatch) contactMethod = emailMatch[0];
   else if (phoneMatch) contactMethod = phoneMatch[0];
   
+  // Extract schedule details
+  let schedule = 'Full-time';
+  if (lowerPrompt.includes('night')) schedule = 'Night shift';
+  else if (lowerPrompt.includes('swing')) schedule = 'Swing shift';
+  else if (lowerPrompt.includes('weekend')) schedule = 'Weekends required';
+  else if (lowerPrompt.includes('part')) schedule = 'Part-time';
+  else if (lowerPrompt.includes('morning') || lowerPrompt.includes('early')) schedule = 'Early morning shift';
+  
+  // Generate job-specific descriptions
+  const jobDescriptions = {
+    warehouse: `We're a busy distribution center in ${location.split(',')[0]} looking for a reliable ${title} to join our team. We're locally owned and operated, with strong ties to the Central Valley community. Easy commute from Highway 99 or I-5.
+
+You'll be:
+• Loading and unloading trucks using pallet jacks or forklifts
+• Organizing inventory and maintaining warehouse cleanliness
+• Picking and packing orders accurately
+• Working as part of a team to meet daily goals
+• Following safety protocols at all times
+
+Must be comfortable with:
+• Standing and walking for full shifts
+• Lifting up to 50 pounds regularly
+• Working in a non-climate controlled warehouse
+• ${schedule === 'Early morning shift' ? 'Starting work at 5 AM' : 'Flexible scheduling'}
+
+Nice to have: Forklift certification, warehouse experience, bilingual (English/Spanish).`,
+    
+    retail: `Join our retail team in ${location.split(',')[0]}! We're a community-focused store that takes pride in serving our neighbors. Great for locals looking for steady work with a flexible schedule.
+
+You'll be:
+• Greeting customers with a friendly attitude
+• Operating cash register and handling transactions
+• Stocking shelves and maintaining store appearance
+• Answering customer questions about products
+• Working with team members to ensure smooth operations
+
+Must be comfortable with:
+• Standing for extended periods
+• Weekend and evening availability
+• Basic math and computer skills
+• Interacting with diverse customers
+
+Nice to have: Previous retail or customer service experience, bilingual abilities.`,
+    
+    driver: `We need dependable drivers to join our ${location.split(',')[0]} team. Perfect for someone who knows the Central Valley roads and wants to stay local - no long hauls or overnight trips.
+
+You'll be:
+• Making deliveries throughout the ${location.split(',')[0]} area
+• Loading and securing cargo in delivery vehicles
+• Maintaining delivery logs and collecting signatures
+• Providing excellent customer service at each stop
+• Performing basic vehicle inspections
+
+Must be comfortable with:
+• Valid CA driver's license with clean record
+• Lifting packages up to 50 pounds
+• Using GPS and delivery apps
+• Working independently with minimal supervision
+
+Nice to have: Commercial driving experience, knowledge of local routes, bilingual skills.`,
+    
+    security: `Join our security team protecting a ${location.split(',')[0]} facility. We're looking for observant, reliable individuals who take pride in keeping people and property safe.
+
+You'll be:
+• Monitoring facility entrances and checking credentials
+• Conducting regular patrols of the premises
+• Writing clear incident reports when needed
+• Responding to alarms and emergencies
+• Assisting employees and visitors with directions
+
+Must be comfortable with:
+• Standing and walking for extended periods
+• Working alone during quiet hours
+• ${schedule.includes('Night') ? 'Staying alert during overnight shifts' : 'Interacting professionally with employees'}
+• Basic computer skills for report writing
+
+Nice to have: Guard card, previous security experience, bilingual abilities.`,
+    
+    general: `We're hiring in ${location.split(',')[0]}! Looking for hardworking individuals to join our growing team. This is a great opportunity for someone seeking stable employment close to home.
+
+You'll be:
+• Performing various tasks as assigned by supervisors
+• Maintaining a clean and safe work environment
+• Working collaboratively with team members
+• Following company policies and procedures
+• Learning new skills on the job
+
+Must be comfortable with:
+• Physical work in various conditions
+• Following directions and staying on task
+• Reliable attendance and punctuality
+• Working as part of a team
+
+Nice to have: Related work experience, strong work ethic, bilingual skills.`
+  };
+  
+  const description = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
+  
+  // Add application instructions
+  const fullDescription = `${description}
+
+How to Apply: Send your resume to ${contactMethod} or ${contactMethod.includes('@') ? 'call us' : 'email us'} to schedule an interview. We typically respond within 2-3 business days. 
+
+Ready to start ASAP? ${contactMethod.includes('@') ? 'Mention "ready now" in your email subject line.' : 'Let us know when you call!'}`;
+  
   return {
     title,
     location,
     salary,
-    description: `Join our growing team in ${location.split(',')[0]}! We're looking for a reliable ${title.toLowerCase()} to join our family-owned business. This is a great opportunity for someone who wants steady work close to home with a company that values its employees.\n\nWe offer a supportive work environment where you can grow your skills and build a career. Our team has deep Central Valley roots and we understand what matters to local workers - stability, fair pay, and being part of something meaningful.`,
-    requirements: `• Must be 18 years or older\n• Reliable transportation to ${location.split(',')[0]}\n• Strong work ethic and positive attitude\n• Able to work in a team environment\n• Previous experience preferred but not required`,
+    description: fullDescription,
+    requirements: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Able to pass background check\n• ${jobType === 'driver' ? 'Valid CA driver\'s license' : 'Legal right to work in US'}`,
     contactMethod,
-    schedule: lowerPrompt.includes('night') ? 'Night shift' : 
-             lowerPrompt.includes('part') ? 'Part-time' : 'Full-time day shift',
-    benefits: 'Health benefits • Paid time off • Employee discounts • Growth opportunities'
+    schedule,
+    benefits: lowerPrompt.includes('benefit') ? 'Health insurance • Paid time off • 401k matching' : ''
   };
 }

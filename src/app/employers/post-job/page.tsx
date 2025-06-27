@@ -362,6 +362,60 @@ export default function PostJobPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Quick Enhancement Buttons */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quick Enhancements
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('Bilingual')) {
+                        handleInputChange('description', jobData.description + '\n\nBilingual (English/Spanish) preferred.');
+                      }
+                    }}
+                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                  >
+                    💬 Add "Bilingual preferred"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('commute')) {
+                        const city = jobData.location.split(',')[0];
+                        handleInputChange('description', jobData.description + `\n\nEasy commute from Highway 99, great for ${city} locals.`);
+                      }
+                    }}
+                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                  >
+                    🚛 Mention commute info
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.contactMethod.includes('call/text')) {
+                        handleInputChange('contactMethod', jobData.contactMethod + ' (call or text okay)');
+                      }
+                    }}
+                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                  >
+                    📱 Add call/text option
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('outdoor') && !jobData.description.includes('physical')) {
+                        handleInputChange('description', jobData.description + '\n\nThis is an active, physical job that includes outdoor work.');
+                      }
+                    }}
+                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                  >
+                    👷 Add outdoor/physical note
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Action Buttons */}
