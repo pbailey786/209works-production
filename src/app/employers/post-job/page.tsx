@@ -34,8 +34,6 @@ export default function PostJobPage() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [quickPrompt, setQuickPrompt] = useState('');
-  const [isQuickGenerating, setIsQuickGenerating] = useState(false);
   
   // Check if form is ready to publish
   const isReady = jobData.title && jobData.location && jobData.salary && jobData.contactMethod;
@@ -124,38 +122,10 @@ export default function PostJobPage() {
     }
   };
 
-  // Quick generate from preview area
-  const handleQuickGenerate = async () => {
-    if (!quickPrompt.trim()) return;
-    
-    setIsQuickGenerating(true);
-    try {
-      const response = await fetch('/api/employers/magic-job-creation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: quickPrompt.trim() })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setJobData(data.jobData);
-        setQuickPrompt('');
-      } else {
-        alert('Failed to generate. Please try again.');
-      }
-    } catch (error) {
-      console.error('Quick generate failed:', error);
-      alert('Failed to generate. Please try again.');
-    } finally {
-      setIsQuickGenerating(false);
-    }
-  };
-
   // Go back to start over
   const startOver = () => {
     setCurrentState('input');
     setPrompt('');
-    setQuickPrompt('');
     setJobData({
       title: '',
       location: '',
@@ -579,35 +549,10 @@ export default function PostJobPage() {
 
             {/* Right Side - Live Preview */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                <Eye className="w-5 h-5 mr-2 text-green-600" />
-                Preview
-              </h3>
-              
-              {/* Quick Prompt Area */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={quickPrompt}
-                  onChange={(e) => setQuickPrompt(e.target.value)}
-                  placeholder="Quick prompt..."
-                  className="text-sm px-3 py-1 border border-gray-300 rounded-lg w-40 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleQuickGenerate();
-                    }
-                  }}
-                />
-                <button
-                  onClick={handleQuickGenerate}
-                  disabled={!quickPrompt.trim() || isQuickGenerating}
-                  className="text-sm px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isQuickGenerating ? '...' : '✨'}
-                </button>
-              </div>
-            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <Eye className="w-5 h-5 mr-2 text-green-600" />
+              How It Looks to Central Valley Job Seekers
+            </h3>
 
             {!jobData.title ? (
               <div className="text-center py-12">
