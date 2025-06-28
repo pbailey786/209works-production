@@ -519,13 +519,85 @@ export default function PostJobPage() {
                   >
                     📈 <span className="ml-2">Add growth opportunities</span>
                   </button>
+
+                  {/* Row 6: Work Conditions & Perks */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('flexible') && !jobData.description.includes('work-life')) {
+                        handleInputChange('description', jobData.description + '\n\n⚖️ Flexible scheduling - work-life balance matters here!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-teal-50 hover:border-teal-300"
+                  >
+                    ⚖️ <span className="ml-2">Add flexible scheduling</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('uniform') && !jobData.description.includes('provided')) {
+                        handleInputChange('description', jobData.description + '\n\n👕 Uniforms and equipment provided - just bring yourself!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-pink-50 hover:border-pink-300"
+                  >
+                    👕 <span className="ml-2">Add "uniforms provided"</span>
+                  </button>
+
+                  {/* Row 7: Local Appeal */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('family business') && !jobData.description.includes('local')) {
+                        handleInputChange('description', jobData.description + '\n\n🏠 Local family business - we care about our Central Valley community!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-amber-50 hover:border-amber-300"
+                  >
+                    🏠 <span className="ml-2">Add "family business" appeal</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('no weekends') && !jobData.description.includes('Monday-Friday')) {
+                        handleInputChange('description', jobData.description + '\n\n📅 Monday-Friday schedule - keep your weekends free!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-cyan-50 hover:border-cyan-300"
+                  >
+                    📅 <span className="ml-2">Add "weekends free"</span>
+                  </button>
+
+                  {/* Row 8: Urgency & Incentives */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('hiring bonus') && !jobData.description.includes('sign-on')) {
+                        handleInputChange('description', jobData.description + '\n\n💸 $500 hiring bonus after 90 days - we invest in keepers!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-emerald-50 hover:border-emerald-300"
+                  >
+                    💸 <span className="ml-2">Add hiring bonus</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('interview today') && !jobData.description.includes('same day')) {
+                        handleInputChange('description', jobData.description + '\n\n🚀 Interviews this week - start Monday if you\'re the right fit!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-rose-50 hover:border-rose-300"
+                  >
+                    🚀 <span className="ml-2">Add "fast hiring" urgency</span>
+                  </button>
                 </div>
                 
                 {/* Pro Tip & Clear Button */}
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex-1 p-3 bg-blue-50 border border-blue-200 rounded-lg mr-3">
                     <p className="text-xs text-blue-800">
-                      💡 <strong>Pro Tip:</strong> Use 3-4 enhancements max. Popular combos: Training + Benefits + Team Culture, or Bilingual + Commute + Start Immediately
+                      💡 <strong>Pro Tip:</strong> Use 3-5 enhancements max. Hot combos: Training + Benefits + Hiring Bonus, or Bilingual + Family Business + Fast Hiring
                     </p>
                   </div>
                   <button

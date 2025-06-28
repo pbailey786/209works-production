@@ -174,7 +174,13 @@ export default function JobDetailsPage() {
               {job.description && (
                 <div className="mb-6">
                   <h4 className="font-medium text-gray-900 mb-2">Description</h4>
-                  <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
+                  <p className="text-gray-700 whitespace-pre-wrap">
+                    {job.description
+                      .replace(/\[CONTACT_EMAIL:.*?\]/g, '')
+                      .replace(/\[REQUIRES_DEGREE:.*?\]/g, '')
+                      .trim()
+                    }
+                  </p>
                 </div>
               )}
 
@@ -209,15 +215,32 @@ export default function JobDetailsPage() {
                   <span>View Public Listing</span>
                 </Link>
                 <Link
-                  href={`/employers/job/${job.id}/edit`}
+                  href={`/employers/my-jobs`}
                   className="w-full flex items-center justify-center space-x-2 border border-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50"
                 >
                   <Edit className="w-4 h-4" />
-                  <span>Edit Job</span>
+                  <span>Manage Jobs</span>
                 </Link>
-                <button className="w-full flex items-center justify-center space-x-2 border border-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50">
+                <button 
+                  onClick={() => {
+                    const jobUrl = `${window.location.origin}/jobs/${job.id}`;
+                    navigator.clipboard.writeText(jobUrl).then(() => {
+                      alert('Job link copied to clipboard!');
+                    }).catch(() => {
+                      // Fallback for older browsers
+                      const textArea = document.createElement('textarea');
+                      textArea.value = jobUrl;
+                      document.body.appendChild(textArea);
+                      textArea.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(textArea);
+                      alert('Job link copied to clipboard!');
+                    });
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 border border-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50"
+                >
                   <Share2 className="w-4 h-4" />
-                  <span>Share Job</span>
+                  <span>Copy Job Link</span>
                 </button>
               </div>
             </div>
@@ -246,13 +269,20 @@ export default function JobDetailsPage() {
 
             {isPublished && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Next Steps</h3>
-                <ul className="text-blue-800 text-sm space-y-2">
+                <h3 className="text-lg font-semibold text-blue-900 mb-3">Next Steps</h3>
+                <ul className="text-blue-800 text-sm space-y-2 mb-4">
                   <li>• Monitor applications as they come in</li>
                   <li>• Share your job on social media</li>
                   <li>• Check back for candidate messages</li>
                   <li>• Review and shortlist top applicants</li>
                 </ul>
+                <Link
+                  href="/employers/post-job"
+                  className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <span>➕</span>
+                  <span>Post Another Job</span>
+                </Link>
               </div>
             )}
           </div>
