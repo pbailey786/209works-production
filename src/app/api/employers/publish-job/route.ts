@@ -45,24 +45,28 @@ export async function POST(req: NextRequest) {
 
     // Parse salary for database storage
     const parseSalary = (salaryText: string) => {
+      if (!salaryText) return null;
       const match = salaryText.match(/\$?(\d+(?:\.\d+)?)/);
       return match ? parseFloat(match[1]) : null;
     };
 
-    const salaryMin = parseSalary(salary);
-    const salaryMax = salary.includes('-') ? parseSalary(salary.split('-')[1]) : salaryMin;
+    const salaryMin = parseSalary(salary) || 0;
+    const salaryMax = salary?.includes('-') ? (parseSalary(salary.split('-')[1]) || salaryMin) : salaryMin;
 
     // Generate embeddings for job search (optional AI enhancement)
     let embeddings = null;
     try {
-      const searchText = `${title} ${location} ${description || ''} ${requirements || ''}`.trim();
-      const embeddingResponse = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: searchText
-      });
-      embeddings = embeddingResponse.data[0]?.embedding;
+      if (openai) {
+        const searchText = `${title} ${location} ${description || ''} ${requirements || ''}`.trim();
+        const embeddingResponse = await openai.embeddings.create({
+          model: 'text-embedding-3-small',
+          input: searchText
+        });
+        embeddings = embeddingResponse.data[0]?.embedding;
+      }
     } catch (error) {
-      console.log('Embedding generation failed, job will still be published');
+      console.log('Embedding generation failed, job will still be published:', error);
+      // Continue without embeddings
     }
 
     // Create job posting - store contact info and metadata in hidden tags
@@ -78,6 +82,16 @@ export async function POST(req: NextRequest) {
       finalDescription += `\n[REQUIRES_DEGREE:true]`;
     }
 
+    // Log the data we're about to save
+    console.log('Creating job with data:', {
+      title: title.trim(),
+      location: location.trim(),
+      salaryMin,
+      salaryMax,
+      employerId: user.id,
+      hasEmbedding: !!embeddings
+    });
+
     const job = await prisma.job.create({
       data: {
         title: title.trim(),
@@ -88,8 +102,8 @@ export async function POST(req: NextRequest) {
         source: '209.works',
         url: '',
         postedAt: new Date(),
-        salaryMin,
-        salaryMax,
+        salaryMin: Math.round(salaryMin), // Ensure integer
+        salaryMax: Math.round(salaryMax), // Ensure integer
         jobType: 'full_time', // Default to full time
         status: 'active',
         employerId: user.id,
