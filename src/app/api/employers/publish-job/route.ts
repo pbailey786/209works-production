@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const requestBody = await req.json();
     console.log('Publish job request body:', JSON.stringify(requestBody, null, 2));
     
-    const { title, location, salary, description, requirements, contactMethod } = requestBody;
+    const { title, location, salary, description, requirements, contactMethod, requiresDegree } = requestBody;
     
     // Validate required fields
     if (!title || !location || !salary) {
@@ -65,12 +65,17 @@ export async function POST(req: NextRequest) {
       console.log('Embedding generation failed, job will still be published');
     }
 
-    // Create job posting - store contact info in a hidden way for email forwarding
+    // Create job posting - store contact info and metadata in hidden tags
     let finalDescription = description?.trim() || '';
     
     // Add hidden contact info for email forwarding (not displayed to users)
     if (contactMethod?.trim()) {
       finalDescription += `\n\n[CONTACT_EMAIL:${contactMethod.trim()}]`;
+    }
+    
+    // Add hidden degree requirement for filtering (not displayed to users)
+    if (requiresDegree) {
+      finalDescription += `\n[REQUIRES_DEGREE:true]`;
     }
 
     const job = await prisma.job.create({

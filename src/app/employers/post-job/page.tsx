@@ -14,6 +14,7 @@ interface JobData {
   contactMethod: string;
   schedule?: string;
   benefits?: string;
+  requiresDegree?: boolean;
 }
 
 type GenerationState = 'input' | 'generating' | 'editing' | 'publishing';
@@ -30,13 +31,23 @@ export default function PostJobPage() {
     salary: '',
     description: '',
     requirements: '',
-    contactMethod: ''
+    contactMethod: '',
+    requiresDegree: false
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isRequirementsExpanded, setIsRequirementsExpanded] = useState(false);
   
   // Check if form is ready to publish
   const isReady = jobData.title && jobData.location && jobData.salary && jobData.contactMethod;
+
+  // Helper functions for collapsible content
+  const isContentLong = (text: string, limit = 300) => text.length > limit;
+  const truncateContent = (text: string, limit = 300) => {
+    if (text.length <= limit) return text;
+    return text.substring(0, limit) + '...';
+  };
 
   // Authentication check
   if (!isLoaded) {
@@ -88,7 +99,7 @@ export default function PostJobPage() {
   };
 
   // Handle input changes in edit mode
-  const handleInputChange = (field: keyof JobData, value: string) => {
+  const handleInputChange = (field: keyof JobData, value: string | boolean) => {
     setJobData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -132,7 +143,8 @@ export default function PostJobPage() {
       salary: '',
       description: '',
       requirements: '',
-      contactMethod: ''
+      contactMethod: '',
+      requiresDegree: false
     });
   };
 
@@ -363,6 +375,24 @@ export default function PostJobPage() {
                 </div>
               </div>
 
+              {/* Degree Requirement Checkbox */}
+              <div>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={jobData.requiresDegree || false}
+                    onChange={(e) => handleInputChange('requiresDegree', e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    🎓 This position requires a college degree
+                  </span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1 ml-6">
+                  This helps us match qualified candidates and filter applications
+                </p>
+              </div>
+
               {/* Power Enhancement Buttons */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -585,16 +615,55 @@ export default function PostJobPage() {
                 {/* Description */}
                 {jobData.description && (
                   <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">Job Description</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap">{jobData.description}</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">Job Description</h4>
+                      {isContentLong(jobData.description) && (
+                        <button
+                          onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                          className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
+                        >
+                          {isDescriptionExpanded ? '▲ Show less' : '▼ Show more'}
+                        </button>
+                      )}
+                    </div>
+                    <div className={`text-gray-700 whitespace-pre-wrap ${isContentLong(jobData.description) && !isDescriptionExpanded ? 'max-h-24 overflow-hidden' : ''}`}>
+                      {isContentLong(jobData.description) && !isDescriptionExpanded 
+                        ? truncateContent(jobData.description)
+                        : jobData.description
+                      }
+                    </div>
                   </div>
                 )}
 
                 {/* Requirements */}
                 {jobData.requirements && (
                   <div className="mb-4">
-                    <h4 className="font-semibold text-gray-900 mb-2">Requirements</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap">{jobData.requirements}</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900">Requirements</h4>
+                      {isContentLong(jobData.requirements, 200) && (
+                        <button
+                          onClick={() => setIsRequirementsExpanded(!isRequirementsExpanded)}
+                          className="text-xs text-blue-600 hover:text-blue-800 flex items-center"
+                        >
+                          {isRequirementsExpanded ? '▲ Show less' : '▼ Show more'}
+                        </button>
+                      )}
+                    </div>
+                    <div className={`text-gray-700 whitespace-pre-wrap ${isContentLong(jobData.requirements, 200) && !isRequirementsExpanded ? 'max-h-20 overflow-hidden' : ''}`}>
+                      {isContentLong(jobData.requirements, 200) && !isRequirementsExpanded 
+                        ? truncateContent(jobData.requirements, 200)
+                        : jobData.requirements
+                      }
+                    </div>
+                  </div>
+                )}
+
+                {/* Degree Requirement Badge */}
+                {jobData.requiresDegree && (
+                  <div className="mb-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                      🎓 College Degree Required
+                    </span>
                   </div>
                 )}
 
