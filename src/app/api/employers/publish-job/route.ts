@@ -12,10 +12,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { title, location, salary, description, requirements, contactMethod } = await req.json();
+    const requestBody = await req.json();
+    console.log('Publish job request body:', JSON.stringify(requestBody, null, 2));
+    
+    const { title, location, salary, description, requirements, contactMethod } = requestBody;
     
     // Validate required fields
     if (!title || !location || !salary) {
+      console.error('Missing required fields:', { title: !!title, location: !!location, salary: !!salary });
       return NextResponse.json({ 
         error: 'Job title, location, and salary are required' 
       }, { status: 400 });
@@ -100,18 +104,26 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Publish job error:', error);
     
-    // Handle specific database errors
+    // Log the error details for debugging
     if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
       if (error.message.includes('Unique constraint')) {
         return NextResponse.json(
           { error: 'A job with similar details already exists' },
           { status: 400 }
         );
       }
+      
+      // Log specific Prisma errors
+      if (error.message.includes('Prisma')) {
+        console.error('Prisma error details:', JSON.stringify(error, null, 2));
+      }
     }
 
     return NextResponse.json(
-      { error: 'Failed to publish job. Please try again.' },
+      { error: `Failed to publish job: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     );
   }

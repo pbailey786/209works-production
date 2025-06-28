@@ -393,56 +393,153 @@ export default function PostJobPage() {
                 </div>
               </div>
 
-              {/* Quick Enhancement Buttons */}
+              {/* Power Enhancement Buttons */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Quick Enhancements
+                  Power Enhancements - One-Click Job Upgrades
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Row 1: Language & Local */}
                   <button
                     type="button"
                     onClick={() => {
                       if (!jobData.description.includes('Bilingual')) {
-                        handleInputChange('description', jobData.description + '\n\nBilingual (English/Spanish) preferred.');
+                        handleInputChange('description', jobData.description + '\n\nBilingual (English/Spanish) strongly preferred for this role.');
                       }
                     }}
-                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-blue-50 hover:border-blue-300"
                   >
-                    💬 Add "Bilingual preferred"
+                    💬 <span className="ml-2">Add bilingual requirement</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      if (!jobData.description.includes('commute')) {
-                        const city = jobData.location.split(',')[0];
-                        handleInputChange('description', jobData.description + `\n\nEasy commute from Highway 99, great for ${city} locals.`);
+                      const city = jobData.location.split(',')[0];
+                      if (!jobData.description.includes('commute') && !jobData.description.includes('Highway')) {
+                        handleInputChange('description', jobData.description + `\n\nEasy commute from Highway 99 - perfect for ${city} and surrounding areas.`);
                       }
                     }}
-                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-blue-50 hover:border-blue-300"
                   >
-                    🚛 Mention commute info
+                    🛣️ <span className="ml-2">Add commute details</span>
+                  </button>
+
+                  {/* Row 2: Work Environment */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('training') && !jobData.description.includes('train')) {
+                        handleInputChange('description', jobData.description + '\n\n✅ Full training provided - no experience required!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-green-50 hover:border-green-300"
+                  >
+                    🎓 <span className="ml-2">Add "training provided"</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      if (!jobData.contactMethod.includes('call/text')) {
-                        handleInputChange('contactMethod', jobData.contactMethod + ' (call or text okay)');
+                      if (!jobData.description.includes('overtime') && !jobData.description.includes('OT')) {
+                        handleInputChange('description', jobData.description + '\n\n💰 Overtime opportunities available - earn extra!');
                       }
                     }}
-                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-green-50 hover:border-green-300"
                   >
-                    📱 Add call/text option
+                    💰 <span className="ml-2">Add overtime opportunities</span>
+                  </button>
+
+                  {/* Row 3: Benefits & Perks */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('benefits') && !jobData.description.includes('health')) {
+                        handleInputChange('description', jobData.description + '\n\n🏥 Benefits: Health insurance, paid time off, and 401k matching.');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-purple-50 hover:border-purple-300"
+                  >
+                    🏥 <span className="ml-2">Add benefits package</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => {
-                      if (!jobData.description.includes('outdoor') && !jobData.description.includes('physical')) {
-                        handleInputChange('description', jobData.description + '\n\nThis is an active, physical job that includes outdoor work.');
+                      if (!jobData.description.includes('start immediately') && !jobData.description.includes('ASAP')) {
+                        handleInputChange('description', jobData.description + '\n\n⚡ Start immediately! We have multiple openings.');
                       }
                     }}
-                    className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-orange-50 hover:border-orange-300"
                   >
-                    👷 Add outdoor/physical note
+                    ⚡ <span className="ml-2">Add "start immediately"</span>
+                  </button>
+
+                  {/* Row 4: Work Environment Specifics */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('team') && !jobData.description.includes('family')) {
+                        handleInputChange('description', jobData.description + '\n\n👥 Join a tight-knit team that feels like family.');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-yellow-50 hover:border-yellow-300"
+                  >
+                    👥 <span className="ml-2">Add team culture</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('physical') && !jobData.description.includes('active')) {
+                        handleInputChange('description', jobData.description + '\n\n💪 This is an active, physical role - great for staying fit!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-red-50 hover:border-red-300"
+                  >
+                    💪 <span className="ml-2">Add physical work note</span>
+                  </button>
+
+                  {/* Row 5: Special Additions */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('drug test') && !jobData.description.includes('background')) {
+                        handleInputChange('requirements', (jobData.requirements || '') + '\n• Must pass background check and drug screening');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 hover:border-gray-400"
+                  >
+                    🔒 <span className="ml-2">Add screening requirements</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!jobData.description.includes('advancement') && !jobData.description.includes('promotion')) {
+                        handleInputChange('description', jobData.description + '\n\n📈 Clear advancement opportunities - promote from within!');
+                      }
+                    }}
+                    className="inline-flex items-center justify-start px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-indigo-50 hover:border-indigo-300"
+                  >
+                    📈 <span className="ml-2">Add growth opportunities</span>
+                  </button>
+                </div>
+                
+                {/* Pro Tip & Clear Button */}
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="flex-1 p-3 bg-blue-50 border border-blue-200 rounded-lg mr-3">
+                    <p className="text-xs text-blue-800">
+                      💡 <strong>Pro Tip:</strong> Use 3-4 enhancements max. Popular combos: Training + Benefits + Team Culture, or Bilingual + Commute + Start Immediately
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Reset to original AI generated content
+                      setCurrentState('generating');
+                      setTimeout(() => {
+                        generateJobPost();
+                      }, 100);
+                    }}
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 whitespace-nowrap"
+                  >
+                    🔄 Reset
                   </button>
                 </div>
               </div>
