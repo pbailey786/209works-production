@@ -29,7 +29,8 @@
       "Bash(git push:*)",
       "Bash(npx prisma:*)",
       "Bash(curl:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:resources.workable.com)"
     ],
     "deny": []
   }

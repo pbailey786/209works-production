@@ -33,21 +33,46 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Enhanced AI prompt for Central Valley specific job generation
-    const systemPrompt = `Your job is to write helpful, friendly job descriptions for working-class folks in California's Central Valley. Don't be corporate. Don't be too casual. Think 'Craigslist meets Indeed.'
+    // Enhanced AI prompt with professional examples
+    const systemPrompt = `You're a professional job posting writer for Central Valley employers. Study these examples of well-written job posts and match their quality and structure:
 
-You're a veteran hiring manager who knows the Central Valley (209, 916, 510 areas) inside and out. Write job posts that:
-- Sound professional yet conversational
-- Include real-world details and clear expectations
-- Target local workers who want steady jobs with supportive teams
-- Are under 400 words total
-- Feel legitimate and informative without being dry
+EXAMPLE 1 - Warehouse Associate:
+"About Our Company: We are seeking a capable Warehouse Associate to support our company's warehouse operations.
 
-Always mention:
-- Commute context ("Easy drive from Highway 99", "Great for Stockton/Manteca locals")
-- Work environment details (outdoor? standing? early shifts?)
-- What makes this job stable and worthwhile
-- Clear next steps for applying`;
+What You'll Do:
+• Process, package, and ship orders accurately
+• Organize stocks and maintain inventory
+• Inspect products for defects and damages
+• Receive and place incoming inventory items appropriately
+• Operate forklift, hand truck, pallet jack safely
+• Maintain a clean and organized warehouse daily
+
+What We're Looking For:
+• Proven warehouse experience preferred
+• Ability to operate warehouse equipment
+• Strong organizational skills
+• Ability to lift and move heavy products
+• High school diploma
+• Team player with problem-solving abilities"
+
+EXAMPLE 2 - Customer Service:
+"Join Our Team! We are seeking a customer-oriented service representative.
+
+Your Daily Impact:
+• Manage large volumes of incoming phone calls with professionalism
+• Generate sales leads and identify customer needs
+• Build sustainable customer relationships through exceptional service
+• Provide accurate information using CRM systems
+• Handle customer complaints and provide solutions
+• Maintain comprehensive customer interaction records
+
+What You Bring:
+• Proven customer support experience
+• Strong phone and active listening skills
+• Excellent communication and multi-tasking abilities
+• Patient, empathetic, and passionate about helping others"
+
+Write job posts with this same level of professionalism, detail, and structure. Always use bullet points, be specific about responsibilities, and maintain a professional yet approachable tone. Focus on Central Valley (209, 916, 510 areas) context.`;
 
     const userPrompt = `Write a job post for: ${prompt.trim()}
 
@@ -57,27 +82,30 @@ ${user?.industry ? `Industry: ${user.industry}` : ''}
 
 The tone should be friendly but professional, targeting Central Valley workers who want a steady job, a supportive team, and clear expectations.
 
-Include these sections:
+Write a professional job post following this exact structure:
 
-1. Company intro (2 sentences max - local, authentic, Central Valley focused)
+1. **Company intro** (1-2 sentences) - Professional opening about the company and role
 
-2. "What you'll be doing:" (5-7 bullet points)
-   - Start each with an action verb
-   - Be specific but concise
-   - Include both routine tasks AND growth opportunities
+2. **"What You'll Do:" or "Your Daily Impact:"** (6-8 detailed bullet points)
+   - Use action verbs (Process, Manage, Organize, Assist, etc.)
+   - Be specific about actual tasks and responsibilities
+   - Include equipment, systems, or tools used
+   - Mention customer interaction if relevant
+   - Add growth/learning opportunities
 
-3. "What we need:" (4-6 bullet points)
-   - Start with absolute must-haves
-   - Include soft skills (reliability, teamwork)
-   - End with nice-to-haves (experience, bilingual)
+3. **"What We're Looking For:" or "What You Bring:"** (5-7 bullet points)
+   - Start with education/experience requirements
+   - Include specific skills and abilities
+   - Mention physical requirements if applicable
+   - Add personality traits and soft skills
+   - End with preferred qualifications
 
-4. "The details:" (3-4 bullet points)
-   - Schedule/shift information
-   - Physical requirements if any
-   - Work environment (indoor/outdoor, team size)
-   - Any special conditions
+4. **Optional "The Details:"** (only if shift/environment details needed)
+   - Schedule information
+   - Work environment specifics
+   - Special conditions or benefits
 
-Keep each bullet point to ONE line (under 70 characters). Be specific but not overwhelming.
+Make each bullet point substantive (not just 5 words). Write like the professional examples above.
 DO NOT include "How to Apply" sections - applications will be handled through the platform.
 
 Return ONLY a JSON object with these exact fields:

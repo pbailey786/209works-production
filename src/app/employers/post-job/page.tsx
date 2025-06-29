@@ -353,24 +353,23 @@ export default function PostJobPage() {
                 />
               </div>
 
-              {/* Contact Method */}
+              {/* Contact Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <User className="w-4 h-4 inline mr-1" />
-                  How to Apply *
+                  Email for Applications *
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   value={jobData.contactMethod}
                   onChange={(e) => handleInputChange('contactMethod', e.target.value)}
-                  placeholder="your-email@company.com or (555) 123-4567"
+                  placeholder="your-email@company.com"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-                <div className="mt-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-xs text-blue-800">
-                    📧 <strong>Email applications:</strong> Candidates will apply through 209jobs AND we'll forward their application to your email<br/>
-                    📱 <strong>Phone applications:</strong> Candidates will call you directly<br/>
-                    🌟 <strong>Bonus:</strong> All applications get saved to your employer dashboard for easy tracking
+                <div className="mt-2 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-xs text-green-800">
+                    ✅ <strong>Dual Application System:</strong> Candidates apply through 209jobs (tracked in your dashboard) AND you get an email copy with their details<br/>
+                    📊 <strong>Benefits:</strong> Never miss an application • Easy to import to your existing systems • Full applicant tracking
                   </p>
                 </div>
               </div>
@@ -521,7 +520,7 @@ export default function PostJobPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-semibold text-green-900 mb-1">Ready to Apply?</h4>
-                      <p className="text-green-800 text-sm">Submit your application through 209jobs</p>
+                      <p className="text-green-800 text-sm">Apply online • Employer gets email copy • Easy tracking</p>
                     </div>
                     <button className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
                       📝 Apply Now
@@ -530,7 +529,7 @@ export default function PostJobPage() {
                   {jobData.contactMethod && (
                     <div className="mt-3 pt-3 border-t border-green-200">
                       <span className="text-xs text-green-700">
-                        ✉️ Applications go to our CRM + employer gets email notification
+                        ✉️ Email notifications sent to: {jobData.contactMethod}
                       </span>
                     </div>
                   )}
