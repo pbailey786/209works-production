@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { openai } from '@/lib/ai';
+import { prisma } from '@/lib/database/prisma';
 
 export const maxDuration = 30;
 
@@ -12,6 +13,19 @@ export async function POST(req: NextRequest) {
     }
 
     const { prompt } = await req.json();
+    
+    // Get employer profile data for smart defaults
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+      select: {
+        companyName: true,
+        businessLocation: true,
+        contactEmail: true,
+        contactPhone: true,
+        industry: true
+      }
+    });
     
     if (!prompt?.trim()) {
       return NextResponse.json({ 
@@ -37,14 +51,33 @@ Always mention:
 
     const userPrompt = `Write a job post for: ${prompt.trim()}
 
+${user?.companyName ? `Company: ${user.companyName}` : ''}
+${user?.businessLocation ? `Default Location: ${user.businessLocation}` : ''}
+${user?.industry ? `Industry: ${user.industry}` : ''}
+
 The tone should be friendly but professional, targeting Central Valley workers who want a steady job, a supportive team, and clear expectations.
 
-Include:
-- A 2-sentence company intro (make one up if none provided, keep it local and authentic)
-- What you'll be doing (4-6 bullet points max, use "You'll be:" format)
-- Must be comfortable with (physical/environment expectations)
-- Nice to have qualifications (keep realistic, mention bilingual as plus if relevant)
+Include these sections:
 
+1. Company intro (2 sentences max - local, authentic, Central Valley focused)
+
+2. "What you'll be doing:" (5-7 bullet points)
+   - Start each with an action verb
+   - Be specific but concise
+   - Include both routine tasks AND growth opportunities
+
+3. "What we need:" (4-6 bullet points)
+   - Start with absolute must-haves
+   - Include soft skills (reliability, teamwork)
+   - End with nice-to-haves (experience, bilingual)
+
+4. "The details:" (3-4 bullet points)
+   - Schedule/shift information
+   - Physical requirements if any
+   - Work environment (indoor/outdoor, team size)
+   - Any special conditions
+
+Keep each bullet point to ONE line (under 70 characters). Be specific but not overwhelming.
 DO NOT include "How to Apply" sections - applications will be handled through the platform.
 
 Return ONLY a JSON object with these exact fields:
@@ -109,7 +142,7 @@ Return ONLY a JSON object with these exact fields:
       console.error('AI generation failed:', aiError);
       
       // Rule-based fallback system - always works
-      const fallbackJobData = generateFallbackJob(prompt.trim());
+      const fallbackJobData = generateFallbackJob(prompt.trim(), user);
       
       return NextResponse.json({
         success: true,
@@ -128,7 +161,7 @@ Return ONLY a JSON object with these exact fields:
 }
 
 // Rule-based fallback job generation with improved format
-function generateFallbackJob(prompt: string): any {
+function generateFallbackJob(prompt: string, user: any): any {
   const lowerPrompt = prompt.toLowerCase();
   
   // Extract title from prompt
@@ -144,8 +177,8 @@ function generateFallbackJob(prompt: string): any {
   else if (lowerPrompt.includes('security')) { title = 'Security Officer'; jobType = 'security'; }
   else if (lowerPrompt.includes('forklift')) { title = 'Forklift Operator'; jobType = 'warehouse'; }
   
-  // Extract location
-  let location = 'Stockton, CA';
+  // Extract location - use user's business location as default
+  let location = user?.businessLocation || 'Stockton, CA';
   if (lowerPrompt.includes('modesto')) location = 'Modesto, CA';
   else if (lowerPrompt.includes('fresno')) location = 'Fresno, CA';
   else if (lowerPrompt.includes('tracy')) location = 'Tracy, CA';
@@ -171,8 +204,8 @@ function generateFallbackJob(prompt: string): any {
     else if (jobType === 'security') salary = '$16-19/hr';
   }
   
-  // Extract contact method if provided
-  let contactMethod = 'hr@localcompany.com';
+  // Extract contact method if provided - use user's contact info as default
+  let contactMethod = user?.contactEmail || user?.contactPhone || 'hr@localcompany.com';
   const emailMatch = prompt.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
   const phoneMatch = prompt.match(/\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
   if (emailMatch) contactMethod = emailMatch[0];
@@ -186,92 +219,136 @@ function generateFallbackJob(prompt: string): any {
   else if (lowerPrompt.includes('part')) schedule = 'Part-time';
   else if (lowerPrompt.includes('morning') || lowerPrompt.includes('early')) schedule = 'Early morning shift';
   
-  // Generate job-specific descriptions
+  // Generate job-specific descriptions with company context
+  const companyIntro = user?.companyName 
+    ? `${user.companyName} is looking for` 
+    : `We're a growing local business in ${location.split(',')[0]} looking for`;
+  
   const jobDescriptions = {
-    warehouse: `We're a busy distribution center in ${location.split(',')[0]} looking for a reliable ${title} to join our team. We're locally owned and operated, with strong ties to the Central Valley community. Easy commute from Highway 99 or I-5.
+    warehouse: `${companyIntro} reliable warehouse workers. ${user?.companyName ? 'We have' : 'Family-owned with'} strong Central Valley roots and value hard work and treating our team right.
 
-You'll be:
-• Loading and unloading trucks using pallet jacks or forklifts
-• Organizing inventory and maintaining warehouse cleanliness
-• Picking and packing orders accurately
-• Working as part of a team to meet daily goals
-• Following safety protocols at all times
+What you'll be doing:
+• Load and unload trucks using pallet jacks and hand trucks
+• Pick and pack customer orders with accuracy
+• Organize inventory and maintain warehouse cleanliness  
+• Operate warehouse equipment safely (training provided)
+• Work with team to meet daily shipping goals
+• Assist with inventory counts and cycle checks
+• Help train new team members as you grow
 
-Must be comfortable with:
-• Standing and walking for full shifts
-• Lifting up to 50 pounds regularly
-• Working in a non-climate controlled warehouse
-• ${schedule === 'Early morning shift' ? 'Starting work at 5 AM' : 'Flexible scheduling'}
+What we need:
+• Reliable transportation to ${location.split(',')[0]}
+• Ability to lift 50 lbs repeatedly throughout shift
+• Strong work ethic and positive attitude
+• Basic math skills for counting inventory
+• Previous warehouse experience (preferred but not required)
+• Bilingual English/Spanish is a plus
 
-Nice to have: Forklift certification, warehouse experience, bilingual (English/Spanish).`,
+The details:
+• ${schedule === 'Early morning shift' ? '5 AM - 1:30 PM shift' : 'Full-time day shift'}
+• Non-climate controlled warehouse environment
+• 10-person team in 50,000 sq ft facility
+• Safety shoes required (we provide discount program)`,
     
-    retail: `Join our retail team in ${location.split(',')[0]}! We're a community-focused store that takes pride in serving our neighbors. Great for locals looking for steady work with a flexible schedule.
+    retail: `Join our ${location.split(',')[0]} retail team! ${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} a community staple that's been serving Central Valley families for years. Looking for friendly folks who enjoy helping neighbors find what they need.
 
-You'll be:
-• Greeting customers with a friendly attitude
-• Operating cash register and handling transactions
-• Stocking shelves and maintaining store appearance
-• Answering customer questions about products
-• Working with team members to ensure smooth operations
+What you'll be doing:
+• Greet and assist customers with product selection
+• Operate POS system and handle cash/card transactions
+• Stock shelves and maintain attractive displays
+• Answer product questions and make recommendations
+• Process returns and exchanges professionally
+• Keep store clean and organized throughout shift
+• Support teammates during busy periods
 
-Must be comfortable with:
-• Standing for extended periods
-• Weekend and evening availability
-• Basic math and computer skills
-• Interacting with diverse customers
+What we need:
+• Friendly personality and genuine desire to help
+• Weekend and evening availability required
+• Basic math skills for handling money
+• Ability to stand/walk for entire shift
+• Retail or customer service experience preferred
+• Bilingual English/Spanish strongly desired
 
-Nice to have: Previous retail or customer service experience, bilingual abilities.`,
+The details:
+• Rotating schedule (must have open availability)
+• Climate-controlled retail environment
+• 15-20 person team across all shifts
+• Employee discount on all merchandise`,
     
-    driver: `We need dependable drivers to join our ${location.split(',')[0]} team. Perfect for someone who knows the Central Valley roads and wants to stay local - no long hauls or overnight trips.
+    driver: `${user?.companyName || 'We'} need${user?.companyName ? 's' : ''} dependable drivers to join our ${location.split(',')[0]} team. Perfect for someone who knows the Central Valley roads and wants to stay local - no long hauls or overnight trips.
 
-You'll be:
-• Making deliveries throughout the ${location.split(',')[0]} area
-• Loading and securing cargo in delivery vehicles
-• Maintaining delivery logs and collecting signatures
-• Providing excellent customer service at each stop
-• Performing basic vehicle inspections
+What you'll be doing:
+• Make local deliveries throughout ${location.split(',')[0]} area
+• Load and secure cargo safely in delivery vehicles
+• Maintain accurate delivery logs and collect signatures
+• Provide friendly customer service at each stop
+• Perform pre-trip vehicle safety inspections
+• Plan efficient routes to meet delivery deadlines
+• Handle packages with care and professionalism
 
-Must be comfortable with:
+What we need:
 • Valid CA driver's license with clean record
-• Lifting packages up to 50 pounds
-• Using GPS and delivery apps
-• Working independently with minimal supervision
+• Ability to lift packages up to 50 pounds repeatedly
+• Smartphone skills for GPS and delivery apps
+• Self-motivated with minimal supervision needed
+• Previous delivery or driving experience (preferred)
+• Bilingual English/Spanish is a plus
 
-Nice to have: Commercial driving experience, knowledge of local routes, bilingual skills.`,
+The details:
+• ${schedule === 'Early morning shift' ? '4 AM - 12 PM shift' : 'Full-time day shift'}
+• Company vehicle provided for deliveries
+• Average 15-20 stops per day
+• Weekly pay with performance bonuses`,
     
-    security: `Join our security team protecting a ${location.split(',')[0]} facility. We're looking for observant, reliable individuals who take pride in keeping people and property safe.
+    security: `Join ${user?.companyName ? `${user.companyName}'s` : 'our'} security team protecting a ${location.split(',')[0]} facility. We're looking for observant, reliable individuals who take pride in keeping people and property safe.
 
-You'll be:
-• Monitoring facility entrances and checking credentials
-• Conducting regular patrols of the premises
-• Writing clear incident reports when needed
-• Responding to alarms and emergencies
-• Assisting employees and visitors with directions
+What you'll be doing:
+• Monitor facility entrances and check credentials
+• Conduct hourly patrols of premises and parking areas
+• Write detailed incident reports when needed
+• Respond quickly to alarms and emergencies
+• Assist employees and visitors with directions
+• Operate security cameras and access control systems
+• Maintain professional presence at all times
 
-Must be comfortable with:
-• Standing and walking for extended periods
-• Working alone during quiet hours
-• ${schedule.includes('Night') ? 'Staying alert during overnight shifts' : 'Interacting professionally with employees'}
-• Basic computer skills for report writing
+What we need:
+• High school diploma or equivalent
+• Ability to stand/walk for entire shift
+• Strong written and verbal communication skills
+• Clean background check required
+• Valid CA Guard Card (or ability to obtain)
+• Previous security experience preferred
 
-Nice to have: Guard card, previous security experience, bilingual abilities.`,
+The details:
+• ${schedule.includes('Night') ? 'Night shift (10 PM - 6 AM)' : 'Day shift (6 AM - 2 PM)'}
+• Solo posts with radio backup support
+• Indoor/outdoor patrol responsibilities
+• Uniform and equipment provided`,
     
-    general: `We're hiring in ${location.split(',')[0]}! Looking for hardworking individuals to join our growing team. This is a great opportunity for someone seeking stable employment close to home.
+    general: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} hiring in ${location.split(',')[0]}! Looking for hardworking individuals to join our growing team. This is a great opportunity for someone seeking stable employment close to home.
 
-You'll be:
-• Performing various tasks as assigned by supervisors
-• Maintaining a clean and safe work environment
-• Working collaboratively with team members
-• Following company policies and procedures
-• Learning new skills on the job
+What you'll be doing:
+• Perform various tasks as assigned by supervisors
+• Maintain clean and organized work areas
+• Assist team members with daily operations
+• Follow all safety protocols and procedures
+• Learn new skills through on-the-job training
+• Communicate effectively with team and management
+• Complete tasks efficiently and accurately
 
-Must be comfortable with:
-• Physical work in various conditions
-• Following directions and staying on task
-• Reliable attendance and punctuality
-• Working as part of a team
+What we need:
+• Reliable transportation to ${location.split(',')[0]}
+• Strong work ethic and positive attitude
+• Ability to follow instructions carefully
+• Team player who helps where needed
+• Physical ability for standing/lifting
+• Open to learning new skills
 
-Nice to have: Related work experience, strong work ethic, bilingual skills.`
+The details:
+• ${schedule} schedule available
+• On-the-job training provided
+• Growth opportunities for motivated workers
+• Supportive team environment`
   };
   
   const description = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
