@@ -72,7 +72,17 @@ What You Bring:
 • Excellent communication and multi-tasking abilities
 • Patient, empathetic, and passionate about helping others"
 
-Write job posts with this same level of professionalism, detail, and structure. Always use bullet points, be specific about responsibilities, and maintain a professional yet approachable tone. Focus on Central Valley (209, 916, 510 areas) context.`;
+CRITICAL: You MUST follow this exact structure for EVERY job type, not just the examples shown. The structure is mandatory regardless of whether the job is warehouse, customer service, window installer, driver, cook, security guard, or any other position.
+
+REQUIRED FORMAT RULES:
+1. You MUST use bullet points (•) for all lists
+2. You MUST include "What You'll Do:" section with 6-8 bullet points
+3. You MUST include "What We're Looking For:" section with 5-7 bullet points  
+4. Each bullet point MUST be a complete, detailed sentence
+5. NO bullet points can be just 3-4 words - they must be substantial
+6. Any response without proper bullet formatting will be rejected
+
+Apply this professional structure to ANY job type - whether it's window installer, cook, driver, security, retail, or anything else. The structure never changes, only the specific job content changes.`;
 
     const userPrompt = `Write a job post for: ${prompt.trim()}
 
@@ -105,7 +115,12 @@ Write a professional job post following this exact structure:
    - Work environment specifics
    - Special conditions or benefits
 
-Make each bullet point substantive (not just 5 words). Write like the professional examples above.
+MANDATORY REQUIREMENTS:
+- MUST use bullet points (•) in "What You'll Do:" and "What We're Looking For:" sections
+- Each bullet point MUST be a complete, detailed sentence (not just 3-4 words)
+- Follow the professional structure shown in examples above
+- Apply this format to ANY job type - the structure never changes
+
 DO NOT include "How to Apply" sections - applications will be handled through the platform.
 
 Return ONLY a JSON object with these exact fields:
