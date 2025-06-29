@@ -126,12 +126,12 @@ DO NOT include "How to Apply" sections - applications will be handled through th
 Return ONLY a JSON object with these exact fields:
 {
   "title": "Specific job title (not generic)",
-  "location": "City, CA",
+  "location": "City, CA", 
   "salary": "$XX-XX/hr or annual",
-  "description": "The complete job post text with all sections",
-  "requirements": "Extracted key requirements as bullet points",
+  "description": "Put the ENTIRE formatted job post here including company intro, What You'll Do section with bullet points, What We're Looking For section with bullet points, and any other sections. ALL content goes in this single description field.",
+  "requirements": "Brief summary of key requirements (separate from description)",
   "contactMethod": "Email or phone from the prompt",
-  "schedule": "Shift details if mentioned",
+  "schedule": "Shift details if mentioned", 
   "benefits": "Any benefits mentioned"
 }`;
 
