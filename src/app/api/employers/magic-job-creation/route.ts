@@ -129,7 +129,7 @@ Return ONLY a JSON object with these exact fields:
   "location": "City, CA", 
   "salary": "$XX-XX/hr or annual",
   "description": "Put the ENTIRE formatted job post here including company intro, What You'll Do section with bullet points, What We're Looking For section with bullet points, and any other sections. ALL content goes in this single description field.",
-  "requirements": "Brief summary of key requirements (separate from description)",
+  "requirements": "5-7 bullet points for What We're Looking For section - education, experience, skills, physical requirements, personality traits, preferred qualifications",
   "contactMethod": "Email or phone from the prompt",
   "schedule": "Shift details if mentioned", 
   "benefits": "Any benefits mentioned"

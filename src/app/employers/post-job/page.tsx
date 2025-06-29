@@ -15,6 +15,7 @@ interface JobData {
   schedule?: string;
   benefits?: string;
   requiresDegree?: boolean;
+  customQuestions?: string[];
 }
 
 type GenerationState = 'input' | 'generating' | 'editing' | 'publishing';
@@ -32,7 +33,8 @@ export default function PostJobPage() {
     description: '',
     requirements: '',
     contactMethod: '',
-    requiresDegree: false
+    requiresDegree: false,
+    customQuestions: []
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -99,7 +101,7 @@ export default function PostJobPage() {
   };
 
   // Handle input changes in edit mode
-  const handleInputChange = (field: keyof JobData, value: string | boolean) => {
+  const handleInputChange = (field: keyof JobData, value: string | boolean | string[]) => {
     setJobData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -390,6 +392,66 @@ export default function PostJobPage() {
                 <p className="text-xs text-gray-500 mt-1 ml-6">
                   This helps us match qualified candidates and filter applications
                 </p>
+              </div>
+
+              {/* Custom Questions */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ❓ Custom Screening Questions (Optional)
+                </label>
+                <p className="text-xs text-gray-500 mb-3">
+                  Add up to 5 specific questions for applicants (e.g., "Describe your forklift experience")
+                </p>
+                
+                <div className="space-y-3">
+                  {(jobData.customQuestions || []).map((question, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <span className="text-sm text-gray-500 w-8">{index + 1}.</span>
+                      <input
+                        type="text"
+                        value={question}
+                        onChange={(e) => {
+                          const newQuestions = [...(jobData.customQuestions || [])];
+                          newQuestions[index] = e.target.value;
+                          handleInputChange('customQuestions', newQuestions);
+                        }}
+                        placeholder="Enter your question..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newQuestions = (jobData.customQuestions || []).filter((_, i) => i !== index);
+                          handleInputChange('customQuestions', newQuestions);
+                        }}
+                        className="px-2 py-2 text-red-600 hover:bg-red-50 rounded"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  
+                  {(!jobData.customQuestions || jobData.customQuestions.length < 5) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newQuestions = [...(jobData.customQuestions || []), ''];
+                        handleInputChange('customQuestions', newQuestions);
+                      }}
+                      className="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-300 hover:text-blue-600 text-sm"
+                    >
+                      + Add Question ({(jobData.customQuestions || []).length}/5)
+                    </button>
+                  )}
+                </div>
+                
+                {jobData.customQuestions && jobData.customQuestions.length > 0 && (
+                  <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p className="text-xs text-yellow-800">
+                      💡 <strong>Note:</strong> These questions will be required for all applicants to answer
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

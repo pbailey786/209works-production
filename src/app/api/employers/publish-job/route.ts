@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const requestBody = await req.json();
     console.log('Publish job request body:', JSON.stringify(requestBody, null, 2));
     
-    const { title, location, salary, description, requirements, contactMethod, requiresDegree } = requestBody;
+    const { title, location, salary, description, requirements, contactMethod, requiresDegree, customQuestions } = requestBody;
     
     // Validate required fields
     if (!title || !location || !salary) {
@@ -107,9 +107,30 @@ export async function POST(req: NextRequest) {
         jobType: 'full_time', // Default to full time
         status: 'active',
         employerId: user.id,
-        embedding: embeddings ? JSON.stringify(embeddings) : null
+        embedding: embeddings ? JSON.stringify(embeddings) : null,
+        supplementalQuestions: customQuestions && customQuestions.length > 0 ? customQuestions.filter(q => q.trim()) : []
       }
     });
+
+    // TODO: Add analytics tracking after database migration
+    // Create analytics records for custom questions
+    // if (customQuestions && customQuestions.length > 0) {
+    //   const filteredQuestions = customQuestions.filter(q => q.trim());
+    //   
+    //   for (let i = 0; i < filteredQuestions.length; i++) {
+    //     await prisma.customQuestionAnalytics.create({
+    //       data: {
+    //         jobId: job.id,
+    //         employerId: user.id,
+    //         questionText: filteredQuestions[i].trim(),
+    //         questionOrder: i + 1,
+    //         jobTitle: job.title,
+    //         industry: user.industry || null,
+    //         location: job.location,
+    //       }
+    //     });
+    //   }
+    // }
 
     // TODO: Deduct credit here when payment system is ready
     // await deductEmployerCredit(user.id, 1);

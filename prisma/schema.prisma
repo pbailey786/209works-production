@@ -97,6 +97,7 @@ model User {
   weeklyDigest         WeeklyDigest?
   chatAnalytics        ChatAnalytics[]
   chatHistory          ChatHistory[]
+  // customQuestionAnalytics CustomQuestionAnalytics[] // TODO: Add after migration
   impersonationSessions ImpersonationSession[] @relation("ImpersonationTarget")
   verificationTokens    VerificationToken[]
   jobPostingPurchases   JobPostingPurchase[]
@@ -259,6 +260,7 @@ model Job {
   
   // Learning system relation
   analysis          JobPostAnalysis?
+  // customQuestionAnalytics CustomQuestionAnalytics[] // TODO: Add after migration
 
   @@index([postedAt])
   @@index([location])
@@ -961,6 +963,34 @@ model ChatHistory {
   @@index([lastActivity])
   @@index([createdAt])
 }
+
+// TODO: Add after database migration
+// model CustomQuestionAnalytics {
+//   id                String   @id @default(uuid())
+//   jobId             String
+//   employerId        String
+//   questionText      String
+//   questionOrder     Int      // 1st, 2nd, 3rd question in the job posting
+//   jobTitle          String   // Denormalized for easier querying
+//   industry          String?  // Denormalized for easier querying
+//   location          String   // Denormalized for easier querying
+//   totalApplications Int      @default(0) // How many people saw this question
+//   answeredCount     Int      @default(0) // How many actually answered
+//   averageAnswerLength Float? // Analytics on answer quality
+//   createdAt         DateTime @default(now())
+//   updatedAt         DateTime @updatedAt
+
+//   // Relations
+//   job               Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+//   employer          User     @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+//   @@index([jobId])
+//   @@index([employerId])
+//   @@index([questionText])
+//   @@index([industry])
+//   @@index([location])
+//   @@index([createdAt])
+// }
 
 model JobPostingPurchase {
   id                    String   @id @default(uuid())
