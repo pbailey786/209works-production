@@ -6,11 +6,20 @@ import { useRouter } from 'next/navigation';
 import JobPostingMethodSelector from '@/components/employers/JobPostingMethodSelector';
 import AIJobCreationChat from '@/components/employers/AIJobCreationChat';
 import CSVBulkUpload from '@/components/employers/CSVBulkUpload';
-import JobAdBuilder from '@/components/employers/JobAdBuilder';
+import JobAdBuilderEnhanced from '@/components/employers/JobAdBuilderEnhanced';
+
+interface BenefitOption {
+  icon: string;
+  title: string;
+  description: string;
+  value: boolean;
+  key: string;
+}
 
 interface JobData {
   title?: string;
   company?: string;
+  companyLogo?: string;
   description?: string;
   requirements?: string;
   salary?: string;
@@ -22,6 +31,7 @@ interface JobData {
   contactMethod?: string;
   schedule?: string;
   benefits?: string;
+  benefitOptions?: BenefitOption[];
 }
 
 type JobPostingStep = 'method-selection' | 'ai-chat' | 'csv-upload' | 'traditional-form' | 'job-builder' | 'preview' | 'credits' | 'published';
@@ -34,6 +44,7 @@ export default function CreateJobPostPage() {
   const [selectedMethod, setSelectedMethod] = useState<'ai-chat' | 'traditional-form' | 'bulk-csv' | null>(null);
   const [jobData, setJobData] = useState<JobData>({});
   const [bulkJobs, setBulkJobs] = useState<any[]>([]);
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
 
   // Check for returning data from traditional form or other sources
   useEffect(() => {
@@ -54,6 +65,21 @@ export default function CreateJobPostPage() {
       }
     }
   }, [router]);
+
+  // Fetch company logo when user is loaded
+  useEffect(() => {
+    if (user) {
+      fetch('/api/employers/logo')
+        .then(res => res.json())
+        .then(data => {
+          if (data.logo) {
+            setCompanyLogo(data.logo);
+            setJobData(prev => ({ ...prev, companyLogo: data.logo }));
+          }
+        })
+        .catch(err => console.error('Failed to fetch company logo:', err));
+    }
+  }, [user]);
 
   // Authentication check
   if (!isLoaded) {
@@ -140,7 +166,7 @@ export default function CreateJobPostPage() {
       
       case 'job-builder':
         return (
-          <JobAdBuilder 
+          <JobAdBuilderEnhanced 
             initialData={jobData}
             onBack={handleJobBuilderBack}
             onContinue={handleJobBuilderComplete}

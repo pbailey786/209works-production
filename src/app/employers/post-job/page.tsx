@@ -3,7 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Zap, ArrowRight, Edit, MapPin, DollarSign, Briefcase, User, Eye } from 'lucide-react';
+import { Sparkles, Zap, ArrowRight, Edit, MapPin, DollarSign, Briefcase, User, Eye, Palette } from 'lucide-react';
+import JobPreviewModern from '@/components/employers/JobPreviewModern';
+
+interface BenefitOption {
+  icon: string;
+  title: string;
+  description: string;
+  value: boolean;
+  key: string;
+}
 
 interface JobData {
   title: string;
@@ -16,6 +25,9 @@ interface JobData {
   benefits?: string;
   requiresDegree?: boolean;
   customQuestions?: string[];
+  company?: string;
+  companyLogo?: string;
+  benefitOptions?: BenefitOption[];
 }
 
 type GenerationState = 'input' | 'generating' | 'editing' | 'publishing';
@@ -41,6 +53,8 @@ export default function PostJobPage() {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isRequirementsExpanded, setIsRequirementsExpanded] = useState(false);
   const [showExampleModal, setShowExampleModal] = useState(false);
+  const [useModernPreview, setUseModernPreview] = useState(true);
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   
   // Auto-fill email when user loads
   useEffect(() => {
@@ -49,6 +63,29 @@ export default function PostJobPage() {
         ...prev,
         contactMethod: user.emailAddresses[0].emailAddress
       }));
+    }
+  }, [user]);
+
+  // Fetch company data when user is loaded
+  useEffect(() => {
+    if (user) {
+      Promise.all([
+        fetch('/api/employers/logo').then(res => res.json()),
+        fetch('/api/user/profile').then(res => res.json())
+      ])
+      .then(([logoData, profileData]) => {
+        if (logoData.logo) {
+          setCompanyLogo(logoData.logo);
+        }
+        if (profileData.user?.companyName) {
+          setJobData(prev => ({ 
+            ...prev, 
+            company: profileData.user.companyName,
+            companyLogo: logoData.logo || null
+          }));
+        }
+      })
+      .catch(err => console.error('Failed to fetch company data:', err));
     }
   }, [user]);
   
@@ -619,10 +656,19 @@ Contact: ${userEmail}`);
 
             {/* Right Side - Live Preview */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Eye className="w-5 h-5 mr-2 text-green-600" />
-              How It Looks to Central Valley Job Seekers
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Eye className="w-5 h-5 mr-2 text-green-600" />
+                How It Looks to Central Valley Job Seekers
+              </h3>
+              <button
+                onClick={() => setUseModernPreview(!useModernPreview)}
+                className="flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                <Palette className="w-4 h-4" />
+                {useModernPreview ? 'Simple' : 'Modern'}
+              </button>
+            </div>
 
             {!jobData.title ? (
               <div className="text-center py-12">
@@ -630,6 +676,16 @@ Contact: ${userEmail}`);
                   <Briefcase className="w-8 h-8 text-gray-400" />
                 </div>
                 <p className="text-gray-500">Start typing to see your job post preview</p>
+              </div>
+            ) : useModernPreview ? (
+              <div className="max-h-[600px] overflow-y-auto">
+                <JobPreviewModern 
+                  jobData={{
+                    ...jobData,
+                    company: jobData.company || 'Your Company',
+                    companyLogo: jobData.companyLogo
+                  }} 
+                />
               </div>
             ) : (
               <div className="border border-gray-200 rounded-lg p-6">

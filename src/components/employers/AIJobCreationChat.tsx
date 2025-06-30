@@ -10,9 +10,18 @@ interface Message {
   timestamp: Date;
 }
 
+interface BenefitOption {
+  icon: string;
+  title: string;
+  description: string;
+  value: boolean;
+  key: string;
+}
+
 interface JobData {
   title?: string;
   company?: string;
+  companyLogo?: string;
   description?: string;
   requirements?: string;
   salary?: string;
@@ -24,6 +33,7 @@ interface JobData {
   contactMethod?: string;
   schedule?: string;
   benefits?: string;
+  benefitOptions?: BenefitOption[];
 }
 
 interface AIJobCreationChatProps {
