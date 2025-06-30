@@ -292,7 +292,7 @@ export default function PostJobPage() {
                     <div><strong>Schedule:</strong> Full-time, some weekends</div>
                     <div><strong>Tasks:</strong> Rent units, take payments, keep facility clean, handle delinquent accounts</div>
                     <div><strong>Skills:</strong> Good with people, basic computer skills, Microsoft Excel</div>
-                    <div><strong>Contact:</strong> manager@storageking.com</div>
+                    <div><strong>Contact:</strong> manager@storagecompany.com</div>
                   </div>
                 </div>
                 
@@ -310,19 +310,20 @@ export default function PostJobPage() {
                 <div className="flex space-x-3">
                   <button
                     onClick={() => {
-                      setPrompt(`Job title: Property Manager
-Company type: Storage company  
-Location: Stockton, CA
-Pay: $17.50–$19.50/hr
-Schedule: Full-time, some weekends
-Tasks: Rent units, take payments, keep facility clean, handle delinquent accounts
-Skills: Good with people, basic computer skills, Microsoft Excel
-Contact: manager@storageking.com`);
+                      const userEmail = user?.emailAddresses?.[0]?.emailAddress || 'your-email@company.com';
+                      setPrompt(`Job title: 
+Company type: 
+Location: ${user?.businessLocation || 'Stockton, CA'}
+Pay: 
+Schedule: 
+Tasks: 
+Skills: 
+Contact: ${userEmail}`);
                       setShowExampleModal(false);
                     }}
                     className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
                   >
-                    📋 Use This Template
+                    📋 Use Blank Template
                   </button>
                   <button
                     onClick={() => setShowExampleModal(false)}

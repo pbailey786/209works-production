@@ -166,7 +166,7 @@ Return ONLY a JSON object with these exact fields:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.7,
+        temperature: 0.1,
         max_tokens: 1000,
       });
 
