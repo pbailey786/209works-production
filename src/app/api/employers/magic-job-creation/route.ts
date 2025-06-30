@@ -215,7 +215,7 @@ Return ONLY a JSON object with these exact fields:
         // Clean up the response - remove markdown code blocks if present
         const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
         jobData = JSON.parse(cleanContent);
-      } catch (parseError) {
+      } catch (parseError: any) {
         console.error('JSON parsing failed:', parseError);
         throw new Error('Invalid AI response format');
       }
@@ -238,7 +238,7 @@ Return ONLY a JSON object with these exact fields:
         jobData
       });
 
-    } catch (aiError) {
+    } catch (aiError: any) {
       console.error('🔥 AI generation failed:', aiError?.message || aiError);
       
       try {
@@ -252,7 +252,7 @@ Return ONLY a JSON object with these exact fields:
           fallback: true,
           message: 'Generated using fallback system (AI temporarily unavailable)'
         });
-      } catch (fallbackError) {
+      } catch (fallbackError: any) {
         console.error('Fallback generation failed:', fallbackError);
         
         // Emergency simple fallback
@@ -275,7 +275,7 @@ Return ONLY a JSON object with these exact fields:
       }
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Magic job creation error:', error);
     
     // Final emergency fallback - ensure we always return valid JSON
@@ -296,7 +296,7 @@ Return ONLY a JSON object with these exact fields:
         emergency: true,
         message: 'System temporarily unavailable - generated basic job post'
       });
-    } catch (finalError) {
+    } catch (finalError: any) {
       console.error('Final fallback failed:', finalError);
       return NextResponse.json(
         { 
