@@ -34,7 +34,7 @@ interface JobPreviewModernProps {
   headerColor?: string;
 }
 
-// Central Valley specific benefit templates
+// Central Valley specific benefit templates - 12 options for selection
 const CENTRAL_VALLEY_BENEFITS: Record<string, BenefitOption> = {
   health: { icon: '🏥', title: 'Health Insurance', description: 'Medical, dental, vision coverage', value: false },
   pto: { icon: '🌴', title: 'Paid Time Off', description: 'Vacation and sick days', value: false },
@@ -106,7 +106,7 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
               </div>
             )}
             <div>
-              <div className="text-xl font-medium opacity-90">{jobData.company}</div>
+              <div className="text-xl font-medium opacity-90">{jobData.company || 'Your Company'}</div>
               {jobData.urgency && (
                 <div className="text-sm opacity-75 mt-1">🔥 {jobData.urgency}</div>
               )}
@@ -120,12 +120,15 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
             </span>
             <span className="bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              {jobData.jobType}
+              {jobData.jobType || 'Full-time'}
             </span>
-            {jobData.schedule && (
-              <span className="bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {jobData.schedule}
+            <span className="bg-white/20 backdrop-blur px-4 py-2 rounded-full text-sm flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Posted today
+            </span>
+            {jobData.urgency && (
+              <span className="bg-red-500/80 backdrop-blur px-4 py-2 rounded-full text-sm flex items-center gap-2 font-medium">
+                🔥 {jobData.urgency}
               </span>
             )}
           </div>
@@ -159,7 +162,7 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
               <span className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center text-white text-lg">
                 ⚡
               </span>
-              What We're Looking For
+              Nice to Have
             </h2>
             <div className="space-y-2">
               {jobData.requirements.split('\n').map((req, index) => (
@@ -239,13 +242,13 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 text-center">
         <h2 className="text-2xl font-semibold mb-3">Ready to Join Our Team?</h2>
         <p className="mb-6 opacity-90">We'd love to hear from you! Take the next step in your career.</p>
-        {jobData.contactMethod && (
-          <div className="bg-white/20 backdrop-blur rounded-xl p-4 mb-6 max-w-2xl mx-auto">
-            <p className="font-medium mb-2">How to Apply:</p>
-            <p className="text-sm">{jobData.contactMethod}</p>
-          </div>
-        )}
+        
+        <button className="bg-white text-blue-600 font-bold text-lg px-8 py-4 rounded-xl hover:bg-gray-100 transform hover:scale-105 transition-all duration-200 shadow-lg">
+          📝 Apply Now
+        </button>
+        
         <div className="text-sm opacity-75 mt-6">
+          <p className="mb-2">✉️ Employer gets notified instantly • Application tracked in your dashboard</p>
           <p>209jobs.com - Your Central Valley Career Connection</p>
           <p className="mt-1">Equal Opportunity Employer</p>
         </div>

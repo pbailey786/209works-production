@@ -2,10 +2,20 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, Save, Eye, Edit3, DollarSign, MapPin, Clock, Briefcase, Users, Sparkles } from 'lucide-react';
+import LogoUpload from './LogoUpload';
+
+interface BenefitOption {
+  icon: string;
+  title: string;
+  description: string;
+  value: boolean;
+  key: string;
+}
 
 interface JobData {
   title?: string;
   company?: string;
+  companyLogo?: string | null;
   description?: string;
   requirements?: string;
   salary?: string;
@@ -17,6 +27,7 @@ interface JobData {
   contactMethod?: string;
   schedule?: string;
   benefits?: string;
+  benefitOptions?: BenefitOption[];
 }
 
 interface JobAdBuilderProps {
@@ -25,15 +36,45 @@ interface JobAdBuilderProps {
   onContinue: (jobData: JobData) => void;
 }
 
+// Central Valley specific benefit options - 12 total for selection
+const BENEFIT_OPTIONS: BenefitOption[] = [
+  { key: 'health', icon: '🏥', title: 'Health Insurance', description: 'Medical, dental, vision coverage', value: false },
+  { key: 'pto', icon: '🌴', title: 'Paid Time Off', description: 'Vacation and sick days', value: false },
+  { key: 'retirement', icon: '💰', title: '401(k) Plan', description: 'Retirement savings with match', value: false },
+  { key: 'parking', icon: '🚗', title: 'Free Parking', description: 'On-site parking provided', value: false },
+  { key: 'training', icon: '📚', title: 'Training', description: 'On-the-job training programs', value: false },
+  { key: 'overtime', icon: '⏰', title: 'Overtime Pay', description: 'Time and a half after 40 hours', value: false },
+  { key: 'meals', icon: '🍽️', title: 'Meal Benefits', description: 'Free or discounted meals', value: false },
+  { key: 'uniform', icon: '👔', title: 'Uniform Provided', description: 'Company provides work attire', value: false },
+  { key: 'tools', icon: '🔧', title: 'Tools Provided', description: 'All necessary equipment', value: false },
+  { key: 'flexible', icon: '⏱️', title: 'Flexible Schedule', description: 'Work-life balance options', value: false },
+  { key: 'bonus', icon: '🎯', title: 'Performance Bonus', description: 'Earn extra based on results', value: false },
+  { key: 'commute', icon: '🚌', title: 'Commute Assistance', description: 'Gas cards or transit passes', value: false },
+];
+
 export default function JobAdBuilder({ initialData, onBack, onContinue }: JobAdBuilderProps) {
   const [jobData, setJobData] = useState<JobData>({
     ...initialData,
     company: initialData.company || 'Your Company Name', // Default if not set
+    benefitOptions: initialData.benefitOptions || BENEFIT_OPTIONS.map(opt => ({ ...opt }))
   });
   const [isPreview, setIsPreview] = useState(false);
 
   const handleFieldChange = (field: keyof JobData, value: any) => {
     setJobData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleBenefit = (benefitKey: string) => {
+    setJobData(prev => ({
+      ...prev,
+      benefitOptions: prev.benefitOptions?.map(benefit => 
+        benefit.key === benefitKey ? { ...benefit, value: !benefit.value } : benefit
+      )
+    }));
+  };
+
+  const getSelectedBenefitsCount = () => {
+    return jobData.benefitOptions?.filter(b => b.value).length || 0;
   };
 
   const handleContinue = () => {
@@ -212,6 +253,15 @@ export default function JobAdBuilder({ initialData, onBack, onContinue }: JobAdB
               />
             </div>
 
+            {/* Company Logo */}
+            <div className="mb-4">
+              <LogoUpload
+                currentLogo={jobData.companyLogo}
+                onLogoChange={(logoUrl) => handleFieldChange('companyLogo', logoUrl)}
+                companyName={jobData.company || 'Company'}
+              />
+            </div>
+
             {/* Location */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -319,16 +369,58 @@ export default function JobAdBuilder({ initialData, onBack, onContinue }: JobAdB
             />
           </div>
 
-          {/* Benefits */}
+          {/* Benefits Selector */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold mb-4">Benefits (Optional)</h2>
-            <textarea
-              value={jobData.benefits || ''}
-              onChange={(e) => handleFieldChange('benefits', e.target.value)}
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="List any benefits, perks, or growth opportunities..."
-            />
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">What We Offer</h2>
+              <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                {getSelectedBenefitsCount()}/6 selected
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Select up to 6 benefits that make your position attractive to Central Valley job seekers
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {jobData.benefitOptions?.map((benefit) => (
+                <button
+                  key={benefit.key}
+                  type="button"
+                  onClick={() => toggleBenefit(benefit.key)}
+                  disabled={!benefit.value && getSelectedBenefitsCount() >= 6}
+                  className={`p-4 border rounded-lg text-left transition-all duration-200 ${
+                    benefit.value
+                      ? 'border-blue-500 bg-blue-50 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  } ${
+                    !benefit.value && getSelectedBenefitsCount() >= 6
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'cursor-pointer'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="text-2xl">{benefit.icon}</div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{benefit.title}</div>
+                      <div className="text-sm text-gray-600">{benefit.description}</div>
+                    </div>
+                    {benefit.value && (
+                      <div className="text-blue-600">
+                        ✓
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            {getSelectedBenefitsCount() >= 6 && (
+              <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <p className="text-sm text-orange-800">
+                  💡 You've selected the maximum of 6 benefits. Deselect one to choose a different option.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

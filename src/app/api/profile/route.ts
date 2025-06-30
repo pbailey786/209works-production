@@ -38,6 +38,16 @@ export async function GET(req: NextRequest) {
         achievements: true,
         profileStrength: true,
         lastActivityDate: true,
+        // Employer fields
+        companyName: true,
+        companyLogo: true,
+        companyDescription: true,
+        businessLocation: true,
+        contactName: true,
+        contactEmail: true,
+        contactPhone: true,
+        industry: true,
+        companySize: true,
       },
     });
 

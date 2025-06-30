@@ -70,8 +70,8 @@ export default function PostJobPage() {
   useEffect(() => {
     if (user) {
       Promise.all([
-        fetch('/api/employers/logo').then(res => res.json()),
-        fetch('/api/user/profile').then(res => res.json())
+        fetch('/api/employers/logo').then(res => res.ok ? res.json() : { logo: null }),
+        fetch('/api/profile').then(res => res.ok ? res.json() : { user: null })
       ])
       .then(([logoData, profileData]) => {
         if (logoData.logo) {
@@ -83,9 +83,19 @@ export default function PostJobPage() {
             company: profileData.user.companyName,
             companyLogo: logoData.logo || null
           }));
+        } else {
+          // Ensure company field is set even if no profile data
+          setJobData(prev => ({ 
+            ...prev, 
+            company: prev.company || 'Your Company Name',
+            companyLogo: logoData.logo || null
+          }));
         }
       })
-      .catch(err => console.error('Failed to fetch company data:', err));
+      .catch(err => {
+        console.error('Failed to fetch company data:', err);
+        // Continue without company data - non-blocking
+      });
     }
   }, [user]);
   
