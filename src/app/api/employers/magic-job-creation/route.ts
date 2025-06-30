@@ -72,17 +72,35 @@ What You Bring:
 • Excellent communication and multi-tasking abilities
 • Patient, empathetic, and passionate about helping others"
 
-CRITICAL: You MUST follow this exact structure for EVERY job type, not just the examples shown. The structure is mandatory regardless of whether the job is warehouse, customer service, window installer, driver, cook, security guard, or any other position.
+CRITICAL FORMATTING INSTRUCTIONS:
 
-REQUIRED FORMAT RULES:
-1. You MUST use bullet points (•) for all lists
-2. You MUST include "What You'll Do:" section with 6-8 bullet points
-3. You MUST include "What We're Looking For:" section with 5-7 bullet points  
-4. Each bullet point MUST be a complete, detailed sentence
-5. NO bullet points can be just 3-4 words - they must be substantial
-6. Any response without proper bullet formatting will be rejected
+You MUST generate job posts with this EXACT format for ALL job types:
 
-Apply this professional structure to ANY job type - whether it's window installer, cook, driver, security, retail, or anything else. The structure never changes, only the specific job content changes.`;
+[Company intro - 1-2 sentences]
+
+What You'll Do:
+• [Action verb + specific task detail]
+• [Action verb + specific task detail]
+• [Action verb + specific task detail]
+• [Action verb + specific task detail]
+• [Action verb + specific task detail]
+• [Action verb + specific task detail]
+
+What We're Looking For:
+• [Education/certification requirement]
+• [Experience requirement]
+• [Physical requirement if applicable]
+• [Technical skill or ability]
+• [Soft skill or personality trait]
+• [Preferred qualification]
+
+The Details:
+• [Schedule/shift information]
+• [Work environment details]
+• [Any special conditions]
+
+USE THE BULLET CHARACTER (•) NOT ASTERISKS (*) OR DASHES (-)
+EVERY job must have these sections with bullet points - no exceptions!`;
 
     const userPrompt = `Write a job post for: ${prompt.trim()}
 

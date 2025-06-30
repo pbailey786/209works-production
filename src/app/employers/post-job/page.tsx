@@ -217,6 +217,27 @@ export default function PostJobPage() {
                 <span>Includes local business touches</span>
               </div>
             </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => {
+                  setJobData({
+                    title: '',
+                    location: user?.user_metadata?.businessLocation || '',
+                    salary: '',
+                    description: '',
+                    requirements: '',
+                    contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
+                    requiresDegree: false,
+                    customQuestions: []
+                  });
+                  setCurrentState('editing');
+                }}
+                className="w-full py-3 px-4 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors"
+              >
+                ✍️ Skip AI - Write Job Post Manually
+              </button>
+            </div>
           </div>
 
           <div className="mt-8 text-gray-500">
@@ -460,6 +481,12 @@ export default function PostJobPage() {
               <button
                 onClick={handlePublish}
                 disabled={!isReady || isPublishing}
+                title={!isReady ? `Missing: ${[
+                  !jobData.title && 'Job Title',
+                  !jobData.location && 'Location', 
+                  !jobData.salary && 'Salary',
+                  !jobData.contactMethod && 'Email for Applications'
+                ].filter(Boolean).join(', ')}` : 'Click to publish your job'}
                 className={`w-full flex items-center justify-center space-x-2 px-6 py-4 rounded-lg font-medium text-lg transition-all ${
                   isReady && !isPublishing
                     ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
@@ -482,7 +509,18 @@ export default function PostJobPage() {
                 ← Start Over with New Prompt
               </button>
               <p className="text-xs text-gray-500 text-center">
-                {isReady ? 'Ready to publish!' : 'Fill in required fields to continue'}
+                {isReady ? (
+                  '✅ Ready to publish!'
+                ) : (
+                  <span className="text-red-600">
+                    Missing: {[
+                      !jobData.title && 'Job Title',
+                      !jobData.location && 'Location',
+                      !jobData.salary && 'Salary',
+                      !jobData.contactMethod && 'Email for Applications'
+                    ].filter(Boolean).join(', ')}
+                  </span>
+                )}
               </p>
             </div>
             </div>
@@ -536,7 +574,7 @@ export default function PostJobPage() {
                         </button>
                       )}
                     </div>
-                    <div className={`text-gray-700 whitespace-pre-wrap ${isContentLong(jobData.description) && !isDescriptionExpanded ? 'max-h-24 overflow-hidden' : ''}`}>
+                    <div className={`text-gray-700 whitespace-pre-line ${isContentLong(jobData.description) && !isDescriptionExpanded ? 'max-h-24 overflow-hidden' : ''}`}>
                       {isContentLong(jobData.description) && !isDescriptionExpanded 
                         ? truncateContent(jobData.description)
                         : jobData.description
@@ -559,7 +597,7 @@ export default function PostJobPage() {
                         </button>
                       )}
                     </div>
-                    <div className={`text-gray-700 whitespace-pre-wrap ${isContentLong(jobData.requirements, 200) && !isRequirementsExpanded ? 'max-h-20 overflow-hidden' : ''}`}>
+                    <div className={`text-gray-700 whitespace-pre-line ${isContentLong(jobData.requirements, 200) && !isRequirementsExpanded ? 'max-h-20 overflow-hidden' : ''}`}>
                       {isContentLong(jobData.requirements, 200) && !isRequirementsExpanded 
                         ? truncateContent(jobData.requirements, 200)
                         : jobData.requirements
