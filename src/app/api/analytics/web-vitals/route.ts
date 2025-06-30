@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PerformanceMetrics } from '@/lib/performance/performance-monitor';
 
+// Short timeout for analytics - fail fast
+export const maxDuration = 5;
+
 // In-memory storage for demo (replace with database in production)
 const metricsStore: PerformanceMetrics[] = [];
 
@@ -38,7 +41,7 @@ export async function POST(request: NextRequest) {
     // });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error storing web vitals metric:', error);
     return NextResponse.json(
       { error: 'Failed to store metric' },
@@ -71,7 +74,7 @@ export async function GET(request: NextRequest) {
       metrics: recentMetrics,
       total: filteredMetrics.length,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error retrieving web vitals metrics:', error);
     return NextResponse.json(
       { error: 'Failed to retrieve metrics' },
