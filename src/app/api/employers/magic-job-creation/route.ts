@@ -186,14 +186,15 @@ Return ONLY a JSON object with these exact fields:
 
     try {
       // Try OpenAI first with timeout
+      console.log('🤖 Attempting GPT-4 generation for prompt:', prompt.trim().substring(0, 100) + '...');
       const completion = await Promise.race([
         openai.chat.completions.create({
-          model: 'gpt-4',
+          model: 'gpt-3.5-turbo', // Switch back for reliability
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
           ],
-          temperature: 0.7, // Increased for more variety in intros
+          temperature: 0.4, // Balanced for variety + accuracy
           max_tokens: 1200,
         }),
         new Promise((_, reject) => 
@@ -205,6 +206,8 @@ Return ONLY a JSON object with these exact fields:
       if (!content) {
         throw new Error('Empty AI response');
       }
+      
+      console.log('✅ GPT-4 responded with content length:', content.length);
 
       // Parse JSON response
       let jobData;
@@ -236,10 +239,11 @@ Return ONLY a JSON object with these exact fields:
       });
 
     } catch (aiError) {
-      console.error('AI generation failed:', aiError);
+      console.error('🔥 AI generation failed:', aiError?.message || aiError);
       
       try {
         // Rule-based fallback system - always works
+        console.log('🔄 Using fallback system for prompt:', prompt.trim().substring(0, 50) + '...');
         const fallbackJobData = generateFallbackJob(prompt.trim(), user);
         
         return NextResponse.json({
