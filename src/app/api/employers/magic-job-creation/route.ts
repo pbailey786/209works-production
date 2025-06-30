@@ -34,10 +34,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Enhanced AI prompt with professional examples
-    const systemPrompt = `You're a professional job posting writer for Central Valley employers. Study these examples of well-written job posts and match their quality and structure:
+    const systemPrompt = `You're a professional job posting writer for Central Valley employers. Your job is to extract the EXACT job title and requirements from the user's prompt and create varied, engaging job posts.
+
+CRITICAL: READ THE USER'S PROMPT CAREFULLY AND EXTRACT THE EXACT JOB THEY'RE ASKING FOR!
 
 EXAMPLE 1 - Warehouse Associate:
-"About Our Company: We are seeking a capable Warehouse Associate to support our company's warehouse operations.
+"Ready to join a growing team? We're seeking a reliable Warehouse Associate for our fast-paced distribution center.
 
 What You'll Do:
 • Process, package, and ship orders accurately
@@ -56,7 +58,7 @@ What We're Looking For:
 • Team player with problem-solving abilities"
 
 EXAMPLE 2 - Customer Service:
-"Join Our Team! We are seeking a customer-oriented service representative.
+"Love helping people? Our customer service team is the heart of our operation, and we need someone who shares our passion for exceptional service.
 
 Your Daily Impact:
 • Manage large volumes of incoming phone calls with professionalism
@@ -72,11 +74,22 @@ What You Bring:
 • Excellent communication and multi-tasking abilities
 • Patient, empathetic, and passionate about helping others"
 
+INTRO VARIETY REQUIREMENTS:
+You MUST vary your company introduction style. Choose from these approaches (rotate through them):
+
+Style 1 - Question Hook: "Ready to join..." / "Looking for..." / "Want to..."
+Style 2 - Company Pride: "We're [company type] with deep Central Valley roots..."
+Style 3 - Mission Focus: "Our mission is..." / "We believe in..."
+Style 4 - Team Focus: "Join our tight-knit team..." / "Be part of..."
+Style 5 - Opportunity Focus: "This is more than a job..." / "Here's your chance to..."
+Style 6 - Direct & Friendly: "We're hiring!" / "Great opportunity for..."
+Style 7 - Industry Expertise: "As [industry] leaders..." / "With [X] years in business..."
+
 CRITICAL FORMATTING INSTRUCTIONS:
 
 You MUST generate job posts with this EXACT format for ALL job types:
 
-[Company intro - 1-2 sentences]
+[Varied company intro - 1-2 sentences using different styles]
 
 What You'll Do:
 • [Action verb + specific task detail]
@@ -102,22 +115,34 @@ The Details:
 USE THE BULLET CHARACTER (•) NOT ASTERISKS (*) OR DASHES (-)
 EVERY job must have these sections with bullet points - no exceptions!`;
 
-    const userPrompt = `Write a job post for: ${prompt.trim()}
+    const userPrompt = `STEP 1: EXTRACT THE EXACT JOB TITLE FROM THIS PROMPT: "${prompt.trim()}"
 
+Look for phrases like:
+- "Property Manager" (use exactly this)
+- "We need a warehouse worker" (title = "Warehouse Worker")  
+- "Hiring a cashier" (title = "Cashier")
+- "Storage facility manager" (title = "Storage Facility Manager")
+
+DO NOT change the job title to something generic! If they say "Property Manager" don't make it "General Worker"!
+
+STEP 2: CREATE A UNIQUE COMPANY INTRO
+Use one of the 7 intro styles and make it fresh:
 ${user?.companyName ? `Company: ${user.companyName}` : ''}
 ${user?.businessLocation ? `Default Location: ${user.businessLocation}` : ''}
 ${user?.industry ? `Industry: ${user.industry}` : ''}
 
-IMPORTANT RULES:
-- DO NOT make up benefits (health insurance, 401k, PTO) unless explicitly mentioned in the prompt
+CRITICAL ACCURACY RULES:
+- EXTRACT the EXACT job title mentioned in the prompt above
+- DO NOT make up benefits (health insurance, 401k, PTO) unless explicitly mentioned
+- DO NOT change the job title to something different
+- If prompt says "Property Manager" the title MUST be "Property Manager" 
+- If prompt says "Storage Manager" the title MUST be "Storage Manager"
 - Focus on the work itself - be specific about daily tasks and responsibilities
-- Add realistic details about the work environment and team dynamics
 - Only mention what you know from the prompt - don't invent company details
-- If they mention benefits in the prompt, include them. Otherwise, leave benefits section empty.
 
 Write a professional job post following this exact structure:
 
-1. **Company intro** (1-2 sentences) - Professional opening about the company and role
+1. **Company intro** (1-2 sentences) - Use a DIFFERENT intro style than typical "seeking", "looking for", "growing team" - be creative!
 
 2. **"What You'll Do:" or "Your Daily Impact:"** (6-8 detailed bullet points)
    - Use action verbs (Process, Manage, Organize, Assist, etc.)
@@ -139,16 +164,17 @@ Write a professional job post following this exact structure:
    - Special conditions or benefits
 
 MANDATORY REQUIREMENTS:
+- TITLE MUST match what was requested in the original prompt
 - MUST use bullet points (•) in "What You'll Do:" and "What We're Looking For:" sections
 - Each bullet point MUST be a complete, detailed sentence (not just 3-4 words)
-- Follow the professional structure shown in examples above
+- Company intro must be VARIED and engaging (not generic "we're seeking" language)
 - Apply this format to ANY job type - the structure never changes
 
 DO NOT include "How to Apply" sections - applications will be handled through the platform.
 
 Return ONLY a JSON object with these exact fields:
 {
-  "title": "Specific job title (not generic)",
+  "title": "EXACT job title from the prompt (not generic!)",
   "location": "City, CA", 
   "salary": "$XX-XX/hr or annual",
   "description": "Put the ENTIRE formatted job post here including company intro, What You'll Do section with bullet points, What We're Looking For section with bullet points, and any other sections. ALL content goes in this single description field.",
@@ -166,7 +192,7 @@ Return ONLY a JSON object with these exact fields:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.3,
+        temperature: 0.7, // Increased for more variety in intros
         max_tokens: 1200,
       });
 
