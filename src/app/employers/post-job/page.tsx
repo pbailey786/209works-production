@@ -14,6 +14,22 @@ interface BenefitOption {
   key: string;
 }
 
+// Icon options for employers to choose from
+const ICON_OPTIONS = [
+  '🏥', '🌴', '💰', '🚗', '📚', '⏰', '🍽️', '👔', '🔧', '⏱️', '🎯', '🚌',
+  '💊', '🏋️', '🎓', '📱', '🏠', '✈️', '🎉', '🌟', '🤝', '📈', '🎪', '🎭',
+  '🏆', '💡', '🎨', '🎮', '☕', '🌱', '🔥', '⚡', '🚀', '🎊', '💎', '🎈'
+];
+
+// Default benefit structure for new benefits
+const createEmptyBenefit = (id: string): BenefitOption => ({
+  key: id,
+  icon: '🌟',
+  title: '',
+  description: '',
+  value: true
+});
+
 interface JobData {
   title: string;
   location: string;
@@ -46,7 +62,8 @@ export default function PostJobPage() {
     requirements: '',
     contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
     requiresDegree: false,
-    customQuestions: []
+    customQuestions: [],
+    benefitOptions: []
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -159,8 +176,38 @@ export default function PostJobPage() {
   };
 
   // Handle input changes in edit mode
-  const handleInputChange = (field: keyof JobData, value: string | boolean | string[]) => {
+  const handleInputChange = (field: keyof JobData, value: string | boolean | string[] | BenefitOption[]) => {
     setJobData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Benefit management functions
+  const addBenefit = () => {
+    const newId = `benefit_${Date.now()}`;
+    const newBenefit = createEmptyBenefit(newId);
+    setJobData(prev => ({
+      ...prev,
+      benefitOptions: [...(prev.benefitOptions || []), newBenefit]
+    }));
+  };
+
+  const removeBenefit = (benefitKey: string) => {
+    setJobData(prev => ({
+      ...prev,
+      benefitOptions: prev.benefitOptions?.filter(b => b.key !== benefitKey)
+    }));
+  };
+
+  const updateBenefit = (benefitKey: string, updates: Partial<BenefitOption>) => {
+    setJobData(prev => ({
+      ...prev,
+      benefitOptions: prev.benefitOptions?.map(benefit => 
+        benefit.key === benefitKey ? { ...benefit, ...updates } : benefit
+      )
+    }));
+  };
+
+  const getActiveBenefitsCount = () => {
+    return jobData.benefitOptions?.length || 0;
   };
 
   // Publish job
@@ -204,7 +251,9 @@ export default function PostJobPage() {
       description: '',
       requirements: '',
       contactMethod: '',
-      requiresDegree: false
+      requiresDegree: false,
+      customQuestions: [],
+      benefitOptions: []
     });
   };
 
@@ -294,7 +343,8 @@ export default function PostJobPage() {
                     requirements: '',
                     contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
                     requiresDegree: false,
-                    customQuestions: []
+                    customQuestions: [],
+                    benefitOptions: []
                   });
                   setCurrentState('editing');
                 }}
@@ -612,6 +662,116 @@ Contact: ${userEmail}`);
                     </p>
                   </div>
                 )}
+              </div>
+
+              {/* Benefits Editor */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium text-gray-900">What We Offer</h3>
+                  <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                    {getActiveBenefitsCount()}/6 benefits
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Add up to 6 benefits with custom titles and descriptions. Choose from 36 icons.
+                </p>
+                
+                <div className="space-y-4">
+                  {jobData.benefitOptions?.map((benefit, index) => (
+                    <div key={benefit.key} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start gap-4">
+                        {/* Icon Selector */}
+                        <div className="flex-shrink-0">
+                          <label className="block text-xs font-medium text-gray-700 mb-2">Icon</label>
+                          <div className="relative">
+                            <select
+                              value={benefit.icon}
+                              onChange={(e) => updateBenefit(benefit.key, { icon: e.target.value })}
+                              className="w-16 h-16 text-2xl text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer"
+                            >
+                              {ICON_OPTIONS.map((icon) => (
+                                <option key={icon} value={icon}>
+                                  {icon}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        
+                        {/* Text Fields */}
+                        <div className="flex-1 space-y-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                              Benefit Title *
+                            </label>
+                            <input
+                              type="text"
+                              value={benefit.title}
+                              onChange={(e) => updateBenefit(benefit.key, { title: e.target.value })}
+                              placeholder="e.g. Health Insurance, Free Lunch, Flexible Hours"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                              Short Description
+                            </label>
+                            <input
+                              type="text"
+                              value={benefit.description}
+                              onChange={(e) => updateBenefit(benefit.key, { description: e.target.value })}
+                              placeholder="e.g. Medical, dental, vision coverage"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Remove Button */}
+                        <button
+                          type="button"
+                          onClick={() => removeBenefit(benefit.key)}
+                          className="flex-shrink-0 w-8 h-8 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg flex items-center justify-center transition-colors"
+                          title="Remove benefit"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Add Benefit Button */}
+                  {getActiveBenefitsCount() < 6 && (
+                    <button
+                      type="button"
+                      onClick={addBenefit}
+                      className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    >
+                      + Add Benefit ({getActiveBenefitsCount()}/6)
+                    </button>
+                  )}
+                  
+                  {getActiveBenefitsCount() === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      <div className="text-4xl mb-2">🎁</div>
+                      <p className="mb-3">No benefits added yet</p>
+                      <button
+                        type="button"
+                        onClick={addBenefit}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Add Your First Benefit
+                      </button>
+                    </div>
+                  )}
+                  
+                  {getActiveBenefitsCount() >= 6 && (
+                    <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <p className="text-sm text-orange-800">
+                        💡 You've reached the maximum of 6 benefits. Remove one to add a different benefit.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
