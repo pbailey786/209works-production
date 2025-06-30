@@ -3,7 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { openai } from '@/lib/ai';
 import { prisma } from '@/lib/database/prisma';
 
-export const maxDuration = 30;
+export const maxDuration = 15; // Reduced timeout - fail fast to fallback
 
 export async function POST(req: NextRequest) {
   try {
@@ -185,16 +185,21 @@ Return ONLY a JSON object with these exact fields:
 }`;
 
     try {
-      // Try OpenAI first
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.7, // Increased for more variety in intros
-        max_tokens: 1200,
-      });
+      // Try OpenAI first with timeout
+      const completion = await Promise.race([
+        openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.7, // Increased for more variety in intros
+          max_tokens: 1200,
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('AI timeout')), 8000) // 8 second timeout
+        )
+      ]) as any;
 
       const content = completion.choices[0]?.message?.content?.trim();
       if (!content) {
@@ -233,22 +238,70 @@ Return ONLY a JSON object with these exact fields:
     } catch (aiError) {
       console.error('AI generation failed:', aiError);
       
-      // Rule-based fallback system - always works
-      const fallbackJobData = generateFallbackJob(prompt.trim(), user);
-      
-      return NextResponse.json({
-        success: true,
-        jobData: fallbackJobData,
-        fallback: true
-      });
+      try {
+        // Rule-based fallback system - always works
+        const fallbackJobData = generateFallbackJob(prompt.trim(), user);
+        
+        return NextResponse.json({
+          success: true,
+          jobData: fallbackJobData,
+          fallback: true,
+          message: 'Generated using fallback system (AI temporarily unavailable)'
+        });
+      } catch (fallbackError) {
+        console.error('Fallback generation failed:', fallbackError);
+        
+        // Emergency simple fallback
+        return NextResponse.json({
+          success: true,
+          jobData: {
+            title: 'General Worker',
+            location: user?.businessLocation || 'Stockton, CA',
+            salary: '$16-19/hr',
+            description: `We're hiring in ${user?.businessLocation || 'Stockton'}! Join our team for steady work in a supportive environment.\n\nWhat You'll Do:\n• Perform daily tasks as assigned by supervisors\n• Maintain clean and organized work areas\n• Follow safety protocols and procedures\n• Work collaboratively with team members\n• Learn new skills through training\n• Complete tasks efficiently and accurately\n\nWhat We're Looking For:\n• Reliable transportation\n• Strong work ethic and positive attitude\n• Ability to follow instructions\n• Team player mentality\n• Physical ability for standing/lifting\n• Willingness to learn new skills`,
+            requirements: '• Must be 18+ with valid ID\n• Reliable transportation\n• Able to pass background check\n• Legal right to work in US',
+            contactMethod: user?.contactEmail || clerkUser.emailAddresses[0]?.emailAddress || 'hr@company.com',
+            schedule: 'Full-time',
+            benefits: ''
+          },
+          fallback: true,
+          emergency: true,
+          message: 'Generated using emergency fallback (please try again)'
+        });
+      }
     }
 
   } catch (error) {
     console.error('Magic job creation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate job posting. Please try again.' },
-      { status: 500 }
-    );
+    
+    // Final emergency fallback - ensure we always return valid JSON
+    try {
+      return NextResponse.json({
+        success: true,
+        jobData: {
+          title: 'General Worker',
+          location: 'Stockton, CA',
+          salary: '$16-19/hr',
+          description: `We're hiring! Join our team for steady work in a supportive environment.\n\nWhat You'll Do:\n• Perform daily tasks as assigned\n• Maintain clean work areas\n• Follow safety protocols\n• Work with team members\n• Learn new skills\n• Complete tasks efficiently\n\nWhat We're Looking For:\n• Reliable transportation\n• Strong work ethic\n• Ability to follow instructions\n• Team player mentality\n• Physical ability for work\n• Willingness to learn`,
+          requirements: '• Must be 18+ with valid ID\n• Reliable transportation\n• Able to pass background check\n• Legal right to work in US',
+          contactMethod: 'hr@company.com',
+          schedule: 'Full-time',
+          benefits: ''
+        },
+        fallback: true,
+        emergency: true,
+        message: 'System temporarily unavailable - generated basic job post'
+      });
+    } catch (finalError) {
+      console.error('Final fallback failed:', finalError);
+      return NextResponse.json(
+        { 
+          error: 'Job posting system temporarily unavailable. Please try again in a few minutes.',
+          success: false 
+        },
+        { status: 500 }
+      );
+    }
   }
 }
 
