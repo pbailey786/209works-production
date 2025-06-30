@@ -60,29 +60,11 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
       .toUpperCase();
   };
 
-  // Parse benefits from text or use benefitOptions
-  const activeBenefits = jobData.benefitOptions?.filter(b => b.value) || [];
+  // Get active benefits (all benefits in the array are considered active now)
+  const activeBenefits = jobData.benefitOptions || [];
   
-  // If no structured benefits, try to parse from benefits text
-  if (activeBenefits.length === 0 && jobData.benefits) {
-    const benefitText = jobData.benefits.toLowerCase();
-    Object.entries(CENTRAL_VALLEY_BENEFITS).forEach(([key, benefit]) => {
-      if (
-        benefitText.includes(benefit.title.toLowerCase()) ||
-        benefitText.includes(key)
-      ) {
-        activeBenefits.push(benefit);
-      }
-    });
-  }
-
-  // Default to some basic benefits if none specified
-  if (activeBenefits.length === 0) {
-    activeBenefits.push(
-      CENTRAL_VALLEY_BENEFITS.training,
-      CENTRAL_VALLEY_BENEFITS.overtime
-    );
-  }
+  // Filter out benefits with empty titles
+  const validBenefits = activeBenefits.filter(b => b.title && b.title.trim() !== '');
 
   const gradientStyle = headerColor 
     ? { background: `linear-gradient(135deg, ${headerColor} 0%, ${headerColor}dd 100%)` }
@@ -184,7 +166,7 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
         )}
 
         {/* Benefits */}
-        {activeBenefits.length > 0 && (
+        {validBenefits.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3">
               <span className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-lg">
@@ -193,14 +175,16 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
               What We Offer
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeBenefits.slice(0, 6).map((benefit, index) => (
+              {validBenefits.map((benefit, index) => (
                 <div 
-                  key={index} 
+                  key={benefit.key || index} 
                   className="bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="text-3xl mb-3">{benefit.icon}</div>
                   <div className="font-semibold text-gray-800 mb-1">{benefit.title}</div>
-                  <div className="text-sm text-gray-600">{benefit.description}</div>
+                  {benefit.description && (
+                    <div className="text-sm text-gray-600">{benefit.description}</div>
+                  )}
                 </div>
               ))}
             </div>
