@@ -38,7 +38,6 @@ export async function GET(request: NextRequest) {
     // Fetch AI-related analytics
     const [
       aiAssistedApplications,
-      shouldIApplyUsage,
       chatIntentTypes,
       failedMatches,
       pricingTierEngagement,
@@ -56,17 +55,6 @@ export async function GET(request: NextRequest) {
         WHERE ja.appliedAt >= ${startDate}
       `,
 
-      // "Should I Apply" feature usage
-      prisma.$queryRaw`
-        SELECT 
-          COUNT(*) as total_queries,
-          COUNT(CASE WHEN response LIKE '%should apply%' THEN 1 END) as apply_recommendations,
-          COUNT(CASE WHEN response LIKE '%not recommend%' THEN 1 END) as no_apply_recommendations,
-          AVG(responseTime) as avg_response_time
-        FROM ChatAnalytics
-        WHERE createdAt >= ${startDate}
-        AND question LIKE '%should i apply%' OR question LIKE '%should I apply%'
-      `,
 
       // Chat intent types analysis
       prisma.$queryRaw`
@@ -76,7 +64,6 @@ export async function GET(request: NextRequest) {
             WHEN question LIKE '%remote%' OR question LIKE '%work from home%' THEN 'remote_work'
             WHEN question LIKE '%benefits%' THEN 'benefits_inquiry'
             WHEN question LIKE '%requirements%' OR question LIKE '%qualifications%' THEN 'requirements'
-            WHEN question LIKE '%should i apply%' THEN 'application_advice'
             WHEN question LIKE '%location%' OR question LIKE '%where%' THEN 'location_inquiry'
             WHEN question LIKE '%company%' THEN 'company_info'
             ELSE 'general_search'
@@ -144,12 +131,6 @@ export async function GET(request: NextRequest) {
         ai_assistance_rate: 0,
       },
       
-      shouldIApplyUsage: Array.isArray(shouldIApplyUsage) ? shouldIApplyUsage[0] : {
-        total_queries: 0,
-        apply_recommendations: 0,
-        no_apply_recommendations: 0,
-        avg_response_time: 0,
-      },
 
       intentTypes: Array.isArray(chatIntentTypes) ? chatIntentTypes : [],
       
@@ -229,25 +210,6 @@ export async function POST(request: NextRequest) {
         });
         break;
 
-      case 'should_i_apply':
-        // Track "Should I Apply" feature usage
-        await prisma.chatAnalytics.create({
-          data: {
-            userId: session.user.id,
-            question: data.query || 'Should I Apply Query',
-            response: data.response || '',
-            jobsFound: 1, // Always 1 for specific job queries
-            responseTime: data.responseTime || 0,
-            sessionId: data.sessionId || '',
-            metadata: JSON.stringify({
-              eventType: 'should_i_apply',
-              jobId: data.jobId,
-              recommendation: data.recommendation,
-              confidence: data.confidence,
-            }),
-          },
-        });
-        break;
 
       case 'failed_match':
         // Track queries that didn't return good results

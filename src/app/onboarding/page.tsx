@@ -111,7 +111,6 @@ export default function OnboardingPage() {
               </p>
               <ul className="text-sm text-gray-500 space-y-2">
                 <li>✓ Smart job recommendations</li>
-                <li>✓ AI-powered "Should I Apply?" feature</li>
                 <li>✓ .works resume builder</li>
                 <li>✓ Skills & career guidance</li>
               </ul>

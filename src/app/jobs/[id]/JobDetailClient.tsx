@@ -26,7 +26,6 @@ import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 import JobCard from '@/components/JobCard';
 import JobGenie from '@/components/JobGenie';
-import ShouldIApplyCalculator from '@/components/ShouldIApplyCalculator';
 import JobApplicationModal from '@/components/JobApplicationModal';
 import {
   formatJobDescription,
@@ -83,25 +82,8 @@ export default function JobDetailClient({
   const [reportReason, setReportReason] = useState('');
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [shouldIApplyOpen, setShouldIApplyOpen] = useState(false);
   const [applicationModalOpen, setApplicationModalOpen] = useState(false);
-  const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
   const [creatingAlert, setCreatingAlert] = useState(false);
-
-  // Check if user has used "Should I Apply" feature before
-  useEffect(() => {
-    const hasUsedFeature = localStorage.getItem('shouldIApply_used');
-    setIsFirstTimeUser(!hasUsedFeature);
-  }, []);
-
-  // Mark feature as used when modal opens
-  const handleShouldIApplyOpen = () => {
-    setShouldIApplyOpen(true);
-    if (isFirstTimeUser) {
-      localStorage.setItem('shouldIApply_used', 'true');
-      setIsFirstTimeUser(false);
-    }
-  };
 
   // Memoized salary display
   const salaryDisplay = useMemo(() => {
@@ -481,38 +463,6 @@ export default function JobDetailClient({
                       </Link>
                     )}
 
-                    {/* Enhanced Should I Apply Button - Most prominent for job seekers */}
-                    {!isJobOwner && (
-                      <div className="relative group">
-                        <button
-                          onClick={handleShouldIApplyOpen}
-                          className="group relative inline-flex items-center rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:from-indigo-700 hover:to-indigo-800 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 focus:ring-offset-2"
-                        >
-                          <SparklesIcon className="mr-3 h-5 w-5 transition-transform group-hover:rotate-12" />
-                          Should I Apply?
-                          {/* AI Badge with first-time indicator */}
-                          <span className={`absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white ${
-                            isFirstTimeUser ? 'bg-blue-500 animate-pulse' : 'bg-indigo-500'
-                          }`}>
-                            {isFirstTimeUser ? 'NEW' : 'AI'}
-                          </span>
-                        </button>
-
-                        {/* Tooltip */}
-                        <div className="absolute bottom-full left-1/2 mb-2 hidden w-64 -translate-x-1/2 transform rounded-lg bg-gray-900 px-3 py-2 text-sm text-white shadow-lg group-hover:block">
-                          <div className="text-center">
-                            <div className="font-medium">Get AI-powered match analysis</div>
-                            <div className="text-xs text-gray-300 mt-1">
-                              Personalized insights for the 209 area
-                            </div>
-                          </div>
-                          {/* Arrow */}
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 transform">
-                            <div className="border-4 border-transparent border-t-gray-900"></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
                     <button
                       onClick={handleSaveJob}
@@ -936,16 +886,6 @@ export default function JobDetailClient({
       {/* JobGenie Chatbot */}
       <JobGenie jobId={job.id} jobTitle={job.title} company={job.company} />
 
-      {/* Should I Apply Calculator */}
-      <ShouldIApplyCalculator
-        isOpen={shouldIApplyOpen}
-        onClose={() => setShouldIApplyOpen(false)}
-        jobId={job.id}
-        jobTitle={job.title}
-        company={job.company}
-        isAuthenticated={isAuthenticated}
-        userId={userId}
-      />
 
       {/* Job Application Modal */}
       <JobApplicationModal

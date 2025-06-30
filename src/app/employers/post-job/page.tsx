@@ -313,7 +313,7 @@ export default function PostJobPage() {
                       const userEmail = user?.emailAddresses?.[0]?.emailAddress || 'your-email@company.com';
                       setPrompt(`Job title: 
 Company type: 
-Location: ${user?.businessLocation || 'Stockton, CA'}
+Location: Stockton, CA
 Pay: 
 Schedule: 
 Tasks: 
@@ -735,10 +735,6 @@ Contact: ${userEmail}`);
                       <div className="flex items-center space-x-2">
                         <span>🧭</span>
                         <span>Commute time from major Central Valley cities</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span>💭</span>
-                        <span>"Should I Apply?" AI matching for this position</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span>📚</span>

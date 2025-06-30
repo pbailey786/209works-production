@@ -121,31 +121,6 @@ export default function Analytics({
             }
           };
 
-          // "Should I Apply" feature tracking
-          window.trackShouldIApply = function(jobId, recommendation, confidence, userAction) {
-            // Google Analytics
-            gtag('event', 'should_i_apply', {
-              event_category: 'ai_assistance',
-              event_label: recommendation,
-              value: confidence,
-              custom_parameters: {
-                job_id: jobId,
-                recommendation: recommendation,
-                user_action: userAction
-              }
-            });
-
-            // PostHog
-            if (window.posthog) {
-              posthog.capture('should_i_apply', {
-                job_id: jobId,
-                recommendation: recommendation,
-                confidence: confidence,
-                user_action: userAction,
-                timestamp: new Date().toISOString()
-              });
-            }
-          };
 
           // Job application tracking
           window.trackJobApplication = function(jobId, source, aiAssisted = false) {

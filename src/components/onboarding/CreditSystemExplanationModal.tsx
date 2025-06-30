@@ -80,7 +80,7 @@ export default function CreditSystemExplanationModal({
               </div>
               <div>
                 <h4 className="font-semibold text-orange-800">⭐ Feature a Job</h4>
-                <p className="text-sm text-orange-700">Top placement in search + email boost to top candidates using our Should I Apply AI. 1 credit gets you there.</p>
+                <p className="text-sm text-orange-700">Top placement in search + email boost to top candidates. 1 credit gets you there.</p>
               </div>
             </div>
 
