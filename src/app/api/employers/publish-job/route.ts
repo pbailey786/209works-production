@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         status: 'active',
         employerId: user.id,
         embedding: embeddings ? JSON.stringify(embeddings) : null,
-        supplementalQuestions: customQuestions && customQuestions.length > 0 ? customQuestions.filter(q => q.trim()) : []
+        supplementalQuestions: customQuestions && customQuestions.length > 0 ? customQuestions.filter((q: string) => q.trim()) : []
       }
     });
 
