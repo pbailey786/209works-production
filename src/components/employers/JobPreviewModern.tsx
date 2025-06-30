@@ -9,6 +9,7 @@ interface BenefitOption {
   title: string;
   description: string;
   value: boolean;
+  key: string;
 }
 
 interface JobData {
@@ -34,21 +35,6 @@ interface JobPreviewModernProps {
   headerColor?: string;
 }
 
-// Central Valley specific benefit templates - 12 options for selection
-const CENTRAL_VALLEY_BENEFITS: Record<string, BenefitOption> = {
-  health: { icon: '🏥', title: 'Health Insurance', description: 'Medical, dental, vision coverage', value: false },
-  pto: { icon: '🌴', title: 'Paid Time Off', description: 'Vacation and sick days', value: false },
-  retirement: { icon: '💰', title: '401(k) Plan', description: 'Retirement savings with match', value: false },
-  parking: { icon: '🚗', title: 'Free Parking', description: 'On-site parking provided', value: false },
-  training: { icon: '📚', title: 'Training', description: 'On-the-job training programs', value: false },
-  overtime: { icon: '⏰', title: 'Overtime Pay', description: 'Time and a half after 40 hours', value: false },
-  meals: { icon: '🍽️', title: 'Meal Benefits', description: 'Free or discounted meals', value: false },
-  uniform: { icon: '👔', title: 'Uniform Provided', description: 'Company provides work attire', value: false },
-  tools: { icon: '🔧', title: 'Tools Provided', description: 'All necessary equipment', value: false },
-  flexible: { icon: '⏱️', title: 'Flexible Schedule', description: 'Work-life balance options', value: false },
-  bonus: { icon: '🎯', title: 'Performance Bonus', description: 'Earn extra based on results', value: false },
-  commute: { icon: '🚌', title: 'Commute Assistance', description: 'Gas cards or transit passes', value: false },
-};
 
 export default function JobPreviewModern({ jobData, headerColor }: JobPreviewModernProps) {
   const getInitials = (name: string) => {
