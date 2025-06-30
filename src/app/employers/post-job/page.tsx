@@ -40,6 +40,7 @@ export default function PostJobPage() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isRequirementsExpanded, setIsRequirementsExpanded] = useState(false);
+  const [showExampleModal, setShowExampleModal] = useState(false);
   
   // Auto-fill email when user loads
   useEffect(() => {
@@ -186,11 +187,18 @@ export default function PostJobPage() {
               />
               <div className="flex justify-between items-center mt-2">
                 <span className="text-sm text-gray-500">{prompt.length}/500 characters</span>
-                <div className="flex gap-2">
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">✨ Include salary</span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">📍 Mention location</span>
-                  <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">⏰ Add schedule</span>
-                </div>
+                <button
+                  onClick={() => setShowExampleModal(true)}
+                  className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+                >
+                  <span>💡</span>
+                  <span>Need help? See example</span>
+                </button>
+              </div>
+              <div className="flex gap-2 mt-2">
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">✨ Include salary</span>
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">📍 Mention location</span>
+                <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">⏰ Add schedule</span>
               </div>
             </div>
 
@@ -254,6 +262,79 @@ export default function PostJobPage() {
             <p className="text-sm">🌾 Optimized for Central Valley • Stockton • Modesto • Fresno • Tracy</p>
           </div>
         </div>
+
+        {/* Example Modal */}
+        {showExampleModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">💡 How to Write Great Job Posts</h3>
+                  <button 
+                    onClick={() => setShowExampleModal(false)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <p className="text-gray-600 mb-4">
+                  Include these details for the best results. The AI works better with specific information!
+                </p>
+                
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <h4 className="font-semibold mb-2">📝 Example Template:</h4>
+                  <div className="text-sm space-y-1 font-mono bg-white p-3 rounded border">
+                    <div><strong>Job title:</strong> Property Manager</div>
+                    <div><strong>Company type:</strong> Storage company</div>
+                    <div><strong>Location:</strong> Stockton, CA</div>
+                    <div><strong>Pay:</strong> $17.50–$19.50/hr</div>
+                    <div><strong>Schedule:</strong> Full-time, some weekends</div>
+                    <div><strong>Tasks:</strong> Rent units, take payments, keep facility clean, handle delinquent accounts</div>
+                    <div><strong>Skills:</strong> Good with people, basic computer skills, Microsoft Excel</div>
+                    <div><strong>Contact:</strong> manager@storageking.com</div>
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                  <h4 className="font-semibold text-blue-900 mb-2">✅ Pro Tips:</h4>
+                  <ul className="text-blue-800 text-sm space-y-1">
+                    <li>• Be specific about daily tasks (not just "customer service")</li>
+                    <li>• Include pay range to attract right candidates</li>
+                    <li>• Mention physical requirements if applicable</li>
+                    <li>• Add contact email for applications</li>
+                    <li>• Note if benefits offered (health insurance, PTO, etc.)</li>
+                  </ul>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setPrompt(`Job title: Property Manager
+Company type: Storage company  
+Location: Stockton, CA
+Pay: $17.50–$19.50/hr
+Schedule: Full-time, some weekends
+Tasks: Rent units, take payments, keep facility clean, handle delinquent accounts
+Skills: Good with people, basic computer skills, Microsoft Excel
+Contact: manager@storageking.com`);
+                      setShowExampleModal(false);
+                    }}
+                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+                  >
+                    📋 Use This Template
+                  </button>
+                  <button
+                    onClick={() => setShowExampleModal(false)}
+                    className="flex-1 border border-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50"
+                  >
+                    I'll Write My Own
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
