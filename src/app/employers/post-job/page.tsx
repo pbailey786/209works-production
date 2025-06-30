@@ -223,7 +223,7 @@ export default function PostJobPage() {
                 onClick={() => {
                   setJobData({
                     title: '',
-                    location: user?.user_metadata?.businessLocation || '',
+                    location: '',
                     salary: '',
                     description: '',
                     requirements: '',
