@@ -161,13 +161,13 @@ Return ONLY a JSON object with these exact fields:
     try {
       // Try OpenAI first
       const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.1,
-        max_tokens: 1000,
+        temperature: 0.3,
+        max_tokens: 1200,
       });
 
       const content = completion.choices[0]?.message?.content?.trim();
