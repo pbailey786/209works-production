@@ -309,18 +309,32 @@ Return ONLY a JSON object with these exact fields:
 function generateFallbackJob(prompt: string, user: any): any {
   const lowerPrompt = prompt.toLowerCase();
   
-  // Extract title from prompt
+  // Extract title from prompt - check specific titles first, then general keywords
   let title = 'General Worker';
   let jobType = 'general';
-  if (lowerPrompt.includes('warehouse')) { title = 'Warehouse Associate'; jobType = 'warehouse'; }
+  
+  // Check for specific job titles first (most important)
+  if (lowerPrompt.includes('property manager')) { title = 'Property Manager'; jobType = 'management'; }
+  else if (lowerPrompt.includes('storage manager')) { title = 'Storage Manager'; jobType = 'management'; }
+  else if (lowerPrompt.includes('facility manager')) { title = 'Facility Manager'; jobType = 'management'; }
+  else if (lowerPrompt.includes('office manager')) { title = 'Office Manager'; jobType = 'office'; }
+  else if (lowerPrompt.includes('warehouse supervisor')) { title = 'Warehouse Supervisor'; jobType = 'warehouse'; }
+  
+  // Then check for general job types
+  else if (lowerPrompt.includes('warehouse')) { title = 'Warehouse Associate'; jobType = 'warehouse'; }
   else if (lowerPrompt.includes('cashier')) { title = 'Cashier'; jobType = 'retail'; }
   else if (lowerPrompt.includes('driver')) { title = 'Delivery Driver'; jobType = 'driver'; }
-  else if (lowerPrompt.includes('retail') || lowerPrompt.includes('sales')) { title = 'Sales Associate'; jobType = 'retail'; }
+  else if (lowerPrompt.includes('retail') || lowerPrompt.includes('sales associate')) { title = 'Sales Associate'; jobType = 'retail'; }
   else if (lowerPrompt.includes('office') || lowerPrompt.includes('admin')) { title = 'Administrative Assistant'; jobType = 'office'; }
   else if (lowerPrompt.includes('cook') || lowerPrompt.includes('kitchen')) { title = 'Line Cook'; jobType = 'kitchen'; }
-  else if (lowerPrompt.includes('clean')) { title = 'Janitor/Cleaner'; jobType = 'cleaning'; }
   else if (lowerPrompt.includes('security')) { title = 'Security Officer'; jobType = 'security'; }
   else if (lowerPrompt.includes('forklift')) { title = 'Forklift Operator'; jobType = 'warehouse'; }
+  
+  // Only match cleaning jobs if it's clearly a cleaning position (not just mentions cleaning tasks)
+  else if (lowerPrompt.includes('janitor') || lowerPrompt.includes('cleaner') || lowerPrompt.includes('cleaning position')) { 
+    title = 'Janitor/Cleaner'; 
+    jobType = 'cleaning'; 
+  }
   
   // Extract location - use user's business location as default
   let location = user?.businessLocation || 'Stockton, CA';
@@ -347,6 +361,7 @@ function generateFallbackJob(prompt: string, user: any): any {
     else if (jobType === 'driver') salary = '$18-22/hr';
     else if (jobType === 'office') salary = '$18-21/hr';
     else if (jobType === 'security') salary = '$16-19/hr';
+    else if (jobType === 'management') salary = '$19-23/hr';
   }
   
   // Extract contact method if provided - use user's contact info as default
@@ -469,6 +484,33 @@ The details:
 • Solo posts with radio backup support
 • Indoor/outdoor patrol responsibilities
 • Uniform and equipment provided`,
+    
+    management: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} seeking an experienced ${title} for our ${location.split(',')[0]} facility. Perfect opportunity for someone with leadership skills who wants to make a real impact in a growing Central Valley business.
+
+What you'll be doing:
+• Oversee daily facility operations and staff coordination
+• Rent storage units and handle customer inquiries professionally
+• Process payments, deposits, and maintain accurate records
+• Handle delinquent accounts with professionalism and follow-up
+• Maintain facility cleanliness and security standards
+• Coordinate maintenance and repairs with vendors
+• Prepare daily reports and manage inventory systems
+• Train and supervise facility staff as needed
+
+What we need:
+• Previous management or supervisory experience preferred
+• Strong customer service and communication skills
+• Proficiency with Microsoft Excel and basic computer systems
+• Ability to handle money and maintain accurate records
+• Problem-solving skills for customer and operational issues
+• Professional appearance and reliable attendance
+• Bilingual English/Spanish strongly preferred
+
+The details:
+• ${schedule.includes('weekend') ? 'Full-time with some weekend coverage required' : 'Full-time with occasional weekend coverage'}
+• Small team environment with growth opportunities
+• Direct interaction with customers and community members
+• Performance-based advancement potential`,
     
     general: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} hiring in ${location.split(',')[0]}! Looking for hardworking individuals to join our growing team. This is a great opportunity for someone seeking stable employment close to home.
 
