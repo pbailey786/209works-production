@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Zap, ArrowRight, Edit, MapPin, DollarSign, Briefcase, User, Eye } from 'lucide-react';
@@ -32,7 +32,7 @@ export default function PostJobPage() {
     salary: '',
     description: '',
     requirements: '',
-    contactMethod: '',
+    contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
     requiresDegree: false,
     customQuestions: []
   });
@@ -40,6 +40,16 @@ export default function PostJobPage() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isRequirementsExpanded, setIsRequirementsExpanded] = useState(false);
+  
+  // Auto-fill email when user loads
+  useEffect(() => {
+    if (user && user.emailAddresses?.[0]?.emailAddress && !jobData.contactMethod) {
+      setJobData(prev => ({
+        ...prev,
+        contactMethod: user.emailAddresses[0].emailAddress
+      }));
+    }
+  }, [user]);
   
   // Check if form is ready to publish
   const isReady = jobData.title && jobData.location && jobData.salary && jobData.contactMethod;

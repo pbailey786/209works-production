@@ -108,7 +108,12 @@ ${user?.companyName ? `Company: ${user.companyName}` : ''}
 ${user?.businessLocation ? `Default Location: ${user.businessLocation}` : ''}
 ${user?.industry ? `Industry: ${user.industry}` : ''}
 
-The tone should be friendly but professional, targeting Central Valley workers who want a steady job, a supportive team, and clear expectations.
+IMPORTANT RULES:
+- DO NOT make up benefits (health insurance, 401k, PTO) unless explicitly mentioned in the prompt
+- Focus on the work itself - be specific about daily tasks and responsibilities
+- Add realistic details about the work environment and team dynamics
+- Only mention what you know from the prompt - don't invent company details
+- If they mention benefits in the prompt, include them. Otherwise, leave benefits section empty.
 
 Write a professional job post following this exact structure:
 
@@ -116,10 +121,10 @@ Write a professional job post following this exact structure:
 
 2. **"What You'll Do:" or "Your Daily Impact:"** (6-8 detailed bullet points)
    - Use action verbs (Process, Manage, Organize, Assist, etc.)
-   - Be specific about actual tasks and responsibilities
-   - Include equipment, systems, or tools used
-   - Mention customer interaction if relevant
-   - Add growth/learning opportunities
+   - Think about a FULL day - what happens in morning vs afternoon?
+   - Include both routine tasks AND occasional responsibilities
+   - Be specific: instead of "help customers", say "greet customers at entrance, answer product questions, guide them to correct aisle"
+   - Include team collaboration and who they'll work with
 
 3. **"What We're Looking For:" or "What You Bring:"** (5-7 bullet points)
    - Start with education/experience requirements
