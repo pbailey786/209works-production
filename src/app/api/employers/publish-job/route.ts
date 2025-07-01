@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const requestBody = await req.json();
     console.log('Publish job request body:', JSON.stringify(requestBody, null, 2));
     
-    const { title, location, salary, description, requirements, contactMethod, requiresDegree, customQuestions, benefitOptions } = requestBody;
+    const { title, location, salary, description, responsibilities, requirements, contactMethod, requiresDegree, customQuestions, benefitOptions } = requestBody;
     
     // Validate required fields
     if (!title || !location || !salary) {
@@ -125,6 +125,7 @@ export async function POST(req: NextRequest) {
       data: {
         title: title.trim(),
         description: finalDescription,
+        responsibilities: responsibilities?.trim() || '',
         requirements: requirements?.trim() || '',
         benefits: benefitsString, // Store benefits in dedicated field
         location: location.trim(),

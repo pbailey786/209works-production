@@ -156,10 +156,12 @@ src/
 **Latest Updates (Jan 1, 2025):**
 - **Job Ad Layout Redesign**: Complete overhaul of job posting structure based on Indeed analysis
 - **New 4-Section Format**: About This Role → What You'll Do → What We're Looking For → What We Offer
+- **Database Schema Update**: Added `responsibilities` field to Job model for new "What You'll Do" section
 - **Enhanced AI Content Generation**: 3-4 sentence role summaries + 5-6 specific daily responsibilities
 - **Professional Balance**: Indeed-quality depth while maintaining job seeker readability
 - **Comprehensive Fallback System**: Added detailed responsibilities for all job types (warehouse, retail, management, etc.)
 - **Improved Display**: New section headers with engaging icons (💼⚡🎯🎁) and better organization
+- **API Updates**: Updated job creation and publishing routes to handle responsibilities field
 
 **Previous Updates (Dec 31, 2024):**
 - **Job Data Flow Fix**: Resolved data loss between job creation and published job display
