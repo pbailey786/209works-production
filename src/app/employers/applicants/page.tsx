@@ -42,6 +42,7 @@ interface Application {
     id: string;
     name: string;
     email: string;
+    phoneNumber?: string;
     resumeUrl?: string;
     bio?: string;
     skills?: string[];
@@ -330,6 +331,12 @@ export default function ApplicantsPage() {
                           <Mail className="mr-1 h-4 w-4" />
                           {application.user.email}
                         </span>
+                        {application.user.phoneNumber && (
+                          <span className="flex items-center">
+                            <Phone className="mr-1 h-4 w-4" />
+                            {application.user.phoneNumber}
+                          </span>
+                        )}
                         {application.user.location && (
                           <span className="flex items-center">
                             <MapPin className="mr-1 h-4 w-4" />
@@ -394,7 +401,6 @@ export default function ApplicantsPage() {
 
                           <button
                             onClick={() => {
-                              // Quick contact functionality - could open a modal or navigate
                               window.location.href = `mailto:${application.user.email}?subject=Regarding your application for ${application.job.title}`;
                             }}
                             className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-50"
@@ -402,6 +408,18 @@ export default function ApplicantsPage() {
                             <Mail className="mr-1 inline h-3 w-3" />
                             Email
                           </button>
+
+                          {application.user.phoneNumber && (
+                            <button
+                              onClick={() => {
+                                window.location.href = `tel:${application.user.phoneNumber}`;
+                              }}
+                              className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                            >
+                              <Phone className="mr-1 inline h-3 w-3" />
+                              Call
+                            </button>
+                          )}
 
                           <Link
                             href={`/employers/candidates/${application.id}`}

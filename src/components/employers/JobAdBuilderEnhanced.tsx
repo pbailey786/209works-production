@@ -19,6 +19,7 @@ interface JobData {
   company?: string;
   companyLogo?: string;
   description?: string;
+  responsibilities?: string;
   requirements?: string;
   salary?: string;
   location?: string;

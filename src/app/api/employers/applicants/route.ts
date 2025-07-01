@@ -35,7 +35,11 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             email: true,
+            phoneNumber: true,
             location: true,
+            skills: true,
+            currentJobTitle: true,
+            experienceLevel: true,
           }
         },
         job: {
@@ -55,6 +59,10 @@ export async function GET(request: NextRequest) {
       id: application.id,
       name: application.user.name || 'Anonymous',
       email: application.user.email,
+      phoneNumber: application.user.phoneNumber || null,
+      currentJobTitle: application.user.currentJobTitle || null,
+      experienceLevel: application.user.experienceLevel || null,
+      skills: application.user.skills || [],
       jobTitle: application.job.title,
       appliedDate: application.appliedAt.toISOString().split('T')[0],
       status: application.status || 'new',

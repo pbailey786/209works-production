@@ -35,6 +35,7 @@ interface JobData {
   location: string;
   salary: string;
   description: string;
+  responsibilities: string;
   requirements: string;
   contactMethod: string;
   schedule?: string;
@@ -59,6 +60,7 @@ export default function PostJobPage() {
     location: '',
     salary: '',
     description: '',
+    responsibilities: '',
     requirements: '',
     contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
     requiresDegree: false,
@@ -249,6 +251,7 @@ export default function PostJobPage() {
       location: '',
       salary: '',
       description: '',
+      responsibilities: '',
       requirements: '',
       contactMethod: '',
       requiresDegree: false,
