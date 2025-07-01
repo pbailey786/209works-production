@@ -275,9 +275,23 @@ export async function POST(req: NextRequest) {
           
           // Generate description in your exact style
           const workplace = cleanTitle.toLowerCase().includes('janitor') && lastUserMessage.includes('church') ? 'church community' : 'team';
-          const description = `"Join a friendly ${workplace} as our ${isEvening ? 'evening' : ''} ${cleanTitle.toLowerCase()}. ${template.typicalDuties[0].toLowerCase()}. ${newJobData.salary}. ${newJobData.schedule ? newJobData.schedule + ' hours' : 'Steady hours'}. No experience required — just a good attitude!"`;
+          const shortDescription = `"Join a friendly ${workplace} as our ${isEvening ? 'evening' : ''} ${cleanTitle.toLowerCase()}. ${template.typicalDuties[0].toLowerCase()}. ${newJobData.salary}. ${newJobData.schedule ? newJobData.schedule + ' hours' : 'Steady hours'}. No experience required — just a good attitude!"`;
           
-          newJobData.description = '• ' + template.typicalDuties.slice(0, 4).join('\n• ');
+          // Create a more comprehensive job description
+          const companyName = newJobData.company || 'our company';
+          const introVariations = [
+            `Join our growing team at ${companyName} in ${cleanLocation}! We're looking for a dedicated ${cleanTitle} to help us maintain our high standards of service.`,
+            `${companyName} is seeking a reliable ${cleanTitle} to join our team in ${cleanLocation}. This is a great opportunity for someone who takes pride in their work.`,
+            `We're a well-established business in ${cleanLocation} looking for a ${cleanTitle} who values hard work and attention to detail.`,
+            `At ${companyName}, we believe in creating opportunities for hardworking individuals. We're currently seeking a ${cleanTitle} for our ${cleanLocation} location.`
+          ];
+          
+          const intro = introVariations[Math.floor(Math.random() * introVariations.length)];
+          
+          // Build comprehensive description
+          const duties = template.typicalDuties.slice(0, 4).map(duty => `• ${duty}`).join('\n');
+          
+          newJobData.description = `${intro}\n\n**What You'll Do:**\n${duties}\n\nThis position offers ${newJobData.salary} with ${newJobData.schedule || 'regular hours'}. We're looking for someone who brings a positive attitude and is ready to contribute to our team's success.`;
           newJobData.requirements = '• ' + template.typicalRequirements.slice(0, 3).join('\n• ');
           
           response = `Perfect! I've got everything I need. Here's what I'm thinking for your posting:\n\n**${headline}**\n\n${description}\n\nI've also added the typical duties and requirements that work well for ${cleanTitle} positions around here. You can edit everything in the next step - just hit 'Build Job Ad' when you're ready!`;
