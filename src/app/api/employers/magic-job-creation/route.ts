@@ -43,17 +43,24 @@ ABOUT THE ROLE (2-3 sentences MAX):
 - 2nd sentence: Key daily tasks in plain language
 - 3rd sentence (optional): Why this role matters to the business
 
-REQUIREMENTS (4-5 bullet points):
-• Must-have skills and experience
-• Nice-to-have qualifications
+REQUIREMENTS (3-4 must-have bullet points):
+• Essential skills and experience
+• Required certifications/education
 • Physical requirements if applicable
-• Schedule flexibility needs
+• Schedule availability needs
+
+NICE TO HAVE (2-3 preferred bullet points):
+• Preferred experience
+• Bonus skills
+• Additional qualifications
 
 BENEFITS (3-4 bullet points of what they get):
-• Pay rate/range
-• Schedule stability or flexibility
+• Pay rate/range (title: "Competitive Pay")
+• Schedule stability (title: "Stable Schedule") 
+• Growth opportunities (title: "Growth Opportunities")
 • Work environment perks
-• Growth opportunities
+
+IMPORTANT: Keep benefit titles SHORT (2-3 words max) to prevent truncation
 
 CRITICAL RULES:
 - Be DIRECT and CONVERSATIONAL - no corporate jargon
@@ -91,12 +98,14 @@ Return JSON:
   "location": "[City, CA]",
   "salary": "[exact pay from prompt]",
   "description": "[2-3 sentences ONLY - what company does, what role does, why it matters]",
-  "requirements": "[4-5 bullet points with • symbol]",
+  "requirements": "[3-4 must-have bullet points with • symbol]",
+  "niceToHave": "[2-3 preferred qualifications with • symbol]",
   "contactMethod": "[email/phone from prompt]",
   "schedule": "[schedule from prompt]",
   "benefitOptions": [
-    {"icon": "💰", "title": "[Pay title]", "description": "[Pay details]", "key": "benefit_1"},
-    {"icon": "[emoji]", "title": "[Benefit]", "description": "[Details]", "key": "benefit_2"}
+    {"icon": "💰", "title": "Competitive Pay", "description": "[Pay details]", "key": "benefit_1"},
+    {"icon": "📅", "title": "Stable Schedule", "description": "[Schedule details]", "key": "benefit_2"},
+    {"icon": "🌟", "title": "Growth Opportunities", "description": "[Growth details]", "key": "benefit_3"}
   ]
 }`;
 
@@ -288,21 +297,35 @@ function generateFallbackJob(prompt: string, user: any): any {
   
   // Extract salary or use defaults based on job type
   let salary = '$16-19/hr';
-  const salaryMatch = prompt.match(/\$(\d+(?:\.\d+)?)/);
-  if (salaryMatch) {
-    const amount = parseFloat(salaryMatch[1]);
-    if (amount > 1000) {
-      salary = `$${amount.toLocaleString()}/year`;
+  
+  // Try to match salary ranges first (e.g., $17.50–$19.50/hr, $22-26/hr)
+  const rangeMatch = prompt.match(/\$(\d+(?:\.\d+)?)\s*[-–]\s*\$?(\d+(?:\.\d+)?)\s*(?:\/hr|per hour|hourly)?/i);
+  if (rangeMatch) {
+    const min = parseFloat(rangeMatch[1]);
+    const max = parseFloat(rangeMatch[2]);
+    if (min > 1000 || max > 1000) {
+      salary = `$${min.toLocaleString()}-${max.toLocaleString()}/year`;
     } else {
-      salary = `$${amount}/hr`;
+      salary = `$${min}–$${max}/hr`;
     }
   } else {
-    // Default salaries by job type
-    if (jobType === 'warehouse') salary = '$17-20/hr';
-    else if (jobType === 'driver') salary = '$18-22/hr';
-    else if (jobType === 'office') salary = '$18-21/hr';
-    else if (jobType === 'security') salary = '$16-19/hr';
-    else if (jobType === 'management') salary = '$19-23/hr';
+    // Try single salary amount
+    const singleMatch = prompt.match(/\$(\d+(?:\.\d+)?)\s*(?:\/hr|per hour|hourly)?/i);
+    if (singleMatch) {
+      const amount = parseFloat(singleMatch[1]);
+      if (amount > 1000) {
+        salary = `$${amount.toLocaleString()}/year`;
+      } else {
+        salary = `$${amount}/hr`;
+      }
+    } else {
+      // Default salaries by job type
+      if (jobType === 'warehouse') salary = '$17-20/hr';
+      else if (jobType === 'driver') salary = '$18-22/hr';
+      else if (jobType === 'office') salary = '$18-21/hr';
+      else if (jobType === 'security') salary = '$16-19/hr';
+      else if (jobType === 'management') salary = '$19-23/hr';
+    }
   }
   
   // Extract contact method if provided - use user's contact info as default
@@ -445,19 +468,38 @@ function generateFallbackJob(prompt: string, user: any): any {
     });
   }
 
-  // Generate job-specific requirements
+  // Generate job-specific requirements (must-haves)
   const requirementsByType = {
-    warehouse: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Ability to lift 50 lbs repeatedly\n• Previous warehouse experience preferred\n• Basic math skills for inventory\n• Able to pass background check`,
+    warehouse: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Ability to lift 50 lbs repeatedly\n• Able to pass background check`,
     
-    retail: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Weekend and evening availability\n• Friendly personality and customer focus\n• Basic math skills for cash handling\n• Previous retail/customer service experience preferred`,
+    retail: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Weekend and evening availability\n• Friendly personality and customer focus`,
     
-    driver: `• Valid CA driver\'s license with clean record\n• Reliable transportation to ${location.split(',')[0]}\n• Ability to lift packages up to 50 pounds\n• Smartphone skills for delivery apps\n• Previous delivery experience preferred\n• Able to pass background check and drug test`,
+    driver: `• Valid CA driver's license with clean record\n• Reliable transportation to ${location.split(',')[0]}\n• Ability to lift packages up to 50 pounds\n• Able to pass background check and drug test`,
     
-    security: `• Must be 18+ with valid ID\n• CA Guard Card (or ability to obtain)\n• High school diploma or equivalent\n• Able to stand/walk for entire shift\n• Clean background check required\n• Previous security experience preferred`,
+    security: `• Must be 18+ with valid ID\n• CA Guard Card (or ability to obtain)\n• High school diploma or equivalent\n• Able to stand/walk for entire shift`,
     
-    management: `• Previous management or supervisory experience\n• Strong customer service skills\n• Proficiency with Microsoft Excel\n• Ability to handle money and records\n• Professional appearance\n• Bilingual English/Spanish preferred`,
+    management: `• Previous management or supervisory experience\n• Strong customer service skills\n• Proficiency with Microsoft Excel\n• Professional appearance`,
     
-    general: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Strong work ethic and positive attitude\n• Ability to follow instructions\n• Physical ability for standing/lifting\n• Legal right to work in US`
+    office: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Friendly and professional demeanor\n• Basic computer skills`,
+    
+    general: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Strong work ethic and positive attitude\n• Legal right to work in US`
+  };
+
+  // Generate nice-to-have qualifications
+  const niceToHaveByType = {
+    warehouse: `• Previous warehouse experience\n• Forklift certification\n• Basic math skills for inventory`,
+    
+    retail: `• Previous retail/customer service experience\n• Basic math skills for cash handling\n• Second language skills`,
+    
+    driver: `• Previous delivery experience\n• Smartphone skills for delivery apps\n• Local area knowledge`,
+    
+    security: `• Previous security experience\n• Clean background check\n• Military or law enforcement background`,
+    
+    management: `• Bilingual English/Spanish\n• Advanced Excel skills\n• Leadership training or certification`,
+    
+    office: `• Experience with Microsoft Excel\n• Previous receptionist experience\n• Medical office experience`,
+    
+    general: `• Previous experience in similar role\n• Physical ability for standing/lifting\n• Positive attitude and team player`
   };
 
   return {
@@ -466,6 +508,7 @@ function generateFallbackJob(prompt: string, user: any): any {
     salary,
     description: fullDescription,
     requirements: requirementsByType[jobType as keyof typeof requirementsByType] || requirementsByType.general,
+    niceToHave: niceToHaveByType[jobType as keyof typeof niceToHaveByType] || niceToHaveByType.general,
     contactMethod,
     schedule,
     benefitOptions

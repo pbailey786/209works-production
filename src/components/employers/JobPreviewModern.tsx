@@ -18,6 +18,7 @@ interface JobData {
   companyLogo?: string;
   description?: string;
   requirements?: string;
+  niceToHave?: string;
   salary?: string;
   location?: string;
   jobType?: string;
@@ -127,16 +128,36 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
         {jobData.requirements && (
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white text-lg">
+                📋
+              </span>
+              Requirements
+            </h2>
+            <div className="space-y-2">
+              {jobData.requirements.split('\n').map((req, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">{req.replace(/^[-•*]\s*/, '')}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Nice to Have */}
+        {jobData.niceToHave && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3">
               <span className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center text-white text-lg">
                 ⚡
               </span>
               Nice to Have
             </h2>
             <div className="space-y-2">
-              {jobData.requirements.split('\n').map((req, index) => (
+              {jobData.niceToHave.split('\n').map((nice, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">{req.replace(/^[-•*]\s*/, '')}</span>
+                  <span className="text-gray-700">{nice.replace(/^[-•*]\s*/, '')}</span>
                 </div>
               ))}
             </div>
