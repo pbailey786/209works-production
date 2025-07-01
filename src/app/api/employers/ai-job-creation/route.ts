@@ -294,7 +294,7 @@ export async function POST(req: NextRequest) {
           newJobData.description = `${intro}\n\n**What You'll Do:**\n${duties}\n\nThis position offers ${newJobData.salary} with ${newJobData.schedule || 'regular hours'}. We're looking for someone who brings a positive attitude and is ready to contribute to our team's success.`;
           newJobData.requirements = '• ' + template.typicalRequirements.slice(0, 3).join('\n• ');
           
-          response = `Perfect! I've got everything I need. Here's what I'm thinking for your posting:\n\n**${headline}**\n\n${description}\n\nI've also added the typical duties and requirements that work well for ${cleanTitle} positions around here. You can edit everything in the next step - just hit 'Build Job Ad' when you're ready!`;
+          response = `Perfect! I've got everything I need. Here's what I'm thinking for your posting:\n\n**${headline}**\n\n${shortDescription}\n\nI've also added the typical duties and requirements that work well for ${cleanTitle} positions around here. You can edit everything in the next step - just hit 'Build Job Ad' when you're ready!`;
           
           return NextResponse.json({
             response,
