@@ -34,161 +34,88 @@ export async function POST(req: NextRequest) {
     }
 
     // Enhanced AI prompt with professional examples
-    const systemPrompt = `You're a professional job posting writer for Central Valley employers. Your job is to extract the EXACT job title and requirements from the user's prompt and create structured job data.
+    const systemPrompt = `You're a professional job posting writer for Central Valley employers. Your job is to extract the EXACT job title from the user's prompt and create structured job data.
 
-CRITICAL: READ THE USER'S PROMPT CAREFULLY AND EXTRACT THE EXACT JOB THEY'RE ASKING FOR!
+CRITICAL: Extract the EXACT job title mentioned in the prompt - don't change it!
 
-IMPORTANT: You must return structured JSON with separated fields:
-- description: Company intro and role overview ONLY (no bullet points)
-- requirements: Bullet point list of qualifications
-- benefitOptions: Array of benefit objects with icon, title, description
+You must return a JSON object with these fields:
+- title: The exact job title from the prompt
+- location: City, CA (use defaults if not mentioned)
+- salary: Hourly or annual rate
+- description: A clean 2-3 paragraph overview of the company and role (NO bullet points, NO sections)
+- requirements: A simple bullet list of 5-7 requirements starting with •
+- benefitOptions: Array of benefits (only include what's explicitly mentioned)
 
-EXAMPLE 1 - Warehouse Associate:
-"Ready to join a growing team? We're seeking a reliable Warehouse Associate for our fast-paced distribution center.
+IMPORTANT RULES:
+1. The "description" field should ONLY contain:
+   - 1st paragraph: Company introduction (vary the style - avoid "seeking" or "looking for")
+   - 2nd paragraph: Role overview and daily responsibilities
+   - 3rd paragraph: Why this role matters and growth opportunities
+   
+2. DO NOT include these in the description:
+   - "What You'll Do" sections
+   - Bullet points or lists
+   - Requirements or qualifications
+   - Contact information
+   - Application instructions
 
-What You'll Do:
-• Process, package, and ship orders accurately
-• Organize stocks and maintain inventory
-• Inspect products for defects and damages
-• Receive and place incoming inventory items appropriately
-• Operate forklift, hand truck, pallet jack safely
-• Maintain a clean and organized warehouse daily
+3. Keep requirements simple and clean:
+   • Previous experience in [relevant field]
+   • [Education/certification] required
+   • Physical ability to [specific tasks]
+   • [Technical skills] proficiency
+   • [Soft skills] needed
 
-What We're Looking For:
-• Proven warehouse experience preferred
-• Ability to operate warehouse equipment
-• Strong organizational skills
-• Ability to lift and move heavy products
-• High school diploma
-• Team player with problem-solving abilities"
+INTRO VARIETY - Rotate through these styles:
+- Question Hook: "Ready to make a difference in..."
+- Company Pride: "As a leading [industry] company in [city]..."
+- Mission Focus: "Our mission is to provide..."
+- Team Focus: "Join our dedicated team of professionals..."
+- Opportunity Focus: "This is your chance to grow with..."
+- Direct: "We're hiring a [title] to help us..."
+- Industry Expertise: "With over [X] years serving [city]..."`;
 
-EXAMPLE 2 - Customer Service:
-"Love helping people? Our customer service team is the heart of our operation, and we need someone who shares our passion for exceptional service.
+    const userPrompt = `Job posting request: "${prompt.trim()}"
 
-Your Daily Impact:
-• Manage large volumes of incoming phone calls with professionalism
-• Generate sales leads and identify customer needs
-• Build sustainable customer relationships through exceptional service
-• Provide accurate information using CRM systems
-• Handle customer complaints and provide solutions
-• Maintain comprehensive customer interaction records
+Extract the EXACT job title from this request. Common patterns:
+- "Property Manager" → use "Property Manager" 
+- "We need a warehouse worker" → use "Warehouse Worker"
+- "Hiring front desk" → use "Front Desk Coordinator"
 
-What You Bring:
-• Proven customer support experience
-• Strong phone and active listening skills
-• Excellent communication and multi-tasking abilities
-• Patient, empathetic, and passionate about helping others"
-
-INTRO VARIETY REQUIREMENTS:
-You MUST vary your company introduction style. Choose from these approaches (rotate through them):
-
-Style 1 - Question Hook: "Ready to join..." / "Looking for..." / "Want to..."
-Style 2 - Company Pride: "We're [company type] with deep Central Valley roots..."
-Style 3 - Mission Focus: "Our mission is..." / "We believe in..."
-Style 4 - Team Focus: "Join our tight-knit team..." / "Be part of..."
-Style 5 - Opportunity Focus: "This is more than a job..." / "Here's your chance to..."
-Style 6 - Direct & Friendly: "We're hiring!" / "Great opportunity for..."
-Style 7 - Industry Expertise: "As [industry] leaders..." / "With [X] years in business..."
-
-CRITICAL FORMATTING INSTRUCTIONS:
-
-You MUST generate job posts with this EXACT format for ALL job types:
-
-[Varied company intro - 1-2 sentences using different styles]
-
-What You'll Do:
-• [Action verb + specific task detail]
-• [Action verb + specific task detail]
-• [Action verb + specific task detail]
-• [Action verb + specific task detail]
-• [Action verb + specific task detail]
-• [Action verb + specific task detail]
-
-What We're Looking For:
-• [Education/certification requirement]
-• [Experience requirement]
-• [Physical requirement if applicable]
-• [Technical skill or ability]
-• [Soft skill or personality trait]
-• [Preferred qualification]
-
-The Details:
-• [Schedule/shift information]
-• [Work environment details]
-• [Any special conditions]
-
-USE THE BULLET CHARACTER (•) NOT ASTERISKS (*) OR DASHES (-)
-EVERY job must have these sections with bullet points - no exceptions!`;
-
-    const userPrompt = `ANALYZE THIS JOB POSTING REQUEST: "${prompt.trim()}"
-
-STEP 1: EXTRACT THE EXACT JOB TITLE
-Look for phrases like:
-- "Property Manager" (use exactly this)
-- "We need a warehouse worker" (title = "Warehouse Worker")  
-- "Hiring a cashier" (title = "Cashier")
-- "Storage facility manager" (title = "Storage Facility Manager")
-
-DO NOT change the job title to something generic! If they say "Property Manager" don't make it "General Worker"!
-
-CRITICAL: Structure your response properly:
-- Put ONLY the company intro and role overview in "description" 
-- Put the bullet point requirements in "requirements"
-- Extract any benefits into the "benefitOptions" array
-
-STEP 2: CREATE A UNIQUE COMPANY INTRO
-Use one of the 7 intro styles and make it fresh:
+Company context:
 ${user?.companyName ? `Company: ${user.companyName}` : ''}
-${user?.businessLocation ? `Default Location: ${user.businessLocation}` : ''}
+${user?.businessLocation ? `Location: ${user.businessLocation}` : ''}
 ${user?.industry ? `Industry: ${user.industry}` : ''}
 
-CRITICAL ACCURACY RULES:
-- EXTRACT the EXACT job title mentioned in the prompt above
-- DO NOT make up benefits (health insurance, 401k, PTO) unless explicitly mentioned
-- DO NOT change the job title to something different
-- If prompt says "Property Manager" the title MUST be "Property Manager" 
-- If prompt says "Storage Manager" the title MUST be "Storage Manager"
-- Focus on the work itself - be specific about daily tasks and responsibilities
-- Only mention what you know from the prompt - don't invent company details
+Create a professional job posting with:
 
-CRITICAL STRUCTURE FOR JSON RESPONSE:
+1. DESCRIPTION (2-3 clean paragraphs, NO bullet points):
+   - Paragraph 1: Company intro (vary the style, be engaging)
+   - Paragraph 2: What they'll do in this role (be specific about daily tasks)
+   - Paragraph 3: Why this role matters and growth opportunities
 
-1. "description" field: Write a comprehensive 3-4 paragraph job description
-   - Paragraph 1: Company introduction using varied intro styles (avoid "seeking", "looking for")  
-   - Paragraph 2: Detailed daily responsibilities and specific tasks (be very specific!)
-   - Paragraph 3: Why this role matters, growth opportunities, and impact on the business
-   - Paragraph 4: Work environment, team dynamics, and company culture
-   - Make it engaging and informative - this is the main content job seekers will read
+2. REQUIREMENTS (5-7 bullet points with •):
+   • Relevant experience or education
+   • Technical skills needed
+   • Physical requirements if applicable
+   • Soft skills and personality traits
+   • Any certifications or licenses
 
-2. "requirements" field: 5-7 specific bullet points
-   • Must start each line with a bullet (•)
-   • Be specific: "Previous property management experience" not just "experience"
-   • Include both hard skills (Excel, software) and soft skills (customer service)
-   • Add physical requirements if applicable
+3. BENEFITS (only what's mentioned in the prompt):
+   - Don't make up benefits not in the original request
+   - Always include the salary as first benefit
 
-3. "benefitOptions" array: Create 3-5 compelling benefits
-   - Always include competitive pay with the actual salary range
-   - Add relevant benefits based on job type (health insurance for full-time, flexible schedule for part-time)
-   - Each benefit needs: emoji icon, descriptive title, detailed description, unique key
-
-DO NOT include:
-- "What You'll Do" sections (save for later editing)
-- Application instructions
-- Contact details in the description
-
-Return ONLY a JSON object with these exact fields:
+Return this exact JSON structure:
 {
-  "title": "EXACT job title from the prompt (not generic!)",
-  "location": "City, CA", 
-  "salary": "$XX-XX/hr or annual",
-  "description": "Write a comprehensive job description with 3-4 detailed paragraphs: 1) Company introduction and culture, 2) Detailed role overview and daily responsibilities, 3) Why this position matters and growth opportunities, 4) Work environment and team dynamics. Make it engaging and specific - include actual tasks, not just generic descriptions.",
-  "requirements": "5-7 bullet points starting with • for qualifications, experience, skills needed",
-  "contactMethod": "Email or phone from the prompt",
-  "schedule": "Shift details if mentioned", 
+  "title": "[exact job title from prompt]",
+  "location": "[City, CA]",
+  "salary": "[$XX-XX/hr or annual]",
+  "description": "[2-3 paragraphs - company intro, role overview, growth opportunities]",
+  "requirements": "[bullet list with • starting each line]",
+  "contactMethod": "[email or phone if provided]",
+  "schedule": "[shift/schedule if mentioned]",
   "benefitOptions": [
-    {"icon": "💰", "title": "Competitive Pay", "description": "Details if mentioned", "key": "benefit_1"},
-    {"icon": "🏥", "title": "Health Benefits", "description": "If mentioned", "key": "benefit_2"},
-    {"icon": "📅", "title": "PTO/Vacation", "description": "If mentioned", "key": "benefit_3"}
+    {"icon": "💰", "title": "Competitive Pay", "description": "[salary details]", "key": "benefit_1"}
   ]
 }`;
 
@@ -412,45 +339,66 @@ function generateFallbackJob(prompt: string, user: any): any {
   else if (lowerPrompt.includes('morning') || lowerPrompt.includes('early')) schedule = 'Early morning shift';
   
   // Generate job-specific descriptions with company context
-  const companyIntro = user?.companyName 
-    ? `${user.companyName} is looking for` 
-    : `We're a growing local business in ${location.split(',')[0]} looking for`;
+  const companyName = user?.companyName || 'Our company';
+  const city = location.split(',')[0];
   
-  const jobDescriptions = {
-    warehouse: `${companyIntro} reliable warehouse workers to join our distribution team. ${user?.companyName ? 'We have' : 'As a family-owned business with'} strong Central Valley roots, we value hard work, treat our team right, and offer opportunities for growth. Our ${location.split(',')[0]} facility operates with a close-knit team where everyone's contribution matters. This is more than just a job - it's a chance to build a career with a company that invests in its people.`,
-    
-    retail: `Join our ${location.split(',')[0]} retail team! ${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} a community staple that's been serving Central Valley families for years. We pride ourselves on creating a welcoming environment where both customers and employees feel valued. If you enjoy helping people and want to be part of a team that makes a difference in the community, this is the place for you.`,
-    
-    driver: `${companyIntro} dependable delivery drivers to join our ${location.split(',')[0]} team. Perfect for someone who knows the Central Valley roads and wants to stay local - no long hauls or overnight trips. We offer steady routes, competitive pay, and the chance to be home every night with your family. Our drivers are the face of our company, and we value those who take pride in safe driving and excellent customer service.`,
-
-    security: `Join ${user?.companyName ? `${user.companyName}'s` : 'our'} security team protecting our ${location.split(',')[0]} facility. We're looking for observant, reliable individuals who take pride in keeping people and property safe. This role offers stability, professional growth opportunities, and the satisfaction of being an essential part of our operations. We believe in treating our security team as valued professionals who contribute to everyone's safety and success.`,
-    
-    management: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} seeking an experienced ${title} for our ${location.split(',')[0]} facility. This is a perfect opportunity for someone with leadership skills who wants to make a real impact in a growing Central Valley business.
-
-In this hands-on management role, you'll oversee all aspects of daily operations including customer relations, facility maintenance coordination, staff supervision, and financial management. Your typical day includes meeting with prospective tenants, conducting facility tours, processing rental agreements, handling customer service inquiries, coordinating maintenance repairs, managing delinquent accounts, and ensuring our facility maintains the highest standards of cleanliness and security.
-
-This position offers significant growth potential and the opportunity to directly impact our business success. As a key decision-maker, you'll implement operational improvements, develop customer retention strategies, and build strong relationships within the local community. We believe in promoting from within and providing our management team with the resources and support needed to excel.
-
-You'll work in a professional environment with a close-knit team that values collaboration, innovation, and exceptional customer service. Our facility features modern amenities, and we pride ourselves on maintaining a positive workplace culture where your contributions are recognized and rewarded.`,
-    
-    general: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} hiring in ${location.split(',')[0]}! Looking for hardworking individuals to join our growing team. This is a great opportunity for someone seeking stable employment with a company that values its employees. We believe in fair pay, respectful treatment, and providing opportunities for our team members to learn and advance. If you're ready to contribute to a positive work environment and grow your career, we want to hear from you.`
+  // Create varied intros based on job type
+  const intros = {
+    warehouse: [
+      `${companyName} is expanding our ${city} warehouse team.`,
+      `Ready to build a career in logistics? ${companyName} has an opportunity for you.`,
+      `Join ${companyName}'s distribution center in ${city}.`
+    ],
+    retail: [
+      `${companyName} is a trusted name in ${city} retail.`,
+      `Be the face of ${companyName} in our ${city} location.`,
+      `${companyName} believes great customer service starts with great people.`
+    ],
+    driver: [
+      `${companyName} keeps ${city} moving with reliable delivery services.`,
+      `Home every night - that's the ${companyName} promise to our drivers.`,
+      `${companyName} values safe, professional drivers who know ${city}.`
+    ],
+    management: [
+      `${companyName} is seeking experienced leadership for our ${city} facility.`,
+      `This is your opportunity to lead at ${companyName}.`,
+      `${companyName} believes in promoting from within and developing leaders.`
+    ],
+    general: [
+      `${companyName} is hiring in ${city}.`,
+      `Join the ${companyName} team and grow your career.`,
+      `${companyName} offers stability and opportunity in ${city}.`
+    ]
   };
   
-  const description = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
+  // Get a random intro for variety
+  const introOptions = intros[jobType as keyof typeof intros] || intros.general;
+  const intro = introOptions[Math.floor(Math.random() * introOptions.length)];
   
-  // Extract only the company intro paragraphs, not the full job listing
-  const descriptionLines = description.split('\n');
-  let companyDescription = '';
+  // Generate clean job descriptions (2-3 paragraphs)
+  const jobDescriptions = {
+    warehouse: `${intro} We're a growing operation that values hard work, safety, and teamwork. Our warehouse team is the backbone of our business, ensuring products move efficiently from our facility to customers throughout the Central Valley.
+
+In this role, you'll handle inventory management, order fulfillment, and shipping/receiving duties. You'll work with a close-knit team that takes pride in maintaining an organized, efficient warehouse operation. This position offers steady hours, competitive pay, and the opportunity to advance into supervisory roles as you gain experience.`,
+    
+    retail: `${intro} We've built our reputation on exceptional customer service and creating a welcoming shopping experience for Central Valley families. Our team members are more than employees - they're the reason customers keep coming back.
+
+As part of our retail team, you'll assist customers, handle transactions, maintain store appearance, and contribute to a positive shopping environment. This role is perfect for someone who enjoys interacting with people and takes pride in helping others find what they need. We offer a supportive work environment where your contributions are valued and recognized.`,
+    
+    driver: `${intro} Our delivery drivers are essential to our operations, ensuring timely and professional service to customers throughout the region. We prioritize safety, reliability, and customer satisfaction in everything we do.
+
+You'll manage daily delivery routes, maintain accurate records, and provide excellent customer service at each stop. This position offers the independence of being on the road while being part of a supportive team. With no overnight trips and predictable schedules, you'll enjoy work-life balance while earning competitive wages.`,
+    
+    management: `${intro} This leadership position offers the opportunity to make a real impact on our operations and drive business growth. We're looking for someone who can balance operational excellence with exceptional customer service.
+
+You'll oversee daily operations, manage staff, handle customer relations, and ensure facility standards are maintained. This includes everything from financial management to team development. Your leadership will directly influence our success and customer satisfaction. We provide the tools and support you need to excel, with clear paths for advancement within our organization.`,
+    
+    general: `${intro} We're looking for dedicated individuals who want to be part of a growing company that values its employees. This is an opportunity to join a stable organization with a strong presence in the Central Valley.
+
+You'll contribute to our daily operations and be part of a team that takes pride in quality work. We offer competitive wages, consistent schedules, and a respectful work environment where your efforts are appreciated. This position provides the stability you need with the growth potential you want.`
+  };
   
-  // Find where "What you'll be doing:" starts and only take content before that
-  for (const line of descriptionLines) {
-    if (line.includes('What you') || line.includes('What we') || line.includes('The details')) {
-      break;
-    }
-    companyDescription += line + '\n';
-  }
-  
-  const fullDescription = companyDescription.trim() || description.split('\n\n')[0];
+  const fullDescription = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
   
   // Generate benefit options based on job type and prompt
   const benefitOptions = [];
