@@ -74,7 +74,7 @@ export default function JobPreviewModern({ jobData, headerColor }: JobPreviewMod
               </div>
             )}
             <div>
-              <div className="text-xl font-medium opacity-90">{jobData.company || 'Your Company'}</div>
+              <div className="text-xl font-medium opacity-90">{jobData.company || ''}</div>
               {jobData.urgency && (
                 <div className="text-sm opacity-75 mt-1">🔥 {jobData.urgency}</div>
               )}

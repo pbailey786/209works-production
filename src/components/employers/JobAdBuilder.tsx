@@ -55,7 +55,7 @@ const createEmptyBenefit = (id: string): BenefitOption => ({
 export default function JobAdBuilder({ initialData, onBack, onContinue }: JobAdBuilderProps) {
   const [jobData, setJobData] = useState<JobData>({
     ...initialData,
-    company: initialData.company || 'Your Company Name', // Default if not set
+    company: initialData.company || '', // Default if not set
     benefitOptions: initialData.benefitOptions || []
   });
   const [isPreview, setIsPreview] = useState(false);

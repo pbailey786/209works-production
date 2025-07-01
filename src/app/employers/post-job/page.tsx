@@ -104,7 +104,7 @@ export default function PostJobPage() {
           // Ensure company field is set even if no profile data
           setJobData(prev => ({ 
             ...prev, 
-            company: prev.company || 'Your Company Name',
+            company: prev.company || '',
             companyLogo: logoData.logo || null
           }));
         }
@@ -852,7 +852,7 @@ Contact: ${userEmail}`);
                 <JobPreviewModern 
                   jobData={{
                     ...jobData,
-                    company: jobData.company || 'Your Company',
+                    company: jobData.company || '',
                     companyLogo: jobData.companyLogo
                   }} 
                 />

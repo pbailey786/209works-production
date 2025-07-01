@@ -34,88 +34,69 @@ export async function POST(req: NextRequest) {
     }
 
     // Enhanced AI prompt with professional examples
-    const systemPrompt = `You're a professional job posting writer for Central Valley employers. Your job is to extract the EXACT job title from the user's prompt and create structured job data.
+    const systemPrompt = `You're an expert in writing clear, modern job ads that help small businesses quickly attract qualified applicants.
 
-CRITICAL: Extract the EXACT job title mentioned in the prompt - don't change it!
+Create a job ad that is BRIEF but PERSUASIVE using this exact structure:
 
-You must return a JSON object with these fields:
-- title: The exact job title from the prompt
-- location: City, CA (use defaults if not mentioned)
-- salary: Hourly or annual rate
-- description: A clean 2-3 paragraph overview of the company and role (NO bullet points, NO sections)
-- requirements: A simple bullet list of 5-7 requirements starting with •
-- benefitOptions: Array of benefits (only include what's explicitly mentioned)
+ABOUT THE ROLE (2-3 sentences MAX):
+- 1st sentence: What the job is and what the company does
+- 2nd sentence: Key daily tasks in plain language
+- 3rd sentence (optional): Why this role matters to the business
 
-IMPORTANT RULES:
-1. The "description" field should ONLY contain:
-   - 1st paragraph: Company introduction (vary the style - avoid "seeking" or "looking for")
-   - 2nd paragraph: Role overview and daily responsibilities
-   - 3rd paragraph: Why this role matters and growth opportunities
-   
-2. DO NOT include these in the description:
-   - "What You'll Do" sections
-   - Bullet points or lists
-   - Requirements or qualifications
-   - Contact information
-   - Application instructions
+REQUIREMENTS (4-5 bullet points):
+• Must-have skills and experience
+• Nice-to-have qualifications
+• Physical requirements if applicable
+• Schedule flexibility needs
 
-3. Keep requirements simple and clean:
-   • Previous experience in [relevant field]
-   • [Education/certification] required
-   • Physical ability to [specific tasks]
-   • [Technical skills] proficiency
-   • [Soft skills] needed
+BENEFITS (3-4 bullet points of what they get):
+• Pay rate/range
+• Schedule stability or flexibility
+• Work environment perks
+• Growth opportunities
 
-INTRO VARIETY - Rotate through these styles:
-- Question Hook: "Ready to make a difference in..."
-- Company Pride: "As a leading [industry] company in [city]..."
-- Mission Focus: "Our mission is to provide..."
-- Team Focus: "Join our dedicated team of professionals..."
-- Opportunity Focus: "This is your chance to grow with..."
-- Direct: "We're hiring a [title] to help us..."
-- Industry Expertise: "With over [X] years serving [city]..."`;
+CRITICAL RULES:
+- Be DIRECT and CONVERSATIONAL - no corporate jargon
+- Use PLAIN LANGUAGE that anyone can understand
+- Keep it SHORT - job seekers scan, they don't read novels
+- Focus on WHAT THEY'LL ACTUALLY DO, not vague descriptions
+- Extract the EXACT job title from the prompt - don't change it!`;
 
-    const userPrompt = `Job posting request: "${prompt.trim()}"
+    const userPrompt = `Job posting: "${prompt.trim()}"
 
-Extract the EXACT job title from this request. Common patterns:
-- "Property Manager" → use "Property Manager" 
-- "We need a warehouse worker" → use "Warehouse Worker"
-- "Hiring front desk" → use "Front Desk Coordinator"
-
-Company context:
-${user?.companyName ? `Company: ${user.companyName}` : ''}
+Company info:
+${user?.companyName ? `Name: ${user.companyName}` : ''}
 ${user?.businessLocation ? `Location: ${user.businessLocation}` : ''}
-${user?.industry ? `Industry: ${user.industry}` : ''}
 
-Create a professional job posting with:
+Write a BRIEF job ad following this EXACT format:
 
-1. DESCRIPTION (2-3 clean paragraphs, NO bullet points):
-   - Paragraph 1: Company intro (vary the style, be engaging)
-   - Paragraph 2: What they'll do in this role (be specific about daily tasks)
-   - Paragraph 3: Why this role matters and growth opportunities
+DESCRIPTION (2-3 short sentences total):
+Example: "We're a busy medical office in Stockton looking for a Front Desk Receptionist. You'll greet patients, schedule appointments, handle payments, and keep the front office running smoothly. This role is essential to creating a positive first impression for our patients."
 
-2. REQUIREMENTS (5-7 bullet points with •):
-   • Relevant experience or education
-   • Technical skills needed
-   • Physical requirements if applicable
-   • Soft skills and personality traits
-   • Any certifications or licenses
+REQUIREMENTS (4-5 bullet points):
+• [Must-have experience/skills]
+• [Technical requirements] 
+• [Soft skills needed]
+• [Schedule requirements]
+• [Nice-to-have qualifications]
 
-3. BENEFITS (only what's mentioned in the prompt):
-   - Don't make up benefits not in the original request
-   - Always include the salary as first benefit
+BENEFITS (3-4 simple benefits):
+- Always list pay first
+- Include basic perks like stable schedule, good team, etc.
+- Don't invent benefits not mentioned
 
-Return this exact JSON structure:
+Return JSON:
 {
-  "title": "[exact job title from prompt]",
+  "title": "[exact title from prompt]",
   "location": "[City, CA]",
-  "salary": "[$XX-XX/hr or annual]",
-  "description": "[2-3 paragraphs - company intro, role overview, growth opportunities]",
-  "requirements": "[bullet list with • starting each line]",
-  "contactMethod": "[email or phone if provided]",
-  "schedule": "[shift/schedule if mentioned]",
+  "salary": "[exact pay from prompt]",
+  "description": "[2-3 sentences ONLY - what company does, what role does, why it matters]",
+  "requirements": "[4-5 bullet points with • symbol]",
+  "contactMethod": "[email/phone from prompt]",
+  "schedule": "[schedule from prompt]",
   "benefitOptions": [
-    {"icon": "💰", "title": "Competitive Pay", "description": "[salary details]", "key": "benefit_1"}
+    {"icon": "💰", "title": "[Pay title]", "description": "[Pay details]", "key": "benefit_1"},
+    {"icon": "[emoji]", "title": "[Benefit]", "description": "[Details]", "key": "benefit_2"}
   ]
 }`;
 
@@ -280,6 +261,7 @@ function generateFallbackJob(prompt: string, user: any): any {
   else if (lowerPrompt.includes('warehouse supervisor')) { title = 'Warehouse Supervisor'; jobType = 'warehouse'; }
   
   // Then check for general job types
+  else if (lowerPrompt.includes('front desk') || lowerPrompt.includes('receptionist')) { title = 'Front Desk Receptionist'; jobType = 'office'; }
   else if (lowerPrompt.includes('warehouse')) { title = 'Warehouse Associate'; jobType = 'warehouse'; }
   else if (lowerPrompt.includes('cashier')) { title = 'Cashier'; jobType = 'retail'; }
   else if (lowerPrompt.includes('driver')) { title = 'Delivery Driver'; jobType = 'driver'; }
@@ -375,27 +357,23 @@ function generateFallbackJob(prompt: string, user: any): any {
   const introOptions = intros[jobType as keyof typeof intros] || intros.general;
   const intro = introOptions[Math.floor(Math.random() * introOptions.length)];
   
-  // Generate clean job descriptions (2-3 paragraphs)
+  // Generate clean, concise job descriptions (2-3 sentences)
   const jobDescriptions = {
-    warehouse: `${intro} We're a growing operation that values hard work, safety, and teamwork. Our warehouse team is the backbone of our business, ensuring products move efficiently from our facility to customers throughout the Central Valley.
-
-In this role, you'll handle inventory management, order fulfillment, and shipping/receiving duties. You'll work with a close-knit team that takes pride in maintaining an organized, efficient warehouse operation. This position offers steady hours, competitive pay, and the opportunity to advance into supervisory roles as you gain experience.`,
+    warehouse: `We're a ${city} warehouse operation looking for reliable team members. You'll handle inventory, fulfill orders, load/unload trucks, and keep the warehouse organized. This role keeps our business running and offers opportunities to advance to lead or supervisor positions.`,
     
-    retail: `${intro} We've built our reputation on exceptional customer service and creating a welcoming shopping experience for Central Valley families. Our team members are more than employees - they're the reason customers keep coming back.
-
-As part of our retail team, you'll assist customers, handle transactions, maintain store appearance, and contribute to a positive shopping environment. This role is perfect for someone who enjoys interacting with people and takes pride in helping others find what they need. We offer a supportive work environment where your contributions are valued and recognized.`,
+    retail: `We're a ${city} retail store that needs friendly staff to help customers and run the register. You'll assist shoppers, handle sales, stock shelves, and keep the store looking great. Good people skills and weekend availability are essential for this customer-facing role.`,
     
-    driver: `${intro} Our delivery drivers are essential to our operations, ensuring timely and professional service to customers throughout the region. We prioritize safety, reliability, and customer satisfaction in everything we do.
-
-You'll manage daily delivery routes, maintain accurate records, and provide excellent customer service at each stop. This position offers the independence of being on the road while being part of a supportive team. With no overnight trips and predictable schedules, you'll enjoy work-life balance while earning competitive wages.`,
+    driver: `We need reliable local delivery drivers to serve ${city} area customers. You'll run daily routes, deliver packages safely, and provide friendly service at each stop. Home every night with no long hauls - perfect for drivers who want work-life balance.`,
     
-    management: `${intro} This leadership position offers the opportunity to make a real impact on our operations and drive business growth. We're looking for someone who can balance operational excellence with exceptional customer service.
-
-You'll oversee daily operations, manage staff, handle customer relations, and ensure facility standards are maintained. This includes everything from financial management to team development. Your leadership will directly influence our success and customer satisfaction. We provide the tools and support you need to excel, with clear paths for advancement within our organization.`,
+    management: `We're hiring a ${title} to oversee our ${city} facility operations. You'll manage staff, handle customer issues, maintain facility standards, and drive business growth. This hands-on leadership role is perfect for someone ready to make a real impact.`,
     
-    general: `${intro} We're looking for dedicated individuals who want to be part of a growing company that values its employees. This is an opportunity to join a stable organization with a strong presence in the Central Valley.
-
-You'll contribute to our daily operations and be part of a team that takes pride in quality work. We offer competitive wages, consistent schedules, and a respectful work environment where your efforts are appreciated. This position provides the stability you need with the growth potential you want.`
+    general: `${companyName} in ${city} is hiring for immediate openings. You'll support daily operations and work with a team that values reliability and hard work. Stable hours and fair pay for someone ready to contribute.`,
+    
+    office: `We need an organized professional for our ${city} office. You'll handle phones, manage schedules, process paperwork, and support the team. Computer skills and a friendly demeanor are essential for this front-office role.`,
+    
+    cleaning: `We're hiring reliable cleaners for facilities in ${city}. You'll maintain cleanliness standards, empty trash, sanitize surfaces, and ensure a professional environment. Evening or early morning shifts available with consistent schedules.`,
+    
+    security: `We need alert security officers to protect our ${city} facility. You'll monitor premises, check credentials, respond to incidents, and ensure safety protocols are followed. Must have CA Guard Card or ability to obtain one.`
   };
   
   const fullDescription = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;

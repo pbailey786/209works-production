@@ -57,7 +57,7 @@ const BENEFIT_OPTIONS: BenefitOption[] = [
 export default function JobAdBuilderEnhanced({ initialData, onBack, onContinue }: JobAdBuilderEnhancedProps) {
   const [jobData, setJobData] = useState<JobData>({
     ...initialData,
-    company: initialData.company || 'Your Company Name',
+    company: initialData.company || '',
     benefitOptions: initialData.benefitOptions || BENEFIT_OPTIONS.map(b => ({ ...b })),
   });
   const [isPreview, setIsPreview] = useState(false);
