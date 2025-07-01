@@ -603,6 +603,24 @@ export default function JobDetailClient({
                 </div>
               </div>
 
+              {/* Requirements Section */}
+              {job.requirements && job.requirements.trim() && (
+                <div className="border-t border-gray-200">
+                  <div className="p-8">
+                    <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
+                      <span className="text-3xl">📋</span>
+                      Requirements
+                    </h2>
+                    <div
+                      className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
+                      dangerouslySetInnerHTML={{
+                        __html: formatJobDescription(job.requirements),
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Benefits Section */}
               {(() => {
                 const benefits = extractBenefits(job.description);

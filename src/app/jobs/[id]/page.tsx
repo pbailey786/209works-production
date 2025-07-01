@@ -23,6 +23,8 @@ const getJob = cache(async (id: string): Promise<Job | null> => {
         title: true,
         company: true,
         description: true,
+        requirements: true,
+        benefits: true,
         location: true,
         jobType: true,
         categories: true,
@@ -34,6 +36,8 @@ const getJob = cache(async (id: string): Promise<Job | null> => {
         createdAt: true,
         updatedAt: true,
         employerId: true,
+        supplementalQuestions: true,
+        status: true,
       },
     });
     return job as Job;
