@@ -130,17 +130,37 @@ export function extractJobHighlights(description: string): {
   return highlights;
 }
 
-export function extractBenefits(description: string): Array<{icon: string; title: string; description: string; key: string}> {
+export function extractBenefits(description: string, benefitsField?: string): Array<{icon: string; title: string; description: string; key: string}> {
+  // First try the dedicated benefits field if provided
+  if (benefitsField && benefitsField.trim()) {
+    try {
+      const benefitsData = JSON.parse(benefitsField);
+      if (Array.isArray(benefitsData)) {
+        return benefitsData;
+      }
+    } catch (error) {
+      console.error('Error parsing benefits field JSON:', error);
+    }
+  }
+  
   if (!description) return [];
   
-  const benefitsMatch = description.match(/\[BENEFITS:(.*?)\]/);
+  // Fallback to extracting from description field
+  const benefitsMatch = description.match(/\[BENEFITS:(.*?)\]/s);
   if (!benefitsMatch) return [];
   
   try {
-    const benefitsData = JSON.parse(benefitsMatch[1]);
+    // Clean up the JSON string - remove extra whitespace and newlines
+    const cleanJsonString = benefitsMatch[1].trim();
+    console.log('Attempting to parse benefits JSON from description:', cleanJsonString);
+    
+    const benefitsData = JSON.parse(cleanJsonString);
     return Array.isArray(benefitsData) ? benefitsData : [];
   } catch (error) {
-    console.error('Error parsing benefits JSON:', error);
+    console.error('Error parsing benefits JSON from description:', error);
+    console.error('Raw JSON string was:', benefitsMatch[1]);
+    
+    // Return empty array instead of crashing
     return [];
   }
 }

@@ -86,7 +86,15 @@ export async function POST(req: NextRequest) {
     if (benefitOptions && Array.isArray(benefitOptions) && benefitOptions.length > 0) {
       const validBenefits = benefitOptions.filter(b => b.title && b.title.trim() !== '');
       if (validBenefits.length > 0) {
-        finalDescription += `\n[BENEFITS:${JSON.stringify(validBenefits)}]`;
+        try {
+          // Ensure clean JSON serialization
+          const benefitsJson = JSON.stringify(validBenefits);
+          console.log('Storing benefits JSON:', benefitsJson);
+          finalDescription += `\n[BENEFITS:${benefitsJson}]`;
+        } catch (jsonError) {
+          console.error('Error serializing benefits:', jsonError);
+          console.error('Benefits data:', validBenefits);
+        }
       }
     }
 
@@ -100,11 +108,25 @@ export async function POST(req: NextRequest) {
       hasEmbedding: !!embeddings
     });
 
+    // Also store benefits in the dedicated benefits field for easier access
+    let benefitsString = '';
+    if (benefitOptions && Array.isArray(benefitOptions) && benefitOptions.length > 0) {
+      const validBenefits = benefitOptions.filter(b => b.title && b.title.trim() !== '');
+      if (validBenefits.length > 0) {
+        try {
+          benefitsString = JSON.stringify(validBenefits);
+        } catch (error) {
+          console.error('Error serializing benefits for benefits field:', error);
+        }
+      }
+    }
+
     const job = await prisma.job.create({
       data: {
         title: title.trim(),
         description: finalDescription,
         requirements: requirements?.trim() || '',
+        benefits: benefitsString, // Store benefits in dedicated field
         location: location.trim(),
         company: user.companyName || `${user.name}'s Company` || 'Local Business',
         source: '209.works',
