@@ -623,7 +623,7 @@ export default function JobDetailClient({
 
               {/* Benefits Section */}
               {(() => {
-                const benefits = extractBenefits(job.description, job.benefits);
+                const benefits = extractBenefits(job.description, job.benefits || undefined);
                 if (benefits.length === 0) return null;
                 
                 return (
