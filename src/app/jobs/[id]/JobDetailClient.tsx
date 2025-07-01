@@ -30,6 +30,7 @@ import JobApplicationModal from '@/components/JobApplicationModal';
 import {
   formatJobDescription,
   extractJobHighlights,
+  extractBenefits,
 } from '@/lib/utils/jobDescriptionFormatter';
 
 interface JobDetailClientProps {
@@ -601,6 +602,37 @@ export default function JobDetailClient({
                   />
                 </div>
               </div>
+
+              {/* Benefits Section */}
+              {(() => {
+                const benefits = extractBenefits(job.description);
+                if (benefits.length === 0) return null;
+                
+                return (
+                  <div className="border-t border-gray-200">
+                    <div className="p-8">
+                      <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        <span className="text-3xl">🎁</span>
+                        What We Offer
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {benefits.map((benefit, index) => (
+                          <div 
+                            key={benefit.key || index} 
+                            className="bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                          >
+                            <div className="text-3xl mb-3">{benefit.icon}</div>
+                            <div className="font-semibold text-gray-800 mb-1">{benefit.title}</div>
+                            {benefit.description && (
+                              <div className="text-sm text-gray-600">{benefit.description}</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Apply Section or Job Management for Owners */}
               <div className="border-t border-gray-200 bg-gradient-to-r from-[#2d4a3e]/5 to-[#1d3a2e]/5">

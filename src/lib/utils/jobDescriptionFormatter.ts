@@ -8,6 +8,12 @@ export function formatJobDescription(description: string): string {
 
   let formatted = description;
 
+  // Remove hidden metadata tags (contact info, degree requirements, benefits)
+  formatted = formatted.replace(/\[CONTACT_EMAIL:.*?\]/g, '');
+  formatted = formatted.replace(/\[REQUIRES_DEGREE:.*?\]/g, '');
+  formatted = formatted.replace(/\[BENEFITS:.*?\]/g, '');
+  formatted = formatted.trim();
+
   // Convert markdown headers to styled HTML
   formatted = formatted.replace(
     /^## (.*$)/gim,
@@ -122,4 +128,19 @@ export function extractJobHighlights(description: string): {
   }
 
   return highlights;
+}
+
+export function extractBenefits(description: string): Array<{icon: string; title: string; description: string; key: string}> {
+  if (!description) return [];
+  
+  const benefitsMatch = description.match(/\[BENEFITS:(.*?)\]/);
+  if (!benefitsMatch) return [];
+  
+  try {
+    const benefitsData = JSON.parse(benefitsMatch[1]);
+    return Array.isArray(benefitsData) ? benefitsData : [];
+  } catch (error) {
+    console.error('Error parsing benefits JSON:', error);
+    return [];
+  }
 }

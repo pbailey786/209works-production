@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const requestBody = await req.json();
     console.log('Publish job request body:', JSON.stringify(requestBody, null, 2));
     
-    const { title, location, salary, description, requirements, contactMethod, requiresDegree, customQuestions } = requestBody;
+    const { title, location, salary, description, requirements, contactMethod, requiresDegree, customQuestions, benefitOptions } = requestBody;
     
     // Validate required fields
     if (!title || !location || !salary) {
@@ -80,6 +80,14 @@ export async function POST(req: NextRequest) {
     // Add hidden degree requirement for filtering (not displayed to users)
     if (requiresDegree) {
       finalDescription += `\n[REQUIRES_DEGREE:true]`;
+    }
+    
+    // Add benefits data as structured JSON (not displayed to users, used for rendering)
+    if (benefitOptions && Array.isArray(benefitOptions) && benefitOptions.length > 0) {
+      const validBenefits = benefitOptions.filter(b => b.title && b.title.trim() !== '');
+      if (validBenefits.length > 0) {
+        finalDescription += `\n[BENEFITS:${JSON.stringify(validBenefits)}]`;
+      }
     }
 
     // Log the data we're about to save
