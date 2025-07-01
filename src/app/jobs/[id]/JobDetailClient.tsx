@@ -588,11 +588,12 @@ export default function JobDetailClient({
                 )}
               </div>
 
-              {/* Job Description */}
+              {/* About This Role */}
               <div className="border-t border-gray-200">
                 <div className="p-8">
-                  <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                    Job Description
+                  <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <span className="text-3xl">💼</span>
+                    About This Role
                   </h2>
                   <div
                     className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
@@ -603,13 +604,31 @@ export default function JobDetailClient({
                 </div>
               </div>
 
-              {/* Requirements Section */}
+              {/* What You'll Do */}
+              {job.responsibilities && job.responsibilities.trim() && (
+                <div className="border-t border-gray-200">
+                  <div className="p-8">
+                    <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
+                      <span className="text-3xl">⚡</span>
+                      What You'll Do
+                    </h2>
+                    <div
+                      className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
+                      dangerouslySetInnerHTML={{
+                        __html: formatJobDescription(job.responsibilities),
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* What We're Looking For Section */}
               {job.requirements && job.requirements.trim() && (
                 <div className="border-t border-gray-200">
                   <div className="p-8">
                     <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
-                      <span className="text-3xl">📋</span>
-                      Requirements
+                      <span className="text-3xl">🎯</span>
+                      What We're Looking For
                     </h2>
                     <div
                       className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"

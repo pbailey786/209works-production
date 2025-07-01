@@ -31,7 +31,8 @@
       "Bash(curl:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:resources.workable.com)",
-      "Bash(timeout 15s npm run dev)"
+      "Bash(timeout 15s npm run dev)",
+      "WebFetch(domain:www.indeed.com)"
     ],
     "deny": []
   }

@@ -33,41 +33,49 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Enhanced AI prompt with professional examples
-    const systemPrompt = `You're an expert in writing clear, modern job ads that help small businesses quickly attract qualified applicants.
+    // Enhanced AI prompt for readable yet professional job descriptions 
+    const systemPrompt = `You're an expert in writing job descriptions that balance professionalism with readability - more detailed than basic ads but more scannable than verbose corporate postings.
 
-Create a job ad that is BRIEF but PERSUASIVE using this exact structure:
+Create a well-structured job description using this format:
 
-ABOUT THE ROLE (2-3 sentences MAX):
-- 1st sentence: What the job is and what the company does
-- 2nd sentence: Key daily tasks in plain language
-- 3rd sentence (optional): Why this role matters to the business
+ABOUT THIS ROLE (3-4 sentences):
+- What the company does and why this role matters
+- 2-3 key daily responsibilities using action verbs
+- What type of person thrives in this position
 
-REQUIREMENTS (3-4 must-have bullet points):
-• Essential skills and experience
-• Required certifications/education
-• Physical requirements if applicable
-• Schedule availability needs
+WHAT YOU'LL DO (5-6 specific bullet points):
+• [Specific daily task with tools/systems mentioned]
+• [Customer/client interaction responsibilities]
+• [Technical duties or equipment operated]
+• [Quality, safety, or compliance requirements]
+• [Team collaboration or communication tasks]
+• [Problem-solving or troubleshooting scenarios]
 
-NICE TO HAVE (2-3 preferred bullet points):
-• Preferred experience
-• Bonus skills
-• Additional qualifications
+WHAT WE'RE LOOKING FOR (5-7 bullet points total):
+Must-Have:
+• [Required experience level and key skills]
+• [Required certifications, licenses, or education]
+• [Essential technical abilities or software]
+• [Physical requirements if applicable]
+Preferred:
+• [Preferred experience that sets candidates apart]
+• [Additional skills or certifications valued]
+• [Nice-to-have qualifications]
 
-BENEFITS (3-4 bullet points of what they get):
-• Pay rate/range (title: "Competitive Pay")
-• Schedule stability (title: "Stable Schedule") 
-• Growth opportunities (title: "Growth Opportunities")
-• Work environment perks
-
-IMPORTANT: Keep benefit titles SHORT (2-3 words max) to prevent truncation
+WHAT WE OFFER (4-5 compelling benefits):
+• Competitive compensation with specifics
+• Professional development opportunities
+• Work-life balance features
+• Health and wellness benefits
+• Company culture highlights
 
 CRITICAL RULES:
-- Be DIRECT and CONVERSATIONAL - no corporate jargon
-- Use PLAIN LANGUAGE that anyone can understand
-- Keep it SHORT - job seekers scan, they don't read novels
-- Focus on WHAT THEY'LL ACTUALLY DO, not vague descriptions
-- Extract the EXACT job title from the prompt - don't change it!`;
+- Write at PROFESSIONAL level but keep scannable
+- Use INDUSTRY-SPECIFIC terminology appropriately  
+- Be SPECIFIC about daily tasks, not vague
+- Extract the EXACT job title from the prompt
+- Focus on what they'll actually DO each day
+- Balance detail with readability for job seekers`;
 
     const userPrompt = `Job posting: "${prompt.trim()}"
 
@@ -75,37 +83,42 @@ Company info:
 ${user?.companyName ? `Name: ${user.companyName}` : ''}
 ${user?.businessLocation ? `Location: ${user.businessLocation}` : ''}
 
-Write a BRIEF job ad following this EXACT format:
+Write a professional job description following the new format:
 
-DESCRIPTION (2-3 short sentences total):
-Example: "We're a busy medical office in Stockton looking for a Front Desk Receptionist. You'll greet patients, schedule appointments, handle payments, and keep the front office running smoothly. This role is essential to creating a positive first impression for our patients."
+ABOUT THIS ROLE (3-4 sentences):
+Example: "We're a growing plumbing company serving residential and commercial clients throughout Stockton and the Central Valley. As our Plumber, you'll diagnose and repair plumbing systems, install new fixtures, and ensure customer satisfaction on every call. You'll work with modern tools and equipment while building lasting relationships with clients who depend on our expertise. This role offers the opportunity to grow your skills while making a real impact in our community."
 
-REQUIREMENTS (4-5 bullet points):
-• [Must-have experience/skills]
-• [Technical requirements] 
-• [Soft skills needed]
-• [Schedule requirements]
-• [Nice-to-have qualifications]
+WHAT YOU'LL DO (5-6 specific daily tasks):
+• [Specific task with tools/equipment mentioned]
+• [Customer interaction or service delivery]
+• [Technical work with systems/software] 
+• [Quality or safety responsibilities]
+• [Team collaboration or communication]
+• [Problem-solving or troubleshooting]
 
-BENEFITS (3-4 simple benefits):
-- Always list pay first
-- Include basic perks like stable schedule, good team, etc.
-- Don't invent benefits not mentioned
+WHAT WE'RE LOOKING FOR (split required vs preferred):
+Required: 3-4 must-haves
+Preferred: 2-3 nice-to-haves
+
+WHAT WE OFFER (4-5 compelling benefits):
+Always include compensation first, then growth, culture, benefits
 
 Return JSON:
 {
   "title": "[exact title from prompt]",
-  "location": "[City, CA]",
+  "location": "[City, CA]", 
   "salary": "[exact pay from prompt]",
-  "description": "[2-3 sentences ONLY - what company does, what role does, why it matters]",
-  "requirements": "[3-4 must-have bullet points with • symbol]",
-  "niceToHave": "[2-3 preferred qualifications with • symbol]",
+  "description": "[3-4 sentence professional role summary]",
+  "responsibilities": "[5-6 specific daily tasks with • bullets]",
+  "requirements": "[3-4 required qualifications with • bullets]", 
+  "niceToHave": "[2-3 preferred qualifications with • bullets]",
   "contactMethod": "[email/phone from prompt]",
   "schedule": "[schedule from prompt]",
   "benefitOptions": [
-    {"icon": "💰", "title": "Competitive Pay", "description": "[Pay details]", "key": "benefit_1"},
-    {"icon": "📅", "title": "Stable Schedule", "description": "[Schedule details]", "key": "benefit_2"},
-    {"icon": "🌟", "title": "Growth Opportunities", "description": "[Growth details]", "key": "benefit_3"}
+    {"icon": "💰", "title": "Competitive Pay", "description": "[Detailed compensation info]", "key": "benefit_1"},
+    {"icon": "📈", "title": "Career Growth", "description": "[Professional development opportunities]", "key": "benefit_2"},
+    {"icon": "🏥", "title": "Benefits Package", "description": "[Health, PTO, retirement if mentioned]", "key": "benefit_3"},
+    {"icon": "🎯", "title": "Great Culture", "description": "[Work environment and team culture]", "key": "benefit_4"}
   ]
 }`;
 
@@ -188,6 +201,7 @@ Return JSON:
             location: user?.businessLocation || 'Stockton, CA',
             salary: '$16-19/hr',
             description: `We're hiring in ${user?.businessLocation || 'Stockton'}! Join our team for steady work in a supportive environment. We value hard workers who take pride in their contributions and are looking for someone ready to grow with us.`,
+            responsibilities: '• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines',
             requirements: '• Must be 18+ with valid ID\n• Reliable transportation\n• Able to pass background check\n• Legal right to work in US\n• Strong work ethic and positive attitude\n• Ability to follow instructions',
             contactMethod: user?.contactEmail || clerkUser.emailAddresses[0]?.emailAddress || 'hr@company.com',
             schedule: 'Full-time',
@@ -225,6 +239,7 @@ Return JSON:
           location: 'Stockton, CA',
           salary: '$16-19/hr',
           description: `We're hiring! Join our team for steady work in a supportive environment where your hard work is valued and recognized.`,
+          responsibilities: '• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines',
           requirements: '• Must be 18+ with valid ID\n• Reliable transportation\n• Able to pass background check\n• Legal right to work in US\n• Strong work ethic\n• Team player mentality',
           contactMethod: 'hr@company.com',
           schedule: 'Full-time',
@@ -502,11 +517,31 @@ function generateFallbackJob(prompt: string, user: any): any {
     general: `• Previous experience in similar role\n• Physical ability for standing/lifting\n• Positive attitude and team player`
   };
 
+  // Generate job-specific responsibilities (what you'll do daily)
+  const responsibilitiesByType = {
+    warehouse: `• Receive, inspect, and organize incoming inventory shipments\n• Pick and pack orders accurately using RF scanners and inventory systems\n• Operate forklifts and pallet jacks to move products safely\n• Maintain clean and organized warehouse areas following safety protocols\n• Collaborate with team members to meet daily shipping deadlines\n• Conduct inventory counts and report discrepancies to supervisors`,
+    
+    retail: `• Greet customers warmly and assist with product selection and questions\n• Process sales transactions accurately using POS systems and handle cash\n• Stock shelves, create displays, and maintain store appearance standards\n• Handle customer complaints and returns professionally\n• Work with team members to achieve sales goals and store targets\n• Learn product features to provide knowledgeable recommendations`,
+    
+    driver: `• Plan and execute efficient delivery routes using GPS and route planning tools\n• Load and unload packages safely, following proper lifting techniques\n• Interact with customers professionally during deliveries and pickups\n• Inspect vehicle daily and report maintenance issues to dispatch\n• Complete delivery documentation and maintain accurate records\n• Communicate with dispatch about delays or delivery issues`,
+    
+    management: `• Oversee daily operations and supervise team members effectively\n• Handle customer inquiries, complaints, and resolve issues promptly\n• Monitor facility maintenance, safety standards, and compliance requirements\n• Analyze performance metrics and implement improvements to operations\n• Conduct staff training, meetings, and performance evaluations\n• Coordinate with vendors, contractors, and corporate management`,
+    
+    office: `• Answer phones professionally and direct calls to appropriate departments\n• Manage calendars, schedule appointments, and coordinate meetings\n• Process paperwork, data entry, and maintain organized filing systems\n• Greet visitors and clients, providing excellent customer service\n• Support team members with administrative tasks and special projects\n• Handle confidential information with discretion and professionalism`,
+    
+    cleaning: `• Clean and sanitize facilities according to established protocols and schedules\n• Empty trash, restock supplies, and maintain restroom cleanliness standards\n• Operate cleaning equipment safely including vacuums, buffers, and chemicals\n• Report maintenance issues and safety hazards to facility management\n• Work efficiently to complete assigned areas within designated timeframes\n• Follow infection control procedures and maintain supply inventory`,
+    
+    security: `• Monitor facility premises through patrols and surveillance equipment\n• Check credentials and control access to restricted areas\n• Respond to alarms, incidents, and emergency situations professionally\n• Complete detailed incident reports and maintain accurate security logs\n• Collaborate with law enforcement and emergency services when needed\n• Ensure compliance with safety protocols and company security policies`,
+    
+    general: `• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines`
+  };
+
   return {
     title,
     location,
     salary,
     description: fullDescription,
+    responsibilities: responsibilitiesByType[jobType as keyof typeof responsibilitiesByType] || responsibilitiesByType.general,
     requirements: requirementsByType[jobType as keyof typeof requirementsByType] || requirementsByType.general,
     niceToHave: niceToHaveByType[jobType as keyof typeof niceToHaveByType] || niceToHaveByType.general,
     contactMethod,
