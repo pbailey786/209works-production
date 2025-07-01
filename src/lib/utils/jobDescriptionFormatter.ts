@@ -9,9 +9,23 @@ export function formatJobDescription(description: string): string {
   let formatted = description;
 
   // Remove hidden metadata tags (contact info, degree requirements, benefits)
-  formatted = formatted.replace(/\[CONTACT_EMAIL:.*?\]/g, '');
-  formatted = formatted.replace(/\[REQUIRES_DEGREE:.*?\]/g, '');
-  formatted = formatted.replace(/\[BENEFITS:.*?\]/g, '');
+  // Using more robust regex to handle multi-line JSON and edge cases
+  formatted = formatted.replace(/\[CONTACT_EMAIL:.*?\]/gs, '');
+  formatted = formatted.replace(/\[REQUIRES_DEGREE:.*?\]/gs, '');
+  formatted = formatted.replace(/\[BENEFITS:.*?\]/gs, '');
+  
+  // Clean up any stray closing brackets that might be left over
+  formatted = formatted.replace(/^\s*\]\s*$/gm, '');
+  
+  // Remove any trailing JSON artifacts (brackets, etc.) at the end of the text
+  formatted = formatted.replace(/\s*[\[\]{}]\s*$/g, '');
+  
+  // Also clean up any orphaned brackets at the end of lines
+  formatted = formatted.replace(/\s*\]\s*$/gm, '');
+  
+  // Clean up any double bullet points that might occur
+  formatted = formatted.replace(/•\s*•/g, '•');
+  
   formatted = formatted.trim();
 
   // Convert markdown headers to styled HTML
@@ -70,10 +84,16 @@ export function formatJobDescription(description: string): string {
     '<div class="flex items-start mb-2"><span class="mr-3 w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span><div><span class="font-medium text-gray-900">$1:</span> <span class="text-gray-700">$2</span></div></div>'
   );
 
-  // Convert regular bullet points
+  // Convert bullet points (both - and • styles)
   formatted = formatted.replace(
-    /^- (.*)$/gim,
+    /^[-•]\s*(.*)$/gim,
     '<div class="flex items-start mb-2"><span class="mr-3 w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span><span class="text-gray-700">$1</span></div>'
+  );
+  
+  // Clean up any trailing brackets or JSON artifacts from list items
+  formatted = formatted.replace(
+    /<span class="text-gray-700">(.*?)\s*[\[\]{}]\s*<\/span>/g,
+    '<span class="text-gray-700">$1</span>'
   );
 
   // Convert bold text
@@ -134,28 +154,66 @@ export function extractBenefits(description: string, benefitsField?: string): Ar
   // First try the dedicated benefits field if provided
   if (benefitsField && benefitsField.trim()) {
     try {
-      const benefitsData = JSON.parse(benefitsField);
+      // Handle case where benefitsField might already be an array/object
+      let benefitsData;
+      if (typeof benefitsField === 'string') {
+        benefitsData = JSON.parse(benefitsField);
+      } else {
+        benefitsData = benefitsField;
+      }
+      
       if (Array.isArray(benefitsData)) {
-        return benefitsData;
+        // Filter out any invalid entries and ensure all required fields exist
+        return benefitsData.filter(benefit => 
+          benefit && 
+          typeof benefit === 'object' && 
+          benefit.title && 
+          benefit.title.trim() !== ''
+        ).map((benefit, index) => ({
+          icon: benefit.icon || '🎁',
+          title: benefit.title,
+          description: benefit.description || '',
+          key: benefit.key || `benefit_${index}`
+        }));
       }
     } catch (error) {
       console.error('Error parsing benefits field JSON:', error);
+      console.error('Benefits field content:', benefitsField);
     }
   }
   
   if (!description) return [];
   
   // Fallback to extracting from description field
+  // Use 's' flag for dotall mode to match across newlines
   const benefitsMatch = description.match(/\[BENEFITS:(.*?)\]/s);
   if (!benefitsMatch) return [];
   
   try {
     // Clean up the JSON string - remove extra whitespace and newlines
-    const cleanJsonString = benefitsMatch[1].trim();
-    console.log('Attempting to parse benefits JSON from description:', cleanJsonString);
+    let cleanJsonString = benefitsMatch[1].trim();
+    
+    // Remove any trailing commas before closing brackets/braces
+    cleanJsonString = cleanJsonString.replace(/,(\s*[}\]])/g, '$1');
     
     const benefitsData = JSON.parse(cleanJsonString);
-    return Array.isArray(benefitsData) ? benefitsData : [];
+    
+    if (Array.isArray(benefitsData)) {
+      // Filter and validate benefits
+      return benefitsData.filter(benefit => 
+        benefit && 
+        typeof benefit === 'object' && 
+        benefit.title && 
+        benefit.title.trim() !== ''
+      ).map((benefit, index) => ({
+        icon: benefit.icon || '🎁',
+        title: benefit.title,
+        description: benefit.description || '',
+        key: benefit.key || `benefit_${index}`
+      }));
+    }
+    
+    return [];
   } catch (error) {
     console.error('Error parsing benefits JSON from description:', error);
     console.error('Raw JSON string was:', benefitsMatch[1]);

@@ -153,22 +153,23 @@ CRITICAL ACCURACY RULES:
 
 CRITICAL STRUCTURE FOR JSON RESPONSE:
 
-1. "description" field: ONLY write 2-3 paragraphs about the company and role
-   - Start with a varied company intro (use the 7 styles)
-   - Explain why this role matters to the company
-   - Describe the work environment and culture
-   - NO bullet points or lists in this field
+1. "description" field: Write a comprehensive 3-4 paragraph job description
+   - Paragraph 1: Company introduction using varied intro styles (avoid "seeking", "looking for")  
+   - Paragraph 2: Detailed daily responsibilities and specific tasks (be very specific!)
+   - Paragraph 3: Why this role matters, growth opportunities, and impact on the business
+   - Paragraph 4: Work environment, team dynamics, and company culture
+   - Make it engaging and informative - this is the main content job seekers will read
 
-2. "requirements" field: 5-7 bullet points for qualifications
+2. "requirements" field: 5-7 specific bullet points
    • Must start each line with a bullet (•)
-   • Include education, experience, skills
+   • Be specific: "Previous property management experience" not just "experience"
+   • Include both hard skills (Excel, software) and soft skills (customer service)
    • Add physical requirements if applicable
-   • Include soft skills and personality traits
 
-3. "benefitOptions" array: Create 3-5 relevant benefits
-   - Each benefit needs: icon emoji, title, description, unique key
-   - Only include benefits actually mentioned in the prompt
-   - If no benefits mentioned, just include competitive pay
+3. "benefitOptions" array: Create 3-5 compelling benefits
+   - Always include competitive pay with the actual salary range
+   - Add relevant benefits based on job type (health insurance for full-time, flexible schedule for part-time)
+   - Each benefit needs: emoji icon, descriptive title, detailed description, unique key
 
 DO NOT include:
 - "What You'll Do" sections (save for later editing)
@@ -180,7 +181,7 @@ Return ONLY a JSON object with these exact fields:
   "title": "EXACT job title from the prompt (not generic!)",
   "location": "City, CA", 
   "salary": "$XX-XX/hr or annual",
-  "description": "Company introduction and role overview paragraph ONLY. 2-3 paragraphs about the company and why this role matters. Do NOT include bullet points, duties, or requirements here.",
+  "description": "Write a comprehensive job description with 3-4 detailed paragraphs: 1) Company introduction and culture, 2) Detailed role overview and daily responsibilities, 3) Why this position matters and growth opportunities, 4) Work environment and team dynamics. Make it engaging and specific - include actual tasks, not just generic descriptions.",
   "requirements": "5-7 bullet points starting with • for qualifications, experience, skills needed",
   "contactMethod": "Email or phone from the prompt",
   "schedule": "Shift details if mentioned", 
@@ -424,7 +425,13 @@ function generateFallbackJob(prompt: string, user: any): any {
 
     security: `Join ${user?.companyName ? `${user.companyName}'s` : 'our'} security team protecting our ${location.split(',')[0]} facility. We're looking for observant, reliable individuals who take pride in keeping people and property safe. This role offers stability, professional growth opportunities, and the satisfaction of being an essential part of our operations. We believe in treating our security team as valued professionals who contribute to everyone's safety and success.`,
     
-    management: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} seeking an experienced ${title} for our ${location.split(',')[0]} facility. This is a perfect opportunity for someone with leadership skills who wants to make a real impact in a growing Central Valley business. We offer competitive compensation, a supportive work environment, and genuine opportunities for career advancement. As a key member of our management team, you'll have the autonomy to make decisions while being backed by a company that values your expertise and contributions.`,
+    management: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} seeking an experienced ${title} for our ${location.split(',')[0]} facility. This is a perfect opportunity for someone with leadership skills who wants to make a real impact in a growing Central Valley business.
+
+In this hands-on management role, you'll oversee all aspects of daily operations including customer relations, facility maintenance coordination, staff supervision, and financial management. Your typical day includes meeting with prospective tenants, conducting facility tours, processing rental agreements, handling customer service inquiries, coordinating maintenance repairs, managing delinquent accounts, and ensuring our facility maintains the highest standards of cleanliness and security.
+
+This position offers significant growth potential and the opportunity to directly impact our business success. As a key decision-maker, you'll implement operational improvements, develop customer retention strategies, and build strong relationships within the local community. We believe in promoting from within and providing our management team with the resources and support needed to excel.
+
+You'll work in a professional environment with a close-knit team that values collaboration, innovation, and exceptional customer service. Our facility features modern amenities, and we pride ourselves on maintaining a positive workplace culture where your contributions are recognized and rewarded.`,
     
     general: `${user?.companyName || 'We\'re'} ${user?.companyName ? 'is' : ''} hiring in ${location.split(',')[0]}! Looking for hardworking individuals to join our growing team. This is a great opportunity for someone seeking stable employment with a company that values its employees. We believe in fair pay, respectful treatment, and providing opportunities for our team members to learn and advance. If you're ready to contribute to a positive work environment and grow your career, we want to hear from you.`
   };
@@ -449,11 +456,11 @@ function generateFallbackJob(prompt: string, user: any): any {
   const benefitOptions = [];
   let benefitKey = 1;
   
-  // Always add competitive pay
+  // Always add competitive pay with detailed description
   benefitOptions.push({
     icon: '💰',
     title: 'Competitive Pay',
-    description: salary,
+    description: `${salary} based on experience with opportunity for raises`,
     key: `benefit_${benefitKey++}`
   });
   
@@ -462,23 +469,40 @@ function generateFallbackJob(prompt: string, user: any): any {
     benefitOptions.push({
       icon: '🏥',
       title: 'Health Insurance',
-      description: 'Medical, dental, vision coverage',
+      description: 'Comprehensive medical, dental, and vision coverage',
       key: `benefit_${benefitKey++}`
     });
   }
   
-  if (lowerPrompt.includes('pto') || lowerPrompt.includes('vacation') || jobType === 'office') {
+  if (lowerPrompt.includes('pto') || lowerPrompt.includes('vacation') || jobType === 'management' || jobType === 'office') {
     benefitOptions.push({
       icon: '🏖️',
       title: 'Paid Time Off',
-      description: 'Vacation and sick days',
+      description: 'Generous vacation and sick leave policy',
+      key: `benefit_${benefitKey++}`
+    });
+  }
+  
+  // Add growth opportunities for management roles
+  if (jobType === 'management') {
+    benefitOptions.push({
+      icon: '📈',
+      title: 'Career Growth',
+      description: 'Professional development and advancement opportunities',
+      key: `benefit_${benefitKey++}`
+    });
+    
+    benefitOptions.push({
+      icon: '🎓',
+      title: 'Management Training',
+      description: 'Ongoing leadership development and training programs',
       key: `benefit_${benefitKey++}`
     });
   }
   
   if (lowerPrompt.includes('401k') || lowerPrompt.includes('retirement')) {
     benefitOptions.push({
-      icon: '💼',
+      icon: '🏦',
       title: '401k Plan',
       description: 'Retirement savings with company match',
       key: `benefit_${benefitKey++}`

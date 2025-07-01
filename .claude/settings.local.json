@@ -30,7 +30,8 @@
       "Bash(npx prisma:*)",
       "Bash(curl:*)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:resources.workable.com)"
+      "WebFetch(domain:resources.workable.com)",
+      "Bash(timeout 15s npm run dev)"
     ],
     "deny": []
   }
