@@ -221,6 +221,7 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
       return NextResponse.json({
         success: true,
         jobData,
+        onetData: onetData, // Include O*NET data for guided mode
         onetUsed: !!(onetData && onetData.title),
         debug: {
           extractedTitle,
@@ -265,6 +266,7 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
         return NextResponse.json({
           success: true,
           jobData: fallbackJobData,
+          onetData: fallbackOnetData, // Include O*NET data for guided mode
           fallback: true,
           onetUsed: !!fallbackOnetData,
           message: fallbackOnetData ? 

@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Zap, ArrowRight, Edit, MapPin, DollarSign, Briefcase, User, Eye, Palette } from 'lucide-react';
+import { Sparkles, Zap, ArrowRight, Edit, MapPin, DollarSign, Briefcase, User, Eye, Palette, Wand2 } from 'lucide-react';
 import JobPreviewModern from '@/components/employers/JobPreviewModern';
+import GuidedJobCreation from '@/components/employers/GuidedJobCreation';
 
 interface BenefitOption {
   icon: string;
@@ -74,6 +75,8 @@ export default function PostJobPage() {
   const [showExampleModal, setShowExampleModal] = useState(false);
   const [useModernPreview, setUseModernPreview] = useState(true);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+  const [useGuidedMode, setUseGuidedMode] = useState(false);
+  const [onetData, setOnetData] = useState<any>(null);
   
   // Auto-fill email when user loads
   useEffect(() => {
@@ -187,6 +190,11 @@ export default function PostJobPage() {
         // Show what title was extracted for O*NET lookup
         if (data.debug?.extractedTitle) {
           console.log('🔍 Extracted job title for O*NET:', data.debug.extractedTitle);
+        }
+        
+        // Store O*NET data for guided mode
+        if (data.onetData) {
+          setOnetData(data.onetData);
         }
         
         setJobData(data.jobData);
@@ -364,26 +372,51 @@ export default function PostJobPage() {
             </div>
 
             <div className="mt-6 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => {
-                  setJobData({
-                    title: '',
-                    location: '',
-                    salary: '',
-                    description: '',
-                    responsibilities: '',
-                    requirements: '',
-                    contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
-                    requiresDegree: false,
-                    customQuestions: [],
-                    benefitOptions: []
-                  });
-                  setCurrentState('editing');
-                }}
-                className="w-full py-3 px-4 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors"
-              >
-                ✍️ Skip AI - Write Job Post Manually
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setJobData({
+                      title: '',
+                      location: '',
+                      salary: '',
+                      description: '',
+                      responsibilities: '',
+                      requirements: '',
+                      contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
+                      requiresDegree: false,
+                      customQuestions: [],
+                      benefitOptions: []
+                    });
+                    setCurrentState('editing');
+                  }}
+                  className="w-full py-3 px-4 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors"
+                >
+                  ✍️ Skip AI - Write Job Post Manually
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setJobData({
+                      title: '',
+                      location: '',
+                      salary: '',
+                      description: '',
+                      responsibilities: '',
+                      requirements: '',
+                      contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
+                      requiresDegree: false,
+                      customQuestions: [],
+                      benefitOptions: []
+                    });
+                    setUseGuidedMode(true);
+                    setCurrentState('editing');
+                  }}
+                  className="w-full py-3 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <Wand2 className="w-4 h-4 inline mr-2" />
+                  Try Smart Guided Flow
+                </button>
+              </div>
             </div>
           </div>
 
@@ -509,12 +542,39 @@ Contact: ${userEmail}`);
   }
 
   if (currentState === 'editing') {
+    // Guided mode using the new GuidedJobCreation component
+    if (useGuidedMode) {
+      return (
+        <GuidedJobCreation
+          initialData={jobData}
+          onetData={onetData}
+          onComplete={(updatedJobData) => {
+            setJobData(updatedJobData);
+            handlePublish();
+          }}
+          onBack={() => setUseGuidedMode(false)}
+        />
+      );
+    }
+
+    // Standard editing mode
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="max-w-7xl mx-auto p-6">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">✨ Your Job Post is Ready!</h1>
             <p className="text-gray-600">Review and edit as needed, then publish to reach Central Valley job seekers</p>
+            
+            {/* Mode Toggle */}
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => setUseGuidedMode(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Wand2 className="w-4 h-4" />
+                Try Smart Guided Flow
+              </button>
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
