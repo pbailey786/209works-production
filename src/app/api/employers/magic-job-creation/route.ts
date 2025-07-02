@@ -636,11 +636,11 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
   });
   
   const responsibilities = (onetData?.responsibilities && Array.isArray(onetData.responsibilities)) 
-    ? onetData.responsibilities.map(r => `• ${r}`).join('\n')
+    ? onetData.responsibilities.map((r: string) => `• ${r}`).join('\n')
     : (responsibilitiesByType[jobType as keyof typeof responsibilitiesByType] || responsibilitiesByType.general);
     
   const requirements = (onetData?.requirements && Array.isArray(onetData.requirements))
-    ? onetData.requirements.map(r => `• ${r}`).join('\n')
+    ? onetData.requirements.map((r: string) => `• ${r}`).join('\n')
     : (requirementsByType[jobType as keyof typeof requirementsByType] || requirementsByType.general);
 
   // Enhance benefits with O*NET suggestions if available
