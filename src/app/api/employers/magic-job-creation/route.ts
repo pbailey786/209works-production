@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { openai } from '@/lib/ai';
 import { prisma } from '@/lib/database/prisma';
+import { jobEnhancer } from '@/lib/onet/job-enhancer';
 
 export const maxDuration = 15; // Reduced timeout - fail fast to fallback
 
@@ -123,14 +124,48 @@ Return JSON:
 }`;
 
     try {
+      // Extract basic job info for O*NET lookup
+      const jobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
+      const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'General Worker';
+      
+      // Try to get O*NET data first (non-blocking)
+      let onetData = null;
+      try {
+        console.log('🔍 Looking up O*NET data for:', extractedTitle);
+        onetData = await Promise.race([
+          jobEnhancer.enhanceJobPosting({ 
+            title: extractedTitle, 
+            location: user?.businessLocation || 'Stockton, CA' 
+          }),
+          new Promise((resolve) => setTimeout(() => resolve(null), 3000)) // 3 second timeout for O*NET
+        ]);
+        
+        if (onetData) {
+          console.log('✅ O*NET data retrieved successfully');
+        }
+      } catch (onetError) {
+        console.log('⚠️ O*NET lookup failed, continuing without enhancement');
+      }
+
+      // Enhance the user prompt with O*NET data if available
+      let enhancedUserPrompt = userPrompt;
+      if (onetData) {
+        enhancedUserPrompt += `\n\nO*NET DATA AVAILABLE - Use this to enhance accuracy:
+Title: ${onetData.title}
+Salary Range: ${onetData.salary?.display || 'Use market rates'}
+Key Responsibilities: ${onetData.responsibilities.slice(0, 3).join('; ')}
+Required Skills: ${onetData.skills.join(', ')}
+Suggested Requirements: ${onetData.requirements.slice(0, 3).join('; ')}`;
+      }
+
       // Try OpenAI first with timeout
-      console.log('🤖 Attempting GPT-4 generation for prompt:', prompt.trim().substring(0, 100) + '...');
+      console.log('🤖 Attempting GPT-3.5 generation for prompt:', prompt.trim().substring(0, 100) + '...');
       const completion = await Promise.race([
         openai.chat.completions.create({
           model: 'gpt-3.5-turbo', // Switch back for reliability
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
+            { role: 'user', content: enhancedUserPrompt }
           ],
           temperature: 0.4, // Balanced for variety + accuracy
           max_tokens: 1200,
@@ -182,7 +217,7 @@ Return JSON:
       try {
         // Rule-based fallback system - always works
         console.log('🔄 Using fallback system for prompt:', prompt.trim().substring(0, 50) + '...');
-        const fallbackJobData = generateFallbackJob(prompt.trim(), user);
+        const fallbackJobData = await generateFallbackJob(prompt.trim(), user, onetData);
         
         return NextResponse.json({
           success: true,
@@ -270,7 +305,7 @@ Return JSON:
 }
 
 // Rule-based fallback job generation with improved format
-function generateFallbackJob(prompt: string, user: any): any {
+async function generateFallbackJob(prompt: string, user: any, onetData: any = null): Promise<any> {
   const lowerPrompt = prompt.toLowerCase();
   
   // Extract title from prompt - check specific titles first, then general keywords
@@ -310,36 +345,46 @@ function generateFallbackJob(prompt: string, user: any): any {
   else if (lowerPrompt.includes('manteca')) location = 'Manteca, CA';
   else if (lowerPrompt.includes('sacramento')) location = 'Sacramento, CA';
   
-  // Extract salary or use defaults based on job type
-  let salary = '$16-19/hr';
-  
-  // Try to match salary ranges first (e.g., $17.50–$19.50/hr, $22-26/hr)
-  const rangeMatch = prompt.match(/\$(\d+(?:\.\d+)?)\s*[-–]\s*\$?(\d+(?:\.\d+)?)\s*(?:\/hr|per hour|hourly)?/i);
-  if (rangeMatch) {
-    const min = parseFloat(rangeMatch[1]);
-    const max = parseFloat(rangeMatch[2]);
-    if (min > 1000 || max > 1000) {
-      salary = `$${min.toLocaleString()}-${max.toLocaleString()}/year`;
-    } else {
-      salary = `$${min}–$${max}/hr`;
+  // Use O*NET data if available for better accuracy
+  if (onetData) {
+    // Use O*NET recommended title if ours is generic
+    if (title === 'General Worker' && onetData.title) {
+      title = onetData.title;
     }
-  } else {
-    // Try single salary amount
-    const singleMatch = prompt.match(/\$(\d+(?:\.\d+)?)\s*(?:\/hr|per hour|hourly)?/i);
-    if (singleMatch) {
-      const amount = parseFloat(singleMatch[1]);
-      if (amount > 1000) {
-        salary = `$${amount.toLocaleString()}/year`;
+  }
+
+  // Extract salary or use O*NET data or defaults
+  let salary = onetData?.salary?.display || '$16-19/hr';
+  
+  // Try to match salary ranges first if O*NET didn't provide
+  if (!onetData?.salary) {
+    const rangeMatch = prompt.match(/\$(\d+(?:\.\d+)?)\s*[-–]\s*\$?(\d+(?:\.\d+)?)\s*(?:\/hr|per hour|hourly)?/i);
+    if (rangeMatch) {
+      const min = parseFloat(rangeMatch[1]);
+      const max = parseFloat(rangeMatch[2]);
+      if (min > 1000 || max > 1000) {
+        salary = `$${min.toLocaleString()}-${max.toLocaleString()}/year`;
       } else {
-        salary = `$${amount}/hr`;
+        salary = `$${min}–$${max}/hr`;
       }
     } else {
-      // Default salaries by job type
-      if (jobType === 'warehouse') salary = '$17-20/hr';
-      else if (jobType === 'driver') salary = '$18-22/hr';
-      else if (jobType === 'office') salary = '$18-21/hr';
-      else if (jobType === 'security') salary = '$16-19/hr';
-      else if (jobType === 'management') salary = '$19-23/hr';
+      // Try single salary amount
+      const singleMatch = prompt.match(/\$(\d+(?:\.\d+)?)\s*(?:\/hr|per hour|hourly)?/i);
+      if (singleMatch) {
+        const amount = parseFloat(singleMatch[1]);
+        if (amount > 1000) {
+          salary = `$${amount.toLocaleString()}/year`;
+        } else {
+          salary = `$${amount}/hr`;
+        }
+      } else {
+        // Default salaries by job type
+        if (jobType === 'warehouse') salary = '$17-20/hr';
+        else if (jobType === 'driver') salary = '$18-22/hr';
+        else if (jobType === 'office') salary = '$18-21/hr';
+        else if (jobType === 'security') salary = '$16-19/hr';
+        else if (jobType === 'management') salary = '$19-23/hr';
+      }
     }
   }
   
@@ -536,16 +581,40 @@ function generateFallbackJob(prompt: string, user: any): any {
     general: `• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines`
   };
 
+  // Use O*NET data for responsibilities and requirements if available
+  const responsibilities = onetData?.responsibilities?.join('\n') || 
+    responsibilitiesByType[jobType as keyof typeof responsibilitiesByType] || 
+    responsibilitiesByType.general;
+    
+  const requirements = onetData?.requirements?.join('\n') || 
+    requirementsByType[jobType as keyof typeof requirementsByType] || 
+    requirementsByType.general;
+
+  // Enhance benefits with O*NET suggestions if available
+  if (onetData?.benefits && benefitOptions.length < 4) {
+    onetData.benefits.forEach((benefit: string, index: number) => {
+      if (benefitOptions.length < 5 && !benefitOptions.some(b => b.description.includes(benefit))) {
+        benefitOptions.push({
+          icon: ['🎯', '📚', '🏆', '🤝'][index % 4],
+          title: benefit.split(' ').slice(0, 3).join(' '),
+          description: benefit,
+          key: `benefit_${benefitOptions.length + 1}`
+        });
+      }
+    });
+  }
+
   return {
     title,
     location,
     salary,
-    description: fullDescription,
-    responsibilities: responsibilitiesByType[jobType as keyof typeof responsibilitiesByType] || responsibilitiesByType.general,
-    requirements: requirementsByType[jobType as keyof typeof requirementsByType] || requirementsByType.general,
+    description: onetData?.description || fullDescription,
+    responsibilities,
+    requirements,
     niceToHave: niceToHaveByType[jobType as keyof typeof niceToHaveByType] || niceToHaveByType.general,
     contactMethod,
     schedule,
-    benefitOptions
+    benefitOptions,
+    onetEnhanced: !!onetData
   };
 }
