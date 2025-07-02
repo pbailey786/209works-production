@@ -144,7 +144,6 @@ export async function GET(request: NextRequest) {
       appliedAt: application.appliedAt.toISOString(),
       coverLetter: application.coverLetter,
       resumeUrl: application.resumeUrl,
-      notes: application.notes,
       job: {
         id: application.job.id,
         title: application.job.title,

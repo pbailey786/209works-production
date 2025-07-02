@@ -343,6 +343,7 @@ export default function PostJobPage() {
                     location: '',
                     salary: '',
                     description: '',
+                    responsibilities: '',
                     requirements: '',
                     contactMethod: user?.emailAddresses?.[0]?.emailAddress || '',
                     requiresDegree: false,
