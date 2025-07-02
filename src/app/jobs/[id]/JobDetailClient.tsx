@@ -17,21 +17,14 @@ import {
   XMarkIcon,
   SparklesIcon,
   PaperAirplaneIcon,
-  MegaphoneIcon,
-  ArrowTrendingUpIcon,
-  HomeIcon,
-  BellIcon,
+  ClockIcon,
+  UserGroupIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
-import JobCard from '@/components/JobCard';
-import JobGenie from '@/components/JobGenie';
-import JobApplicationModal from '@/components/JobApplicationModal';
-import {
-  formatJobDescription,
-  extractJobHighlights,
-  extractBenefits,
-} from '@/lib/utils/jobDescriptionFormatter';
+// import JobCard from '@/components/JobCard';
+// import JobApplicationModal from '@/components/JobApplicationModal';
 
 interface JobDetailClientProps {
   job: Job;
@@ -43,7 +36,7 @@ interface JobDetailClientProps {
   isJobOwner?: boolean;
 }
 
-// Memoized helper function to format job type
+// Helper function to format job type
 const formatJobType = (type: string): string => {
   return type
     .split('_')
@@ -51,7 +44,7 @@ const formatJobType = (type: string): string => {
     .join(' ');
 };
 
-// Memoized helper function to format date
+// Helper function to format date
 const formatDate = (date: Date): string => {
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
@@ -65,6 +58,32 @@ const formatDate = (date: Date): string => {
   if (diffMonths < 12) return `${diffMonths} months ago`;
 
   return date.toLocaleDateString();
+};
+
+// Helper function to parse benefits from JSON or string
+const parseBenefits = (benefitsData: string | null): any[] => {
+  if (!benefitsData) return [];
+  
+  try {
+    // Try to parse as JSON first (new format)
+    const parsed = JSON.parse(benefitsData);
+    if (Array.isArray(parsed)) {
+      return parsed.filter(b => b.title && b.title.trim() !== '');
+    }
+  } catch (e) {
+    // If JSON parsing fails, it might be plain text (old format)
+    if (typeof benefitsData === 'string' && benefitsData.trim()) {
+      // Return as simple text benefits
+      return [{
+        icon: '🎁',
+        title: 'Benefits Available',
+        description: benefitsData.trim(),
+        key: 'legacy_benefit'
+      }];
+    }
+  }
+  
+  return [];
 };
 
 export default function JobDetailClient({
@@ -100,109 +119,106 @@ export default function JobDetailClient({
     return 'Salary not specified';
   }, [job.salaryMin, job.salaryMax]);
 
-  // Memoized formatted date
-  const formattedDate = useMemo(() => formatDate(job.postedAt), [job.postedAt]);
+  // Parse benefits data
+  const benefits = useMemo(() => parseBenefits(job.benefits), [job.benefits]);
 
-  // Memoized formatted job type
-  const formattedJobType = useMemo(
-    () => formatJobType(job.jobType),
-    [job.jobType]
-  );
-
-  // Clear error after timeout
-  const clearError = useCallback(() => {
-    if (error) {
-      setTimeout(() => setError(null), 5000);
-    }
-  }, [error]);
-
-  // Handle save/unsave job with improved error handling
-  const handleSaveJob = useCallback(async () => {
+  // Handle save/unsave job
+  const handleSaveToggle = useCallback(async () => {
     if (!isAuthenticated) {
-      window.location.href = '/signin';
+      setError('Please sign in to save jobs');
       return;
     }
 
     setSaving(true);
     setError(null);
-
+    
     try {
-      const response = await fetch('/api/profile/saved-jobs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          jobId: job.id,
-          action: saved ? 'unsave' : 'save',
-        }),
+      const response = await fetch('/api/jobs/save', {
+        method: saved ? 'DELETE' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId: job.id }),
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        setSaved(!saved);
+      } else {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save job');
+        setError(errorData.message || 'Failed to save job');
       }
-
-      const data = await response.json();
-      setSaved(!saved); // Toggle the saved state
-      setError(saved ? 'Job removed from saved jobs!' : 'Saved!');
-      setTimeout(() => setError(null), 2000); // Shorter notification
     } catch (error) {
-      console.error('Error saving job:', error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : 'Failed to save job. Please try again.'
-      );
-      clearError();
+      console.error('Save job error:', error);
+      setError('Failed to save job. Please try again.');
     } finally {
       setSaving(false);
     }
-  }, [isAuthenticated, job.id, clearError]);
+  }, [isAuthenticated, saved, job.id]);
 
-  // Handle share job with improved error handling
+  // Handle share job
   const handleShare = useCallback(async () => {
     setSharing(true);
-    setError(null);
-
-    const shareData = {
-      title: `${job.title} at ${job.company}`,
-      text: `Check out this job opportunity: ${job.title} at ${job.company}`,
-      url: window.location.href,
-    };
-
+    
     try {
-      if (
-        navigator.share &&
-        navigator.canShare &&
-        navigator.canShare(shareData)
-      ) {
-        await navigator.share(shareData);
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(window.location.href);
-        // Use a more accessible notification instead of alert
-        setError('Job link copied to clipboard!');
-        setTimeout(() => setError(null), 3000);
+      if (navigator.share) {
+        await navigator.share({
+          title: `${job.title} at ${job.company}`,
+          text: `Check out this ${job.title} position at ${job.company} in ${job.location}`,
+          url: window.location.href,
+        });
       } else {
-        throw new Error('Sharing not supported on this device');
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Job link copied to clipboard!');
       }
     } catch (error) {
-      console.error('Error sharing:', error);
-      if (error instanceof Error && error.name !== 'AbortError') {
-        setError('Failed to share job. Please try copying the URL manually.');
-        clearError();
+      console.error('Share error:', error);
+      // Fallback to copying to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Job link copied to clipboard!');
+      } catch (clipboardError) {
+        setError('Failed to share job. Please copy the URL manually.');
       }
     } finally {
       setSharing(false);
     }
-  }, [job.title, job.company, clearError]);
+  }, [job.title, job.company, job.location]);
 
-  // Handle create job alert with job details pre-filled
+  // Handle report job
+  const handleReport = useCallback(async () => {
+    if (!reportReason.trim()) {
+      setError('Please select a reason for reporting');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/jobs/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: job.id,
+          reason: reportReason,
+        }),
+      });
+
+      if (response.ok) {
+        setReportSubmitted(true);
+        setTimeout(() => {
+          setReportModalOpen(false);
+          setReportSubmitted(false);
+          setReportReason('');
+        }, 2000);
+      } else {
+        setError('Failed to submit report. Please try again.');
+      }
+    } catch (error) {
+      console.error('Report error:', error);
+      setError('Failed to submit report. Please try again.');
+    }
+  }, [job.id, reportReason]);
+
+  // Create job alert
   const handleCreateAlert = useCallback(async () => {
     if (!isAuthenticated) {
       setError('Please sign in to create job alerts');
-      clearError();
       return;
     }
 
@@ -210,740 +226,371 @@ export default function JobDetailClient({
     setError(null);
 
     try {
-      // Navigate to alerts page with pre-filled data
-      const alertData = {
-        jobTitle: job.title,
-        location: job.location,
-        jobTypes: [job.jobType],
-        categories: job.categories.slice(0, 3), // Limit to first 3 categories
-        salaryMin: job.salaryMin || undefined,
-        salaryMax: job.salaryMax || undefined,
-        companies: [job.company],
-      };
-
-      // Store in sessionStorage to pre-fill the alert form
-      sessionStorage.setItem('prefillAlert', JSON.stringify(alertData));
-      
-      // Navigate to alerts page
-      window.location.href = '/alerts?create=true';
-    } catch (error) {
-      console.error('Error creating alert:', error);
-      setError('Failed to create alert. Please try again.');
-      clearError();
-    } finally {
-      setCreatingAlert(false);
-    }
-  }, [isAuthenticated, job.title, job.location, job.jobType, job.categories, job.salaryMin, job.salaryMax, job.company, clearError]);
-
-  // Handle report job with improved error handling
-  const handleReportJob = useCallback(async () => {
-    if (!reportReason.trim()) return;
-
-    setError(null);
-
-    try {
-      const response = await fetch('/api/jobs/report', {
+      const response = await fetch('/api/jobs/alerts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobId: job.id,
-          reason: reportReason.trim(),
-          reporterUserId: userId,
+          keywords: job.title,
+          location: job.location,
+          jobType: job.jobType,
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit report');
+      if (response.ok) {
+        alert('Job alert created! You\'ll receive notifications for similar jobs.');
+      } else {
+        setError('Failed to create job alert. Please try again.');
       }
-
-      setReportSubmitted(true);
-      setTimeout(() => {
-        setReportModalOpen(false);
-        setReportSubmitted(false);
-        setReportReason('');
-      }, 2000);
     } catch (error) {
-      console.error('Error reporting job:', error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : 'Failed to submit report. Please try again.'
-      );
-      clearError();
+      console.error('Create alert error:', error);
+      setError('Failed to create job alert. Please try again.');
+    } finally {
+      setCreatingAlert(false);
     }
-  }, [reportReason, job.id, userId, clearError]);
-
-  // Handle modal close
-  const handleCloseModal = useCallback(() => {
-    setReportModalOpen(false);
-    setReportReason('');
-    setReportSubmitted(false);
-    setError(null);
-  }, []);
+  }, [isAuthenticated, job.title, job.location, job.jobType]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Error Notification */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
-          className={`fixed right-4 top-4 z-50 max-w-sm rounded-lg p-4 shadow-lg ${
-            error.includes('copied') || error.includes('success')
-              ? 'border-blue-200 bg-blue-100 text-blue-800'
-              : 'border-gray-200 bg-gray-100 text-gray-800'
-          } border`}
-          role="alert"
-          aria-live="assertive"
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">{error}</p>
-            <button
-              onClick={() => setError(null)}
-              className="ml-3 text-gray-400 hover:text-gray-600"
-              aria-label="Close notification"
-            >
-              <XMarkIcon className="h-4 w-4" />
-            </button>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Apple-style Breadcrumb Navigation with Dashboard Link */}
-      <nav className="border-b border-gray-200/60 bg-white/80 backdrop-blur-md" aria-label="Breadcrumb">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <ol className="flex items-center space-x-3 text-sm">
-              <li>
-                <Link
-                  href="/"
-                  className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  Home
-                </Link>
-              </li>
-              <li aria-hidden="true">
-                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-              </li>
-              <li>
-                <Link
-                  href="/jobs"
-                  className="rounded-full px-3 py-1 font-medium text-gray-600 transition-all duration-200 hover:bg-blue-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  Jobs
-                </Link>
-              </li>
-              <li aria-hidden="true">
-                <ChevronRightIcon className="h-4 w-4 text-gray-400" />
-              </li>
-              <li aria-current="page">
-                <span className="truncate rounded-full bg-blue-100 px-3 py-1 font-semibold text-blue-800">{job.title}</span>
-              </li>
-            </ol>
-            
-            {/* Dashboard Link for Job Seekers */}
-            {isAuthenticated && userRole === 'jobseeker' && !isJobOwner && (
-              <Link
-                href="/dashboard"
-                className="group inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <HomeIcon className="mr-2 h-4 w-4 text-gray-500 transition-transform group-hover:scale-110" />
-                Back to Dashboard
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* Apple-style Hero Section */}
-      <div className="relative overflow-hidden bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            {/* Company Logo Placeholder / Icon */}
-            <div className="mb-8 inline-flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-2xl">
-              <BriefcaseIcon className="h-12 w-12 text-white" />
-            </div>
-            
-            {/* Job Title */}
-            <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 md:text-6xl">
-              {job.title}
-            </h1>
-            
-            {/* Company Name */}
-            <div className="mb-8 flex items-center justify-center">
-              <div className="rounded-2xl bg-gray-100 px-6 py-3">
-                <div className="flex items-center text-xl font-semibold text-gray-800">
-                  <BuildingOfficeIcon className="mr-3 h-6 w-6 text-gray-600" />
-                  <span>{job.company}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Key Job Info Cards */}
-            <div className="mx-auto max-w-4xl">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-sm">
-                  <div className="flex items-center justify-center">
-                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
-                      <MapPinIcon className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-gray-500">Location</div>
-                      <div className="text-lg font-semibold text-gray-900">{job.location}</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-sm">
-                  <div className="flex items-center justify-center">
-                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
-                      <BriefcaseIcon className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-gray-500">Type</div>
-                      <div className="text-lg font-semibold text-gray-900">{formattedJobType}</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 p-6 shadow-sm">
-                  <div className="flex items-center justify-center">
-                    <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100">
-                      <CurrencyDollarIcon className="h-5 w-5 text-indigo-600" />
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm font-medium text-gray-500">Salary</div>
-                      <div className="text-lg font-semibold text-gray-900">{salaryDisplay}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Posted Date */}
-            <div className="mt-8 inline-flex items-center rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              <span>Posted {formattedDate}</span>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <motion.article
+    <div className="min-h-screen bg-gray-50">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Job Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Job Header Card */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="overflow-hidden rounded-3xl border border-gray-200/60 bg-white/90 shadow-2xl backdrop-blur-sm"
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
             >
-              {/* Apple-style Quick Actions Bar */}
-              <div className="border-b border-gray-200/60 bg-gradient-to-r from-gray-50 to-slate-50 p-8">
-                <div className="flex flex-wrap items-center justify-between gap-6">
-                  <div className="flex flex-wrap gap-4">
-                    {/* Edit Button for Job Owner */}
-                    {isJobOwner && (
-                      <Link
-                        href={`/employers/job/${job.id}/edit`}
-                        className="group inline-flex items-center rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:ring-offset-2"
-                      >
-                        <svg className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit Job
-                      </Link>
-                    )}
-
-
+              {/* Header with gradient */}
+              <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h1 className="text-3xl font-bold mb-3">{job.title}</h1>
+                    <div className="flex flex-wrap items-center gap-4 text-blue-100">
+                      <div className="flex items-center gap-2">
+                        <BuildingOfficeIcon className="w-5 h-5" />
+                        <span className="font-medium">{job.company}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPinIcon className="w-5 h-5" />
+                        <span>{job.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CurrencyDollarIcon className="w-5 h-5" />
+                        <span className="font-semibold">{salaryDisplay}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <BriefcaseIcon className="w-5 h-5" />
+                        <span>{formatJobType(job.jobType)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-3 ml-6">
                     <button
-                      onClick={handleSaveJob}
+                      onClick={handleSaveToggle}
                       disabled={saving}
-                      className={`group inline-flex items-center rounded-2xl px-6 py-3 text-sm font-semibold shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-offset-2 ${
-                        saved
-                          ? 'border-2 border-blue-200 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 hover:from-blue-200 hover:to-indigo-200 focus:ring-blue-500/20'
-                          : 'border-2 border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:shadow-xl focus:ring-gray-500/20'
-                      } ${saving ? 'cursor-not-allowed opacity-50' : ''}`}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-colors disabled:opacity-50"
                     >
                       {saved ? (
-                        <BookmarkSolidIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
+                        <BookmarkSolidIcon className="w-5 h-5" />
                       ) : (
-                        <BookmarkIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
+                        <BookmarkIcon className="w-5 h-5" />
                       )}
-                      {saving ? 'Saving...' : saved ? 'Saved' : 'Save Job'}
+                      <span className="hidden sm:inline">
+                        {saving ? 'Saving...' : saved ? 'Saved' : 'Save'}
+                      </span>
                     </button>
-
-                    {/* Create Alert Button - Only for authenticated non-owners */}
-                    {isAuthenticated && !isJobOwner && (
-                      <button
-                        onClick={handleCreateAlert}
-                        disabled={creatingAlert}
-                        className="group inline-flex items-center rounded-2xl border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-3 text-sm font-semibold text-orange-700 shadow-lg transition-all duration-200 hover:from-orange-100 hover:to-amber-100 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-orange-500/20 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <BellIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
-                        {creatingAlert ? 'Creating...' : 'Create Alert'}
-                      </button>
-                    )}
-
+                    
                     <button
                       onClick={handleShare}
                       disabled={sharing}
-                      className="group inline-flex items-center rounded-2xl border-2 border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 shadow-lg transition-all duration-200 hover:bg-gray-50 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-gray-500/20 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-colors disabled:opacity-50"
                     >
-                      <ShareIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
-                      {sharing ? 'Sharing...' : 'Share'}
+                      <ShareIcon className="w-5 h-5" />
+                      <span className="hidden sm:inline">Share</span>
                     </button>
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    {/* Apple-style Social Share Buttons */}
-                    <a
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this ${job.title} position at ${job.company} in ${job.location}`)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}&hashtags=209jobs,hiring,${job.location.replace(/\s+/g, '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white shadow-lg transition-all duration-200 hover:bg-gray-800 hover:shadow-xl hover:scale-110"
-                    >
-                      <svg className="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
-                    </a>
-
-                    <a
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg transition-all duration-200 hover:bg-blue-700 hover:shadow-xl hover:scale-110"
-                    >
-                      <svg className="h-5 w-5 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                      </svg>
-                    </a>
-
-                    <button
-                      onClick={() => setReportModalOpen(true)}
-                      className="group flex items-center justify-center rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 shadow-lg transition-all duration-200 hover:bg-gray-100 hover:shadow-xl"
-                    >
-                      <ExclamationTriangleIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
-                      Report
-                    </button>
+                </div>
+                
+                {/* Job metadata */}
+                <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-blue-200">
+                  <div className="flex items-center gap-1">
+                    <CalendarIcon className="w-4 h-4" />
+                    <span>Posted {formatDate(job.postedAt)}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <UserGroupIcon className="w-4 h-4" />
+                    <span>Via {job.source}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Job Details Section */}
-              <div className="p-8">
-                {/* Categories */}
-                {job.categories.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="mb-3 text-sm font-semibold text-gray-900 uppercase tracking-wide">Categories</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {job.categories.map((category, index) => (
-                        <span
-                          key={index}
-                          className="inline-block rounded-full bg-[#2d4a3e]/10 px-4 py-2 text-sm font-medium text-[#2d4a3e]"
+              {/* Job Content - New 4-Section Format */}
+              <div className="p-8 space-y-8">
+                {/* 1. About This Role */}
+                {job.description && (
+                  <section>
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
+                      💼 About This Role
+                    </h2>
+                    <div className="prose prose-gray max-w-none">
+                      <p className="text-gray-700 leading-relaxed text-lg">
+                        {job.description}
+                      </p>
+                    </div>
+                  </section>
+                )}
+
+                {/* 2. What You'll Do - NEW SECTION */}
+                {job.responsibilities && (
+                  <section>
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
+                      ⚡ What You'll Do
+                    </h2>
+                    <div className="bg-purple-50 rounded-lg p-6">
+                      <div className="prose prose-gray max-w-none">
+                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                          {job.responsibilities}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                )}
+
+                {/* 3. What We're Looking For */}
+                {job.requirements && (
+                  <section>
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
+                      🎯 What We're Looking For
+                    </h2>
+                    <div className="bg-red-50 rounded-lg p-6">
+                      <div className="prose prose-gray max-w-none">
+                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                          {job.requirements}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                )}
+
+                {/* 4. What We Offer */}
+                {benefits.length > 0 && (
+                  <section>
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
+                      🎁 What We Offer
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {benefits.map((benefit, index) => (
+                        <div
+                          key={benefit.key || index}
+                          className="flex items-center p-4 bg-green-50 rounded-lg border border-green-200"
                         >
-                          {category}
-                        </span>
+                          <span className="text-3xl mr-4">{benefit.icon}</span>
+                          <div>
+                            <div className="font-semibold text-green-900">
+                              {benefit.title}
+                            </div>
+                            <div className="text-sm text-green-700">
+                              {benefit.description}
+                            </div>
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  </div>
+                  </section>
                 )}
 
-                {/* Upsell Badges */}
-                {(job.socialMediaShoutout ||
-                  job.placementBump ||
-                  job.upsellBundle) && (
-                  <div className="mb-6">
-                    <h3 className="mb-3 text-sm font-semibold text-gray-900 uppercase tracking-wide">Promotion Features</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {(job.socialMediaShoutout || job.upsellBundle) && (
-                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-gradient-to-r from-blue-100 to-indigo-100 px-4 py-2 text-sm font-medium text-blue-700">
-                          <MegaphoneIcon className="mr-2 h-4 w-4" />
-                          Social Media Promoted
-                        </span>
-                      )}
-                      {(job.placementBump || job.upsellBundle) && (
-                        <span className="inline-flex items-center rounded-full border border-indigo-200 bg-gradient-to-r from-indigo-100 to-blue-100 px-4 py-2 text-sm font-medium text-indigo-700">
-                          <ArrowTrendingUpIcon className="mr-2 h-4 w-4" />
-                          Priority Placement
-                        </span>
-                      )}
-                      {job.upsellBundle && (
-                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-gradient-to-r from-blue-100 to-indigo-100 px-4 py-2 text-sm font-medium text-blue-700">
-                          <SparklesIcon className="mr-2 h-4 w-4" />
-                          Premium Promotion
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* About This Role */}
-              <div className="border-t border-gray-200">
-                <div className="p-8">
-                  <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
-                    <span className="text-3xl">💼</span>
-                    About This Role
-                  </h2>
-                  <div
-                    className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
-                    dangerouslySetInnerHTML={{
-                      __html: formatJobDescription(job.description),
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* What You'll Do */}
-              {job.responsibilities && job.responsibilities.trim() && (
-                <div className="border-t border-gray-200">
-                  <div className="p-8">
-                    <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
-                      <span className="text-3xl">⚡</span>
-                      What You'll Do
-                    </h2>
-                    <div
-                      className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
-                      dangerouslySetInnerHTML={{
-                        __html: formatJobDescription(job.responsibilities),
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* What We're Looking For Section */}
-              {job.requirements && job.requirements.trim() && (
-                <div className="border-t border-gray-200">
-                  <div className="p-8">
-                    <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
-                      <span className="text-3xl">🎯</span>
-                      What We're Looking For
-                    </h2>
-                    <div
-                      className="prose prose-lg max-w-none leading-relaxed text-gray-700 prose-headings:text-gray-900 prose-a:text-[#2d4a3e] prose-strong:text-gray-900"
-                      dangerouslySetInnerHTML={{
-                        __html: formatJobDescription(job.requirements),
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Benefits Section */}
-              {(() => {
-                const benefits = extractBenefits(job.description, job.benefits || undefined);
-                if (benefits.length === 0) return null;
-                
-                return (
-                  <div className="border-t border-gray-200">
-                    <div className="p-8">
-                      <h2 className="mb-6 text-2xl font-bold text-gray-900 flex items-center gap-3">
-                        <span className="text-3xl">🎁</span>
-                        What We Offer
-                      </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {benefits.map((benefit, index) => (
-                          <div 
-                            key={benefit.key || index} 
-                            className="bg-gradient-to-br from-gray-50 to-gray-100 p-5 rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                {/* Application Section */}
+                <section className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-8 border border-green-200">
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                      Ready to Apply?
+                    </h3>
+                    <p className="text-gray-600 mb-6">
+                      Join {job.company} and start your career journey in {job.location}
+                    </p>
+                    
+                    {isAuthenticated ? (
+                      <button
+                        onClick={() => setApplicationModalOpen(true)}
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 text-white text-lg font-semibold rounded-xl hover:bg-green-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                      >
+                        <PaperAirplaneIcon className="w-6 h-6" />
+                        Apply Now
+                      </button>
+                    ) : (
+                      <div className="space-y-4">
+                        <p className="text-gray-500">Sign in to apply for this position</p>
+                        <div className="flex gap-4 justify-center">
+                          <Link
+                            href="/sign-in"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                           >
-                            <div className="text-3xl mb-3">{benefit.icon}</div>
-                            <div className="font-semibold text-gray-800 mb-1">{benefit.title}</div>
-                            {benefit.description && (
-                              <div className="text-sm text-gray-600">{benefit.description}</div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Apply Section or Job Management for Owners */}
-              <div className="border-t border-gray-200 bg-gradient-to-r from-[#2d4a3e]/5 to-[#1d3a2e]/5">
-                <div className="p-8">
-                  {isJobOwner ? (
-                    /* Job Management Section for Employers */
-                    <div className="text-center">
-                      <h3 className="mb-4 text-2xl font-bold text-gray-900">
-                        Manage Your Job Posting
-                      </h3>
-                      <p className="mb-8 text-lg text-gray-600">
-                        Track applications, edit details, and manage your job posting
-                      </p>
-
-                      <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                        <Link
-                          href={`/employers/job/${job.id}`}
-                          className="inline-flex transform items-center justify-center rounded-2xl bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-10 py-5 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
-                        >
-                          <svg className="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                          </svg>
-                          View Dashboard
-                        </Link>
-
-                        <Link
-                          href={`/employers/job/${job.id}/edit`}
-                          className="inline-flex transform items-center justify-center rounded-2xl border-2 border-[#2d4a3e] bg-white px-8 py-5 text-lg font-bold text-[#2d4a3e] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#2d4a3e] hover:text-white hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
-                        >
-                          <svg className="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                          Edit Job
-                        </Link>
-                      </div>
-
-                      <p className="mt-6 text-sm text-gray-500">
-                        💼 Manage applications, track performance, and optimize your job posting
-                      </p>
-                    </div>
-                  ) : (
-                    /* Apply Section for Job Seekers */
-                    <div className="text-center">
-                      <h3 className="mb-4 text-2xl font-bold text-gray-900">
-                        Ready to Take the Next Step?
-                      </h3>
-                      <p className="mb-8 text-lg text-gray-600">
-                        Submit your application through 209 Works and get noticed by {job.company}
-                        {job.url && job.source && (
-                          <span className="block mt-2 text-sm">or apply directly on their company website</span>
-                        )}
-                      </p>
-
-                      <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                        <button
-                          onClick={() => setApplicationModalOpen(true)}
-                          className="inline-flex transform items-center justify-center rounded-2xl bg-gradient-to-r from-[#2d4a3e] to-[#1d3a2e] px-10 py-5 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-[#1d3a2e] hover:to-[#0d2a1e] hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
-                        >
-                          <PaperAirplaneIcon className="mr-3 h-6 w-6" />
-                          Apply Now on 209 Works
-                        </button>
-
-                        {job.url && (
-                          <a
-                            href={job.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex transform items-center justify-center rounded-2xl border-2 border-[#2d4a3e] bg-white px-8 py-5 text-lg font-bold text-[#2d4a3e] shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#2d4a3e] hover:text-white hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#2d4a3e]/50 focus:ring-offset-2"
+                            Sign In to Apply
+                          </Link>
+                          <Link
+                            href="/sign-up"
+                            className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                           >
-                            <svg
-                              className="mr-3 h-5 w-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                              />
-                            </svg>
-                            Apply on Company Site
-                            <span className="sr-only"> (opens in new tab)</span>
-                          </a>
-                        )}
+                            Create Account
+                          </Link>
+                        </div>
                       </div>
-
-                      <p className="mt-6 text-sm text-gray-500">
-                        💡 Tip: Applying through 209 Works helps you track your application status and get personalized job recommendations
-                      </p>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                </section>
               </div>
-            </motion.article>
+            </motion.div>
           </div>
 
-          {/* Apple-style Sidebar */}
-          <aside className="lg:col-span-1">
-            <div className="sticky top-8 space-y-8">
-              {/* Job Summary Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="rounded-3xl border border-gray-200/60 bg-white/90 p-8 shadow-2xl backdrop-blur-sm"
-              >
-                <h3 className="mb-6 text-xl font-bold text-gray-900">Job Summary</h3>
-                <dl className="space-y-6">
-                  <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
-                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Location</dt>
-                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100">
-                        <MapPinIcon className="h-4 w-4 text-blue-600" />
-                      </div>
-                      {job.location}
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
-                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Job Type</dt>
-                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100">
-                        <BriefcaseIcon className="h-4 w-4 text-blue-600" />
-                      </div>
-                      {formattedJobType}
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 p-4">
-                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Salary</dt>
-                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-100">
-                        <CurrencyDollarIcon className="h-4 w-4 text-indigo-600" />
-                      </div>
-                      {salaryDisplay}
-                    </dd>
-                  </div>
-                  <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
-                    <dt className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Posted</dt>
-                    <dd className="mt-2 flex items-center text-base font-semibold text-gray-900">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100">
-                        <CalendarIcon className="h-4 w-4 text-blue-600" />
-                      </div>
-                      {formattedDate}
-                    </dd>
-                  </div>
-                </dl>
-              </motion.div>
-
-              {/* Apple-style Related Jobs */}
-              {relatedJobs.length > 0 && (
-                <motion.section
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="rounded-3xl border border-gray-200/60 bg-white/90 p-8 shadow-2xl backdrop-blur-sm"
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Quick Actions */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <button
+                  onClick={handleCreateAlert}
+                  disabled={creatingAlert}
+                  className="w-full flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors disabled:opacity-50"
                 >
-                  <h3 className="mb-6 text-xl font-bold text-gray-900">
-                    Similar Jobs
-                  </h3>
-                  <ul className="space-y-4">
-                    {relatedJobs.map(relatedJob => (
-                      <li key={relatedJob.id}>
-                        <Link
-                          href={`/jobs/${relatedJob.id}`}
-                          className="group block rounded-2xl border-2 border-gray-100 bg-gradient-to-br from-gray-50 to-slate-50 p-6 transition-all duration-200 hover:border-blue-200 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
-                        >
-                          <h4 className="mb-2 font-semibold text-gray-900">
-                            {relatedJob.title}
-                          </h4>
-                          <p className="mb-2 text-sm text-gray-600">
-                            {relatedJob.company}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-gray-500">
-                            <span>{relatedJob.location}</span>
-                            <span>{formatJobType(relatedJob.jobType)}</span>
-                          </div>
-                          {(relatedJob.salaryMin || relatedJob.salaryMax) && (
-                            <p className="mt-2 text-sm font-medium text-[#2d4a3e]">
-                              {relatedJob.salaryMin && relatedJob.salaryMax
-                                ? `$${relatedJob.salaryMin.toLocaleString()} - $${relatedJob.salaryMax.toLocaleString()}`
-                                : relatedJob.salaryMin
-                                ? `From $${relatedJob.salaryMin.toLocaleString()}`
-                                : `Up to $${relatedJob.salaryMax?.toLocaleString()}`}
-                            </p>
-                          )}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/jobs"
-                    className="group mt-6 inline-flex items-center rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:ring-offset-2"
-                  >
-                    View All Jobs
-                    <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </motion.section>
-              )}
+                  <StarIcon className="w-5 h-5" />
+                  <span>{creatingAlert ? 'Creating...' : 'Create Job Alert'}</span>
+                </button>
+                
+                <button
+                  onClick={() => setReportModalOpen(true)}
+                  className="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <ExclamationTriangleIcon className="w-5 h-5" />
+                  <span>Report Job</span>
+                </button>
+              </div>
             </div>
-          </aside>
+
+            {/* Related Jobs */}
+            {relatedJobs.length > 0 && (
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h3 className="text-lg font-semibold mb-4">Similar Jobs</h3>
+                <div className="space-y-4">
+                  {relatedJobs.slice(0, 3).map((relatedJob) => (
+                    <Link
+                      key={relatedJob.id}
+                      href={`/jobs/${relatedJob.id}`}
+                      className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <h4 className="font-medium text-gray-900 mb-1">{relatedJob.title}</h4>
+                      <p className="text-sm text-gray-600 mb-2">{relatedJob.company}</p>
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>{relatedJob.location}</span>
+                        <span>{formatDate(relatedJob.postedAt)}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  href="/jobs"
+                  className="inline-flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <span>View all jobs</span>
+                  <ChevronRightIcon className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg">
+          <div className="flex items-center gap-2">
+            <ExclamationTriangleIcon className="w-5 h-5" />
+            <span>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="ml-2 text-red-500 hover:text-red-700"
+            >
+              <XMarkIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Job Application Modal - Simplified for now */}
+      {applicationModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-4">Apply for {job.title}</h3>
+            <p className="text-gray-600 mb-4">
+              Application system coming soon! Please contact the employer directly for now.
+            </p>
+            <button
+              onClick={() => setApplicationModalOpen(false)}
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Report Modal */}
       {reportModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="report-modal-title"
-        >
-          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-4">Report Job</h3>
+            
             {reportSubmitted ? (
-              <div className="text-center">
-                <CheckIcon
-                  className="mx-auto mb-4 h-12 w-12 text-blue-500"
-                  aria-hidden="true"
-                />
-                <h3
-                  id="report-modal-title"
-                  className="mb-2 text-lg font-medium text-gray-900"
-                >
-                  Report Submitted
-                </h3>
-                <p className="text-gray-600">
-                  Thank you for your feedback. We'll review this job posting.
-                </p>
+              <div className="text-center py-8">
+                <CheckIcon className="w-12 h-12 text-green-600 mx-auto mb-4" />
+                <p className="text-green-600 font-medium">Thank you for your report!</p>
               </div>
             ) : (
               <>
-                <h3
-                  id="report-modal-title"
-                  className="mb-4 text-lg font-medium text-gray-900"
-                >
-                  Report Job Posting
-                </h3>
-                <p className="mb-4 text-sm text-gray-600">
-                  Please let us know why you're reporting this job posting.
+                <p className="text-gray-600 mb-4">
+                  Why are you reporting this job posting?
                 </p>
-                <div className="mb-4">
-                  <label htmlFor="report-reason" className="sr-only">
-                    Reason for reporting
-                  </label>
-                  <textarea
-                    id="report-reason"
-                    value={reportReason}
-                    onChange={e => setReportReason(e.target.value)}
-                    placeholder="Describe the issue..."
-                    className="h-24 w-full resize-none rounded-lg border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-purple-500"
-                    aria-describedby="report-reason-help"
-                  />
-                  <p
-                    id="report-reason-help"
-                    className="mt-1 text-xs text-gray-500"
-                  >
-                    Please provide at least 10 characters
-                  </p>
+                
+                <div className="space-y-3 mb-6">
+                  {[
+                    'Spam or fake job',
+                    'Inappropriate content',
+                    'Discrimination',
+                    'Misleading information',
+                    'Duplicate posting',
+                    'Other'
+                  ].map((reason) => (
+                    <label key={reason} className="flex items-center">
+                      <input
+                        type="radio"
+                        name="reportReason"
+                        value={reason}
+                        checked={reportReason === reason}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        className="mr-3"
+                      />
+                      <span>{reason}</span>
+                    </label>
+                  ))}
                 </div>
+                
                 <div className="flex gap-3">
                   <button
-                    onClick={handleReportJob}
-                    disabled={
-                      !reportReason.trim() || reportReason.trim().length < 10
-                    }
-                    className="flex-1 rounded-lg bg-gray-600 px-4 py-2 font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Submit Report
-                  </button>
-                  <button
-                    onClick={handleCloseModal}
-                    className="flex-1 rounded-lg bg-gray-200 px-4 py-2 font-medium text-gray-800 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    onClick={() => setReportModalOpen(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Cancel
+                  </button>
+                  <button
+                    onClick={handleReport}
+                    disabled={!reportReason}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                  >
+                    Submit Report
                   </button>
                 </div>
               </>
@@ -951,20 +598,6 @@ export default function JobDetailClient({
           </div>
         </div>
       )}
-
-      {/* JobGenie Chatbot */}
-      <JobGenie jobId={job.id} jobTitle={job.title} company={job.company} />
-
-
-      {/* Job Application Modal */}
-      <JobApplicationModal
-        isOpen={applicationModalOpen}
-        onClose={() => setApplicationModalOpen(false)}
-        jobId={job.id}
-        jobTitle={job.title}
-        company={job.company}
-        isAuthenticated={isAuthenticated}
-      />
     </div>
   );
 }

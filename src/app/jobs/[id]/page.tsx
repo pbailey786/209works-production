@@ -23,6 +23,7 @@ const getJob = cache(async (id: string): Promise<Job | null> => {
         title: true,
         company: true,
         description: true,
+        responsibilities: true, // MISSING FIELD - needed for "What You'll Do" section
         requirements: true,
         benefits: true,
         location: true,
