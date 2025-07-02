@@ -35,12 +35,21 @@ export class JobEnhancer {
 
   async enhanceJobPosting(input: JobEnhancementInput): Promise<EnhancedJobData | null> {
     try {
+      console.log('🔧 JobEnhancer: Starting enhancement for:', input.title);
+      
       // Get O*NET data
       const onetData = await this.onetClient.getJobEnhancementData(input.title, input.location);
       
       if (!onetData) {
+        console.log('🔧 JobEnhancer: No O*NET data returned');
         return null;
       }
+      
+      console.log('🔧 JobEnhancer: O*NET data found:', {
+        occupationTitle: onetData.occupation?.title,
+        tasksCount: onetData.tasks?.length || 0,
+        skillsCount: onetData.skills?.length || 0
+      });
 
       // Extract region from location for salary adjustment
       const regionCode = this.extractRegionCode(input.location);

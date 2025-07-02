@@ -65,13 +65,18 @@ export class ONetClient {
       'User-Agent': '209jobs/1.0',
     };
 
+    console.log('🌐 O*NET Request:', url);
     const response = await fetch(url, { headers });
     
     if (!response.ok) {
-      throw new Error(`O*NET API error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.log('🌐 O*NET Error Response:', response.status, response.statusText, errorText);
+      throw new Error(`O*NET API error: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('🌐 O*NET Response data:', JSON.stringify(data, null, 2).substring(0, 500) + '...');
+    return data;
   }
 
   // Search for occupations by keyword
@@ -173,11 +178,16 @@ export class ONetClient {
   // Get comprehensive job data for AI enhancement
   async getJobEnhancementData(jobTitle: string, location?: string) {
     try {
+      console.log('🌐 O*NET Client: Searching for occupation:', jobTitle);
+      
       // Find best matching occupation
       const occupation = await this.findBestOccupationMatch(jobTitle);
       if (!occupation) {
+        console.log('🌐 O*NET Client: No occupation match found for:', jobTitle);
         return null;
       }
+      
+      console.log('🌐 O*NET Client: Best match found:', occupation);
 
       // Get all relevant data in parallel
       const [details, tasks, skills, wageData] = await Promise.all([

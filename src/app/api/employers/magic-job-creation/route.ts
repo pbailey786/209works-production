@@ -132,19 +132,28 @@ Return JSON:
       let onetData: any = null;
       try {
         console.log('🔍 Looking up O*NET data for:', extractedTitle);
+        console.log('🔍 User location:', user?.businessLocation || 'Stockton, CA');
+        
         onetData = await Promise.race([
           jobEnhancer.enhanceJobPosting({ 
             title: extractedTitle, 
             location: user?.businessLocation || 'Stockton, CA' 
           }),
-          new Promise((resolve) => setTimeout(() => resolve(null), 3000)) // 3 second timeout for O*NET
+          new Promise((resolve) => setTimeout(() => resolve(null), 5000)) // Increased to 5 second timeout
         ]) as any;
         
         if (onetData) {
-          console.log('✅ O*NET data retrieved successfully');
+          console.log('✅ O*NET data retrieved successfully:', {
+            title: onetData.title,
+            salaryDisplay: onetData.salary?.display,
+            responsibilitiesCount: onetData.responsibilities?.length || 0,
+            skillsCount: onetData.skills?.length || 0
+          });
+        } else {
+          console.log('⏱️ O*NET lookup timed out (5 seconds)');
         }
-      } catch (onetError) {
-        console.log('⚠️ O*NET lookup failed, continuing without enhancement');
+      } catch (onetError: any) {
+        console.log('⚠️ O*NET lookup failed:', onetError?.message || onetError);
       }
 
       // Enhance the user prompt with O*NET data if available
