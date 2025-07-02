@@ -167,19 +167,26 @@ export default function PostJobPage() {
           success: data.success,
           fallback: data.fallback,
           emergency: data.emergency,
+          onetUsed: data.onetUsed,
           onetEnhanced: data.jobData?.onetEnhanced,
           title: data.jobData?.title,
-          responsibilitiesLength: data.jobData?.responsibilities?.length || 0
+          responsibilitiesLength: data.jobData?.responsibilities?.length || 0,
+          extractedTitle: data.debug?.extractedTitle
         });
         
         if (data.fallback) {
           console.log('⚠️ Used fallback system:', data.message);
         }
         
-        if (data.jobData?.onetEnhanced) {
+        if (data.onetUsed || data.jobData?.onetEnhanced) {
           console.log('✅ O*NET enhanced this job posting!');
         } else {
           console.log('❌ No O*NET enhancement - check server logs');
+        }
+        
+        // Show what title was extracted for O*NET lookup
+        if (data.debug?.extractedTitle) {
+          console.log('🔍 Extracted job title for O*NET:', data.debug.extractedTitle);
         }
         
         setJobData(data.jobData);

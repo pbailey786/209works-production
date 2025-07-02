@@ -232,13 +232,41 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
       try {
         // Rule-based fallback system - always works
         console.log('🔄 Using fallback system for prompt:', prompt.trim().substring(0, 50) + '...');
-        const fallbackJobData = await generateFallbackJob(prompt.trim(), user, null);
+        
+        // Try to use O*NET data in fallback too
+        let fallbackOnetData = null;
+        if (onetData) {
+          console.log('✅ Using O*NET data in fallback system');
+          fallbackOnetData = onetData;
+        } else {
+          console.log('🔄 Fallback: Attempting O*NET lookup...');
+          try {
+            const jobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
+            const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'General Worker';
+            
+            fallbackOnetData = await jobEnhancer.enhanceJobPosting({ 
+              title: extractedTitle, 
+              location: user?.businessLocation || 'Stockton, CA' 
+            });
+            
+            if (fallbackOnetData) {
+              console.log('✅ Fallback: O*NET data retrieved successfully');
+            }
+          } catch (fallbackOnetError) {
+            console.log('⚠️ Fallback: O*NET lookup failed, using rule-based only');
+          }
+        }
+        
+        const fallbackJobData = await generateFallbackJob(prompt.trim(), user, fallbackOnetData);
         
         return NextResponse.json({
           success: true,
           jobData: fallbackJobData,
           fallback: true,
-          message: 'Generated using fallback system (AI temporarily unavailable)'
+          onetUsed: !!fallbackOnetData,
+          message: fallbackOnetData ? 
+            'Generated using fallback system with O*NET enhancement' : 
+            'Generated using fallback system (AI temporarily unavailable)'
         });
       } catch (fallbackError: any) {
         console.error('Fallback generation failed:', fallbackError);
