@@ -29,6 +29,6 @@ export default function SessionProviderWrapper({
   }
 
   // Fallback: Mock session (for development/testing)
-  console.log('🔧 Mock SessionProvider - Clerk auth disabled');
+  // Avoid console.log in component body to prevent hydration mismatch
   return <>{children}</>;
 }
