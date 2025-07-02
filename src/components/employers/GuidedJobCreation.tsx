@@ -155,6 +155,33 @@ export default function GuidedJobCreation({
     setSuggestions(prev => prev.filter(s => s !== suggestion));
   };
 
+  // Check if current values are good (no suggestions needed)
+  const isValueOptimal = (section: string, currentValue: string): boolean => {
+    if (section === 'salary' && onetData?.salary?.display) {
+      // Check if current salary is within good range of O*NET suggestion
+      const current = currentValue.toLowerCase();
+      const suggested = onetData.salary.display.toLowerCase();
+      
+      // Simple check - if they contain similar numbers, it's probably good
+      const currentNumbers = current.match(/\d+/g);
+      const suggestedNumbers = suggested.match(/\d+/g);
+      
+      if (currentNumbers && suggestedNumbers) {
+        const currentMin = parseInt(currentNumbers[0]);
+        const suggestedMin = parseInt(suggestedNumbers[0]);
+        const diff = Math.abs(currentMin - suggestedMin);
+        return diff <= 2; // Within $2/hr is considered good
+      }
+    }
+    
+    if (section === 'title' && onetData?.title) {
+      return currentValue.toLowerCase().includes(onetData.title.toLowerCase()) || 
+             onetData.title.toLowerCase().includes(currentValue.toLowerCase());
+    }
+    
+    return false;
+  };
+
   const renderSectionContent = () => {
     const section = SECTIONS[currentSection];
     const currentSuggestions = suggestions.filter(s => s.type === section.id);
@@ -209,7 +236,7 @@ export default function GuidedJobCreation({
                   className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Back
+                  Back to Edit
                 </button>
                 <button
                   onClick={() => onComplete(jobData)}
@@ -220,10 +247,73 @@ export default function GuidedJobCreation({
                 </button>
               </div>
             </div>
+            <p className="text-gray-600 mt-2">This is how your job will appear to job seekers. Use "Back to Edit" to make changes.</p>
           </div>
           
           <div className="p-6">
             <JobPreview jobData={jobData} />
+            
+            {/* Quick Edit Section */}
+            <div className="mt-8 pt-6 border-t">
+              <h3 className="text-lg font-semibold mb-4">Quick Edits</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  onClick={() => {
+                    setCurrentSection(0); // Title section
+                    setIsPreview(false);
+                  }}
+                  className="flex items-center gap-2 p-3 border rounded-lg hover:bg-gray-50 text-left"
+                >
+                  <Target className="w-4 h-4 text-blue-600" />
+                  <div>
+                    <div className="font-medium text-sm">Edit Job Title</div>
+                    <div className="text-xs text-gray-600">{jobData.title}</div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setCurrentSection(1); // Salary section
+                    setIsPreview(false);
+                  }}
+                  className="flex items-center gap-2 p-3 border rounded-lg hover:bg-gray-50 text-left"
+                >
+                  <DollarSign className="w-4 h-4 text-green-600" />
+                  <div>
+                    <div className="font-medium text-sm">Edit Salary</div>
+                    <div className="text-xs text-gray-600">{jobData.salary}</div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setCurrentSection(2); // Responsibilities section
+                    setIsPreview(false);
+                  }}
+                  className="flex items-center gap-2 p-3 border rounded-lg hover:bg-gray-50 text-left"
+                >
+                  <CheckCircle className="w-4 h-4 text-purple-600" />
+                  <div>
+                    <div className="font-medium text-sm">Edit Daily Tasks</div>
+                    <div className="text-xs text-gray-600">What you'll do section</div>
+                  </div>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setCurrentSection(4); // Benefits section
+                    setIsPreview(false);
+                  }}
+                  className="flex items-center gap-2 p-3 border rounded-lg hover:bg-gray-50 text-left"
+                >
+                  <Gift className="w-4 h-4 text-green-600" />
+                  <div>
+                    <div className="font-medium text-sm">Edit Benefits</div>
+                    <div className="text-xs text-gray-600">{jobData.benefitOptions?.filter(b => b.value).length || 0} selected</div>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -363,6 +453,9 @@ function TitleSection({ jobData, setJobData, suggestions, onApplySuggestion }: a
 }
 
 function SalarySection({ jobData, setJobData, suggestions, onApplySuggestion }: any) {
+  // Check if salary is already optimal
+  const isOptimal = jobData.salary && suggestions.length === 0;
+  
   return (
     <div className="space-y-6">
       <div>
@@ -384,6 +477,21 @@ function SalarySection({ jobData, setJobData, suggestions, onApplySuggestion }: 
             placeholder="e.g. $18-22/hr, $40k-50k/year"
           />
         </div>
+
+        {/* Show positive feedback when salary is good */}
+        {isOptimal && jobData.salary && (
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-green-900">Great Salary Range!</h4>
+                <p className="text-sm text-green-700 mt-1">
+                  Your salary of {jobData.salary} is competitive for the Central Valley market. This should attract qualified candidates.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {suggestions.map((suggestion: ONetSuggestion, index: number) => (
           <div key={index} className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
@@ -451,7 +559,7 @@ function ResponsibilitiesSection({ jobData, setJobData, onetData }: any) {
           <CheckCircle className="w-6 h-6 text-purple-600" />
           Daily Responsibilities
         </h2>
-        <p className="text-gray-600">Help candidates understand what they'll actually do each day</p>
+        <p className="text-gray-600">Describe specific daily tasks to help candidates understand the role. {onetData?.responsibilities ? 'Select from industry-standard tasks below or write your own.' : 'Be specific about equipment, tools, and daily activities.'}</p>
       </div>
 
       <div className="space-y-4">
@@ -481,12 +589,14 @@ function ResponsibilitiesSection({ jobData, setJobData, onetData }: any) {
                 onClick={() => {
                   const allTasks = onetData.responsibilities.slice(0, 5);
                   const taskText = allTasks.map((t: string) => `• ${t}`).join('\n');
-                  setJobData((prev: any) => ({ ...prev, responsibilities: taskText }));
-                  setSelectedTasks(allTasks);
+                  const currentText = jobData.responsibilities || '';
+                  const newText = currentText ? `${currentText}\n${taskText}` : taskText;
+                  setJobData((prev: any) => ({ ...prev, responsibilities: newText }));
+                  setSelectedTasks([...selectedTasks, ...allTasks]);
                 }}
                 className="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700"
               >
-                Add Top 5
+                ➕ Add Top 5 to Job
               </button>
               <button
                 onClick={() => {
@@ -495,7 +605,7 @@ function ResponsibilitiesSection({ jobData, setJobData, onetData }: any) {
                 }}
                 className="px-3 py-1 border border-purple-300 text-purple-700 rounded text-sm hover:bg-purple-50"
               >
-                Clear All
+                🗑️ Clear All Tasks
               </button>
             </div>
           </div>
@@ -551,7 +661,7 @@ function RequirementsSection({ jobData, setJobData, onetData }: any) {
           <Users className="w-6 h-6 text-red-600" />
           Requirements & Qualifications
         </h2>
-        <p className="text-gray-600">Define what candidates need to succeed in this role</p>
+        <p className="text-gray-600">Set realistic requirements to attract qualified candidates. {onetData?.requirements ? 'Use industry standards below or customize for your specific needs.' : 'Focus on truly essential skills - too many requirements reduce applications by 50%.'}</p>
       </div>
 
       <div className="space-y-4">
@@ -581,12 +691,14 @@ function RequirementsSection({ jobData, setJobData, onetData }: any) {
                 onClick={() => {
                   const essentialReqs = onetData.requirements.slice(0, 4);
                   const reqText = essentialReqs.map((r: string) => `• ${r}`).join('\n');
-                  setJobData((prev: any) => ({ ...prev, requirements: reqText }));
-                  setSelectedRequirements(essentialReqs);
+                  const currentText = jobData.requirements || '';
+                  const newText = currentText ? `${currentText}\n${reqText}` : reqText;
+                  setJobData((prev: any) => ({ ...prev, requirements: newText }));
+                  setSelectedRequirements([...selectedRequirements, ...essentialReqs]);
                 }}
                 className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
               >
-                Add Essential
+                ➕ Add Essential to Job
               </button>
               <button
                 onClick={() => {
@@ -595,7 +707,7 @@ function RequirementsSection({ jobData, setJobData, onetData }: any) {
                 }}
                 className="px-3 py-1 border border-red-300 text-red-700 rounded text-sm hover:bg-red-50"
               >
-                Clear All
+                🗑️ Clear All Requirements
               </button>
             </div>
           </div>
@@ -683,34 +795,45 @@ function BenefitsSection({ jobData, setJobData }: any) {
       </div>
 
       <div className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {currentBenefits.map((benefit: BenefitOption, index: number) => (
-            <label
-              key={benefit.key}
-              className={`
-                flex items-center p-3 border rounded-lg cursor-pointer transition-all
-                ${benefit.value 
-                  ? 'bg-green-50 border-green-300 ring-2 ring-green-200' 
-                  : 'bg-white border-gray-200 hover:bg-gray-50'
-                }
-              `}
-            >
-              <input
-                type="checkbox"
-                checked={benefit.value}
-                onChange={() => handleBenefitToggle(index)}
-                className="sr-only"
-              />
-              <span className="text-2xl mr-3">{benefit.icon}</span>
-              <div className="flex-1">
-                <div className="font-medium text-sm">{benefit.title}</div>
-                <div className="text-xs text-gray-600">{benefit.description}</div>
-              </div>
-              {benefit.value && (
-                <CheckCircle className="w-5 h-5 text-green-600 ml-2" />
-              )}
-            </label>
-          ))}
+        <div className="space-y-3">
+          <p className="text-sm text-blue-600 font-medium">💡 Click any benefit below to add it to your job posting:</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {currentBenefits.map((benefit: BenefitOption, index: number) => (
+              <label
+                key={benefit.key}
+                className={`
+                  group flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md
+                  ${benefit.value 
+                    ? 'bg-green-50 border-green-400 ring-2 ring-green-200 shadow-sm' 
+                    : 'bg-white border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                  }
+                `}
+              >
+                <input
+                  type="checkbox"
+                  checked={benefit.value}
+                  onChange={() => handleBenefitToggle(index)}
+                  className="sr-only"
+                />
+                <span className="text-3xl mr-4">{benefit.icon}</span>
+                <div className="flex-1">
+                  <div className={`font-semibold text-sm ${benefit.value ? 'text-green-900' : 'text-gray-800'}`}>
+                    {benefit.title}
+                  </div>
+                  <div className={`text-xs ${benefit.value ? 'text-green-700' : 'text-gray-600'}`}>
+                    {benefit.description}
+                  </div>
+                </div>
+                <div className="ml-2">
+                  {benefit.value ? (
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  ) : (
+                    <div className="w-6 h-6 border-2 border-gray-300 rounded-full group-hover:border-blue-400 transition-colors"></div>
+                  )}
+                </div>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">

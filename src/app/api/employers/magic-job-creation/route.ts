@@ -451,63 +451,39 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
   else if (lowerPrompt.includes('part')) schedule = 'Part-time';
   else if (lowerPrompt.includes('morning') || lowerPrompt.includes('early')) schedule = 'Early morning shift';
   
-  // Generate job-specific descriptions with company context
+  // Generate job-specific descriptions with company context and O*NET enhancement
   const companyName = user?.companyName || 'Our company';
   const city = location.split(',')[0];
   
-  // Create varied intros based on job type
-  const intros = {
-    warehouse: [
-      `${companyName} is expanding our ${city} warehouse team.`,
-      `Ready to build a career in logistics? ${companyName} has an opportunity for you.`,
-      `Join ${companyName}'s distribution center in ${city}.`
-    ],
-    retail: [
-      `${companyName} is a trusted name in ${city} retail.`,
-      `Be the face of ${companyName} in our ${city} location.`,
-      `${companyName} believes great customer service starts with great people.`
-    ],
-    driver: [
-      `${companyName} keeps ${city} moving with reliable delivery services.`,
-      `Home every night - that's the ${companyName} promise to our drivers.`,
-      `${companyName} values safe, professional drivers who know ${city}.`
-    ],
-    management: [
-      `${companyName} is seeking experienced leadership for our ${city} facility.`,
-      `This is your opportunity to lead at ${companyName}.`,
-      `${companyName} believes in promoting from within and developing leaders.`
-    ],
-    general: [
-      `${companyName} is hiring in ${city}.`,
-      `Join the ${companyName} team and grow your career.`,
-      `${companyName} offers stability and opportunity in ${city}.`
-    ]
-  };
+  // Enhanced descriptions using O*NET data when available
+  let fullDescription;
   
-  // Get a random intro for variety
-  const introOptions = intros[jobType as keyof typeof intros] || intros.general;
-  const intro = introOptions[Math.floor(Math.random() * introOptions.length)];
-  
-  // Generate clean, concise job descriptions (2-3 sentences)
-  const jobDescriptions = {
-    warehouse: `We're a ${city} warehouse operation looking for reliable team members. You'll handle inventory, fulfill orders, load/unload trucks, and keep the warehouse organized. This role keeps our business running and offers opportunities to advance to lead or supervisor positions.`,
+  if (onetData?.description) {
+    // Use O*NET description as base, but localize it
+    const onetDesc = onetData.description;
+    fullDescription = `Join ${companyName} as a ${title} in ${city}. ${onetDesc.replace(/\b(workers?|employees?|individuals?)\b/gi, 'team members')} This role offers growth opportunities in our established ${city} operation, with the chance to develop expertise in this field while contributing to our company's success.`;
+  } else {
+    // Fallback to original descriptions
+    const jobDescriptions = {
+      warehouse: `Join ${companyName}'s growing ${city} warehouse team. You'll be responsible for inventory management, order fulfillment, and maintaining our efficient distribution operation. This role offers excellent opportunities for advancement and skills development in the logistics industry.`,
+      
+      retail: `${companyName} is seeking customer-focused team members for our ${city} location. You'll create positive shopping experiences, handle transactions, and help maintain our store's reputation for excellent service. Perfect for someone who enjoys helping people and wants to grow in retail.`,
+      
+      driver: `${companyName} needs professional drivers to serve our ${city} area customers. You'll operate delivery vehicles safely and efficiently while representing our company with every interaction. Home nightly with local routes - ideal for drivers seeking work-life balance.`,
+      
+      management: `Lead ${companyName}'s ${city} operations as our ${title}. You'll oversee daily activities, develop team members, and drive performance improvements. This strategic role offers significant growth potential for an experienced leader ready to make an impact.`,
+      
+      office: `Support ${companyName}'s ${city} operations as our ${title}. You'll coordinate administrative functions, assist customers and team members, and help maintain our professional standards. Computer proficiency and strong communication skills essential.`,
+      
+      cleaning: `Maintain ${companyName}'s professional standards as a member of our ${city} facilities team. You'll ensure clean, safe environments through systematic cleaning protocols and attention to detail. Reliable schedules with opportunities for additional hours.`,
+      
+      security: `Protect ${companyName}'s ${city} facility as a licensed security professional. You'll monitor access, maintain safety protocols, and respond to incidents while representing our company's commitment to security excellence.`,
+      
+      general: `Join ${companyName}'s team in ${city} for stable employment with growth opportunities. You'll contribute to our daily operations while developing new skills in a supportive work environment. We value reliability, teamwork, and dedication to quality work.`
+    };
     
-    retail: `We're a ${city} retail store that needs friendly staff to help customers and run the register. You'll assist shoppers, handle sales, stock shelves, and keep the store looking great. Good people skills and weekend availability are essential for this customer-facing role.`,
-    
-    driver: `We need reliable local delivery drivers to serve ${city} area customers. You'll run daily routes, deliver packages safely, and provide friendly service at each stop. Home every night with no long hauls - perfect for drivers who want work-life balance.`,
-    
-    management: `We're hiring a ${title} to oversee our ${city} facility operations. You'll manage staff, handle customer issues, maintain facility standards, and drive business growth. This hands-on leadership role is perfect for someone ready to make a real impact.`,
-    
-    general: `${companyName} in ${city} is hiring for immediate openings. You'll support daily operations and work with a team that values reliability and hard work. Stable hours and fair pay for someone ready to contribute.`,
-    
-    office: `We need an organized professional for our ${city} office. You'll handle phones, manage schedules, process paperwork, and support the team. Computer skills and a friendly demeanor are essential for this front-office role.`,
-    
-    cleaning: `We're hiring reliable cleaners for facilities in ${city}. You'll maintain cleanliness standards, empty trash, sanitize surfaces, and ensure a professional environment. Evening or early morning shifts available with consistent schedules.`,
-    
-    security: `We need alert security officers to protect our ${city} facility. You'll monitor premises, check credentials, respond to incidents, and ensure safety protocols are followed. Must have CA Guard Card or ability to obtain one.`
-  };
-  
-  const fullDescription = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
+    fullDescription = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
+  }
   
   // Generate benefit options based on job type and prompt
   const benefitOptions: Array<{ icon: string; title: string; description: string; key: string }> = [];
