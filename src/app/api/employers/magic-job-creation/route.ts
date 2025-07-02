@@ -628,13 +628,20 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
   };
 
   // Use O*NET data for responsibilities and requirements if available
-  const responsibilities = onetData?.responsibilities?.join('\n') || 
-    responsibilitiesByType[jobType as keyof typeof responsibilitiesByType] || 
-    responsibilitiesByType.general;
+  console.log('🔧 Fallback O*NET data structure:', {
+    hasOnetData: !!onetData,
+    responsibilitiesType: onetData?.responsibilities ? typeof onetData.responsibilities : 'undefined',
+    responsibilitiesLength: onetData?.responsibilities?.length || 0,
+    firstResponsibility: onetData?.responsibilities?.[0] || 'none'
+  });
+  
+  const responsibilities = (onetData?.responsibilities && Array.isArray(onetData.responsibilities)) 
+    ? onetData.responsibilities.map(r => `• ${r}`).join('\n')
+    : (responsibilitiesByType[jobType as keyof typeof responsibilitiesByType] || responsibilitiesByType.general);
     
-  const requirements = onetData?.requirements?.join('\n') || 
-    requirementsByType[jobType as keyof typeof requirementsByType] || 
-    requirementsByType.general;
+  const requirements = (onetData?.requirements && Array.isArray(onetData.requirements))
+    ? onetData.requirements.map(r => `• ${r}`).join('\n')
+    : (requirementsByType[jobType as keyof typeof requirementsByType] || requirementsByType.general);
 
   // Enhance benefits with O*NET suggestions if available
   if (onetData?.benefits && benefitOptions.length < 4) {
