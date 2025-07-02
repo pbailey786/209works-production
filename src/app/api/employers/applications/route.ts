@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const status = searchParams.get('status');
     const search = searchParams.get('search');
+    const jobId = searchParams.get('jobId');
     const offset = (page - 1) * limit;
 
     // Build where clause
@@ -36,6 +37,11 @@ export async function GET(request: NextRequest) {
         employerId: user.id
       }
     };
+
+    // Filter by specific job if provided
+    if (jobId) {
+      whereClause.job.id = jobId;
+    }
 
     if (status && status !== 'all') {
       whereClause.status = status;
@@ -110,14 +116,17 @@ export async function GET(request: NextRequest) {
       })
     ]);
 
-    // Get status summary
+    // Get status summary (use same where clause for consistency)
+    const statusSummaryWhere = {
+      job: {
+        employerId: user.id,
+        ...(jobId && { id: jobId })
+      }
+    };
+
     const statusSummary = await prisma.jobApplication.groupBy({
       by: ['status'],
-      where: {
-        job: {
-          employerId: user.id
-        }
-      },
+      where: statusSummaryWhere,
       _count: {
         status: true,
       },
