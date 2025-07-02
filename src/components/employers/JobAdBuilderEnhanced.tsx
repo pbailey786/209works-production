@@ -63,7 +63,6 @@ export default function JobAdBuilderEnhanced({ initialData, onBack, onContinue }
   });
   const [isPreview, setIsPreview] = useState(false);
   const [headerColor, setHeaderColor] = useState<string>('#1a202c');
-  const [isModernPreview, setIsModernPreview] = useState(true);
 
   // Extract color when logo changes
   useEffect(() => {
@@ -98,13 +97,6 @@ export default function JobAdBuilderEnhanced({ initialData, onBack, onContinue }
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsModernPreview(!isModernPreview)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              <Palette className="w-4 h-4" />
-              {isModernPreview ? 'Simple View' : 'Modern View'}
-            </button>
-            <button
               onClick={() => setIsPreview(false)}
               className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
@@ -121,15 +113,7 @@ export default function JobAdBuilderEnhanced({ initialData, onBack, onContinue }
           </div>
         </div>
 
-        {isModernPreview ? (
-          <JobPreviewModern jobData={jobData} headerColor={headerColor} />
-        ) : (
-          // Original simple preview here
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h1 className="text-3xl font-bold mb-4">{jobData.title}</h1>
-            {/* ... rest of simple preview ... */}
-          </div>
-        )}
+        <JobPreviewModern jobData={jobData} headerColor={headerColor} />
       </div>
     );
   }

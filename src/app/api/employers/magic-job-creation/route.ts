@@ -284,7 +284,7 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
             description: `We're hiring in ${user?.businessLocation || 'Stockton'}! Join our team for steady work in a supportive environment. We value hard workers who take pride in their contributions and are looking for someone ready to grow with us.`,
             responsibilities: '• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines',
             requirements: '• Must be 18+ with valid ID\n• Reliable transportation\n• Able to pass background check\n• Legal right to work in US\n• Strong work ethic and positive attitude\n• Ability to follow instructions',
-            contactMethod: user?.contactEmail || clerkUser.emailAddresses[0]?.emailAddress || 'hr@company.com',
+            contactMethod: '',
             schedule: 'Full-time',
             benefitOptions: [
               {
@@ -322,7 +322,7 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
           description: `We're hiring! Join our team for steady work in a supportive environment where your hard work is valued and recognized.`,
           responsibilities: '• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines',
           requirements: '• Must be 18+ with valid ID\n• Reliable transportation\n• Able to pass background check\n• Legal right to work in US\n• Strong work ethic\n• Team player mentality',
-          contactMethod: 'hr@company.com',
+          contactMethod: '',
           schedule: 'Full-time',
           benefitOptions: [
             {
@@ -434,8 +434,8 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
     }
   }
   
-  // Extract contact method if provided - use user's contact info as default
-  let contactMethod = user?.contactEmail || user?.contactPhone || 'hr@localcompany.com';
+  // Extract contact method if provided - leave blank by default for employer to fill
+  let contactMethod = '';
   const emailMatch = prompt.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
   const phoneMatch = prompt.match(/\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
   if (emailMatch) contactMethod = emailMatch[0];
