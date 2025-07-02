@@ -87,6 +87,28 @@ npm run queue:status          # Check email queue status
 - **Role-Based Access**: Job seekers, employers, admins
 - **Comprehensive Admin Dashboard**: Content moderation, analytics, user management
 
+### Credit System & Pricing
+
+The platform uses a credit-based system for employers to post jobs. Credits are purchased in tiers and never expire.
+
+**Credit Pricing Tiers:**
+- **Starter Tier**: $89 for 3 job posting credits ($29.67 per post)
+- **Standard Tier**: $199 for 6 job posting credits ($33.17 per post) 
+- **Pro Tier**: $350 for 12 job posting credits ($29.17 per post)
+
+**Credit Usage:**
+- 1 credit = 1 job posting (basic)
+- Additional credits for featured posts, priority placement, etc.
+- Credits are managed through `/employers/credits/checkout` and employer dashboard
+- Credit balance displayed throughout job posting flow
+- Automatic credit deduction upon successful job publication
+
+**Business Model:**
+- No subscription fees - pay-per-job-post model
+- Credits appeal to Central Valley businesses (seasonal hiring, project-based)
+- Average revenue per employer: $89-350 depending on hiring volume
+- Target: $15K+ monthly recurring revenue from employer credits
+
 ### Directory Structure
 
 ```

@@ -1198,12 +1198,12 @@ Contact: ${userEmail}`);
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="text-left">
-                      <div className="font-semibold text-blue-900">Starter Pack</div>
-                      <div className="text-sm text-blue-700">5 Job Posts + 1 Featured</div>
+                      <div className="font-semibold text-blue-900">Starter Tier</div>
+                      <div className="text-sm text-blue-700">3 Job Posts</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-blue-900">$25</div>
-                      <div className="text-xs text-blue-600">$5.00 per post</div>
+                      <div className="font-bold text-blue-900">$89</div>
+                      <div className="text-xs text-blue-600">$29.67 per post</div>
                     </div>
                   </div>
                 </div>
@@ -1211,12 +1211,25 @@ Contact: ${userEmail}`);
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="text-left">
-                      <div className="font-semibold text-green-900">Professional Pack ⭐</div>
-                      <div className="text-sm text-green-700">15 Job Posts + 3 Featured</div>
+                      <div className="font-semibold text-green-900">Standard Tier ⭐</div>
+                      <div className="text-sm text-green-700">6 Job Posts</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-green-900">$50</div>
-                      <div className="text-xs text-green-600">$3.33 per post</div>
+                      <div className="font-bold text-green-900">$199</div>
+                      <div className="text-xs text-green-600">$33.17 per post</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <div className="font-semibold text-purple-900">Pro Tier</div>
+                      <div className="text-sm text-purple-700">12 Job Posts</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-purple-900">$350</div>
+                      <div className="text-xs text-purple-600">$29.17 per post</div>
                     </div>
                   </div>
                 </div>

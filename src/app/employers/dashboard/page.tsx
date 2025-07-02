@@ -17,6 +17,7 @@ interface SimpleStats {
   activeJobs: number;
   totalApplications: number;
   newApplications: number;
+  credits: number;
 }
 
 export default function SimpleEmployerDashboard() {
@@ -26,6 +27,7 @@ export default function SimpleEmployerDashboard() {
     activeJobs: 0,
     totalApplications: 0,
     newApplications: 0,
+    credits: 0,
   });
 
   const [recentJobs, setRecentJobs] = useState([]);
@@ -51,16 +53,29 @@ export default function SimpleEmployerDashboard() {
     
     const fetchData = async () => {
       try {
-        // Fetch simplified stats
-        const response = await fetch('/api/employers/dashboard-stats');
-        if (response.ok) {
-          const data = await response.json();
-          setStats({
-            activeJobs: data.activeJobs || 0,
-            totalApplications: data.totalApplications || 0,
-            newApplications: data.newApplications || 0,
-          });
+        // Fetch simplified stats and credits in parallel
+        const [statsResponse, creditsResponse] = await Promise.all([
+          fetch('/api/employers/dashboard-stats'),
+          fetch('/api/job-posting/credits')
+        ]);
+        
+        let statsData: any = {};
+        let creditsData: any = { credits: { total: 0 } };
+        
+        if (statsResponse.ok) {
+          statsData = await statsResponse.json();
         }
+        
+        if (creditsResponse.ok) {
+          creditsData = await creditsResponse.json();
+        }
+        
+        setStats({
+          activeJobs: statsData.activeJobs || 0,
+          totalApplications: statsData.totalApplications || 0,
+          newApplications: statsData.newApplications || 0,
+          credits: creditsData.credits?.total || 0,
+        });
         
         // Fetch recent jobs (just 2-3 for simplicity)
         const jobsResponse = await fetch('/api/employers/my-jobs?limit=3');
@@ -172,7 +187,7 @@ export default function SimpleEmployerDashboard() {
         </div>
 
         {/* Simple Stats - Only what matters */}
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl p-6 border border-gray-100">
             <div className="text-center">
               <div className="text-3xl font-bold text-[#2d4a3e] mb-1">
@@ -202,6 +217,30 @@ export default function SimpleEmployerDashboard() {
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
                   Needs review
                 </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-6 border border-gray-100">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600 mb-1">
+                {stats.credits}
+              </div>
+              <div className="text-sm text-gray-600 mb-2">Job Credits</div>
+              {stats.credits === 0 ? (
+                <Link
+                  href="/employers/credits/checkout"
+                  className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs hover:bg-purple-200 transition-colors"
+                >
+                  💎 Buy Credits
+                </Link>
+              ) : (
+                <Link
+                  href="/employers/credits/checkout"
+                  className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs hover:bg-blue-200 transition-colors"
+                >
+                  📊 Manage Credits
+                </Link>
               )}
             </div>
           </div>
