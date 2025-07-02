@@ -159,6 +159,12 @@ export default function PostJobPage() {
       return;
     }
 
+    // Check credits before proceeding
+    if (!credits || credits.total === 0) {
+      setShowCreditsModal(true);
+      return;
+    }
+
     setIsGenerating(true);
     setCurrentState('generating');
 
@@ -383,7 +389,7 @@ export default function PostJobPage() {
 
             <button
               onClick={generateJobPost}
-              disabled={!prompt.trim() || isGenerating || (credits?.total === 0)}
+              disabled={!prompt.trim() || isGenerating}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-semibold py-4 px-8 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
             >
               {isGenerating ? (
@@ -391,14 +397,10 @@ export default function PostJobPage() {
                   <div className="w-6 h-6 animate-spin rounded-full border-b-2 border-white"></div>
                   <span>Creating magic...</span>
                 </>
-              ) : credits?.total === 0 ? (
-                <>
-                  <span>💎 Purchase Credits to Continue</span>
-                </>
               ) : (
                 <>
                   <Zap className="w-6 h-6" />
-                  <span>Generate Job Post</span>
+                  <span>Generate Job Post{credits?.total === 0 ? ' - Need Credits' : ''}</span>
                   <ArrowRight className="w-6 h-6" />
                 </>
               )}
@@ -1197,11 +1199,11 @@ Contact: ${userEmail}`);
                   <div className="flex items-center justify-between">
                     <div className="text-left">
                       <div className="font-semibold text-blue-900">Starter Pack</div>
-                      <div className="text-sm text-blue-700">5 Job Posts</div>
+                      <div className="text-sm text-blue-700">5 Job Posts + 1 Featured</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-blue-900">$49</div>
-                      <div className="text-xs text-blue-600">$9.80 per post</div>
+                      <div className="font-bold text-blue-900">$25</div>
+                      <div className="text-xs text-blue-600">$5.00 per post</div>
                     </div>
                   </div>
                 </div>
@@ -1209,12 +1211,12 @@ Contact: ${userEmail}`);
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="text-left">
-                      <div className="font-semibold text-green-900">Growth Pack ⭐</div>
-                      <div className="text-sm text-green-700">20 Job Posts</div>
+                      <div className="font-semibold text-green-900">Professional Pack ⭐</div>
+                      <div className="text-sm text-green-700">15 Job Posts + 3 Featured</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-bold text-green-900">$149</div>
-                      <div className="text-xs text-green-600">$7.45 per post</div>
+                      <div className="font-bold text-green-900">$50</div>
+                      <div className="text-xs text-green-600">$3.33 per post</div>
                     </div>
                   </div>
                 </div>
@@ -1230,7 +1232,7 @@ Contact: ${userEmail}`);
                 <button
                   onClick={() => {
                     setShowCreditsModal(false);
-                    router.push('/employers/pricing');
+                    router.push('/employers/credits/checkout');
                   }}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
