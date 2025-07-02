@@ -217,7 +217,13 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
 
       return NextResponse.json({
         success: true,
-        jobData
+        jobData,
+        onetUsed: !!(onetData && onetData.title),
+        debug: {
+          extractedTitle,
+          onetTimeout: !onetData,
+          aiModel: 'gpt-3.5-turbo'
+        }
       });
 
     } catch (aiError: any) {

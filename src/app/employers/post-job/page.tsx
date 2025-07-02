@@ -161,6 +161,27 @@ export default function PostJobPage() {
 
       if (response.ok) {
         const data = await response.json();
+        
+        // Debug: Log O*NET integration status
+        console.log('🎯 Magic Job Creation Response:', {
+          success: data.success,
+          fallback: data.fallback,
+          emergency: data.emergency,
+          onetEnhanced: data.jobData?.onetEnhanced,
+          title: data.jobData?.title,
+          responsibilitiesLength: data.jobData?.responsibilities?.length || 0
+        });
+        
+        if (data.fallback) {
+          console.log('⚠️ Used fallback system:', data.message);
+        }
+        
+        if (data.jobData?.onetEnhanced) {
+          console.log('✅ O*NET enhanced this job posting!');
+        } else {
+          console.log('❌ No O*NET enhancement - check server logs');
+        }
+        
         setJobData(data.jobData);
         setCurrentState('editing');
       } else {

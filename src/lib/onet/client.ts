@@ -223,11 +223,19 @@ export function getONetClient() {
     const username = process.env.ONET_USERNAME;
     const password = process.env.ONET_PASSWORD;
     
+    console.log('🔧 O*NET Client Init:', {
+      hasUsername: !!username,
+      hasPassword: !!password,
+      usernameLength: username?.length || 0
+    });
+    
     if (!username || !password) {
+      console.error('❌ O*NET credentials not configured!');
       throw new Error('O*NET credentials not configured');
     }
     
     onetClient = new ONetClient(username, password);
+    console.log('✅ O*NET Client initialized successfully');
   }
   
   return onetClient;
