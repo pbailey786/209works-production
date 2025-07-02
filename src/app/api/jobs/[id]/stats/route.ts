@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 // GET /api/jobs/:id/stats - Get job statistics (employer only)
 export async function GET(
@@ -10,21 +8,21 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // TODO: Replace with Clerk
-  const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session as Session | null;
-
-    if (!session?.user?.email) {
+    // Get current user from Clerk
+    const clerkUser = await currentUser();
+    
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user and verify they're an employer
+    // Get user and verify they're an employer or admin
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: clerkUser.emailAddresses[0].emailAddress },
       select: { id: true, role: true },
     });
 
-    if (!user || user.role !== 'employer') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!user || (user.role !== 'employer' && user.role !== 'admin')) {
+      return NextResponse.json({ error: 'Forbidden - Employer access required' }, { status: 403 });
     }
 
     const jobId = (await params).id;
@@ -39,8 +37,9 @@ export async function GET(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
-    if (job.employerId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Allow access if user is admin or owns the job
+    if (user.role !== 'admin' && job.employerId !== user.id) {
+      return NextResponse.json({ error: 'Forbidden - You can only view stats for your own jobs' }, { status: 403 });
     }
 
     // Get job statistics
