@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 import { prisma } from '@/lib/database/prisma';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 export async function GET(req: NextRequest) {
   try {
-    // Check authentication
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -18,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: clerkUser.emailAddresses[0].emailAddress },
       select: { id: true, role: true },
     });
 
@@ -29,11 +27,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    if (user.role !== 'employer') {
-      return NextResponse.json(
-        { error: 'Only employers can access job posting credits' },
-        { status: 403 }
-      );
+    // Allow access for employers and admins, create employer role if needed
+    if (!user.role || user.role === 'jobseeker') {
+      // Update user role to employer if they're accessing job posting features
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { role: 'employer' }
+      });
     }
 
     // Get user's available credits
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
     const recentPurchases = await JobPostingCreditsService.getPurchaseHistory(user.id, 5);
 
     return NextResponse.json({
-      ...credits,
+      credits,
       expiringSoon: expiringSoon.length,
       recentPurchases: recentPurchases.map(purchase => ({
         id: purchase.id,
@@ -71,9 +71,9 @@ export async function GET(req: NextRequest) {
 // POST endpoint to manually use credits (for testing or admin purposes)
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-    if (!session?.user?.email) {
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: clerkUser.emailAddresses[0].emailAddress },
       select: { id: true, role: true },
     });
 
@@ -93,11 +93,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (user.role !== 'employer') {
-      return NextResponse.json(
-        { error: 'Only employers can use job posting credits' },
-        { status: 403 }
-      );
+    // Allow access for employers and admins
+    if (!user.role || user.role === 'jobseeker') {
+      // Update user role to employer if they're accessing job posting features
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { role: 'employer' }
+      });
     }
 
     const body = await req.json();

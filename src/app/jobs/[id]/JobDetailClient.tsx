@@ -60,30 +60,59 @@ const formatDate = (date: Date): string => {
   return date.toLocaleDateString();
 };
 
-// Helper function to parse benefits from JSON or string
-const parseBenefits = (benefitsData: string | null): any[] => {
-  if (!benefitsData) return [];
+// Helper function to clean description and extract metadata
+const cleanJobDescription = (description: string): string => {
+  if (!description) return '';
   
-  try {
-    // Try to parse as JSON first (new format)
-    const parsed = JSON.parse(benefitsData);
-    if (Array.isArray(parsed)) {
-      return parsed.filter(b => b.title && b.title.trim() !== '');
-    }
-  } catch (e) {
-    // If JSON parsing fails, it might be plain text (old format)
-    if (typeof benefitsData === 'string' && benefitsData.trim()) {
-      // Return as simple text benefits
-      return [{
-        icon: '🎁',
-        title: 'Benefits Available',
-        description: benefitsData.trim(),
-        key: 'legacy_benefit'
-      }];
+  // Remove hidden metadata tags - use more robust regex with multiline and dotall flags
+  return description
+    .replace(/\[CONTACT_EMAIL:.*?\]/gs, '')
+    .replace(/\[REQUIRES_DEGREE:.*?\]/gs, '')
+    .replace(/\[BENEFITS:\[.*?\]\]/gs, '') // More specific for nested JSON arrays
+    .replace(/\s*\n\s*\n\s*/g, '\n\n') // Clean up extra whitespace
+    .trim();
+};
+
+// Helper function to parse benefits from multiple sources
+const parseBenefits = (benefitsData: string | null, description: string | null): any[] => {
+  let benefits: any[] = [];
+  
+  // First, try to get benefits from the dedicated benefits field
+  if (benefitsData) {
+    try {
+      const parsed = JSON.parse(benefitsData);
+      if (Array.isArray(parsed)) {
+        benefits = parsed.filter(b => b.title && b.title.trim() !== '');
+      }
+    } catch (e) {
+      // If JSON parsing fails, treat as plain text
+      if (benefitsData.trim()) {
+        benefits = [{
+          icon: '🎁',
+          title: 'Benefits Available',
+          description: benefitsData.trim(),
+          key: 'legacy_benefit'
+        }];
+      }
     }
   }
   
-  return [];
+  // If no benefits from dedicated field, try to extract from description
+  if (benefits.length === 0 && description) {
+    const benefitsMatch = description.match(/\[BENEFITS:(.*?)\]/);
+    if (benefitsMatch) {
+      try {
+        const extractedBenefits = JSON.parse(benefitsMatch[1]);
+        if (Array.isArray(extractedBenefits)) {
+          benefits = extractedBenefits.filter(b => b.title && b.title.trim() !== '');
+        }
+      } catch (e) {
+        console.error('Failed to parse benefits from description:', e);
+      }
+    }
+  }
+  
+  return benefits;
 };
 
 export default function JobDetailClient({
@@ -119,8 +148,9 @@ export default function JobDetailClient({
     return 'Salary not specified';
   }, [job.salaryMin, job.salaryMax]);
 
-  // Parse benefits data
-  const benefits = useMemo(() => parseBenefits(job.benefits), [job.benefits]);
+  // Parse benefits data and clean description
+  const benefits = useMemo(() => parseBenefits(job.benefits, job.description), [job.benefits, job.description]);
+  const cleanDescription = useMemo(() => cleanJobDescription(job.description), [job.description]);
 
   // Handle save/unsave job
   const handleSaveToggle = useCallback(async () => {
@@ -331,14 +361,14 @@ export default function JobDetailClient({
               {/* Job Content - New 4-Section Format */}
               <div className="p-8 space-y-8">
                 {/* 1. About This Role */}
-                {job.description && (
+                {cleanDescription && (
                   <section>
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
                       💼 About This Role
                     </h2>
                     <div className="prose prose-gray max-w-none">
                       <p className="text-gray-700 leading-relaxed text-lg">
-                        {job.description}
+                        {cleanDescription}
                       </p>
                     </div>
                   </section>
@@ -368,9 +398,34 @@ export default function JobDetailClient({
                     </h2>
                     <div className="bg-red-50 rounded-lg p-6">
                       <div className="prose prose-gray max-w-none">
-                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-                          {job.requirements}
-                        </div>
+                        {/* Check if requirements contain "Must-Have:" and "Preferred:" sections */}
+                        {job.requirements.includes('Must-Have:') ? (
+                          <div className="space-y-4">
+                            {job.requirements.split('Preferred:').map((section, index) => (
+                              <div key={index}>
+                                {index === 0 ? (
+                                  <div>
+                                    <h4 className="font-semibold text-red-900 mb-2">Required Qualifications:</h4>
+                                    <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                      {section.replace('Must-Have:', '').trim()}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <h4 className="font-semibold text-red-700 mb-2">Preferred Qualifications:</h4>
+                                    <div className="text-gray-600 leading-relaxed whitespace-pre-line">
+                                      {section.trim()}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                            {job.requirements}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </section>

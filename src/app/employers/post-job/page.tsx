@@ -77,6 +77,8 @@ export default function PostJobPage() {
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [useGuidedMode, setUseGuidedMode] = useState(false);
   const [onetData, setOnetData] = useState<any>(null);
+  const [credits, setCredits] = useState<{ universal: number; total: number } | null>(null);
+  const [showCreditsModal, setShowCreditsModal] = useState(false);
   
   // Auto-fill email when user loads
   useEffect(() => {
@@ -88,14 +90,15 @@ export default function PostJobPage() {
     }
   }, [user]);
 
-  // Fetch company data when user is loaded
+  // Fetch company data and credits when user is loaded
   useEffect(() => {
     if (user) {
       Promise.all([
         fetch('/api/employers/logo').then(res => res.ok ? res.json() : { logo: null }),
-        fetch('/api/profile').then(res => res.ok ? res.json() : { user: null })
+        fetch('/api/profile').then(res => res.ok ? res.json() : { user: null }),
+        fetch('/api/job-posting/credits').then(res => res.ok ? res.json() : { credits: { universal: 0, total: 0 } })
       ])
-      .then(([logoData, profileData]) => {
+      .then(([logoData, profileData, creditsData]) => {
         if (logoData.logo) {
           setCompanyLogo(logoData.logo);
         }
@@ -113,10 +116,14 @@ export default function PostJobPage() {
             companyLogo: logoData.logo || null
           }));
         }
+        // Set credits
+        setCredits(creditsData.credits || { universal: 0, total: 0 });
       })
       .catch(err => {
         console.error('Failed to fetch company data:', err);
         // Continue without company data - non-blocking
+        // Set default credits if fetch fails
+        setCredits({ universal: 0, total: 0 });
       });
     }
   }, [user]);
@@ -254,6 +261,12 @@ export default function PostJobPage() {
       alert('Please fill in job title, location, salary, and contact method');
       return;
     }
+
+    // Check credits before proceeding
+    if (!credits || credits.total === 0) {
+      setShowCreditsModal(true);
+      return;
+    }
     
     setIsPublishing(true);
     try {
@@ -265,10 +278,20 @@ export default function PostJobPage() {
       
       if (response.ok) {
         const data = await response.json();
+        // Update credits from response if available
+        if (data.creditsRemaining) {
+          setCredits(data.creditsRemaining);
+        }
         router.push(`/employers/jobs/${data.jobId}?published=true`);
       } else {
         const error = await response.json();
-        alert(error.message || 'Failed to publish job');
+        
+        // Handle insufficient credits error specifically
+        if (response.status === 402 || error.code === 'INSUFFICIENT_CREDITS') {
+          setShowCreditsModal(true);
+        } else {
+          alert(error.message || 'Failed to publish job');
+        }
       }
     } catch (error) {
       console.error('Failed to publish:', error);
@@ -309,6 +332,27 @@ export default function PostJobPage() {
             </div>
             <h1 className="text-5xl font-bold text-gray-900 mb-4">Magic Job Creator</h1>
             <p className="text-xl text-gray-600">Describe your job need in plain English. Our AI will create a professional posting instantly.</p>
+            
+            {/* Credits Display */}
+            {credits && (
+              <div className="mt-6 flex justify-center">
+                <div className="flex items-center gap-2 bg-white rounded-lg shadow-lg px-4 py-2 border border-gray-200">
+                  <span className="text-2xl">💎</span>
+                  <span className="font-semibold text-gray-900">
+                    {credits.total} Credit{credits.total !== 1 ? 's' : ''}
+                  </span>
+                  <span className="text-gray-500">available</span>
+                  {credits?.total === 0 && (
+                    <button
+                      onClick={() => setShowCreditsModal(true)}
+                      className="ml-2 px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      Buy Credits
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
@@ -339,13 +383,17 @@ export default function PostJobPage() {
 
             <button
               onClick={generateJobPost}
-              disabled={!prompt.trim() || isGenerating}
+              disabled={!prompt.trim() || isGenerating || (credits?.total === 0)}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-semibold py-4 px-8 rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-3"
             >
               {isGenerating ? (
                 <>
                   <div className="w-6 h-6 animate-spin rounded-full border-b-2 border-white"></div>
                   <span>Creating magic...</span>
+                </>
+              ) : credits?.total === 0 ? (
+                <>
+                  <span>💎 Purchase Credits to Continue</span>
                 </>
               ) : (
                 <>
@@ -580,6 +628,7 @@ Contact: ${userEmail}`);
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Left Side - Form */}
             <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Job Details</h2>
             <div className="space-y-6">
               {/* Job Title */}
               <div>
@@ -643,18 +692,38 @@ Contact: ${userEmail}`);
                 </div>
               </div>
 
+              {/* What You'll Do (Responsibilities) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ⚡ What You'll Do (Daily Tasks)
+                </label>
+                <textarea
+                  value={jobData.responsibilities}
+                  onChange={(e) => handleInputChange('responsibilities', e.target.value)}
+                  placeholder="e.g. • Greet customers and answer questions&#10;• Operate cash register and handle transactions&#10;• Stock shelves and maintain store appearance&#10;• Help with inventory management&#10;• Work as part of a team"
+                  rows={5}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">💡 Tip: Use bullet points to list 4-6 daily tasks</span>
+                </div>
+              </div>
+
               {/* Requirements */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Requirements (Optional)
+                  🎯 What We're Looking For (Requirements)
                 </label>
                 <textarea
                   value={jobData.requirements}
                   onChange={(e) => handleInputChange('requirements', e.target.value)}
-                  placeholder="e.g. Must be 18+, Valid driver's license, etc."
-                  rows={3}
+                  placeholder="e.g. Must-Have:&#10;• 18+ years old&#10;• Valid driver's license&#10;• Able to lift 50 lbs&#10;&#10;Preferred:&#10;• Previous retail experience&#10;• Bilingual (English/Spanish)"
+                  rows={5}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">💡 Tip: Separate "Must-Have" and "Preferred" qualifications</span>
+                </div>
               </div>
 
               {/* Contact Email */}
@@ -870,25 +939,31 @@ Contact: ${userEmail}`);
             {/* Action Buttons */}
             <div className="mt-8 pt-6 border-t space-y-3">
               <button
-                onClick={handlePublish}
+                onClick={credits?.total === 0 ? () => setShowCreditsModal(true) : handlePublish}
                 disabled={!isReady || isPublishing}
                 title={!isReady ? `Missing: ${[
                   !jobData.title && 'Job Title',
                   !jobData.location && 'Location', 
                   !jobData.salary && 'Salary',
                   !jobData.contactMethod && 'Email for Applications'
-                ].filter(Boolean).join(', ')}` : 'Click to publish your job'}
+                ].filter(Boolean).join(', ')}` : credits?.total === 0 ? 'Purchase credits to post job' : 'Click to publish your job'}
                 className={`w-full flex items-center justify-center space-x-2 px-6 py-4 rounded-lg font-medium text-lg transition-all ${
                   isReady && !isPublishing
-                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
+                    ? credits?.total === 0
+                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
+                      : 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
                 {isPublishing ? (
                   <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
+                ) : credits?.total === 0 ? (
+                  <>
+                    <span>💎 Purchase Credits to Post Job</span>
+                  </>
                 ) : (
                   <>
-                    <span>🚀 Post Job - 1 Credit</span>
+                    <span>🚀 Post Job - 1 Credit ({credits?.total || 0} available)</span>
                   </>
                 )}
               </button>
@@ -1102,5 +1177,74 @@ Contact: ${userEmail}`);
     );
   }
 
-  return null;
+  return (
+    <>
+      {/* Credits Modal */}
+      {showCreditsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">💎</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Need Credits to Post Jobs</h3>
+              <p className="text-gray-600 mb-6">
+                You need at least 1 credit to post a job. Credits are used to maintain platform quality and support our Central Valley job seekers.
+              </p>
+              
+              <div className="space-y-3">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <div className="font-semibold text-blue-900">Starter Pack</div>
+                      <div className="text-sm text-blue-700">5 Job Posts</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-blue-900">$49</div>
+                      <div className="text-xs text-blue-600">$9.80 per post</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <div className="font-semibold text-green-900">Growth Pack ⭐</div>
+                      <div className="text-sm text-green-700">20 Job Posts</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-green-900">$149</div>
+                      <div className="text-xs text-green-600">$7.45 per post</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setShowCreditsModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCreditsModal(false);
+                    router.push('/employers/pricing');
+                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Buy Credits
+                </button>
+              </div>
+              
+              <p className="text-xs text-gray-500 mt-4">
+                💡 Credits never expire and can be used for any job posting
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

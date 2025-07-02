@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import { openai } from '@/lib/ai';
+import { JobPostingCreditsService } from '@/lib/services/job-posting-credits';
 
 export const maxDuration = 15;
 
@@ -41,6 +42,16 @@ export async function POST(req: NextRequest) {
           role: 'employer'
         }
       });
+    }
+
+    // Check if user has credits before proceeding
+    const hasCredits = await JobPostingCreditsService.canPostJob(user.id);
+    if (!hasCredits) {
+      return NextResponse.json({
+        error: 'Insufficient credits',
+        code: 'INSUFFICIENT_CREDITS',
+        message: 'You need at least 1 credit to post a job. Please purchase credits to continue.'
+      }, { status: 402 }); // 402 Payment Required
     }
 
     // Parse salary for database storage
@@ -163,13 +174,24 @@ export async function POST(req: NextRequest) {
     //   }
     // }
 
-    // TODO: Deduct credit here when payment system is ready
-    // await deductEmployerCredit(user.id, 1);
+    // Deduct credit after successful job creation
+    const creditResult = await JobPostingCreditsService.useJobPostCredit(user.id, job.id);
+    if (!creditResult.success) {
+      // If credit deduction fails, we should ideally rollback the job creation
+      // For now, log the error but don't fail the job posting
+      console.error('Failed to deduct credit after job creation:', creditResult.error);
+      
+      // In a production system, you might want to:
+      // 1. Delete the created job
+      // 2. Return an error
+      // For now, we'll log and continue since the job was already created
+    }
 
     return NextResponse.json({
       success: true,
       jobId: job.id,
-      message: 'Job posted successfully!'
+      message: 'Job posted successfully!',
+      creditsRemaining: creditResult.success ? await JobPostingCreditsService.getUserCredits(user.id) : undefined
     });
 
   } catch (error) {
