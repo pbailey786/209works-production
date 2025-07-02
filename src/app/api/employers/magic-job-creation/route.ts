@@ -123,38 +123,41 @@ Return JSON:
   ]
 }`;
 
+    // Extract basic job info for O*NET lookup
+    const jobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
+    const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'General Worker';
+    
+    // Try to get O*NET data first (non-blocking) - declare outside try block
+    let onetData: any = null;
+
+    // Try to get O*NET data first (non-blocking)
     try {
-      // Extract basic job info for O*NET lookup
-      const jobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
-      const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'General Worker';
+      console.log('🔍 Looking up O*NET data for:', extractedTitle);
+      console.log('🔍 User location:', user?.businessLocation || 'Stockton, CA');
       
-      // Try to get O*NET data first (non-blocking)
-      let onetData: any = null;
-      try {
-        console.log('🔍 Looking up O*NET data for:', extractedTitle);
-        console.log('🔍 User location:', user?.businessLocation || 'Stockton, CA');
-        
-        onetData = await Promise.race([
-          jobEnhancer.enhanceJobPosting({ 
-            title: extractedTitle, 
-            location: user?.businessLocation || 'Stockton, CA' 
-          }),
-          new Promise((resolve) => setTimeout(() => resolve(null), 5000)) // Increased to 5 second timeout
-        ]) as any;
-        
-        if (onetData) {
-          console.log('✅ O*NET data retrieved successfully:', {
-            title: onetData.title,
-            salaryDisplay: onetData.salary?.display,
-            responsibilitiesCount: onetData.responsibilities?.length || 0,
-            skillsCount: onetData.skills?.length || 0
-          });
-        } else {
-          console.log('⏱️ O*NET lookup timed out (5 seconds)');
-        }
-      } catch (onetError: any) {
-        console.log('⚠️ O*NET lookup failed:', onetError?.message || onetError);
+      onetData = await Promise.race([
+        jobEnhancer.enhanceJobPosting({ 
+          title: extractedTitle, 
+          location: user?.businessLocation || 'Stockton, CA' 
+        }),
+        new Promise((resolve) => setTimeout(() => resolve(null), 5000)) // Increased to 5 second timeout
+      ]) as any;
+      
+      if (onetData) {
+        console.log('✅ O*NET data retrieved successfully:', {
+          title: onetData.title,
+          salaryDisplay: onetData.salary?.display,
+          responsibilitiesCount: onetData.responsibilities?.length || 0,
+          skillsCount: onetData.skills?.length || 0
+        });
+      } else {
+        console.log('⏱️ O*NET lookup timed out (5 seconds)');
       }
+    } catch (onetError: any) {
+      console.log('⚠️ O*NET lookup failed:', onetError?.message || onetError);
+    }
+
+    try {
 
       // Enhance the user prompt with O*NET data if available
       let enhancedUserPrompt = userPrompt;
@@ -241,11 +244,11 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
         } else {
           console.log('🔄 Fallback: Attempting O*NET lookup...');
           try {
-            const jobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
-            const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'General Worker';
+            const fallbackJobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
+            const fallbackExtractedTitle = fallbackJobTitleMatch ? fallbackJobTitleMatch[1].trim() : 'General Worker';
             
             fallbackOnetData = await jobEnhancer.enhanceJobPosting({ 
-              title: extractedTitle, 
+              title: fallbackExtractedTitle, 
               location: user?.businessLocation || 'Stockton, CA' 
             });
             
