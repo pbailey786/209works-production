@@ -62,7 +62,7 @@ export class JobEnhancer {
         title: this.refineJobTitle(input.title, onetData.occupation.title),
         description: this.enhanceDescription(
           input.description || '', 
-          onetData.occupation.description
+          onetData.occupation.description || ''
         ),
         responsibilities,
         requirements,

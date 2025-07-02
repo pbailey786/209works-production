@@ -129,7 +129,7 @@ Return JSON:
       const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'General Worker';
       
       // Try to get O*NET data first (non-blocking)
-      let onetData = null;
+      let onetData: any = null;
       try {
         console.log('🔍 Looking up O*NET data for:', extractedTitle);
         onetData = await Promise.race([
@@ -138,7 +138,7 @@ Return JSON:
             location: user?.businessLocation || 'Stockton, CA' 
           }),
           new Promise((resolve) => setTimeout(() => resolve(null), 3000)) // 3 second timeout for O*NET
-        ]);
+        ]) as any;
         
         if (onetData) {
           console.log('✅ O*NET data retrieved successfully');
@@ -149,13 +149,13 @@ Return JSON:
 
       // Enhance the user prompt with O*NET data if available
       let enhancedUserPrompt = userPrompt;
-      if (onetData) {
+      if (onetData && onetData.title) {
         enhancedUserPrompt += `\n\nO*NET DATA AVAILABLE - Use this to enhance accuracy:
 Title: ${onetData.title}
 Salary Range: ${onetData.salary?.display || 'Use market rates'}
-Key Responsibilities: ${onetData.responsibilities.slice(0, 3).join('; ')}
-Required Skills: ${onetData.skills.join(', ')}
-Suggested Requirements: ${onetData.requirements.slice(0, 3).join('; ')}`;
+Key Responsibilities: ${onetData.responsibilities?.slice(0, 3).join('; ') || 'See job description'}
+Required Skills: ${onetData.skills?.join(', ') || 'Standard skills for role'}
+Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See requirements section'}`;
       }
 
       // Try OpenAI first with timeout
@@ -217,7 +217,7 @@ Suggested Requirements: ${onetData.requirements.slice(0, 3).join('; ')}`;
       try {
         // Rule-based fallback system - always works
         console.log('🔄 Using fallback system for prompt:', prompt.trim().substring(0, 50) + '...');
-        const fallbackJobData = await generateFallbackJob(prompt.trim(), user, onetData);
+        const fallbackJobData = await generateFallbackJob(prompt.trim(), user, null);
         
         return NextResponse.json({
           success: true,
@@ -462,7 +462,7 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
   const fullDescription = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;
   
   // Generate benefit options based on job type and prompt
-  const benefitOptions = [];
+  const benefitOptions: Array<{ icon: string; title: string; description: string; key: string }> = [];
   let benefitKey = 1;
   
   // Always add competitive pay with detailed description

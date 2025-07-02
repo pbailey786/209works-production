@@ -194,8 +194,8 @@ export class ONetClient {
           description: details?.description,
           alternativeTitles: details?.sample_of_reported_job_titles || [],
         },
-        tasks: tasks.map(t => t.task),
-        skills: skills.filter(s => s.importance > 3).map(s => s.name),
+        tasks: tasks.map((t: any) => t.task),
+        skills: skills.filter((s: any) => s.importance > 3).map((s: any) => s.name),
         salary: wageData,
       };
     } catch (error) {
