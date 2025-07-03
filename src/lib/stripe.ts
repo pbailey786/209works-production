@@ -100,7 +100,7 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   starter: {
     name: 'Starter',
     monthlyPrice: 89,
-    stripePriceId: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID,
+    stripePriceId: process.env.STRIPE_PRICE_STARTER,
     features: {
       credits: 3, // Updated to use unified credit system
       duration: 30, // days
@@ -113,9 +113,9 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   standard: {
     name: 'Standard',
     monthlyPrice: 199,
-    stripePriceId: process.env.STRIPE_STANDARD_MONTHLY_PRICE_ID,
+    stripePriceId: process.env.STRIPE_PRICE_STANDARD,
     features: {
-      credits: 5, // Updated to use unified credit system
+      credits: 6, // Updated to use unified credit system
       duration: 30,
       aiOptimization: true,
       analytics: 'advanced',
@@ -127,7 +127,7 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   pro: {
     name: 'Pro',
     monthlyPrice: 349,
-    stripePriceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID,
+    stripePriceId: process.env.STRIPE_PRICE_PRO,
     features: {
       credits: 12, // Updated to use unified credit system (10 + 2 featured = 12 total)
       duration: 60,
@@ -166,18 +166,18 @@ export const JOB_POSTING_CONFIG = {
   creditPacks: {
     singleCredit: {
       name: '1 Universal Credit',
-      price: 0, // Price hidden from UI per unified credit system
+      price: 25,
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_1 || 'price_dynamic_credit_1',
       credits: 1,
       description: 'Perfect for any feature: job posts, featured listings, social graphics',
     },
     fiveCredits: {
       name: '5 Universal Credits',
-      price: 0, // Price hidden from UI per unified credit system
+      price: 100,
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_5 || 'price_dynamic_credit_5',
       credits: 5,
       description: 'Best value for multiple features and job postings',
-      savings: 0, // Savings calculation hidden from UI
+      savings: 25, // Save $25 compared to buying 5 individual credits
     },
     // New credit pack options for modal
     small: {

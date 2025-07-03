@@ -54,7 +54,7 @@ const SUBSCRIPTION_PLANS: CreditOption[] = [
 
 const ADDITIONAL_CREDITS: CreditOption[] = [
   {
-    id: 'single',
+    id: 'singleCredit',
     name: '+1 Credit',
     credits: 1,
     price: 25,
@@ -62,7 +62,7 @@ const ADDITIONAL_CREDITS: CreditOption[] = [
     type: 'addon',
   },
   {
-    id: 'five',
+    id: 'fiveCredits',
     name: '+5 Credits',
     credits: 5,
     price: 100,
@@ -104,16 +104,26 @@ export default function CreditsPage() {
   const handlePurchase = async (optionId: string) => {
     setLoading(true);
     try {
+      // Determine if this is a subscription tier or credit pack
+      const option = [...SUBSCRIPTION_PLANS, ...ADDITIONAL_CREDITS].find(opt => opt.id === optionId);
+      
+      const requestBody: any = {
+        successUrl: `${window.location.origin}/employers/dashboard?purchase_success=true`,
+        cancelUrl: `${window.location.origin}/employers/credits?cancelled=true`,
+      };
+
+      if (option?.type === 'subscription') {
+        requestBody.tier = optionId;
+      } else if (option?.type === 'addon') {
+        requestBody.creditPack = optionId;
+      }
+
       const response = await fetch('/api/job-posting/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          tier: optionId,
-          successUrl: `${window.location.origin}/employers/dashboard?purchase_success=true`,
-          cancelUrl: `${window.location.origin}/employers/credits?cancelled=true`,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
