@@ -223,12 +223,11 @@ export async function POST(req: NextRequest) {
     const totalAmount = basePrice + totalAddonPrice;
 
     // Determine checkout mode based on what's being purchased
-    // All job posting purchases are one-time payments (not subscriptions)
-    // This includes tiers, credit packs, and addons
-    const checkoutMode = 'payment';
+    // Subscriptions use 'subscription' mode, credit packs use 'payment' mode
+    const checkoutMode = tierConfig ? 'subscription' : 'payment';
 
     console.log('🔄 Checkout mode:', checkoutMode);
-    console.log('📦 Purchase type:', 'One-time Payment (Tier/Credits/Addons)');
+    console.log('📦 Purchase type:', tierConfig ? 'Subscription' : 'One-time Payment (Credits/Addons)');
     console.log('💰 Total amount calculated:', totalAmount);
     console.log('📋 Line items:', lineItems);
 

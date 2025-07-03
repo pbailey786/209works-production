@@ -184,7 +184,18 @@ src/
 - **Cost Control**: Removed expensive "Should I Apply?" feature, added SmartMatch for employer-side matching
 - **Reliability**: Switched to GPT-3.5-turbo with 8-second timeout + instant rule-based fallback
 
-**Latest Updates (Jan 1, 2025):**
+**Latest Updates (Jan 2, 2025):**
+- **Credits System Overhaul**: Fixed all credit-related APIs and checkout flow
+- **Subscription + Credits Model**: Implemented monthly subscriptions ($89/199/349) with additional credit packs (+1 for $25, +5 for $100)
+- **Job Creation Flow**: Allows free job creation, credits only required for publishing
+- **Company Name Fix**: AI now correctly uses employer's profile company name instead of generating fake names
+- **React Hydration Fix**: Resolved Error #310 with proper client-side rendering checks
+- **Credits UX**: Added clear credits display in job posting flow with improved modal messaging
+- **API Authentication**: Fixed all Clerk authentication issues in checkout and subscription APIs
+- **New Credits Page**: Created comprehensive /employers/credits page showing subscriptions and add-ons
+- **Removed "How to Apply"**: Cleaned up redundant application instructions from job display
+
+**Previous Updates (Jan 1, 2025):**
 - **Job Ad Layout Redesign**: Complete overhaul of job posting structure based on Indeed analysis
 - **New 4-Section Format**: About This Role → What You'll Do → What We're Looking For → What We Offer
 - **Database Schema Update**: Added `responsibilities` field to Job model for new "What You'll Do" section

@@ -6,6 +6,11 @@ import {
   extractJobSearchFiltersWithContext,
 } from '@/lib/llm/conversationalResponse';
 import {
+  generateStrictJobResponse,
+  generateStrictFollowUpQuestions,
+  validateResponseAccuracy,
+} from '@/lib/llm/strictJobResponse';
+import {
   withAISecurity,
   aiSecurityConfigs,
   type AISecurityContext,
@@ -401,6 +406,7 @@ export const POST = withAISecurity(
         userProfile = null,
         sessionId = null,
         isOnboarding = false,
+        userContext = null,
       } = body;
 
       if (!userMessage || typeof userMessage !== 'string') {
@@ -662,42 +668,37 @@ export const POST = withAISecurity(
         );
       }
 
-      // Generate response based on context
+      // Generate response using STRICT database-only system (no AI hallucination)
       let conversationalResponse: string;
+      
+      // Get total jobs in database for context
+      const totalJobsInDatabase = await prisma.job.count({
+        where: { status: 'active' }
+      });
 
-      if (hasValidApiKey) {
-        try {
-          // Use the new AI utility with OpenAI + Anthropic fallback
-          conversationalResponse = await generateJobSearchResponse(
-            userMessage,
-            conversationHistory,
-            jobs,
-            filters
-          );
-        } catch (error) {
-          console.error('AI response generation failed:', error);
-          conversationalResponse = generateBasicResponse(
-            userMessage,
-            filters,
-            jobs,
-            conversationHistory
-          );
-        }
-      } else {
-        conversationalResponse = generateBasicResponse(
-          userMessage,
-          filters,
-          jobs,
-          conversationHistory
-        );
+      // Use strict response system that NEVER fabricates jobs
+      conversationalResponse = await generateStrictJobResponse({
+        userMessage,
+        jobs,
+        conversationHistory,
+        userContext,
+        totalJobsInDatabase,
+      });
+
+      // Validate response doesn't contain fabricated information
+      const isResponseAccurate = validateResponseAccuracy(conversationalResponse, jobs);
+      if (!isResponseAccurate) {
+        console.warn('Response validation failed, using fallback');
+        conversationalResponse = jobs.length > 0 
+          ? `Found ${jobs.length} job${jobs.length !== 1 ? 's' : ''} matching your search.`
+          : "No jobs found matching your search. Try different keywords or check back later.";
       }
 
-      // Generate enhanced follow-up questions
-      const followUpQuestions = generateContextualFollowUpQuestions(
-        userMessage,
-        filters,
+      // Generate strict follow-up questions based on actual results
+      const followUpQuestions = generateStrictFollowUpQuestions(
         jobs,
-        conversationHistory
+        userContext,
+        userMessage
       );
 
       // Save analytics data if user is authenticated

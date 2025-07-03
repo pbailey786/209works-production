@@ -32,6 +32,11 @@ API_ALLOWED_ORIGINS=https://209.works,https://916.works,https://510.works,https:
 # OpenAI (if using AI features)
 OPENAI_API_KEY="your-openai-key"
 
+# O*NET Web Services (for job market data and career guidance)
+ONET_USER_AGENT="209jobs/1.0 (mailto:your-email@209.works)"
+ONET_USERNAME="your-onet-username"
+ONET_PASSWORD="your-onet-password"
+
 # Stripe (if using payments)
 STRIPE_PUBLISHABLE_KEY="your-stripe-publishable-key"
 STRIPE_SECRET_KEY="your-stripe-secret-key"

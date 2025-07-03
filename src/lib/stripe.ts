@@ -58,20 +58,31 @@ export const getStripe = (): Promise<StripeClient | null> => {
   return stripePromise;
 };
 
-// Stripe configuration for monthly recurring subscriptions
+// Stripe configuration base settings
 export const STRIPE_CONFIG = {
   currency: 'usd',
   payment_method_types: ['card'],
-  mode: 'subscription' as const, // All packages are monthly recurring subscriptions
   billing_address_collection: 'required' as const,
   customer_creation: 'always' as const,
   automatic_tax: {
     enabled: true,
   },
   allow_promotion_codes: true,
+};
+
+// Subscription-specific config
+export const STRIPE_SUBSCRIPTION_CONFIG = {
+  ...STRIPE_CONFIG,
+  mode: 'subscription' as const,
   subscription_data: {
     trial_period_days: 0, // No trial period for simplicity
   },
+};
+
+// One-time payment config
+export const STRIPE_PAYMENT_CONFIG = {
+  ...STRIPE_CONFIG,
+  mode: 'payment' as const,
 };
 
 // Type definitions for subscription tiers
@@ -166,18 +177,18 @@ export const JOB_POSTING_CONFIG = {
   creditPacks: {
     singleCredit: {
       name: '1 Universal Credit',
-      price: 25,
+      price: 59,
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_1 || 'price_dynamic_credit_1',
       credits: 1,
       description: 'Perfect for any feature: job posts, featured listings, social graphics',
     },
     fiveCredits: {
       name: '5 Universal Credits',
-      price: 100,
+      price: 349,
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_5 || 'price_dynamic_credit_5',
       credits: 5,
       description: 'Best value for multiple features and job postings',
-      savings: 25, // Save $25 compared to buying 5 individual credits
+      savings: 46, // Save $46 compared to buying 5 individual credits ($59 x 5 = $295)
     },
     // New credit pack options for modal
     small: {
