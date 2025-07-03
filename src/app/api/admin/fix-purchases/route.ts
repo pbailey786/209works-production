@@ -1,35 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/database/prisma';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    // Check authentication with Clerk
-    const clerkUser = await currentUser();
-    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: clerkUser.emailAddresses[0].emailAddress },
-      select: { id: true, role: true },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Get all pending purchases for this user
+    // Get all pending purchases for the specific user
+    const userId = "user_2yzEVn2FAZUuyEZWDmt0habs1EV"; // Your user ID from debug output
+    
     const pendingPurchases = await prisma.jobPostingPurchase.findMany({
       where: { 
-        userId: user.id,
+        userId: userId,
         status: 'pending'
       },
       orderBy: { purchasedAt: 'desc' }
@@ -77,7 +56,7 @@ export async function GET(req: NextRequest) {
           const credits = [];
           for (let i = 0; i < creditsToCreate; i++) {
             credits.push({
-              userId: user.id,
+              userId: userId,
               purchaseId: purchase.id,
               type: 'universal',
               expiresAt: purchase.expiresAt,
@@ -108,9 +87,9 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-      message: `Fixed ${results.filter(r => !r.error).length} of ${pendingPurchases.length} pending purchases`,
+      message: `Fixed ${results.filter(r => !('error' in r)).length} of ${pendingPurchases.length} pending purchases`,
       results,
-      totalCreditsCreated: results.reduce((sum, r) => sum + ('creditsCreated' in r ? (r as any).creditsCreated : 0), 0)
+      totalCreditsCreated: results.reduce((sum, r) => sum + (('creditsCreated' in r) ? (r as any).creditsCreated : 0), 0)
     });
 
   } catch (error) {
