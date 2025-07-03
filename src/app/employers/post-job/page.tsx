@@ -159,11 +159,7 @@ export default function PostJobPage() {
       return;
     }
 
-    // Check credits before proceeding
-    if (!credits || credits.total === 0) {
-      setShowCreditsModal(true);
-      return;
-    }
+    // Allow job creation without credits (credits only needed for publishing)
 
     setIsGenerating(true);
     setCurrentState('generating');
@@ -350,7 +346,7 @@ export default function PostJobPage() {
                   <span className="text-gray-500">available</span>
                   {credits?.total === 0 && (
                     <button
-                      onClick={() => setShowCreditsModal(true)}
+                      onClick={() => router.push('/employers/credits')}
                       className="ml-2 px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
                     >
                       Buy Credits
@@ -400,7 +396,7 @@ export default function PostJobPage() {
               ) : (
                 <>
                   <Zap className="w-6 h-6" />
-                  <span>Generate Job Post{credits?.total === 0 ? ' - Need Credits' : ''}</span>
+                  <span>Generate Job Post</span>
                   <ArrowRight className="w-6 h-6" />
                 </>
               )}
@@ -1245,7 +1241,7 @@ Contact: ${userEmail}`);
                 <button
                   onClick={() => {
                     setShowCreditsModal(false);
-                    router.push('/employers/credits/checkout?package=standard');
+                    router.push('/employers/credits');
                   }}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >

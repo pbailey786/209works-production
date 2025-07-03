@@ -25,7 +25,7 @@ const employerPlans = [
   {
     id: 'standard',
     name: 'Standard Tier',
-    price: 179,
+    price: 199,
     description: 'More credits, better visibility, and powerful tools to help you hire faster.',
     features: [
       '6 Job Posting Credits',

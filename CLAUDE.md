@@ -89,12 +89,21 @@ npm run queue:status          # Check email queue status
 
 ### Credit System & Pricing
 
-The platform uses a credit-based system for employers to post jobs. Credits are purchased in tiers and never expire.
+The platform uses a subscription + credit system for employers:
 
-**Credit Pricing Tiers:**
-- **Starter Tier**: $89 for 3 job posting credits ($29.67 per post)
-- **Standard Tier**: $199 for 6 job posting credits ($33.17 per post) 
-- **Pro Tier**: $350 for 12 job posting credits ($29.17 per post)
+**Monthly Subscription Tiers:**
+- **Starter Tier**: $89/month for 3 job posting credits 
+- **Standard Tier**: $199/month for 6 job posting credits 
+- **Pro Tier**: $349/month for 12 job posting credits
+
+**Additional Credit Packs (for subscribers):**
+- **+1 Credit**: $25 (single additional job post)
+- **+5 Credits**: $100 (5 additional job posts)
+
+**Business Model:**
+- Users buy monthly subscriptions for regular credits
+- When subscription credits are used up, they can buy additional +1 or +5 credit packs
+- Job creation is free, but publishing requires credits
 
 **Credit Usage:**
 - 1 credit = 1 job posting (basic)
