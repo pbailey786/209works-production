@@ -13,6 +13,9 @@ interface PageProps {
   }>;
 }
 
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
+
 export default async function EditAdPage({ params }: PageProps) {
   const { id } = await params;
 

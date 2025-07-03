@@ -23,6 +23,9 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
+
 export default async function EditJobPage({ params }: PageProps) {
   const { id } = await params;
   // TODO: Replace with Clerk

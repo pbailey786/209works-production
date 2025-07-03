@@ -23,6 +23,9 @@ import {
   Globe,
 } from 'lucide-react';
 
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
+
 export default async function AdminSettingsPage() {
   // TODO: Replace with Clerk
   const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } } // Mock session;

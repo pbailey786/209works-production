@@ -5,6 +5,9 @@ import { prisma } from '@/lib/database/prisma';
 import JobSeekerOnboardingClient from './JobSeekerOnboardingClient';
 // import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
+
 export default async function JobSeekerOnboardingPage() {
   // Skip database operations during build
   if (process.env.NODE_ENV === 'production' && process.env.NETLIFY) {

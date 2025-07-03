@@ -3,6 +3,9 @@ import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/database/prisma';
 import EmployerOnboardingClient from './EmployerOnboardingClient';
 
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
+
 export default async function EmployerOnboardingPage() {
   const clerkUser = await currentUser();
   

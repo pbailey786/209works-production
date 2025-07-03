@@ -325,32 +325,13 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
 // Enable static generation for popular job pages
 export async function generateStaticParams() {
-  // Skip static generation during build if database is not available
-  if (process.env.NODE_ENV === 'production' && process.env.NETLIFY) {
-    console.log('Skipping static params generation during Netlify build');
-    return [];
-  }
-  
-  try {
-    // Generate static pages for the most recent 50 jobs
-    const recentJobs = await prisma.job.findMany({
-      select: { id: true },
-      orderBy: { postedAt: 'desc' },
-      take: 50,
-    });
-
-    return recentJobs.map(job => ({
-      id: job.id,
-    }));
-  } catch (error) {
-    console.error('Error generating static params:', error);
-    return [];
-  }
+  // Skip static generation during build to avoid database connections
+  console.log('Skipping static params generation to avoid database connections during build');
+  return [];
 }
 
-// Enable ISR (Incremental Static Regeneration)
-export const revalidate = 3600; // Revalidate every hour
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
 
 // Optimize runtime
 export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic'; // For authenticated features

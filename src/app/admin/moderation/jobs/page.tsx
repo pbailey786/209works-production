@@ -16,6 +16,9 @@ interface SearchParams {
   sortOrder?: string;
 }
 
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
+
 export default async function JobModerationPage({
   searchParams,
 }: {

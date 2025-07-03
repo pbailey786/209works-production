@@ -9,6 +9,9 @@ import CreditManagementDashboard from '@/components/admin/CreditManagementDashbo
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Force dynamic rendering to avoid database connections during build
+export const dynamic = 'force-dynamic';
+
 async function getCreditData() {
   try {
     // Get credit statistics
