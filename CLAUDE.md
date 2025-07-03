@@ -92,13 +92,13 @@ npm run queue:status          # Check email queue status
 The platform uses a subscription + credit system for employers:
 
 **Monthly Subscription Tiers:**
-- **Starter Tier**: $89/month for 3 job posting credits 
-- **Standard Tier**: $199/month for 6 job posting credits 
-- **Pro Tier**: $349/month for 12 job posting credits
+- **Starter Tier**: $129/month for 3 job posting credits 
+- **Standard Tier**: $249/month for 6 job posting credits 
+- **Pro Tier**: $399/month for 12 job posting credits
 
 **Additional Credit Packs (for subscribers):**
-- **+1 Credit**: $25 (single additional job post)
-- **+5 Credits**: $100 (5 additional job posts)
+- **+1 Credit**: $49 (single additional job post)
+- **+5 Credits**: $199 (5 additional job posts, save $46)
 
 **Business Model:**
 - Users buy monthly subscriptions for regular credits
@@ -113,10 +113,10 @@ The platform uses a subscription + credit system for employers:
 - Automatic credit deduction upon successful job publication
 
 **Business Model:**
-- No subscription fees - pay-per-job-post model
+- Subscription + credit pack model for flexible hiring needs
 - Credits appeal to Central Valley businesses (seasonal hiring, project-based)
-- Average revenue per employer: $89-350 depending on hiring volume
-- Target: $15K+ monthly recurring revenue from employer credits
+- Average revenue per employer: $129-399 depending on hiring volume
+- Target: $20K+ monthly recurring revenue from employer subscriptions
 
 ### Directory Structure
 

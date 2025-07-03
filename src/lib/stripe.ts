@@ -110,7 +110,7 @@ export interface SubscriptionTier {
 export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   starter: {
     name: 'Starter',
-    monthlyPrice: 89,
+    monthlyPrice: 129,
     stripePriceId: process.env.STRIPE_PRICE_STARTER,
     features: {
       credits: 3, // Updated to use unified credit system
@@ -123,7 +123,7 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   },
   standard: {
     name: 'Standard',
-    monthlyPrice: 199,
+    monthlyPrice: 249,
     stripePriceId: process.env.STRIPE_PRICE_STANDARD,
     features: {
       credits: 6, // Updated to use unified credit system
@@ -137,7 +137,7 @@ export const SUBSCRIPTION_TIERS_CONFIG: Record<string, SubscriptionTier> = {
   },
   pro: {
     name: 'Pro',
-    monthlyPrice: 349,
+    monthlyPrice: 399,
     stripePriceId: process.env.STRIPE_PRICE_PRO,
     features: {
       credits: 12, // Updated to use unified credit system (10 + 2 featured = 12 total)
@@ -177,18 +177,18 @@ export const JOB_POSTING_CONFIG = {
   creditPacks: {
     singleCredit: {
       name: '1 Universal Credit',
-      price: 59,
+      price: 49,
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_1 || 'price_dynamic_credit_1',
       credits: 1,
       description: 'Perfect for any feature: job posts, featured listings, social graphics',
     },
     fiveCredits: {
       name: '5 Universal Credits',
-      price: 349,
+      price: 199,
       stripePriceId: process.env.STRIPE_PRICE_CREDIT_5 || 'price_dynamic_credit_5',
       credits: 5,
       description: 'Best value for multiple features and job postings',
-      savings: 46, // Save $46 compared to buying 5 individual credits ($59 x 5 = $295)
+      savings: 46, // Save $46 compared to buying 5 individual credits ($49 x 5 = $245)
     },
     // New credit pack options for modal
     small: {

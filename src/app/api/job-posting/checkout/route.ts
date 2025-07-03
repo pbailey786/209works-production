@@ -250,7 +250,7 @@ export async function POST(req: NextRequest) {
           tier: validatedData.tier?.toUpperCase() || '',
           creditPack: validatedData.creditPack?.toUpperCase() || '',
           addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
-          type: 'job_posting_purchase',
+          type: tierConfig ? 'subscription_purchase' : 'credit_pack_purchase',
           totalAmount: totalAmount.toString(),
           jobCredits: jobCredits.toString(),
           featuredCredits: selectedAddons.filter(a =>
@@ -363,7 +363,7 @@ export async function POST(req: NextRequest) {
             tier: validatedData.tier?.toUpperCase() || '',
             creditPack: validatedData.creditPack?.toUpperCase() || '',
             addons: selectedAddons.map(a => a.key.toUpperCase()).join(','),
-            type: 'job_posting_purchase',
+            type: tierConfig ? 'subscription_purchase' : 'credit_pack_purchase',
             totalAmount: totalAmount.toString(),
             jobCredits: jobCredits.toString(),
             featuredCredits: selectedAddons.filter(a =>

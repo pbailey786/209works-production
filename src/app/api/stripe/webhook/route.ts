@@ -130,8 +130,23 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
-  // Handle job posting purchases and credit packs
-  if (type === 'job_posting_purchase' || type === 'credit_pack_purchase') {
+  // Handle subscription purchases (monthly recurring plans)
+  if (type === 'subscription_purchase') {
+    console.log('🔄 Processing subscription purchase');
+    await handleSubscriptionCheckout(session);
+    return;
+  }
+
+  // Handle credit pack purchases (one-time payments)
+  if (type === 'credit_pack_purchase') {
+    console.log('💰 Processing credit pack purchase');
+    await handleJobPostingPurchase(session);
+    return;
+  }
+
+  // Handle legacy job posting purchases
+  if (type === 'job_posting_purchase') {
+    console.log('📦 Processing legacy job posting purchase');
     await handleJobPostingPurchase(session);
     return;
   }
@@ -148,7 +163,7 @@ async function handleCheckoutSessionCompleted(
     return;
   }
 
-  // Handle subscription purchases
+  // Handle subscription purchases (fallback)
   const tier = session.metadata?.tier as PricingTier;
   const billingInterval = session.metadata?.billingInterval as BillingInterval;
 
@@ -280,7 +295,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 async function allocateSubscriptionCredits(userId: string, tier: string) {
   const creditAllocation = {
     starter: { credits: 3 },
-    standard: { credits: 5 },
+    standard: { credits: 6 }, // Fixed to match pricing page
     pro: { credits: 12 }, // 10 + 2 featured = 12 total unified credits
   };
 
@@ -304,6 +319,81 @@ async function allocateSubscriptionCredits(userId: string, tier: string) {
       data: creditsToCreate,
     });
     console.log(`Allocated ${creditsToCreate.length} universal credits to user ${userId} for tier ${tier}`);
+  }
+}
+
+// Handle subscription purchases from checkout sessions
+async function handleSubscriptionCheckout(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.userId;
+  const tier = session.metadata?.tier?.toLowerCase();
+
+  if (!userId) {
+    console.error('❌ Missing userId in subscription checkout:', session.id);
+    return;
+  }
+
+  if (!tier) {
+    console.error('❌ Missing tier in subscription checkout:', session.id);
+    return;
+  }
+
+  try {
+    console.log(`🔄 Processing subscription checkout for user ${userId}, tier: ${tier}`);
+
+    // Get user email
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    });
+
+    if (!user) {
+      console.error('User not found:', userId);
+      return;
+    }
+
+    // Update user with customer ID if not already set
+    if (session.customer && typeof session.customer === 'string') {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { stripeCustomerId: session.customer },
+      });
+    }
+
+    // Create or update subscription record if subscription ID exists
+    if (session.subscription && typeof session.subscription === 'string') {
+      const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription);
+
+      await prisma.subscription.upsert({
+        where: { userId },
+        update: {
+          stripeSubscriptionId: stripeSubscription.id,
+          tier: tier as any,
+          billingCycle: 'monthly',
+          status: stripeSubscription.status === 'trialing' ? 'trial' : 'active',
+          startDate: new Date((stripeSubscription as any).current_period_start * 1000),
+          endDate: new Date((stripeSubscription as any).current_period_end * 1000),
+          price: stripeSubscription.items.data[0]?.price.unit_amount || 0,
+        },
+        create: {
+          userId,
+          email: user.email,
+          stripeSubscriptionId: stripeSubscription.id,
+          tier: tier as any,
+          billingCycle: 'monthly',
+          status: stripeSubscription.status === 'trialing' ? 'trial' : 'active',
+          startDate: new Date((stripeSubscription as any).current_period_start * 1000),
+          endDate: new Date((stripeSubscription as any).current_period_end * 1000),
+          price: stripeSubscription.items.data[0]?.price.unit_amount || 0,
+        },
+      });
+    }
+
+    // Allocate credits based on tier
+    await allocateSubscriptionCredits(userId, tier);
+
+    console.log(`✅ Subscription checkout completed for user ${userId} with tier ${tier}`);
+  } catch (error) {
+    console.error('❌ Error handling subscription checkout:', error);
   }
 }
 

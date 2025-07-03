@@ -38,8 +38,8 @@ export default function HowCreditsWorkPage() {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">🎯 Best Value</h2>
               <p className="text-gray-600">
-                The 5-credit pack saves you $46 compared to buying individual credits. 
-                Subscriptions offer the best per-credit rates for regular hiring.
+                The 5-credit pack saves you $46 compared to buying individual credits ($199 vs $245). 
+                Pro subscription offers the best per-credit rate at $33.25 per credit.
               </p>
             </div>
           </div>

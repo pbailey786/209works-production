@@ -29,7 +29,7 @@ const SUBSCRIPTION_PLANS: CreditOption[] = [
     id: 'starter',
     name: 'Starter',
     credits: 3,
-    price: 89,
+    price: 129,
     description: 'Monthly subscription with 3 job posting credits',
     type: 'subscription',
   },
@@ -37,7 +37,7 @@ const SUBSCRIPTION_PLANS: CreditOption[] = [
     id: 'standard',
     name: 'Standard',
     credits: 6,
-    price: 199,
+    price: 249,
     description: 'Monthly subscription with 6 job posting credits',
     type: 'subscription',
     popular: true,
@@ -46,7 +46,7 @@ const SUBSCRIPTION_PLANS: CreditOption[] = [
     id: 'pro',
     name: 'Pro',
     credits: 12,
-    price: 349,
+    price: 399,
     description: 'Monthly subscription with 12 job posting credits',
     type: 'subscription',
   },
@@ -57,7 +57,7 @@ const ADDITIONAL_CREDITS: CreditOption[] = [
     id: 'singleCredit',
     name: '+1 Credit',
     credits: 1,
-    price: 59,
+    price: 49,
     description: 'One additional job post',
     type: 'addon',
   },
@@ -65,7 +65,7 @@ const ADDITIONAL_CREDITS: CreditOption[] = [
     id: 'fiveCredits',
     name: '+5 Credits',
     credits: 5,
-    price: 349,
+    price: 199,
     description: 'Five additional job posts',
     type: 'addon',
   },
@@ -280,7 +280,7 @@ export default function CreditsPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">{addon.name}</h3>
                     <p className="text-gray-600 text-sm mb-2">{addon.description}</p>
                     {index === 1 && (
-                      <p className="text-xs text-green-700 mb-2">vs $295 buying individually</p>
+                      <p className="text-xs text-green-700 mb-2">vs $245 buying individually</p>
                     )}
                     <div className="text-2xl font-bold text-[#2d4a3e]">${addon.price}</div>
                     <div className="text-xs text-gray-500 mt-1">
