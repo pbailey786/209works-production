@@ -32,15 +32,37 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // For now, we're using a credit-based system, not subscriptions
-    // Return basic subscription info
+    // Check if user has any active subscriptions in the database
+    let hasActiveSubscription = false;
+    let subscriptionTier = null;
+    
+    if (user.stripeCustomerId) {
+      // Check for active job posting purchases that represent subscriptions
+      const activeSubscription = await prisma.jobPostingPurchase.findFirst({
+        where: {
+          userId: user.id,
+          status: 'completed',
+          tier: { in: ['starter', 'standard', 'pro'] },
+          expiresAt: { gt: new Date() },
+        },
+        orderBy: { purchasedAt: 'desc' },
+      });
+
+      if (activeSubscription) {
+        hasActiveSubscription = true;
+        subscriptionTier = activeSubscription.tier;
+      }
+    }
+
     return NextResponse.json({
-      subscriptionStatus: 'active', // We don't use subscriptions, always active
-      currentTier: user.currentTier || 'basic',
+      subscriptionStatus: hasActiveSubscription ? 'active' : 'inactive',
+      currentTier: subscriptionTier || user.currentTier || 'none',
       subscriptionEndsAt: user.subscriptionEndsAt,
       hasStripeCustomer: !!user.stripeCustomerId,
-      paymentModel: 'credits', // Indicate we use credits, not subscriptions
-      message: 'Using credit-based billing model'
+      paymentModel: 'subscription_plus_credits', // Updated to reflect new model
+      message: hasActiveSubscription 
+        ? `Active ${subscriptionTier} subscription`
+        : 'No active subscription - purchase a plan to get monthly credits'
     });
 
   } catch (error) {

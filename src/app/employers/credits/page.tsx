@@ -142,6 +142,7 @@ export default function CreditsPage() {
   };
 
   const hasSubscription = subscriptionStatus?.subscriptionStatus === 'active';
+  const currentTier = subscriptionStatus?.currentTier;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -167,7 +168,9 @@ export default function CreditsPage() {
                 {currentCredits} Credits Available
               </div>
               <div className="text-gray-600">
-                {hasSubscription ? 'Active Subscription' : 'No Active Subscription'}
+                {hasSubscription 
+                  ? `Active ${currentTier ? currentTier.charAt(0).toUpperCase() + currentTier.slice(1) : ''} Subscription`
+                  : 'No Active Subscription'}
               </div>
             </div>
             {currentCredits === 0 && (
@@ -237,7 +240,11 @@ export default function CreditsPage() {
         <section>
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Additional Credits</h2>
-            <p className="text-gray-600">Need more credits? Purchase additional credits anytime</p>
+            <p className="text-gray-600">
+              {hasSubscription 
+                ? 'Need more credits this month? Purchase additional credits anytime'
+                : 'One-time credit purchases - no subscription required'}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
