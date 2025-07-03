@@ -13,15 +13,32 @@ import { EmailQueue } from '@/lib/services/email-queue';
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(request: NextRequest) {
+  console.log('🎣 Stripe webhook received');
+  
   try {
     const body = await request.text();
     const headersList = await headers();
     const signature = headersList.get('stripe-signature');
 
+    console.log('📥 Webhook details:', {
+      hasSignature: !!signature,
+      hasWebhookSecret: !!webhookSecret,
+      bodyLength: body.length,
+    });
+
     if (!signature) {
+      console.error('❌ Missing stripe-signature header');
       return NextResponse.json(
         { error: 'Missing stripe-signature header' },
         { status: 400 }
+      );
+    }
+
+    if (!webhookSecret) {
+      console.error('❌ STRIPE_WEBHOOK_SECRET not configured');
+      return NextResponse.json(
+        { error: 'Webhook secret not configured' },
+        { status: 500 }
       );
     }
 
@@ -29,14 +46,18 @@ export async function POST(request: NextRequest) {
 
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      console.log('✅ Webhook signature verified successfully');
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
+      console.error('❌ Webhook signature verification failed:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
     // Handle the event
+    console.log(`🎯 Processing webhook event: ${event.type}`);
+    
     switch (event.type) {
       case 'checkout.session.completed':
+        console.log('💳 Processing checkout session completed');
         await handleCheckoutSessionCompleted(
           event.data.object as Stripe.Checkout.Session
         );
@@ -91,11 +112,21 @@ export async function POST(request: NextRequest) {
 async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ) {
+  console.log('📦 Checkout session details:', {
+    sessionId: session.id,
+    userId: session.metadata?.userId,
+    tier: session.metadata?.tier,
+    creditPack: session.metadata?.creditPack,
+    type: session.metadata?.type,
+    paymentStatus: session.payment_status,
+    metadata: session.metadata,
+  });
+
   const userId = session.metadata?.userId;
   const type = session.metadata?.type;
 
   if (!userId) {
-    console.error('Missing userId in checkout session:', session.id);
+    console.error('❌ Missing userId in checkout session:', session.id);
     return;
   }
 
@@ -501,9 +532,13 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
 
     // Create all credits
     if (creditsToCreate.length > 0) {
+      console.log(`💳 Creating ${creditsToCreate.length} universal credits for user ${userId}`);
       await prisma.jobPostingCredit.createMany({
         data: creditsToCreate,
       });
+      console.log(`✅ Successfully created ${creditsToCreate.length} credits`);
+    } else {
+      console.log('⚠️ No credits to create');
     }
 
     // Total credits already calculated above
