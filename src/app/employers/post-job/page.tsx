@@ -937,31 +937,25 @@ Contact: ${userEmail}`);
             {/* Action Buttons */}
             <div className="mt-8 pt-6 border-t space-y-3">
               <button
-                onClick={credits?.total === 0 ? () => setShowCreditsModal(true) : handlePublish}
+                onClick={handlePublish}
                 disabled={!isReady || isPublishing}
                 title={!isReady ? `Missing: ${[
                   !jobData.title && 'Job Title',
                   !jobData.location && 'Location', 
                   !jobData.salary && 'Salary',
                   !jobData.contactMethod && 'Email for Applications'
-                ].filter(Boolean).join(', ')}` : credits?.total === 0 ? 'Purchase credits to post job' : 'Click to publish your job'}
+                ].filter(Boolean).join(', ')}` : 'Click to publish your job'}
                 className={`w-full flex items-center justify-center space-x-2 px-6 py-4 rounded-lg font-medium text-lg transition-all ${
                   isReady && !isPublishing
-                    ? credits?.total === 0
-                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
-                      : 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
+                    ? 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg hover:shadow-xl transform hover:scale-[1.02]'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
                 {isPublishing ? (
                   <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
-                ) : credits?.total === 0 ? (
-                  <>
-                    <span>💎 Purchase Credits to Post Job</span>
-                  </>
                 ) : (
                   <>
-                    <span>🚀 Post Job - 1 Credit ({credits?.total || 0} available)</span>
+                    <span>🚀 Publish Job{credits?.total === 0 ? ' - Need Credits' : ` - 1 Credit (${credits?.total || 0} available)`}</span>
                   </>
                 )}
               </button>

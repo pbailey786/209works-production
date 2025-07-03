@@ -221,19 +221,6 @@ export default function JobDetailsPage() {
                 </div>
               )}
 
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">How to Apply</h4>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-green-800 font-medium mb-2">
-                    📝 Apply through 209jobs online application system
-                  </p>
-                  <p className="text-green-700 text-sm">
-                    ✓ Applications tracked in employer dashboard<br/>
-                    ✓ Email notifications sent to: {job.contactEmail || job.contactPhone || job.contactMethod || 'employer@company.com'}<br/>
-                    ✓ Easy to import to existing hiring systems
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
 

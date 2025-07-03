@@ -84,10 +84,15 @@ Company info:
 ${user?.companyName ? `Name: ${user.companyName}` : ''}
 ${user?.businessLocation ? `Location: ${user.businessLocation}` : ''}
 
+IMPORTANT: ${user?.companyName ? `You MUST use "${user.companyName}" as the company name throughout the description. Do NOT make up a different company name.` : 'Do not make up a specific company name, use generic terms like "our company" or "our team".'}
+
 Write a professional job description following the new format:
 
 ABOUT THIS ROLE (3-4 sentences):
-Example: "We're a growing plumbing company serving residential and commercial clients throughout Stockton and the Central Valley. As our Plumber, you'll diagnose and repair plumbing systems, install new fixtures, and ensure customer satisfaction on every call. You'll work with modern tools and equipment while building lasting relationships with clients who depend on our expertise. This role offers the opportunity to grow your skills while making a real impact in our community."
+${user?.companyName 
+  ? `Start with "Join ${user.companyName} as a [job title]..." and describe what the company does and the role.`
+  : `Start with "Join our team as a [job title]..." and describe what the company does and the role.`
+}
 
 WHAT YOU'LL DO (5-6 specific daily tasks):
 • [Specific task with tools/equipment mentioned]
