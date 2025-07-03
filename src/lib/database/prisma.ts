@@ -10,7 +10,7 @@ export const prisma =
   });
 
 // Simple connection without complex middleware
-if (!globalForPrisma.prisma) {
+if (!globalForPrisma.prisma && process.env.NEXT_PHASE !== 'phase-production-build') {
   console.log('🔌 Connecting to database...');
 }
 

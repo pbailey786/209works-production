@@ -8,11 +8,12 @@ import {
 } from './email/security';
 import { SecurityLogger } from './security/security-monitor';
 
-// Validate environment variables (but allow build-time flexibility)
-if (
-  process.env.NODE_ENV !== 'development' ||
-  process.env.NEXT_PHASE !== 'phase-production-build'
-) {
+// Only validate environment variables at runtime, not during build
+const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || 
+                   process.env.NODE_ENV === 'test' ||
+                   typeof window === 'undefined' && !process.env.RESEND_API_KEY;
+
+if (!isBuildTime) {
   if (!process.env.RESEND_API_KEY) {
     console.warn('RESEND_API_KEY environment variable is not set');
   }

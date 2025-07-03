@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,9 +50,15 @@ interface ChatConversation {
   createdAt: string;
 }
 
-export default function ChatPage() {
-  const { user } = useUser();
+// Component that handles search params
+function ChatWithSearchParams() {
   const searchParams = useSearchParams();
+  return <ChatPageContent searchParams={searchParams} />;
+}
+
+function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
+  const { user } = useUser();
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -69,11 +75,14 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Handle initial query from URL
+  // Handle initial query from URL (with SSR safety)
   useEffect(() => {
-    const query = searchParams.get('q');
-    if (query && messages.length === 1) {
-      handleSendMessage(query);
+    // Only run on client side and when we have the welcome message
+    if (typeof window !== 'undefined' && messages.length === 1) {
+      const query = searchParams.get('q');
+      if (query) {
+        handleSendMessage(query);
+      }
     }
   }, [searchParams, messages.length]);
 
@@ -575,5 +584,21 @@ export default function ChatPage() {
         />
       )}
     </div>
+  );
+}
+
+// Main export with Suspense wrapper for SSR safety
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading chat...</p>
+        </div>
+      </div>
+    }>
+      <ChatWithSearchParams />
+    </Suspense>
   );
 }
