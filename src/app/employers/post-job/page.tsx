@@ -99,16 +99,19 @@ export default function PostJobPage() {
         fetch('/api/job-posting/credits').then(res => res.ok ? res.json() : { credits: { universal: 0, total: 0 } })
       ])
       .then(([logoData, profileData, creditsData]) => {
+        console.log('🏢 Company profile data:', profileData.user?.companyName);
         if (logoData.logo) {
           setCompanyLogo(logoData.logo);
         }
         if (profileData.user?.companyName) {
+          console.log('✅ Setting company name to:', profileData.user.companyName);
           setJobData(prev => ({ 
             ...prev, 
             company: profileData.user.companyName,
             companyLogo: logoData.logo || null
           }));
         } else {
+          console.log('❌ No company name found in profile data');
           // Ensure company field is set even if no profile data
           setJobData(prev => ({ 
             ...prev, 
@@ -165,6 +168,7 @@ export default function PostJobPage() {
     setCurrentState('generating');
 
     try {
+      console.log('🎯 Sending job creation request with company:', jobData.company);
       const response = await fetch('/api/employers/magic-job-creation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -259,6 +263,15 @@ export default function PostJobPage() {
 
   // Publish job
   const handlePublish = async () => {
+    console.log('🚀 HandlePublish called!');
+    console.log('📋 Form data:', { 
+      title: jobData.title, 
+      location: jobData.location, 
+      salary: jobData.salary, 
+      contactMethod: jobData.contactMethod 
+    });
+    console.log('💎 Credits:', credits);
+    
     if (!jobData.title || !jobData.location || !jobData.salary || !jobData.contactMethod) {
       alert('Please fill in job title, location, salary, and contact method');
       return;
@@ -266,6 +279,7 @@ export default function PostJobPage() {
 
     // Check credits before proceeding
     if (!credits || credits.total === 0) {
+      console.log('❌ No credits, showing modal');
       setShowCreditsModal(true);
       return;
     }
@@ -937,7 +951,16 @@ Contact: ${userEmail}`);
             {/* Action Buttons */}
             <div className="mt-8 pt-6 border-t space-y-3">
               <button
-                onClick={handlePublish}
+                onClick={() => {
+                  console.log('🖱️ Publish button clicked!');
+                  console.log('✅ isReady:', isReady);
+                  console.log('⏳ isPublishing:', isPublishing);
+                  if (isReady && !isPublishing) {
+                    handlePublish();
+                  } else {
+                    console.log('❌ Button disabled - missing fields or publishing');
+                  }
+                }}
                 disabled={!isReady || isPublishing}
                 title={!isReady ? `Missing: ${[
                   !jobData.title && 'Job Title',
