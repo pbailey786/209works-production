@@ -99,19 +99,16 @@ export default function PostJobPage() {
         fetch('/api/job-posting/credits').then(res => res.ok ? res.json() : { credits: { universal: 0, total: 0 } })
       ])
       .then(([logoData, profileData, creditsData]) => {
-        console.log('🏢 Company profile data:', profileData.user?.companyName);
         if (logoData.logo) {
           setCompanyLogo(logoData.logo);
         }
         if (profileData.user?.companyName) {
-          console.log('✅ Setting company name to:', profileData.user.companyName);
           setJobData(prev => ({ 
             ...prev, 
             company: profileData.user.companyName,
             companyLogo: logoData.logo || null
           }));
         } else {
-          console.log('❌ No company name found in profile data');
           // Ensure company field is set even if no profile data
           setJobData(prev => ({ 
             ...prev, 
@@ -133,6 +130,13 @@ export default function PostJobPage() {
   
   // Check if form is ready to publish
   const isReady = jobData.title && jobData.location && jobData.salary && jobData.contactMethod;
+  
+  // Add loading state to prevent hydration mismatches
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Helper functions for collapsible content
   const isContentLong = (text: string, limit = 300) => text.length > limit;
@@ -141,8 +145,8 @@ export default function PostJobPage() {
     return text.substring(0, limit) + '...';
   };
 
-  // Authentication check
-  if (!isLoaded) {
+  // Authentication check with hydration protection
+  if (!isLoaded || !isClient) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
@@ -168,7 +172,6 @@ export default function PostJobPage() {
     setCurrentState('generating');
 
     try {
-      console.log('🎯 Sending job creation request with company:', jobData.company);
       const response = await fetch('/api/employers/magic-job-creation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -210,7 +213,12 @@ export default function PostJobPage() {
           setOnetData(data.onetData);
         }
         
-        setJobData(data.jobData);
+        // Ensure company name is preserved from profile
+        const updatedJobData = {
+          ...data.jobData,
+          company: jobData.company || data.jobData.company || 'Our Company'
+        };
+        setJobData(updatedJobData);
         setCurrentState('editing');
       } else {
         const error = await response.json();
@@ -263,15 +271,6 @@ export default function PostJobPage() {
 
   // Publish job
   const handlePublish = async () => {
-    console.log('🚀 HandlePublish called!');
-    console.log('📋 Form data:', { 
-      title: jobData.title, 
-      location: jobData.location, 
-      salary: jobData.salary, 
-      contactMethod: jobData.contactMethod 
-    });
-    console.log('💎 Credits:', credits);
-    
     if (!jobData.title || !jobData.location || !jobData.salary || !jobData.contactMethod) {
       alert('Please fill in job title, location, salary, and contact method');
       return;
@@ -279,7 +278,6 @@ export default function PostJobPage() {
 
     // Check credits before proceeding
     if (!credits || credits.total === 0) {
-      console.log('❌ No credits, showing modal');
       setShowCreditsModal(true);
       return;
     }
@@ -948,19 +946,33 @@ Contact: ${userEmail}`);
               </div>
             </div>
 
+            {/* Credits Status */}
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-blue-900">💎 Job Credits</h4>
+                  <p className="text-sm text-blue-700">
+                    {credits?.total || 0} credits available
+                    {credits?.total === 0 && (
+                      <span className="text-red-600 font-medium"> - Purchase needed to publish</span>
+                    )}
+                  </p>
+                </div>
+                {credits?.total === 0 && (
+                  <button
+                    onClick={() => setShowCreditsModal(true)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  >
+                    Buy Credits
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="mt-8 pt-6 border-t space-y-3">
               <button
-                onClick={() => {
-                  console.log('🖱️ Publish button clicked!');
-                  console.log('✅ isReady:', isReady);
-                  console.log('⏳ isPublishing:', isPublishing);
-                  if (isReady && !isPublishing) {
-                    handlePublish();
-                  } else {
-                    console.log('❌ Button disabled - missing fields or publishing');
-                  }
-                }}
+                onClick={handlePublish}
                 disabled={!isReady || isPublishing}
                 title={!isReady ? `Missing: ${[
                   !jobData.title && 'Job Title',
@@ -1202,10 +1214,16 @@ Contact: ${userEmail}`);
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">💎</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Need Credits to Post Jobs</h3>
-              <p className="text-gray-600 mb-6">
-                You need at least 1 credit to post a job. Credits are used to maintain platform quality and support our Central Valley job seekers.
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Ready to Publish? Get Credits!</h3>
+              <p className="text-gray-600 mb-4">
+                Your job post is ready! You just need credits to publish it live to thousands of Central Valley job seekers.
               </p>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6">
+                <p className="text-green-800 text-sm">
+                  ✅ <strong>Your job is saved</strong> - it won't be lost!<br/>
+                  💎 <strong>Just need 1 credit</strong> to make it live
+                </p>
+              </div>
               
               <div className="space-y-3">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
