@@ -20,11 +20,11 @@ export default function HomeSimple() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const query = searchQuery.trim() || 'jobs in the 209 area';
-    router.push(`/jobs?q=${encodeURIComponent(query)}`);
+    router.push(`/chat?q=${encodeURIComponent(query)}`);
   };
 
   const handleQuickSearch = (suggestion: string) => {
-    router.push(`/jobs?q=${encodeURIComponent(suggestion)}`);
+    router.push(`/chat?q=${encodeURIComponent(suggestion)}`);
   };
 
   return (
@@ -106,7 +106,7 @@ export default function HomeSimple() {
 
             {/* Apple-style CTA Button */}
             <Link
-              href="/jobs"
+              href="/chat"
               className="group inline-flex items-center gap-4 rounded-3xl bg-gradient-to-r from-blue-600 to-blue-700 px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-300 hover:from-blue-700 hover:to-blue-800 hover:shadow-3xl hover:scale-105"
             >
               <span>Explore Jobs</span>
@@ -199,7 +199,7 @@ export default function HomeSimple() {
               <ul className="space-y-3 text-gray-300">
                 <li>
                   <Link 
-                    href="/jobs" 
+                    href="/chat" 
                     className="group inline-flex items-center rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:text-white"
                   >
                     Browse Jobs

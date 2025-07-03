@@ -235,7 +235,6 @@ class ONetService {
       'farmhand': '45-2092.00',
       'picker': '45-2092.00',
       'harvester': '45-2092.00',
-      'walnut harvester': '45-2092.00',
       'fruit picker': '45-2092.00',
       'farm laborer': '45-2092.00',
       'ranch hand': '45-2093.00',

@@ -4,7 +4,8 @@
  * Uses O*NET API for legitimate job market insights when no results found.
  */
 
-import { enhanceJobSearchWithONetData } from '@/lib/services/onet';
+// Temporarily disabled O*NET integration to fix 502 errors
+// import { enhanceJobSearchWithONetData } from '@/lib/services/onet';
 
 interface StrictJobResponseParams {
   userMessage: string;
@@ -43,24 +44,24 @@ async function generateNoJobsResponseWithONet(
   let response = `No ${searchTerms} jobs in our current listings.`;
 
   try {
-    // Get O*NET insights for this job type
-    const onetData = await enhanceJobSearchWithONetData(searchTerms, []);
+    // Temporarily using basic suggestions instead of O*NET to fix 502 errors
+    // TODO: Re-enable O*NET integration once import issues are resolved
     
-    if (onetData.careerGuidance) {
-      response += ` ${onetData.careerGuidance}`;
-    } else if (onetData.marketInsight) {
-      response += ` ${onetData.marketInsight}`;
-    } else if (totalJobsInDatabase > 0) {
-      // Fallback to generic suggestions
+    if (totalJobsInDatabase > 0) {
+      // Provide helpful suggestions based on common Central Valley jobs
       const suggestions = [
         "Try searching for warehouse, retail, or customer service roles.",
         "Check out healthcare, logistics, or administrative positions.", 
         "Consider entry-level opportunities in different fields.",
+        "Look for manufacturing, food service, or general labor positions.",
+        "Try broadening your search to include related job types.",
       ];
       response += ` ${suggestions[Math.floor(Math.random() * suggestions.length)]}`;
+    } else {
+      response += " Check back soon as we add new jobs regularly.";
     }
   } catch (error) {
-    console.error('Error getting O*NET data:', error);
+    console.error('Error in response generation:', error);
     // Fallback to basic suggestions
     if (totalJobsInDatabase > 0) {
       response += " Try different keywords or check similar job types.";
@@ -160,7 +161,7 @@ function extractSearchTerms(messageWords: string): string {
     { pattern: /clean|custodial|janitorial/, term: 'cleaning' },
     { pattern: /construction|trade|maintenance/, term: 'trades' },
     { pattern: /manager|management|supervisor/, term: 'management' },
-    { pattern: /walnut|harvest|farm|agriculture/, term: 'agricultural' },
+    { pattern: /harvest|farm|agriculture/, term: 'agricultural' },
   ];
 
   for (const { pattern, term } of rolePatterns) {

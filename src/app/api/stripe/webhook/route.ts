@@ -481,35 +481,18 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
       }
     });
 
-    // Create individual credits for the user
+    // Create individual credits for the user (unified system - all credits are universal)
     const creditsToCreate = [];
 
-    // Add job posting credits
-    for (let i = 0; i < purchase.jobPostCredits; i++) {
-      creditsToCreate.push({
-        userId,
-        purchaseId: purchase.id,
-        type: 'job_post',
-        expiresAt: purchase.expiresAt,
-      });
-    }
+    // Calculate total credits from all sources (unified system)
+    const totalCredits = (purchase.jobPostCredits || 0) + (purchase.featuredPostCredits || 0) + (purchase.socialGraphicCredits || 0);
 
-    // Add featured post credits
-    for (let i = 0; i < purchase.featuredPostCredits; i++) {
+    // Add universal credits (can be used for any feature)
+    for (let i = 0; i < totalCredits; i++) {
       creditsToCreate.push({
         userId,
         purchaseId: purchase.id,
-        type: 'featured_post',
-        expiresAt: purchase.expiresAt,
-      });
-    }
-
-    // Add social graphic credits
-    for (let i = 0; i < purchase.socialGraphicCredits; i++) {
-      creditsToCreate.push({
-        userId,
-        purchaseId: purchase.id,
-        type: 'social_graphic',
+        type: 'universal', // Unified credit type - can be used for job posts, featured posts, or social graphics
         expiresAt: purchase.expiresAt,
       });
     }
@@ -523,8 +506,7 @@ async function handleJobPostingPurchase(session: Stripe.Checkout.Session) {
       });
     }
 
-    // Calculate total credits
-    const totalCredits = (purchase.jobPostCredits || 0) + (purchase.featuredPostCredits || 0) + (purchase.socialGraphicCredits || 0);
+    // Total credits already calculated above
 
     // Send credit confirmation email
     try {

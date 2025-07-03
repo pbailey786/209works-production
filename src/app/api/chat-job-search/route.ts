@@ -677,21 +677,29 @@ export const POST = withAISecurity(
       });
 
       // Use strict response system that NEVER fabricates jobs
-      conversationalResponse = await generateStrictJobResponse({
-        userMessage,
-        jobs,
-        conversationHistory,
-        userContext,
-        totalJobsInDatabase,
-      });
+      try {
+        conversationalResponse = await generateStrictJobResponse({
+          userMessage,
+          jobs,
+          conversationHistory,
+          userContext,
+          totalJobsInDatabase,
+        });
 
-      // Validate response doesn't contain fabricated information
-      const isResponseAccurate = validateResponseAccuracy(conversationalResponse, jobs);
-      if (!isResponseAccurate) {
-        console.warn('Response validation failed, using fallback');
+        // Validate response doesn't contain fabricated information
+        const isResponseAccurate = validateResponseAccuracy(conversationalResponse, jobs);
+        if (!isResponseAccurate) {
+          console.warn('Response validation failed, using fallback');
+          conversationalResponse = jobs.length > 0 
+            ? `Found ${jobs.length} job${jobs.length !== 1 ? 's' : ''} matching your search.`
+            : "No jobs found matching your search. Try different keywords or check back later.";
+        }
+      } catch (strictResponseError) {
+        console.error('Strict response system failed:', strictResponseError);
+        // Fallback to basic response without AI fabrication
         conversationalResponse = jobs.length > 0 
-          ? `Found ${jobs.length} job${jobs.length !== 1 ? 's' : ''} matching your search.`
-          : "No jobs found matching your search. Try different keywords or check back later.";
+          ? `Found ${jobs.length} job${jobs.length !== 1 ? 's' : ''} in the 209 area.`
+          : "No jobs found matching your search. Try different keywords or check back soon.";
       }
 
       // Generate strict follow-up questions based on actual results

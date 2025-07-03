@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   SparklesIcon, 
@@ -51,6 +52,7 @@ interface ChatConversation {
 
 export default function ChatPage() {
   const { user } = useUser();
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +68,14 @@ export default function ChatPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Handle initial query from URL
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (query && messages.length === 1) {
+      handleSendMessage(query);
+    }
+  }, [searchParams, messages.length]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -115,11 +125,7 @@ export default function ChatPage() {
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Hi there! I'm your AI job search assistant for the 209 area.
-
-I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy, Manteca, and throughout the Central Valley.
-
-**How can I help you today?**`,
+          content: `Hey! Tell me what's going on - looking for work? 💼`,
           timestamp: new Date(),
         },
       ]);
@@ -163,6 +169,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
             content: m.content,
           })),
           sessionId: currentSessionId,
+          userContext: null, // Will be enhanced later with context extraction
         }),
       });
 
@@ -222,11 +229,7 @@ I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy,
       {
         id: 'welcome',
         role: 'assistant',
-        content: `Hi there! I'm your AI job search assistant for the 209 area.
-
-I'm here to help you find amazing job opportunities in Stockton, Modesto, Tracy, Manteca, and throughout the Central Valley.
-
-**How can I help you today?**`,
+        content: `Hey! Tell me what's going on - looking for work? 💼`,
         timestamp: new Date(),
       },
     ]);
