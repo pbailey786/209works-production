@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
-import authOptions from '@/app/api/auth/authOptions';
+import { currentUser } from '@clerk/nextjs/server';
 import { stripe } from '@/lib/stripe';
 import { JOB_POSTING_CONFIG, SUBSCRIPTION_TIERS_CONFIG } from '@/lib/stripe';
 import { prisma } from '@/lib/database/prisma';
 import { z } from 'zod';
-// import type { Session } from 'next-auth'; // TODO: Replace with Clerk
 
 const checkoutSchema = z.object({
   tier: z.enum(['starter', 'standard', 'pro']).optional(),
@@ -49,43 +47,28 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   console.log('🛒 Job posting checkout API called - START');
 
-  // Test imports first
-  try {
-    console.log('🔧 Testing imports...');
-    console.log('🔧 authOptions:', typeof authOptions);
-    console.log('🔧 stripe:', typeof stripe);
-    console.log('🔧 JOB_POSTING_CONFIG:', typeof JOB_POSTING_CONFIG);
-    console.log('🔧 prisma:', typeof prisma);
-    console.log('🔧 z:', typeof z);
-  } catch (importError) {
-    console.error('❌ Import error:', importError);
-    return NextResponse.json(
-      { error: 'Import error', details: importError instanceof Error ? importError.message : 'Unknown' },
-      { status: 500 }
-    );
-  }
-
   try {
     console.log('🛒 Job posting checkout API called - INSIDE TRY');
     console.log('🔧 Environment check - STRIPE_PRICE_STARTER:', !!process.env.STRIPE_PRICE_STARTER);
     console.log('🔧 JOB_POSTING_CONFIG loaded:', !!JOB_POSTING_CONFIG);
 
-    // Check authentication
-    const session = { user: { role: "admin", email: "admin@209.works", name: "Admin User", id: "admin-user-id" } }; // Mock session
-    console.log('🔐 Session check:', !!session, session?.user?.email);
-
-    if (!session?.user?.email) {
-      console.log('❌ No session or email found');
+    // Check authentication with Clerk
+    const clerkUser = await currentUser();
+    if (!clerkUser?.emailAddresses[0]?.emailAddress) {
+      console.log('❌ No Clerk user or email found');
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
 
+    console.log('🔐 Clerk user authenticated:', clerkUser.emailAddresses[0].emailAddress);
+
     // Get user from database
-    console.log('🔍 Looking up user:', session.user.email);
+    const userEmail = clerkUser.emailAddresses[0].emailAddress;
+    console.log('🔍 Looking up user:', userEmail);
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: userEmail },
       select: { id: true, email: true, name: true, stripeCustomerId: true, role: true },
     });
     console.log('👤 User found:', !!user, user?.role);
@@ -260,9 +243,9 @@ export async function POST(req: NextRequest) {
         mode: checkoutMode, // Always 'payment' for one-time job posting purchases
         allow_promotion_codes: true,
         success_url: validatedData.successUrl ||
-          `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL || 'https://209.works'}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: validatedData.cancelUrl ||
-          `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_cancelled=true`,
+          `${process.env.NEXT_PUBLIC_BASE_URL || 'https://209.works'}/employers/dashboard?purchase_cancelled=true`,
         metadata: {
           userId: user.id,
           tier: validatedData.tier?.toUpperCase() || '',
@@ -373,9 +356,9 @@ export async function POST(req: NextRequest) {
           mode: checkoutMode,
           allow_promotion_codes: true,
           success_url: validatedData.successUrl ||
-            `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL || 'https://209.works'}/employers/dashboard?purchase_success=true&session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: validatedData.cancelUrl ||
-            `${process.env.NEXTAUTH_URL}/employers/dashboard?purchase_cancelled=true`,
+            `${process.env.NEXT_PUBLIC_BASE_URL || 'https://209.works'}/employers/dashboard?purchase_cancelled=true`,
           metadata: {
             userId: user.id,
             tier: validatedData.tier?.toUpperCase() || '',

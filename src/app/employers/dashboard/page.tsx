@@ -229,14 +229,14 @@ export default function SimpleEmployerDashboard() {
               <div className="text-sm text-gray-600 mb-2">Job Credits</div>
               {stats.credits === 0 ? (
                 <Link
-                  href="/employers/credits/checkout"
+                  href="/employers/credits/checkout?package=standard"
                   className="inline-flex items-center px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs hover:bg-purple-200 transition-colors"
                 >
                   💎 Buy Credits
                 </Link>
               ) : (
                 <Link
-                  href="/employers/credits/checkout"
+                  href="/employers/credits/checkout?package=standard"
                   className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs hover:bg-blue-200 transition-colors"
                 >
                   📊 Manage Credits

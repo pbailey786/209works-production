@@ -27,35 +27,27 @@ const CREDIT_PACKAGES: Record<string, CreditPackage> = {
   starter: {
     id: 'starter',
     name: 'Starter Pack',
-    jobCredits: 5,
-    featuredCredits: 1,
-    price: 2500,
+    jobCredits: 3,
+    featuredCredits: 0,
+    price: 8900,
     description: 'Perfect for small businesses',
   },
-  professional: {
-    id: 'professional',
-    name: 'Professional Pack',
-    jobCredits: 15,
-    featuredCredits: 3,
-    price: 5000,
+  standard: {
+    id: 'standard',
+    name: 'Standard Pack',
+    jobCredits: 6,
+    featuredCredits: 0,
+    price: 19900,
     description: 'Great for growing companies',
     popular: true,
   },
-  enterprise: {
-    id: 'enterprise',
-    name: 'Enterprise Pack',
-    jobCredits: 50,
-    featuredCredits: 10,
-    price: 15000,
-    description: 'For large organizations',
-  },
-  bulk: {
-    id: 'bulk',
-    name: 'Bulk Credits',
-    jobCredits: 100,
-    featuredCredits: 20,
-    price: 25000,
-    description: 'Maximum value pack',
+  pro: {
+    id: 'pro',
+    name: 'Pro Pack',
+    jobCredits: 12,
+    featuredCredits: 0,
+    price: 35000,
+    description: 'For larger organizations',
   },
 };
 
@@ -90,24 +82,16 @@ function CreditsCheckoutContent() {
       const response = await fetch('/api/employers/subscription/status');
       if (response.ok) {
         const data = await response.json();
-        const hasSubscription = data.hasActiveSubscription || false;
-        setHasActiveSubscription(hasSubscription);
-
-        // Redirect if no active subscription
-        if (!hasSubscription) {
-          router.push('/employers/pricing?message=subscription_required_for_credits');
-          return;
-        }
+        // For credit-based billing, always allow purchases
+        setHasActiveSubscription(true);
       } else {
-        setHasActiveSubscription(false);
-        router.push('/employers/pricing?message=subscription_required_for_credits');
-        return;
+        // If API fails, still allow purchases - we don't require subscriptions
+        setHasActiveSubscription(true);
       }
     } catch (error) {
       console.error('Error checking subscription status:', error);
-      setHasActiveSubscription(false);
-      router.push('/employers/pricing?message=subscription_required_for_credits');
-      return;
+      // If API fails, still allow purchases - we don't require subscriptions
+      setHasActiveSubscription(true);
     } finally {
       setSubscriptionLoading(false);
     }
@@ -116,23 +100,16 @@ function CreditsCheckoutContent() {
   const handlePurchase = async () => {
     if (!selectedPackage) return;
 
-    // Check if user has active subscription
-    if (!hasActiveSubscription) {
-      alert('You need an active subscription to purchase additional credits. Please upgrade your subscription first.');
-      router.push('/employers/pricing');
-      return;
-    }
-
     setLoading(true);
     try {
       // Create Stripe Checkout session for credit purchase
-      const response = await fetch('/api/job-posting/buy-credits', {
+      const response = await fetch('/api/job-posting/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          creditPack: selectedPackage.id,
+          tier: selectedPackage.id,
           successUrl: `${window.location.origin}/employers/dashboard?credit_purchase_success=true`,
           cancelUrl: `${window.location.origin}/employers/credits/checkout?cancelled=true`,
         }),
@@ -324,32 +301,11 @@ function CreditsCheckoutContent() {
             </div>
           </div>
 
-          {/* Subscription Warning */}
-          {!subscriptionLoading && !hasActiveSubscription && (
-            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
-              <div className="flex items-center">
-                <div className="mr-3 rounded-full bg-red-100 p-1">
-                  <svg className="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-red-800">Subscription Required</h3>
-                  <p className="text-sm text-red-700 mt-1">
-                    You need an active subscription to purchase additional credits.
-                    <Link href="/employers/pricing" className="underline hover:text-red-800 ml-1">
-                      Upgrade your subscription first →
-                    </Link>
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Purchase Button */}
           <button
             onClick={handlePurchase}
-            disabled={loading || !hasActiveSubscription}
+            disabled={loading}
             className="w-full rounded-lg bg-[#2d4a3e] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#1d3a2e] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
@@ -357,8 +313,6 @@ function CreditsCheckoutContent() {
                 <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                 Processing...
               </span>
-            ) : !hasActiveSubscription ? (
-              'Subscription Required'
             ) : (
               `Complete Purchase - $${(totalPrice / 100).toFixed(2)}`
             )}
