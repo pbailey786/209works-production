@@ -24,7 +24,7 @@ import {
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 // import JobCard from '@/components/JobCard';
-// import JobApplicationModal from '@/components/JobApplicationModal';
+import JobApplicationModal from '@/components/JobApplicationModal';
 
 interface JobDetailClientProps {
   job: Job;
@@ -575,23 +575,15 @@ export default function JobDetailClient({
         </div>
       )}
 
-      {/* Job Application Modal - Simplified for now */}
-      {applicationModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold mb-4">Apply for {job.title}</h3>
-            <p className="text-gray-600 mb-4">
-              Application system coming soon! Please contact the employer directly for now.
-            </p>
-            <button
-              onClick={() => setApplicationModalOpen(false)}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Job Application Modal */}
+      <JobApplicationModal
+        isOpen={applicationModalOpen}
+        onClose={() => setApplicationModalOpen(false)}
+        jobId={job.id}
+        jobTitle={job.title}
+        company={job.company}
+        isAuthenticated={isAuthenticated}
+      />
 
       {/* Report Modal */}
       {reportModalOpen && (
