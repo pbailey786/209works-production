@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
   results.analysis = {
     totalQueries: Object.keys(results.queries).length,
     failedQueries: failedQueries.length,
-    likelyIssue: failedQueries.length > 0 ? failedQueries[0][1].error : 'None detected',
+    likelyIssue: failedQueries.length > 0 ? (failedQueries[0][1] as any).error : 'None detected',
     recommendations: [],
   };
 
