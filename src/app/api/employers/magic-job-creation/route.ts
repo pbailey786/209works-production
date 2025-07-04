@@ -4,18 +4,25 @@ import { openai } from '@/lib/ai';
 import { prisma } from '@/lib/database/prisma';
 import { jobEnhancer } from '@/lib/onet/job-enhancer';
 
-export const maxDuration = 15; // Reduced timeout - fail fast to fallback
+export const maxDuration = 30; // Increased timeout for AI generation
 
 export async function POST(req: NextRequest) {
+  console.log('🚀 Magic job creation API called');
   try {
+    console.log('🔐 Getting current user...');
     const clerkUser = await currentUser();
     if (!clerkUser?.emailAddresses[0]?.emailAddress) {
+      console.log('❌ No authenticated user found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    console.log('✅ User authenticated:', clerkUser.emailAddresses[0].emailAddress);
 
+    console.log('📝 Parsing request body...');
     const { prompt } = await req.json();
+    console.log('✅ Request parsed, prompt length:', prompt?.length || 0);
     
     // Get employer profile data for smart defaults
+    console.log('🗄️ Querying user profile...');
     const userEmail = clerkUser.emailAddresses[0].emailAddress;
     const user = await prisma.user.findUnique({
       where: { email: userEmail },
@@ -27,6 +34,10 @@ export async function POST(req: NextRequest) {
         industry: true
       }
     });
+    console.log('✅ User profile found:', { 
+      companyName: user?.companyName, 
+      location: user?.businessLocation 
+    });
     
     if (!prompt?.trim()) {
       return NextResponse.json({ 
@@ -34,99 +45,16 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Enhanced AI prompt for readable yet professional job descriptions 
-    const systemPrompt = `You're an expert in writing job descriptions that balance professionalism with readability - more detailed than basic ads but more scannable than verbose corporate postings.
+    // Simplified AI prompt to avoid memory issues
+    const systemPrompt = `Create a professional job description in JSON format. Extract the exact job title, location, and salary from the user's prompt. Generate realistic responsibilities, requirements, and benefits for the Central Valley region.
 
-Create a well-structured job description using this format:
-
-ABOUT THIS ROLE (3-4 sentences):
-- What the company does and why this role matters
-- 2-3 key daily responsibilities using action verbs
-- What type of person thrives in this position
-
-WHAT YOU'LL DO (5-6 specific bullet points):
-• [Specific daily task with tools/systems mentioned]
-• [Customer/client interaction responsibilities]
-• [Technical duties or equipment operated]
-• [Quality, safety, or compliance requirements]
-• [Team collaboration or communication tasks]
-• [Problem-solving or troubleshooting scenarios]
-
-WHAT WE'RE LOOKING FOR (5-7 bullet points total):
-Must-Have:
-• [Required experience level and key skills]
-• [Required certifications, licenses, or education]
-• [Essential technical abilities or software]
-• [Physical requirements if applicable]
-Preferred:
-• [Preferred experience that sets candidates apart]
-• [Additional skills or certifications valued]
-• [Nice-to-have qualifications]
-
-WHAT WE OFFER (4-5 compelling benefits):
-• Competitive compensation with specifics
-• Professional development opportunities
-• Work-life balance features
-• Health and wellness benefits
-• Company culture highlights
-
-CRITICAL RULES:
-- Write at PROFESSIONAL level but keep scannable
-- Use INDUSTRY-SPECIFIC terminology appropriately  
-- Be SPECIFIC about daily tasks, not vague
-- Extract the EXACT job title from the prompt
-- Focus on what they'll actually DO each day
-- Balance detail with readability for job seekers`;
+Return JSON with: title, location, salary, description, responsibilities, requirements, niceToHave, contactMethod, schedule, benefitOptions (array with icon, title, description, key)`;
 
     const userPrompt = `Job posting: "${prompt.trim()}"
+Company: ${user?.companyName || 'Our company'}
+Location: ${user?.businessLocation || 'Central Valley, CA'}
 
-Company info:
-${user?.companyName ? `Name: ${user.companyName}` : ''}
-${user?.businessLocation ? `Location: ${user.businessLocation}` : ''}
-
-IMPORTANT: ${user?.companyName ? `You MUST use "${user.companyName}" as the company name throughout the description. Do NOT make up a different company name.` : 'Do not make up a specific company name, use generic terms like "our company" or "our team".'}
-
-Write a professional job description following the new format:
-
-ABOUT THIS ROLE (3-4 sentences):
-${user?.companyName 
-  ? `Start with "Join ${user.companyName} as a [job title]..." and describe what the company does and the role.`
-  : `Start with "Join our team as a [job title]..." and describe what the company does and the role.`
-}
-
-WHAT YOU'LL DO (5-6 specific daily tasks):
-• [Specific task with tools/equipment mentioned]
-• [Customer interaction or service delivery]
-• [Technical work with systems/software] 
-• [Quality or safety responsibilities]
-• [Team collaboration or communication]
-• [Problem-solving or troubleshooting]
-
-WHAT WE'RE LOOKING FOR (split required vs preferred):
-Required: 3-4 must-haves
-Preferred: 2-3 nice-to-haves
-
-WHAT WE OFFER (4-5 compelling benefits):
-Always include compensation first, then growth, culture, benefits
-
-Return JSON:
-{
-  "title": "[exact title from prompt]",
-  "location": "[City, CA]", 
-  "salary": "[exact pay from prompt]",
-  "description": "[3-4 sentence professional role summary]",
-  "responsibilities": "[5-6 specific daily tasks with • bullets]",
-  "requirements": "[3-4 required qualifications with • bullets]", 
-  "niceToHave": "[2-3 preferred qualifications with • bullets]",
-  "contactMethod": "[email/phone from prompt]",
-  "schedule": "[schedule from prompt]",
-  "benefitOptions": [
-    {"icon": "💰", "title": "Competitive Pay", "description": "[Detailed compensation info]", "key": "benefit_1"},
-    {"icon": "📈", "title": "Career Growth", "description": "[Professional development opportunities]", "key": "benefit_2"},
-    {"icon": "🏥", "title": "Benefits Package", "description": "[Health, PTO, retirement if mentioned]", "key": "benefit_3"},
-    {"icon": "🎯", "title": "Great Culture", "description": "[Work environment and team culture]", "key": "benefit_4"}
-  ]
-}`;
+Create a professional job description with realistic details for this role.`;
 
     // Extract basic job info for O*NET lookup
     const jobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
@@ -163,10 +91,12 @@ Return JSON:
     }
 
     try {
+      console.log('🤖 Starting AI generation...');
 
       // Enhance the user prompt with O*NET data if available
       let enhancedUserPrompt = userPrompt;
       if (onetData && onetData.title) {
+        console.log('🔧 Enhancing prompt with O*NET data');
         enhancedUserPrompt += `\n\nO*NET DATA AVAILABLE - Use this to enhance accuracy:
 Title: ${onetData.title}
 Salary Range: ${onetData.salary?.display || 'Use market rates'}
@@ -176,7 +106,7 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
       }
 
       // Try OpenAI first with timeout
-      console.log('🤖 Attempting GPT-3.5 generation for prompt:', prompt.trim().substring(0, 100) + '...');
+      console.log('🤖 Calling OpenAI GPT-3.5 for prompt:', prompt.trim().substring(0, 100) + '...');
       const completion = await Promise.race([
         openai.chat.completions.create({
           model: 'gpt-3.5-turbo', // Switch back for reliability
@@ -192,12 +122,14 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
         )
       ]) as any;
 
+      console.log('✅ OpenAI API call completed');
       const content = completion.choices[0]?.message?.content?.trim();
       if (!content) {
+        console.log('❌ Empty AI response received');
         throw new Error('Empty AI response');
       }
       
-      console.log('✅ GPT-4 responded with content length:', content.length);
+      console.log('✅ AI content received, length:', content.length);
 
       // Parse JSON response
       let jobData;
@@ -237,6 +169,7 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
 
     } catch (aiError: any) {
       console.error('🔥 AI generation failed:', aiError?.message || aiError);
+      console.error('🔥 Full error object:', aiError);
       
       try {
         // Rule-based fallback system - always works
@@ -316,7 +249,9 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
     }
 
   } catch (error: any) {
-    console.error('Magic job creation error:', error);
+    console.error('💥 Magic job creation error:', error?.message || error);
+    console.error('💥 Full error stack:', error?.stack);
+    console.error('💥 Error type:', typeof error);
     
     // Final emergency fallback - ensure we always return valid JSON
     try {

@@ -231,7 +231,16 @@ export function getONetClient() {
     
     if (!username || !password) {
       console.error('❌ O*NET credentials not configured!');
-      throw new Error('O*NET credentials not configured');
+      // Return a mock client instead of throwing
+      return {
+        searchOccupations: async () => [],
+        getOccupationDetails: async () => null,
+        getOccupationTasks: async () => [],
+        getOccupationSkills: async () => [],
+        getWageData: async () => null,
+        findBestOccupationMatch: async () => null,
+        getJobEnhancementData: async () => null
+      } as any;
     }
     
     onetClient = new ONetClient(username, password);
