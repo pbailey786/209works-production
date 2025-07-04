@@ -293,10 +293,10 @@ export async function extractJobFiltersWithAI(
   userMessage: string,
   conversationHistory: any[] = []
 ): Promise<any> {
-  const systemPrompt = `Extract job search filters from the user's message. Focus on the 209 area (Central Valley, California).
+  const systemPrompt = `Extract job search filters from the user's message. This is for jobs in the 209 area (Central Valley, California).
 
 Extract these fields (set to null if not mentioned):
-- location (must be in 209 area: Stockton, Modesto, Tracy, etc.)
+- location (if mentioned: Stockton, Modesto, Tracy, Manteca, etc. If not mentioned, set to null)
 - job_type (use: full_time, part_time, contract, internship, temporary)
 - role (job title/position)
 - industry (healthcare, retail, warehouse, etc.)
@@ -307,7 +307,7 @@ Extract these fields (set to null if not mentioned):
 - skills (array of skills)
 - sortBy (salary_desc, salary_asc, date_desc, date_asc, relevance)
 
-Return as JSON only.`;
+Return as JSON only. Do not add default values - only extract what is explicitly mentioned.`;
 
   try {
     const response = await processWithAI(

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
@@ -125,9 +125,10 @@ export default function JobSpecificApplicantsPage() {
   const [showCommunicationCenter, setShowCommunicationCenter] = useState(false);
   const [showNotesSystem, setShowNotesSystem] = useState(false);
   const [selectedApplicationForNotes, setSelectedApplicationForNotes] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   // Smart prioritization algorithm (same as before but job-specific)
-  const calculatePriority = (application: Application): PriorityCandidate => {
+  const calculatePriority = useCallback((application: Application): PriorityCandidate => {
     let score = 0;
     let reason = '';
     let urgency: 'high' | 'medium' | 'low' = 'low';
@@ -223,9 +224,9 @@ export default function JobSpecificApplicantsPage() {
       suggestedAction: suggestedAction || 'Review when convenient',
       matchHighlights: highlights
     };
-  };
+  }, []);
 
-  const fetchJobAndApplications = async () => {
+  const fetchJobAndApplications = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -253,11 +254,15 @@ export default function JobSpecificApplicantsPage() {
       setApplications(apps);
 
       // Calculate priority scores and sort
-      const prioritized = apps
-        .map(calculatePriority)
-        .sort((a: PriorityCandidate, b: PriorityCandidate) => b.priorityScore - a.priorityScore);
+      if (apps.length > 0) {
+        const prioritized = apps
+          .map(calculatePriority)
+          .sort((a: PriorityCandidate, b: PriorityCandidate) => b.priorityScore - a.priorityScore);
 
-      setPriorityCandidates(prioritized);
+        setPriorityCandidates(prioritized);
+      } else {
+        setPriorityCandidates([]);
+      }
 
       // Calculate pipeline stats
       const stats = applicationsData.statusSummary || {};
@@ -268,9 +273,9 @@ export default function JobSpecificApplicantsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [jobId, calculatePriority]);
 
-  const updateApplicationStatus = async (applicationId: string, newStatus: string) => {
+  const updateApplicationStatus = useCallback(async (applicationId: string, newStatus: string) => {
     try {
       const response = await fetch('/api/employers/applications', {
         method: 'PATCH',
@@ -287,31 +292,36 @@ export default function JobSpecificApplicantsPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update application');
     }
-  };
+  }, [fetchJobAndApplications]);
 
-  const openCommunicationCenter = (candidateId: string) => {
+  const openCommunicationCenter = useCallback((candidateId: string) => {
     setSelectedCandidate(candidateId);
     setShowCommunicationCenter(true);
-  };
+  }, []);
 
-  const openNotesSystem = (applicationId: string) => {
+  const openNotesSystem = useCallback((applicationId: string) => {
     setSelectedApplicationForNotes(applicationId);
     setShowNotesSystem(true);
-  };
+  }, []);
 
-  const handleEmailSent = () => {
+  const handleEmailSent = useCallback(() => {
     // Refresh data to show any updates
     fetchJobAndApplications();
-  };
+  }, [fetchJobAndApplications]);
 
   useEffect(() => {
+    setIsClient(true);
     if (jobId) {
       fetchJobAndApplications();
     }
-  }, [jobId]);
+  }, [jobId, fetchJobAndApplications]);
 
   // Filtered applications based on status and search
   const filteredApplications = useMemo(() => {
+    if (!priorityCandidates || priorityCandidates.length === 0) {
+      return [];
+    }
+
     let filtered = priorityCandidates;
 
     if (statusFilter !== 'all') {
@@ -330,14 +340,17 @@ export default function JobSpecificApplicantsPage() {
     return filtered;
   }, [priorityCandidates, statusFilter, searchQuery]);
 
-  const thisWeekApplications = useMemo(() => 
-    applications.filter(a => {
+  const thisWeekApplications = useMemo(() => {
+    if (!applications || applications.length === 0) {
+      return 0;
+    }
+    return applications.filter(a => {
       const daysAgo = (Date.now() - new Date(a.appliedAt).getTime()) / (1000 * 60 * 60 * 24);
       return daysAgo <= 7;
-    }).length, [applications]
-  );
+    }).length;
+  }, [applications]);
 
-  if (loading) {
+  if (loading || !isClient) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="animate-pulse space-y-6">
@@ -368,19 +381,19 @@ export default function JobSpecificApplicantsPage() {
     );
   }
 
-  const selectedCandidateData = useMemo(() => 
-    selectedCandidate 
-      ? applications.find(app => app.id === selectedCandidate)
-      : null,
-    [selectedCandidate, applications]
-  );
+  const selectedCandidateData = useMemo(() => {
+    if (!selectedCandidate || !applications || applications.length === 0) {
+      return null;
+    }
+    return applications.find(app => app.id === selectedCandidate) || null;
+  }, [selectedCandidate, applications]);
 
-  const selectedApplicationData = useMemo(() =>
-    selectedApplicationForNotes
-      ? applications.find(app => app.id === selectedApplicationForNotes)
-      : null,
-    [selectedApplicationForNotes, applications]
-  );
+  const selectedApplicationData = useMemo(() => {
+    if (!selectedApplicationForNotes || !applications || applications.length === 0) {
+      return null;
+    }
+    return applications.find(app => app.id === selectedApplicationForNotes) || null;
+  }, [selectedApplicationForNotes, applications]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">

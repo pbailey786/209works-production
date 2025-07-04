@@ -15,12 +15,13 @@ import {
   aiSecurityConfigs,
   type AISecurityContext,
   sanitizeUserData,
-} from '@/lib/middleware/ai-security';
+} from '@/lib/middleware/ai-security-fixed';
 // import { getServerSession } from 'next-auth/next'; // TODO: Replace with Clerk
 import authOptions from '../auth/authOptions';
 import { generateJobSearchResponse } from '@/lib/ai';
 import Anthropic from '@anthropic-ai/sdk';
 import { OpenAI } from 'openai';
+import { buildJobQueryFromFiltersSafe } from '@/lib/job-query-builder';
 
 // Type definitions for conversation messages
 interface ConversationMessage {
@@ -204,6 +205,7 @@ function extractBasicFilters(
 }
 
 // Build job query with enhanced sorting and local prioritization
+// DEPRECATED: Use buildJobQueryFromFiltersSafe instead (removes mode: 'insensitive')
 function buildJobQueryFromFilters(filters: any) {
   const query: any = {
     status: 'active',
@@ -613,7 +615,7 @@ export const POST = withAISecurity(
       }
 
       // Build and execute job query with local prioritization
-      const jobQuery = buildJobQueryFromFilters(filters);
+      const jobQuery = buildJobQueryFromFiltersSafe(filters);
       const userRequestsRemote = filters.isRemote === true || 
         (filters.other && filters.other.toLowerCase().includes('remote'));
       const sortOrder = getSortOrder(filters.sortBy || 'relevance', userRequestsRemote);
