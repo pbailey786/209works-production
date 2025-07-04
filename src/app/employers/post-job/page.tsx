@@ -537,13 +537,16 @@ export default function PostJobPage() {
       </div>
 
       {/* Upsell Modal */}
-      {console.log('Modal render check:', {
-        showUpsellModal,
-        publishedJobId,
-        hasJobData: !!jobData,
-        hasCredits: !!credits,
-        shouldRender: !!(showUpsellModal && publishedJobId && jobData && credits)
-      })}
+      {(() => {
+        console.log('Modal render check:', {
+          showUpsellModal,
+          publishedJobId,
+          hasJobData: !!jobData,
+          hasCredits: !!credits,
+          shouldRender: !!(showUpsellModal && publishedJobId && jobData && credits)
+        });
+        return null;
+      })()}
       {showUpsellModal && publishedJobId && jobData && credits && (
         <JobPostUpsellModal
           isOpen={showUpsellModal}
