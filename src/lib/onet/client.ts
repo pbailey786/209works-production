@@ -66,17 +66,36 @@ export class ONetClient {
     };
 
     console.log('🌐 O*NET Request:', url);
-    const response = await fetch(url, { headers });
     
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.log('🌐 O*NET Error Response:', response.status, response.statusText, errorText);
-      throw new Error(`O*NET API error: ${response.status} ${response.statusText} - ${errorText}`);
-    }
+    // Add timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    
+    try {
+      const response = await fetch(url, { 
+        headers,
+        signal: controller.signal 
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('🌐 O*NET Error Response:', response.status, response.statusText, errorText);
+        throw new Error(`O*NET API error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
 
-    const data = await response.json();
-    console.log('🌐 O*NET Response data:', JSON.stringify(data, null, 2).substring(0, 500) + '...');
-    return data;
+      const data = await response.json();
+      console.log('🌐 O*NET Response data:', JSON.stringify(data, null, 2).substring(0, 500) + '...');
+      return data;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.error('🌐 O*NET Request timed out after 5 seconds');
+        throw new Error('O*NET API request timed out');
+      }
+      throw error;
+    }
   }
 
   // Search for occupations by keyword
