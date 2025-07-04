@@ -32,10 +32,10 @@ export function getJobEnhancerSafe(): SafeJobEnhancer {
     const { jobEnhancer } = require('@/lib/onet/job-enhancer');
     console.log('✅ O*NET job enhancer loaded successfully');
     cachedEnhancer = jobEnhancer;
-    return cachedEnhancer;
+    return cachedEnhancer!;
   } catch (error) {
     console.error('❌ Failed to load O*NET job enhancer:', error instanceof Error ? error.message : 'unknown error');
     cachedEnhancer = new MockJobEnhancer();
-    return cachedEnhancer;
+    return cachedEnhancer!;
   }
 }
