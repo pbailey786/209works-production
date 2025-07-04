@@ -146,6 +146,17 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
       if (!jobData.title || !jobData.location || !jobData.salary) {
         throw new Error('AI response missing required fields');
       }
+      
+      // Ensure responsibilities and requirements are present
+      if (!jobData.responsibilities || typeof jobData.responsibilities !== 'string' || !jobData.responsibilities.trim()) {
+        console.log('AI missing responsibilities, using fallback');
+        jobData.responsibilities = '• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines';
+      }
+      
+      if (!jobData.requirements || typeof jobData.requirements !== 'string' || !jobData.requirements.trim()) {
+        console.log('AI missing requirements, using fallback');
+        jobData.requirements = '• Must be 18+ with valid ID\n• Reliable transportation to work location\n• Strong work ethic and positive attitude\n• Legal right to work in US\n• Ability to follow instructions and work as part of a team\n• Professional appearance and demeanor';
+      }
 
       // Clean the description to remove "How to Apply" sections
       if (jobData.description) {

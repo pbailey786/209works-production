@@ -139,12 +139,21 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Ensure responsibilities and requirements are never empty
+    const finalResponsibilities = typeof responsibilities === 'string' && responsibilities.trim() 
+      ? responsibilities.trim()
+      : '• Support daily operations and assist team members with various tasks\n• Follow company procedures and maintain quality standards consistently\n• Communicate effectively with supervisors and coworkers throughout shifts\n• Complete assigned tasks efficiently while maintaining attention to detail\n• Adapt to changing priorities and take on additional responsibilities\n• Maintain clean and safe work environment following safety guidelines';
+      
+    const finalRequirements = typeof requirements === 'string' && requirements.trim()
+      ? requirements.trim()
+      : '• Must be 18+ with valid ID\n• Reliable transportation to work location\n• Strong work ethic and positive attitude\n• Legal right to work in US\n• Ability to follow instructions and work as part of a team\n• Professional appearance and demeanor';
+
     const job = await prisma.job.create({
       data: {
         title: typeof title === 'string' ? title.trim() : title,
         description: finalDescription,
-        responsibilities: typeof responsibilities === 'string' ? responsibilities.trim() : '',
-        requirements: typeof requirements === 'string' ? requirements.trim() : '',
+        responsibilities: finalResponsibilities,
+        requirements: finalRequirements,
         benefits: benefitsString, // Store benefits in dedicated field
         location: typeof location === 'string' ? location.trim() : location,
         company: user.companyName || `${user.name}'s Company` || 'Local Business',
