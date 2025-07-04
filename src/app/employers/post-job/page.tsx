@@ -169,15 +169,28 @@ export default function PostJobPage() {
         body: JSON.stringify(finalJobData)
       });
 
+      console.log('Publish response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Publish success data:', data);
+        console.log('Setting states...', {
+          jobId: data.jobId,
+          credits: data.creditsRemaining,
+          showModal: true
+        });
+        
         setPublishedJobId(data.jobId);
         setJobData(finalJobData);
         setCredits(data.creditsRemaining); // Update credits after successful publish
+        setFlowState('choose'); // Reset flow state so wizard doesn't interfere
         setShowUpsellModal(true);
+        
+        console.log('States set, modal should appear');
         // Don't redirect immediately - let them see upsells first
       } else {
         const errorData = await response.json();
+        console.error('Publish failed:', errorData);
         throw new Error(errorData.message || 'Failed to publish job');
       }
     } catch (error) {
@@ -522,6 +535,13 @@ export default function PostJobPage() {
       </div>
 
       {/* Upsell Modal */}
+      {console.log('Modal render check:', {
+        showUpsellModal,
+        publishedJobId,
+        hasJobData: !!jobData,
+        hasCredits: !!credits,
+        shouldRender: !!(showUpsellModal && publishedJobId && jobData && credits)
+      })}
       {showUpsellModal && publishedJobId && jobData && credits && (
         <JobPostUpsellModal
           isOpen={showUpsellModal}
