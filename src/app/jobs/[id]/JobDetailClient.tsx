@@ -73,26 +73,74 @@ const cleanJobDescription = (description: string): string => {
     .trim();
 };
 
+// Helper function to get appropriate icon for benefit type
+const getBenefitIcon = (benefitText: string): string => {
+  const text = benefitText.toLowerCase();
+  
+  if (text.includes('health') || text.includes('medical') || text.includes('insurance')) {
+    return '🏥';
+  } else if (text.includes('401k') || text.includes('retirement') || text.includes('pension')) {
+    return '💰';
+  } else if (text.includes('flexible') || text.includes('schedule') || text.includes('hours')) {
+    return '⏰';
+  } else if (text.includes('vacation') || text.includes('pto') || text.includes('time off')) {
+    return '🏖️';
+  } else if (text.includes('dental')) {
+    return '🦷';
+  } else if (text.includes('vision') || text.includes('eye')) {
+    return '👁️';
+  } else if (text.includes('bonus') || text.includes('incentive')) {
+    return '🎯';
+  } else if (text.includes('training') || text.includes('development') || text.includes('education')) {
+    return '📚';
+  } else if (text.includes('discount') || text.includes('employee')) {
+    return '🏷️';
+  } else if (text.includes('parking')) {
+    return '🚗';
+  } else if (text.includes('food') || text.includes('meal') || text.includes('lunch')) {
+    return '🍽️';
+  } else {
+    return '🎁';
+  }
+};
+
 // Helper function to parse benefits from multiple sources
 const parseBenefits = (benefitsData: string | null, description: string | null): any[] => {
   let benefits: any[] = [];
+  
+  console.log('Parsing benefits:', { benefitsData, description });
   
   // First, try to get benefits from the dedicated benefits field
   if (benefitsData) {
     try {
       const parsed = JSON.parse(benefitsData);
       if (Array.isArray(parsed)) {
-        benefits = parsed.filter(b => b.title && b.title.trim() !== '');
+        benefits = parsed.filter(b => b && (b.title || b.name)).map(b => ({
+          icon: b.icon || '🎁',
+          title: b.title || b.name || 'Benefit',
+          description: b.description || '',
+          key: b.key || b.title || b.name || 'benefit'
+        }));
       }
     } catch (e) {
-      // If JSON parsing fails, treat as plain text
+      // If JSON parsing fails, try to split by lines/commas and create benefits
       if (benefitsData.trim()) {
-        benefits = [{
-          icon: '🎁',
-          title: 'Benefits Available',
-          description: benefitsData.trim(),
-          key: 'legacy_benefit'
-        }];
+        const benefitLines = benefitsData.split(/\n|,/).filter(line => line.trim());
+        if (benefitLines.length > 1) {
+          benefits = benefitLines.map((line, index) => ({
+            icon: getBenefitIcon(line.trim()),
+            title: line.trim(),
+            description: '',
+            key: `benefit_${index}`
+          }));
+        } else {
+          benefits = [{
+            icon: '🎁',
+            title: 'Benefits Available',
+            description: benefitsData.trim(),
+            key: 'legacy_benefit'
+          }];
+        }
       }
     }
   }
@@ -104,7 +152,12 @@ const parseBenefits = (benefitsData: string | null, description: string | null):
       try {
         const extractedBenefits = JSON.parse(benefitsMatch[1]);
         if (Array.isArray(extractedBenefits)) {
-          benefits = extractedBenefits.filter(b => b.title && b.title.trim() !== '');
+          benefits = extractedBenefits.filter(b => b && (b.title || b.name)).map(b => ({
+            icon: b.icon || getBenefitIcon(b.title || b.name || ''),
+            title: b.title || b.name || 'Benefit',
+            description: b.description || '',
+            key: b.key || b.title || b.name || 'benefit'
+          }));
         }
       } catch (e) {
         console.error('Failed to parse benefits from description:', e);
@@ -112,6 +165,7 @@ const parseBenefits = (benefitsData: string | null, description: string | null):
     }
   }
   
+  console.log('Final parsed benefits:', benefits);
   return benefits;
 };
 
