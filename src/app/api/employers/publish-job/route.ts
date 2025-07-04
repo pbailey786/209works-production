@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     
     // Add benefits data as structured JSON (not displayed to users, used for rendering)
     if (benefitOptions && Array.isArray(benefitOptions) && benefitOptions.length > 0) {
-      const validBenefits = benefitOptions.filter(b => b.title && b.title.trim() !== '');
+      const validBenefits = benefitOptions.filter(b => b.title && typeof b.title === 'string' && b.title.trim() !== '');
       if (validBenefits.length > 0) {
         try {
           // Ensure clean JSON serialization
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
     // Also store benefits in the dedicated benefits field for easier access
     let benefitsString = '';
     if (benefitOptions && Array.isArray(benefitOptions) && benefitOptions.length > 0) {
-      const validBenefits = benefitOptions.filter(b => b.title && b.title.trim() !== '');
+      const validBenefits = benefitOptions.filter(b => b.title && typeof b.title === 'string' && b.title.trim() !== '');
       if (validBenefits.length > 0) {
         try {
           benefitsString = JSON.stringify(validBenefits);
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
         status: 'active',
         employerId: user.id,
         embedding: embeddings ? JSON.stringify(embeddings) : null,
-        supplementalQuestions: customQuestions && customQuestions.length > 0 ? customQuestions.filter((q: string) => q.trim()) : []
+        supplementalQuestions: customQuestions && customQuestions.length > 0 ? customQuestions.filter((q: any) => typeof q === 'string' && q.trim()) : []
       }
     });
 
