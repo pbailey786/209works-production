@@ -11,6 +11,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Search, ArrowRight, Heart, Shield, Zap, Briefcase } from 'lucide-react';
 import HomepageChat from '@/components/HomepageChat';
+import AISearchTeaser from '@/components/homepage/AISearchTeaser';
+import SocialProofSection from '@/components/homepage/SocialProofSection';
 import { FEATURES } from '@/lib/feature-flags';
 
 export default function HomeSimple() {
@@ -41,21 +43,21 @@ export default function HomeSimple() {
             {/* Headline */}
             <div className="mb-12">
               <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl">
-                Jobs for the 209.
+                209 Jobs.
                 <span className="block bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                  No Suits Required.
+                  209 People.
                 </span>
               </h1>
               <p className="mx-auto max-w-4xl text-xl font-medium text-gray-600 sm:text-2xl">
-                Built for the folks who work hard and don't mess around.
-                <span className="block text-blue-600"> Real jobs that hit close to home.</span>
+                No Bay Area commute. No LA competition.
+                <span className="block text-blue-600">Just local jobs for local people.</span>
               </p>
             </div>
 
-            {/* AI-Powered Job Search */}
+            {/* AI Search Teaser - Redirects to /chat */}
             {FEATURES.AI_CHAT ? (
               <div className="mx-auto mb-12">
-                <HomepageChat />
+                <AISearchTeaser />
               </div>
             ) : (
               /* Fallback to regular search if AI is disabled */
@@ -116,16 +118,19 @@ export default function HomeSimple() {
         </div>
       </section>
 
+      {/* Social Proof Section with Real Data */}
+      <SocialProofSection />
+
       {/* Apple-style Features Section */}
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-              Why Choose 209 Works?
+              Stop Competing with the Whole World
             </h2>
             <p className="mx-auto max-w-2xl text-xl text-gray-600">
-              Built for the Central Valley, by people who understand the 209.
+              Built for the Central Valley, by people who live here too.
             </p>
           </div>
 
@@ -135,9 +140,9 @@ export default function HomeSimple() {
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
                 <Heart className="h-10 w-10 text-white" />
               </div>
-              <h3 className="mb-4 text-xl font-bold text-gray-900">24/7 Local Support</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Actually Local</h3>
               <p className="text-gray-600">
-                We're here to help. Get in touch with any questions about finding work in the 209.
+                Every job is within driving distance. No San Francisco startups or remote-only bait and switch.
               </p>
             </div>
 
@@ -146,9 +151,9 @@ export default function HomeSimple() {
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
                 <Shield className="h-10 w-10 text-white" />
               </div>
-              <h3 className="mb-4 text-xl font-bold text-gray-900">Verified Employers</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">AI That Gets It</h3>
               <p className="text-gray-600">
-                Work with real Central Valley businesses that are actually hiring.
+                JobsGPT knows the difference between Stockton and San Jose. Search like you talk.
               </p>
             </div>
 
@@ -157,9 +162,9 @@ export default function HomeSimple() {
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg">
                 <Zap className="h-10 w-10 text-white" />
               </div>
-              <h3 className="mb-4 text-xl font-bold text-gray-900">Quick Applications</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">No Resume Upload</h3>
               <p className="text-gray-600">
-                Apply fast with our streamlined job platform. No endless forms.
+                Most employers want to meet you, not read 10 pages. Apply with contact info and let them call.
               </p>
             </div>
 
@@ -168,9 +173,9 @@ export default function HomeSimple() {
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg">
                 <Briefcase className="h-10 w-10 text-white" />
               </div>
-              <h3 className="mb-4 text-xl font-bold text-gray-900">Career Tools</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Your Neighbors</h3>
               <p className="text-gray-600">
-                Build your profile and track your job search progress.
+                Work with people you might run into at the grocery store. Build your local network.
               </p>
             </div>
           </div>

@@ -15,6 +15,10 @@ import {
 } from '@heroicons/react/24/outline';
 import ChatHistory from '@/components/chat/ChatHistory';
 import JobCard from '@/components/chat/JobCard';
+import MobileOptimizedInput from '@/components/chat/MobileOptimizedInput';
+import OnboardingFlow from '@/components/chat/OnboardingFlow';
+import JobResultsPanel from '@/components/chat/JobResultsPanel';
+import { getAccountPrompt, generateAccountPromptMessage, shouldShowAccountPrompt, AccountPromptContext } from '@/lib/ai/account-prompts';
 
 // TypeScript declarations for Web Speech API
 declare global {
@@ -69,6 +73,14 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
+  
+  // New UX state
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [jobResultsOpen, setJobResultsOpen] = useState(false);
+  const [currentJobs, setCurrentJobs] = useState<any[]>([]);
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [messageCount, setMessageCount] = useState(0);
+  const [lastAccountPrompt, setLastAccountPrompt] = useState<number>(0);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -127,19 +139,33 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
     };
   }, []);
 
-  // Initialize with welcome message
+  // Initialize based on URL params and first visit
   useEffect(() => {
-    if (messages.length === 0) {
+    const query = searchParams.get('q');
+    const isReturningUser = localStorage.getItem('jobsgpt_visited') === 'true';
+    
+    if (query) {
+      // User came from homepage with query
+      setIsFirstVisit(false);
+      setShowOnboarding(true);
+      // OnboardingFlow will handle the query
+    } else if (!isReturningUser && messages.length === 0) {
+      // First-time visitor without query
+      setShowOnboarding(true);
+      localStorage.setItem('jobsgpt_visited', 'true');
+    } else if (messages.length === 0) {
+      // Returning user - direct to chat
       setMessages([
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Hey! Tell me what's going on - looking for work? 💼`,
+          content: `Welcome back! What kind of work are you looking for today?`,
           timestamp: new Date(),
         },
       ]);
+      setIsFirstVisit(false);
     }
-  }, []);
+  }, [searchParams, messages.length]);
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
@@ -187,6 +213,35 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
       }
 
       const data = await response.json();
+      
+      // Update message count for account prompts
+      setMessageCount(prev => prev + 1);
+      
+      // Handle job results
+      if (data.jobs && data.jobs.length > 0) {
+        setCurrentJobs(data.jobs);
+        setJobResultsOpen(true);
+      }
+      
+      // Check if we should show account prompt
+      let responseContent = data.response || 'Sorry, I encountered an error. Please try again.';
+      
+      if (!user) {
+        const accountContext: AccountPromptContext = {
+          isLoggedIn: false,
+          messageCount: messageCount + 1,
+          hasFoundJobs: data.jobs && data.jobs.length > 0,
+          searchType: content.length > 50 ? 'specific' : 'general'
+        };
+        
+        if (shouldShowAccountPrompt(accountContext, lastAccountPrompt)) {
+          const prompt = getAccountPrompt(accountContext);
+          if (prompt) {
+            responseContent = generateAccountPromptMessage(responseContent, prompt);
+            setLastAccountPrompt(Date.now());
+          }
+        }
+      }
 
       // Remove typing indicator and add actual response
       setMessages(prev => {
@@ -196,9 +251,9 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
           {
             id: Date.now().toString(),
             role: 'assistant',
-            content: data.response || 'Sorry, I encountered an error. Please try again.',
+            content: responseContent,
             timestamp: new Date(),
-            jobs: data.jobs || [],
+            jobs: [], // Jobs now handled by separate panel
             metadata: data.metadata || {},
           },
         ];
@@ -271,6 +326,40 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
     "What local jobs pay well in Tracy?",
     "Show me jobs where I don't need to work from home",
   ];
+
+  // Onboarding handlers
+  const handleOnboardingComplete = (exampleQuery?: string) => {
+    setShowOnboarding(false);
+    setIsFirstVisit(false);
+    
+    if (exampleQuery) {
+      // Start with the example query
+      handleSendMessage(exampleQuery);
+    } else {
+      // Show welcome message
+      setMessages([
+        {
+          id: 'welcome',
+          role: 'assistant',
+          content: `Perfect! I'm ready to help you find local jobs in the 209 area. What kind of work are you looking for?`,
+          timestamp: new Date(),
+        },
+      ]);
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    setShowOnboarding(false);
+    setIsFirstVisit(false);
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: `Hi! I'm JobsGPT, your local job search assistant. What kind of work are you looking for in the 209 area?`,
+        timestamp: new Date(),
+      },
+    ]);
+  };
 
   // Job card action handlers with conversation memory tracking
   const trackJobInteraction = async (jobId: string, action: 'viewed' | 'applied' | 'saved' | 'rejected') => {
@@ -516,65 +605,57 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
           </div>
         </div>
 
-        {/* Input Area */}
-        <div className="border-t border-gray-200 bg-white p-4">
-          <div className="mx-auto max-w-3xl">
-            <div className="flex items-end space-x-3">
-              <div className="flex-1 relative">
-                <textarea
-                  ref={inputRef}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder={isListening ? "Listening... Speak now!" : "Ask me anything about jobs in the 209 area..."}
-                  className={`w-full resize-none rounded-lg border px-4 py-3 pr-20 focus:outline-none focus:ring-1 ${
-                    isListening
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50'
-                      : 'border-gray-300 focus:border-orange-500 focus:ring-orange-500'
-                  }`}
-                  rows={1}
-                  style={{ minHeight: '48px', maxHeight: '120px' }}
-                  disabled={isLoading}
-                />
-
-                {/* Voice Input Button */}
-                {speechSupported && (
-                  <button
-                    onClick={toggleListening}
-                    disabled={isLoading}
-                    className={`absolute bottom-2 right-12 rounded-lg p-2 transition-colors ${
-                      isListening
-                        ? 'bg-red-500 text-white hover:bg-red-600 animate-pulse'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    title={isListening ? 'Stop listening' : 'Start voice input'}
-                  >
-                    {isListening ? (
-                      <StopIcon className="h-4 w-4" />
-                    ) : (
-                      <MicrophoneIcon className="h-4 w-4" />
-                    )}
-                  </button>
-                )}
-
-                {/* Send Button */}
-                <button
-                  onClick={() => handleSendMessage(inputValue)}
-                  disabled={!inputValue.trim() || isLoading}
-                  className="absolute bottom-2 right-2 rounded-lg bg-orange-500 p-2 text-white hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <PaperAirplaneIcon className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-gray-500 text-center">
-              JobsGPT may display inaccurate info, so double-check responses.
-              {speechSupported && <span> Voice input processes locally on your device.</span>}
-              <a href="/privacy" className="text-orange-600 hover:underline ml-1">Your Privacy & Central AI</a>
-            </p>
-          </div>
-        </div>
+        {/* Mobile-Optimized Input Area */}
+        <MobileOptimizedInput
+          value={inputValue}
+          onChange={setInputValue}
+          onSubmit={handleSendMessage}
+          onVoiceToggle={toggleListening}
+          isLoading={isLoading}
+          isListening={isListening}
+          speechSupported={speechSupported}
+          placeholder="Ask me anything about jobs in the 209 area..."
+        />
       </div>
+
+      {/* Job Results Panel */}
+      <JobResultsPanel
+        jobs={currentJobs.map(job => ({
+          id: job.id,
+          title: job.title,
+          company: job.company,
+          location: job.location,
+          salary: job.salaryMin && job.salaryMax
+            ? `$${job.salaryMin.toLocaleString()} - $${job.salaryMax.toLocaleString()}`
+            : job.salaryMin
+            ? `$${job.salaryMin.toLocaleString()}+`
+            : undefined,
+          type: job.jobType || 'Full-time',
+          postedDate: job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'Recently posted',
+          description: job.description,
+          requirements: job.requirements ? [job.requirements] : [],
+          benefits: job.benefits ? [job.benefits] : [],
+          remote: job.isRemote,
+          urgent: false,
+        }))}
+        isOpen={jobResultsOpen}
+        onClose={() => setJobResultsOpen(false)}
+        onApply={handleApplyToJob}
+        onViewDetails={handleViewJobDetails}
+        onSave={handleSaveJob}
+        searchQuery={messages.length > 1 ? messages[messages.length - 2]?.content : undefined}
+        isLoggedIn={!!user}
+      />
+
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <OnboardingFlow
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+          fromHomepage={!!searchParams.get('q')}
+          homepageQuery={searchParams.get('q') || undefined}
+        />
+      )}
 
       {/* Mobile Overlay */}
       {sidebarOpen && (

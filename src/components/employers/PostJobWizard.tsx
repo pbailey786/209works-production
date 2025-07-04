@@ -53,6 +53,7 @@ interface PostJobWizardProps {
   onCancel: () => void;
   initialData?: Partial<JobData>;
   credits?: { universal: number; total: number };
+  isPublishing?: boolean;
 }
 
 const STEPS = [
@@ -117,7 +118,8 @@ export default function PostJobWizard({
   onComplete,
   onCancel,
   initialData = {},
-  credits
+  credits,
+  isPublishing = false
 }: PostJobWizardProps) {
   const { user } = useUser();
   const router = useRouter();
@@ -741,11 +743,20 @@ export default function PostJobWizard({
           {currentStep === STEPS.length - 1 ? (
             <button
               onClick={handleSubmit}
-              disabled={credits && credits.universal < 1}
+              disabled={isPublishing || (credits && credits.universal < 1)}
               className="flex items-center space-x-2 px-6 py-2 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Sparkles className="h-4 w-4" />
-              <span>Publish Job</span>
+              {isPublishing ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Publishing...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span>Publish Job</span>
+                </>
+              )}
             </button>
           ) : (
             <button

@@ -180,22 +180,23 @@ export default function PostJobPage() {
           showModal: true
         });
         
+        // Batch state updates to prevent race conditions
         setPublishedJobId(data.jobId);
         setJobData(finalJobData);
-        setCredits(data.creditsRemaining); // Update credits after successful publish
-        setFlowState('choose'); // Reset flow state so wizard doesn't interfere
+        setCredits(data.creditsRemaining);
+        setFlowState('choose');
         setShowUpsellModal(true);
         
         console.log('States set, modal should appear');
         // Don't redirect immediately - let them see upsells first
       } else {
         const errorData = await response.json();
-        console.error('Publish failed:', errorData);
-        throw new Error(errorData.message || 'Failed to publish job');
+        throw new Error(errorData.error || 'Failed to publish job');
       }
     } catch (error) {
       console.error('Error publishing job:', error);
-      alert('Failed to publish job. Please try again.');
+      // TODO: Replace with proper toast notification system
+      alert(`Failed to publish job: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`);
     } finally {
       setIsPublishing(false);
     }
@@ -276,6 +277,7 @@ export default function PostJobPage() {
         onCancel={handleWizardCancel}
         initialData={jobData}
         credits={credits || undefined}
+        isPublishing={isPublishing}
       />
     );
   }
