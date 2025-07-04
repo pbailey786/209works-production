@@ -73,11 +73,37 @@ const cleanJobDescription = (description: string): string => {
     .trim();
 };
 
-// Helper function to get appropriate icon for benefit type
+// Helper function to get appropriate icon for benefit type or convert text identifiers to emojis
 const getBenefitIcon = (benefitText: string): string => {
   const text = benefitText.toLowerCase();
   
-  if (text.includes('health') || text.includes('medical') || text.includes('insurance')) {
+  // First check for text identifiers that should be converted to emojis
+  if (text === 'healthcare' || text === 'health-insurance') {
+    return '🏥';
+  } else if (text === '401k' || text === 'retirement' || text === 'retirement-plan') {
+    return '💰';
+  } else if (text === 'paid-time-off' || text === 'pto' || text === 'vacation') {
+    return '🏖️';
+  } else if (text === 'flexible-schedule' || text === 'flexible-hours') {
+    return '⏰';
+  } else if (text === 'dental' || text === 'dental-insurance') {
+    return '🦷';
+  } else if (text === 'vision' || text === 'vision-insurance') {
+    return '👁️';
+  } else if (text === 'bonus' || text === 'performance-bonus') {
+    return '🎯';
+  } else if (text === 'training' || text === 'professional-development') {
+    return '📚';
+  } else if (text === 'employee-discount' || text === 'discount') {
+    return '🏷️';
+  } else if (text === 'parking' || text === 'free-parking') {
+    return '🚗';
+  } else if (text === 'meals' || text === 'food-allowance') {
+    return '🍽️';
+  }
+  
+  // Then check for partial matches in benefit descriptions
+  else if (text.includes('health') || text.includes('medical') || text.includes('insurance')) {
     return '🏥';
   } else if (text.includes('401k') || text.includes('retirement') || text.includes('pension')) {
     return '💰';
@@ -115,12 +141,21 @@ const parseBenefits = (benefitsData: string | null, description: string | null):
     try {
       const parsed = JSON.parse(benefitsData);
       if (Array.isArray(parsed)) {
-        benefits = parsed.filter(b => b && (b.title || b.name)).map(b => ({
-          icon: b.icon || '🎁',
-          title: b.title || b.name || 'Benefit',
-          description: b.description || '',
-          key: b.key || b.title || b.name || 'benefit'
-        }));
+        benefits = parsed.filter(b => b && (b.title || b.name)).map(b => {
+          // Fix icons that are text identifiers instead of emojis
+          let icon = b.icon || '🎁';
+          if (typeof icon === 'string' && !icon.match(/[\u{1F300}-\u{1F9FF}]/u)) {
+            // If icon doesn't contain emoji characters, convert text identifier to emoji
+            icon = getBenefitIcon(icon);
+          }
+          
+          return {
+            icon,
+            title: b.title || b.name || 'Benefit',
+            description: b.description || '',
+            key: b.key || b.title || b.name || 'benefit'
+          };
+        });
       }
     } catch (e) {
       // If JSON parsing fails, try to split by lines/commas and create benefits
@@ -152,12 +187,21 @@ const parseBenefits = (benefitsData: string | null, description: string | null):
       try {
         const extractedBenefits = JSON.parse(benefitsMatch[1]);
         if (Array.isArray(extractedBenefits)) {
-          benefits = extractedBenefits.filter(b => b && (b.title || b.name)).map(b => ({
-            icon: b.icon || getBenefitIcon(b.title || b.name || ''),
-            title: b.title || b.name || 'Benefit',
-            description: b.description || '',
-            key: b.key || b.title || b.name || 'benefit'
-          }));
+          benefits = extractedBenefits.filter(b => b && (b.title || b.name)).map(b => {
+            // Fix icons that are text identifiers instead of emojis
+            let icon = b.icon || getBenefitIcon(b.title || b.name || '');
+            if (typeof icon === 'string' && !icon.match(/[\u{1F300}-\u{1F9FF}]/u)) {
+              // If icon doesn't contain emoji characters, convert text identifier to emoji
+              icon = getBenefitIcon(icon);
+            }
+            
+            return {
+              icon,
+              title: b.title || b.name || 'Benefit',
+              description: b.description || '',
+              key: b.key || b.title || b.name || 'benefit'
+            };
+          });
         }
       } catch (e) {
         console.error('Failed to parse benefits from description:', e);
