@@ -18,11 +18,18 @@ export async function POST(req: NextRequest) {
     
     const { title, location, salary, description, responsibilities, requirements, contactMethod, requiresDegree, customQuestions, benefitOptions } = requestBody;
     
-    // Validate required fields
-    if (!title || !location || !salary) {
-      console.error('Missing required fields:', { title: !!title, location: !!location, salary: !!salary });
+    // Validate required fields with type checking
+    if (!title || typeof title !== 'string' || !location || typeof location !== 'string' || !salary || typeof salary !== 'string') {
+      console.error('Missing required fields:', { 
+        title: !!title, 
+        titleType: typeof title,
+        location: !!location, 
+        locationType: typeof location,
+        salary: !!salary,
+        salaryType: typeof salary
+      });
       return NextResponse.json({ 
-        error: 'Job title, location, and salary are required' 
+        error: 'Job title, location, and salary are required and must be strings' 
       }, { status: 400 });
     }
 
@@ -81,10 +88,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Create job posting - store contact info and metadata in hidden tags
-    let finalDescription = description?.trim() || '';
+    let finalDescription = (typeof description === 'string' ? description.trim() : '') || '';
     
     // Add hidden contact info for email forwarding (not displayed to users)
-    if (contactMethod?.trim()) {
+    if (typeof contactMethod === 'string' && contactMethod.trim()) {
       finalDescription += `\n\n[CONTACT_EMAIL:${contactMethod.trim()}]`;
     }
     
@@ -134,12 +141,12 @@ export async function POST(req: NextRequest) {
 
     const job = await prisma.job.create({
       data: {
-        title: title.trim(),
+        title: typeof title === 'string' ? title.trim() : title,
         description: finalDescription,
-        responsibilities: responsibilities?.trim() || '',
-        requirements: requirements?.trim() || '',
+        responsibilities: typeof responsibilities === 'string' ? responsibilities.trim() : '',
+        requirements: typeof requirements === 'string' ? requirements.trim() : '',
         benefits: benefitsString, // Store benefits in dedicated field
-        location: location.trim(),
+        location: typeof location === 'string' ? location.trim() : location,
         company: user.companyName || `${user.name}'s Company` || 'Local Business',
         source: '209.works',
         url: '',
