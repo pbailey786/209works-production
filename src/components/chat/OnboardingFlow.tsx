@@ -58,7 +58,7 @@ export default function OnboardingFlow({
       title: "🎯 What I Can Do",
       subtitle: "Natural language job search",
       content: "Ask me questions like you'd ask a local friend who knows all the employers.",
-      icon: <MapPinIcon className="h-8 w-8 text-blue-500" />,
+      icon: <MapPinIcon className="h-8 w-8 text-orange-500" />,
       examples: [
         "Find warehouse jobs in Stockton that pay over $20/hour",
         "Show me healthcare jobs in Modesto with good benefits",
@@ -70,7 +70,7 @@ export default function OnboardingFlow({
       title: "🏠 Hyperlocal Intelligence", 
       subtitle: "No more competing with San Francisco",
       content: "Every job I show you is within driving distance. No remote-only bait and switch.",
-      icon: <ClockIcon className="h-8 w-8 text-green-500" />,
+      icon: <ClockIcon className="h-8 w-8 text-orange-500" />,
       examples: [
         "Jobs near the Stockton mall",
         "Walking distance from downtown Modesto", 

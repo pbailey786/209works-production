@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   MapPinIcon, 
   CurrencyDollarIcon, 
@@ -147,15 +147,57 @@ export default function JobCard({
       {/* Benefits (if expanded or not compact) */}
       {(!compact || isExpanded) && job.benefits.length > 0 && (
         <div className="mb-3">
-          <h4 className="text-xs font-medium text-gray-900 mb-1">Benefits</h4>
-          <ul className="text-xs text-gray-600 space-y-0.5 ml-3">
-            {job.benefits.slice(0, 2).map((benefit, index) => (
-              <li key={index} className="list-disc">{benefit}</li>
-            ))}
-            {job.benefits.length > 2 && (
-              <li className="text-gray-500">+{job.benefits.length - 2} more</li>
-            )}
-          </ul>
+          <h4 className="text-xs font-medium text-gray-900 mb-1">🎁 Benefits</h4>
+          <div className="text-xs text-gray-600 space-y-1">
+            {job.benefits.map((benefit, index) => {
+              try {
+                // Try to parse as JSON first
+                const parsedBenefits = JSON.parse(benefit);
+                if (Array.isArray(parsedBenefits)) {
+                  return (
+                    <React.Fragment key={index}>
+                      {parsedBenefits.slice(0, 3).map((b, i) => (
+                        <div key={`${index}-${i}`} className="flex items-start space-x-2">
+                          <span className="text-sm">{b.icon || '•'}</span>
+                          <div>
+                            <span className="font-medium">{b.title}:</span>
+                            <span className="ml-1">{b.description}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </React.Fragment>
+                  );
+                } else if (parsedBenefits.title) {
+                  // Single benefit object
+                  return (
+                    <div key={index} className="flex items-start space-x-2">
+                      <span className="text-sm">{parsedBenefits.icon || '•'}</span>
+                      <div>
+                        <span className="font-medium">{parsedBenefits.title}:</span>
+                        <span className="ml-1">{parsedBenefits.description}</span>
+                      </div>
+                    </div>
+                  );
+                } else {
+                  // Fallback for malformed JSON objects
+                  return (
+                    <div key={index} className="flex items-start space-x-2">
+                      <span className="text-sm">•</span>
+                      <span>{JSON.stringify(parsedBenefits)}</span>
+                    </div>
+                  );
+                }
+              } catch (e) {
+                // Fallback for plain text benefits
+                return (
+                  <div key={index} className="flex items-start space-x-2">
+                    <span className="text-sm">•</span>
+                    <span>{benefit}</span>
+                  </div>
+                );
+              }
+            })}
+          </div>
         </div>
       )}
 

@@ -36,7 +36,7 @@ export default function HomeSimple() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             {/* Hero Icon */}
-            <div className="mx-auto mb-12 flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-2xl">
+            <div className="mx-auto mb-12 flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-2xl">
               <Briefcase className="h-16 w-16 text-white" />
             </div>
             
@@ -44,13 +44,13 @@ export default function HomeSimple() {
             <div className="mb-12">
               <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl">
                 209 Jobs.
-                <span className="block bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-orange-600 to-orange-800 bg-clip-text text-transparent">
                   209 People.
                 </span>
               </h1>
               <p className="mx-auto max-w-4xl text-xl font-medium text-gray-600 sm:text-2xl">
                 No Bay Area commute. No LA competition.
-                <span className="block text-blue-600">Just local jobs for local people.</span>
+                <span className="block text-orange-600">Just local jobs for local people.</span>
               </p>
             </div>
 
@@ -72,12 +72,12 @@ export default function HomeSimple() {
                           placeholder="What kind of work are you looking for?"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 py-4 pl-14 pr-6 text-lg transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                          className="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 py-4 pl-14 pr-6 text-lg transition-all duration-200 focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-orange-500/20"
                         />
                       </div>
                       <button
                         type="submit"
-                        className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:scale-105"
+                        className="group flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:from-orange-700 hover:to-orange-800 hover:shadow-xl hover:scale-105"
                       >
                         <span>Search Jobs</span>
                         <Search className="h-5 w-5 transition-transform group-hover:scale-110" />
@@ -97,7 +97,7 @@ export default function HomeSimple() {
                     <button
                       key={suggestion}
                       onClick={() => handleQuickSearch(suggestion)}
-                      className="rounded-full border-2 border-gray-200 bg-white/80 px-6 py-2 font-medium text-gray-700 backdrop-blur-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:scale-105"
+                      className="rounded-full border-2 border-gray-200 bg-white/80 px-6 py-2 font-medium text-gray-700 backdrop-blur-sm transition-all duration-200 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700 hover:scale-105"
                     >
                       {suggestion}
                     </button>
@@ -109,7 +109,7 @@ export default function HomeSimple() {
             {/* Apple-style CTA Button */}
             <Link
               href="/chat"
-              className="group inline-flex items-center gap-4 rounded-3xl bg-gradient-to-r from-blue-600 to-blue-700 px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-300 hover:from-blue-700 hover:to-blue-800 hover:shadow-3xl hover:scale-105"
+              className="group inline-flex items-center gap-4 rounded-3xl bg-gradient-to-r from-orange-600 to-orange-700 px-12 py-6 text-xl font-bold text-white shadow-2xl transition-all duration-300 hover:from-orange-700 hover:to-orange-800 hover:shadow-3xl hover:scale-105"
             >
               <span>Explore Jobs</span>
               <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2" />

@@ -159,7 +159,16 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Welcome back! What kind of work are you looking for today?`,
+          content: `Welcome back! 👋 I'm JobsGPT, your local job search assistant.
+
+I know every employer from Stockton to Fresno and can help you find work that's actually within driving distance.
+
+**Try asking me:**
+• "What warehouse jobs pay the most in Stockton?"
+• "Find healthcare jobs in Modesto with benefits"
+• "Show me customer service jobs I can start next week"
+
+What kind of work are you looking for today?`,
           timestamp: new Date(),
         },
       ]);
@@ -341,7 +350,15 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Perfect! I'm ready to help you find local jobs in the 209 area. What kind of work are you looking for?`,
+          content: `Perfect! I'm ready to help you find local jobs in the 209 area. 🎯
+
+I can help you with:
+• **Finding specific jobs** - "Show me warehouse jobs in Stockton"
+• **Salary research** - "What do customer service jobs pay in Modesto?"
+• **Company insights** - "Tell me about healthcare employers in Tracy"
+• **Quick applications** - "Find jobs I can apply to today"
+
+What kind of work are you looking for?`,
           timestamp: new Date(),
         },
       ]);
@@ -355,7 +372,16 @@ function ChatPageContent({ searchParams }: { searchParams: URLSearchParams }) {
       {
         id: 'welcome',
         role: 'assistant',
-        content: `Hi! I'm JobsGPT, your local job search assistant. What kind of work are you looking for in the 209 area?`,
+        content: `Hi! I'm JobsGPT, your local job search assistant for the Central Valley. 🤖
+
+I specialize in finding jobs that are actually within driving distance - no Bay Area commute required!
+
+**Popular searches:**
+• "Warehouse jobs in Stockton that pay over $20/hour"
+• "Healthcare jobs in Modesto with benefits"
+• "Customer service jobs I can start this week"
+
+What kind of work are you looking for in the 209 area?`,
         timestamp: new Date(),
       },
     ]);

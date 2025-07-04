@@ -90,7 +90,7 @@ export default function MobileOptimizedInput({
             {/* Voice Button - Left side for thumb accessibility */}
             {speechSupported && (
               <button
-                onClick={onVoiceToggle}
+                onClick={onVoiceToggle || (() => {})}
                 disabled={isLoading}
                 className={`flex-shrink-0 rounded-full p-3 transition-all duration-200 ${
                   isListening

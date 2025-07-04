@@ -114,7 +114,7 @@ export default function JobResultsPanel({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 lg:relative lg:max-w-none lg:shadow-none lg:border-l lg:border-gray-200"
+            className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl z-50 lg:relative lg:w-96 lg:shadow-none lg:border-l lg:border-gray-200"
           >
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">

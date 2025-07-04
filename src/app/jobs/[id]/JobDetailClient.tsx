@@ -202,8 +202,15 @@ export default function JobDetailClient({
     return 'Salary not specified';
   }, [job.salaryMin, job.salaryMax]);
 
-  // Parse benefits data and clean description
-  const benefits = useMemo(() => parseBenefits(job.benefits, job.description), [job.benefits, job.description]);
+  // Parse benefits data and clean description with error boundary
+  const benefits = useMemo(() => {
+    try {
+      return parseBenefits(job.benefits, job.description);
+    } catch (error) {
+      console.error('Benefits parsing failed:', error);
+      return []; // Graceful fallback - show no benefits rather than crash
+    }
+  }, [job.benefits, job.description]);
   const cleanDescription = useMemo(() => cleanJobDescription(job.description), [job.description]);
 
   // Handle save/unsave job
@@ -491,13 +498,19 @@ export default function JobDetailClient({
                     <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-900">
                       🎁 What We Offer
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-4xl">
                       {benefits.map((benefit, index) => (
                         <div
                           key={benefit.key || index}
                           className="flex items-center p-4 bg-green-50 rounded-lg border border-green-200"
                         >
-                          <span className="text-3xl mr-4">{benefit.icon}</span>
+                          <span 
+                            className="text-3xl mr-4" 
+                            aria-label={`${benefit.title} icon`}
+                            role="img"
+                          >
+                            {benefit.icon}
+                          </span>
                           <div>
                             <div className="font-semibold text-green-900">
                               {benefit.title}
