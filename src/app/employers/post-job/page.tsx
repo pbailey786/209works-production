@@ -173,6 +173,7 @@ export default function PostJobPage() {
         const data = await response.json();
         setPublishedJobId(data.jobId);
         setJobData(finalJobData);
+        setCredits(data.creditsRemaining); // Update credits after successful publish
         setShowUpsellModal(true);
         // Don't redirect immediately - let them see upsells first
       } else {
