@@ -30,8 +30,8 @@ export async function PATCH(
     const applicationId = (await params).id;
     const { status } = await request.json();
 
-    // Validate status
-    const validStatuses = ['applied', 'shortlisted', 'hired', 'rejected'];
+    // Validate status - updated to new status flow
+    const validStatuses = ['pending', 'reviewing', 'contacted', 'interview', 'offer', 'rejected'];
     if (!validStatuses.includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }

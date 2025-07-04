@@ -30,6 +30,7 @@ import {
   X,
   Send,
 } from 'lucide-react';
+import CommunicationCenter from '@/components/employers/CommunicationCenter';
 
 interface CandidateSnapshot {
   id: string;
@@ -104,10 +105,7 @@ export default function CandidateSnapshotPage() {
   const [newNote, setNewNote] = useState('');
   const [addingNote, setAddingNote] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [emailSubject, setEmailSubject] = useState('');
-  const [emailMessage, setEmailMessage] = useState('');
-  const [sendingEmail, setSendingEmail] = useState(false);
+  const [showCommunicationCenter, setShowCommunicationCenter] = useState(false);
 
   useEffect(() => {
     fetchCandidateSnapshot();
@@ -181,48 +179,9 @@ export default function CandidateSnapshotPage() {
     }
   };
 
-  const sendEmail = async () => {
-    if (!emailSubject.trim() || !emailMessage.trim() || !candidate) return;
-
-    try {
-      setSendingEmail(true);
-      const response = await fetch('/api/employers/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: candidate.user.email,
-          subject: emailSubject,
-          message: emailMessage,
-          candidateName: candidate.user.name,
-          jobTitle: candidate.job.title,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send email');
-      }
-
-      // Close modal and reset form
-      setShowEmailModal(false);
-      setEmailSubject('');
-      setEmailMessage('');
-
-      // Show success message (you could add a toast notification here)
-      alert('Email sent successfully!');
-    } catch (err) {
-      console.error('Error sending email:', err);
-      alert('Failed to send email. Please try again.');
-    } finally {
-      setSendingEmail(false);
-    }
-  };
-
-  const openEmailModal = () => {
-    if (candidate) {
-      setEmailSubject(`Re: ${candidate.job.title} Application`);
-      setEmailMessage(`Hi ${candidate.user.name || 'there'},\n\nThank you for your application for the ${candidate.job.title} position.\n\nBest regards,\n${candidate.job.company}`);
-      setShowEmailModal(true);
-    }
+  const handleEmailSent = () => {
+    // Refresh the candidate data to show any updates
+    fetchCandidateSnapshot();
   };
 
   const getStatusColor = (status: string) => {
@@ -329,11 +288,11 @@ export default function CandidateSnapshotPage() {
               Reject
             </button>
             <button
-              onClick={openEmailModal}
+              onClick={() => setShowCommunicationCenter(true)}
               className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
             >
-              <Mail className="mr-2 h-4 w-4" />
-              Email
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Communicate
             </button>
           </div>
         </div>
@@ -706,84 +665,17 @@ export default function CandidateSnapshotPage() {
         </div>
       </div>
 
-      {/* Email Modal */}
-      {showEmailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="mx-4 w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">Send Email</h2>
-              <button
-                onClick={() => setShowEmailModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  To:
-                </label>
-                <div className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-md">
-                  {candidate?.user.email}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Subject:
-                </label>
-                <input
-                  type="text"
-                  value={emailSubject}
-                  onChange={(e) => setEmailSubject(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Email subject"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Message:
-                </label>
-                <textarea
-                  value={emailMessage}
-                  onChange={(e) => setEmailMessage(e.target.value)}
-                  rows={8}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Type your message here..."
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  onClick={() => setShowEmailModal(false)}
-                  className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={sendEmail}
-                  disabled={!emailSubject.trim() || !emailMessage.trim() || sendingEmail}
-                  className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {sendingEmail ? (
-                    <>
-                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 h-4 w-4" />
-                      Send Email
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Communication Center */}
+      {showCommunicationCenter && candidate && (
+        <CommunicationCenter
+          candidateId={candidate.id}
+          candidateName={candidate.user.name || 'Candidate'}
+          candidateEmail={candidate.user.email}
+          jobTitle={candidate.job.title}
+          companyName={candidate.job.company}
+          onClose={() => setShowCommunicationCenter(false)}
+          onEmailSent={handleEmailSent}
+        />
       )}
     </div>
   );

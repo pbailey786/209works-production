@@ -18,6 +18,7 @@ import {
   FileText
 } from 'lucide-react';
 import PostJobWizard from '@/components/employers/PostJobWizard';
+import JobPostUpsellModal from '@/components/employers/JobPostUpsellModal';
 
 interface JobData {
   title: string;
@@ -55,6 +56,8 @@ export default function PostJobPage() {
   const [jobData, setJobData] = useState<JobData | null>(null);
   const [credits, setCredits] = useState<{ universal: number; total: number } | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [publishedJobId, setPublishedJobId] = useState<string | null>(null);
+  const [showUpsellModal, setShowUpsellModal] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -168,7 +171,10 @@ export default function PostJobPage() {
 
       if (response.ok) {
         const data = await response.json();
-        router.push(`/employers/jobs/${data.jobId}`);
+        setPublishedJobId(data.jobId);
+        setJobData(finalJobData);
+        setShowUpsellModal(true);
+        // Don't redirect immediately - let them see upsells first
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to publish job');
@@ -178,6 +184,46 @@ export default function PostJobPage() {
       alert('Failed to publish job. Please try again.');
     } finally {
       setIsPublishing(false);
+    }
+  };
+
+  const handleUpsellPurchase = async (upsells: { featured: boolean; social: boolean }) => {
+    if (!publishedJobId) return;
+    
+    try {
+      const response = await fetch('/api/jobs/upsells', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: publishedJobId,
+          featured: upsells.featured,
+          social: upsells.social
+        })
+      });
+
+      if (response.ok) {
+        // Update credits after purchase
+        const creditsResponse = await fetch('/api/job-posting/credits');
+        if (creditsResponse.ok) {
+          const creditsData = await creditsResponse.json();
+          setCredits(creditsData.credits);
+        }
+        
+        // Redirect to job management
+        router.push(`/employers/jobs/${publishedJobId}`);
+      } else {
+        throw new Error('Failed to purchase upsells');
+      }
+    } catch (error) {
+      console.error('Upsell purchase failed:', error);
+      alert('Failed to add premium features. Please try again.');
+    }
+  };
+
+  const handleUpsellModalClose = () => {
+    setShowUpsellModal(false);
+    if (publishedJobId) {
+      router.push(`/employers/jobs/${publishedJobId}`);
     }
   };
 
@@ -238,7 +284,7 @@ export default function PostJobPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Post a Job</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Post a Job</h1>
             <p className="text-lg text-gray-600 mt-2">
               Find the perfect candidates for your open position
             </p>
@@ -261,7 +307,7 @@ export default function PostJobPage() {
             className="space-y-6"
           >
             {/* AI-Powered Option */}
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-8 text-white">
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-8 text-white shadow-lg">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-4">
@@ -307,7 +353,7 @@ export default function PostJobPage() {
             </div>
 
             {/* Manual Option */}
-            <div className="bg-white border border-gray-200 rounded-xl p-8">
+            <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-md hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <h2 className="text-xl font-semibold text-gray-900 mb-3">Manual Job Builder</h2>
@@ -347,7 +393,7 @@ export default function PostJobPage() {
             </div>
 
             {/* Have existing description option */}
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
               <div className="flex items-center space-x-3 mb-3">
                 <Upload className="h-5 w-5 text-blue-600" />
                 <h3 className="text-lg font-semibold text-blue-900">Have an existing job description?</h3>
@@ -473,6 +519,18 @@ export default function PostJobPage() {
           </motion.div>
         )}
       </div>
+
+      {/* Upsell Modal */}
+      {showUpsellModal && publishedJobId && jobData && credits && (
+        <JobPostUpsellModal
+          isOpen={showUpsellModal}
+          onClose={handleUpsellModalClose}
+          jobId={publishedJobId}
+          jobTitle={jobData.title}
+          credits={credits}
+          onPurchase={handleUpsellPurchase}
+        />
+      )}
     </div>
   );
 }

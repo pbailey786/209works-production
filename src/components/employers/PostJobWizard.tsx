@@ -471,7 +471,7 @@ export default function PostJobWizard({
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                How should candidates apply? *
+                Application Notification Email *
               </label>
               <input
                 type="email"
@@ -485,9 +485,13 @@ export default function PostJobWizard({
               {validationErrors.contactMethod && (
                 <p className="mt-1 text-sm text-red-600">{validationErrors.contactMethod}</p>
               )}
-              <p className="mt-1 text-sm text-gray-500">
-                Candidates will email their application to this address
-              </p>
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>How it works:</strong> Candidates apply directly on your job posting. You'll receive 
+                  an email notification at this address when someone applies, and all applications will be 
+                  available in your employer dashboard for easy management.
+                </p>
+              </div>
             </div>
 
             <div>
@@ -497,13 +501,18 @@ export default function PostJobWizard({
               <textarea
                 value={jobData.customQuestions?.join('\n') || ''}
                 onChange={(e) => updateJobData('customQuestions', e.target.value.split('\n').filter(q => q.trim()))}
-                placeholder="• What experience do you have with...?&#10;• Why are you interested in this role?&#10;• What's your availability?"
-                rows={3}
+                placeholder="What experience do you have with warehouse equipment?&#10;Why are you interested in this role?&#10;What's your availability for shifts?"
+                rows={4}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
-              <p className="mt-1 text-sm text-gray-500">
-                One question per line. Keep it to 3-4 questions max.
-              </p>
+              <div className="mt-2 space-y-1">
+                <p className="text-sm text-gray-600">
+                  <strong>Add your own questions</strong> - one per line, 3-4 questions max
+                </p>
+                <p className="text-xs text-gray-500">
+                  These questions will be asked when candidates apply, in addition to uploading their resume.
+                </p>
+              </div>
             </div>
           </div>
         );

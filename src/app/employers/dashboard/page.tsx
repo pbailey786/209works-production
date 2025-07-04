@@ -12,6 +12,7 @@ import {
   Sparkles,
   CheckCircle,
 } from 'lucide-react';
+// Removed global Smart Dashboard - now job-specific
 
 interface SimpleStats {
   activeJobs: number;
@@ -289,6 +290,35 @@ export default function SimpleEmployerDashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Job Management - Enhanced with applicant links */}
+        {stats.totalApplications > 0 && (
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden mb-8">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900">Jobs with Applications</h3>
+                <Link
+                  href="/employers/my-jobs"
+                  className="text-sm text-[#2d4a3e] hover:text-[#1d3a2e] font-medium"
+                >
+                  View all jobs →
+                </Link>
+              </div>
+            </div>
+            <div className="p-6">
+              <p className="text-gray-600 mb-4">
+                Manage applicants for each of your active job postings.
+              </p>
+              <Link
+                href="/employers/my-jobs"
+                className="inline-flex items-center px-6 py-3 bg-[#2d4a3e] text-white rounded-xl font-medium hover:bg-[#1d3a2e] transition-colors"
+              >
+                <Users className="w-5 h-5 mr-2" />
+                Manage Job Applications
+              </Link>
             </div>
           </div>
         )}

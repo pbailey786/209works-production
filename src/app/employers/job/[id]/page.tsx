@@ -404,10 +404,10 @@ export default function EmployerJobDetailsPage() {
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Recent Applicants</h3>
                 <Link
-                  href={`/employers/applicants?job=${jobData.id}`}
+                  href={`/employers/job/${jobData.id}/applicants`}
                   className="text-sm text-blue-600 hover:text-blue-500"
                 >
-                  View All
+                  Manage Applicants
                 </Link>
               </div>
               <div className="space-y-3">
@@ -546,11 +546,11 @@ export default function EmployerJobDetailsPage() {
                   <span>Export</span>
                 </button>
                 <Link
-                  href={`/employers/applicants?job=${jobData.id}`}
+                  href={`/employers/job/${jobData.id}/applicants`}
                   className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                 >
                   <Users className="h-4 w-4" />
-                  <span>Manage All</span>
+                  <span>Manage Applicants</span>
                 </Link>
               </div>
             </div>

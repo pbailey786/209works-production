@@ -507,21 +507,34 @@ function MyJobsContent() {
                 </div>
 
                 {/* Actions */}
-                <div className="ml-4 flex items-center space-x-2">
-                  <Link
-                    href={`/employers/job/${job.id}`}
-                    className="p-2 text-gray-400 hover:text-gray-600"
-                    title="View Details"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={`/employers/job/${job.id}/edit`}
-                    className="p-2 text-gray-400 hover:text-gray-600"
-                    title="Edit Job"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Link>
+                <div className="ml-4 flex flex-col items-end space-y-2">
+                  {/* Primary Action - Manage Applicants */}
+                  {(job.applications || 0) > 0 && (
+                    <Link
+                      href={`/employers/job/${job.id}/applicants`}
+                      className="flex items-center space-x-2 rounded-lg bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+                    >
+                      <Users className="h-4 w-4" />
+                      <span>Manage Applicants</span>
+                    </Link>
+                  )}
+                  
+                  {/* Secondary Actions */}
+                  <div className="flex items-center space-x-2">
+                    <Link
+                      href={`/employers/job/${job.id}`}
+                      className="p-2 text-gray-400 hover:text-gray-600"
+                      title="View Details"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                    <Link
+                      href={`/employers/job/${job.id}/edit`}
+                      className="p-2 text-gray-400 hover:text-gray-600"
+                      title="Edit Job"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Link>
                   <button
                     className="p-2 text-gray-400 hover:text-gray-600"
                     title="Duplicate Job"
@@ -543,12 +556,13 @@ function MyJobsContent() {
                       <Play className="h-4 w-4" />
                     </button>
                   )}
-                  <button
-                    className="p-2 text-gray-400 hover:text-gray-600"
-                    title="More Actions"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
+                    <button
+                      className="p-2 text-gray-400 hover:text-gray-600"
+                      title="More Actions"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
 

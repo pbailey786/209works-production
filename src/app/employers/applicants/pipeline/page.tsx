@@ -41,8 +41,11 @@ interface Job {
 }
 
 const statusConfig = {
-  applied: { title: 'Applied', color: 'bg-blue-50 border-blue-200', textColor: 'text-blue-700' },
-  shortlisted: { title: 'Shortlisted', color: 'bg-green-50 border-green-200', textColor: 'text-green-700' },
+  pending: { title: 'Applied', color: 'bg-blue-50 border-blue-200', textColor: 'text-blue-700' },
+  reviewing: { title: 'Reviewed', color: 'bg-yellow-50 border-yellow-200', textColor: 'text-yellow-700' },
+  contacted: { title: 'Contact', color: 'bg-purple-50 border-purple-200', textColor: 'text-purple-700' },
+  interview: { title: 'Interview', color: 'bg-orange-50 border-orange-200', textColor: 'text-orange-700' },
+  offer: { title: 'Decision', color: 'bg-green-50 border-green-200', textColor: 'text-green-700' },
   rejected: { title: 'Rejected', color: 'bg-red-50 border-red-200', textColor: 'text-red-700' },
 };
 
@@ -210,8 +213,8 @@ export default function PipelineViewPage() {
                 </Link>
               </div>
 
-              {/* Simple 3-Column Pipeline */}
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {/* Updated 6-Column Pipeline */}
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 xl:grid-cols-6">
                 {Object.entries(statusConfig).map(([status, config]) => {
                   const applications = getApplicationsByStatus(status);
                   return (
@@ -266,11 +269,20 @@ export default function PipelineViewPage() {
                                 </div>
 
                                 <div className="flex space-x-1">
-                                  {status !== 'shortlisted' && (
+                                  {status === 'pending' && (
                                     <button
-                                      onClick={() => updateApplicationStatus(application.id, 'shortlisted')}
-                                      className="rounded bg-green-600 px-2 py-1 text-xs text-white transition-colors hover:bg-green-700"
-                                      title="Shortlist"
+                                      onClick={() => updateApplicationStatus(application.id, 'reviewing')}
+                                      className="rounded bg-blue-600 px-2 py-1 text-xs text-white transition-colors hover:bg-blue-700"
+                                      title="Mark as Reviewed"
+                                    >
+                                      <Eye className="h-3 w-3" />
+                                    </button>
+                                  )}
+                                  {(status === 'reviewing' || status === 'contacted') && (
+                                    <button
+                                      onClick={() => updateApplicationStatus(application.id, status === 'reviewing' ? 'contacted' : 'interview')}
+                                      className="rounded bg-purple-600 px-2 py-1 text-xs text-white transition-colors hover:bg-purple-700"
+                                      title={status === 'reviewing' ? 'Make Contact' : 'Schedule Interview'}
                                     >
                                       <UserCheck className="h-3 w-3" />
                                     </button>

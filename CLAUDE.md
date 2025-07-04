@@ -107,7 +107,10 @@ The platform uses a subscription + credit system for employers:
 
 **Credit Usage:**
 - 1 credit = 1 job posting (basic)
-- Additional credits for featured posts, priority placement, etc.
+- Additional credits for enhanced features:
+  - **Featured Post**: +1 credit for priority placement and enhanced visibility
+  - **Social Media Promotion**: +1 credit for Instagram/X promotion to 5K+ local followers
+  - **Bundle Option**: Both features together at discounted rate
 - Credits are managed through `/employers/credits/checkout` and employer dashboard
 - Credit balance displayed throughout job posting flow
 - Automatic credit deduction upon successful job publication

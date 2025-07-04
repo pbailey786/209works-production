@@ -22,6 +22,7 @@ import {
   Phone,
   ExternalLink,
 } from 'lucide-react';
+import NotesSystem from '@/components/employers/NotesSystem';
 
 interface Application {
   id: string;
@@ -56,37 +57,37 @@ const statusConfig = {
     icon: Clock,
     color: 'text-yellow-600',
     bg: 'bg-yellow-100',
-    label: 'Pending',
+    label: 'Applied',
   },
   reviewing: {
     icon: Eye,
     color: 'text-blue-600',
     bg: 'bg-blue-100',
-    label: 'Under Review',
+    label: 'Reviewed',
+  },
+  contacted: {
+    icon: MessageSquare,
+    color: 'text-purple-600',
+    bg: 'bg-purple-100',
+    label: 'Contact',
   },
   interview: {
     icon: Calendar,
-    color: 'text-purple-600',
-    bg: 'bg-purple-100',
+    color: 'text-orange-600',
+    bg: 'bg-orange-100',
     label: 'Interview',
   },
   offer: {
     icon: Gift,
     color: 'text-green-600',
     bg: 'bg-green-100',
-    label: 'Offer',
+    label: 'Decision',
   },
   rejected: {
     icon: XCircle,
     color: 'text-red-600',
     bg: 'bg-red-100',
     label: 'Rejected',
-  },
-  withdrawn: {
-    icon: AlertCircle,
-    color: 'text-gray-600',
-    bg: 'bg-gray-100',
-    label: 'Withdrawn',
   },
 };
 
@@ -99,6 +100,8 @@ export default function ApplicantsPage() {
   const [statusSummary, setStatusSummary] = useState<Record<string, number>>({});
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showNotesSystem, setShowNotesSystem] = useState(false);
+  const [selectedApplicationForNotes, setSelectedApplicationForNotes] = useState<string | null>(null);
 
   const fetchApplications = async (
     pageNum: number = 1,
@@ -164,6 +167,11 @@ export default function ApplicantsPage() {
     }
   };
 
+  const openNotesSystem = (applicationId: string) => {
+    setSelectedApplicationForNotes(applicationId);
+    setShowNotesSystem(true);
+  };
+
   useEffect(() => {
     fetchApplications(1, statusFilter, searchQuery);
   }, [statusFilter]);
@@ -197,18 +205,18 @@ export default function ApplicantsPage() {
         <div>
           <h1 className="flex items-center text-3xl font-bold text-gray-900">
             <Users className="mr-3 h-8 w-8 text-blue-500" />
-            Candidates
+            Global Applicant View
           </h1>
           <p className="mt-1 text-gray-600">
-            Manage applications and track candidates through your hiring process
+            <strong>Note:</strong> For better management, use job-specific applicant pages from your <Link href="/employers/my-jobs" className="text-blue-600 hover:underline">My Jobs</Link> dashboard
           </p>
         </div>
         <div className="flex items-center space-x-3">
           <Link
-            href="/employers/applicants/pipeline"
+            href="/employers/my-jobs"
             className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
           >
-            Pipeline View
+            Go to My Jobs
           </Link>
         </div>
       </div>
@@ -421,6 +429,14 @@ export default function ApplicantsPage() {
                             </button>
                           )}
 
+                          <button
+                            onClick={() => openNotesSystem(application.id)}
+                            className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                          >
+                            <FileText className="mr-1 inline h-3 w-3" />
+                            Notes
+                          </button>
+
                           <Link
                             href={`/employers/candidates/${application.id}`}
                             className="rounded bg-blue-600 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-700"
@@ -461,6 +477,21 @@ export default function ApplicantsPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Notes System */}
+      {showNotesSystem && selectedApplicationForNotes && (
+        <NotesSystem
+          applicationId={selectedApplicationForNotes}
+          candidateName={
+            applications.find(app => app.id === selectedApplicationForNotes)?.user.name || 'Candidate'
+          }
+          isOpen={showNotesSystem}
+          onClose={() => {
+            setShowNotesSystem(false);
+            setSelectedApplicationForNotes(null);
+          }}
+        />
       )}
     </div>
   );

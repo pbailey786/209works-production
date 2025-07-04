@@ -97,6 +97,7 @@ model User {
   weeklyDigest         WeeklyDigest?
   chatAnalytics        ChatAnalytics[]
   chatHistory          ChatHistory[]
+  applicationNotes     ApplicationNote[]      @relation("ApplicationNotes")
   // customQuestionAnalytics CustomQuestionAnalytics[] // TODO: Add after migration
   impersonationSessions ImpersonationSession[] @relation("ImpersonationTarget")
   verificationTokens    VerificationToken[]
@@ -604,23 +605,44 @@ model Subscription {
 }
 
 model JobApplication {
-  id             String    @id @default(uuid())
+  id             String            @id @default(uuid())
   userId         String
   jobId          String
-  appliedAt      DateTime  @default(now())
+  appliedAt      DateTime          @default(now())
   resumeUrl      String?
   coverLetterUrl String?
-  status         String?   @default("pending")
+  status         String?           @default("pending")
   coverLetter    String?
   deletedAt      DateTime?
   linkedinUrl    String?
-  job            Job       @relation(fields: [jobId], references: [id])
-  user           User      @relation(fields: [userId], references: [id])
+  job            Job               @relation(fields: [jobId], references: [id])
+  user           User              @relation(fields: [userId], references: [id])
+  notes          ApplicationNote[]
 
   @@unique([userId, jobId])
   @@index([userId])
   @@index([jobId])
   @@index([appliedAt])
+  @@index([deletedAt])
+}
+
+model ApplicationNote {
+  id            String          @id @default(uuid())
+  content       String          @db.VarChar(2000) // Limit content length
+  type          String          @default("general") // general, interview, skills, follow_up, concern, positive
+  isPrivate     Boolean         @default(false)
+  applicationId String
+  authorId      String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  deletedAt     DateTime?       // Soft delete for inappropriate notes
+  application   JobApplication  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  author        User            @relation("ApplicationNotes", fields: [authorId], references: [id])
+
+  @@index([applicationId])
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([type])
   @@index([deletedAt])
 }
 
