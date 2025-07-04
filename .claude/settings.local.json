@@ -33,7 +33,8 @@
       "WebFetch(domain:resources.workable.com)",
       "Bash(timeout 15s npm run dev)",
       "WebFetch(domain:www.indeed.com)",
-      "WebFetch(domain:services.onetcenter.org)"
+      "WebFetch(domain:services.onetcenter.org)",
+      "Bash(git reset:*)"
     ],
     "deny": []
   }
