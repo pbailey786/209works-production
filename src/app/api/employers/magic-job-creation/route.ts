@@ -51,23 +51,20 @@ export async function POST(req: NextRequest) {
 CRITICAL RULES:
 1. Extract the EXACT job title from the user's prompt
 2. Generate HIGHLY TECHNICAL, SPECIFIC content - NO GENERIC PHRASES
-3. ALWAYS use these Central Valley market salary ranges (ignore user-provided salaries if unrealistic):
-   - HVAC/Refrigeration technicians: $25-35/hr
-   - Plumbers/Electricians: $28-38/hr
-   - Pest Control Technicians: $18-25/hr
-   - Solar/Renewable Energy Techs: $22-30/hr
-   - Medical/Healthcare (non-RN): $18-28/hr
-   - Warehouse/Forklift operators: $17-22/hr
-   - Retail/Cashiers: $16-20/hr
-   - Drivers (CDL): $22-28/hr
-   - Drivers (non-CDL): $17-22/hr
-   - Security: $16-22/hr
-   - Management/Supervisors: $22-32/hr ($45K-65K/year)
-   - Office/Admin: $18-24/hr ($35K-50K/year)
-   - Skilled trades (general): $22-35/hr
-   - General labor: $16-19/hr
+3. SALARY DETERMINATION - Use your knowledge of labor markets:
+   - Research appropriate wages for this specific occupation in Central Valley, California
+   - Consider required certifications, licenses, and skill level
+   - Technical/skilled trades with certifications: typically $22-35/hr
+   - Entry-level positions: typically $16-22/hr
+   - Management/Professional: Use annual salaries ($40K-70K/year)
+   - Specialized roles (medical, legal, engineering): Research industry standards
+   - If O*NET data is provided, prioritize those authoritative wage ranges
    
-4. SALARY FORMAT: Use hourly for non-exempt positions. For management/professional roles, you may show annual salary (e.g., "$45,000-65,000/year") or both formats
+4. Be intelligent about salary determination. Consider:
+   - Required education/certification level
+   - Physical demands and working conditions
+   - Regional market rates for Central Valley
+   - Industry standards and competition for talent
 
 Generate HIGHLY SPECIFIC, INDUSTRY-FOCUSED content:
 - DESCRIPTION: 150-200 words with technical details about the role, specific equipment/systems, work environment, and career growth paths
@@ -243,46 +240,13 @@ IMPORTANT: Create an in-depth, detailed job description using this O*NET data. M
               }
             }
           } 
-          // Fallback: Use hardcoded market data when O*NET unavailable
+          // Trust the AI to generate appropriate salaries based on the enhanced prompt
           else {
-            const jobTitleLower = jobData.title.toLowerCase();
-            let marketRange = null;
+            console.log(`💰 No O*NET salary data available. Trusting AI-generated salary for ${jobData.title}: ${jobData.salary}`);
             
-            // Define market ranges for specific job types
-            if (jobTitleLower.includes('hvac') || jobTitleLower.includes('heating') || jobTitleLower.includes('air conditioning') || jobTitleLower.includes('refrigeration')) {
-              marketRange = { min: 25, max: 35, median: 28 }; // Central Valley HVAC rates
-            } else if (jobTitleLower.includes('pest control') || jobTitleLower.includes('exterminator')) {
-              marketRange = { min: 18, max: 25, median: 21 }; // Pest control rates
-            } else if (jobTitleLower.includes('solar') || jobTitleLower.includes('renewable')) {
-              marketRange = { min: 22, max: 30, median: 25 }; // Solar tech rates
-            } else if (jobTitleLower.includes('medical') || jobTitleLower.includes('healthcare') || jobTitleLower.includes('assistant')) {
-              marketRange = { min: 18, max: 28, median: 22 }; // Medical assistant rates
-            } else if (jobTitleLower.includes('warehouse')) {
-              marketRange = { min: 17, max: 22, median: 18 };
-            } else if (jobTitleLower.includes('retail') || jobTitleLower.includes('cashier')) {
-              marketRange = { min: 16, max: 20, median: 17 };
-            } else if (jobTitleLower.includes('driver') || jobTitleLower.includes('delivery')) {
-              marketRange = { min: 18, max: 24, median: 20 };
-            } else if (jobTitleLower.includes('security')) {
-              marketRange = { min: 16, max: 22, median: 18 };
-            } else if (jobTitleLower.includes('manager') || jobTitleLower.includes('supervisor')) {
-              marketRange = { min: 22, max: 32, median: 26 };
-            }
-            
-            // Always use market range for specific job types, regardless of AI salary
-            if (marketRange) {
-              // For management/professional roles, show both hourly and annual
-              if (jobTitleLower.includes('manager') || jobTitleLower.includes('supervisor') || jobTitleLower.includes('coordinator')) {
-                const annualMin = Math.round(marketRange.min * 40 * 52 / 1000) * 1000; // Round to nearest thousand
-                const annualMax = Math.round(marketRange.max * 40 * 52 / 1000) * 1000;
-                console.log(`💰 Using salary range for ${jobData.title}: $${annualMin/1000}K-${annualMax/1000}K/year (was: ${jobData.salary})`);
-                jobData.salary = `$${annualMin.toLocaleString()}-${annualMax.toLocaleString()}/year`;
-              } else {
-                console.log(`💰 Using market-appropriate salary for ${jobData.title}: $${marketRange.min}-${marketRange.max}/hr (was: ${jobData.salary})`);
-                jobData.salary = `$${marketRange.min}-${marketRange.max}/hr`;
-              }
-            } else if (aiSalaryAmount > 25) { // Only validate if no specific market range and salary seems high
-              console.log(`⚠️ No market data for ${jobData.title}, keeping AI salary: ${jobData.salary}`);
+            // Only validate if salary seems completely unrealistic (>$50/hr for non-specialized roles)
+            if (aiSalaryAmount > 50 && !jobData.title.toLowerCase().includes('manager') && !jobData.title.toLowerCase().includes('supervisor') && !jobData.title.toLowerCase().includes('engineer')) {
+              console.log(`⚠️ AI salary $${aiSalaryAmount}/hr seems very high for ${jobData.title}, but keeping it - AI should know best`);
             }
           }
         }
