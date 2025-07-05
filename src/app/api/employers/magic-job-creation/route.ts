@@ -48,13 +48,20 @@ export async function POST(req: NextRequest) {
     // Enhanced AI prompt for detailed job descriptions using O*NET data
     const systemPrompt = `Create a comprehensive, professional job description in JSON format. Extract job title and location from the user's prompt. For salary, prioritize realistic market rates for the region over user-provided amounts.
 
-Generate detailed, in-depth content:
-- DESCRIPTION: 4-5 sentences describing the role, company impact, and growth opportunities (150-200 words)
-- RESPONSIBILITIES: 6-8 specific daily tasks and duties using action words (detailed bullet points)
-- REQUIREMENTS: 5-7 must-have qualifications including skills, experience, and certifications
-- NICE TO HAVE: 3-4 preferred qualifications that would set candidates apart
+CRITICAL: Generate SPECIFIC, TECHNICAL content tailored to the exact job type. Avoid generic language.
 
-When O*NET data is provided, incorporate their detailed occupational information to create authoritative, comprehensive job descriptions that reflect real industry standards and expectations.
+Generate detailed, industry-specific content:
+- DESCRIPTION: 4-5 sentences describing the specific role, technical aspects, and growth opportunities (150-200 words)
+- RESPONSIBILITIES: 6-8 SPECIFIC daily tasks using technical terminology and industry-specific duties
+- REQUIREMENTS: 5-7 must-have qualifications including certifications, technical skills, and experience levels
+- NICE TO HAVE: 3-4 advanced qualifications that show expertise
+
+Examples of SPECIFIC content:
+- HVAC: "Install, maintain, and repair heating, ventilation, air conditioning systems", "EPA certification", "refrigerant handling"
+- Warehouse: "Operate RF scanners", "forklift certification", "inventory cycle counts"
+- Driver: "DOT physical", "clean driving record", "delivery route optimization"
+
+When O*NET data is provided, prioritize their occupational tasks and incorporate technical terminology, certifications, and industry-specific requirements.
 
 Return JSON with: title, location, salary, description, responsibilities, requirements, niceToHave, contactMethod, schedule, benefitOptions (array with icon, title, description, key)`;
 
@@ -64,9 +71,30 @@ Location: ${user?.businessLocation || 'Stockton, CA'}
 
 Create a professional job description with realistic details for this role.`;
 
-    // Extract basic job info for O*NET lookup
-    const jobTitleMatch = prompt.match(/(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i);
-    const extractedTitle = jobTitleMatch ? jobTitleMatch[1].trim() : 'General Worker';
+    // Extract basic job info for O*NET lookup - enhanced to handle direct job titles
+    let extractedTitle = 'General Worker';
+    
+    // Try different patterns to extract job title
+    const patterns = [
+      // Pattern 1: "hiring/need/looking for [job title]"
+      /(?:hiring|need|looking for|seeking)\s+(?:a\s+)?([^,.]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.)/i,
+      // Pattern 2: Direct job title at start
+      /^([A-Z][a-zA-Z\s]+?)(?:\s+for|\s+in|\s+at|\s+to|,|\.|$)/,
+      // Pattern 3: Job title anywhere in prompt
+      /(HVAC|warehouse|retail|driver|manager|technician|specialist|associate|coordinator|assistant)[^,.]*(?:worker|associate|technician|specialist|manager|supervisor|coordinator|assistant|operator)?/i
+    ];
+    
+    for (const pattern of patterns) {
+      const match = prompt.match(pattern);
+      if (match && match[1] && match[1].trim().length > 2) {
+        extractedTitle = match[1].trim();
+        console.log(`📋 Job title extracted using pattern: "${extractedTitle}"`);
+        break;
+      }
+    }
+    
+    console.log(`📋 Final extracted title: "${extractedTitle}" from prompt: "${prompt.trim().substring(0, 50)}..."`);
+    
     
     // Try to get O*NET data first (non-blocking) - declare outside try block
     let onetData: any = null;
@@ -189,17 +217,27 @@ IMPORTANT: Create an in-depth, detailed job description using this O*NET data. M
             const jobTitleLower = jobData.title.toLowerCase();
             let marketRange = null;
             
-            if (jobTitleLower.includes('hvac') || jobTitleLower.includes('heating') || jobTitleLower.includes('air conditioning')) {
+            // Define market ranges for specific job types
+            if (jobTitleLower.includes('hvac') || jobTitleLower.includes('heating') || jobTitleLower.includes('air conditioning') || jobTitleLower.includes('refrigeration')) {
               marketRange = { min: 25, max: 35, median: 28 }; // Central Valley HVAC rates
             } else if (jobTitleLower.includes('warehouse')) {
               marketRange = { min: 17, max: 22, median: 18 };
             } else if (jobTitleLower.includes('retail') || jobTitleLower.includes('cashier')) {
               marketRange = { min: 16, max: 20, median: 17 };
+            } else if (jobTitleLower.includes('driver') || jobTitleLower.includes('delivery')) {
+              marketRange = { min: 18, max: 24, median: 20 };
+            } else if (jobTitleLower.includes('security')) {
+              marketRange = { min: 16, max: 22, median: 18 };
+            } else if (jobTitleLower.includes('manager') || jobTitleLower.includes('supervisor')) {
+              marketRange = { min: 22, max: 32, median: 26 };
             }
             
-            if (marketRange && aiSalaryAmount > marketRange.max * 1.4) {
-              console.log(`🚨 AI salary $${aiSalaryAmount}/hr is unrealistic for ${jobData.title}, using market data: $${marketRange.min}-${marketRange.max}/hr`);
+            // Always use market range for specific job types, regardless of AI salary
+            if (marketRange) {
+              console.log(`💰 Using market-appropriate salary for ${jobData.title}: $${marketRange.min}-${marketRange.max}/hr (was: ${jobData.salary})`);
               jobData.salary = `$${marketRange.min}-${marketRange.max}/hr`;
+            } else if (aiSalaryAmount > 25) { // Only validate if no specific market range and salary seems high
+              console.log(`⚠️ No market data for ${jobData.title}, keeping AI salary: ${jobData.salary}`);
             }
           }
         }
@@ -370,7 +408,10 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
   let jobType = 'general';
   
   // Check for specific job titles first (most important)
-  if (lowerPrompt.includes('property manager')) { title = 'Property Manager'; jobType = 'management'; }
+  if (lowerPrompt.includes('hvac') || lowerPrompt.includes('heating') || lowerPrompt.includes('air conditioning') || lowerPrompt.includes('refrigeration')) { 
+    title = 'HVAC Repair Technician'; jobType = 'hvac'; 
+  }
+  else if (lowerPrompt.includes('property manager')) { title = 'Property Manager'; jobType = 'management'; }
   else if (lowerPrompt.includes('storage manager')) { title = 'Storage Manager'; jobType = 'management'; }
   else if (lowerPrompt.includes('facility manager')) { title = 'Facility Manager'; jobType = 'management'; }
   else if (lowerPrompt.includes('office manager')) { title = 'Office Manager'; jobType = 'office'; }
@@ -479,6 +520,8 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
   } else {
     // Enhanced detailed fallback descriptions
     const jobDescriptions = {
+      hvac: `Join ${companyName}'s skilled technical team as an HVAC Repair Technician in ${city}, where your expertise in heating, ventilation, and air conditioning systems makes a direct impact on customer comfort and satisfaction. In this essential role, you'll diagnose, repair, and maintain residential and commercial HVAC systems, working with cutting-edge equipment and technology while serving the growing ${city} area market. You'll have opportunities to specialize in advanced systems, earn additional certifications, and potentially advance into supervisory or field management roles within our expanding service operation. We provide ongoing training, professional development, and the tools you need to build a successful career in the high-demand HVAC industry.`,
+      
       warehouse: `Join ${companyName}'s dynamic ${city} warehouse operation where efficiency meets opportunity. As a key member of our logistics team, you'll be responsible for comprehensive inventory management, accurate order fulfillment, and maintaining our streamlined distribution processes that serve customers across the region. This role offers excellent opportunities for professional advancement within the fast-growing logistics industry, with potential paths into supervisory roles, specialized equipment operation, and supply chain management. You'll work in a modern facility equipped with the latest technology and safety systems, collaborating with a dedicated team committed to operational excellence and continuous improvement.`,
       
       retail: `${companyName} is seeking passionate, customer-focused team members to join our thriving ${city} retail location. In this dynamic role, you'll create memorable shopping experiences by providing exceptional customer service, processing transactions with accuracy and efficiency, and helping maintain our store's reputation as a premier destination for quality products and outstanding service. This position is perfect for individuals who genuinely enjoy interacting with people, solving problems, and contributing to a positive team environment. You'll have opportunities to develop valuable retail skills, learn about inventory management, visual merchandising, and potentially advance into leadership roles within our growing company.`,
@@ -568,6 +611,8 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
 
   // Generate job-specific requirements (must-haves)
   const requirementsByType = {
+    hvac: `• EPA 608 certification or ability to obtain within 90 days\n• High school diploma or equivalent with technical/trade school preferred\n• Valid CA driver's license with clean driving record\n• Ability to lift 50+ lbs and work in various weather conditions\n• Own basic hand tools and willing to invest in specialized HVAC tools\n• Able to pass background check and drug screening`,
+    
     warehouse: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Ability to lift 50 lbs repeatedly\n• Able to pass background check`,
     
     retail: `• Must be 18+ with valid ID\n• Reliable transportation to ${location.split(',')[0]}\n• Weekend and evening availability\n• Friendly personality and customer focus`,
@@ -585,6 +630,8 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
 
   // Generate nice-to-have qualifications
   const niceToHaveByType = {
+    hvac: `• 2+ years HVAC installation or repair experience\n• Additional certifications (NATE, HVAC Excellence, or manufacturer certifications)\n• Experience with residential and commercial systems\n• Knowledge of electrical systems and controls`,
+    
     warehouse: `• Previous warehouse experience\n• Forklift certification\n• Basic math skills for inventory`,
     
     retail: `• Previous retail/customer service experience\n• Basic math skills for cash handling\n• Second language skills`,
@@ -602,6 +649,8 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
 
   // Generate job-specific responsibilities (what you'll do daily)
   const responsibilitiesByType = {
+    hvac: `• Install, repair, and maintain heating, ventilation, and air conditioning systems in residential and commercial settings\n• Diagnose system malfunctions using specialized testing equipment and technical manuals\n• Replace or repair defective components including compressors, motors, thermostats, and refrigerant lines\n• Perform routine maintenance inspections and preventive service on HVAC equipment\n• Handle refrigerants safely following EPA regulations and environmental guidelines\n• Document service calls, parts used, and system performance for customer records`,
+    
     warehouse: `• Receive, inspect, and organize incoming inventory shipments\n• Pick and pack orders accurately using RF scanners and inventory systems\n• Operate forklifts and pallet jacks to move products safely\n• Maintain clean and organized warehouse areas following safety protocols\n• Collaborate with team members to meet daily shipping deadlines\n• Conduct inventory counts and report discrepancies to supervisors`,
     
     retail: `• Greet customers warmly and assist with product selection and questions\n• Process sales transactions accurately using POS systems and handle cash\n• Stock shelves, create displays, and maintain store appearance standards\n• Handle customer complaints and returns professionally\n• Work with team members to achieve sales goals and store targets\n• Learn product features to provide knowledgeable recommendations`,
