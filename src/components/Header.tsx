@@ -77,11 +77,35 @@ export default function Header() {
   const [authError, setAuthError] = useState<string | null>(null);
 
   const navigation = [
-    { name: 'Find Jobs', href: '/jobs', icon: Search },
-    ...(FEATURES.AI_CHAT ? [{ name: 'JobsGPT', href: '/chat', icon: Sparkles }] : []),
-    { name: 'For Employers', href: '/employers', icon: Building2 },
-    { name: 'About', href: '/about', icon: Heart },
-    { name: 'Contact', href: '/contact', icon: FileText },
+    // Lead with AI differentiator - primary CTA
+    ...(FEATURES.AI_CHAT ? [{ 
+      name: 'AI Job Search', 
+      href: '/chat', 
+      icon: Sparkles,
+      isPrimary: true,
+      description: 'Smart job matching powered by AI'
+    }] : []),
+    // Traditional search as secondary option
+    { 
+      name: '209 Jobs', 
+      href: '/jobs', 
+      icon: Search,
+      description: 'Browse all local opportunities'
+    },
+    // Action-oriented employer CTA
+    { 
+      name: 'Post a Job', 
+      href: '/employers', 
+      icon: Building2,
+      description: 'Hire local talent in the 209'
+    },
+    // Community-focused about
+    { 
+      name: 'About 209', 
+      href: '/about', 
+      icon: Heart,
+      description: 'Your local job platform'
+    },
   ];
 
   // Role-based navigation
@@ -207,18 +231,31 @@ export default function Header() {
           >
             {navigation.map(item => {
               const Icon = item.icon;
+              const isPrimary = (item as any).isPrimary;
+              
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
                     'flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200',
-                    'text-gray-700 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e]',
-                    'focus:outline-none focus:ring-2 focus:ring-[#2d4a3e] focus:ring-offset-2'
+                    'focus:outline-none focus:ring-2 focus:ring-offset-2',
+                    isPrimary
+                      ? 'bg-gradient-to-r from-[#ff6b35] to-[#e55a2b] text-white shadow-md hover:shadow-lg hover:scale-105 focus:ring-[#ff6b35]'
+                      : 'text-gray-700 hover:bg-[#ff6b35]/10 hover:text-[#ff6b35] focus:ring-[#ff6b35]'
                   )}
+                  title={(item as any).description}
                 >
-                  <Icon className="h-4 w-4" />
-                  {item.name}
+                  <Icon className={cn(
+                    'h-4 w-4',
+                    isPrimary ? 'text-white' : ''
+                  )} />
+                  <span className={isPrimary ? 'font-semibold' : ''}>
+                    {item.name}
+                  </span>
+                  {isPrimary && (
+                    <div className="ml-1 flex h-2 w-2 rounded-full bg-white/80 animate-pulse" />
+                  )}
                 </Link>
               );
             })}
@@ -288,7 +325,16 @@ export default function Header() {
                     afterSignOutUrl="/"
                     appearance={{
                       elements: {
-                        avatarBox: "w-10 h-10"
+                        avatarBox: "w-10 h-10",
+                        userButtonAvatarBox: "w-10 h-10",
+                        userButtonAvatarImage: "w-10 h-10",
+                      },
+                      variables: {
+                        colorPrimary: "#ff6b35",
+                        colorBackground: "#fff",
+                        colorInputBackground: "#f9fafb",
+                        colorInputText: "#374151",
+                        borderRadius: "0.5rem",
                       }
                     }}
                   >
@@ -445,15 +491,30 @@ export default function Header() {
               <div className="space-y-1">
                 {navigation.map(item => {
                   const Icon = item.icon;
+                  const isPrimary = (item as any).isPrimary;
+                  
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e]"
+                      className={cn(
+                        'flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-all duration-200',
+                        isPrimary
+                          ? 'bg-gradient-to-r from-[#ff6b35] to-[#e55a2b] text-white shadow-md mx-2'
+                          : 'text-gray-700 hover:bg-[#ff6b35]/10 hover:text-[#ff6b35]'
+                      )}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <Icon className="h-5 w-5" />
-                      {item.name}
+                      <Icon className={cn(
+                        'h-5 w-5',
+                        isPrimary ? 'text-white' : ''
+                      )} />
+                      <span className={isPrimary ? 'font-semibold' : ''}>
+                        {item.name}
+                      </span>
+                      {isPrimary && (
+                        <div className="ml-auto flex h-2 w-2 rounded-full bg-white/80 animate-pulse" />
+                      )}
                     </Link>
                   );
                 })}
@@ -467,7 +528,7 @@ export default function Header() {
                         <Link
                           key={item.name}
                           href={item.href}
-                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e]"
+                          className="flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#ff6b35]/10 hover:text-[#ff6b35]"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           <Icon className="h-5 w-5" />
@@ -481,7 +542,7 @@ export default function Header() {
                         handleSignOut();
                       }}
                       disabled={isSigningOut}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#9fdf9f]/10 hover:text-[#2d4a3e] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-base font-medium text-gray-700 transition-colors duration-200 hover:bg-[#ff6b35]/10 hover:text-[#ff6b35] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {isSigningOut ? (
                         <>

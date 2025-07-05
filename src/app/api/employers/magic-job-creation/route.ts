@@ -53,13 +53,21 @@ CRITICAL RULES:
 2. Generate HIGHLY TECHNICAL, SPECIFIC content - NO GENERIC PHRASES
 3. ALWAYS use these Central Valley market salary ranges (ignore user-provided salaries if unrealistic):
    - HVAC/Refrigeration technicians: $25-35/hr
-   - Plumbers/Electricians: $28-38/hr  
+   - Plumbers/Electricians: $28-38/hr
+   - Pest Control Technicians: $18-25/hr
+   - Solar/Renewable Energy Techs: $22-30/hr
+   - Medical/Healthcare (non-RN): $18-28/hr
    - Warehouse/Forklift operators: $17-22/hr
    - Retail/Cashiers: $16-20/hr
    - Drivers (CDL): $22-28/hr
+   - Drivers (non-CDL): $17-22/hr
    - Security: $16-22/hr
-   - Management/Supervisors: $22-32/hr
+   - Management/Supervisors: $22-32/hr ($45K-65K/year)
+   - Office/Admin: $18-24/hr ($35K-50K/year)
+   - Skilled trades (general): $22-35/hr
    - General labor: $16-19/hr
+   
+4. SALARY FORMAT: Use hourly for non-exempt positions. For management/professional roles, you may show annual salary (e.g., "$45,000-65,000/year") or both formats
 
 Generate HIGHLY SPECIFIC, INDUSTRY-FOCUSED content:
 - DESCRIPTION: 150-200 words with technical details about the role, specific equipment/systems, work environment, and career growth paths
@@ -243,6 +251,12 @@ IMPORTANT: Create an in-depth, detailed job description using this O*NET data. M
             // Define market ranges for specific job types
             if (jobTitleLower.includes('hvac') || jobTitleLower.includes('heating') || jobTitleLower.includes('air conditioning') || jobTitleLower.includes('refrigeration')) {
               marketRange = { min: 25, max: 35, median: 28 }; // Central Valley HVAC rates
+            } else if (jobTitleLower.includes('pest control') || jobTitleLower.includes('exterminator')) {
+              marketRange = { min: 18, max: 25, median: 21 }; // Pest control rates
+            } else if (jobTitleLower.includes('solar') || jobTitleLower.includes('renewable')) {
+              marketRange = { min: 22, max: 30, median: 25 }; // Solar tech rates
+            } else if (jobTitleLower.includes('medical') || jobTitleLower.includes('healthcare') || jobTitleLower.includes('assistant')) {
+              marketRange = { min: 18, max: 28, median: 22 }; // Medical assistant rates
             } else if (jobTitleLower.includes('warehouse')) {
               marketRange = { min: 17, max: 22, median: 18 };
             } else if (jobTitleLower.includes('retail') || jobTitleLower.includes('cashier')) {
@@ -257,8 +271,16 @@ IMPORTANT: Create an in-depth, detailed job description using this O*NET data. M
             
             // Always use market range for specific job types, regardless of AI salary
             if (marketRange) {
-              console.log(`💰 Using market-appropriate salary for ${jobData.title}: $${marketRange.min}-${marketRange.max}/hr (was: ${jobData.salary})`);
-              jobData.salary = `$${marketRange.min}-${marketRange.max}/hr`;
+              // For management/professional roles, show both hourly and annual
+              if (jobTitleLower.includes('manager') || jobTitleLower.includes('supervisor') || jobTitleLower.includes('coordinator')) {
+                const annualMin = Math.round(marketRange.min * 40 * 52 / 1000) * 1000; // Round to nearest thousand
+                const annualMax = Math.round(marketRange.max * 40 * 52 / 1000) * 1000;
+                console.log(`💰 Using salary range for ${jobData.title}: $${annualMin/1000}K-${annualMax/1000}K/year (was: ${jobData.salary})`);
+                jobData.salary = `$${annualMin.toLocaleString()}-${annualMax.toLocaleString()}/year`;
+              } else {
+                console.log(`💰 Using market-appropriate salary for ${jobData.title}: $${marketRange.min}-${marketRange.max}/hr (was: ${jobData.salary})`);
+                jobData.salary = `$${marketRange.min}-${marketRange.max}/hr`;
+              }
             } else if (aiSalaryAmount > 25) { // Only validate if no specific market range and salary seems high
               console.log(`⚠️ No market data for ${jobData.title}, keeping AI salary: ${jobData.salary}`);
             }
