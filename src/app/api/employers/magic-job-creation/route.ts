@@ -45,14 +45,22 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Simplified AI prompt to avoid memory issues
-    const systemPrompt = `Create a professional job description in JSON format. Extract job title and location from the user's prompt. For salary, prioritize realistic market rates for the Central Valley region over user-provided amounts. Generate professional responsibilities, requirements, and benefits.
+    // Enhanced AI prompt for detailed job descriptions using O*NET data
+    const systemPrompt = `Create a comprehensive, professional job description in JSON format. Extract job title and location from the user's prompt. For salary, prioritize realistic market rates for the region over user-provided amounts.
+
+Generate detailed, in-depth content:
+- DESCRIPTION: 4-5 sentences describing the role, company impact, and growth opportunities (150-200 words)
+- RESPONSIBILITIES: 6-8 specific daily tasks and duties using action words (detailed bullet points)
+- REQUIREMENTS: 5-7 must-have qualifications including skills, experience, and certifications
+- NICE TO HAVE: 3-4 preferred qualifications that would set candidates apart
+
+When O*NET data is provided, incorporate their detailed occupational information to create authoritative, comprehensive job descriptions that reflect real industry standards and expectations.
 
 Return JSON with: title, location, salary, description, responsibilities, requirements, niceToHave, contactMethod, schedule, benefitOptions (array with icon, title, description, key)`;
 
     const userPrompt = `Job posting: "${prompt.trim()}"
 Company: ${user?.companyName || 'Our company'}
-Location: ${user?.businessLocation || 'Central Valley, CA'}
+Location: ${user?.businessLocation || 'Stockton, CA'}
 
 Create a professional job description with realistic details for this role.`;
 
@@ -97,14 +105,24 @@ Create a professional job description with realistic details for this role.`;
       let enhancedUserPrompt = userPrompt;
       if (onetData && onetData.title) {
         console.log('🔧 Enhancing prompt with O*NET data');
-        enhancedUserPrompt += `\n\nO*NET DATA AVAILABLE - Use this authoritative data:
-Title: ${onetData.title}
-REALISTIC SALARY (use this range): ${onetData.salary?.display || '$16-20/hr for entry level'}
-Key Responsibilities: ${onetData.responsibilities?.slice(0, 3).join('; ') || 'See job description'}
-Required Skills: ${onetData.skills?.join(', ') || 'Standard skills for role'}
-Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See requirements section'}
+        enhancedUserPrompt += `\n\nO*NET OCCUPATIONAL DATA - Use this authoritative information to create a comprehensive job description:
 
-IMPORTANT: Use the O*NET salary range as it reflects actual market rates for this region.`;
+OCCUPATION: ${onetData.title}
+REALISTIC SALARY: ${onetData.salary?.display || '$16-20/hr for entry level'}
+
+DETAILED RESPONSIBILITIES (use these for comprehensive daily tasks):
+${Array.isArray(onetData.responsibilities) ? onetData.responsibilities.slice(0, 8).map((task: string, i: number) => `• ${task}`).join('\n') : '• Handle daily operations and support team objectives'}
+
+REQUIRED SKILLS & QUALIFICATIONS:
+${Array.isArray(onetData.skills) ? onetData.skills.slice(0, 6).join(', ') : 'Standard professional skills'}
+
+EDUCATION & EXPERIENCE REQUIREMENTS:
+${Array.isArray(onetData.requirements) ? onetData.requirements.slice(0, 5).map((req: string, i: number) => `• ${req}`).join('\n') : '• High school diploma or equivalent'}
+
+INDUSTRY CONTEXT:
+${onetData.description || 'Professional role with growth opportunities'}
+
+IMPORTANT: Create an in-depth, detailed job description using this O*NET data. Make it comprehensive and authoritative - this should be a complete, professional job posting that reflects real industry standards.`;
       }
 
       // Try OpenAI first with timeout
@@ -117,7 +135,7 @@ IMPORTANT: Use the O*NET salary range as it reflects actual market rates for thi
             { role: 'user', content: enhancedUserPrompt }
           ],
           temperature: 0.4, // Balanced for variety + accuracy
-          max_tokens: 1200,
+          max_tokens: 2000,
         }),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('AI timeout')), 8000) // 8 second timeout
@@ -459,23 +477,23 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
     const onetDesc = onetData.description;
     fullDescription = `Join ${companyName} as a ${title} in ${city}. ${onetDesc.replace(/\b(workers?|employees?|individuals?)\b/gi, 'team members')} This role offers growth opportunities in our established ${city} operation, with the chance to develop expertise in this field while contributing to our company's success.`;
   } else {
-    // Fallback to original descriptions
+    // Enhanced detailed fallback descriptions
     const jobDescriptions = {
-      warehouse: `Join ${companyName}'s growing ${city} warehouse team. You'll be responsible for inventory management, order fulfillment, and maintaining our efficient distribution operation. This role offers excellent opportunities for advancement and skills development in the logistics industry.`,
+      warehouse: `Join ${companyName}'s dynamic ${city} warehouse operation where efficiency meets opportunity. As a key member of our logistics team, you'll be responsible for comprehensive inventory management, accurate order fulfillment, and maintaining our streamlined distribution processes that serve customers across the region. This role offers excellent opportunities for professional advancement within the fast-growing logistics industry, with potential paths into supervisory roles, specialized equipment operation, and supply chain management. You'll work in a modern facility equipped with the latest technology and safety systems, collaborating with a dedicated team committed to operational excellence and continuous improvement.`,
       
-      retail: `${companyName} is seeking customer-focused team members for our ${city} location. You'll create positive shopping experiences, handle transactions, and help maintain our store's reputation for excellent service. Perfect for someone who enjoys helping people and wants to grow in retail.`,
+      retail: `${companyName} is seeking passionate, customer-focused team members to join our thriving ${city} retail location. In this dynamic role, you'll create memorable shopping experiences by providing exceptional customer service, processing transactions with accuracy and efficiency, and helping maintain our store's reputation as a premier destination for quality products and outstanding service. This position is perfect for individuals who genuinely enjoy interacting with people, solving problems, and contributing to a positive team environment. You'll have opportunities to develop valuable retail skills, learn about inventory management, visual merchandising, and potentially advance into leadership roles within our growing company.`,
       
-      driver: `${companyName} needs professional drivers to serve our ${city} area customers. You'll operate delivery vehicles safely and efficiently while representing our company with every interaction. Home nightly with local routes - ideal for drivers seeking work-life balance.`,
+      driver: `${companyName} is looking for professional, safety-minded drivers to serve our valued customers throughout the ${city} area and surrounding communities. In this essential role, you'll operate company delivery vehicles with the highest standards of safety and efficiency while serving as a positive ambassador for our brand with every customer interaction. You'll enjoy the independence of the road while maintaining regular routes that get you home nightly, making this an ideal opportunity for experienced drivers seeking work-life balance. We provide comprehensive training, competitive compensation, and opportunities for advancement within our expanding transportation network.`,
       
-      management: `Lead ${companyName}'s ${city} operations as our ${title}. You'll oversee daily activities, develop team members, and drive performance improvements. This strategic role offers significant growth potential for an experienced leader ready to make an impact.`,
+      management: `Lead ${companyName}'s successful ${city} operations as our ${title} and drive our continued growth in this strategic leadership position. You'll oversee daily operational activities, develop and mentor team members to reach their full potential, and implement performance improvements that enhance both efficiency and employee satisfaction. This role offers significant growth potential for an experienced leader ready to make a meaningful impact while building upon our established reputation for excellence. You'll work with senior management to develop strategic initiatives, manage budgets, ensure compliance with industry standards, and foster a culture of continuous improvement and professional development.`,
       
-      office: `Support ${companyName}'s ${city} operations as our ${title}. You'll coordinate administrative functions, assist customers and team members, and help maintain our professional standards. Computer proficiency and strong communication skills essential.`,
+      office: `Support ${companyName}'s growing ${city} operations as our ${title} in this versatile administrative role that combines customer service, team support, and operational coordination. You'll manage a variety of administrative functions, assist both customers and team members with professionalism and attention to detail, and help maintain the high professional standards that set us apart in our industry. This position requires strong computer proficiency, excellent communication skills, and the ability to multitask effectively in a dynamic office environment. You'll have opportunities to learn various aspects of business operations and potentially advance into specialized administrative or management roles.`,
       
-      cleaning: `Maintain ${companyName}'s professional standards as a member of our ${city} facilities team. You'll ensure clean, safe environments through systematic cleaning protocols and attention to detail. Reliable schedules with opportunities for additional hours.`,
+      cleaning: `Maintain ${companyName}'s professional standards as an essential member of our ${city} facilities team, ensuring clean, safe, and welcoming environments through systematic cleaning protocols and meticulous attention to detail. In this important role, you'll be responsible for comprehensive facility maintenance that directly contributes to our professional image and the health and safety of our team members and visitors. We offer reliable schedules with opportunities for additional hours, competitive compensation, and the satisfaction of knowing your work makes a real difference in creating positive environments. You'll use professional-grade equipment and follow industry best practices while working independently and as part of our dedicated facilities team.`,
       
-      security: `Protect ${companyName}'s ${city} facility as a licensed security professional. You'll monitor access, maintain safety protocols, and respond to incidents while representing our company's commitment to security excellence.`,
+      security: `Protect ${companyName}'s ${city} facility and personnel as a licensed security professional, maintaining the highest standards of safety and security while representing our company's unwavering commitment to protection and peace of mind. In this critical role, you'll monitor facility access, maintain comprehensive safety protocols, respond to incidents with professionalism and appropriate action, and serve as a visible deterrent to potential security threats. You'll work with state-of-the-art security systems and receive ongoing training to stay current with industry best practices. This position offers the opportunity to build a career in the growing security field while contributing to a safe, secure environment for our entire team.`,
       
-      general: `Join ${companyName}'s team in ${city} for stable employment with growth opportunities. You'll contribute to our daily operations while developing new skills in a supportive work environment. We value reliability, teamwork, and dedication to quality work.`
+      general: `Join ${companyName}'s established team in ${city} for stable, long-term employment with genuine opportunities for professional growth and skill development. In this versatile role, you'll contribute to our daily operations while learning new skills in a supportive work environment that values reliability, teamwork, and dedication to quality work. We believe in investing in our people and providing clear paths for advancement based on performance and commitment. You'll work alongside experienced professionals who are committed to your success, receive comprehensive training, and have access to ongoing professional development opportunities that can help you build a rewarding career with our growing company.`
     };
     
     fullDescription = jobDescriptions[jobType as keyof typeof jobDescriptions] || jobDescriptions.general;

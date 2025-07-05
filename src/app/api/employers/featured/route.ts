@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       id: employer.company?.id || employer.id,
       name: employer.company?.name || employer.name || 'Unknown Company',
       industry: employer.company?.industry || 'Various',
-      location: employer.company?.headquarters || 'Central Valley, CA',
+      location: employer.company?.headquarters || 'Stockton, CA',
       activeJobs: employer._count.employerJobs,
       description:
         employer.company?.description ||

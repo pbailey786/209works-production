@@ -238,8 +238,8 @@ function buildJobQueryFromFilters(filters: any) {
                 OR: [
                   { areaCodes: { hasSome: ['209', '916', '510'] } }, // Central Valley area codes
                   { city: { in: ['Stockton', 'Modesto', 'Tracy', 'Manteca', 'Lodi', 'Turlock', 'Merced', 'Sacramento', 'Oakland', 'San Jose'] } },
-                  { location: { contains: 'Central Valley', mode: 'insensitive' } },
-                  { location: { contains: '209', mode: 'insensitive' } },
+                  { location: { contains: 'Central Valley' } },
+                  { location: { contains: '209' } },
                   { targetCities: { hasSome: ['Stockton', 'Modesto', 'Tracy', 'Manteca'] } }
                 ]
               }
@@ -269,7 +269,6 @@ function buildJobQueryFromFilters(filters: any) {
     query.AND.push({
       location: {
         contains: filters.location,
-        mode: 'insensitive',
       },
     });
   }
@@ -284,7 +283,6 @@ function buildJobQueryFromFilters(filters: any) {
     query.AND.push({
       company: {
         contains: filters.company,
-        mode: 'insensitive',
       },
     });
   }
@@ -303,7 +301,6 @@ function buildJobQueryFromFilters(filters: any) {
     query.AND.push({
       title: {
         contains: filters.role,
-        mode: 'insensitive',
       },
     });
   }
@@ -317,9 +314,9 @@ function buildJobQueryFromFilters(filters: any) {
   if (filters.other && !filters.previousJobs) {
     query.AND.push({
       OR: [
-        { title: { contains: filters.other, mode: 'insensitive' } },
-        { description: { contains: filters.other, mode: 'insensitive' } },
-        { company: { contains: filters.other, mode: 'insensitive' } },
+        { title: { contains: filters.other } },
+        { description: { contains: filters.other } },
+        { company: { contains: filters.other } },
       ],
     });
   }

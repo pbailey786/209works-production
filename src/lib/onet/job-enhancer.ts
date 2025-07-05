@@ -30,6 +30,38 @@ const REGION_WAGE_MULTIPLIERS: Record<string, number> = {
   'default': 0.90, // Default for rural/unknown
 };
 
+// Market-based salary data for common jobs when O*NET fails
+const MARKET_SALARY_DATA: Record<string, Record<string, { min: number; max: number; median: number }>> = {
+  'hvac technician': {
+    '209': { min: 25, max: 35, median: 28 },
+    '916': { min: 28, max: 38, median: 32 },
+    '510': { min: 32, max: 42, median: 36 },
+    'bay': { min: 38, max: 48, median: 42 },
+    'default': { min: 22, max: 32, median: 26 }
+  },
+  'warehouse worker': {
+    '209': { min: 16, max: 22, median: 18 },
+    '916': { min: 18, max: 24, median: 20 },
+    '510': { min: 20, max: 26, median: 22 },
+    'bay': { min: 24, max: 30, median: 26 },
+    'default': { min: 15, max: 20, median: 17 }
+  },
+  'retail associate': {
+    '209': { min: 16, max: 20, median: 17 },
+    '916': { min: 17, max: 21, median: 18 },
+    '510': { min: 18, max: 22, median: 19 },
+    'bay': { min: 20, max: 24, median: 21 },
+    'default': { min: 15, max: 18, median: 16 }
+  },
+  'customer service': {
+    '209': { min: 17, max: 23, median: 19 },
+    '916': { min: 19, max: 25, median: 21 },
+    '510': { min: 21, max: 27, median: 23 },
+    'bay': { min: 25, max: 31, median: 27 },
+    'default': { min: 16, max: 21, median: 18 }
+  }
+};
+
 export class JobEnhancer {
   private onetClient = getONetClient();
 
@@ -56,7 +88,7 @@ export class JobEnhancer {
       const wageMultiplier = REGION_WAGE_MULTIPLIERS[regionCode] || REGION_WAGE_MULTIPLIERS.default;
 
       // Process salary data
-      const salary = this.processSalaryData(onetData.salary, wageMultiplier, input.salary);
+      const salary = this.processSalaryData(onetData.salary, wageMultiplier, input.salary, input.title, regionCode);
 
       // Generate enhanced responsibilities from O*NET tasks
       const responsibilities = this.enhanceResponsibilities(onetData.tasks);
@@ -105,11 +137,29 @@ export class JobEnhancer {
   private processSalaryData(
     onetSalary: any, 
     regionMultiplier: number,
-    userProvidedSalary?: string
+    userProvidedSalary?: string,
+    jobTitle?: string,
+    region?: string
   ): EnhancedJobData['salary'] {
-    // If user provided specific salary, use it
+    // If user provided specific salary, validate it
     if (userProvidedSalary) {
       const parsed = this.parseUserSalary(userProvidedSalary);
+      if (parsed && jobTitle && region) {
+        // Validate the salary range
+        const validation = this.validateSalaryRange(parsed.max, jobTitle, region);
+        
+        if (validation.warningMessage) {
+          console.warn('🚨 Salary validation warning:', validation.warningMessage);
+          console.warn('📊 Market data:', validation.marketData);
+        }
+        
+        // If unrealistic, suggest market-based range but still return user input
+        if (!validation.isRealistic && validation.marketData) {
+          console.warn('💡 Suggested salary range:', 
+            `$${validation.marketData.min}-$${validation.marketData.max}/hour`);
+        }
+      }
+      
       if (parsed) return parsed;
     }
 
@@ -134,6 +184,35 @@ export class JobEnhancer {
         max: Math.round(adjustedHigh / 2080),
         display: `$${(adjustedLow / 1000).toFixed(0)}k-$${(adjustedHigh / 1000).toFixed(0)}k/year`,
       };
+    }
+
+    // Fallback to market data if O*NET fails
+    if (jobTitle && region) {
+      const jobTitleLower = jobTitle.toLowerCase();
+      let marketKey = '';
+      
+      // Find matching market data
+      for (const key of Object.keys(MARKET_SALARY_DATA)) {
+        if (jobTitleLower.includes(key.replace(' ', '')) || 
+            jobTitleLower.includes(key.split(' ')[0])) {
+          marketKey = key;
+          break;
+        }
+      }
+      
+      if (marketKey) {
+        const marketData = MARKET_SALARY_DATA[marketKey];
+        const regionData = marketData[region] || marketData['default'];
+        
+        console.log('📊 Using market-based salary data for:', jobTitle);
+        console.log('💰 Market range:', `$${regionData.min}-$${regionData.max}/hour`);
+        
+        return {
+          min: regionData.min,
+          max: regionData.max,
+          display: `$${regionData.min}-$${regionData.max}/hour`,
+        };
+      }
     }
 
     return null;
@@ -164,6 +243,80 @@ export class JobEnhancer {
     }
 
     return null;
+  }
+
+  private validateSalaryRange(salary: number, jobTitle: string, region: string): {
+    isRealistic: boolean;
+    suggestedRange: { min: number; max: number };
+    warningMessage?: string;
+    marketData?: { min: number; max: number; median: number };
+  } {
+    // Find matching job type in market data
+    const jobTitleLower = jobTitle.toLowerCase();
+    let marketKey = '';
+    
+    // Match job title to market data
+    for (const key of Object.keys(MARKET_SALARY_DATA)) {
+      if (jobTitleLower.includes(key.replace(' ', '')) || 
+          jobTitleLower.includes(key.split(' ')[0])) {
+        marketKey = key;
+        break;
+      }
+    }
+    
+    // Special cases for common job patterns
+    if (!marketKey) {
+      if (jobTitleLower.includes('hvac') || jobTitleLower.includes('heating') || 
+          jobTitleLower.includes('air conditioning') || jobTitleLower.includes('refrigeration')) {
+        marketKey = 'hvac technician';
+      } else if (jobTitleLower.includes('warehouse') || jobTitleLower.includes('picker') || 
+                jobTitleLower.includes('packer')) {
+        marketKey = 'warehouse worker';
+      } else if (jobTitleLower.includes('retail') || jobTitleLower.includes('sales associate') || 
+                jobTitleLower.includes('cashier')) {
+        marketKey = 'retail associate';
+      } else if (jobTitleLower.includes('customer') || jobTitleLower.includes('service') || 
+                jobTitleLower.includes('support')) {
+        marketKey = 'customer service';
+      }
+    }
+    
+    if (!marketKey) {
+      // No market data available, return basic validation
+      return {
+        isRealistic: salary <= 75, // General high-end threshold
+        suggestedRange: { min: 15, max: 45 }
+      };
+    }
+    
+    const marketData = MARKET_SALARY_DATA[marketKey];
+    const regionData = marketData[region] || marketData['default'];
+    
+    // Calculate thresholds
+    const highThreshold = regionData.max * 1.25; // 25% above typical max
+    const veryHighThreshold = regionData.max * 1.4; // 40% above typical max (tighter threshold)
+    
+    if (salary > veryHighThreshold) {
+      return {
+        isRealistic: false,
+        suggestedRange: { min: regionData.min, max: regionData.max },
+        warningMessage: `$${salary}/hour is ${Math.round((salary/regionData.median)*100)}% above typical ${jobTitle} median wage in this region. This rate is exceptional and may indicate a specialized or senior-level position.`,
+        marketData: regionData
+      };
+    } else if (salary > highThreshold) {
+      return {
+        isRealistic: true,
+        suggestedRange: { min: regionData.min, max: regionData.max },
+        warningMessage: `$${salary}/hour is above typical ${jobTitle} range but may be appropriate for experienced candidates or specialized roles.`,
+        marketData: regionData
+      };
+    }
+    
+    return {
+      isRealistic: true,
+      suggestedRange: { min: regionData.min, max: regionData.max },
+      marketData: regionData
+    };
   }
 
   private enhanceResponsibilities(onetTasks: string[]): string[] {

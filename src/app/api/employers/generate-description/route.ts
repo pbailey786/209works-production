@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     // Try AI first with short timeout
     try {
-      const prompt = `Write a concise job description for a ${title} position in ${location || 'Central Valley, CA'}${salary ? ` paying ${salary}` : ''}. 
+      const prompt = `Write a concise job description for a ${title} position in ${location || 'Stockton, CA'}${salary ? ` paying ${salary}` : ''}. 
 
 Format as:
 DESCRIPTION: 2-3 sentences about main duties and what makes this job appealing
@@ -76,7 +76,7 @@ Keep it professional but friendly. Focus on Central Valley work culture.`;
     }
 
     // Final fallback - generic description
-    const fallbackDescription = `We're looking for a reliable ${title} to join our team in ${location || 'the Central Valley'}. You'll handle daily responsibilities with attention to detail and work with a supportive team.`;
+    const fallbackDescription = `We're looking for a reliable ${title} to join our team in ${location || 'Stockton'}. You'll handle daily responsibilities with attention to detail and work with a supportive team.`;
     const fallbackRequirements = '• Must be 18+ years old\n• Reliable transportation\n• Good work ethic\n• Ability to work in a team';
 
     return NextResponse.json({

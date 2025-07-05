@@ -122,7 +122,7 @@ function generateJobsFoundResponse(
     } else if (locations.length <= 3) {
       response += ` Located in ${locations.slice(0, -1).join(', ')} and ${locations[locations.length - 1]}.`;
     } else {
-      response += ` Across ${locations.length} different locations in the Central Valley.`;
+      response += ` Across ${locations.length} different locations.`;
     }
   }
 

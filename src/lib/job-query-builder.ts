@@ -63,12 +63,11 @@ export function buildJobQueryFromFiltersSafe(filters: any) {
     }
   }
 
-  // Location filter
+  // Location filter with case-insensitive search
   if (filters.location && filters.location !== '209 area') {
     query.AND.push({
       location: {
         contains: filters.location,
-        mode: 'insensitive',
       },
     });
   }
@@ -84,7 +83,6 @@ export function buildJobQueryFromFiltersSafe(filters: any) {
     query.AND.push({
       company: {
         contains: filters.company,
-        mode: 'insensitive',
       },
     });
   }
@@ -101,13 +99,11 @@ export function buildJobQueryFromFiltersSafe(filters: any) {
         {
           title: {
             contains: filters.industry,
-            mode: 'insensitive',
           },
         },
         {
           description: {
             contains: filters.industry,
-            mode: 'insensitive',
           },
         },
       ],
@@ -119,7 +115,6 @@ export function buildJobQueryFromFiltersSafe(filters: any) {
     query.AND.push({
       title: {
         contains: filters.role,
-        mode: 'insensitive',
       },
     });
   }
@@ -133,9 +128,9 @@ export function buildJobQueryFromFiltersSafe(filters: any) {
   if (filters.other && !filters.previousJobs) {
     query.AND.push({
       OR: [
-        { title: { contains: filters.other, mode: 'insensitive' } },
-        { description: { contains: filters.other, mode: 'insensitive' } },
-        { company: { contains: filters.other, mode: 'insensitive' } },
+        { title: { contains: filters.other } },
+        { description: { contains: filters.other } },
+        { company: { contains: filters.other } },
       ],
     });
   }

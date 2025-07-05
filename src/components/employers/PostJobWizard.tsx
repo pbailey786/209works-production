@@ -500,19 +500,59 @@ export default function PostJobWizard({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Custom Application Questions (Optional)
               </label>
-              <textarea
-                value={jobData.customQuestions?.join('\n') || ''}
-                onChange={(e) => updateJobData('customQuestions', e.target.value.split('\n').filter(q => q.trim()))}
-                placeholder="What experience do you have with warehouse equipment?&#10;Why are you interested in this role?&#10;What's your availability for shifts?"
-                rows={4}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              />
-              <div className="mt-2 space-y-1">
+              
+              <div className="space-y-3">
+                {/* Existing Questions */}
+                {(jobData.customQuestions || []).map((question, index) => (
+                  <div key={index} className="flex gap-3 items-start">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={question}
+                        onChange={(e) => {
+                          const newQuestions = [...(jobData.customQuestions || [])];
+                          newQuestions[index] = e.target.value;
+                          updateJobData('customQuestions', newQuestions);
+                        }}
+                        placeholder={`Question ${index + 1}...`}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newQuestions = (jobData.customQuestions || []).filter((_, i) => i !== index);
+                        updateJobData('customQuestions', newQuestions);
+                      }}
+                      className="mt-2 text-red-600 hover:text-red-800 text-sm font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                
+                {/* Add Question Button */}
+                {(!jobData.customQuestions || jobData.customQuestions.length < 4) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newQuestions = [...(jobData.customQuestions || []), ''];
+                      updateJobData('customQuestions', newQuestions);
+                    }}
+                    className="flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium text-sm"
+                  >
+                    <span className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs">+</span>
+                    Add Custom Question
+                  </button>
+                )}
+              </div>
+              
+              <div className="mt-3 space-y-1">
                 <p className="text-sm text-gray-600">
-                  <strong>Add your own questions</strong> - one per line, 3-4 questions max
+                  <strong>Add up to 4 custom questions</strong> that candidates must answer when applying
                 </p>
                 <p className="text-xs text-gray-500">
-                  These questions will be asked when candidates apply, in addition to uploading their resume.
+                  These questions will be asked in addition to uploading their resume. Examples: "What experience do you have with warehouse equipment?" or "What's your availability for shifts?"
                 </p>
               </div>
             </div>
