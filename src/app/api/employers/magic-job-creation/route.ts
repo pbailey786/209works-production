@@ -46,30 +46,42 @@ export async function POST(req: NextRequest) {
     }
 
     // Enhanced AI prompt for detailed job descriptions using O*NET data
-    const systemPrompt = `Create a comprehensive, professional job description in JSON format. Extract job title and location from the user's prompt. For salary, prioritize realistic market rates for the region over user-provided amounts.
+    const systemPrompt = `You are an expert job posting creator specializing in Central Valley, California positions. Create a comprehensive, professional job description in JSON format.
 
-CRITICAL: Generate SPECIFIC, TECHNICAL content tailored to the exact job type. Avoid generic language.
+CRITICAL RULES:
+1. Extract the EXACT job title from the user's prompt
+2. Generate HIGHLY TECHNICAL, SPECIFIC content - NO GENERIC PHRASES
+3. ALWAYS use these Central Valley market salary ranges (ignore user-provided salaries if unrealistic):
+   - HVAC/Refrigeration technicians: $25-35/hr
+   - Plumbers/Electricians: $28-38/hr  
+   - Warehouse/Forklift operators: $17-22/hr
+   - Retail/Cashiers: $16-20/hr
+   - Drivers (CDL): $22-28/hr
+   - Security: $16-22/hr
+   - Management/Supervisors: $22-32/hr
+   - General labor: $16-19/hr
 
-Generate detailed, industry-specific content:
-- DESCRIPTION: 4-5 sentences describing the specific role, technical aspects, and growth opportunities (150-200 words)
-- RESPONSIBILITIES: 6-8 SPECIFIC daily tasks using technical terminology and industry-specific duties
-- REQUIREMENTS: 5-7 must-have qualifications including certifications, technical skills, and experience levels
-- NICE TO HAVE: 3-4 advanced qualifications that show expertise
+Generate HIGHLY SPECIFIC, INDUSTRY-FOCUSED content:
+- DESCRIPTION: 150-200 words with technical details about the role, specific equipment/systems, work environment, and career growth paths
+- RESPONSIBILITIES: 6-8 SPECIFIC technical tasks (NOT generic like "support operations" or "assist team")
+- REQUIREMENTS: 5-7 industry-specific qualifications including certifications, tools, physical requirements
+- NICE TO HAVE: 3-4 advanced certifications or specialized skills
 
-Examples of SPECIFIC content:
-- HVAC: "Install, maintain, and repair heating, ventilation, air conditioning systems", "EPA certification", "refrigerant handling"
-- Warehouse: "Operate RF scanners", "forklift certification", "inventory cycle counts"
-- Driver: "DOT physical", "clean driving record", "delivery route optimization"
+CRITICAL - Use these industry-specific examples as templates:
 
-When O*NET data is provided, prioritize their occupational tasks and incorporate technical terminology, certifications, and industry-specific requirements.
+HVAC/Refrigeration:
+- Description: Must mention HVAC/R systems, diagnostic equipment, residential/commercial settings
+- Responsibilities: "Diagnose system issues using manifold gauges and multimeters", "Replace compressors, evaporator coils, and condensers", "Program thermostats and control systems"
+- Requirements: "EPA 608 Type II certification", "Own hand tools and gauges", "Read electrical schematics"
+
+Warehouse/Logistics:
+- Description: Mention WMS systems, material handling equipment, distribution center environment
+- Responsibilities: "Pick orders using RF scanners", "Operate sit-down and reach forklifts", "Perform cycle counts"
+- Requirements: "Forklift certification", "Experience with warehouse management systems", "Lift 50 lbs repeatedly"
+
+Always use TECHNICAL TERMINOLOGY specific to the industry. When O*NET data is provided, incorporate it to make the posting even more authoritative and detailed.
 
 Return JSON with: title, location, salary, description, responsibilities, requirements, niceToHave, contactMethod, schedule, benefitOptions (array with icon, title, description, key)`;
-
-    const userPrompt = `Job posting: "${prompt.trim()}"
-Company: ${user?.companyName || 'Our company'}
-Location: ${user?.businessLocation || 'Stockton, CA'}
-
-Create a professional job description with realistic details for this role.`;
 
     // Extract basic job info for O*NET lookup - enhanced to handle direct job titles
     let extractedTitle = 'General Worker';
@@ -94,7 +106,18 @@ Create a professional job description with realistic details for this role.`;
     }
     
     console.log(`📋 Final extracted title: "${extractedTitle}" from prompt: "${prompt.trim().substring(0, 50)}..."`);
-    
+
+    const userPrompt = `Job posting: "${prompt.trim()}"
+Company: ${user?.companyName || 'Our company'}
+Location: ${user?.businessLocation || 'Stockton, CA'}
+
+IMPORTANT CONTEXT:
+- Job Title Detected: "${extractedTitle}"
+- This appears to be a ${extractedTitle.toLowerCase().includes('hvac') ? 'technical/trade' : extractedTitle.toLowerCase().includes('warehouse') ? 'warehouse/logistics' : 'general'} position
+- Use appropriate salary range for this job type in Central Valley, CA
+- Generate SPECIFIC technical content for this exact role type
+
+Create a professional, detailed job description with industry-specific terminology and requirements.`;
     
     // Try to get O*NET data first (non-blocking) - declare outside try block
     let onetData: any = null;
