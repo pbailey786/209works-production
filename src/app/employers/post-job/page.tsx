@@ -87,6 +87,42 @@ export default function PostJobPage() {
           companyLogo: undefined,
           benefitOptions: []
         };
+        
+        // 🔄 RECOVERY: Check for saved AI job data
+        try {
+          const savedBackup = localStorage.getItem('ai_generated_job_backup');
+          if (savedBackup) {
+            const backup = JSON.parse(savedBackup);
+            const backupAge = Date.now() - new Date(backup.timestamp).getTime();
+            
+            // If backup is less than 2 hours old, offer recovery
+            if (backupAge < 2 * 60 * 60 * 1000) {
+              const shouldRecover = confirm(
+                `Found unsaved job posting from ${new Date(backup.timestamp).toLocaleTimeString()}:\n` +
+                `"${backup.jobData.title}" in ${backup.jobData.location}\n\n` +
+                'Would you like to continue working on this job posting?'
+              );
+              
+              if (shouldRecover) {
+                setJobData(backup.jobData);
+                setAiPrompt(backup.aiPrompt);
+                setFlowState('wizard');
+                setCredits(creditsData.credits || { universal: 0, total: 0 });
+                console.log('🔄 Recovered job data from backup');
+                return; // Skip setting base job data
+              } else {
+                localStorage.removeItem('ai_generated_job_backup');
+              }
+            } else {
+              // Remove old backups
+              localStorage.removeItem('ai_generated_job_backup');
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to check for job backup:', e);
+          localStorage.removeItem('ai_generated_job_backup');
+        }
+        
         setJobData(baseJobData);
         setCredits(creditsData.credits || { universal: 0, total: 0 });
       })
@@ -141,6 +177,19 @@ export default function PostJobPage() {
             contactMethod: jobData?.contactMethod || user.emailAddresses?.[0]?.emailAddress || '',
             company: jobData?.company || data.jobData.company || '',
           };
+          
+          // 💾 SAVE CHECKPOINT: Store AI-generated job data for recovery
+          try {
+            localStorage.setItem('ai_generated_job_backup', JSON.stringify({
+              jobData: enhancedJobData,
+              aiPrompt: aiPrompt.trim(),
+              timestamp: new Date().toISOString(),
+              stage: 'ai-complete'
+            }));
+            console.log('💾 AI job data saved as backup');
+          } catch (e) {
+            console.warn('Failed to save job backup:', e);
+          }
           
           setJobData(enhancedJobData);
           setFlowState('wizard');
@@ -243,6 +292,21 @@ export default function PostJobPage() {
   };
 
   const handleWizardCancel = () => {
+    // Save current progress before canceling
+    if (jobData?.title) {
+      try {
+        localStorage.setItem('ai_generated_job_backup', JSON.stringify({
+          jobData,
+          aiPrompt,
+          timestamp: new Date().toISOString(),
+          stage: 'wizard-cancelled'
+        }));
+        console.log('💾 Job progress saved before canceling');
+      } catch (e) {
+        console.warn('Failed to save job progress:', e);
+      }
+    }
+    
     setFlowState('choose');
     setJobData({
       title: '',
@@ -262,6 +326,11 @@ export default function PostJobPage() {
     });
   };
 
+  const goBackToAIEdit = () => {
+    setFlowState('ai-input');
+    // Keep current job data so user can see what was generated
+  };
+
   const startFromScratch = () => {
     setFlowState('wizard');
   };
@@ -272,12 +341,25 @@ export default function PostJobPage() {
 
   if (flowState === 'wizard' && jobData) {
     return (
-      <PostJobWizard
-        onComplete={handleJobComplete}
-        onCancel={handleWizardCancel}
-        initialData={jobData}
-        credits={credits || undefined}
-        isPublishing={isPublishing}
+      <div>
+        {/* Go Back to AI Edit Button */}
+        {aiPrompt && (
+          <div className="max-w-4xl mx-auto px-4 py-2">
+            <button
+              onClick={goBackToAIEdit}
+              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            >
+              ← Edit AI Prompt: "{aiPrompt.substring(0, 50)}..."
+            </button>
+          </div>
+        )}
+        
+        <PostJobWizard
+          onComplete={handleJobComplete}
+          onCancel={handleWizardCancel}
+          initialData={jobData}
+          credits={credits || undefined}
+          isPublishing={isPublishing}
       />
     );
   }
