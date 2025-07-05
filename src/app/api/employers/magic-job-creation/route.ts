@@ -150,17 +150,38 @@ IMPORTANT: Use the O*NET salary range as it reflects actual market rates for thi
       }
       
       // Validate and fix salary if AI provided unrealistic amount
-      if (jobData.salary && onetData?.salary?.display) {
+      if (jobData.salary) {
         const aiSalaryMatch = jobData.salary.match(/\$(\d+(?:\.\d+)?)/);
         if (aiSalaryMatch) {
           const aiSalaryAmount = parseFloat(aiSalaryMatch[1]);
-          const onetSalaryMatch = onetData.salary.display.match(/\$(\d+(?:\.\d+)?)/);
-          if (onetSalaryMatch) {
-            const onetSalaryAmount = parseFloat(onetSalaryMatch[1]);
-            // If AI salary is more than 40% higher than O*NET, use O*NET data
-            if (aiSalaryAmount > onetSalaryAmount * 1.4) {
-              console.log(`🚨 AI salary $${aiSalaryAmount}/hr is unrealistic, using O*NET: ${onetData.salary.display}`);
-              jobData.salary = onetData.salary.display;
+          
+          // First try O*NET validation
+          if (onetData?.salary?.display) {
+            const onetSalaryMatch = onetData.salary.display.match(/\$(\d+(?:\.\d+)?)/);
+            if (onetSalaryMatch) {
+              const onetSalaryAmount = parseFloat(onetSalaryMatch[1]);
+              if (aiSalaryAmount > onetSalaryAmount * 1.4) {
+                console.log(`🚨 AI salary $${aiSalaryAmount}/hr is unrealistic, using O*NET: ${onetData.salary.display}`);
+                jobData.salary = onetData.salary.display;
+              }
+            }
+          } 
+          // Fallback: Use hardcoded market data when O*NET unavailable
+          else {
+            const jobTitleLower = jobData.title.toLowerCase();
+            let marketRange = null;
+            
+            if (jobTitleLower.includes('hvac') || jobTitleLower.includes('heating') || jobTitleLower.includes('air conditioning')) {
+              marketRange = { min: 25, max: 35, median: 28 }; // Central Valley HVAC rates
+            } else if (jobTitleLower.includes('warehouse')) {
+              marketRange = { min: 17, max: 22, median: 18 };
+            } else if (jobTitleLower.includes('retail') || jobTitleLower.includes('cashier')) {
+              marketRange = { min: 16, max: 20, median: 17 };
+            }
+            
+            if (marketRange && aiSalaryAmount > marketRange.max * 1.4) {
+              console.log(`🚨 AI salary $${aiSalaryAmount}/hr is unrealistic for ${jobData.title}, using market data: $${marketRange.min}-${marketRange.max}/hr`);
+              jobData.salary = `$${marketRange.min}-${marketRange.max}/hr`;
             }
           }
         }
