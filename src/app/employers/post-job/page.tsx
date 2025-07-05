@@ -360,7 +360,8 @@ export default function PostJobPage() {
           initialData={jobData}
           credits={credits || undefined}
           isPublishing={isPublishing}
-      />
+        />
+      </div>
     );
   }
 
