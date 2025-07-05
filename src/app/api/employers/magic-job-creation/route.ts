@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Simplified AI prompt to avoid memory issues
-    const systemPrompt = `Create a professional job description in JSON format. Extract the exact job title, location, and salary from the user's prompt. Generate realistic responsibilities, requirements, and benefits for the Central Valley region.
+    const systemPrompt = `Create a professional job description in JSON format. Extract job title and location from the user's prompt. For salary, prioritize realistic market rates for the Central Valley region over user-provided amounts. Generate professional responsibilities, requirements, and benefits.
 
 Return JSON with: title, location, salary, description, responsibilities, requirements, niceToHave, contactMethod, schedule, benefitOptions (array with icon, title, description, key)`;
 
@@ -97,12 +97,14 @@ Create a professional job description with realistic details for this role.`;
       let enhancedUserPrompt = userPrompt;
       if (onetData && onetData.title) {
         console.log('🔧 Enhancing prompt with O*NET data');
-        enhancedUserPrompt += `\n\nO*NET DATA AVAILABLE - Use this to enhance accuracy:
+        enhancedUserPrompt += `\n\nO*NET DATA AVAILABLE - Use this authoritative data:
 Title: ${onetData.title}
-Salary Range: ${onetData.salary?.display || 'Use market rates'}
+REALISTIC SALARY (use this range): ${onetData.salary?.display || '$16-20/hr for entry level'}
 Key Responsibilities: ${onetData.responsibilities?.slice(0, 3).join('; ') || 'See job description'}
 Required Skills: ${onetData.skills?.join(', ') || 'Standard skills for role'}
-Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See requirements section'}`;
+Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See requirements section'}
+
+IMPORTANT: Use the O*NET salary range as it reflects actual market rates for this region.`;
       }
 
       // Try OpenAI first with timeout
@@ -147,6 +149,23 @@ Suggested Requirements: ${onetData.requirements?.slice(0, 3).join('; ') || 'See 
         throw new Error('AI response missing required fields');
       }
       
+      // Validate and fix salary if AI provided unrealistic amount
+      if (jobData.salary && onetData?.salary?.display) {
+        const aiSalaryMatch = jobData.salary.match(/\$(\d+(?:\.\d+)?)/);
+        if (aiSalaryMatch) {
+          const aiSalaryAmount = parseFloat(aiSalaryMatch[1]);
+          const onetSalaryMatch = onetData.salary.display.match(/\$(\d+(?:\.\d+)?)/);
+          if (onetSalaryMatch) {
+            const onetSalaryAmount = parseFloat(onetSalaryMatch[1]);
+            // If AI salary is more than 40% higher than O*NET, use O*NET data
+            if (aiSalaryAmount > onetSalaryAmount * 1.4) {
+              console.log(`🚨 AI salary $${aiSalaryAmount}/hr is unrealistic, using O*NET: ${onetData.salary.display}`);
+              jobData.salary = onetData.salary.display;
+            }
+          }
+        }
+      }
+
       // Ensure responsibilities and requirements are present
       if (!jobData.responsibilities || typeof jobData.responsibilities !== 'string' || !jobData.responsibilities.trim()) {
         console.log('AI missing responsibilities, using fallback');
@@ -352,11 +371,16 @@ async function generateFallbackJob(prompt: string, user: any, onetData: any = nu
     }
   }
 
-  // Extract salary or use O*NET data or defaults
+  // Extract salary - prioritize O*NET/market data over user input for realism
   let salary = onetData?.salary?.display || '$16-19/hr';
   
-  // Try to match salary ranges first if O*NET didn't provide
-  if (!onetData?.salary) {
+  // If O*NET provided salary, use it (it's already validated and realistic)
+  if (onetData?.salary?.display) {
+    console.log('💰 Using O*NET validated salary:', onetData.salary.display);
+    salary = onetData.salary.display;
+  } else {
+    // Try to match salary ranges from user input, but validate against market data
+    console.log('💰 No O*NET salary, checking user input and market data');
     const rangeMatch = prompt.match(/\$(\d+(?:\.\d+)?)\s*[-–]\s*\$?(\d+(?:\.\d+)?)\s*(?:\/hr|per hour|hourly)?/i);
     if (rangeMatch) {
       const min = parseFloat(rangeMatch[1]);
